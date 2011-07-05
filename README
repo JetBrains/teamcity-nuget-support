@@ -1,0 +1,8 @@
+This is dotNetPackageManagers TeamCity plugin.
+
+The goal of this plugin is to research and support
+.NET package managers in TeamCity. 
+
+We plan to cover mostly nuget and openwrap.
+
+This plugin will be compatible with at least TeamCity 6.5
