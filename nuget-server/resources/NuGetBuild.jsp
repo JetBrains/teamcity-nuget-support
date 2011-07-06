@@ -8,8 +8,10 @@ This is the list of all NuGet packages that were downloaded for the build.
 
 <table class="runnerFormTable" style="width:40em">
   <thead>
-    <th>Package Name</th>
-    <th>Package Version</th>
+    <tr>
+      <th>Package Name</th>
+      <th>Package Version</th>
+    </tr>
   </thead>
 <c:forEach var="it" items="${nugetPackages}">
   <tr>
