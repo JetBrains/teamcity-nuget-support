@@ -2,7 +2,13 @@
 <module type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
-      <configuration />
+      <configuration>
+        <fileset id="fileset1" name="nuget-server" removed="false">
+          <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget.xml</file>
+          <file>jar://$TeamCityDistribution$/webapps/ROOT/WEB-INF/lib/server.jar!/META-INF/buildServerSpring.xml</file>
+          <file>jar://$TeamCityDistribution$/webapps/ROOT/WEB-INF/lib/server.jar!/META-INF/buildServerPermissions.xml</file>
+        </fileset>
+      </configuration>
     </facet>
     <facet type="web" name="nuget-server">
       <configuration>
