@@ -4,4 +4,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
 
+  <bean class="jetbrains.buildServer.nuget.agent.util.impl.CommandlineBuildProcessFactoryImpl"/>
+
+  <bean class="jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner"/>
+  <bean class="jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunnerRegistrar"/>
 </beans>

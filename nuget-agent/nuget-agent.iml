@@ -5,6 +5,8 @@
       <configuration>
         <fileset id="fileset1" name="nuget-agent" removed="false">
           <file>file://$MODULE_DIR$/src/META-INF/build-agent-plugin-nuget.xml</file>
+          <file>jar://$TeamCityDistribution$/buildAgent/lib/agent.jar!/META-INF/buildAgentSpring.xml</file>
+          <file>jar://$TeamCityDistribution$/buildAgent/lib/agent.jar!/META-INF/buildAgentPlugins.xml</file>
         </fileset>
       </configuration>
     </facet>
@@ -16,6 +18,12 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Agent-Api" level="project" />
+    <orderEntry type="library" name="Common-Api" level="project" />
+    <orderEntry type="library" name="Idea-OpenApi" level="project" />
+    <orderEntry type="library" name="log4j" level="project" />
+    <orderEntry type="module" module-name="nuget-common" />
+    <orderEntry type="library" name="Agent-internal" level="project" />
   </component>
 </module>
 
