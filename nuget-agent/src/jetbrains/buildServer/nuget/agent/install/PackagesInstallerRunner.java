@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.agent.install;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.common.PackagesInstallerConstants;
@@ -64,13 +65,29 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
                                         @NotNull final CompositeBuildProcessImpl process,
                                         @NotNull final PackagesInstallParameters parameters) {
     return new Callback() {
-      public void onPackagesConfigFound(@NotNull File config,
-                                        @NotNull File targetFolder) throws RunBuildException {
+      public void onPackagesConfigFound(@NotNull final File config,
+                                        @NotNull final File targetFolder) {
         process.pushBuildProcess(
-                myInstallActionFactory.createBuildProcess(context,
-                        parameters,
-                        config,
-                        targetFolder)
+                new DelegatingBuildProcess(
+                        new DelegatingBuildProcess.Action() {
+                          private final BuildProgressLogger logger = context.getBuild().getBuildLogger();
+
+                          @NotNull
+                          public BuildProcess startImpl() throws RunBuildException {
+                            logger.activityStarted("install", "Installing NuGet packages for " + config, "nuget");
+
+                            return myInstallActionFactory.createBuildProcess(context,
+                                    parameters,
+                                    config,
+                                    targetFolder)
+                                    ;
+                          }
+
+                          public void finishedImpl() {
+                            logger.activityFinished("install", "nuget");
+                          }
+                        }
+                )
         );
       }
     };
