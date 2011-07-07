@@ -46,9 +46,8 @@ public abstract class BuildProcessBase implements BuildProcess {
 
   @NotNull
   public final BuildFinishedStatus waitFor() throws RunBuildException {
-    if (isInterrupted()) return BuildFinishedStatus.INTERRUPTED;
-
     try {
+      if (isInterrupted()) return BuildFinishedStatus.INTERRUPTED;
       BuildFinishedStatus status = waitForImpl();
       if (isInterrupted()) return BuildFinishedStatus.INTERRUPTED;
 
@@ -57,7 +56,6 @@ public abstract class BuildProcessBase implements BuildProcess {
       myIsFinished.set(true);
     }
   }
-
 
   protected abstract BuildFinishedStatus waitForImpl() throws RunBuildException;
 

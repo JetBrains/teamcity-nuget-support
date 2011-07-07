@@ -9,6 +9,15 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="testng" level="project" />
     <orderEntry type="library" name="jmock" level="project" />
+    <orderEntry type="library" name="Test-Api" level="project" />
+    <orderEntry type="module" module-name="nuget-agent" />
+    <orderEntry type="module" module-name="nuget-common" />
+    <orderEntry type="module" module-name="nuget-server" />
+    <orderEntry type="library" name="Common-Api" level="project" />
+    <orderEntry type="library" name="Agent-Api" level="project" />
+    <orderEntry type="library" name="Test-Api libs" level="project" />
+    <orderEntry type="library" name="Idea-OpenApi" level="project" />
+    <orderEntry type="library" name="log4j" level="project" />
   </component>
 </module>
 
