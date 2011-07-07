@@ -20,13 +20,12 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildProcessFacade;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.agent.runner.ProgramCommandLine;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.runner.SimpleRunnerConstants;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -39,21 +38,19 @@ public class CommandlineBuildProcessFactoryImpl implements CommandlineBuildProce
     myFacade = facade;
   }
 
-  public BuildProcess executeCommandLine(@NotNull final BuildRunnerContext hostContext,
-                                         @NotNull final ProgramCommandLine cmd) throws RunBuildException {
+  public BuildProcess executeCommandLine(@NotNull BuildRunnerContext hostContext,
+                                         @NotNull File program,
+                                         @NotNull Collection<String> argz,
+                                         @NotNull File workingDir) throws RunBuildException {
     BuildRunnerContext context = myFacade.createBuildRunnerContext(
             hostContext.getBuild(),
             SimpleRunnerConstants.TYPE,
-            cmd.getWorkingDirectory(),
+            workingDir.getPath(),
             hostContext
     );
 
-    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, cmd.getExecutablePath());
-    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, joinCommandLineArguments(cmd.getArguments()));
-
-    for (Map.Entry<String, String> e : cmd.getEnvironment().entrySet()) {
-      context.addEnvironmentVariable(e.getKey(), e.getValue());
-    }
+    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, program.getPath());
+    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, joinCommandLineArguments(argz));
 
     return myFacade.createExecutable(hostContext.getBuild(), context);
   }
