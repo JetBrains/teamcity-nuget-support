@@ -19,22 +19,61 @@ package jetbrains.buildServer.nuget.agent.install;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.common.PackagesInstallerConstants;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+
+import static jetbrains.buildServer.nuget.agent.install.LocateNuGetConfigBuildProcess.Callback;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 13:55
  */
-public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunnerInfo{
+public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunnerInfo {
   private static final Logger LOG = Logger.getInstance(PackagesInstallerRunner.class.getName());
+
+  private final NuGetInstallPackageActionFactory myInstallActionFactory;
+  private final PackageInstallParametersFactory myParametersFactory;
+
+  public PackagesInstallerRunner(@NotNull final NuGetInstallPackageActionFactory installActionFactory,
+                                 @NotNull final PackageInstallParametersFactory parametersFactory) {
+    myInstallActionFactory = installActionFactory;
+    myParametersFactory = parametersFactory;
+  }
 
   @NotNull
   public BuildProcess createBuildProcess(@NotNull AgentRunningBuild runningBuild,
-                                         @NotNull BuildRunnerContext context) throws RunBuildException {
+                                         @NotNull final BuildRunnerContext context) throws RunBuildException {
+    final CompositeBuildProcessImpl process = new CompositeBuildProcessImpl();
+    final PackagesInstallParameters parameters = myParametersFactory.loadParameters(context);
+    final LocateNuGetConfigBuildProcess locate = new LocateNuGetConfigBuildProcess(
+            parameters,
+            context.getBuild().getBuildLogger(),
+            createLocateCallback(context, process, parameters)
+    );
+    process.pushBuildProcess(locate);
 
-    throw new RunBuildException("Not Implemented");
+    return process;
+  }
+
+  @NotNull
+  private Callback createLocateCallback(@NotNull final BuildRunnerContext context,
+                                        @NotNull final CompositeBuildProcessImpl process,
+                                        @NotNull final PackagesInstallParameters parameters) {
+    return new Callback() {
+      public void onPackagesConfigFound(@NotNull File config,
+                                        @NotNull File targetFolder) throws RunBuildException {
+        process.pushBuildProcess(
+                myInstallActionFactory.createBuildProcess(context,
+                        parameters,
+                        config,
+                        targetFolder)
+        );
+      }
+    };
   }
 
   @NotNull
@@ -60,5 +99,4 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
 
     return true;
   }
-
 }

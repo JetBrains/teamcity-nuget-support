@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.common;
+package jetbrains.buildServer.nuget.agent.install;
+
+import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildProcess;
+import jetbrains.buildServer.agent.BuildRunnerContext;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 07.07.11 13:56
+ * Date: 07.07.11 18:07
  */
-public interface PackagesInstallerConstants {
-  public static final String RUN_TYPE = "jetbrains.nuget.packagesInstaller";
-
-
-  public static final String NUGET_PATH = "nuget.path";
-  public static final String NUGET_SOURCES = "nuget.sources";
-  public static final String SLN_PATH = "sln.path";
+public interface NuGetInstallPackageActionFactory {
+  BuildProcess createBuildProcess(@NotNull BuildRunnerContext context,
+                                  @NotNull PackagesInstallParameters params,
+                                  @NotNull File packagesConfig,
+                                  @NotNull File targetFolder) throws RunBuildException;
 }
