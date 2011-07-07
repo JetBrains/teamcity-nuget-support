@@ -77,7 +77,8 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
       will(returnValue(myLogger));
 
       allowing(myMockProcess).start();
-      allowing(myMockProcess).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+      allowing(myMockProcess).waitFor();
+      will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
 
       allowing(myLogger).message(with(any(String.class)));
       allowing(myLogger).activityStarted(with(equal("install")), with(any(String.class)), with(any(String.class)));
@@ -88,8 +89,36 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   @Test
   public void test_01_online_sources() throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
-    final File sln = new File(myRoot, "sln1-lib.sln");
 
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList());
+
+    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(4, packageses.size());
+  }
+
+  @Test(enabled = false, dependsOnGroups = "Need to understand how to check NuGet uses only specified sources")
+  public void test_01_local_sources() throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+    File sourcesDir = new File(myRoot, "js");
+    ArchiveUtil.unpackZip(getTestDataPath("test-01-sources.zip"), "", sourcesDir);
+
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()));
+
+    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(4, packageses.size());
+  }
+
+  private void fetchPackages(final File sln, final List<String> sources) throws RunBuildException {
     m.checking(new Expectations() {{
       allowing(myParametersFactory).loadParameters(myContext);
       will(returnValue(myParameters));
@@ -99,26 +128,17 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
       allowing(myParameters).getSolutionFile();
       will(returnValue(sln));
       allowing(myParameters).getNuGetPackageSources();
-      will(returnValue(Collections.<String>emptyList()));
+      will(returnValue(sources));
     }});
 
     BuildProcess proc = new PackagesInstallerRunner(
             new NuGetInstallPackageActionFactoryImpl(executingFactory()),
             myParametersFactory
-    )
-            .createBuildProcess(myBuild, myContext);
+    ).createBuildProcess(myBuild, myContext);
 
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
 
     m.assertIsSatisfied();
-
-    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
-    System.out.println("installed packageses = " + packageses);
-
-    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packageses.size());
   }
 
 
@@ -153,6 +173,8 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
               cmd.addParameter(arg);
             }
             cmd.setWorkingDirectory(workingDir);
+
+            System.out.println("Run: " + cmd.getCommandLineString());
 
             ExecResult result = SimpleCommandLineProcessRunner.runCommand(cmd, new byte[0]);
 
