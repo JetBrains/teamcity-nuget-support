@@ -24,6 +24,7 @@
     <orderEntry type="library" name="log4j" level="project" />
     <orderEntry type="module" module-name="nuget-common" />
     <orderEntry type="library" name="Agent-internal" level="project" />
+    <orderEntry type="library" name="Common-Impl" level="project" />
   </component>
 </module>
 
