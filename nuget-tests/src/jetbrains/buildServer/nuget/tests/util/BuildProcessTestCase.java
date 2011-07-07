@@ -16,15 +16,13 @@
 
 package jetbrains.buildServer.nuget.tests.util;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
-import jetbrains.buildServer.util.StringUtil;
+import jetbrains.buildServer.nuget.tests.LoggingTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 
 import java.util.ArrayList;
@@ -34,19 +32,7 @@ import java.util.List;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 20:08
  */
-public class BuildProcessTestCase extends BaseTestCase {
-  private List<String> myLog;
-
-  protected synchronized void log(@NotNull String message) {
-    myLog.add(message);
-  }
-
-  @BeforeMethod
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    myLog = new ArrayList<String>();
-  }
+public class BuildProcessTestCase extends LoggingTestCase {
 
   @DataProvider(name = "buildFinishStatuses")
   public Object[][] buildStatuses() {
@@ -75,14 +61,8 @@ public class BuildProcessTestCase extends BaseTestCase {
       proc.waitFor();
       Assert.fail("Exception expected");
     } catch (RunBuildException e) {
-      Assert.assertEquals(message, e.getMessage());
+      Assert.assertTrue(e.getMessage().contains(message), e.toString());
     }
-  }
-
-  protected void assertLog(String... gold) {
-    String actual = StringUtil.join(myLog, "\n");
-    String expected = StringUtil.join(gold, "\n");
-    Assert.assertEquals(actual, expected);
   }
 
   /**

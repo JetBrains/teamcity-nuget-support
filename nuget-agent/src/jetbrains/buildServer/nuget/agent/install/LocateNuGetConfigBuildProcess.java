@@ -61,16 +61,17 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder);
   }
 
+  @NotNull
   @Override
   protected BuildFinishedStatus waitForImpl() throws RunBuildException {
     final File sln = myContext.getSolutionFile();
-    final File packages = new File(sln, "packages");
+    final File packages = new File(sln.getParentFile(), "packages");
     final File repositoriesConfig = new File(packages, "repositories.config");
 
     LOG.debug("resources.config path is " + repositoriesConfig);
 
     if (!repositoriesConfig.isFile()) {
-      throw new RunBuildException("Failed to find " + repositoriesConfig);
+      throw new RunBuildException("Failed to find repositories.config at " + repositoriesConfig);
     }
 
     myLogger.message("Found packages folder: " + packages);
@@ -86,7 +87,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
       myCallback.onPackagesConfigFound(file, packages);
     }
 
-    return null;
+    return BuildFinishedStatus.FINISHED_SUCCESS;
   }
 
   @NotNull
@@ -108,7 +109,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
         }
       }.parse(repositoriesConfig);
     } catch (IOException e) {
-      throw new RunBuildException("Failed to parse " + repositoriesConfig + ". " + e.getMessage(), e);
+      throw new RunBuildException("Failed to parse repositories.config at " + repositoriesConfig + ". " + e.getMessage(), e);
     }
 
     return files;

@@ -57,6 +57,7 @@ public abstract class BuildProcessBase implements BuildProcess {
     }
   }
 
+  @NotNull
   protected abstract BuildFinishedStatus waitForImpl() throws RunBuildException;
 
   protected void interruptImpl() {

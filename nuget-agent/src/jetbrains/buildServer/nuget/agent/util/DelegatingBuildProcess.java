@@ -42,6 +42,7 @@ public class DelegatingBuildProcess extends BuildProcessBase {
     if (process != null) process.interrupt();
   }
 
+  @NotNull
   @Override
   protected final BuildFinishedStatus waitForImpl() throws RunBuildException {
     try {

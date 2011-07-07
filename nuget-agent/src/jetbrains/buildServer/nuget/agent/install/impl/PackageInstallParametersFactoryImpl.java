@@ -41,14 +41,14 @@ public class PackageInstallParametersFactoryImpl implements PackageInstallParame
   public PackagesInstallParameters loadParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
     return new PackagesInstallParameters() {
 
-      private File resolvePath(@Nullable final String runnerParameter) throws RunBuildException {
+      private File resolvePath(@Nullable final String runnerParameter, @NotNull String name) throws RunBuildException {
         String path = context.getRunnerParameters().get(runnerParameter);
         if (StringUtil.isEmptyOrSpaces(path))
           throw new RunBuildException("Runner parameter '" + runnerParameter + "' was not found");
 
         File file = FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
         if (!file.exists()) {
-          throw new RunBuildException("File does not exists: " + file);
+          throw new RunBuildException("Failed to find " + name + " at " + file);
         }
 
         return file;
@@ -57,12 +57,12 @@ public class PackageInstallParametersFactoryImpl implements PackageInstallParame
 
       @NotNull
       public File getSolutionFile() throws RunBuildException {
-        return resolvePath(PackagesInstallerConstants.SLN_PATH);
+        return resolvePath(PackagesInstallerConstants.SLN_PATH, "Visual Studio .sln file");
       }
 
       @NotNull
       public File getNuGetExeFile() throws RunBuildException {
-        return resolvePath(PackagesInstallerConstants.NUGET_PATH);
+        return resolvePath(PackagesInstallerConstants.NUGET_PATH, "nuget.exe");
       }
 
       @NotNull
