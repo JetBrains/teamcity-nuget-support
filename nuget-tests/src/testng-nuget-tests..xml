@@ -1,0 +1,20 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="nuget">
+
+  <test name="fast tests">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.agent.LocateNuGetConfigBuildProcessTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetInstallPackageActionFactoryTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.util.CompositeBuildProcessTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.DelegatingBuildProcessTest"/>
+    </classes>
+  </test>
+
+  <test name="nuget integration test">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.integration.InstallPackageIntegtatoinTest"/>
+    </classes>
+  </test>
+</suite>
+
