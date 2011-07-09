@@ -75,6 +75,8 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
       will(returnValue(myBuild));
       allowing(myBuild).getBuildLogger();
       will(returnValue(myLogger));
+      allowing(myBuild).getCheckoutDirectory();
+      will(returnValue(myRoot));
 
       allowing(myMockProcess).start();
       allowing(myMockProcess).waitFor();
