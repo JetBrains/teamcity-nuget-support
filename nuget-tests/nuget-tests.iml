@@ -18,6 +18,7 @@
     <orderEntry type="library" name="Test-Api libs" level="project" />
     <orderEntry type="library" name="Idea-OpenApi" level="project" />
     <orderEntry type="library" name="log4j" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="TeamCity xstream" level="project" />
   </component>
 </module>
 
