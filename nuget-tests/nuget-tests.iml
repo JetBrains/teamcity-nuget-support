@@ -19,6 +19,7 @@
     <orderEntry type="library" name="Idea-OpenApi" level="project" />
     <orderEntry type="library" name="log4j" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="TeamCity server runtime" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="TeamCity agent runtime" level="project" />
   </component>
 </module>
 
