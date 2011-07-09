@@ -95,12 +95,12 @@ public class PackagesInstallerRunType extends RunType {
 
   @Override
   public String getEditRunnerParamsJspFilePath() {
-    return myDescriptor.getPluginResourcesPath("editInstallPackage.jsp");
+    return myDescriptor.getPluginResourcesPath("install/editInstallPackage.jsp");
   }
 
   @Override
   public String getViewRunnerParamsJspFilePath() {
-    return myDescriptor.getPluginResourcesPath("viewInstallPackage.jsp");
+    return myDescriptor.getPluginResourcesPath("install/viewInstallPackage.jsp");
   }
 
   @Override
