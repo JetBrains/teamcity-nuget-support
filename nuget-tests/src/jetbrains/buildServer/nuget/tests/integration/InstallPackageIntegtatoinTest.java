@@ -92,7 +92,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   public void test_01_online_sources() throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList());
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false);
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
     System.out.println("installed packageses = " + packageses);
@@ -100,6 +100,21 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(4, packageses.size());
+  }
+
+  @Test
+  public void test_01_online_sources_ecludeVersion() throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true);
+
+    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/NUnit").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications").isDirectory());
     Assert.assertEquals(4, packageses.size());
   }
 
@@ -109,7 +124,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     File sourcesDir = new File(myRoot, "js");
     ArchiveUtil.unpackZip(getTestDataPath("test-01-sources.zip"), "", sourcesDir);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()));
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false);
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
     System.out.println("installed packageses = " + packageses);
@@ -120,7 +135,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     Assert.assertEquals(4, packageses.size());
   }
 
-  private void fetchPackages(final File sln, final List<String> sources) throws RunBuildException {
+  private void fetchPackages(final File sln, final List<String> sources, final boolean excludeVersion) throws RunBuildException {
     m.checking(new Expectations() {{
       allowing(myParametersFactory).loadParameters(myContext);
       will(returnValue(myParameters));
@@ -131,6 +146,8 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
       will(returnValue(sln));
       allowing(myParameters).getNuGetPackageSources();
       will(returnValue(sources));
+      allowing(myParameters).getExcludeVersion();
+      will(returnValue(excludeVersion));
     }});
 
     BuildProcess proc = new PackagesInstallerRunner(

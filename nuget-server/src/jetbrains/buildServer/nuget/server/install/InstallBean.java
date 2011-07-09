@@ -26,4 +26,5 @@ public class InstallBean {
   public String getNuGetPathKey() { return PackagesInstallerConstants.NUGET_PATH; }
   public String getNuGetSourcesKey() { return PackagesInstallerConstants.NUGET_SOURCES; }
   public String getSolutionPathKey() { return PackagesInstallerConstants.SLN_PATH; }
+  public String getExcludeVersionKey() { return PackagesInstallerConstants.NUGET_EXCLUDE_VERSION;}
 }

@@ -65,6 +65,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       allowing(ps).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
       allowing(ps).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(ps).getExcludeVersion(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
@@ -79,11 +80,32 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   }
 
   @Test
+  public void test_no_sources_excludeVersion() throws RunBuildException, IOException {
+    final File nuget = createTempFile();
+    m.checking(new Expectations(){{
+      allowing(ps).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(ps).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(ps).getExcludeVersion(); will(returnValue(true));
+
+      oneOf(myProcessFactory).executeCommandLine(
+              ctx,
+              nuget,
+              Arrays.asList("install", myConfig.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath()),
+              myConfig.getParentFile()
+      );
+    }});
+
+    i.createBuildProcess(ctx, ps, myConfig, myTarget);
+    m.assertIsSatisfied();
+  }
+
+  @Test
   public void test_sources() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
       allowing(ps).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
       allowing(ps).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(ps).getExcludeVersion(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,

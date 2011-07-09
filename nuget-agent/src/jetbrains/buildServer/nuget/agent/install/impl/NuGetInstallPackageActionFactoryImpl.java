@@ -47,6 +47,9 @@ public class NuGetInstallPackageActionFactoryImpl implements NuGetInstallPackage
     final List<String> argz = new ArrayList<String>();
     argz.add("install");
     argz.add(FileUtil.getCanonicalFile(packagesConfig).getPath()); //path to package
+    if (params.getExcludeVersion()) {
+      argz.add("-ExcludeVersion");
+    }
     argz.add("-OutputDirectory");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 

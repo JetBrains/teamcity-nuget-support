@@ -47,4 +47,11 @@ public interface PackagesInstallParameters {
    */
   @NotNull
   Collection<String> getNuGetPackageSources();
+
+  /**
+   * @return true if pacakges are expected to be installed
+   *         without version
+   *         numbers in directory names
+   */
+  boolean getExcludeVersion();
 }

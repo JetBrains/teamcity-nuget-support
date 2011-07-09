@@ -43,11 +43,20 @@
 </l:settingsGroup>
 
 <l:settingsGroup title="Packages">
-<tr>
-  <th>Path to solution file</th>
-  <td>
-    <props:textProperty name="${ib.solutionPathKey}" className="longField"/>
-    <span class="smallNote">Specify path to Visual Studio solution file (.sln)</span>
-  </td>
-</tr>
+  <tr>
+    <th>Path to solution file</th>
+    <td>
+      <props:textProperty name="${ib.solutionPathKey}" className="longField"/>
+      <span class="smallNote">Specify path to Visual Studio solution file (.sln)</span>
+    </td>
+  </tr>
+  <tr>
+    <th>Options</th>
+    <td>
+      <props:checkboxProperty name="${ib.excludeVersionKey}"/>
+      Exclude version from package folder names
+      <span class="smallNote">Makes NuGet exlude package version from package folders. Equivalent of -ExcludeVersion commandline argument</span>
+    </td>
+  </tr>
+
 </l:settingsGroup>

@@ -29,3 +29,7 @@
 <div class="parameter">
   Path to .sln: <strong><props:displayValue name="${ib.solutionPathKey}"/></strong>
 </div>
+
+<div class="parameter">
+  Exclude Version: <strong><props:displayCheckboxValue name="${ib.excludeVersionKey}"/></strong>
+</div>

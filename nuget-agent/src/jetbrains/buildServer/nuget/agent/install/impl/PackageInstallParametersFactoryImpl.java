@@ -20,7 +20,6 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.PackageInstallParametersFactory;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.common.PackagesInstallerConstants;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import static jetbrains.buildServer.nuget.common.PackagesInstallerConstants.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -57,17 +58,17 @@ public class PackageInstallParametersFactoryImpl implements PackageInstallParame
 
       @NotNull
       public File getSolutionFile() throws RunBuildException {
-        return resolvePath(PackagesInstallerConstants.SLN_PATH, "Visual Studio .sln file");
+        return resolvePath(SLN_PATH, "Visual Studio .sln file");
       }
 
       @NotNull
       public File getNuGetExeFile() throws RunBuildException {
-        return resolvePath(PackagesInstallerConstants.NUGET_PATH, "nuget.exe");
+        return resolvePath(NUGET_PATH, "nuget.exe");
       }
 
       @NotNull
       public Collection<String> getNuGetPackageSources() {
-        String sources = context.getRunnerParameters().get(PackagesInstallerConstants.NUGET_SOURCES);
+        String sources = context.getRunnerParameters().get(NUGET_SOURCES);
         if (sources == null) return Collections.emptyList();
 
         List<String> list = new ArrayList<String>();
@@ -79,6 +80,10 @@ public class PackageInstallParametersFactoryImpl implements PackageInstallParame
         }
 
         return Collections.unmodifiableList(list);
+      }
+
+      public boolean getExcludeVersion() {
+        return !StringUtil.isEmptyOrSpaces(context.getRunnerParameters().get(NUGET_EXCLUDE_VERSION));
       }
     };
   }
