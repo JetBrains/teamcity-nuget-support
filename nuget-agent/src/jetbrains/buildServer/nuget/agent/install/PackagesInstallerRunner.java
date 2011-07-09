@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.common.PackagesInstallerConstants;
+import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -74,7 +75,9 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
 
                           @NotNull
                           public BuildProcess startImpl() throws RunBuildException {
-                            logger.activityStarted("install", "Installing NuGet packages for " + config, "nuget");
+                            String pathToLog = FileUtil.getRelativePath(context.getBuild().getCheckoutDirectory(), config);
+                            if (pathToLog == null) pathToLog = config.getPath();
+                            logger.activityStarted("install", "Installing NuGet packages for " + pathToLog, "nuget");
 
                             return myInstallActionFactory.createBuildProcess(context,
                                     parameters,
