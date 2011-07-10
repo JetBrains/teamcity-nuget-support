@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
@@ -55,7 +56,8 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   private BuildRunnerContext myContext;
   private BuildProgressLogger myLogger;
   private PackagesParametersFactory myParametersFactory;
-  private PackagesInstallParameters myParameters;
+  private PackagesInstallParameters myInstall;
+  private PackagesUpdateParameters myUpdate;
   private NuGetParameters myNuGet;
   private BuildProcess myMockProcess;
 
@@ -69,7 +71,8 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     myContext = m.mock(BuildRunnerContext.class);
     myLogger = m.mock(BuildProgressLogger.class);
     myParametersFactory = m.mock(PackagesParametersFactory.class);
-    myParameters = m.mock(PackagesInstallParameters.class);
+    myInstall = m.mock(PackagesInstallParameters.class);
+    myUpdate = m.mock(PackagesUpdateParameters.class);
     myMockProcess = m.mock(BuildProcess.class);
     myNuGet = m.mock(NuGetParameters.class);
 
@@ -85,7 +88,8 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
       allowing(myLogger).activityStarted(with(equal("install")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("install")), with(any(String.class)));
 
-      allowing(myParameters).getNuGetParameters(); will(returnValue(myNuGet));
+      allowing(myInstall).getNuGetParameters(); will(returnValue(myNuGet));
+      allowing(myUpdate).getNuGetParameters(); will(returnValue(myNuGet));
     }});
   }
 
@@ -93,7 +97,55 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   public void test_01_online_sources() throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false);
+
+    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(4, packageses.size());
+  }
+
+  @Test
+  public void test_01_online_sources_update() throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+
+    m.checking(new Expectations(){{
+      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
+      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
+
+      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+    }});
+
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true);
+
+
+    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(4, packageses.size());
+  }
+
+  @Test
+  public void test_01_online_sources_update_safe() throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+
+    m.checking(new Expectations(){{
+      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
+      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
+
+      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(true));
+      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+    }});
+
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true);
+
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
     System.out.println("installed packageses = " + packageses);
@@ -108,7 +160,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   public void test_01_online_sources_ecludeVersion() throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true, false);
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
     System.out.println("installed packageses = " + packageses);
@@ -125,7 +177,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     File sourcesDir = new File(myRoot, "js");
     ArchiveUtil.unpackZip(getTestDataPath("test-01-sources.zip"), "", sourcesDir);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false, false);
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
     System.out.println("installed packageses = " + packageses);
@@ -136,15 +188,19 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     Assert.assertEquals(4, packageses.size());
   }
 
-  private void fetchPackages(final File sln, final List<String> sources, final boolean excludeVersion) throws RunBuildException {
+  private void fetchPackages(final File sln,
+                             final List<String> sources,
+                             final boolean excludeVersion,
+                             final boolean update) throws RunBuildException {
     m.checking(new Expectations() {{
       allowing(myParametersFactory).loadNuGetParameters(myContext);  will(returnValue(myNuGet));
-      allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);  will(returnValue(myParameters));
+      allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);  will(returnValue(myInstall));
 
       allowing(myNuGet).getNuGetExeFile(); will(returnValue(getPathToNuGet()));
       allowing(myNuGet).getSolutionFile(); will(returnValue(sln));
       allowing(myNuGet).getNuGetPackageSources(); will(returnValue(sources));
-      allowing(myParameters).getExcludeVersion(); will(returnValue(excludeVersion));
+      allowing(myInstall).getExcludeVersion(); will(returnValue(excludeVersion));
+      allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myNuGet);  will(returnValue(update ? myUpdate : null));
     }});
 
     BuildProcess proc = new PackagesInstallerRunner(

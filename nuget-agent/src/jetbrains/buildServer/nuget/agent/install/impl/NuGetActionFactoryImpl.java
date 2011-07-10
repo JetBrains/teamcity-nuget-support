@@ -72,6 +72,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
     if (params.getUseSafeUpdate()) {
       argz.add("-Safe");
     }
+    argz.add("-Verbose");
     argz.add("-RepositoryPath");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 
