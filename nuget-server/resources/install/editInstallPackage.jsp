@@ -58,9 +58,31 @@
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       Exclude version from package folder names
-      <span class="smallNote">Makes NuGet exlude package version from package folders. Equivalent of -ExcludeVersion commandline argument</span>
-      <span class="error" id="error_${ib.excludeVersionKey}"></span>
+      <span class="smallNote">Makes NuGet exlude package version from package folders.
+                              Equivalent of -ExcludeVersion commandline argument</span>
+
+      <props:checkboxProperty name="${ib.updatePackagesKey}"/>
+      Update packages with help of NuGet update command
+      <span class="smallNote">Uses NuGet update command to update all packages under solution.
+                              Package versions and constraints are taken from
+                              packages.config files</span>
+
+      <div style="margin-left: 2em;">
+        <props:checkboxProperty name="${ib.updatePackagesSafeKey}"/>
+        Perform safe update.
+        <span class="smallNote">Equivalent to -Safe NuGet option</span>
+      </div>
     </td>
   </tr>
+
+  <script type="text/javascript">
+    (function() {
+    var handler = function() {
+      $('${ib.updatePackagesSafeKey}').disabled = !$('${ib.updatePackagesKey}').checked;
+    };
+    Event.observe($('${ib.updatePackagesKey}'), 'change', handler);
+    handler();
+    })();
+  </script>
 
 </l:settingsGroup>

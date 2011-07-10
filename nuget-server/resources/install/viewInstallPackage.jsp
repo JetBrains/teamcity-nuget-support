@@ -33,3 +33,15 @@
 <div class="parameter">
   Exclude Version: <strong><props:displayCheckboxValue name="${ib.excludeVersionKey}"/></strong>
 </div>
+<div class="parameter">
+  Update packages:
+  <strong>
+    <props:displayCheckboxValue name="${ib.updatePackagesKey}"/>
+  </strong>
+</div>
+<div class="parameter">
+  Use safe packages update:
+  <strong>
+    <props:displayCheckboxValue name="${ib.updatePackagesSafeKey}"/>
+  </strong>
+</div>
