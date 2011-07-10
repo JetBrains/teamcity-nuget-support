@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.agent.install.impl;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.install.NuGetInstallPackageActionFactory;
+import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.util.FileUtil;
@@ -33,17 +33,17 @@ import java.util.List;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 17:49
  */
-public class NuGetInstallPackageActionFactoryImpl implements NuGetInstallPackageActionFactory {
+public class NuGetActionFactoryImpl implements NuGetActionFactory {
   private final CommandlineBuildProcessFactory myFactory;
 
-  public NuGetInstallPackageActionFactoryImpl(CommandlineBuildProcessFactory factory) {
+  public NuGetActionFactoryImpl(CommandlineBuildProcessFactory factory) {
     myFactory = factory;
   }
 
-  public BuildProcess createBuildProcess(@NotNull final BuildRunnerContext context,
-                                         @NotNull final PackagesInstallParameters params,
-                                         @NotNull final File packagesConfig,
-                                         @NotNull final File targetFolder) throws RunBuildException {
+  public BuildProcess createInstall(@NotNull final BuildRunnerContext context,
+                                    @NotNull final PackagesInstallParameters params,
+                                    @NotNull final File packagesConfig,
+                                    @NotNull final File targetFolder) throws RunBuildException {
     final List<String> argz = new ArrayList<String>();
     argz.add("install");
     argz.add(FileUtil.getCanonicalFile(packagesConfig).getPath()); //path to package

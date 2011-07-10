@@ -37,10 +37,10 @@ import static jetbrains.buildServer.nuget.agent.install.LocateNuGetConfigBuildPr
 public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunnerInfo {
   private static final Logger LOG = Logger.getInstance(PackagesInstallerRunner.class.getName());
 
-  private final NuGetInstallPackageActionFactory myInstallActionFactory;
+  private final NuGetActionFactory myInstallActionFactory;
   private final PackageInstallParametersFactory myParametersFactory;
 
-  public PackagesInstallerRunner(@NotNull final NuGetInstallPackageActionFactory installActionFactory,
+  public PackagesInstallerRunner(@NotNull final NuGetActionFactory installActionFactory,
                                  @NotNull final PackageInstallParametersFactory parametersFactory) {
     myInstallActionFactory = installActionFactory;
     myParametersFactory = parametersFactory;
@@ -79,7 +79,7 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
                             if (pathToLog == null) pathToLog = config.getPath();
                             logger.activityStarted("install", "Installing NuGet packages for " + pathToLog, "nuget");
 
-                            return myInstallActionFactory.createBuildProcess(context,
+                            return myInstallActionFactory.createInstall(context,
                                     parameters,
                                     config,
                                     targetFolder)

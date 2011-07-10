@@ -20,7 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.agent.install.impl.NuGetInstallPackageActionFactoryImpl;
+import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -39,7 +39,7 @@ import java.util.Collections;
 public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   private Mockery m;
   private CommandlineBuildProcessFactory myProcessFactory;
-  private NuGetInstallPackageActionFactoryImpl i;
+  private NuGetActionFactoryImpl i;
   private BuildRunnerContext ctx;
   private PackagesInstallParameters ps;
   private File myTarget;
@@ -51,7 +51,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
     super.setUp();
     m = new Mockery();
     myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
-    i = new NuGetInstallPackageActionFactoryImpl(myProcessFactory);
+    i = new NuGetActionFactoryImpl(myProcessFactory);
     ctx = m.mock(BuildRunnerContext.class);
     ps = m.mock(PackagesInstallParameters.class);
 
@@ -75,7 +75,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
       );
     }});
 
-    i.createBuildProcess(ctx, ps, myConfig, myTarget);
+    i.createInstall(ctx, ps, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -95,7 +95,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
       );
     }});
 
-    i.createBuildProcess(ctx, ps, myConfig, myTarget);
+    i.createInstall(ctx, ps, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -115,7 +115,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
       );
     }});
 
-    i.createBuildProcess(ctx, ps, myConfig, myTarget);
+    i.createInstall(ctx, ps, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 }

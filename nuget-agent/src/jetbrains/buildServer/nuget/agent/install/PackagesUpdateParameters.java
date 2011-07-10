@@ -16,20 +16,14 @@
 
 package jetbrains.buildServer.nuget.agent.install;
 
-import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.BuildProcess;
-import jetbrains.buildServer.agent.BuildRunnerContext;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-
 /**
+ * Contains settings for packages update parameters
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 07.07.11 18:07
+ * Date: 10.07.11 14:02
  */
-public interface NuGetInstallPackageActionFactory {
-  BuildProcess createBuildProcess(@NotNull BuildRunnerContext context,
-                                  @NotNull PackagesInstallParameters params,
-                                  @NotNull File packagesConfig,
-                                  @NotNull File targetFolder) throws RunBuildException;
+public interface PackagesUpdateParameters {
+  /**
+   * @return true if update should be performed with -Safe argument
+   */
+  boolean getUseSafeUpdate();
 }

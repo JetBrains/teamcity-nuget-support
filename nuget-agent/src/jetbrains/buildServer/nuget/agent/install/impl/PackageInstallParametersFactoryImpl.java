@@ -20,6 +20,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.PackageInstallParametersFactory;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.agent.install.PackagesUpdateParameters;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -84,6 +85,11 @@ public class PackageInstallParametersFactoryImpl implements PackageInstallParame
 
       public boolean getExcludeVersion() {
         return !StringUtil.isEmptyOrSpaces(context.getRunnerParameters().get(NUGET_EXCLUDE_VERSION));
+      }
+
+      @Nullable
+      public PackagesUpdateParameters getUpdatePackages() {
+        return null;
       }
     };
   }

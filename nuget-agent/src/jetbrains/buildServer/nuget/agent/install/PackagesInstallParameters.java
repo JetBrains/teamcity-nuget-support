@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.agent.install;
 
 import jetbrains.buildServer.RunBuildException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
@@ -54,4 +55,10 @@ public interface PackagesInstallParameters {
    *         numbers in directory names
    */
   boolean getExcludeVersion();
+
+  /**
+   * @return package update parameters or null if no update required
+   */
+  @Nullable
+  PackagesUpdateParameters getUpdatePackages();
 }
