@@ -22,7 +22,7 @@ import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.DotNetConstants;
-import jetbrains.buildServer.nuget.common.PackagesInstallerConstants;
+import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -103,7 +103,7 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
 
   @NotNull
   public String getType() {
-    return PackagesInstallerConstants.RUN_TYPE;
+    return PackagesConstants.RUN_TYPE;
   }
 
   public boolean canRun(@NotNull BuildAgentConfiguration agentConfiguration) {

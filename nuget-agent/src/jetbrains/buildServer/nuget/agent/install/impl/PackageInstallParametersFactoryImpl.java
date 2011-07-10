@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import static jetbrains.buildServer.nuget.common.PackagesInstallerConstants.*;
+import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)

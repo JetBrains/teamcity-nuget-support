@@ -16,17 +16,17 @@
 
 package jetbrains.buildServer.nuget.server.install;
 
-import jetbrains.buildServer.nuget.common.PackagesInstallerConstants;
+import jetbrains.buildServer.nuget.common.PackagesConstants;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 08.07.11 20:49
  */
 public class InstallBean {
-  public String getNuGetPathKey() { return PackagesInstallerConstants.NUGET_PATH; }
-  public String getNuGetSourcesKey() { return PackagesInstallerConstants.NUGET_SOURCES; }
-  public String getSolutionPathKey() { return PackagesInstallerConstants.SLN_PATH; }
-  public String getExcludeVersionKey() { return PackagesInstallerConstants.NUGET_EXCLUDE_VERSION;}
-  public String getUpdatePackagesKey() { return PackagesInstallerConstants.NUGET_UPDATE_PACKAGES;}
-  public String getUpdatePackagesSafeKey() { return PackagesInstallerConstants.NUGET_UPDATE_PACKAGES_SAFE;}
+  public String getNuGetPathKey() { return PackagesConstants.NUGET_PATH; }
+  public String getNuGetSourcesKey() { return PackagesConstants.NUGET_SOURCES; }
+  public String getSolutionPathKey() { return PackagesConstants.SLN_PATH; }
+  public String getExcludeVersionKey() { return PackagesConstants.NUGET_EXCLUDE_VERSION;}
+  public String getUpdatePackagesKey() { return PackagesConstants.NUGET_UPDATE_PACKAGES;}
+  public String getUpdatePackagesSafeKey() { return PackagesConstants.NUGET_UPDATE_PACKAGES_SAFE;}
 }

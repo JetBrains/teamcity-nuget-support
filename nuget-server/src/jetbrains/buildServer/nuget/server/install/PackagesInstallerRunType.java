@@ -28,7 +28,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.common.PackagesInstallerConstants.*;
+import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)

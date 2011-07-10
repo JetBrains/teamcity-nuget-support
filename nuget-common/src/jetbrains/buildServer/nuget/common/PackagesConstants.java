@@ -20,7 +20,7 @@ package jetbrains.buildServer.nuget.common;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 13:56
  */
-public interface PackagesInstallerConstants {
+public interface PackagesConstants {
   public static final String RUN_TYPE = "jetbrains.nuget.packagesInstaller";
 
 
