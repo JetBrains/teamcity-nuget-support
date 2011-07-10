@@ -25,6 +25,7 @@
     <td>
       <props:textProperty name="${ib.nuGetPathKey}" className="longField"/>
       <span class="smallNote">Specify path to NuGet.exe</span>
+      <span class="error" id="error_${ib.nuGetPathKey}"></span>
     </td>
   </tr>
   <tr>
@@ -38,6 +39,7 @@
         Specify NuGet package sources.
         Leave blank to let NuGet decided what package repository to use (nuget.org by default).
       </span>
+      <span class="error" id="error_${ib.nuGetSourcesKey}"></span>
     </td>
   </tr>
 </l:settingsGroup>
@@ -48,6 +50,7 @@
     <td>
       <props:textProperty name="${ib.solutionPathKey}" className="longField"/>
       <span class="smallNote">Specify path to Visual Studio solution file (.sln)</span>
+      <span class="error" id="error_${ib.solutionPathKey}"></span>
     </td>
   </tr>
   <tr>
@@ -56,6 +59,7 @@
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       Exclude version from package folder names
       <span class="smallNote">Makes NuGet exlude package version from package folders. Equivalent of -ExcludeVersion commandline argument</span>
+      <span class="error" id="error_${ib.excludeVersionKey}"></span>
     </td>
   </tr>
 
