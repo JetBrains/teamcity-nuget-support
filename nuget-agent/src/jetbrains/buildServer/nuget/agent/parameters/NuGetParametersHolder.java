@@ -16,15 +16,13 @@
 
 package jetbrains.buildServer.nuget.agent.parameters;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 07.07.11 16:18
+ * Date: 10.07.11 15:57
  */
-public interface PackagesInstallParameters extends NuGetParametersHolder{
-  /**
-   * @return true if pacakges are expected to be installed
-   *         without version
-   *         numbers in directory names
-   */
-  boolean getExcludeVersion();
+public interface NuGetParametersHolder {
+  @NotNull
+  NuGetParameters getNuGetParameters();
 }

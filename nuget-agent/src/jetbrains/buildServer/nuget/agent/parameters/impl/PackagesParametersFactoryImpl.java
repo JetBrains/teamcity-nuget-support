@@ -18,12 +18,13 @@ package jetbrains.buildServer.nuget.agent.parameters.impl;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,11 +40,11 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  */
 public class PackagesParametersFactoryImpl implements PackagesParametersFactory {
   @NotNull
-  public PackagesInstallParameters loadParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
-    return new PackagesInstallParameters() {
+  public NuGetParameters loadNuGetParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
+    return new NuGetParameters() {
 
-      private File resolvePath(@Nullable final String runnerParameter, @NotNull String name) throws RunBuildException {
-        String path = getParameter(runnerParameter);
+      private File resolvePath(@NotNull final String runnerParameter, @NotNull String name) throws RunBuildException {
+        String path = getParameter(context, runnerParameter);
         if (StringUtil.isEmptyOrSpaces(path))
           throw new RunBuildException("Runner parameter '" + runnerParameter + "' was not found");
 
@@ -68,30 +69,70 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       @NotNull
       public Collection<String> getNuGetPackageSources() {
-        String sources = getParameter(NUGET_SOURCES);
-        if (sources == null) return Collections.emptyList();
-
-        List<String> list = new ArrayList<String>();
-        for (String _source : sources.split("[\\r\\n]+")) {
-          final String source = _source.trim();
-          if (!source.isEmpty()) {
-            list.add(source);
-          }
-        }
-
-        return Collections.unmodifiableList(list);
+        return getMultilineParameter(context, NUGET_SOURCES);
       }
 
       public boolean getExcludeVersion() {
-        return getBoolean(NUGET_EXCLUDE_VERSION);
+        return getBoolean(context, NUGET_EXCLUDE_VERSION);
+      }
+    };
+  }
+
+  private Collection<String> getMultilineParameter(BuildRunnerContext context, String nugetSources) {
+    String sources = getParameter(context, nugetSources);
+    if (sources == null) return Collections.emptyList();
+
+    List<String> list = new ArrayList<String>();
+    for (String _source : sources.split("[\\r\\n]+")) {
+      final String source = _source.trim();
+      if (!source.isEmpty()) {
+        list.add(source);
+      }
+    }
+
+    return Collections.unmodifiableList(list);
+  }
+
+  private boolean getBoolean(@NotNull BuildRunnerContext context, @NotNull String key) {
+    return !StringUtil.isEmptyOrSpaces(getParameter(context, key));
+  }
+
+  private String getParameter(@NotNull BuildRunnerContext context, @NotNull String key) {
+    return context.getRunnerParameters().get(key);
+  }
+
+
+  public PackagesInstallParameters loadInstallPackagesParameters(@NotNull final BuildRunnerContext context,
+                                                                 @NotNull final NuGetParameters nuget) throws RunBuildException {
+    return new PackagesInstallParameters() {
+      @NotNull
+      public NuGetParameters getNuGetParameters() {
+        return nuget;
       }
 
-      private boolean getBoolean(String key) {
-        return !StringUtil.isEmptyOrSpaces(getParameter(key));
+      public boolean getExcludeVersion() {
+        return getBoolean(context, NUGET_EXCLUDE_VERSION);
+      }
+    };
+  }
+
+  public PackagesUpdateParameters loadUpdatePackagesParameters(@NotNull final BuildRunnerContext context,
+                                                               @NotNull final NuGetParameters nuget) throws RunBuildException {
+    if (!getBoolean(context, NUGET_UPDATE_PACKAGES)) return null;
+
+    return new PackagesUpdateParameters() {
+      @NotNull
+      public NuGetParameters getNuGetParameters() {
+        return nuget;
       }
 
-      private String getParameter(String key) {
-        return context.getRunnerParameters().get(key);
+      public boolean getUseSafeUpdate() {
+        return getBoolean(context, NUGET_UPDATE_PACKAGES_SAFE);
+      }
+
+      @NotNull
+      public Collection<String> getPackagesToUpdate() {
+        return getMultilineParameter(context, NUGET_UPDATE_PACKAGE_IDS);
       }
     };
   }

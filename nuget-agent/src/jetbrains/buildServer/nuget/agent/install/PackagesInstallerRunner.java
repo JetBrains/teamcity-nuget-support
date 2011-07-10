@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.agent.install;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
@@ -52,11 +53,17 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
   public BuildProcess createBuildProcess(@NotNull AgentRunningBuild runningBuild,
                                          @NotNull final BuildRunnerContext context) throws RunBuildException {
     final CompositeBuildProcessImpl process = new CompositeBuildProcessImpl();
-    final PackagesInstallParameters parameters = myParametersFactory.loadParameters(context);
+    final NuGetParameters parameters = myParametersFactory.loadNuGetParameters(context);
+    final PackagesInstallParameters installParameters = myParametersFactory.loadInstallPackagesParameters(context, parameters);
+
+    if (installParameters == null) {
+      throw new RunBuildException("NuGet install packages must be enabled");
+    }
+
     final LocateNuGetConfigBuildProcess locate = new LocateNuGetConfigBuildProcess(
             parameters,
             context.getBuild().getBuildLogger(),
-            createLocateCallback(context, process, parameters)
+            createLocateCallback(context, process, installParameters)
     );
     process.pushBuildProcess(locate);
 

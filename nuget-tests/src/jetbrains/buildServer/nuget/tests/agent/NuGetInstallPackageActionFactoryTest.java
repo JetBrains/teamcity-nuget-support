@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
@@ -42,6 +43,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   private NuGetActionFactoryImpl i;
   private BuildRunnerContext ctx;
   private PackagesInstallParameters ps;
+  private NuGetParameters nugetParams;
   private File myTarget;
   private File myConfig;
 
@@ -54,17 +56,22 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
     i = new NuGetActionFactoryImpl(myProcessFactory);
     ctx = m.mock(BuildRunnerContext.class);
     ps = m.mock(PackagesInstallParameters.class);
+    nugetParams = m.mock(NuGetParameters.class);
 
     myTarget = createTempDir();
     myConfig = createTempFile();
+
+    m.checking(new Expectations(){{
+      allowing(ps).getNuGetParameters(); will(returnValue(nugetParams));
+    }});
   }
 
   @Test
   public void test_no_sources() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(ps).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
-      allowing(ps).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
@@ -83,8 +90,8 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   public void test_no_sources_excludeVersion() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(ps).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
-      allowing(ps).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(true));
 
       oneOf(myProcessFactory).executeCommandLine(
@@ -103,8 +110,8 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   public void test_sources() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(ps).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
-      allowing(ps).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
+      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(

@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.agent.parameters;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -27,10 +28,19 @@ import org.jetbrains.annotations.NotNull;
 public interface PackagesParametersFactory {
   /**
    * Creates object-style implementation of parameters
+   *
    * @param context current build step context
    * @return parameters
    * @throws RunBuildException if failed to create parameters
    */
   @NotNull
-  PackagesInstallParameters loadParameters(@NotNull final BuildRunnerContext context) throws RunBuildException;
+  NuGetParameters loadNuGetParameters(@NotNull final BuildRunnerContext context) throws RunBuildException;
+
+  @Nullable
+  PackagesInstallParameters loadInstallPackagesParameters(@NotNull final BuildRunnerContext context,
+                                                          @NotNull final NuGetParameters nuget) throws RunBuildException;
+
+  @Nullable
+  PackagesUpdateParameters loadUpdatePackagesParameters(@NotNull final BuildRunnerContext context,
+                                                        @NotNull final NuGetParameters nuget) throws RunBuildException;
 }

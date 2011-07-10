@@ -23,4 +23,12 @@ public interface NuGetParameters {
    */
   @NotNull
   Collection<String> getNuGetPackageSources();
+
+  /**
+   * @return path to solution file.
+   * @throws jetbrains.buildServer.RunBuildException
+   *          if .sln file is not found
+   */
+  @NotNull
+  File getSolutionFile() throws RunBuildException;
 }

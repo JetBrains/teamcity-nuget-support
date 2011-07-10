@@ -21,6 +21,7 @@ import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner;
@@ -55,6 +56,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   private BuildProgressLogger myLogger;
   private PackagesParametersFactory myParametersFactory;
   private PackagesInstallParameters myParameters;
+  private NuGetParameters myNuGet;
   private BuildProcess myMockProcess;
 
   @BeforeMethod
@@ -69,22 +71,21 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     myParametersFactory = m.mock(PackagesParametersFactory.class);
     myParameters = m.mock(PackagesInstallParameters.class);
     myMockProcess = m.mock(BuildProcess.class);
+    myNuGet = m.mock(NuGetParameters.class);
 
     m.checking(new Expectations() {{
-      allowing(myContext).getBuild();
-      will(returnValue(myBuild));
-      allowing(myBuild).getBuildLogger();
-      will(returnValue(myLogger));
-      allowing(myBuild).getCheckoutDirectory();
-      will(returnValue(myRoot));
+      allowing(myContext).getBuild();  will(returnValue(myBuild));
+      allowing(myBuild).getBuildLogger(); will(returnValue(myLogger));
+      allowing(myBuild).getCheckoutDirectory(); will(returnValue(myRoot));
 
       allowing(myMockProcess).start();
-      allowing(myMockProcess).waitFor();
-      will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+      allowing(myMockProcess).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
 
       allowing(myLogger).message(with(any(String.class)));
       allowing(myLogger).activityStarted(with(equal("install")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("install")), with(any(String.class)));
+
+      allowing(myParameters).getNuGetParameters(); will(returnValue(myNuGet));
     }});
   }
 
@@ -137,17 +138,13 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   private void fetchPackages(final File sln, final List<String> sources, final boolean excludeVersion) throws RunBuildException {
     m.checking(new Expectations() {{
-      allowing(myParametersFactory).loadParameters(myContext);
-      will(returnValue(myParameters));
+      allowing(myParametersFactory).loadNuGetParameters(myContext);  will(returnValue(myNuGet));
+      allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);  will(returnValue(myParameters));
 
-      allowing(myParameters).getNuGetExeFile();
-      will(returnValue(getPathToNuGet()));
-      allowing(myParameters).getSolutionFile();
-      will(returnValue(sln));
-      allowing(myParameters).getNuGetPackageSources();
-      will(returnValue(sources));
-      allowing(myParameters).getExcludeVersion();
-      will(returnValue(excludeVersion));
+      allowing(myNuGet).getNuGetExeFile(); will(returnValue(getPathToNuGet()));
+      allowing(myNuGet).getSolutionFile(); will(returnValue(sln));
+      allowing(myNuGet).getNuGetPackageSources(); will(returnValue(sources));
+      allowing(myParameters).getExcludeVersion(); will(returnValue(excludeVersion));
     }});
 
     BuildProcess proc = new PackagesInstallerRunner(

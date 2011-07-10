@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
@@ -41,6 +42,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   private CommandlineBuildProcessFactory myProcessFactory;
   private NuGetActionFactoryImpl i;
   private BuildRunnerContext ctx;
+  private NuGetParameters nugetParams;
   private PackagesUpdateParameters ps;
   private File myTarget;
   private File myConfig;
@@ -54,17 +56,21 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
     i = new NuGetActionFactoryImpl(myProcessFactory);
     ctx = m.mock(BuildRunnerContext.class);
     ps = m.mock(PackagesUpdateParameters.class);
+    nugetParams = m.mock(NuGetParameters.class);
 
     myTarget = createTempDir();
     myConfig = createTempFile();
+    m.checking(new Expectations(){{
+      allowing(ps).getNuGetParameters(); will(returnValue(nugetParams));
+    }});
   }
 
   @Test
   public void test_no_sources() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(ps).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
-      allowing(ps).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getUseSafeUpdate(); will(returnValue(false));
       allowing(ps).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
 
@@ -84,8 +90,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   public void test_packageIds() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(ps).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
-      allowing(ps).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getUseSafeUpdate(); will(returnValue(false));
       allowing(ps).getPackagesToUpdate(); will(returnValue(Arrays.asList("aaa", "bbb")));
 
@@ -105,8 +111,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   public void test_safe() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(ps).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
-      allowing(ps).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getUseSafeUpdate(); will(returnValue(true));
       allowing(ps).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
 
@@ -126,8 +132,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   public void test_sources() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(ps).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
-      allowing(ps).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(NuGetUpdatePackageActionFactoryTest.this.nugetParams).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
+      allowing(NuGetUpdatePackageActionFactoryTest.this.nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getUseSafeUpdate(); will(returnValue(false));
       allowing(ps).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
 

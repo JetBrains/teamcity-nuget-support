@@ -25,7 +25,7 @@ import java.util.Collection;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 10.07.11 14:02
  */
-public interface PackagesUpdateParameters extends NuGetParameters {
+public interface PackagesUpdateParameters extends NuGetParametersHolder{
   /**
    * @return true if update should be performed
    *         with -Safe argument

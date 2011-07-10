@@ -20,6 +20,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -55,17 +57,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
     argz.add("-OutputDirectory");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 
-    for (String source : params.getNuGetPackageSources()) {
-      argz.add("-Source");
-      argz.add(source);
-    }
-
-    return myFactory.executeCommandLine(
-            context,
-            params.getNuGetExeFile(),
-            argz,
-            packagesConfig.getParentFile()
-    );
+    return executeNuGet(context, params.getNuGetParameters(), argz, packagesConfig.getParentFile());
   }
 
 
@@ -88,16 +80,26 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
       argz.add(id);
     }
 
-    for (String source : params.getNuGetPackageSources()) {
+    return executeNuGet(context, params.getNuGetParameters(), argz, packagesConfig.getParentFile());
+  }
+
+
+  @NotNull
+  private BuildProcess executeNuGet(@NotNull final BuildRunnerContext context,
+                                    @NotNull final NuGetParameters nuget,
+                                    @NotNull final Collection<String> arguments,
+                                    @NotNull final File workingDirectory) throws RunBuildException {
+    final List<String> argz = new ArrayList<String>(arguments);
+    for (String source : nuget.getNuGetPackageSources()) {
       argz.add("-Source");
       argz.add(source);
     }
 
     return myFactory.executeCommandLine(
             context,
-            params.getNuGetExeFile(),
+            nuget.getNuGetExeFile(),
             argz,
-            packagesConfig.getParentFile()
+            workingDirectory
     );
   }
 }

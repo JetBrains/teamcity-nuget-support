@@ -20,7 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -41,11 +41,11 @@ import java.util.List;
 public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   private static final Logger LOG = Logger.getInstance(LocateNuGetConfigBuildProcess.class.getName());
 
-  private final PackagesInstallParameters myContext;
+  private final NuGetParameters myContext;
   private final BuildProgressLogger myLogger;
   private final Callback myCallback;
 
-  public LocateNuGetConfigBuildProcess(@NotNull final PackagesInstallParameters context,
+  public LocateNuGetConfigBuildProcess(@NotNull final NuGetParameters context,
                                        @NotNull final BuildProgressLogger logger,
                                        @NotNull final Callback callback) {
     myContext = context;

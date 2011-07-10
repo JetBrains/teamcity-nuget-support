@@ -20,7 +20,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.install.LocateNuGetConfigBuildProcess;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
@@ -38,7 +38,7 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
   private File myRoot;
   private Mockery m;
   private BuildProgressLogger log;
-  private PackagesInstallParameters ps;
+  private NuGetParameters ps;
   private LocateNuGetConfigBuildProcess.Callback cb;
   private LocateNuGetConfigBuildProcess proc;
 
@@ -49,7 +49,7 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
     myRoot = createTempDir();
     m = new Mockery();
     log = m.mock(BuildProgressLogger.class);
-    ps = m.mock(PackagesInstallParameters.class);
+    ps = m.mock(NuGetParameters.class);
     cb = m.mock(LocateNuGetConfigBuildProcess.Callback.class);
     proc = new LocateNuGetConfigBuildProcess(ps, log, cb);
   }
