@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.install;
+package jetbrains.buildServer.nuget.agent.parameters;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.install;
+package jetbrains.buildServer.nuget.agent.parameters;
 
-import jetbrains.buildServer.RunBuildException;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
+import java.util.Collection;
 
 /**
+ * Contains settings for packages update parameters
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 07.07.11 16:18
+ * Date: 10.07.11 14:02
  */
-public interface PackagesInstallParameters extends NuGetParameters {
+public interface PackagesUpdateParameters extends NuGetParameters {
   /**
-   * @return path to solution file.
-   * @throws jetbrains.buildServer.RunBuildException
-   *          if .sln file is not found
+   * @return true if update should be performed
+   *         with -Safe argument
    */
-  @NotNull
-  File getSolutionFile() throws RunBuildException;
+  boolean getUseSafeUpdate();
 
   /**
-   * @return true if pacakges are expected to be installed
-   *         without version
-   *         numbers in directory names
+   * @return list of package Ids to update. Empty list
+   *         means update all packages
    */
-  boolean getExcludeVersion();
+  @NotNull
+  Collection<String> getPackagesToUpdate();
 }

@@ -1,4 +1,4 @@
-package jetbrains.buildServer.nuget.agent.install;
+package jetbrains.buildServer.nuget.agent.parameters;
 
 import jetbrains.buildServer.RunBuildException;
 import org.jetbrains.annotations.NotNull;
