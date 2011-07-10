@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.agent.install;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
-import jetbrains.buildServer.nuget.agent.parameters.PackageInstallParametersFactory;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
@@ -40,10 +40,10 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
   private static final Logger LOG = Logger.getInstance(PackagesInstallerRunner.class.getName());
 
   private final NuGetActionFactory myInstallActionFactory;
-  private final PackageInstallParametersFactory myParametersFactory;
+  private final PackagesParametersFactory myParametersFactory;
 
   public PackagesInstallerRunner(@NotNull final NuGetActionFactory installActionFactory,
-                                 @NotNull final PackageInstallParametersFactory parametersFactory) {
+                                 @NotNull final PackagesParametersFactory parametersFactory) {
     myInstallActionFactory = installActionFactory;
     myParametersFactory = parametersFactory;
   }

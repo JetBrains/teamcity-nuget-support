@@ -18,14 +18,13 @@ package jetbrains.buildServer.nuget.agent.parameters;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 18:08
  */
-public interface PackageInstallParametersFactory {
+public interface PackagesParametersFactory {
   /**
    * Creates object-style implementation of parameters
    * @param context current build step context

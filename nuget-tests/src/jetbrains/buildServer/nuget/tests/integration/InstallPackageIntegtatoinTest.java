@@ -21,7 +21,7 @@ import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
-import jetbrains.buildServer.nuget.agent.parameters.PackageInstallParametersFactory;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
@@ -53,7 +53,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   private AgentRunningBuild myBuild;
   private BuildRunnerContext myContext;
   private BuildProgressLogger myLogger;
-  private PackageInstallParametersFactory myParametersFactory;
+  private PackagesParametersFactory myParametersFactory;
   private PackagesInstallParameters myParameters;
   private BuildProcess myMockProcess;
 
@@ -66,7 +66,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     myBuild = m.mock(AgentRunningBuild.class);
     myContext = m.mock(BuildRunnerContext.class);
     myLogger = m.mock(BuildProgressLogger.class);
-    myParametersFactory = m.mock(PackageInstallParametersFactory.class);
+    myParametersFactory = m.mock(PackagesParametersFactory.class);
     myParameters = m.mock(PackagesInstallParameters.class);
     myMockProcess = m.mock(BuildProcess.class);
 

@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.agent.parameters.impl;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.parameters.PackageInstallParametersFactory;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -37,7 +37,7 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 18:09
  */
-public class PackageInstallParametersFactoryImpl implements PackageInstallParametersFactory {
+public class PackagesParametersFactoryImpl implements PackagesParametersFactory {
   @NotNull
   public PackagesInstallParameters loadParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
     return new PackagesInstallParameters() {

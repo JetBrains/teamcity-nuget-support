@@ -12,5 +12,5 @@
   <bean class="jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunnerRegistrar"/>
 
   <bean class="jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl"/>
-  <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackageInstallParametersFactoryImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackagesParametersFactoryImpl"/>
 </beans>
