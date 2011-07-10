@@ -44,7 +44,7 @@ public class PackageInstallParametersFactoryImpl implements PackageInstallParame
     return new PackagesInstallParameters() {
 
       private File resolvePath(@Nullable final String runnerParameter, @NotNull String name) throws RunBuildException {
-        String path = context.getRunnerParameters().get(runnerParameter);
+        String path = getParameter(runnerParameter);
         if (StringUtil.isEmptyOrSpaces(path))
           throw new RunBuildException("Runner parameter '" + runnerParameter + "' was not found");
 
@@ -69,7 +69,7 @@ public class PackageInstallParametersFactoryImpl implements PackageInstallParame
 
       @NotNull
       public Collection<String> getNuGetPackageSources() {
-        String sources = context.getRunnerParameters().get(NUGET_SOURCES);
+        String sources = getParameter(NUGET_SOURCES);
         if (sources == null) return Collections.emptyList();
 
         List<String> list = new ArrayList<String>();
@@ -84,12 +84,28 @@ public class PackageInstallParametersFactoryImpl implements PackageInstallParame
       }
 
       public boolean getExcludeVersion() {
-        return !StringUtil.isEmptyOrSpaces(context.getRunnerParameters().get(NUGET_EXCLUDE_VERSION));
+        return getBoolean(NUGET_EXCLUDE_VERSION);
       }
 
       @Nullable
       public PackagesUpdateParameters getUpdatePackages() {
-        return null;
+        if (!getBoolean(NUGET_UPDATE_PACKAGES))
+          return null;
+
+        final boolean safe = getBoolean(NUGET_UPDATE_PACKAGES_SAFE);
+        return new PackagesUpdateParameters() {
+          public boolean getUseSafeUpdate() {
+            return safe;
+          }
+        };
+      }
+
+      private boolean getBoolean(String key) {
+        return !StringUtil.isEmptyOrSpaces(getParameter(key));
+      }
+
+      private String getParameter(String key) {
+        return context.getRunnerParameters().get(key);
       }
     };
   }
