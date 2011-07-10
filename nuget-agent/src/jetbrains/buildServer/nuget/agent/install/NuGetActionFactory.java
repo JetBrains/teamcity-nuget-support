@@ -33,4 +33,10 @@ public interface NuGetActionFactory {
                              @NotNull PackagesInstallParameters params,
                              @NotNull File packagesConfig,
                              @NotNull File targetFolder) throws RunBuildException;
+
+  @NotNull
+  BuildProcess createUpdate(@NotNull BuildRunnerContext context,
+                            @NotNull PackagesUpdateParameters params,
+                            @NotNull File packagesConfig,
+                            @NotNull File targetFolder) throws RunBuildException;
 }

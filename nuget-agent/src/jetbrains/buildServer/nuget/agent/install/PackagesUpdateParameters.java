@@ -16,14 +16,26 @@
 
 package jetbrains.buildServer.nuget.agent.install;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+
 /**
  * Contains settings for packages update parameters
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 10.07.11 14:02
  */
-public interface PackagesUpdateParameters {
+public interface PackagesUpdateParameters extends NuGetParameters {
   /**
-   * @return true if update should be performed with -Safe argument
+   * @return true if update should be performed
+   *         with -Safe argument
    */
   boolean getUseSafeUpdate();
+
+  /**
+   * @return list of package Ids to update. Empty list
+   *         means update all packages
+   */
+  @NotNull
+  Collection<String> getPackagesToUpdate();
 }

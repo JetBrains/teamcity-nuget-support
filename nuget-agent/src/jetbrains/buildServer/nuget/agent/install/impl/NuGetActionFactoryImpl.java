@@ -21,6 +21,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.agent.install.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +54,39 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
     }
     argz.add("-OutputDirectory");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
+
+    for (String source : params.getNuGetPackageSources()) {
+      argz.add("-Source");
+      argz.add(source);
+    }
+
+    return myFactory.executeCommandLine(
+            context,
+            params.getNuGetExeFile(),
+            argz,
+            packagesConfig.getParentFile()
+    );
+  }
+
+
+  @NotNull
+  public BuildProcess createUpdate(@NotNull final BuildRunnerContext context,
+                                   @NotNull final PackagesUpdateParameters params,
+                                   @NotNull final File packagesConfig,
+                                   @NotNull final File targetFolder) throws RunBuildException {
+    final List<String> argz = new ArrayList<String>();
+    argz.add("update");
+    argz.add(FileUtil.getCanonicalFile(packagesConfig).getPath()); //path to package
+    if (params.getUseSafeUpdate()) {
+      argz.add("-Safe");
+    }
+    argz.add("-RepositoryPath");
+    argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
+
+    for (String id : params.getPackagesToUpdate()) {
+      argz.add("-Id");
+      argz.add(id);
+    }
 
     for (String source : params.getNuGetPackageSources()) {
       argz.add("-Source");

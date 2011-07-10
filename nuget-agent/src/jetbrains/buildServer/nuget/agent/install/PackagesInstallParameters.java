@@ -18,16 +18,14 @@ package jetbrains.buildServer.nuget.agent.install;
 
 import jetbrains.buildServer.RunBuildException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.Collection;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 16:18
  */
-public interface PackagesInstallParameters {
+public interface PackagesInstallParameters extends NuGetParameters {
   /**
    * @return path to solution file.
    * @throws jetbrains.buildServer.RunBuildException
@@ -37,28 +35,9 @@ public interface PackagesInstallParameters {
   File getSolutionFile() throws RunBuildException;
 
   /**
-   * @return path to nuget.exe file
-   * @throws RunBuildException if nuget was not found
-   */
-  @NotNull
-  File getNuGetExeFile() throws RunBuildException;
-
-  /**
-   * @return collection of nuget sources to fetch packages
-   */
-  @NotNull
-  Collection<String> getNuGetPackageSources();
-
-  /**
    * @return true if pacakges are expected to be installed
    *         without version
    *         numbers in directory names
    */
   boolean getExcludeVersion();
-
-  /**
-   * @return package update parameters or null if no update required
-   */
-  @Nullable
-  PackagesUpdateParameters getUpdatePackages();
 }
