@@ -28,6 +28,7 @@ import java.io.File;
  * Date: 07.07.11 18:07
  */
 public interface NuGetActionFactory {
+  @NotNull
   BuildProcess createInstall(@NotNull BuildRunnerContext context,
                              @NotNull PackagesInstallParameters params,
                              @NotNull File packagesConfig,

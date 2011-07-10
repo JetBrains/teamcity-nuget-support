@@ -40,6 +40,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
     myFactory = factory;
   }
 
+  @NotNull
   public BuildProcess createInstall(@NotNull final BuildRunnerContext context,
                                     @NotNull final PackagesInstallParameters params,
                                     @NotNull final File packagesConfig,
