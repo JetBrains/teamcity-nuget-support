@@ -7,6 +7,7 @@
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget.xml</file>
           <file>jar://$TeamCityDistribution$/webapps/ROOT/WEB-INF/lib/server.jar!/META-INF/buildServerSpring.xml</file>
           <file>jar://$TeamCityDistribution$/webapps/ROOT/WEB-INF/lib/server.jar!/META-INF/buildServerPermissions.xml</file>
+          <file>file://$MODULE_DIR$/fake-teamcity-server-plugin-context.xml</file>
         </fileset>
       </configuration>
     </facet>
