@@ -127,9 +127,10 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.10.11092").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packageses.size());
+    Assert.assertEquals(5, packageses.size());
   }
 
   @Test
@@ -151,9 +152,10 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.10.11092").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packageses.size());
+    Assert.assertEquals(5, packageses.size());
   }
 
   @Test

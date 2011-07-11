@@ -23,17 +23,11 @@ import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
-import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
+import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.io.File;
-
-import static jetbrains.buildServer.nuget.agent.install.LocateNuGetConfigBuildProcess.Callback;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -42,19 +36,19 @@ import static jetbrains.buildServer.nuget.agent.install.LocateNuGetConfigBuildPr
 public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunnerInfo {
   private static final Logger LOG = Logger.getInstance(PackagesInstallerRunner.class.getName());
 
-  private final NuGetActionFactory myInstallActionFactory;
+  private final NuGetActionFactory myNuGetActionFactory;
   private final PackagesParametersFactory myParametersFactory;
 
-  public PackagesInstallerRunner(@NotNull final NuGetActionFactory installActionFactory,
+  public PackagesInstallerRunner(@NotNull final NuGetActionFactory nuGetActionFactory,
                                  @NotNull final PackagesParametersFactory parametersFactory) {
-    myInstallActionFactory = installActionFactory;
+    myNuGetActionFactory = nuGetActionFactory;
     myParametersFactory = parametersFactory;
   }
 
   @NotNull
   public BuildProcess createBuildProcess(@NotNull AgentRunningBuild runningBuild,
                                          @NotNull final BuildRunnerContext context) throws RunBuildException {
-    final CompositeBuildProcessImpl process = new CompositeBuildProcessImpl();
+    CompositeBuildProcessImpl process = new CompositeBuildProcessImpl();
     final NuGetParameters parameters = myParametersFactory.loadNuGetParameters(context);
     final PackagesInstallParameters installParameters = myParametersFactory.loadInstallPackagesParameters(context, parameters);
     final PackagesUpdateParameters updateParameters = myParametersFactory.loadUpdatePackagesParameters(context, parameters);
@@ -63,86 +57,29 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
       throw new RunBuildException("NuGet install packages must be enabled");
     }
 
+    final CompositeBuildProcess install = new CompositeBuildProcessImpl();
+    final CompositeBuildProcess update = new CompositeBuildProcessImpl();
+    final CompositeBuildProcess postUpdate = new CompositeBuildProcessImpl();
+
     final LocateNuGetConfigBuildProcess locate = new LocateNuGetConfigBuildProcess(
             parameters,
             context.getBuild().getBuildLogger(),
-            createLocateCallback(context, process, installParameters, updateParameters)
-    );
+            new PackagesInstallerBuilder(
+                    myNuGetActionFactory,
+                    install,
+                    update,
+                    postUpdate,
+                    context,
+                    installParameters,
+                    updateParameters
+            ));
+
     process.pushBuildProcess(locate);
+    process.pushBuildProcess(install);
+    process.pushBuildProcess(update);
+    process.pushBuildProcess(postUpdate);
 
     return process;
-  }
-
-  @NotNull
-  private Callback createLocateCallback(@NotNull final BuildRunnerContext context,
-                                        @NotNull final CompositeBuildProcessImpl process,
-                                        @NotNull final PackagesInstallParameters installParameters,
-                                        @Nullable final PackagesUpdateParameters updateParameters) {
-    return new Callback() {
-      public void onPackagesConfigFound(@NotNull final File config,
-                                        @NotNull final File targetFolder) {
-        process.pushBuildProcess(
-                new DelegatingBuildProcess(
-                        new DelegatingBuildProcess.Action() {
-                          private final BuildProgressLogger logger = context.getBuild().getBuildLogger();
-
-                          @NotNull
-                          public BuildProcess startImpl() throws RunBuildException {
-                            if (updateParameters != null) {
-                              process.pushBuildProcess(
-                                      createUpdateCallback(context, updateParameters, config, targetFolder));
-                            }
-
-                            String pathToLog = FileUtil.getRelativePath(context.getBuild().getCheckoutDirectory(), config);
-                            if (pathToLog == null) pathToLog = config.getPath();
-                            logger.activityStarted("install", "Installing NuGet packages for " + pathToLog, "nuget");
-
-
-                            return myInstallActionFactory.createInstall(context,
-                                    installParameters,
-                                    config,
-                                    targetFolder)
-                                    ;
-                          }
-
-                          public void finishedImpl() {
-                            logger.activityFinished("install", "nuget");
-                          }
-                        }
-                )
-        );
-      }
-    };
-  }
-
-  @NotNull
-  private BuildProcess createUpdateCallback(@NotNull final BuildRunnerContext context,
-                                            @NotNull final PackagesUpdateParameters parameters,
-                                            @NotNull final File config,
-                                            @NotNull final File targetFolder) {
-    return
-            new DelegatingBuildProcess(
-                    new DelegatingBuildProcess.Action() {
-                      private final BuildProgressLogger logger = context.getBuild().getBuildLogger();
-
-                      @NotNull
-                      public BuildProcess startImpl() throws RunBuildException {
-                        String pathToLog = FileUtil.getRelativePath(context.getBuild().getCheckoutDirectory(), config);
-                        if (pathToLog == null) pathToLog = config.getPath();
-                        logger.activityStarted("update", "Updating NuGet packages for " + pathToLog, "nuget");
-
-                        return myInstallActionFactory.createUpdate(context,
-                                parameters,
-                                config,
-                                targetFolder)
-                                ;
-                      }
-
-                      public void finishedImpl() {
-                        logger.activityFinished("update", "nuget");
-                      }
-                    }
-            );
   }
 
   @NotNull
