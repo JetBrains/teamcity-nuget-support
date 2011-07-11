@@ -8,7 +8,7 @@
   <bean class="jetbrains.buildServer.nuget.server.NuGetPublishRunType"/>
   <bean class="jetbrains.buildServer.nuget.server.NuGetDownloadedPackagesTab"/>
   <bean class="jetbrains.buildServer.nuget.server.NuGetDownloadFeature"/>
-  <bean class="jetbrains.buildServer.nuget.server.NuGetTrigger"/>
+  <bean class="jetbrains.buildServer.nuget.server.trigger.NuGetTrigger"/>
 -->
 
   <bean class="jetbrains.buildServer.nuget.server.install.PackageInstallerRunTypeRegistrar"/>
