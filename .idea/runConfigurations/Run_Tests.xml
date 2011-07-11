@@ -9,13 +9,13 @@
     <module name="nuget-tests" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
-    <option name="SUITE_NAME" value="" />
-    <option name="PACKAGE_NAME" value="jetbrains.buildServer" />
+    <option name="SUITE_NAME" value="$PROJECT_DIR$/nuget-tests/src/testng-nuget-tests..xml" />
+    <option name="PACKAGE_NAME" value="" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="GROUP_NAME" value="" />
-    <option name="TEST_OBJECT" value="PACKAGE" />
-    <option name="VM_PARAMETERS" value="" />
+    <option name="TEST_OBJECT" value="SUITE" />
+    <option name="VM_PARAMETERS" value="-ea -Xmx512m" />
     <option name="PARAMETERS" value="" />
     <option name="WORKING_DIRECTORY" value="" />
     <option name="OUTPUT_DIRECTORY" value="" />
@@ -23,7 +23,7 @@
     <option name="ENV_VARIABLES" />
     <option name="PASS_PARENT_ENVS" value="true" />
     <option name="TEST_SEARCH_SCOPE">
-      <value defaultName="singleModule" />
+      <value defaultName="moduleWithDependencies" />
     </option>
     <option name="USE_DEFAULT_REPORTERS" value="false" />
     <option name="PROPERTIES_FILE" value="" />
