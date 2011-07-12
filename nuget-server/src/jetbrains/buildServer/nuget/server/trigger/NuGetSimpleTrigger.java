@@ -37,7 +37,18 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
   @NotNull
   @Override
   public String describeTrigger(@NotNull final BuildTriggerDescriptor trigger) {
-    return "Triggers build on NuGet dependency change";
+    Map<String, String> props = trigger.getProperties();
+    StringBuilder sb = new StringBuilder();
+    sb.append("Package Id: ").append(props.get(TriggerConstants.PACKAGE)).append("\n");
+    sb.append("Source: ").append(props.get(TriggerConstants.PACKAGE));
+
+    String version = props.get(TriggerConstants.VERSION);
+    if (!StringUtil.isEmptyOrSpaces(version)) {
+      sb.append("\n");
+      sb.append("Version: ").append(version);
+    }
+
+    return sb.toString();
   }
 
   @NotNull
