@@ -20,27 +20,27 @@
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.trigger.TriggerBean" scope="request"/>
 
 <tr>
-  <th>NuGet package source:<l:star/></th>
+  <td>NuGet package source:<l:star/></td>
   <td>
-    <props:textProperty name="${ib.sourceKey}" className="longField" />
+    <props:textProperty name="${ib.sourceKey}" style="width:20em;" />
     <span class="smallNote">Specify NuGet packages repository to monitor packages changes</span>
     <span class="error" id="error_${ib.sourceKey}"></span>
   </td>
 </tr>
 
 <tr>
-  <th>Package Ids<l:star/>:</th>
+  <td>Package Ids<l:star/>:</td>
   <td>
-    <props:textProperty name="${ib.packageKey}" className="longField">
+    <props:textProperty name="${ib.packageKey}" style="width:20em;"/>
     <span class="smallNote">Specify package Id to check for updates.</span>
     <span class="error" id="error_${ib.packageKey}"></span>
   </td>
 </tr>
 
 <tr>
-  <th>Package Version Spec:</th>
+  <td>Package Version Spec:</td>
   <td>
-    <props:textProperty name="${ib.versionKey}" className="longField"/>
+    <props:textProperty name="${ib.versionKey}" style="width:20em;"/>
     <span class="smallNote">Specify package version to check. Leave empty to check for latest version</span>
     <span class="error" id="error_${ib.versionKey}"></span>
   </td>
