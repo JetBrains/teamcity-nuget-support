@@ -8,17 +8,17 @@ import org.jetbrains.annotations.NotNull;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 03.05.11 15:25
  */
-public class NuGetTrigger extends BuildTriggerService {
+public class NuGetSimpleTrigger extends BuildTriggerService {
   private final PluginDescriptor myDescriptor;
 
-  public NuGetTrigger(final PluginDescriptor descriptor) {
+  public NuGetSimpleTrigger(@NotNull final PluginDescriptor descriptor) {
     myDescriptor = descriptor;
   }
 
   @NotNull
   @Override
   public String getName() {
-    return "NuGet";
+    return TriggerConstants.TRIGGER_ID;
   }
 
   @NotNull
@@ -30,7 +30,7 @@ public class NuGetTrigger extends BuildTriggerService {
   @NotNull
   @Override
   public String describeTrigger(@NotNull final BuildTriggerDescriptor trigger) {
-    return "Trigger build on NuGet dependency change";
+    return "Triggers build on NuGet dependency change";
   }
 
   @NotNull
@@ -45,6 +45,6 @@ public class NuGetTrigger extends BuildTriggerService {
 
   @Override
   public String getEditParametersUrl() {
-    return myDescriptor.getPluginResourcesPath("NuGetTrigger.jsp");
+    return myDescriptor.getPluginResourcesPath("trigger/editSimpleTrigger.jsp");
   }
 }
