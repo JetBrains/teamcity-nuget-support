@@ -16,26 +16,26 @@
 
 package jetbrains.buildServer.nuget.common.dependencies;
 
-import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.util.XmlXppAbstractParser;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 11.07.11 21:23
+ * Date: 12.07.11 12:49
  */
-public class RepositoryConfigReader {
-  private final FileSystem myFileSystem;
+public interface RepositoryConfigReader {
 
-  public RepositoryConfigReader(@NotNull final FileSystem fileSystem) {
-    myFileSystem = fileSystem;
-  }
+  /**
+   * Read repositories.config file and pushes callbacks for every found reference
+   * @param nugetRepsitoryConfig path
+   * @param callback callback
+   * @throws IOException exception if no file found, or file read or xml parse errors
+   */
+  void readConfigurations(@NotNull RelativePath nugetRepsitoryConfig,
+                          @NotNull Callback callback) throws IOException;
 
-  private interface Callback {
+  public interface Callback {
     /**
      * Called when packages.config is found
      *
@@ -43,25 +43,4 @@ public class RepositoryConfigReader {
      */
     void onPackagesConfigFound(@NotNull final RelativePath configRelativePath);
   }
-
-  public void readConfigurations(@NotNull final RelativePath nugetRepsitoryConfig,
-                                 @NotNull final Callback callback) throws IOException {
-    myFileSystem.parseXml(
-            nugetRepsitoryConfig,
-            new XmlXppAbstractParser() {
-              @Override
-              protected List<XmlHandler> getRootHandlers() {
-                return Arrays.asList(elementsPath(new Handler() {
-                  public XmlReturn processElement(@NotNull XmlElementInfo xmlElementInfo) {
-                    final String relPath = xmlElementInfo.getAttribute("path");
-                    if (relPath != null && !StringUtil.isEmptyOrSpaces(relPath)) {
-                      callback.onPackagesConfigFound(nugetRepsitoryConfig.getParent().createChild(relPath));
-                    }
-                    return xmlElementInfo.noDeep();
-                  }
-                }, "repositories", "repository"));
-              }
-            });
-  }
 }
-

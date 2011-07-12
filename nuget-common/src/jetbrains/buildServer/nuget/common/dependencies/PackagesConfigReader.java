@@ -16,26 +16,21 @@
 
 package jetbrains.buildServer.nuget.common.dependencies;
 
-import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.util.XmlXppAbstractParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Provide parsing for NuGet packages.config file
+ *
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 11.07.11 21:48
+ * Date: 12.07.11 12:48
  */
-public class PackagesConfigReader {
-  private final FileSystem myFileSystem;
+public interface PackagesConfigReader {
 
-  public PackagesConfigReader(@NotNull final FileSystem fileSystem) {
-    myFileSystem = fileSystem;
-  }
+  void readConfig(@NotNull RelativePath path,
+                  @NotNull Callback callback) throws IOException;
 
   public interface Callback {
     /**
@@ -45,33 +40,5 @@ public class PackagesConfigReader {
      * @param allowedVersions nuget allowed version info, if specified
      */
     void packageFound(@NotNull String id, @NotNull String version, @Nullable String allowedVersions);
-  }
-
-  public void readConfig(@NotNull final RelativePath path,
-                         @NotNull final Callback callback) throws IOException {
-    myFileSystem.parseXml(path,
-            new XmlXppAbstractParser() {
-              @Override
-              protected List<XmlHandler> getRootHandlers() {
-                return Arrays.asList(elementsPath(new Handler() {
-                  public XmlReturn processElement(@NotNull XmlElementInfo xmlElementInfo) {
-                    String id = xmlElementInfo.getAttribute("id");
-                    String version = xmlElementInfo.getAttribute("version");
-                    if (id == null || StringUtil.isEmptyOrSpaces(id))
-                      return xmlElementInfo.noDeep();
-
-                    if (version == null || StringUtil.isEmptyOrSpaces(version))
-                      return xmlElementInfo.noDeep();
-
-                    callback.packageFound(
-                            id,
-                            version,
-                            xmlElementInfo.getAttribute("allowedVersions"));
-
-                    return xmlElementInfo.noDeep();
-                  }
-                }, "packages", "package"));
-              }
-            });
   }
 }
