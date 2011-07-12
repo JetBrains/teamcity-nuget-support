@@ -15,5 +15,5 @@
   <bean class="jetbrains.buildServer.nuget.server.install.PackagesInstallerRunType"/>
 
 
-  <bean class="jetbrains.buildServer.nuget.server.trigger.NuGetTrigger"/>
+  <bean class="jetbrains.buildServer.nuget.server.trigger.NuGetSimpleTrigger"/>
 </beans>
