@@ -29,10 +29,10 @@ import java.util.List;
  * Date: 11.07.11 21:23
  */
 public class RepositoryConfigReader {
-  private final XmlParsers myXmlParsers;
+  private final FileSystem myFileSystem;
 
-  public RepositoryConfigReader(@NotNull final XmlParsers xmlParsers) {
-    myXmlParsers = xmlParsers;
+  public RepositoryConfigReader(@NotNull final FileSystem fileSystem) {
+    myFileSystem = fileSystem;
   }
 
   private interface Callback {
@@ -46,7 +46,7 @@ public class RepositoryConfigReader {
 
   public void readConfigurations(@NotNull final RelativePath nugetRepsitoryConfig,
                                  @NotNull final Callback callback) throws IOException {
-    myXmlParsers.parseXml(
+    myFileSystem.parseXml(
             nugetRepsitoryConfig,
             new XmlXppAbstractParser() {
               @Override

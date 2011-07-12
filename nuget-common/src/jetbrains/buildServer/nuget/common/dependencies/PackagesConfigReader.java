@@ -26,23 +26,30 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * Provide parsing for NuGet packages.config file
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 11.07.11 21:48
  */
 public class PackagesConfigReader {
-  private final XmlParsers myXmlParsers;
+  private final FileSystem myFileSystem;
 
-  public PackagesConfigReader(@NotNull final XmlParsers xmlParsers) {
-    myXmlParsers = xmlParsers;
+  public PackagesConfigReader(@NotNull final FileSystem fileSystem) {
+    myFileSystem = fileSystem;
   }
 
   public interface Callback {
+    /**
+     * Called for each new found package usage in project
+     * @param id nuget package Id
+     * @param version nuget package version
+     * @param allowedVersions nuget allowed version info, if specified
+     */
     void packageFound(@NotNull String id, @NotNull String version, @Nullable String allowedVersions);
   }
 
   public void readConfig(@NotNull final RelativePath path,
                          @NotNull final Callback callback) throws IOException {
-    myXmlParsers.parseXml(path,
+    myFileSystem.parseXml(path,
             new XmlXppAbstractParser() {
               @Override
               protected List<XmlHandler> getRootHandlers() {

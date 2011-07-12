@@ -16,10 +16,10 @@
 
 package jetbrains.buildServer.nuget.common.dependencies;
 
+import jetbrains.buildServer.util.XmlXppAbstractParser;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
+import java.io.IOException;
 
 /**
  * Represents virual file to allow using it both
@@ -35,10 +35,12 @@ public interface FileSystem {
   RelativePath getRoot();
 
   /**
-   * @param relativePath relative path
-   * @return a file that contains content of a given by RelativePath.
-   *         Returned file may be a temporary file
+   * Parses xml with given parser
+   *
+   * @param path   relative path
+   * @param parser parser to parse
+   * @throws IOException exception on access error or parse error or if file was not found
    */
-  @Nullable
-  File getFile(@NotNull final RelativePath relativePath);
+  public void parseXml(@NotNull final RelativePath path,
+                       @NotNull final XmlXppAbstractParser parser) throws IOException;
 }

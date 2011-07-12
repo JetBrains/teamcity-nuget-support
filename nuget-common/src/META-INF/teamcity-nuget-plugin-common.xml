@@ -7,7 +7,6 @@
        default-autowire="constructor">
 
   <bean class="jetbrains.buildServer.nuget.common.dependencies.FileSystem" abstract="true"/>
-  <bean class="jetbrains.buildServer.nuget.common.dependencies.XmlParsers"/>
   <bean class="jetbrains.buildServer.nuget.common.dependencies.RepositoryConfigReader"/>
   <bean class="jetbrains.buildServer.nuget.common.dependencies.PackagesConfigReader"/>
 </beans>
