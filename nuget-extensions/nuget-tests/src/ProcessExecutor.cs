@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using NUnit.Framework;
+using System.Linq;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {
@@ -14,7 +15,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       var pi = new ProcessStartInfo
                  {
                    FileName = exe,
-                   Arguments = string.Join(" ", args),
+                   Arguments = string.Join(" ", args.Select(x=>x.Contains(' ') ? "\"" + x + "\"" : x)),
                    RedirectStandardError = true,
                    RedirectStandardOutput = true,
                    RedirectStandardInput = true,

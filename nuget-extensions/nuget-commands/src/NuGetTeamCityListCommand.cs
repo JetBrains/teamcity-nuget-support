@@ -6,8 +6,6 @@ using System.Linq.Expressions;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Util;
 using NuGet;
 using NuGet.Commands;
-using NuGet.Common;
-using PackageSourceProviderExtensions = NuGet.Common.PackageSourceProviderExtensions;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
@@ -37,8 +35,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       System.Console.Out.WriteLine("Version: {0}", Version ?? "<null>");
       
       System.Console.Out.WriteLine("Checking for latest version...");
-      var packages = GetPackages();
-      foreach (var p in packages)
+      foreach (var p in GetPackages())
       {
         var msg = ServiceMessageFormatter.FormatMessage(
           "nuget-package",
@@ -59,8 +56,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         .GetPackages()
         .Where(exp);
 
-      if (Version == null) return packages;
-      return packages.Where(VersionUtility.ParseVersionSpec(Version).ToDelegate());
+      if (string.IsNullOrWhiteSpace(Version)) return packages;
+      var versionSpec = VersionUtility.ParseVersionSpec(Version);
+      return packages.Where(versionSpec.ToDelegate());
     }
   }
 }
