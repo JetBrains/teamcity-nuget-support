@@ -16,7 +16,6 @@ namespace nuget_runner
       string[] nugetArgs = args.Skip(1).ToArray();
 
       var nugetAssembly = Assembly.LoadFrom(nuget);
-
       var result = nugetAssembly.EntryPoint.Invoke(null, new[] {nugetArgs});
 
       if (result is int)
