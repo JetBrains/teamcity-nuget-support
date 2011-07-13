@@ -44,8 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\ListCommandBase.cs" />
     <Compile Include="src\NuGetTeamCityListCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\NuGetTeamCityListPackagesCommand.cs" />
     <Compile Include="src\NuGetTeamCityPingCommand.cs" />
     <Compile Include="src\Util\ServiceMessageFormatter.cs" />
     <Compile Include="src\Util\ServiceMessageProperty.cs" />
