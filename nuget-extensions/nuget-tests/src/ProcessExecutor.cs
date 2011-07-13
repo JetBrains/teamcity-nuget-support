@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
+using NUnit.Framework;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {
@@ -59,16 +60,52 @@ namespace JetBrains.TeamCity.NuGet.Tests
         ExitCode = exitCode;
       }
 
+      public Result AssertOutputContains(params string[] text)
+      {
+        foreach (var _ in text)
+        {
+          var s = _.Trim();
+          Assert.IsTrue(Output.Contains(s), "Process Output must contain {0}. Output: {1}", s, Output);
+        }
+        return this;
+      }
+
+      public Result AssertNoErrorOutput()
+      {
+        Assert.IsTrue(string.IsNullOrWhiteSpace(Error));
+        return this;
+      }
+
+      public Result AssertExitedSuccessfully()
+      {
+        Assert.That(ExitCode, Is.EqualTo(0));
+        return this;
+      }
+
+      public Result Dump()
+      {
+        Console.Out.WriteLine(this);
+        return this;
+      }
+
       public override string ToString()
       {
-        return new StringBuilder()
-          .AppendFormat("ExitCode: {0}\r\n", ExitCode)
-          .Append("Output:\n")
-          .Append(Output)
-          .Append("\n")
-          .Append("Error:\n")
-          .Append(Error)
-          .ToString();
+        var sb = new StringBuilder();
+        sb.AppendFormat("ExitCode: {0}\r\n", ExitCode);
+        if (!string.IsNullOrWhiteSpace(Output))
+        {
+          sb
+            .Append("Output:\n")
+            .Append(Output)
+            .Append("\n");
+        }
+        if (!string.IsNullOrWhiteSpace(Error))
+        {
+          sb
+            .Append("Error:\n")
+            .Append(Error);
+        }
+        return sb.ToString();
       }
     }
   }

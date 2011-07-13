@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using JetBrains.TeamCity.NuGetRunner;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {

@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace JetBrains.TeamCity.NuGet.Tests
+namespace JetBrains.TeamCity.NuGetRunner
 {
   public static class AssemblyHelper
   {
@@ -19,6 +19,11 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string GetAssemblyDirectory(this Type type)
     {
       return GetAssemblyDirectory(type.Assembly);
+    }
+    
+    public static string GetAssemblyPath(this Type type)
+    {
+      return GetAssemblyPath(type.Assembly);
     }
   }
 }
