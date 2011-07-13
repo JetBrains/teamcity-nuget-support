@@ -2,6 +2,7 @@ out
 .idea/workspace.xml
 nuget-extensions/**/bin
 nuget-extensions/**/obj
-nuget-extensions/**/*.suo
+nuget-extensions/**.suo
 nuget-extensions/**/*.user
-nuget-extensions/**/_ReShraper
+nuget-extensions/*.user
+nuget-extensions/_ReSharper*
