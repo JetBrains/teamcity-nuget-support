@@ -75,6 +75,9 @@ public class ListPackagesCommandProcessor implements NuGetOutputProcessor<Collec
     if (LOG.isDebugEnabled()) {
       LOG.debug("NuGet TeamCity.List command exited with " + exitCode);
     }
+    if (exitCode != 0) {
+      throw new RuntimeException("Failed to execute TeamCity.List command. Exit code was " + exitCode);
+    }
   }
 
   @NotNull
