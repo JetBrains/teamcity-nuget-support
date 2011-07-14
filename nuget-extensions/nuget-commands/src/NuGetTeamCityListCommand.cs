@@ -19,6 +19,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     public override void ExecuteCommand()
     {
+      if (string.IsNullOrWhiteSpace(Source))
+        Source = NuGetConstants.DefaultFeedUrl;
+
       System.Console.Out.WriteLine("TeamCity NuGet List command.");
       System.Console.Out.WriteLine("Source: {0}", Source ?? "<null>");
       System.Console.Out.WriteLine("Package Id: {0}", Id ?? "<null>");

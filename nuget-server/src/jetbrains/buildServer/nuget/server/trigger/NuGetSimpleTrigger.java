@@ -74,10 +74,6 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
       public Collection<InvalidProperty> process(Map<String, String> properties) {
         Collection<InvalidProperty> err = new ArrayList<InvalidProperty>();
 
-        if (StringUtil.isEmptyOrSpaces(properties.get(TriggerConstants.SOURCE))) {
-          err.add(new InvalidProperty(TriggerConstants.SOURCE, "Source must be specified"));
-        }
-
         if (StringUtil.isEmptyOrSpaces(properties.get(TriggerConstants.NUGET_EXE))) {
           err.add(new InvalidProperty(TriggerConstants.NUGET_EXE, "NuGet.exe path must be specified"));
         }

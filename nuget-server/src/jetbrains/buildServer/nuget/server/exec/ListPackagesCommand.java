@@ -48,8 +48,10 @@ public class ListPackagesCommand {
     List<String> cmd = new ArrayList<String>();
 
     cmd.add("TeamCity.List");
-    cmd.add("-Source");
-    cmd.add(source);
+    if (!StringUtil.isEmptyOrSpaces(source)) {
+      cmd.add("-Source");
+      cmd.add(source);
+    }
     cmd.add("-Id");
     cmd.add(packageId);
 

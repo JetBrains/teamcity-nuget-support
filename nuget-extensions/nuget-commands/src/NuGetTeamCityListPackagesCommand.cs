@@ -17,6 +17,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     {
       var req = LoadRequests();
 
+      if (string.IsNullOrWhiteSpace(req.Source))
+        req.Source = NuGetConstants.DefaultFeedUrl;
+
       IEnumerable<IPackage> package = GetAllPackages(req.Source, req.Packages.Select(x => x.Id)).ToList();
       var hash = new Dictionary<string, Func<IPackage, bool>>(
         req
