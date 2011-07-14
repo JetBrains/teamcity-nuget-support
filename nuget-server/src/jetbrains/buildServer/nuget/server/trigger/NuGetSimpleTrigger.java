@@ -1,6 +1,8 @@
 package jetbrains.buildServer.nuget.server.trigger;
 
-import jetbrains.buildServer.buildTriggers.*;
+import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
+import jetbrains.buildServer.buildTriggers.BuildTriggerService;
+import jetbrains.buildServer.buildTriggers.BuildTriggeringPolicy;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.util.StringUtil;
@@ -17,9 +19,13 @@ import java.util.Map;
  */
 public class NuGetSimpleTrigger extends BuildTriggerService {
   private final PluginDescriptor myDescriptor;
+  private BuildTriggeringPolicy myPolicy;
 
-  public NuGetSimpleTrigger(@NotNull final PluginDescriptor descriptor) {
+  public NuGetSimpleTrigger(@NotNull final PluginDescriptor descriptor,
+                            @NotNull final ThreadedBuildTriggetFactory factory,
+                            @NotNull final NamedPackagesUpdateChecker checker) {
     myDescriptor = descriptor;
+    myPolicy = factory.createTrigger(checker);
   }
 
   @NotNull
@@ -54,11 +60,7 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
   @NotNull
   @Override
   public BuildTriggeringPolicy getBuildTriggeringPolicy() {
-    return new PolledBuildTrigger() {
-      @Override
-      public void triggerBuild(@NotNull final PolledTriggerContext context) throws BuildTriggerException {
-      }
-    };
+    return myPolicy;
   }
 
   @Override

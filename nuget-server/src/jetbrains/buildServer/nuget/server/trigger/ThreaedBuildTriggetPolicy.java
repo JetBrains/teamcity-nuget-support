@@ -21,53 +21,58 @@ import jetbrains.buildServer.buildTriggers.PolledBuildTrigger;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 12.07.11 23:29
  */
-public class NuGetTriggerPolicy extends PolledBuildTrigger{
+public class ThreaedBuildTriggetPolicy extends PolledBuildTrigger {
   private final ExecutorService myExecutor;
-  private Future<Boolean> myUpdateRequired;
+  private final TriggerUpdateChecker myUpdater;
+  private Future<BuildStartReason> myUpdateRequired;
 
-  public NuGetTriggerPolicy(@NotNull final ExecutorService executor) {
+  public ThreaedBuildTriggetPolicy(@NotNull final ExecutorService executor,
+                                   @NotNull final TriggerUpdateChecker updater) {
     myExecutor = executor;
+    myUpdater = updater;
   }
 
   @Override
   public synchronized void triggerBuild(@NotNull PolledTriggerContext context) throws BuildTriggerException {
     if (myUpdateRequired == null) {
-      myUpdateRequired = myExecutor.submit(createUpdateTask());
+      myUpdateRequired = myExecutor.submit(createUpdateTask(context));
     }
 
     if (!myUpdateRequired.isDone()) return;
 
-    Boolean result;
+    BuildStartReason result;
     try {
       result = myUpdateRequired.get();
     } catch (InterruptedException e) {
       return;
     } catch (ExecutionException e) {
       Throwable cause = e.getCause();
+      if (cause instanceof BuildTriggerException) throw (BuildTriggerException)cause;
       throw new BuildTriggerException(cause.getMessage(), cause);
     } finally {
       myUpdateRequired = null;
     }
 
-    if (Boolean.TRUE.equals(result)) {
-      String packageName = context.getTriggerDescriptor().getProperties().get(TriggerConstants.PACKAGE);
-      context.getBuildType().addToQueue("NuGet Package " + packageName + " updated");
+    if (result != null) {
+      context.getBuildType().addToQueue(result.getReason());
     }
   }
 
-  private Callable<Boolean> createUpdateTask() {
-    return new Callable<Boolean>() {
-      public Boolean call() throws Exception {
-        return null;
+  @NotNull
+  private Callable<BuildStartReason> createUpdateTask(@NotNull final PolledTriggerContext storage) {
+    return new Callable<BuildStartReason>() {
+      public BuildStartReason call() throws Exception {
+        return myUpdater.checkChanges(storage.getTriggerDescriptor(), storage.getCustomDataStorage());
       }
     };
   }
-
-
 }
