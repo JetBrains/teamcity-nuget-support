@@ -46,6 +46,16 @@ public class ListPackagesCommandProcessorTest extends BaseTestCase {
   }
 
   @Test
+  public void test_should_throw_on_exit_code() {
+    try {
+      p.onFinished(1);
+    } catch (RuntimeException e) {
+      return;
+    }
+    Assert.fail("Exception expected");
+  }
+
+  @Test
   public void test_some_output() {
     for(int i =0; i <100; i++) {
       p.onStdError("asdasd");
