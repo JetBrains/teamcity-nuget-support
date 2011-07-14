@@ -11,6 +11,7 @@
       <class name="jetbrains.buildServer.nuget.tests.util.DelegatingBuildProcessTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.server.ListPackagesCommandTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.ListPackagesCommandProcessorTest"/>
     </classes>
   </test>
 

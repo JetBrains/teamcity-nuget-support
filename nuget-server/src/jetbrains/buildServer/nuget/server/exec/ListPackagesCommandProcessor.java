@@ -37,7 +37,7 @@ public class ListPackagesCommandProcessor implements NuGetOutputProcessor<Collec
   private final String mySource;
   private final List<PackageInfo> myPackages = new ArrayList<PackageInfo>();
 
-  ListPackagesCommandProcessor(@NotNull final String source) {
+  public ListPackagesCommandProcessor(@NotNull final String source) {
     mySource = source;
   }
 
