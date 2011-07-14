@@ -34,6 +34,7 @@
     <orderEntry type="library" name="Idea-OpenApi" level="project" />
     <orderEntry type="library" name="Servlet Api" level="project" />
     <orderEntry type="module" module-name="nuget-common" />
+    <orderEntry type="library" name="Common-Impl" level="project" />
   </component>
 </module>
 

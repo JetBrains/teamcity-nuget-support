@@ -12,3 +12,4 @@ API gaps:
  - Reuse ComposideBuildProcess and DelegatingBuildProcess
  - Use XmlXppAbstractParser#parse(InputSream)
  - Consider reuseing of Maven build trigger/project models
+ - Make server-side PluginDescription contain getPluginRoot() to avoid cast to PluginInfo
