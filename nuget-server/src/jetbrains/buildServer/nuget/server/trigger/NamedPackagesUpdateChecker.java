@@ -5,6 +5,7 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.PackageInfo;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -29,11 +30,29 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     final String version = descriptor.getProperties().get(TriggerConstants.VERSION);
     final String source = descriptor.getProperties().get(TriggerConstants.SOURCE);
 
-    Collection<PackageInfo> result = myCommand.checkForChanges(new File(path), source, pkgId, version);
+    if (StringUtil.isEmptyOrSpaces(path)) {
+      throw new BuildTriggerException("Path to NuGet.exe must be specified");
+    }
+
+    if (StringUtil.isEmptyOrSpaces(pkgId)) {
+      throw new BuildTriggerException("Package Id must be specified");
+    }
+
+    File nugetPath = new File(path);
+    if (!nugetPath.isFile()) {
+      throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
+    }
+
+    Collection<PackageInfo> result;
+    try {
+      result = myCommand.checkForChanges(nugetPath, source, pkgId, version);
+    } catch (Throwable t) {
+      throw new BuildTriggerException("Failed to check for package versions. " + t.getMessage(), t);
+    }
     final String hash = serializeHashcode(result);
 
     String oldHash = storage.getValue(KEY);
-    if (!hash.equals(oldHash)) {
+    if (oldHash != null && !hash.equals(oldHash)) {
       storage.putValue(KEY, hash);
       storage.flush();
       return new BuildStartReason("NuGet Package " + pkgId + " updated");

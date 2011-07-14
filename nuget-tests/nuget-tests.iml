@@ -21,6 +21,7 @@
     <orderEntry type="library" scope="RUNTIME" name="TeamCity server runtime" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="TeamCity agent runtime" level="project" />
     <orderEntry type="library" name="Common-Impl" level="project" />
+    <orderEntry type="library" name="Server-Api" level="project" />
   </component>
 </module>
 

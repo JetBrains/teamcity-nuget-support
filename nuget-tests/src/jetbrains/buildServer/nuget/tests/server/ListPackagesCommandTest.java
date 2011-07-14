@@ -17,10 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
-import jetbrains.buildServer.nuget.server.exec.ListPackagesCommandProcessor;
-import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
-import jetbrains.buildServer.nuget.server.exec.PackageInfo;
+import jetbrains.buildServer.nuget.server.exec.*;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -44,7 +41,7 @@ public class ListPackagesCommandTest extends BaseTestCase {
     super.setUp();
     m = new Mockery();
     exec = m.mock(NuGetExecutor.class);
-    cmd = new ListPackagesCommand(exec);
+    cmd = new ListPackagesCommandImpl(exec);
   }
 
   private void allowCommandLineCall(final String... cmd) {

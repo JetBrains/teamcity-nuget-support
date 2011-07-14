@@ -17,7 +17,7 @@
 
   <bean class="jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProviderImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.exec.NuGetExecutorImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.exec.ListPackagesCommand"/>
+  <bean class="jetbrains.buildServer.nuget.server.exec.ListPackagesCommandImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.trigger.ThreadedBuildTriggetFactoryImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker"/>

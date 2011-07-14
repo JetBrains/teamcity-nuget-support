@@ -16,51 +16,21 @@
 
 package jetbrains.buildServer.nuget.server.exec;
 
-import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 14.07.11 13:10
+ * Date: 14.07.11 19:04
  */
-public class ListPackagesCommand {
-  private static final Logger LOG = Logger.getInstance(ListPackagesCommand.class.getName());
-
-  private NuGetExecutor myExec;
-
-  public ListPackagesCommand(NuGetExecutor exec) {
-    myExec = exec;
-  }
-
+public interface ListPackagesCommand {
   @NotNull
-  public Collection<PackageInfo> checkForChanges(
-          @NotNull final File nugetPath,
-          @NotNull final String source,
-          @NotNull final String packageId,
-          @Nullable final String versionSpec) {
-    List<String> cmd = new ArrayList<String>();
-
-    cmd.add("TeamCity.List");
-    if (!StringUtil.isEmptyOrSpaces(source)) {
-      cmd.add("-Source");
-      cmd.add(source);
-    }
-    cmd.add("-Id");
-    cmd.add(packageId);
-
-    if (!StringUtil.isEmptyOrSpaces(versionSpec)) {
-      cmd.add("-Version");
-      cmd.add(versionSpec);
-    }
-
-    return myExec.executeNuGet(nugetPath, cmd, new ListPackagesCommandProcessor(source));
-  }
-
+  Collection<PackageInfo> checkForChanges(
+          @NotNull File nugetPath,
+          @Nullable String source,
+          @NotNull String packageId,
+          @Nullable String versionSpec);
 }
