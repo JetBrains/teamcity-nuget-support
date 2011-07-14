@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Linq;
+using System.Text;
+using System.Threading;
 
 namespace JetBrains.TeamCity.NuGetRunner
 {
@@ -71,19 +74,49 @@ namespace JetBrains.TeamCity.NuGetRunner
       }
     }
 
-    public int Run(string[] argz)
+    public int Run(IEnumerable<string> argz)
     {
       CallEvents(myStartEvents);
 
       try
       {
-        var result = myNuGetAssembly.EntryPoint.Invoke(null, new[] {argz});
+        var process = Process.Start(new ProcessStartInfo
+                                      {
+                                        FileName = myNuGetExe,
+                                        //TODO use escapring safe escaping here.
+                                        Arguments = string.Join(" ", argz.Select(x=>x.IndexOfAny(" \t\n\r".ToCharArray()) >=0 ? "\"" + x + "\"" : x)),
+                                        UseShellExecute = false,
+                                        RedirectStandardInput = true, 
+                                        RedirectStandardError = true, 
+                                        RedirectStandardOutput = true
+                                      });
 
-        if (result is int)
-          return (int) result;
+        process.StandardInput.Close();
+        Func<StreamReader, TextWriter, Thread> readOutput = (si, so) =>
+        {
+          var th = new Thread(delegate()
+          {
+            int i;
+            while ((i = si.Read()) >= 0) so.Write((char)i);            
+          }) { Name = "Process output reader " + process.Id };
+          th.Start();
+          return th;
+        };
 
-        return 0;
-      } finally
+        var t1 = readOutput(process.StandardOutput, Console.Out);
+        var t2 = readOutput(process.StandardError, Console.Error);
+        
+        process.WaitForExit();
+
+        t1.Join(TimeSpan.FromMinutes(5));
+        t2.Join(TimeSpan.FromMinutes(5));
+
+        return process.ExitCode;
+        /*AppDomain dom = AppDomain.CreateDomain("NuGet Launcher Domain");
+        var result = dom.ExecuteAssembly(myNuGetExe, argz);
+        return result is int ? (int) result : 0;*/
+      }
+      finally
       {
         CallEvents(myFinishEvents);
       }

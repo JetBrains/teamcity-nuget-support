@@ -17,7 +17,8 @@ namespace JetBrains.TeamCity.NuGetRunner
 
                                        foreach (var ext in extensions)
                                        {
-                                         File.Copy(ext, Path.Combine(home, Path.GetFileName(ext)));
+                                         var destFileName = Path.Combine(home, Path.GetFileName(ext));
+                                         File.Copy(ext, destFileName);
                                        }
                                      };
 
