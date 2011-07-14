@@ -20,7 +20,6 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
-import jetbrains.buildServer.plugins.bean.PluginInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -33,15 +32,10 @@ import java.util.List;
 public class NuGetExecutorImpl implements NuGetExecutor {
   private static final Logger LOG = Logger.getInstance(NuGetExecutorImpl.class.getName());
 
-  private final PluginInfo myPluginInfo;
+  private final NuGetTeamCityProvider myNuGetTeamCityProvider;
 
-  public NuGetExecutorImpl(PluginInfo pluginInfo) {
-    myPluginInfo = pluginInfo;
-  }
-
-  @NotNull
-  private File getNuGetRunnerPath() {
-    return new File(myPluginInfo.getPluginRoot(), "bin/JetBrains.TeamCity.NuGetRunner.exe");
+  public NuGetExecutorImpl(@NotNull final NuGetTeamCityProvider nuGetTeamCityProvider) {
+    myNuGetTeamCityProvider = nuGetTeamCityProvider;
   }
 
   @NotNull
@@ -50,7 +44,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
                             @NotNull final NuGetOutputProcessor<T> listener) {
 
     GeneralCommandLine cmd = new GeneralCommandLine();
-    cmd.setExePath(getNuGetRunnerPath().getPath());
+    cmd.setExePath(myNuGetTeamCityProvider.getNuGetRunnerPath().getPath());
     cmd.addParameter(nugetExePath.getPath());
     cmd.addParameters(arguments);
 

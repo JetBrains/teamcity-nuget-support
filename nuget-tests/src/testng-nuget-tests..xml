@@ -18,6 +18,7 @@
   <test name="nuget integration test">
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.integration.InstallPackageIntegtatoinTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.NuGetExecutorTest"/>
     </classes>
   </test>
 </suite>

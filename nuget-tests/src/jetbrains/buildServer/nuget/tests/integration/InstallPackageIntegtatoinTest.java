@@ -21,17 +21,16 @@ import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.ArchiveUtil;
-import jetbrains.buildServer.util.FileUtil;
 import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -95,7 +94,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   @Test
   public void test_01_online_sources() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01.zip"), "", myRoot);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false);
 
@@ -110,7 +109,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   @Test
   public void test_01_online_sources_update() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01.zip"), "", myRoot);
 
     m.checking(new Expectations(){{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
@@ -135,7 +134,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   @Test
   public void test_01_online_sources_update_safe() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01.zip"), "", myRoot);
 
     m.checking(new Expectations(){{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
@@ -160,7 +159,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   @Test
   public void test_01_online_sources_ecludeVersion() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01.zip"), "", myRoot);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true, false);
 
@@ -175,9 +174,9 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   @Test(enabled = false, dependsOnGroups = "Need to understand how to check NuGet uses only specified sources")
   public void test_01_local_sources() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01.zip"), "", myRoot);
     File sourcesDir = new File(myRoot, "js");
-    ArchiveUtil.unpackZip(getTestDataPath("test-01-sources.zip"), "", sourcesDir);
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01-sources.zip"), "", sourcesDir);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false, false);
 
@@ -198,7 +197,8 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
       allowing(myParametersFactory).loadNuGetParameters(myContext);  will(returnValue(myNuGet));
       allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);  will(returnValue(myInstall));
 
-      allowing(myNuGet).getNuGetExeFile(); will(returnValue(getPathToNuGet()));
+      allowing(myNuGet).getNuGetExeFile();
+      will(returnValue(Paths.getPathToNuGet()));
       allowing(myNuGet).getSolutionFile(); will(returnValue(sln));
       allowing(myNuGet).getNuGetPackageSources(); will(returnValue(sources));
       allowing(myInstall).getExcludeVersion(); will(returnValue(excludeVersion));
@@ -213,22 +213,6 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
 
     m.assertIsSatisfied();
-  }
-
-
-  @NotNull
-  private File getTestDataPath() {
-    return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/integration"));
-  }
-
-  @NotNull
-  private File getTestDataPath(@NotNull final String p) {
-    return FileUtil.getCanonicalFile(new File(getTestDataPath(), p));
-  }
-
-  @NotNull
-  private File getPathToNuGet() {
-    return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.4/NuGet.exe"));
   }
 
   private CommandlineBuildProcessFactory executingFactory() {

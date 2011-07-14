@@ -15,6 +15,7 @@
   <bean class="jetbrains.buildServer.nuget.server.install.PackagesInstallerRunType"/>
 
 
+  <bean class="jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProviderImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.exec.NuGetExecutorImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.exec.ListPackagesCommand"/>
 
