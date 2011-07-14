@@ -38,6 +38,7 @@ public class ListPackagesCommand {
     myExec = exec;
   }
 
+  @NotNull
   public Collection<PackageInfo> checkForChanges(
           @NotNull final String source,
           @NotNull final String packageId,

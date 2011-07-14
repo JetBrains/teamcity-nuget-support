@@ -44,6 +44,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
     return new File(myPluginInfo.getPluginRoot(), "bin/JetBrains.TeamCity.NuGetRunner.exe");
   }
 
+  @NotNull
   public <T> T executeNuGet(@NotNull final List<String> arguments,
                             @NotNull final NuGetOutputProcessor<T> listener) {
 
