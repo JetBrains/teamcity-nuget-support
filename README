@@ -13,3 +13,4 @@ API gaps:
  - Use XmlXppAbstractParser#parse(InputSream)
  - Consider reusing of Maven build trigger/project models
  - Make server-side PluginDescription contain getPluginRoot() to avoid cast to PluginInfo
+ - Add CustomDataStorage to BuildTriggerDescriptor
