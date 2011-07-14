@@ -23,7 +23,7 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
   }
 
   public BuildStartReason checkChanges(@NotNull BuildTriggerDescriptor descriptor,
-                              @NotNull CustomDataStorage storage) throws BuildTriggerException {
+                                       @NotNull CustomDataStorage storage) throws BuildTriggerException {
     final String path = descriptor.getProperties().get(TriggerConstants.NUGET_EXE);
     final String pkgId = descriptor.getProperties().get(TriggerConstants.PACKAGE);
     final String version = descriptor.getProperties().get(TriggerConstants.VERSION);
