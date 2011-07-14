@@ -33,6 +33,12 @@
         </element>
       </element>
       <element id="file-copy" path="$PROJECT_DIR$/nuget-server/teamcity-server-plugin.xml" output-file-name="teamcity-plugin.xml" />
+      <element id="directory" name="bin">
+        <element id="file-copy" path="$PROJECT_DIR$/nuget-extensions/bin/JetBrains.TeamCity.NuGet.ExtendedCommands.dll" />
+        <element id="file-copy" path="$PROJECT_DIR$/nuget-extensions/bin/JetBrains.TeamCity.NuGet.ExtendedCommands.pdb" />
+        <element id="file-copy" path="$PROJECT_DIR$/nuget-extensions/bin/JetBrains.TeamCity.NuGetRunner.exe" />
+        <element id="file-copy" path="$PROJECT_DIR$/nuget-extensions/bin/JetBrains.TeamCity.NuGetRunner.pdb" />
+      </element>
     </root>
   </artifact>
 </component>
