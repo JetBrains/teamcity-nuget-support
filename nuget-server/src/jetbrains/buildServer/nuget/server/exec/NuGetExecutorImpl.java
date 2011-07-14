@@ -45,11 +45,13 @@ public class NuGetExecutorImpl implements NuGetExecutor {
   }
 
   @NotNull
-  public <T> T executeNuGet(@NotNull final List<String> arguments,
+  public <T> T executeNuGet(@NotNull final File nugetExePath,
+                            @NotNull final List<String> arguments,
                             @NotNull final NuGetOutputProcessor<T> listener) {
 
     GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(getNuGetRunnerPath().getPath());
+    cmd.addParameter(nugetExePath.getPath());
     cmd.addParameters(arguments);
 
     if (LOG.isDebugEnabled()) {

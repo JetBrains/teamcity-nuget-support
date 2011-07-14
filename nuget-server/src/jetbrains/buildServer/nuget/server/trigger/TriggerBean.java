@@ -21,6 +21,7 @@ package jetbrains.buildServer.nuget.server.trigger;
  * Date: 12.07.11 14:56
  */
 public class TriggerBean {
+  public String getNuGetExeKey() {  return TriggerConstants.NUGET_EXE; }
   public String getSourceKey() {  return TriggerConstants.SOURCE;   }
   public String getPackageKey() {  return TriggerConstants.PACKAGE;   }
   public String getVersionKey() {  return TriggerConstants.VERSION;   }

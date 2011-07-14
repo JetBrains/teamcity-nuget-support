@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.exec;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -26,6 +27,7 @@ import java.util.List;
  */
 public interface NuGetExecutor {
   @NotNull
-  <T> T executeNuGet(@NotNull List<String> arguments,
+  <T> T executeNuGet(@NotNull File nugetExePath,
+                     @NotNull List<String> arguments,
                      @NotNull NuGetOutputProcessor<T> listener);
 }

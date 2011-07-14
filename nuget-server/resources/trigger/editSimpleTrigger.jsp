@@ -20,6 +20,15 @@
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.trigger.TriggerBean" scope="request"/>
 
 <tr>
+  <td>NuGet path:<l:star/></td>
+  <td>
+    <props:textProperty name="${ib.nuGetExeKey}" style="width:20em;" />
+    <span class="smallNote">Specify path to NuGet.exe </span>
+    <span class="error" id="error_${ib.sourceKey}"></span>
+  </td>
+</tr>
+
+<tr>
   <td>NuGet package source:<l:star/></td>
   <td>
     <props:textProperty name="${ib.sourceKey}" style="width:20em;" />

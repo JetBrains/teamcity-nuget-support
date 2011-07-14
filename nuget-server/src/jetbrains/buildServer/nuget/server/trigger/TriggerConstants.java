@@ -23,6 +23,8 @@ package jetbrains.buildServer.nuget.server.trigger;
 public interface TriggerConstants {
   public static final String TRIGGER_ID = "nuget.simple";
 
+  //TODO: use same extensions as for psexec and handle
+  public static final String NUGET_EXE = "nuget.exe";
   public static final String SOURCE = "nuget.source";
   public static final String PACKAGE = "nuget.package";
   public static final String VERSION = "nuget.version";

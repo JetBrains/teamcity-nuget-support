@@ -7,6 +7,7 @@ import jetbrains.buildServer.nuget.server.exec.PackageInfo;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -23,10 +24,12 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
 
   public BuildStartReason checkChanges(@NotNull BuildTriggerDescriptor descriptor,
                               @NotNull CustomDataStorage storage) throws BuildTriggerException {
+    final String path = descriptor.getProperties().get(TriggerConstants.NUGET_EXE);
     final String pkgId = descriptor.getProperties().get(TriggerConstants.PACKAGE);
     final String version = descriptor.getProperties().get(TriggerConstants.VERSION);
     final String source = descriptor.getProperties().get(TriggerConstants.SOURCE);
-    Collection<PackageInfo> result = myCommand.checkForChanges(source, pkgId, version);
+
+    Collection<PackageInfo> result = myCommand.checkForChanges(new File(path), source, pkgId, version);
     final String hash = serializeHashcode(result);
 
     String oldHash = storage.getValue(KEY);

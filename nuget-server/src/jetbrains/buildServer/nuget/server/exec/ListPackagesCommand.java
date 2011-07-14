@@ -21,6 +21,7 @@ import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +41,7 @@ public class ListPackagesCommand {
 
   @NotNull
   public Collection<PackageInfo> checkForChanges(
+          @NotNull final File nugetPath,
           @NotNull final String source,
           @NotNull final String packageId,
           @Nullable final String versionSpec) {
@@ -56,7 +58,7 @@ public class ListPackagesCommand {
       cmd.add(versionSpec);
     }
 
-    return myExec.executeNuGet(cmd, new ListPackagesCommandProcessor(source));
+    return myExec.executeNuGet(nugetPath, cmd, new ListPackagesCommandProcessor(source));
   }
 
 }

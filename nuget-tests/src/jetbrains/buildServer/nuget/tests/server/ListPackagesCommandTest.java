@@ -17,12 +17,16 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.exec.*;
+import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
+import jetbrains.buildServer.nuget.server.exec.ListPackagesCommandProcessor;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
+import jetbrains.buildServer.nuget.server.exec.PackageInfo;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -33,7 +37,6 @@ public class ListPackagesCommandTest extends BaseTestCase {
   private Mockery m;
   private NuGetExecutor exec;
   private ListPackagesCommand cmd;
-
 
   @BeforeMethod
   @Override
@@ -47,7 +50,7 @@ public class ListPackagesCommandTest extends BaseTestCase {
   private void allowCommandLineCall(final String... cmd) {
     final List<String> list = new ArrayList<String>(Arrays.<String>asList(cmd));
     m.checking(new Expectations(){{
-      oneOf(exec).executeNuGet(with(equal(list)), with(any(ListPackagesCommandProcessor.class)));
+      oneOf(exec).executeNuGet(with(any(File.class)), with(equal(list)), with(any(ListPackagesCommandProcessor.class)));
       will(returnValue(Collections.<PackageInfo>emptyList()));
     }});
   }
@@ -62,9 +65,7 @@ public class ListPackagesCommandTest extends BaseTestCase {
             "package"
     );
 
-    Collection<PackageInfo> infos = cmd.checkForChanges("source", "package", null);
-
-
+    cmd.checkForChanges(new File("nuget"), "source", "package", null);
     m.assertIsSatisfied();
   }
 
@@ -80,8 +81,7 @@ public class ListPackagesCommandTest extends BaseTestCase {
             "version"
     );
 
-    Collection<PackageInfo> infos = cmd.checkForChanges("source", "package", "version");
-
+    cmd.checkForChanges(new File("nuget"), "source", "package", "version");
     m.assertIsSatisfied();
   }
 }
