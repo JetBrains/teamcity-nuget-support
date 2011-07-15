@@ -68,7 +68,9 @@ public class ListPackagesCommandProcessor implements NuGetOutputProcessor<Collec
   }
 
   public void onStdError(String text) {
-    LOG.warn(text);
+    if (!StringUtil.isEmptyOrSpaces(text)) {
+      LOG.warn(text);
+    }
   }
 
   public void onFinished(int exitCode) {

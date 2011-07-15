@@ -20,6 +20,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -56,8 +57,12 @@ public class NuGetExecutorImpl implements NuGetExecutor {
 
     if (LOG.isDebugEnabled()) {
       LOG.debug("Exited with code: " + result.getExitCode());
-      LOG.debug("Output: " + result.getStdout());
-      LOG.error("Error: " + result.getStderr());
+      if (!StringUtil.isEmptyOrSpaces(result.getStdout())) {
+        LOG.debug("Output: " + result.getStdout());
+      }
+      if (!StringUtil.isEmptyOrSpaces(result.getStderr())) {
+        LOG.debug("Error: " + result.getStderr());
+      }
     }
 
     listener.onStdOutput(result.getStdout());
