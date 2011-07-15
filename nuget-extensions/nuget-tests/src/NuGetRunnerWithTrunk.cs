@@ -6,6 +6,7 @@ using NUnit.Framework;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {
+  [Explicit]
   [TestFixture("bt4")]
   [TestFixture("bt22")]
   [TestFixture("bt21")]  
