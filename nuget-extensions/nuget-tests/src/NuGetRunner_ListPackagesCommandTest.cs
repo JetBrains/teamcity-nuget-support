@@ -1,11 +1,11 @@
 using System.IO;
 using NUnit.Framework;
-using NuGet;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {
+  [Ignore("Not yet needed in TeamCity NuGet support")]
   [TestFixture]
-  public class NuGetRunner_ListPackagesCommandTest
+  public class NuGetRunner_ListPackagesCommandTest_Remote
   {
     [Test]
     public void TestCommand_ListPublic()
@@ -17,7 +17,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
                               "<NuGet-Request Source=\"" + NuGetConstants.DefaultFeedUrl +
                               "\"><Requests><Request Id='NUnit'/></Requests></NuGet-Request>");
 
-            ProcessExecutor.ExecuteProcess(NuGetRunner.Path.Value, NuGet.NuGetPath,
+            ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.NuGetExe,
                                            "TeamCity.ListPackages", "-Request", file)
               .Dump()
               .AssertExitedSuccessfully()
@@ -38,7 +38,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
                               "<NuGet-Request Source=\"" + NuGetConstants.DefaultFeedUrl +
                               "\"><Requests><Request Id='NUnit' Versions='(1.1.1,2.5.8]'/></Requests></NuGet-Request>");
 
-            ProcessExecutor.ExecuteProcess(NuGetRunner.Path.Value, NuGet.NuGetPath,
+            ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.NuGetExe,
                                            "TeamCity.ListPackages", "-Request", file)
               .Dump()
               .AssertExitedSuccessfully()

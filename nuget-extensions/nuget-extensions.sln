@@ -6,6 +6,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-runner", "nuget-runner\nuget-runner.csproj", "{B79E58CB-F8FD-4CD6-8B62-10EBA0DF592B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-tests", "nuget-tests\nuget-tests.csproj", "{6D862627-466B-4CD1-82DE-E57B7B976EB6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B79E58CB-F8FD-4CD6-8B62-10EBA0DF592B} = {B79E58CB-F8FD-4CD6-8B62-10EBA0DF592B}
+		{8FA969EA-85C0-464E-9745-66B9820121A9} = {8FA969EA-85C0-464E-9745-66B9820121A9}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

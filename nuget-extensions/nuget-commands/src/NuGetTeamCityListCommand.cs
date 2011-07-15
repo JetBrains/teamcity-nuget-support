@@ -17,7 +17,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [Option("NuGet Version Spec to constraint versions to be checked. Optional")]
     public string Version { get; set; }
 
-    public override void ExecuteCommand()
+    protected override void ExecuteCommandImpl()
     {
       if (string.IsNullOrWhiteSpace(Source))
         Source = NuGetConstants.DefaultFeedUrl;

@@ -19,8 +19,11 @@ namespace JetBrains.TeamCity.NuGet.Tests
                    RedirectStandardError = true,
                    RedirectStandardOutput = true,
                    RedirectStandardInput = true,
-                   UseShellExecute = false
+                   UseShellExecute = false,
+                   CreateNoWindow = true,
                  };
+
+      Console.Out.WriteLine("Starting: " + pi.FileName + " " + pi.Arguments);
 
       var process = Process.Start(pi);
       process.StandardInput.Close();

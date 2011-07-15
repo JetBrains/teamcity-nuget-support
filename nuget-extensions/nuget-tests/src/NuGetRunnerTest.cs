@@ -9,7 +9,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test]
     public void TestExcuteNuGet()
     {
-      var r = ProcessExecutor.ExecuteProcess(NuGetRunner.Path.Value, NuGet.NuGetPath, "help");
+      var r = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.NuGetExe, "help");
       Console.Out.WriteLine(r);
 
       Assert.IsTrue(r.ExitCode == 0);
@@ -18,7 +18,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test]
     public void TestDumpExtensionsPath()
     {
-      var r = ProcessExecutor.ExecuteProcess(NuGetRunner.Path.Value, NuGet.NuGetPath, "---TeamCity.DumpExtensionsPath");
+      var r = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.NuGetExe, "---TeamCity.DumpExtensionsPath");
       Console.Out.WriteLine(r);
 
       Assert.IsTrue(r.ExitCode == 0);
@@ -27,7 +27,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test]
     public void TestCommand_TeamCityPing()
     {
-      ProcessExecutor.ExecuteProcess(NuGetRunner.Path.Value, NuGet.NuGetPath, "TeamCity.Ping")
+      ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.NuGetExe, "TeamCity.Ping")
         .Dump()
         .AssertExitedSuccessfully()
         .AssertNoErrorOutput()

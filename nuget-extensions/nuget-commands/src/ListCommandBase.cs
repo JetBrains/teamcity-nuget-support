@@ -5,11 +5,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Util;
 using NuGet;
-using NuGet.Commands;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
-  public abstract class ListCommandBase : Command
+  public abstract class ListCommandBase : CommandBase
   {
     [Import]
     public IPackageRepositoryFactory RepositoryFactory { get; set; }

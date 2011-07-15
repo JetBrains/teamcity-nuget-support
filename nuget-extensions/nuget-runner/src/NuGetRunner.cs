@@ -88,7 +88,8 @@ namespace JetBrains.TeamCity.NuGetRunner
                                         UseShellExecute = false,
                                         RedirectStandardInput = true, 
                                         RedirectStandardError = true, 
-                                        RedirectStandardOutput = true
+                                        RedirectStandardOutput = true, 
+                                        CreateNoWindow = true,
                                       });
 
         process.StandardInput.Close();

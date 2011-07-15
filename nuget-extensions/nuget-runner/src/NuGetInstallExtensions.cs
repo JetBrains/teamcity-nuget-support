@@ -12,6 +12,9 @@ namespace JetBrains.TeamCity.NuGetRunner
       runner.BeforeNuGetStarted += (_, __) =>
                                      {
                                        string home = computeHome();
+                                       if (Directory.Exists(home))
+                                         Directory.Delete(home, true);
+
                                        if (!Directory.Exists(home))
                                          Directory.CreateDirectory(home);
 

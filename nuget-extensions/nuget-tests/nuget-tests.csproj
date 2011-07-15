@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NuGet">
-      <HintPath>..\lib\nuget\1.4\NuGet.exe</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\lib\nunit\nunit.framework.dll</HintPath>
     </Reference>
@@ -47,24 +44,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\NuGet.cs" />
-    <Compile Include="src\NuGetRunner.cs" />
+    <Compile Include="..\nuget-runner\src\AssemblyHelper.cs">
+      <Link>src\AssemblyHelper.cs</Link>
+    </Compile>
+    <Compile Include="src\Files.cs" />
+    <Compile Include="src\NuGetConstants.cs" />
     <Compile Include="src\NuGetRunnerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\NuGetRunner_ListCommandTest.cs" />
     <Compile Include="src\NuGetRunner_ListPackagesCommandTest.cs" />
+    <Compile Include="src\PathSearcher.cs" />
     <Compile Include="src\ProcessExecutor.cs" />
     <Compile Include="src\TempFilesHolder.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\nuget-commands\nuget-commands.csproj">
-      <Project>{8FA969EA-85C0-464E-9745-66B9820121A9}</Project>
-      <Name>nuget-commands</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\nuget-runner\nuget-runner.csproj">
-      <Project>{B79E58CB-F8FD-4CD6-8B62-10EBA0DF592B}</Project>
-      <Name>nuget-runner</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

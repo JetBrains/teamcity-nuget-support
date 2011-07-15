@@ -13,7 +13,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [Option("Path to file containing package-version pairs to check for updates")]
     public string Request { get; set; }
 
-    public override void ExecuteCommand()
+    protected override void ExecuteCommandImpl()
     {
       var req = LoadRequests();
 
@@ -31,9 +31,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       package = package.Where(x =>
                                 {
                                   Func<IPackage, bool> r;
-                                  if (!hash.TryGetValue(x.Id, out r))
-                                    return true;
-                                  return r(x);
+                                  return !hash.TryGetValue(x.Id, out r) || r(x);
                                 });
 
       foreach (var pkg in package)
