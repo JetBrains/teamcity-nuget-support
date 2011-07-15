@@ -32,6 +32,6 @@ public class ThreadedBuildTriggetFactoryImpl implements ThreadedBuildTriggetFact
   }
 
   public BuildTriggeringPolicy createTrigger(@NotNull TriggerUpdateChecker updateChecker) {
-    return new ThreaedBuildTriggetPolicy(myExecutors.getLowPriorityExecutorService(), updateChecker);
+    return new ThreadedBuildTriggetPolicy(myExecutors.getLowPriorityExecutorService(), updateChecker);
   }
 }
