@@ -30,12 +30,12 @@ import java.util.concurrent.Future;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 12.07.11 23:29
  */
-public class ThreadedBuildTriggetPolicy extends PolledBuildTrigger {
+public class ThreadedBuildTriggerPolicy extends PolledBuildTrigger {
   private final ExecutorService myExecutor;
   private final TriggerUpdateChecker myUpdater;
   private Future<BuildStartReason> myUpdateRequired;
 
-  public ThreadedBuildTriggetPolicy(@NotNull final ExecutorService executor,
+  public ThreadedBuildTriggerPolicy(@NotNull final ExecutorService executor,
                                     @NotNull final TriggerUpdateChecker updater) {
     myExecutor = executor;
     myUpdater = updater;
