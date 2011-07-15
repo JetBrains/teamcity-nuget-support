@@ -16,21 +16,21 @@
 
 package jetbrains.buildServer.nuget.server.trigger;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledBuildTrigger;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 12.07.11 23:29
  */
 public class ThreadedBuildTriggerPolicy extends PolledBuildTrigger {
+  private static final Logger LOG = Logger.getInstance(ThreadedBuildTriggerPolicy.class.getName());
+
   private final ExecutorService myExecutor;
   private final TriggerUpdateChecker myUpdater;
   private Future<BuildStartReason> myUpdateRequired;
@@ -44,7 +44,14 @@ public class ThreadedBuildTriggerPolicy extends PolledBuildTrigger {
   @Override
   public synchronized void triggerBuild(@NotNull PolledTriggerContext context) throws BuildTriggerException {
     if (myUpdateRequired == null) {
-      myUpdateRequired = myExecutor.submit(createUpdateTask(context));
+      try {
+        myUpdateRequired = myExecutor.submit(createUpdateTask(context));
+      } catch (RejectedExecutionException e) {
+        String msg = "Failed to enqueue trigger task: " + myUpdater + ". " + e.getMessage();
+        LOG.warn(msg);
+        LOG.debug(msg, e);
+        return;
+      }
     }
 
     if (!myUpdateRequired.isDone()) return;
