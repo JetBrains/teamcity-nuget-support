@@ -16,5 +16,20 @@ namespace JetBrains.TeamCity.NuGet.Tests
         File.Delete(tmp);
       }
     }
+
+    public static void WithTempDirectory(Action<string> action)
+    {
+      string tmp = Path.GetTempFileName();
+      File.Delete(tmp);
+      Directory.CreateDirectory(tmp);
+      try
+      {
+        action(tmp);
+      }
+      finally
+      {
+        Directory.Delete(tmp,true);
+      }
+    }
   }
 }

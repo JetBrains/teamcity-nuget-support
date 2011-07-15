@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using NUnit.Framework;
 
 namespace JetBrains.TeamCity.NuGet.Tests
@@ -14,6 +15,42 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
       Assert.IsTrue(r.ExitCode == 0);
     }
+
+    [Test]
+    public void TestExcuteNuGet_NuGetFromTemp()
+    {
+      TempFilesHolder.WithTempDirectory(
+        home =>
+          {
+            var destNuGet = Path.Combine(home, "NuGet.exe");
+            File.Copy(Files.NuGetExe, destNuGet);
+
+            ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, destNuGet, "TeamCity.Ping")
+              .Dump()
+              .AssertExitedSuccessfully();
+          });
+    }
+
+    [Test]
+    public void TestExcuteNuGet_BothInTemp()
+    {
+      TempFilesHolder.WithTempDirectory(
+        home =>
+          {
+            var destNuGet = Path.Combine(home, "NuGet.exe");
+            var destRunner = Path.Combine(home, "TeamCity.NuGetRunner.exe");
+            
+            File.Copy(Files.NuGetExe, destNuGet);            
+            File.Copy(Files.NuGetRunnerExe, destRunner);
+            const string ext = "JetBrains.TeamCity.NuGet.ExtendedCommands.dll";
+            File.Copy(Path.Combine(Files.NuGetRunnerExe, "../" + ext), Path.Combine(home, ext));
+
+            ProcessExecutor.ExecuteProcess(destRunner, destNuGet, "TeamCity.Ping")
+              .Dump()
+              .AssertExitedSuccessfully();
+          });
+    }
+
 
     [Test]
     public void TestDumpExtensionsPath()
