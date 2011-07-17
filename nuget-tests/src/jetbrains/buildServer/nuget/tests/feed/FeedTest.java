@@ -64,8 +64,8 @@ public class FeedTest extends BaseTestCase {
     info = m.mock(ExtendedUriInfo.class);
 
     m.checking(new Expectations(){{
-      allowing(info).getBaseUri(); will(returnValue(new URI("http://feed.jonnyzzz.name")));
-      allowing(info).getPath(); will(returnValue("/path/Packages"));
+      allowing(info).getBaseUri(); will(returnValue(new URI("http://feed.jonnyzzz.name/")));
+      allowing(info).getPath(); will(returnValue("path/Packages"));
     }});
   }
 
