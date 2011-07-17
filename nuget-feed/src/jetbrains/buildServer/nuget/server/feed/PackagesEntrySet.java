@@ -16,15 +16,25 @@
 
 package jetbrains.buildServer.nuget.server.feed;
 
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.producer.EntitiesResponse;
+import org.odata4j.edm.*;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
-* Created by Eugene Petrenko (eugene.petrenko@gmail.com)
-* Date: 18.07.11 1:58
-*/
-public abstract class PackagesResponseBase implements EntitiesResponse {
-  public EdmEntitySet getEntitySet() {
-    return PackagesEntrySet.ENTRY_SET;
-  }
+ * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 18.07.11 3:08
+ */
+public class PackagesEntrySet {
+  public static EdmEntitySet ENTRY_SET = new EdmEntitySet("Packages", new EdmEntityType(
+          "banespace",
+          "alias",
+          "name",
+          true,
+          Arrays.asList("Id", "Version"),
+          Arrays.asList(
+                  new EdmProperty("Title", EdmType.STRING, true)
+          ),
+          Collections.<EdmNavigationProperty>emptyList()
+  ));
 }

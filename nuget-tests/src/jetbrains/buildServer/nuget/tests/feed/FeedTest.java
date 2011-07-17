@@ -121,9 +121,11 @@ public class FeedTest extends BaseTestCase {
     Element el = XmlUtil.from_s(s);
 
 
-    Collection<XmlPatchAction> repaces = Arrays.<XmlPatchAction>asList(
+    Collection<XmlPatchAction> repaces = Arrays.asList(
             new SetContentXmlPatchAction("/x:feed/x:updated", ".*Z", "UPDATED"),
-            new SetContentXmlPatchAction("/x:feed/x:id", "http://(feed.jonnyzzz.name/path/Packages)|(http://packages.nuget.org/v1/FeedService.svc/Packages)", "URL")
+            new SetContentXmlPatchAction("/x:feed/x:id", "http://(feed.jonnyzzz.name/path/Packages)|(http://packages.nuget.org/v1/FeedService.svc/Packages)", "URL"),
+            new RemoveElement("/x:feed/x:entry/x:link[@rel='edit']"),
+            new RemoveElement("/x:feed/x:entry/x:link[@rel='edit-media']")
             );
 
     for (XmlPatchAction replace : repaces) {

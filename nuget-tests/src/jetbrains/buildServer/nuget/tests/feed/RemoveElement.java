@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed;
+package jetbrains.buildServer.nuget.tests.feed;
 
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.producer.EntitiesResponse;
+import org.jdom.Element;
+import org.jetbrains.annotations.NotNull;
 
 /**
 * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
-* Date: 18.07.11 1:58
+* Date: 18.07.11 3:13
 */
-public abstract class PackagesResponseBase implements EntitiesResponse {
-  public EdmEntitySet getEntitySet() {
-    return PackagesEntrySet.ENTRY_SET;
+public class RemoveElement extends XmlPatchAction {
+  public RemoveElement(String XPath) {
+    super(XPath);
+  }
+
+  @Override
+  protected void action(@NotNull Element element) {
+    element.detach();
   }
 }
