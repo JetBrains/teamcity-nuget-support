@@ -2,11 +2,9 @@ package jetbrains.buildServer.nuget.server.feed;
 
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OEntity;
-import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.QueryInfo;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -15,15 +13,12 @@ import java.util.List;
  */
 public class FeedDescriptor {
 
-  public EntitiesResponse getEntities(@NotNull final QueryInfo filters) {
-    return new EntitiesResponse() {
-      public EdmEntitySet getEntitySet() {
-        return null;
-//        return new EdmEntitySet("Packages", new EdmEntityType());
-      }
+  public EntitiesResponse getEntities(@NotNull final List<OEntity> entries,
+                                      @NotNull final QueryInfo filters) {
+    return new PackagesResponseBase() {
 
       public List<OEntity> getEntities() {
-        return Collections.emptyList();
+        return entries;
       }
 
       public Integer getInlineCount() {
@@ -35,5 +30,6 @@ public class FeedDescriptor {
       }
     };
   }
+
 
 }
