@@ -11,6 +11,11 @@
   <bean class="jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner"/>
   <bean class="jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunnerRegistrar"/>
 
-  <bean class="jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.install.impl.LoggingNuGetActionFactoryImpl">
+    <constructor-arg>
+      <bean class="jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl"/>
+    </constructor-arg>
+  </bean>
+
   <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackagesParametersFactoryImpl"/>
 </beans>

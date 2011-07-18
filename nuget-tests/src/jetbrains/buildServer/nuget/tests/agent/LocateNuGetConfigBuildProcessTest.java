@@ -73,6 +73,8 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
     m.checking(new Expectations() {{
       allowing(ps).getSolutionFile();
       will(returnValue(sln));
+
+      oneOf(cb).onSolutionFileFound(sln, new File(sln.getParentFile(), "packages"));
     }});
 
     assertRunException(proc, "Failed to find repositories.config");
@@ -82,13 +84,15 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
   @Test
   public void test_solutionFile_packages_empty() throws RunBuildException {
     final File sln = new File(myRoot, "foo.sln");
-    final File packages = new File(sln, "../packages");
+    final File packages = new File(sln.getParentFile(), "packages");
     packages.mkdirs();
 
     FileUtil.writeFile(sln, "Fake solution file");
     m.checking(new Expectations() {{
       allowing(ps).getSolutionFile();
       will(returnValue(sln));
+
+      oneOf(cb).onSolutionFileFound(sln, packages);
     }});
 
     assertRunException(proc, "Failed to find repositories.config");
@@ -108,6 +112,8 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
     m.checking(new Expectations() {{
       allowing(ps).getSolutionFile();
       will(returnValue(sln));
+
+      oneOf(cb).onSolutionFileFound(sln, packages);
 
       allowing(log).message(with(new StartsWithMatcher("Found packages folder: ")));
       allowing(log).message(with(new StartsWithMatcher("Found list of packages.config files: ")));
@@ -130,6 +136,8 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
     m.checking(new Expectations() {{
       allowing(ps).getSolutionFile();
       will(returnValue(sln));
+
+      oneOf(cb).onSolutionFileFound(sln, packages);
 
       allowing(log).message(with(new StartsWithMatcher("Found packages folder: ")));
       allowing(log).message(with(new StartsWithMatcher("Found list of packages.config files: ")));
@@ -159,6 +167,7 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
       allowing(ps).getSolutionFile();
       will(returnValue(sln));
 
+      oneOf(cb).onSolutionFileFound(sln, packages);
       oneOf(cb).onPackagesConfigFound(new File(myRoot, "Mvc/packages.config"), packages);
       oneOf(cb).onPackagesConfigFound(new File("c:\\Mvc2/packages.config"), packages);
 

@@ -31,6 +31,7 @@ public interface PackagesConstants {
   public static final String NUGET_UPDATE_PACKAGES = "nuget.updatePackages";
   public static final String NUGET_UPDATE_PACKAGES_SAFE = "nuget.updatePackages.safe";
   public static final String NUGET_UPDATE_PACKAGE_IDS = "nuget.updatePackages.ids";
+  public static final String NUGET_UPDATE_MODE = "nuget.updatePackages.mode";
 
   public static final String SLN_PATH = "sln.path";
 }

@@ -18,10 +18,8 @@ package jetbrains.buildServer.nuget.agent.parameters.impl;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.parameters.*;
+import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -124,6 +122,12 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       @NotNull
       public NuGetParameters getNuGetParameters() {
         return nuget;
+      }
+
+      @NotNull
+      public PackagesUpdateMode getUpdateMode() {
+        PackagesUpdateMode mode = PackagesUpdateMode.parse(getParameter(context, NUGET_UPDATE_MODE));
+        return mode == null ? PackagesUpdateMode.FOR_SLN : mode;
       }
 
       public boolean getUseSafeUpdate() {

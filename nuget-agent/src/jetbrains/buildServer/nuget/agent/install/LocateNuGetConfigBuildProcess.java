@@ -58,8 +58,17 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
      * Called when packages.config is found
      * @param config full path to packages.config file
      * @param targetFolder target folder to store packages
+     * @throws RunBuildException on erorr
      */
-    void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder);
+    void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException;
+
+    /**
+     * Called when solution file is found
+     * @param sln path to sln file
+     * @param targetFolder target folder to store packages
+     * @throws RunBuildException on error
+     */
+    void onSolutionFileFound(@NotNull final File sln, @NotNull final File targetFolder) throws RunBuildException;
   }
 
   @NotNull
@@ -68,6 +77,11 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     final File sln = myContext.getSolutionFile();
     final File packages = new File(sln.getParentFile(), "packages");
     final File repositoriesConfig = new File(packages, "repositories.config");
+
+    if (sln.isFile()) {
+      LOG.debug("Found Visual Studio .sln file: " + sln);
+      myCallback.onSolutionFileFound(sln, packages);
+    }
 
     LOG.debug("resources.config path is " + repositoriesConfig);
 

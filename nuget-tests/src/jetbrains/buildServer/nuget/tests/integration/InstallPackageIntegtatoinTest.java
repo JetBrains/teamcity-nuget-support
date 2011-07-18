@@ -29,6 +29,7 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.ArchiveUtil;
 import junit.framework.Assert;
@@ -117,6 +118,33 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
       allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
       allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
+    }});
+
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true);
+
+
+    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.10.11092").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(5, packageses.size());
+  }
+
+  @Test
+  public void test_01_online_sources_update_forSln() throws RunBuildException {
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01.zip"), "", myRoot);
+
+    m.checking(new Expectations(){{
+      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
+      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
+
+      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true);
@@ -142,6 +170,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
       allowing(myUpdate).getUseSafeUpdate(); will(returnValue(true));
       allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
     }});
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true);
