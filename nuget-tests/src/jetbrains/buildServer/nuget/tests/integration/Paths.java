@@ -28,7 +28,7 @@ import java.io.File;
 public class Paths {
   @NotNull
   public static File getTestDataPath() {
-    return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/integration"));
+    return FileUtil.getCanonicalFile(new File("./nuget-tests/testData"));
   }
 
   @NotNull

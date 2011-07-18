@@ -64,4 +64,12 @@ public class PackageInfo implements Comparable<PackageInfo> {
     result = 31 * result + myVersion.hashCode();
     return result;
   }
+
+  @Override
+  public String toString() {
+    return "PackageInfo{" +
+            "myId='" + myId + '\'' +
+            ", myVersion='" + myVersion + '\'' +
+            '}';
+  }
 }
