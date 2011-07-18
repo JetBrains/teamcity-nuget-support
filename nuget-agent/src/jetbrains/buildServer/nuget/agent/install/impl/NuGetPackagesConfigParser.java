@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.install;
+package jetbrains.buildServer.nuget.agent.install.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.agent.install.NuGetPackagesCollector;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlXppAbstractParser;
 import org.jetbrains.annotations.NotNull;

@@ -21,7 +21,6 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.nuget.agent.install.NuGetPackagesCollector;
-import jetbrains.buildServer.nuget.agent.install.NuGetPackagesConfigParser;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import org.jetbrains.annotations.NotNull;
