@@ -54,7 +54,7 @@ public class PackagesInstallerRunType extends RunType {
 
   @Override
   public String getDescription() {
-    return "Installs missing NuGet packages";
+    return "Installs and updates missing NuGet packages";
   }
 
   @Override
