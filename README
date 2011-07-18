@@ -7,6 +7,20 @@ We plan to cover mostly nuget and openwrap.
 
 This plugin will be compatible with TeamCity 6.5 and newer
 
+Supported features:
+
+- NuGet packages installer build runner:
+    
+  Installs packages with help of nuget install command, according to David Ebbo post 
+  (http://blog.davidebbo.com/2011/03/using-nuget-without-committing-packages.html)
+  allowing to use NuGet without committing packages to version control.
+
+  Updates packages help of nuget update command
+
+
+- NuGet Dependency Trigger:
+  
+  Build Trigger that starts a new build if package is updated.   
 
 API gaps:
  - Reuse ComposideBuildProcess and DelegatingBuildProcess
@@ -14,3 +28,4 @@ API gaps:
  - Consider reusing of Maven build trigger/project models
  - Make server-side PluginDescription contain getPluginRoot() to avoid cast to PluginInfo
  - Add CustomDataStorage to BuildTriggerDescriptor
+
