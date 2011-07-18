@@ -20,6 +20,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
+import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
@@ -38,9 +39,12 @@ import java.util.List;
  */
 public class NuGetActionFactoryImpl implements NuGetActionFactory {
   private final CommandlineBuildProcessFactory myFactory;
+  private final PackageUsages myPackageUsages;
 
-  public NuGetActionFactoryImpl(CommandlineBuildProcessFactory factory) {
+  public NuGetActionFactoryImpl(@NotNull final CommandlineBuildProcessFactory factory,
+                                @NotNull final PackageUsages packageUsages) {
     myFactory = factory;
+    myPackageUsages = packageUsages;
   }
 
   @NotNull
@@ -84,6 +88,13 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
     return executeNuGet(context, params.getNuGetParameters(), argz, packagesConfig.getParentFile());
   }
 
+  @NotNull
+  public BuildProcess createUsageReport(@NotNull BuildRunnerContext context,
+                                        @NotNull NuGetParameters params,
+                                        @NotNull File packagesConfig,
+                                        @NotNull File targetFolder) throws RunBuildException {
+    return myPackageUsages.createReport(packagesConfig);
+  }
 
   @NotNull
   private BuildProcess executeNuGet(@NotNull final BuildRunnerContext context,

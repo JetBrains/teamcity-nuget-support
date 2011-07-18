@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.install;
+package jetbrains.buildServer.nuget.agent.install.impl;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.nuget.agent.install.LocateNuGetConfigBuildProcess;
+import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
-import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,24 +36,18 @@ import static jetbrains.buildServer.nuget.common.PackagesUpdateMode.FOR_EACH_PAC
  */
 public class PackagesInstallerBuilder implements LocateNuGetConfigBuildProcess.Callback {
   private final NuGetActionFactory myActionFactory;
-  private final BuildProcessContinuation myInstall;
-  private final BuildProcessContinuation myUpdate;
-  private final BuildProcessContinuation myPostUpdate;
+  private final InstallStages myStages;
   private final BuildRunnerContext myContext;
 
   private final PackagesUpdateParameters myUpdateParameters;
   private final PackagesInstallParameters myInstallParameters;
 
   public PackagesInstallerBuilder(@NotNull final NuGetActionFactory actionFactory,
-                                  @NotNull final BuildProcessContinuation install,
-                                  @NotNull final BuildProcessContinuation update,
-                                  @NotNull final BuildProcessContinuation postUpdate,
+                                  @NotNull final InstallStages stages,
                                   @NotNull final BuildRunnerContext context,
                                   @NotNull final PackagesInstallParameters installParameters,
                                   @Nullable final PackagesUpdateParameters updateParameters) {
-    myInstall = install;
-    myUpdate = update;
-    myPostUpdate = postUpdate;
+    myStages = stages;
     myContext = context;
     myUpdateParameters = updateParameters;
     myInstallParameters = installParameters;
@@ -63,7 +58,7 @@ public class PackagesInstallerBuilder implements LocateNuGetConfigBuildProcess.C
     if (myUpdateParameters == null) return;
     if (myUpdateParameters.getUpdateMode() != PackagesUpdateMode.FOR_SLN) return;
 
-    myUpdate.pushBuildProcess(
+    myStages.getUpdateStage().pushBuildProcess(
             myActionFactory.createUpdate(
                     myContext,
                     myUpdateParameters,
@@ -74,14 +69,20 @@ public class PackagesInstallerBuilder implements LocateNuGetConfigBuildProcess.C
   }
 
   public final void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException {
-    myInstall.pushBuildProcess(myActionFactory.createInstall(myContext,
+    myStages.getInstallStage().pushBuildProcess(myActionFactory.createInstall(
+            myContext,
             myInstallParameters,
             config,
             targetFolder));
 
+    myStages.getReportStage().pushBuildProcess(myActionFactory.createUsageReport(
+            myContext,
+            myInstallParameters.getNuGetParameters(),
+            config, targetFolder));
+
     if (myUpdateParameters == null) return;
     if (myUpdateParameters.getUpdateMode() == FOR_EACH_PACKAGES_CONFIG) {
-      myUpdate.pushBuildProcess(
+      myStages.getUpdateStage().pushBuildProcess(
               myActionFactory.createUpdate(
                       myContext,
                       myUpdateParameters,
@@ -91,7 +92,7 @@ public class PackagesInstallerBuilder implements LocateNuGetConfigBuildProcess.C
       );
     }
 
-    myPostUpdate.pushBuildProcess(
+    myStages.getPostUpdateStart().pushBuildProcess(
             myActionFactory.createInstall(
                     myContext,
                     myInstallParameters,
@@ -99,6 +100,8 @@ public class PackagesInstallerBuilder implements LocateNuGetConfigBuildProcess.C
                     targetFolder
             )
     );
+
+
   }
 
 }

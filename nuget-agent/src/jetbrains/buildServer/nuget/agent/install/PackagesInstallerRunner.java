@@ -19,11 +19,13 @@ package jetbrains.buildServer.nuget.agent.install;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.nuget.agent.install.impl.InstallStages;
+import jetbrains.buildServer.nuget.agent.install.impl.InstallStagesImpl;
+import jetbrains.buildServer.nuget.agent.install.impl.PackagesInstallerBuilder;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
-import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
@@ -49,6 +51,13 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
   public BuildProcess createBuildProcess(@NotNull AgentRunningBuild runningBuild,
                                          @NotNull final BuildRunnerContext context) throws RunBuildException {
     CompositeBuildProcessImpl process = new CompositeBuildProcessImpl();
+    InstallStages stages = new InstallStagesImpl(process);
+    createStages(context, stages);
+    return process;
+  }
+
+  private void createStages(@NotNull final BuildRunnerContext context,
+                            @NotNull final InstallStages stages) throws RunBuildException {
     final NuGetParameters parameters = myParametersFactory.loadNuGetParameters(context);
     final PackagesInstallParameters installParameters = myParametersFactory.loadInstallPackagesParameters(context, parameters);
     final PackagesUpdateParameters updateParameters = myParametersFactory.loadUpdatePackagesParameters(context, parameters);
@@ -57,29 +66,18 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
       throw new RunBuildException("NuGet install packages must be enabled");
     }
 
-    final CompositeBuildProcess install = new CompositeBuildProcessImpl();
-    final CompositeBuildProcess update = new CompositeBuildProcessImpl();
-    final CompositeBuildProcess postUpdate = new CompositeBuildProcessImpl();
-
     final LocateNuGetConfigBuildProcess locate = new LocateNuGetConfigBuildProcess(
             parameters,
             context.getBuild().getBuildLogger(),
             new PackagesInstallerBuilder(
                     myNuGetActionFactory,
-                    install,
-                    update,
-                    postUpdate,
+                    stages,
                     context,
                     installParameters,
                     updateParameters
             ));
 
-    process.pushBuildProcess(locate);
-    process.pushBuildProcess(install);
-    process.pushBuildProcess(update);
-    process.pushBuildProcess(postUpdate);
-
-    return process;
+    stages.getLocateStage().pushBuildProcess(locate);
   }
 
   @NotNull

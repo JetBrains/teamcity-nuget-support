@@ -21,6 +21,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
@@ -38,6 +39,11 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
 
   public LoggingNuGetActionFactoryImpl(@NotNull final NuGetActionFactory actionFactory) {
     myActionFactory = actionFactory;
+  }
+
+  @NotNull
+  public BuildProcess createUsageReport(@NotNull BuildRunnerContext context, @NotNull NuGetParameters params, @NotNull File packagesConfig, @NotNull File targetFolder) throws RunBuildException {
+    return myActionFactory.createUsageReport(context, params, packagesConfig, targetFolder);
   }
 
   @NotNull

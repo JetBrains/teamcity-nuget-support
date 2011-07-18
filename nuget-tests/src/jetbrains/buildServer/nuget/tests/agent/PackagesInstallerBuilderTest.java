@@ -21,7 +21,8 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.install.PackagesInstallerBuilder;
+import jetbrains.buildServer.nuget.agent.install.impl.InstallStages;
+import jetbrains.buildServer.nuget.agent.install.impl.PackagesInstallerBuilder;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
@@ -46,6 +47,7 @@ public class PackagesInstallerBuilderTest extends BaseTestCase {
   private BuildProcessContinuation install;
   private BuildProcessContinuation update;
   private BuildProcessContinuation postUpdate;
+  private BuildProcessContinuation report;
   private BuildRunnerContext context;
   private NuGetParameters nugetSettings;
   private PackagesInstallParameters installParameters;
@@ -71,25 +73,39 @@ public class PackagesInstallerBuilderTest extends BaseTestCase {
     install = m.mock(BuildProcessContinuation.class, "install");
     update = m.mock(BuildProcessContinuation.class, "update");
     postUpdate = m.mock(BuildProcessContinuation.class, "post-install");
+    report = m.mock(BuildProcessContinuation.class, "report");
     context = m.mock(BuildRunnerContext.class);
     installParameters = m.mock(PackagesInstallParameters.class);
     updateParameters = m.mock(PackagesUpdateParameters.class);
     nugetSettings = m.mock(NuGetParameters.class);
 
+    final InstallStages is = m.mock(InstallStages.class);
+    final BuildProcess reportProcess = m.mock(BuildProcess.class, "report process");
+    m.checking(new Expectations(){{
+      allowing(is).getInstallStage(); will(returnValue(install));
+      allowing(is).getUpdateStage(); will(returnValue(update));
+      allowing(is).getPostUpdateStart(); will(returnValue(postUpdate));
+      allowing(is).getReportStage(); will(returnValue(report));
+
+      allowing(factory).createUsageReport(context, nugetSettings, myConfig, myTaget);
+      will(returnValue(reportProcess));
+      allowing(factory).createUsageReport(context, nugetSettings, myConfig2, myTaget);
+      will(returnValue(reportProcess));
+
+      allowing(report).pushBuildProcess(reportProcess);
+    }});
+
     builderUpdate = new PackagesInstallerBuilder(
             factory,
-            install,
-            update,
-            postUpdate,
+            is,
             context,
             installParameters,
-            updateParameters);
+            updateParameters
+            );
 
     builderInstall = new PackagesInstallerBuilder(
             factory,
-            install,
-            update,
-            postUpdate,
+            is,
             context,
             installParameters,
             null);
@@ -102,7 +118,7 @@ public class PackagesInstallerBuilderTest extends BaseTestCase {
 
   @Test
   public void test_install() throws RunBuildException {
-    final BuildProcess bp = m.mock(BuildProcess.class);
+    final BuildProcess bp = m.mock(BuildProcess.class, "bp");
     m.checking(new Expectations(){{
       oneOf(factory).createInstall(context, installParameters, myConfig, myTaget);
       will(returnValue(bp));

@@ -18,4 +18,10 @@
   </bean>
 
   <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackagesParametersFactoryImpl"/>
+
+  <bean class="jetbrains.buildServer.nuget.agent.install.impl.PackageUsagesImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.install.NuGetPackagesConfigParser" />
+  <bean class="jetbrains.buildServer.nuget.agent.install.impl.PackagesWatcher"/>
+  <bean class="jetbrains.buildServer.nuget.agent.install.impl.PackagesInfoUploader"/>
+  <bean class="jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesCollectorImpl"/>
 </beans>

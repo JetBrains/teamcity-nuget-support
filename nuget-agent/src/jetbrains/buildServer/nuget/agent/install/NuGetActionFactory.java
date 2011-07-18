@@ -42,4 +42,10 @@ public interface NuGetActionFactory {
                             @NotNull PackagesUpdateParameters params,
                             @NotNull File packagesConfig,
                             @NotNull File targetFolder) throws RunBuildException;
+
+  @NotNull
+  BuildProcess createUsageReport(@NotNull BuildRunnerContext context,
+                                 @NotNull NuGetParameters params,
+                                 @NotNull File packagesConfig,
+                                 @NotNull File targetFolder) throws RunBuildException;
 }

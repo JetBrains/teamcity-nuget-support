@@ -21,6 +21,7 @@ import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
@@ -222,6 +223,8 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
                              final List<String> sources,
                              final boolean excludeVersion,
                              final boolean update) throws RunBuildException {
+    final PackageUsages pu = m.mock(PackageUsages.class);
+    final BuildProcess pup = m.mock(BuildProcess.class, "report usages");
     m.checking(new Expectations() {{
       allowing(myParametersFactory).loadNuGetParameters(myContext);  will(returnValue(myNuGet));
       allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);  will(returnValue(myInstall));
@@ -232,10 +235,16 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
       allowing(myNuGet).getNuGetPackageSources(); will(returnValue(sources));
       allowing(myInstall).getExcludeVersion(); will(returnValue(excludeVersion));
       allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myNuGet);  will(returnValue(update ? myUpdate : null));
+
+      allowing(pu).createReport(with(any(File.class)));
+      will(returnValue(pup));
+
+      allowing(pup).start();
+      allowing(pup).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
     }});
 
     BuildProcess proc = new PackagesInstallerRunner(
-            new NuGetActionFactoryImpl(executingFactory()),
+            new NuGetActionFactoryImpl(executingFactory(), pu),
             myParametersFactory
     ).createBuildProcess(myBuild, myContext);
 
