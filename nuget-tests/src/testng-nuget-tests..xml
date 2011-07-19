@@ -4,6 +4,7 @@
   <test name="fast tests">
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackagesConfigParserTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackagesWatcherTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.LocateNuGetConfigBuildProcessTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackagesInstallerBuilderTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetInstallPackageActionFactoryTest"/>
