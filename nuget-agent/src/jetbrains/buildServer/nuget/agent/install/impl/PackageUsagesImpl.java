@@ -17,12 +17,8 @@
 package jetbrains.buildServer.nuget.agent.install.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.BuildFinishedStatus;
-import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.nuget.agent.install.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
-import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -44,25 +40,16 @@ public class PackageUsagesImpl implements PackageUsages {
     myParser = parser;
   }
 
-  @NotNull
-  public BuildProcess createReport(@NotNull final File packagesConfig) {
-    return new BuildProcessBase() {
-      @NotNull
-      @Override
-      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
-        if (!packagesConfig.exists()) {
-          LOG.debug("Packages file: " + packagesConfig + " does not exit");
-          return BuildFinishedStatus.FINISHED_SUCCESS;
-        }
+  public void createReport(@NotNull final File packagesConfig) {
+    if (!packagesConfig.exists()) {
+      LOG.debug("Packages file: " + packagesConfig + " does not exit");
+      return;
+    }
 
-        try {
-          myParser.parseNuGetPackages(packagesConfig, myCollector);
-        } catch (IOException e) {
-          LOG.warn("Failed to parse " + packagesConfig + ". " + e.getMessage(), e);
-        }
-
-        return BuildFinishedStatus.FINISHED_SUCCESS;
-      }
-    };
+    try {
+      myParser.parseNuGetPackages(packagesConfig, myCollector);
+    } catch (IOException e) {
+      LOG.warn("Failed to parse " + packagesConfig + ". " + e.getMessage(), e);
+    }
   }
 }

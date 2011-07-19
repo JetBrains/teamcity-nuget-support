@@ -57,4 +57,12 @@ public class PackageDependencies {
   public boolean isEmpty() {
     return getPackages().isEmpty();
   }
+
+  @Override
+  public String toString() {
+    return "PackageDependencies{" +
+            "mySources=" + mySources +
+            ", myPackages=" + myPackages +
+            '}';
+  }
 }

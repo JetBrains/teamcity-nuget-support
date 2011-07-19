@@ -16,7 +16,9 @@
 
 package jetbrains.buildServer.nuget.agent.install.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
@@ -24,6 +26,7 @@ import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
@@ -38,6 +41,8 @@ import java.util.List;
  * Date: 07.07.11 17:49
  */
 public class NuGetActionFactoryImpl implements NuGetActionFactory {
+  private static final Logger LOG = Logger.getInstance(NuGetActionFactoryImpl.class.getName());
+
   private final CommandlineBuildProcessFactory myFactory;
   private final PackageUsages myPackageUsages;
 
@@ -89,11 +94,18 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
-  public BuildProcess createUsageReport(@NotNull BuildRunnerContext context,
-                                        @NotNull NuGetParameters params,
-                                        @NotNull File packagesConfig,
-                                        @NotNull File targetFolder) throws RunBuildException {
-    return myPackageUsages.createReport(packagesConfig);
+  public BuildProcess createUsageReport(@NotNull final BuildRunnerContext context,
+                                        @NotNull final NuGetParameters params,
+                                        @NotNull final File packagesConfig,
+                                        @NotNull final File targetFolder) throws RunBuildException {
+    return new BuildProcessBase() {
+      @NotNull
+      @Override
+      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+        myPackageUsages.createReport(packagesConfig);
+        return BuildFinishedStatus.FINISHED_SUCCESS;
+      }
+    };
   }
 
   @NotNull

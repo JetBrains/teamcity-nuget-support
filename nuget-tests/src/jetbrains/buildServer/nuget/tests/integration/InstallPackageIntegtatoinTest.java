@@ -24,27 +24,29 @@ import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
+import jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesCollectorImpl;
+import jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesConfigParser;
+import jetbrains.buildServer.nuget.agent.install.impl.PackageUsagesImpl;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.ArchiveUtil;
-import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -78,19 +80,25 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     myNuGet = m.mock(NuGetParameters.class);
 
     m.checking(new Expectations() {{
-      allowing(myContext).getBuild();  will(returnValue(myBuild));
-      allowing(myBuild).getBuildLogger(); will(returnValue(myLogger));
-      allowing(myBuild).getCheckoutDirectory(); will(returnValue(myRoot));
+      allowing(myContext).getBuild();
+      will(returnValue(myBuild));
+      allowing(myBuild).getBuildLogger();
+      will(returnValue(myLogger));
+      allowing(myBuild).getCheckoutDirectory();
+      will(returnValue(myRoot));
 
       allowing(myMockProcess).start();
-      allowing(myMockProcess).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+      allowing(myMockProcess).waitFor();
+      will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
 
       allowing(myLogger).message(with(any(String.class)));
       allowing(myLogger).activityStarted(with(equal("install")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("install")), with(any(String.class)));
 
-      allowing(myInstall).getNuGetParameters(); will(returnValue(myNuGet));
-      allowing(myUpdate).getNuGetParameters(); will(returnValue(myNuGet));
+      allowing(myInstall).getNuGetParameters();
+      will(returnValue(myNuGet));
+      allowing(myUpdate).getNuGetParameters();
+      will(returnValue(myNuGet));
     }});
   }
 
@@ -98,7 +106,12 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   public void test_01_online_sources() throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213"),
+                    new PackageInfo("Ninject", "2.2.1.4"))
+    );
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
     System.out.println("installed packageses = " + packageses);
@@ -115,10 +128,10 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   }
 
   @Test
-  public void test_01_online_sources_update() throws RunBuildException {
+  public void test_01_online_sources_update_forConfig() throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
 
-    m.checking(new Expectations(){{
+    m.checking(new Expectations() {{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
       allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
 
@@ -127,7 +140,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, null);
 
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
@@ -144,16 +157,19 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   public void test_01_online_sources_update_forSln() throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
 
-    m.checking(new Expectations(){{
+    m.checking(new Expectations() {{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
       allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
 
-      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
-      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
+      allowing(myUpdate).getUseSafeUpdate();
+      will(returnValue(false));
+      allowing(myUpdate).getPackagesToUpdate();
+      will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode();
+      will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, null);
 
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
@@ -170,16 +186,19 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   public void test_01_online_sources_update_safe() throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
 
-    m.checking(new Expectations(){{
+    m.checking(new Expectations() {{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
       allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
 
-      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(true));
-      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
+      allowing(myUpdate).getUseSafeUpdate();
+      will(returnValue(true));
+      allowing(myUpdate).getPackagesToUpdate();
+      will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode();
+      will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, null);
 
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
@@ -196,7 +215,11 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   public void test_01_online_sources_ecludeVersion() throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true, false);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true, false,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213"),
+                    new PackageInfo("Ninject", "2.2.1.4")));
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
     System.out.println("installed packageses = " + packageses);
@@ -213,7 +236,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     File sourcesDir = new File(myRoot, "js");
     ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01-sources.zip"), "", sourcesDir);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false, false);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false, false, null);
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
     System.out.println("installed packageses = " + packageses);
@@ -227,26 +250,32 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   private void fetchPackages(final File sln,
                              final List<String> sources,
                              final boolean excludeVersion,
-                             final boolean update) throws RunBuildException {
-    final PackageUsages pu = m.mock(PackageUsages.class);
-    final BuildProcess pup = m.mock(BuildProcess.class, "report usages");
+                             final boolean update,
+                             @Nullable Collection<PackageInfo> detectedPackages) throws RunBuildException {
+
     m.checking(new Expectations() {{
-      allowing(myParametersFactory).loadNuGetParameters(myContext);  will(returnValue(myNuGet));
-      allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);  will(returnValue(myInstall));
+      allowing(myParametersFactory).loadNuGetParameters(myContext);
+      will(returnValue(myNuGet));
+      allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);
+      will(returnValue(myInstall));
 
       allowing(myNuGet).getNuGetExeFile();
       will(returnValue(Paths.getPathToNuGet()));
-      allowing(myNuGet).getSolutionFile(); will(returnValue(sln));
-      allowing(myNuGet).getNuGetPackageSources(); will(returnValue(sources));
-      allowing(myInstall).getExcludeVersion(); will(returnValue(excludeVersion));
-      allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myNuGet);  will(returnValue(update ? myUpdate : null));
-
-      allowing(pu).createReport(with(any(File.class)));
-      will(returnValue(pup));
-
-      allowing(pup).start();
-      allowing(pup).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+      allowing(myNuGet).getSolutionFile();
+      will(returnValue(sln));
+      allowing(myNuGet).getNuGetPackageSources();
+      will(returnValue(sources));
+      allowing(myInstall).getExcludeVersion();
+      will(returnValue(excludeVersion));
+      allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myNuGet);
+      will(returnValue(update ? myUpdate : null));
     }});
+
+    NuGetPackagesCollectorImpl collector = new NuGetPackagesCollectorImpl();
+    PackageUsages pu = new PackageUsagesImpl(
+            collector,
+            new NuGetPackagesConfigParser()
+    );
 
     BuildProcess proc = new PackagesInstallerRunner(
             new NuGetActionFactoryImpl(executingFactory(), pu),
@@ -254,6 +283,13 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     ).createBuildProcess(myBuild, myContext);
 
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    System.out.println(collector.getPackages());
+    if (detectedPackages != null) {
+      Assert.assertEquals(
+              new TreeSet<PackageInfo>(collector.getPackages().getPackages()),
+              new TreeSet<PackageInfo>(detectedPackages));
+    }
 
     m.assertIsSatisfied();
   }

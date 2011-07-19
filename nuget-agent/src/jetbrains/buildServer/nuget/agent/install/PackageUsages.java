@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.agent.install;
 
-import jetbrains.buildServer.agent.BuildProcess;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -26,6 +25,5 @@ import java.io.File;
  * Date: 18.07.11 23:50
  */
 public interface PackageUsages {
-  @NotNull
-  BuildProcess createReport(@NotNull File packagesConfig);
+  void createReport(@NotNull File packagesConfig);
 }
