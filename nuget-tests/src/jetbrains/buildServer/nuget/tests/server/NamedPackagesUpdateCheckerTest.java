@@ -20,7 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
-import jetbrains.buildServer.nuget.server.exec.PackageInfo;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker;
 import jetbrains.buildServer.nuget.server.trigger.TriggerConstants;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
@@ -75,7 +75,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   public void test_check_first_time_should_not_trigger() {
     m.checking(new Expectations(){{
       oneOf(cmd).checkForChanges(nugetFakePath, null, "NUnit", null);
-      will(returnValue(Arrays.asList(new PackageInfo("src", "pkg", "5.6.87"))));
+      will(returnValue(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87"))));
 
       oneOf(store).getValue("hash"); will(returnValue(null));
       oneOf(store).putValue(with(equal("hash")), with(any(String.class)));
@@ -88,10 +88,10 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   public void test_check_should_not_trigger_twice() {
     m.checking(new Expectations(){{
       oneOf(cmd).checkForChanges(nugetFakePath, null, "NUnit", null);
-      will(returnValue(Arrays.asList(new PackageInfo("src", "pkg", "5.6.87"))));
+      will(returnValue(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87"))));
 
       oneOf(cmd).checkForChanges(nugetFakePath, null, "NUnit", null);
-      will(returnValue(Arrays.asList(new PackageInfo("src", "pkg", "5.6.87"))));
+      will(returnValue(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87"))));
 
       oneOf(store).getValue("hash"); will(returnValue("aaa"));
       oneOf(store).putValue("hash", "|s:src|p:pkg|v:5.6.87");

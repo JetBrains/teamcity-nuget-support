@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommandProcessor;
-import jetbrains.buildServer.nuget.server.exec.PackageInfo;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -68,9 +68,9 @@ public class ListPackagesCommandProcessorTest extends BaseTestCase {
   public void test_parse_service_message() {
     p.onStdOutput("##teamcity[nuget-package Id='NUnit' Version='2.5.10.11092']");
 
-    Collection<PackageInfo> result = p.getResult();
+    Collection<SourcePackageInfo> result = p.getResult();
     Assert.assertEquals(result.size(), 1);
-    PackageInfo next = result.iterator().next();
+    SourcePackageInfo next = result.iterator().next();
 
     Assert.assertEquals(next.getSource(), "source5");
     Assert.assertEquals(next.getPackageId(), "NUnit");
@@ -82,10 +82,10 @@ public class ListPackagesCommandProcessorTest extends BaseTestCase {
     p.onStdOutput("##teamcity[nuget-package Id='NUnit' Version='2.5.10.11092']");
     p.onStdOutput("##teamcity[nuget-package Id='JUnit' Version='1.2.0.92']");
 
-    Collection<PackageInfo> result = p.getResult();
+    Collection<SourcePackageInfo> result = p.getResult();
     Assert.assertEquals(result.size(), 2);
-    Iterator<PackageInfo> it = result.iterator();
-    PackageInfo next = it.next();
+    Iterator<SourcePackageInfo> it = result.iterator();
+    SourcePackageInfo next = it.next();
 
     Assert.assertEquals(next.getSource(), "source5");
     Assert.assertEquals(next.getPackageId(), "NUnit");

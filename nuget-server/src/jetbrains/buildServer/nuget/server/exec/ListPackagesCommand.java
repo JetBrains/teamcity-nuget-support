@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 public interface ListPackagesCommand {
   @NotNull
-  Collection<PackageInfo> checkForChanges(
+  Collection<SourcePackageInfo> checkForChanges(
           @NotNull File nugetPath,
           @Nullable String source,
           @NotNull String packageId,

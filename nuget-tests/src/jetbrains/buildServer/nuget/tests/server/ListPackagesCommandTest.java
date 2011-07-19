@@ -48,7 +48,7 @@ public class ListPackagesCommandTest extends BaseTestCase {
     final List<String> list = new ArrayList<String>(Arrays.<String>asList(cmd));
     m.checking(new Expectations(){{
       oneOf(exec).executeNuGet(with(any(File.class)), with(equal(list)), with(any(ListPackagesCommandProcessor.class)));
-      will(returnValue(Collections.<PackageInfo>emptyList()));
+      will(returnValue(Collections.<SourcePackageInfo>emptyList()));
     }});
   }
 

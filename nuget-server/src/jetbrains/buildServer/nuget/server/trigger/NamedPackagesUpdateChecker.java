@@ -3,7 +3,7 @@ package jetbrains.buildServer.nuget.server.trigger;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
-import jetbrains.buildServer.nuget.server.exec.PackageInfo;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +43,7 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
     }
 
-    Collection<PackageInfo> result;
+    Collection<SourcePackageInfo> result;
     try {
       result = myCommand.checkForChanges(nugetPath, source, pkgId, version);
     } catch (Throwable t) {
@@ -61,10 +61,10 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     return null;
   }
 
-  private String serializeHashcode(@NotNull final Collection<PackageInfo> _packages) {
-    List<PackageInfo> sorted = new ArrayList<PackageInfo>(_packages);
-    Collections.sort(sorted, new Comparator<PackageInfo>() {
-      public int compare(PackageInfo o1, PackageInfo o2) {
+  private String serializeHashcode(@NotNull final Collection<SourcePackageInfo> _packages) {
+    List<SourcePackageInfo> sorted = new ArrayList<SourcePackageInfo>(_packages);
+    Collections.sort(sorted, new Comparator<SourcePackageInfo>() {
+      public int compare(SourcePackageInfo o1, SourcePackageInfo o2) {
         int i;
         if (0 != (i = o1.getSource().compareTo(o2.getSource()))) return i;
         if (0 != (i = o1.getPackageId().compareTo(o2.getPackageId()))) return i;
@@ -74,7 +74,7 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     });
 
     StringBuilder sb = new StringBuilder();
-    for (PackageInfo info : sorted) {
+    for (SourcePackageInfo info : sorted) {
       sb.append("|s:").append(info.getSource());
       sb.append("|p:").append(info.getPackageId());
       sb.append("|v:").append(info.getVersion());

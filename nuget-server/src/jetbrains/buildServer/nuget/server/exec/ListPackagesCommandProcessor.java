@@ -32,10 +32,10 @@ import java.util.List;
 * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
 * Date: 14.07.11 13:23
 */
-public class ListPackagesCommandProcessor implements NuGetOutputProcessor<Collection<PackageInfo>> {
+public class ListPackagesCommandProcessor implements NuGetOutputProcessor<Collection<SourcePackageInfo>> {
   private static final Logger LOG = Logger.getInstance(ListPackagesCommandProcessor.class.getName());
   private final String mySource;
-  private final List<PackageInfo> myPackages = new ArrayList<PackageInfo>();
+  private final List<SourcePackageInfo> myPackages = new ArrayList<SourcePackageInfo>();
 
   public ListPackagesCommandProcessor(@NotNull final String source) {
     mySource = source;
@@ -58,7 +58,7 @@ public class ListPackagesCommandProcessor implements NuGetOutputProcessor<Collec
         if (StringUtil.isEmptyOrSpaces(id)) return;
         if (StringUtil.isEmptyOrSpaces(version)) return;
 
-        myPackages.add(new PackageInfo(mySource, id, version));
+        myPackages.add(new SourcePackageInfo(mySource, id, version));
 
       }
 
@@ -83,7 +83,7 @@ public class ListPackagesCommandProcessor implements NuGetOutputProcessor<Collec
   }
 
   @NotNull
-  public Collection<PackageInfo> getResult() {
+  public Collection<SourcePackageInfo> getResult() {
     return Collections.unmodifiableList(myPackages);
   }
 }

@@ -37,7 +37,7 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
   }
 
   @NotNull
-  public Collection<PackageInfo> checkForChanges(
+  public Collection<SourcePackageInfo> checkForChanges(
           @NotNull final File nugetPath,
           @Nullable final String source,
           @NotNull final String packageId,

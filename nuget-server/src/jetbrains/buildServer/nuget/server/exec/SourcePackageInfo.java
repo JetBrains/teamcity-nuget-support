@@ -22,14 +22,14 @@ import org.jetbrains.annotations.NotNull;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 14.07.11 13:17
  */
-public class PackageInfo {
+public class SourcePackageInfo {
   private final String mySource;
   private final String myPackageId;
   private final String myVersion;
 
-  public PackageInfo(@NotNull final String source,
-                     @NotNull final String packageId,
-                     @NotNull final String version) {
+  public SourcePackageInfo(@NotNull final String source,
+                           @NotNull final String packageId,
+                           @NotNull final String version) {
     mySource = source;
     myPackageId = packageId;
     myVersion = version;
@@ -52,7 +52,7 @@ public class PackageInfo {
 
   @Override
   public String toString() {
-    return "PackageInfo{" +
+    return "SourcePackageInfo{" +
             "mySource='" + mySource + '\'' +
             ", myPackageId='" + myPackageId + '\'' +
             ", myVersion='" + myVersion + '\'' +
