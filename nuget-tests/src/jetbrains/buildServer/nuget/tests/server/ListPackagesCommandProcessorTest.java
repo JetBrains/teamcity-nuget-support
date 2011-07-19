@@ -82,9 +82,9 @@ public class ListPackagesCommandProcessorTest extends BaseTestCase {
     p = new ListPackagesCommandProcessor(null);
     p.onStdOutput("##teamcity[nuget-package Id='NUnit' Version='2.5.10.11092']");
 
-    Collection<SourcePackageInfo> result = p.getResult();
+    Collection<PackageInfo> result = p.getResult();
     Assert.assertEquals(result.size(), 1);
-    SourcePackageInfo next = result.iterator().next();
+    PackageInfo next = result.iterator().next();
 
     Assert.assertEquals(next.getSource(), null);
     Assert.assertEquals(next.getPackageId(), "NUnit");

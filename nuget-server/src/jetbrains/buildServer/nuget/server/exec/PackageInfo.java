@@ -28,7 +28,7 @@ public class PackageInfo {
   private final String myPackageId;
   private final String myVersion;
 
-  public SourcePackageInfo(@Nullable final String source,
+  public PackageInfo(@Nullable final String source,
                            @NotNull final String packageId,
                            @NotNull final String version) {
     mySource = source;
