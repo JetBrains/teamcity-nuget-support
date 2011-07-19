@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.exec;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -27,7 +28,7 @@ public class SourcePackageInfo {
   private final String myPackageId;
   private final String myVersion;
 
-  public SourcePackageInfo(@NotNull final String source,
+  public SourcePackageInfo(@Nullable final String source,
                            @NotNull final String packageId,
                            @NotNull final String version) {
     mySource = source;
@@ -35,7 +36,7 @@ public class SourcePackageInfo {
     myVersion = version;
   }
 
-  @NotNull
+  @Nullable
   public String getSource() {
     return mySource;
   }

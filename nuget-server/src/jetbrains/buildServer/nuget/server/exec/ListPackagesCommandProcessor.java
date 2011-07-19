@@ -21,6 +21,7 @@ import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageParserCallback;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class ListPackagesCommandProcessor implements NuGetOutputProcessor<Collec
   private final String mySource;
   private final List<SourcePackageInfo> myPackages = new ArrayList<SourcePackageInfo>();
 
-  public ListPackagesCommandProcessor(@NotNull final String source) {
+  public ListPackagesCommandProcessor(@Nullable final String source) {
     mySource = source;
   }
 
