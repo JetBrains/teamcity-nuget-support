@@ -93,11 +93,12 @@ public class PackageDependenciesStore {
     for (String source : deps.getSources()) {
       Element src = new Element("source");
       src.setText(source);
+      sources.addContent((Content)src);
     }
 
     root.addContent((Content)sources);
 
-    Document doc = new Document(pkgs);
+    Document doc = new Document(root);
 
     OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
     try {

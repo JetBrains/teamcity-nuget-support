@@ -9,6 +9,8 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetInstallPackageActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetUpdatePackageActionFactoryTest"/>
 
+      <class name="jetbrains.buildServer.nuget.tests.common.PackageDependenciesStoreTest"/>
+
       <class name="jetbrains.buildServer.nuget.tests.util.CompositeBuildProcessTest"/>
       <class name="jetbrains.buildServer.nuget.tests.util.DelegatingBuildProcessTest"/>
 
