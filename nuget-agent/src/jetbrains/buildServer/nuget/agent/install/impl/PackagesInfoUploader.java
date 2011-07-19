@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.agent.install.impl;
 
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
-import jetbrains.buildServer.nuget.agent.install.PackageInfo;
+import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.Content;

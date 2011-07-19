@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.agent.install.PackageInfo;
+import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesConfigParser;
 import jetbrains.buildServer.nuget.tests.integration.Paths;

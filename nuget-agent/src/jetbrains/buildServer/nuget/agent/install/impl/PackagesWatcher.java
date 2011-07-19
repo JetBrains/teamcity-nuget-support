@@ -21,7 +21,7 @@ import jetbrains.buildServer.agent.AgentLifeCycleAdapter;
 import jetbrains.buildServer.agent.AgentLifeCycleListener;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
-import jetbrains.buildServer.nuget.agent.install.PackageInfo;
+import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.util.EventDispatcher;
 import org.jetbrains.annotations.NotNull;
 

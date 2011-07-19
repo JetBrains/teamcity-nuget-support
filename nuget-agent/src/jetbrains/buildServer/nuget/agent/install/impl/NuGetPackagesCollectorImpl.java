@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.agent.install.impl;
 
-import jetbrains.buildServer.nuget.agent.install.PackageInfo;
+import jetbrains.buildServer.nuget.common.PackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

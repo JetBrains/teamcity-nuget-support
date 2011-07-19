@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.install;
+package jetbrains.buildServer.nuget.common;
 
 import org.jetbrains.annotations.NotNull;
 
