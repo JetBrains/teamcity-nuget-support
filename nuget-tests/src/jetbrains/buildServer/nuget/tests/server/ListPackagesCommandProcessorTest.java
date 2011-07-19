@@ -78,6 +78,20 @@ public class ListPackagesCommandProcessorTest extends BaseTestCase {
   }
 
   @Test
+  public void test_parse_service_message_no_source() {
+    p = new ListPackagesCommandProcessor(null);
+    p.onStdOutput("##teamcity[nuget-package Id='NUnit' Version='2.5.10.11092']");
+
+    Collection<SourcePackageInfo> result = p.getResult();
+    Assert.assertEquals(result.size(), 1);
+    SourcePackageInfo next = result.iterator().next();
+
+    Assert.assertEquals(next.getSource(), null);
+    Assert.assertEquals(next.getPackageId(), "NUnit");
+    Assert.assertEquals(next.getVersion(), "2.5.10.11092");
+  }
+
+  @Test
   public void test_parse_service_message_multiple() {
     p.onStdOutput("##teamcity[nuget-package Id='NUnit' Version='2.5.10.11092']");
     p.onStdOutput("##teamcity[nuget-package Id='JUnit' Version='1.2.0.92']");

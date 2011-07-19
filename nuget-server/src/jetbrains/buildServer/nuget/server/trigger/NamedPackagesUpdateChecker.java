@@ -74,8 +74,11 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     });
 
     StringBuilder sb = new StringBuilder();
-    for (PackageInfo info : sorted) {
-      sb.append("|s:").append(info.getSource());
+    for (SourcePackageInfo info : sorted) {
+      String source = info.getSource();
+      if (source != null) {
+        sb.append("|s:").append(source);
+      }
       sb.append("|p:").append(info.getPackageId());
       sb.append("|v:").append(info.getVersion());
     }
