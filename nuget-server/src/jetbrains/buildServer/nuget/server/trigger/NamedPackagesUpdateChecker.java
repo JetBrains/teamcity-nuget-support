@@ -66,7 +66,9 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     Collections.sort(sorted, new Comparator<PackageInfo>() {
       public int compare(PackageInfo o1, PackageInfo o2) {
         int i;
-        if (0 != (i = o1.getSource().compareTo(o2.getSource()))) return i;
+        String s1 = o1.getSource();
+        String s2 = o2.getSource();
+        if (s1 != null && s2 != null && 0 != (i = s1.compareTo(s2))) return i;
         if (0 != (i = o1.getPackageId().compareTo(o2.getPackageId()))) return i;
         if (0 != (i = o1.getVersion().compareTo(o2.getVersion()))) return i;
         return 0;
