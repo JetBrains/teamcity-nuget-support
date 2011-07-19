@@ -17,16 +17,16 @@
 package jetbrains.buildServer.nuget.common;
 
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
-import jetbrains.buildServer.util.XmlXppAbstractParser;
 import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -34,45 +34,45 @@ import java.util.List;
  * Date: 19.07.11 11:39
  */
 public class PackageDependenciesStore {
-  public PackageDependencies load(@NotNull final File file) throws IOException {
+
+  public PackageDependencies load(@NotNull final InputStream is) throws IOException {
+    Element element = null;
+    try {
+      element = FileUtil.parseDocument(is, false);
+    } catch (final JDOMException e) {
+      throw new IOException("Failed to parse stream." + e.getMessage()){{initCause(e);}};
+    }
+
     final List<String> sources = new ArrayList<String>();
     final List<PackageInfo> infos = new ArrayList<PackageInfo>();
 
-    new XmlXppAbstractParser(){
-      @Override
-      protected List<XmlHandler> getRootHandlers() {
-        return Arrays.asList(elementsPath(new Handler() {
-          public XmlReturn processElement(@NotNull XmlElementInfo xmlElementInfo) {
-            return xmlElementInfo.visitChildren(
-                    elementsPath(
-                            new Handler() {
-                              public XmlReturn processElement(@NotNull XmlElementInfo xmlElementInfo) {
-                                final String id = xmlElementInfo.getAttribute("id");
-                                final String version = xmlElementInfo.getAttribute("version");
-                                if (id != null && version != null) {
-                                  infos.add(new PackageInfo(id, version));
-                                }
-                                return xmlElementInfo.noDeep();
-                              }
-                            }, "packages", "package"),
-                    elementsPath(
-                            new Handler() {
-                              public XmlReturn processElement(@NotNull XmlElementInfo xmlElementInfo) {
-                                xmlElementInfo.visitText(new TextHandler() {
-                                  public void setText(@NotNull String s) {
-                                    sources.add(s);
-                                  }
-                                });
-                                return null;
-                              }
-                            }, "sources", "source")
-            );
-          }
-        }, "nuget-dependencies"));
+    Element packagesElement = element.getChild("packages");
+    if (packagesElement != null) {
+      for (Object pkg : packagesElement.getChildren("package")) {
+        Element el = (Element) pkg;
+        final String id = el.getAttributeValue("id");
+        final String version = el.getAttributeValue("version");
+        if (id != null && version != null) {
+          infos.add(new PackageInfo(id, version));
+        }
       }
-    }.parse(file);
+    }
 
+    Element sourcesElement = element.getChild("sources");
+    if (sourcesElement != null) {
+      for (Object o : sourcesElement.getChildren("source")) {
+        Element source = (Element) o;
+        String text = source.getTextTrim();
+        if (!StringUtil.isEmptyOrSpaces(text)) {
+          sources.add(text);
+        }
+      }
+    }
     return new PackageDependencies(sources, infos);
+  }
+
+  public PackageDependencies load(@NotNull final File file) throws IOException {
+    return load(new BufferedInputStream(new FileInputStream(file)));
   }
 
   public void save(@NotNull final PackageDependencies deps,
@@ -87,16 +87,16 @@ public class PackageDependenciesStore {
       pkgs.addContent((Content) pkg);
     }
 
-    root.addContent((Content)pkgs);
+    root.addContent((Content) pkgs);
 
     Element sources = new Element("sources");
     for (String source : deps.getSources()) {
       Element src = new Element("source");
       src.setText(source);
-      sources.addContent((Content)src);
+      sources.addContent((Content) src);
     }
 
-    root.addContent((Content)sources);
+    root.addContent((Content) sources);
 
     Document doc = new Document(root);
 

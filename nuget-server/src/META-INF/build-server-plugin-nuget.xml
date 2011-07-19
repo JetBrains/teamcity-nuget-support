@@ -6,7 +6,7 @@
 
 <!--
   <bean class="jetbrains.buildServer.nuget.server.NuGetPublishRunType"/>
-  <bean class="jetbrains.buildServer.nuget.server.NuGetDownloadedPackagesTab"/>
+  <bean class="jetbrains.buildServer.nuget.server.show.NuGetDownloadedPackagesTab"/>
   <bean class="jetbrains.buildServer.nuget.server.NuGetDownloadFeature"/>
 
 -->
@@ -22,4 +22,7 @@
   <bean class="jetbrains.buildServer.nuget.server.trigger.ThreadedBuildTriggetFactoryImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.NuGetSimpleTrigger"/>
+
+
+  <bean class="jetbrains.buildServer.nuget.server.show.NuGetDownloadedPackagesTab"/>
 </beans>

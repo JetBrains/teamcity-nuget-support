@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.common;
 
+import jetbrains.buildServer.ArtifactsConstants;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 13:56
@@ -34,4 +36,7 @@ public interface PackagesConstants {
   public static final String NUGET_UPDATE_MODE = "nuget.updatePackages.mode";
 
   public static final String SLN_PATH = "sln.path";
+
+  public static final String NUGET_USED_PACKAGES_DIR = ArtifactsConstants.TEAMCITY_ARTIFACTS_DIR + "/nuget";
+  public static final String NUGET_USED_PACKAGES_FILE = "nuget.xml";
 }
