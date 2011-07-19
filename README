@@ -22,6 +22,12 @@ Supported features:
   
   Build Trigger that starts a new build if package is updated.   
 
+- NuGet used packages tab
+
+  Reports list of all used packages in build configuration. 
+  Available only if NuGet Packages Installer Build Runner is used.
+
+
 API gaps:
  - Reuse ComposideBuildProcess and DelegatingBuildProcess
  - Use XmlXppAbstractParser#parse(InputSream)
