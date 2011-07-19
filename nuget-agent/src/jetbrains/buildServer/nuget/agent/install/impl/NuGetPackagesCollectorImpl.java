@@ -16,11 +16,11 @@
 
 package jetbrains.buildServer.nuget.agent.install.impl;
 
+import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.TreeSet;
 
@@ -37,8 +37,10 @@ public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
   }
 
   @NotNull
-  public Collection<PackageInfo> getPackages() {
-    return Collections.unmodifiableCollection(myPackages);
+  public PackageDependencies getPackages() {
+    return new PackageDependencies(
+            Collections.<String>emptyList(),
+            myPackages);
   }
 
   public void removeAllPackages() {

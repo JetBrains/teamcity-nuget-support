@@ -21,6 +21,7 @@ import jetbrains.buildServer.agent.AgentLifeCycleAdapter;
 import jetbrains.buildServer.agent.AgentLifeCycleListener;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
+import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.util.EventDispatcher;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +48,7 @@ public class PackagesWatcher {
 
       @Override
       public void beforeBuildFinish(@NotNull AgentRunningBuild build, @NotNull BuildFinishedStatus buildStatus) {
-        Collection<PackageInfo> packages = new ArrayList<PackageInfo>(collector.getPackages());
+        PackageDependencies packages = collector.getPackages();
         if (packages.isEmpty()) return;
 
         try {

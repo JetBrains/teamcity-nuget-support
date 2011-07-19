@@ -6,6 +6,8 @@
                            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
 
+  <import resource="classpath*:META-INF/spring-nuget-common.xml"/>
+
   <bean class="jetbrains.buildServer.nuget.agent.util.impl.CommandlineBuildProcessFactoryImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner"/>

@@ -16,11 +16,9 @@
 
 package jetbrains.buildServer.nuget.agent.install;
 
-import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.common.PackageDependencies;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -36,5 +34,5 @@ public interface NuGetPackagesCollector {
    * @return sorted list of packages that were registered
    */
   @NotNull
-  public Collection<PackageInfo> getPackages();
+  public PackageDependencies getPackages();
 }

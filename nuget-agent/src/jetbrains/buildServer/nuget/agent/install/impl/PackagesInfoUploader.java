@@ -18,16 +18,13 @@ package jetbrains.buildServer.nuget.agent.install.impl;
 
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
-import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.common.PackageDependencies;
+import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
 import jetbrains.buildServer.util.FileUtil;
-import jetbrains.buildServer.util.XmlUtil;
-import org.jdom.Content;
-import org.jdom.Document;
-import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
-import java.util.Collection;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -35,32 +32,19 @@ import java.util.Collection;
  */
 public class PackagesInfoUploader {
   private final ArtifactsWatcher myPublisher;
+  private final PackageDependenciesStore myStore;
 
-  public PackagesInfoUploader(@NotNull final ArtifactsWatcher publisher) {
+  public PackagesInfoUploader(@NotNull final ArtifactsWatcher publisher,
+                              @NotNull final PackageDependenciesStore store) {
     myPublisher = publisher;
+    myStore = store;
   }
 
   public void uploadDepectedPackages(@NotNull final AgentRunningBuild build,
-                                     @NotNull final Collection<PackageInfo> infos) throws IOException {
+                                     @NotNull final PackageDependencies infos) throws IOException {
     File tmp = FileUtil.createTempDirectory("nuget", "packages", build.getBuildTempDirectory());
-
-    Element root = new Element("packages");
-    for (PackageInfo info : infos) {
-      Element pkg = new Element("package");
-      pkg.setAttribute("id", info.getId());
-      pkg.setAttribute("version", info.getVersion());
-      root.addContent((Content)pkg);
-    }
-    Document doc = new Document(root);
-
-    final File content = new File(tmp, "nuget-packages.xml");
-    OutputStream os = new BufferedOutputStream(new FileOutputStream(content));
-    try {
-      XmlUtil.saveDocument(doc, os);
-    } finally {
-      FileUtil.close(os);
-    }
-
+    File content = new File(tmp, "nuget.xml");
+    myStore.save(infos, content);
     myPublisher.addNewArtifactsPath(content.getPath() + " => .teamcity/nuget");
   }
 }
