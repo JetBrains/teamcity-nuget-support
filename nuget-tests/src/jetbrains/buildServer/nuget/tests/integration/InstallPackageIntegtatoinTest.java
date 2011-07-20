@@ -104,7 +104,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   @Test
   public void test_01_online_sources() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false,
             Arrays.asList(
@@ -123,13 +123,13 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   }
 
   @NotNull
-  private File getTestDataPath() {
-    return Paths.getTestDataPath("integration/test-01.zip");
+  private File getTestDataPath(final String path) {
+    return Paths.getTestDataPath("integration/" + path);
   }
 
   @Test
   public void test_01_online_sources_update_forConfig() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     m.checking(new Expectations() {{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
@@ -155,7 +155,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   @Test
   public void test_01_online_sources_update_forSln() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     m.checking(new Expectations() {{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
@@ -184,7 +184,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   @Test
   public void test_01_online_sources_update_safe() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     m.checking(new Expectations() {{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
@@ -213,7 +213,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   @Test
   public void test_01_online_sources_ecludeVersion() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true, false,
             Arrays.asList(
@@ -232,7 +232,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
 
   @Test(enabled = false, dependsOnGroups = "Need to understand how to check NuGet uses only specified sources")
   public void test_01_local_sources() throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath(), "", myRoot);
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
     File sourcesDir = new File(myRoot, "js");
     ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01-sources.zip"), "", sourcesDir);
 
