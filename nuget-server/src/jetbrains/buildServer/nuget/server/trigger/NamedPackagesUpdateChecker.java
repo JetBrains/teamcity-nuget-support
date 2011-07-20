@@ -1,5 +1,6 @@
 package jetbrains.buildServer.nuget.server.trigger;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
@@ -16,6 +17,8 @@ import java.util.*;
  * Date: 14.07.11 15:41
  */
 public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
+  private static final Logger LOG = Logger.getInstance(NamedPackagesUpdateChecker.class.getName());
+
   public static final String KEY = "hash";
   private final ListPackagesCommand myCommand;
 
@@ -50,8 +53,10 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       throw new BuildTriggerException("Failed to check for package versions. " + t.getMessage(), t);
     }
     final String hash = serializeHashcode(result);
+    final String oldHash = storage.getValue(KEY);
 
-    String oldHash = storage.getValue(KEY);
+    LOG.debug("Recieved packages hash: " + hash);
+    LOG.debug("          old hash was: " + oldHash);
     if (!hash.equals(oldHash)) {
       storage.putValue(KEY, hash);
       storage.flush();

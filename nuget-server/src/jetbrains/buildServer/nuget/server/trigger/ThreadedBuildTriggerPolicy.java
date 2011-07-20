@@ -20,6 +20,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledBuildTrigger;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
+import jetbrains.buildServer.serverSide.CustomDataStorage;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.*;
@@ -30,10 +32,11 @@ import java.util.concurrent.*;
  */
 public class ThreadedBuildTriggerPolicy extends PolledBuildTrigger {
   private static final Logger LOG = Logger.getInstance(ThreadedBuildTriggerPolicy.class.getName());
+  private static final String HASH = "jtriggerId";
 
   private final ExecutorService myExecutor;
   private final TriggerUpdateChecker myUpdater;
-  private Future<BuildStartReason> myUpdateRequired;
+  private ConcurrentMap<String, Future<BuildStartReason>> myUpdatesRequired = new ConcurrentHashMap<String, Future<BuildStartReason>>();
 
   public ThreadedBuildTriggerPolicy(@NotNull final ExecutorService executor,
                                     @NotNull final TriggerUpdateChecker updater) {
@@ -43,9 +46,20 @@ public class ThreadedBuildTriggerPolicy extends PolledBuildTrigger {
 
   @Override
   public synchronized void triggerBuild(@NotNull PolledTriggerContext context) throws BuildTriggerException {
+    final CustomDataStorage storage = context.getCustomDataStorage();
+
+    String value = storage.getValue(HASH);
+    if (value == null) {
+      value = StringUtil.generateUniqueHash();
+      storage.putValue(HASH, value);
+      storage.flush();
+    }
+
+    Future<BuildStartReason> myUpdateRequired = myUpdatesRequired.get(value);
     if (myUpdateRequired == null) {
       try {
         myUpdateRequired = myExecutor.submit(createUpdateTask(context));
+        myUpdatesRequired.put(value, myUpdateRequired);
       } catch (RejectedExecutionException e) {
         String msg = "Failed to enqueue trigger task: " + myUpdater + ". " + e.getMessage();
         LOG.warn(msg);
@@ -66,7 +80,7 @@ public class ThreadedBuildTriggerPolicy extends PolledBuildTrigger {
       if (cause instanceof BuildTriggerException) throw (BuildTriggerException)cause;
       throw new BuildTriggerException(cause.getMessage(), cause);
     } finally {
-      myUpdateRequired = null;
+      myUpdatesRequired.remove(value);
     }
 
     if (result != null) {

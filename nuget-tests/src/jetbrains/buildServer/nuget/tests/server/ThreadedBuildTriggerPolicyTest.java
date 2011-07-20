@@ -22,6 +22,7 @@ import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.nuget.server.trigger.BuildStartReason;
 import jetbrains.buildServer.nuget.server.trigger.ThreadedBuildTriggerPolicy;
 import jetbrains.buildServer.nuget.server.trigger.TriggerUpdateChecker;
+import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.SBuildType;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -41,7 +42,11 @@ public class ThreadedBuildTriggerPolicyTest extends BaseTestCase {
   private TriggerUpdateChecker checker;
   private ThreadedBuildTriggerPolicy policy;
   private PolledTriggerContext ctx;
+  private PolledTriggerContext ctx2;
   private Future future;
+  private Future future2;
+  private CustomDataStorage store1;
+  private CustomDataStorage store2;
   private SBuildType bt;
 
 
@@ -53,12 +58,23 @@ public class ThreadedBuildTriggerPolicyTest extends BaseTestCase {
     executor = m.mock(ExecutorService.class);
     checker = m.mock(TriggerUpdateChecker.class);
     policy = new ThreadedBuildTriggerPolicy(executor, checker);
-    ctx = m.mock(PolledTriggerContext.class);
-    future = m.mock(Future.class);
+    ctx = m.mock(PolledTriggerContext.class, "ctx1");
+    ctx2 = m.mock(PolledTriggerContext.class, "ctx2");
+    future = m.mock(Future.class, "future1");
+    future2 = m.mock(Future.class, "future2");
     bt = m.mock(SBuildType.class);
+    store1 = m.mock(CustomDataStorage.class, "store1");
+    store2 = m.mock(CustomDataStorage.class, "store2");
 
     m.checking(new Expectations(){{
       allowing(ctx).getBuildType(); will(returnValue(bt));
+      allowing(ctx2).getBuildType(); will(returnValue(bt));
+
+      allowing(ctx).getCustomDataStorage(); will(returnValue(store1));
+      allowing(ctx2).getCustomDataStorage(); will(returnValue(store2));
+
+      allowing(store1).getValue("jtriggerId"); will(returnValue("x"));
+      allowing(store2).getValue("jtriggerId"); will(returnValue("y"));
     }});
   }
 
@@ -72,6 +88,8 @@ public class ThreadedBuildTriggerPolicyTest extends BaseTestCase {
       oneOf(future).isDone(); will(returnValue(false));
     }});
      policy.triggerBuild(ctx);
+
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -83,6 +101,8 @@ public class ThreadedBuildTriggerPolicyTest extends BaseTestCase {
     }});
 
     policy.triggerBuild(ctx);
+
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -96,6 +116,8 @@ public class ThreadedBuildTriggerPolicyTest extends BaseTestCase {
     }});
 
     policy.triggerBuild(ctx);
+
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -108,6 +130,8 @@ public class ThreadedBuildTriggerPolicyTest extends BaseTestCase {
     }});
 
     policy.triggerBuild(ctx);
+
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -125,6 +149,8 @@ public class ThreadedBuildTriggerPolicyTest extends BaseTestCase {
     } catch (BuildTriggerException e) {
       Assert.assertEquals(e.getMessage(), "fail");
     }
+
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -136,5 +162,27 @@ public class ThreadedBuildTriggerPolicyTest extends BaseTestCase {
     }});
 
     policy.triggerBuild(ctx);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @SuppressWarnings({"unchecked"})
+  public void test_should_not_reuse_same_taks_in_several_triggers() {
+    m.checking(new Expectations(){{
+      oneOf(executor).submit(with(any(Callable.class)));
+      will(returnValue(future));
+
+      oneOf(executor).submit(with(any(Callable.class)));
+      will(returnValue(future2));
+
+      oneOf(future).isDone(); will(returnValue(false));
+      oneOf(future2).isDone(); will(returnValue(false));
+    }
+    });
+    policy.triggerBuild(ctx);
+    policy.triggerBuild(ctx2);
+
+    m.assertIsSatisfied();
   }
 }

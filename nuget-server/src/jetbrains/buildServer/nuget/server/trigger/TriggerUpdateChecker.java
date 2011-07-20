@@ -30,6 +30,9 @@ public interface TriggerUpdateChecker {
   /**
    * Called from background thread to check for updates
    *
+   * Update is called for different trigger settings and thus there should
+   * be nothing cached in instance
+   *
    * @param descriptor build trigger desciptor to check for parameters
    * @param storage    trigger state
    * @return null or StartReason instance to start a build
