@@ -38,5 +38,5 @@ public interface TriggerUpdateChecker {
    */
   @Nullable
   BuildStartReason checkChanges(@NotNull BuildTriggerDescriptor descriptor,
-                           @NotNull CustomDataStorage storage) throws BuildTriggerException;
+                                @NotNull CustomDataStorage storage) throws BuildTriggerException;
 }
