@@ -38,7 +38,7 @@
 </tr>
 
 <tr>
-  <td>Package Ids<l:star/>:</td>
+  <td>Package Id<l:star/>:</td>
   <td>
     <props:textProperty name="${ib.packageKey}" style="width:20em;"/>
     <span class="smallNote">Specify package Id to check for updates.</span>
