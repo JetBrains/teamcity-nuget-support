@@ -82,6 +82,106 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
     }});
     Assert.assertNull(checker.checkChanges(desr, store));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_should_trigger_on_new_package() {
+    final String source = "\\\\ServerNameRemoved\\NugetTest\\Repository";
+
+    params.put(TriggerConstants.PACKAGE, "Common");
+    params.put(TriggerConstants.SOURCE, source);
+    m.checking(new Expectations(){{
+      oneOf(cmd).checkForChanges(nugetFakePath, source, "Common", null);
+      will(returnValue(Arrays.asList(new SourcePackageInfo(source, "Common", "1.0.0.21"))));
+
+      oneOf(cmd).checkForChanges(nugetFakePath, source, "Common", null);
+      will(returnValue(Arrays.asList(
+              new SourcePackageInfo(source, "Common", "1.0.0.21"),
+              new SourcePackageInfo(source, "Common", "2.0.0.22")
+              )));
+
+      final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21";
+      final String hash2 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:2.0.0.22";
+
+      oneOf(store).getValue("hash"); will(returnValue(null));
+      oneOf(store).putValue("hash", hash1);
+      oneOf(store).flush();
+
+      oneOf(store).getValue("hash"); will(returnValue(hash1));
+      oneOf(store).putValue("hash", hash2);
+      oneOf(store).flush();
+
+    }});
+    Assert.assertNull(checker.checkChanges(desr, store));
+
+
+    Assert.assertNotNull(checker.checkChanges(desr, store));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_should_trigger_on_new_package2() {
+    final String source = "\\\\ServerNameRemoved\\NugetTest\\Repository";
+
+    params.put(TriggerConstants.PACKAGE, "Common");
+    params.put(TriggerConstants.SOURCE, source);
+    m.checking(new Expectations(){{
+      oneOf(cmd).checkForChanges(nugetFakePath, source, "Common", null);
+      will(returnValue(Arrays.asList(new SourcePackageInfo(source, "Common", "1.0.0.21"))));
+
+      oneOf(cmd).checkForChanges(nugetFakePath, source, "Common", null);
+      will(returnValue(Arrays.asList(
+              new SourcePackageInfo(source, "Common", "1.0.0.21"),
+              new SourcePackageInfo(source, "Common", "2.0.0.22")
+              )));
+
+      final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21";
+      final String hash2 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:2.0.0.22";
+
+      oneOf(store).getValue("hash"); will(returnValue(hash1));
+      oneOf(store).getValue("hash"); will(returnValue(hash1));
+      oneOf(store).putValue("hash", hash2);
+      oneOf(store).flush();
+
+    }});
+    Assert.assertNull(checker.checkChanges(desr, store));
+
+
+    Assert.assertNotNull(checker.checkChanges(desr, store));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_should_sort_packages() {
+    final String source = "\\\\ServerNameRemoved\\NugetTest\\Repository";
+
+    params.put(TriggerConstants.PACKAGE, "Common");
+    params.put(TriggerConstants.SOURCE, source);
+    m.checking(new Expectations(){{
+      oneOf(cmd).checkForChanges(nugetFakePath, source, "Common", null);
+      will(returnValue(Arrays.asList(
+              new SourcePackageInfo(source, "Common", "1.0.0.21"),
+              new SourcePackageInfo(null, "Common", "2.0.0.22"),
+              new SourcePackageInfo("s2", "C3ommon", "2.0.0.22"),
+              new SourcePackageInfo(null, "C3ommon", "2.0.0.22"),
+              new SourcePackageInfo(null, "C3o4mmon", "2.0.0.22"),
+              new SourcePackageInfo("s4", "C3o3mmon", "2.0.0.22"),
+              new SourcePackageInfo(null, "C3omm5on", "2.0.0.22")
+              )));
+
+      final String hash1 = "|p:Common|v:2.0.0.22|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:s2|p:C3ommon|v:2.0.0.22|s:s4|p:C3o3mmon|v:2.0.0.22|p:C3ommon|v:2.0.0.22|p:C3o4mmon|v:2.0.0.22|p:C3omm5on|v:2.0.0.22";
+      oneOf(store).getValue("hash"); will(returnValue("foo"));
+      oneOf(store).putValue("hash", hash1);
+      oneOf(store).flush();
+
+    }});
+    Assert.assertNotNull(checker.checkChanges(desr, store));
+
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -101,6 +201,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     Assert.assertNotNull(checker.checkChanges(desr, store));
     Assert.assertNull(checker.checkChanges(desr, store));
+
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -111,9 +213,11 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     }});
     try {
       checker.checkChanges(desr, store);
+      Assert.fail("should throw an exception");
     } catch (BuildTriggerException e) {
-      return;
+      //NOP
     }
-    Assert.fail("should throw an exception");
+
+    m.assertIsSatisfied();
   }
 }

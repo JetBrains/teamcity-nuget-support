@@ -52,10 +52,13 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     final String hash = serializeHashcode(result);
 
     String oldHash = storage.getValue(KEY);
-    if (oldHash != null && !hash.equals(oldHash)) {
+    if (!hash.equals(oldHash)) {
       storage.putValue(KEY, hash);
       storage.flush();
-      return new BuildStartReason("NuGet Package " + pkgId + " updated");
+
+      if (oldHash != null) {
+        return new BuildStartReason("NuGet Package " + pkgId + " updated");
+      }
     }
 
     return null;
@@ -68,7 +71,9 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
         int i;
         String s1 = o1.getSource();
         String s2 = o2.getSource();
-        if (s1 != null && s2 != null && 0 != (i = s1.compareTo(s2))) return i;
+        if (s1 == null && s2 == null) return 0;
+        if (s1 == null ^ s2 == null) return 1;
+        if (0 != (i = s1.compareTo(s2))) return i;
         if (0 != (i = o1.getPackageId().compareTo(o2.getPackageId()))) return i;
         if (0 != (i = o1.getVersion().compareTo(o2.getVersion()))) return i;
         return 0;
