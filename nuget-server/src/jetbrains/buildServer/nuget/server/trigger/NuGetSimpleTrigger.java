@@ -46,7 +46,7 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
     Map<String, String> props = trigger.getProperties();
     StringBuilder sb = new StringBuilder();
     sb.append("Package Id: ").append(props.get(TriggerConstants.PACKAGE)).append("\n");
-    sb.append("Source: ").append(props.get(TriggerConstants.PACKAGE));
+    sb.append("Source: ").append(props.get(TriggerConstants.SOURCE));
 
     String version = props.get(TriggerConstants.VERSION);
     if (!StringUtil.isEmptyOrSpaces(version)) {
