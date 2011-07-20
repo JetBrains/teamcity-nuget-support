@@ -119,7 +119,7 @@ namespace JetBrains.TeamCity.NuGetRunner
       }
       finally
       {
-        CallEvents(myFinishEvents);
+        CallEvents(Enumerable.Reverse(myFinishEvents));
       }
     }
 

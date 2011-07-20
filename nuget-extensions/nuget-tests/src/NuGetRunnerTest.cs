@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using NUnit.Framework;
+using System.Linq;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {
@@ -70,5 +72,46 @@ namespace JetBrains.TeamCity.NuGet.Tests
         .AssertNoErrorOutput()
         .AssertOutputContains("TeamCity NuGet Extension is available.");
     }
+
+    [Test]
+    public void TestCommands_RunConcurrently()
+    {
+      bool failed = false;
+      new[] {1, 2, 3, 4, 5, 6, 7}
+        .Select(
+          x => new Thread(() =>
+                            {
+                              for (int i = 0; i < 3; i++)
+                              {
+                                var proc = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.NuGetExe, "TeamCity.Ping", "-Sleep");
+                                if (proc.ExitCode != 0 || !string.IsNullOrWhiteSpace(proc.Error))
+                                {
+                                  proc.Dump();
+                                  failed = true;
+                                }
+                                proc.AssertNoErrorOutput().AssertExitedSuccessfully();
+                              }
+                            })
+                 {
+                   Name = "Checker " + x,
+                 })
+        .ToList()
+        .Select(
+          x =>
+            {
+              x.Start();
+              return x;
+            })
+        .ToList()
+        .Select(x =>
+                  {
+                    x.Join();
+                    return 0;
+                  })
+        .ToList();
+
+      Assert.IsFalse(failed);
+    }
+
   }
 }
