@@ -59,7 +59,6 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     System.out.println(file);
   }
 
-
   private File preparePackage() throws IOException {
     @NotNull final File root = createTempDir();
     final File spec = new File(root, "SamplePackage.nuspec");
