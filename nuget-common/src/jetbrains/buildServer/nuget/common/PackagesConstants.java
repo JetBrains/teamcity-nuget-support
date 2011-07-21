@@ -23,7 +23,7 @@ import jetbrains.buildServer.ArtifactsConstants;
  * Date: 07.07.11 13:56
  */
 public interface PackagesConstants {
-  public static final String RUN_TYPE = "jetbrains.nuget.packagesInstaller";
+  public static final String RUN_TYPE = "jb.nuget.installer"; //no more than 30 chars
 
 
   public static final String NUGET_PATH = "nuget.path";
