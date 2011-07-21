@@ -33,6 +33,7 @@
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.integration.InstallPackageIntegtatoinTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.NuGetExecutorTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.PackagesPublishIntegrationTest"/>
     </classes>
   </test>
 </suite>

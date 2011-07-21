@@ -68,7 +68,21 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList(myFile.getPath(), "api-key-guid", "-Source", "push-feed"), myFile.getParentFile());
+      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid", "-Source", "push-feed"), myFile.getParentFile());
+    }});
+
+    i.createPush(ctx, ps, myFile);
+  }
+
+  @Test
+  public void test_command_push_no_source() throws RunBuildException {
+    m.checking(new Expectations(){{
+      allowing(ps).getNuGetExeFile(); will(returnValue(myNuGet));
+      allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
+      allowing(ps).getPublishSource(); will(returnValue(null));
+      allowing(ps).getCreateOnly(); will(returnValue(false));
+
+      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid"), myFile.getParentFile());
     }});
 
     i.createPush(ctx, ps, myFile);
@@ -82,7 +96,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
       allowing(ps).getCreateOnly(); will(returnValue(true));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList(myFile.getPath(), "api-key-guid", "-CreateOnly", "-Source", "push-feed"), myFile.getParentFile());
+      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid", "-CreateOnly", "-Source", "push-feed"), myFile.getParentFile());
     }});
 
     i.createPush(ctx, ps, myFile);

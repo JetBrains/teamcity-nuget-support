@@ -20,13 +20,11 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -73,15 +71,19 @@ public class CommandFactoryImpl implements CommandFactory {
                           @NotNull final File packagePath,
                           @NotNull final Callback<T> factory) throws RunBuildException {
     final List<String> arguments = new ArrayList<String>();
+    arguments.add("push");
     arguments.add(packagePath.getPath());
     arguments.add(params.getApiKey());
     if (params.getCreateOnly()) {
       arguments.add("-CreateOnly");
     }
 
+    final String source = params.getPublishSource();
     return executeNuGet(
             params,
-            Arrays.asList(params.getPublishSource()),
+            StringUtil.isEmptyOrSpaces(source)
+                    ? Collections.<String>emptyList()
+                    : Arrays.asList(source),
             arguments,
             packagePath.getParentFile(),
             factory);
