@@ -43,6 +43,16 @@ public interface CommandFactory {
                      @NotNull Callback<T> factory) throws RunBuildException;
 
   public interface Callback<T> {
-    T createCommand(@NotNull File program, @NotNull final File workingDir, @NotNull Collection<String> argz) throws RunBuildException;
+    /**
+     * Called with generated arguments to crate execurable instance or run command
+     * @param program program to run
+     * @param workingDir working firectory of program
+     * @param argz arguments array
+     * @return some result object depending of caller's desire
+     * @throws RunBuildException if failed to create/execure command
+     */
+    T createCommand(@NotNull File program,
+                    @NotNull final File workingDir,
+                    @NotNull Collection<String> argz) throws RunBuildException;
   }
 }
