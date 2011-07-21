@@ -27,11 +27,21 @@ Supported features:
   Reports list of all used packages in build configuration. 
   Available only if NuGet Packages Installer Build Runner is used.
 
+- Build Runner to publish created NuGet packages to NuGet feeds
 
-API gaps:
+
+API gaps TeamCity:
  - Reuse ComposideBuildProcess and DelegatingBuildProcess
  - Use XmlXppAbstractParser#parse(InputSream)
  - Consider reusing of Maven build trigger/project models
  - Make server-side PluginDescription contain getPluginRoot() to avoid cast to PluginInfo
  - Add CustomDataStorage to BuildTriggerDescriptor
+
+API gaps NuGet:
+ - Allow to call nuget.exe with plugins without installing them into %USERPROFILE%
+     http://nuget.codeplex.com/workitem/1295
+ - Allow to provide authorization for NuGet sources from commandline
+     http://nuget.codeplex.com/workitem/1303
+
+
 
