@@ -24,9 +24,8 @@ import jetbrains.buildServer.agent.Constants;
  * Date: 07.07.11 13:56
  */
 public interface PackagesConstants {
-  public static final String INSTALL_RUN_TYPE = "jetbrains.nuget.packagesInstaller";
+  public static final String RUN_TYPE = "jb.nuget.installer"; //no more than 30 chars
   public static final String PUBLISH_RUN_TYPE = "jb.nuget.publish"; //run-type could never exceed 30 chars
-
 
   public static final String NUGET_PATH = "nuget.path";
   public static final String NUGET_SOURCES = "nuget.sources";
