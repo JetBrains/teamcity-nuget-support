@@ -50,7 +50,7 @@ public class PublishRunType extends RunType {
 
   @Override
   public String getDisplayName() {
-    return "NuGet Publish Packages";
+    return "NuGet Packages Publish";
   }
 
   @Override
