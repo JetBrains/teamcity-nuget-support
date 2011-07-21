@@ -17,31 +17,20 @@
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.install.InstallBean" scope="request"/>
+<jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.publish.PublishBean" scope="request"/>
 
 <div class="parameter">
   Path to NuGet.exe: <strong><props:displayValue name="${ib.nuGetPathKey}"/></strong>
 </div>
 <div class="parameter">
-  Package Sources: <strong><props:displayValue name="${ib.nuGetSourcesKey}"
-                                               emptyValue="Use nuget default package source"/></strong>
-</div>
-<div class="parameter">
-  Path to .sln: <strong><props:displayValue name="${ib.solutionPathKey}"/></strong>
+  Package Sources: <strong><props:displayValue name="${ib.nuGetSourceKey}"
+                                               emptyValue="Use default source"/></strong>
 </div>
 
 <div class="parameter">
-  Exclude Version: <strong><props:displayCheckboxValue name="${ib.excludeVersionKey}"/></strong>
+  Packages to upload: <strong><props:displayValue name="${ib.nuGetPublishFilesKey}" showInPopup="${true}"/></strong>
 </div>
+
 <div class="parameter">
-  Update packages:
-  <strong>
-    <props:displayCheckboxValue name="${ib.updatePackagesKey}"/>
-  </strong>
-</div>
-<div class="parameter">
-  Use safe packages update:
-  <strong>
-    <props:displayCheckboxValue name="${ib.updatePackagesSafeKey}"/>
-  </strong>
+  Publish package in feed: <strong><props:displayCheckboxValue name="${ib.nuGetPublishCreateOnlyKey}" checkedValue="False" uncheckedValue="True"/></strong>
 </div>

@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.common;
 
 import jetbrains.buildServer.ArtifactsConstants;
+import jetbrains.buildServer.agent.Constants;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -39,4 +40,10 @@ public interface PackagesConstants {
 
   public static final String NUGET_USED_PACKAGES_DIR = ArtifactsConstants.TEAMCITY_ARTIFACTS_DIR + "/nuget";
   public static final String NUGET_USED_PACKAGES_FILE = "nuget.xml";
+
+
+  public static final String NUGET_PUBLISH_CREATE_ONLY = "nuget.publish.create.only";
+  public static final String NUGET_PUBLISH_FILES = "nuget.publish.files";
+  public static final String NUGET_PUBLISH_SOURCE = "nuget.publish.source";
+  public static final String NUGET_API_KEY = Constants.SECURE_PROPERTY_PREFIX + "nuget.api.key";
 }
