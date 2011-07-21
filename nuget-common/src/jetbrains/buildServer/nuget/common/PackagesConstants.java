@@ -24,7 +24,8 @@ import jetbrains.buildServer.agent.Constants;
  * Date: 07.07.11 13:56
  */
 public interface PackagesConstants {
-  public static final String RUN_TYPE = "jetbrains.nuget.packagesInstaller";
+  public static final String INSTALL_RUN_TYPE = "jetbrains.nuget.packagesInstaller";
+  public static final String PUBLISH_RUN_TYPE = "jetbrains.nuget.publish";
 
 
   public static final String NUGET_PATH = "nuget.path";

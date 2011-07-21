@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.install;
+package jetbrains.buildServer.nuget.server.publish;
 
 import jetbrains.buildServer.nuget.common.DotNetConstants;
+import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.requirements.Requirement;
 import jetbrains.buildServer.requirements.RequirementType;
 import jetbrains.buildServer.serverSide.InvalidProperty;
@@ -28,51 +29,53 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
+import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_API_KEY;
+import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_PATH;
+import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_PUBLISH_FILES;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 08.07.11 20:45
+ * Date: 21.07.11 14:15
  */
-public class PackagesInstallerRunType extends RunType {
+public class PublishRunType extends RunType {
   private final PluginDescriptor myDescriptor;
 
-  public PackagesInstallerRunType(@NotNull final PluginDescriptor descriptor) {
+  public PublishRunType(@NotNull final PluginDescriptor descriptor) {
     myDescriptor = descriptor;
   }
 
   @NotNull
   @Override
   public String getType() {
-    return INSTALL_RUN_TYPE;
+    return PackagesConstants.PUBLISH_RUN_TYPE;
   }
 
   @Override
   public String getDisplayName() {
-    return "NuGet Packages Installer";
+    return "NuGet Publish Packages";
   }
 
   @Override
   public String getDescription() {
-    return "Installs and updates missing NuGet packages";
+    return "Pushes and publishes NuGet package to a given feed";
   }
 
   @Override
   public PropertiesProcessor getRunnerPropertiesProcessor() {
     return new PropertiesProcessor() {
       public Collection<InvalidProperty> process(Map<String, String> properties) {
-        List<InvalidProperty> checks = new ArrayList<InvalidProperty>();
+        final List<InvalidProperty> checks = new ArrayList<InvalidProperty>();
 
         if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PATH))) {
           checks.add(new InvalidProperty(NUGET_PATH, "Path to nuget.exe must be specified"));
         }
 
-        String sln = properties.get(SLN_PATH);
-        if (StringUtil.isEmptyOrSpaces(sln)) {
-          checks.add(new InvalidProperty(NUGET_PATH, "Path to solution file should be specified"));
+        if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_API_KEY))) {
+          checks.add(new InvalidProperty(NUGET_API_KEY, "API key must be specified"));
         }
-        if (!sln.toLowerCase().endsWith(".sln")) {
-          checks.add(new InvalidProperty(NUGET_PATH, "File extension must be .sln. Specify path to .sln file."));
+
+        if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PUBLISH_FILES))) {
+          checks.add(new InvalidProperty(NUGET_API_KEY, "Specify at least one package to pusblish"));
         }
 
         return checks;
@@ -80,10 +83,19 @@ public class PackagesInstallerRunType extends RunType {
     };
   }
 
-  @NotNull
   @Override
-  public String describeParameters(@NotNull Map<String, String> parameters) {
-    return getDescription() + "\nSolution: " + parameters.get(SLN_PATH);
+  public String getEditRunnerParamsJspFilePath() {
+    return myDescriptor.getPluginResourcesPath("publish/editPublish.jsp");
+  }
+
+  @Override
+  public String getViewRunnerParamsJspFilePath() {
+    return myDescriptor.getPluginResourcesPath("publish/viewPublish.jsp");
+  }
+
+  @Override
+  public Map<String, String> getDefaultRunnerProperties() {
+    return Collections.emptyMap();
   }
 
   @Override
@@ -93,18 +105,4 @@ public class PackagesInstallerRunType extends RunType {
     return list;
   }
 
-  @Override
-  public String getEditRunnerParamsJspFilePath() {
-    return myDescriptor.getPluginResourcesPath("install/editInstallPackage.jsp");
-  }
-
-  @Override
-  public String getViewRunnerParamsJspFilePath() {
-    return myDescriptor.getPluginResourcesPath("install/viewInstallPackage.jsp");
-  }
-
-  @Override
-  public Map<String, String> getDefaultRunnerProperties() {
-    return new TreeMap<String, String>();
-  }
 }

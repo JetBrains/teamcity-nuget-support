@@ -87,7 +87,7 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
 
   @NotNull
   public String getType() {
-    return PackagesConstants.RUN_TYPE;
+    return PackagesConstants.INSTALL_RUN_TYPE;
   }
 
   public boolean canRun(@NotNull BuildAgentConfiguration agentConfiguration) {

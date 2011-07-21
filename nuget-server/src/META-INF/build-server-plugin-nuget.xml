@@ -26,4 +26,8 @@
 
 
   <bean class="jetbrains.buildServer.nuget.server.show.NuGetDownloadedPackagesTab"/>
+
+
+  <bean class="jetbrains.buildServer.nuget.server.publish.PublishRunTypeRegistrar"/>
+  <bean class="jetbrains.buildServer.nuget.server.publish.PublishRunType"/>
 </beans>
