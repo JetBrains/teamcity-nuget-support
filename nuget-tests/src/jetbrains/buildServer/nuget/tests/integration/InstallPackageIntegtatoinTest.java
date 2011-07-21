@@ -21,6 +21,7 @@ import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
@@ -278,7 +279,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     );
 
     BuildProcess proc = new PackagesInstallerRunner(
-            new NuGetActionFactoryImpl(executingFactory(), pu),
+            new NuGetActionFactoryImpl(executingFactory(), pu, new CommandFactoryImpl()),
             myParametersFactory
     ).createBuildProcess(myBuild, myContext);
 

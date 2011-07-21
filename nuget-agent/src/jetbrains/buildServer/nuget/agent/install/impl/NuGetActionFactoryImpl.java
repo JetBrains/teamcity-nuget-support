@@ -21,6 +21,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
@@ -28,13 +29,10 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
-import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -43,13 +41,31 @@ import java.util.List;
 public class NuGetActionFactoryImpl implements NuGetActionFactory {
   private static final Logger LOG = Logger.getInstance(NuGetActionFactoryImpl.class.getName());
 
+  private final CommandFactory myCommandFactory;
   private final CommandlineBuildProcessFactory myFactory;
   private final PackageUsages myPackageUsages;
 
   public NuGetActionFactoryImpl(@NotNull final CommandlineBuildProcessFactory factory,
-                                @NotNull final PackageUsages packageUsages) {
+                                @NotNull final PackageUsages packageUsages,
+                                @NotNull final CommandFactory commandFactory) {
     myFactory = factory;
     myPackageUsages = packageUsages;
+    myCommandFactory = commandFactory;
+  }
+
+  private CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context) {
+    return new CommandFactory.Callback<BuildProcess>() {
+      public BuildProcess createCommand(@NotNull File program,
+                                        @NotNull File workingDir,
+                                        @NotNull Collection<String> argz) throws RunBuildException {
+        return myFactory.executeCommandLine(
+                context,
+                program,
+                argz,
+                workingDir
+        );
+      }
+    };
   }
 
   @NotNull
@@ -57,16 +73,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                                     @NotNull final PackagesInstallParameters params,
                                     @NotNull final File packagesConfig,
                                     @NotNull final File targetFolder) throws RunBuildException {
-    final List<String> argz = new ArrayList<String>();
-    argz.add("install");
-    argz.add(FileUtil.getCanonicalFile(packagesConfig).getPath()); //path to package
-    if (params.getExcludeVersion()) {
-      argz.add("-ExcludeVersion");
-    }
-    argz.add("-OutputDirectory");
-    argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
-
-    return executeNuGet(context, params.getNuGetParameters(), argz, packagesConfig.getParentFile());
+    return myCommandFactory.createInstall(params, packagesConfig, targetFolder, getCallback(context));
   }
 
 
@@ -75,22 +82,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                                    @NotNull final PackagesUpdateParameters params,
                                    @NotNull final File packagesConfig,
                                    @NotNull final File targetFolder) throws RunBuildException {
-    final List<String> argz = new ArrayList<String>();
-    argz.add("update");
-    argz.add(FileUtil.getCanonicalFile(packagesConfig).getPath()); //path to package
-    if (params.getUseSafeUpdate()) {
-      argz.add("-Safe");
-    }
-    argz.add("-Verbose");
-    argz.add("-RepositoryPath");
-    argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
-
-    for (String id : params.getPackagesToUpdate()) {
-      argz.add("-Id");
-      argz.add(id);
-    }
-
-    return executeNuGet(context, params.getNuGetParameters(), argz, packagesConfig.getParentFile());
+    return myCommandFactory.createUpdate(params, packagesConfig, targetFolder, getCallback(context));
   }
 
   @NotNull
@@ -106,24 +98,5 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
         return BuildFinishedStatus.FINISHED_SUCCESS;
       }
     };
-  }
-
-  @NotNull
-  private BuildProcess executeNuGet(@NotNull final BuildRunnerContext context,
-                                    @NotNull final NuGetFetchParameters nuget,
-                                    @NotNull final Collection<String> arguments,
-                                    @NotNull final File workingDirectory) throws RunBuildException {
-    final List<String> argz = new ArrayList<String>(arguments);
-    for (String source : nuget.getNuGetPackageSources()) {
-      argz.add("-Source");
-      argz.add(source);
-    }
-
-    return myFactory.executeCommandLine(
-            context,
-            nuget.getNuGetExeFile(),
-            argz,
-            workingDirectory
-    );
   }
 }
