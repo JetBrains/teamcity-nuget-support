@@ -58,7 +58,7 @@
       <props:multilineProperty name="${ib.nuGetPublishFilesKey}" linkTitle="Packages files"
                                cols="60" rows="5"
                                expanded="${true}"/>
-      <span>Specify NuGet package files to push to NuGet Feed. Each file on new line.</span>
+      <span>Specify NuGet package files to push to NuGet Feed. Each file on new line. Wildcards are supported</span>
       <span class="error" id="error_${ib.nuGetPublishFilesKey}"></span>
     </td>
   </tr>
