@@ -38,6 +38,7 @@ import java.util.Collection;
  * Date: 22.07.11 1:26
  */
 public class IntegrationTestBase extends BuildProcessTestCase {
+  private StringBuilder myCommandsOutput;
   protected File myRoot;
   protected Mockery m;
   protected AgentRunningBuild myBuild;
@@ -50,10 +51,16 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected NuGetFetchParameters myNuGet;
   private BuildProcess myMockProcess;
 
+  @NotNull
+  protected String getCommandsOutput() {
+    return myCommandsOutput.toString();
+  }
+
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    myCommandsOutput = new StringBuilder();
     myRoot = createTempDir();
     m = new Mockery();
     myBuild = m.mock(AgentRunningBuild.class);
@@ -117,6 +124,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
             System.out.println(result.getStdout());
             System.out.println(result.getStderr());
+
+            myCommandsOutput.append(result.getStdout()).append("\n\n").append(result.getStderr()).append("\n\n");
 
             return result.getExitCode() == 0
                     ? BuildFinishedStatus.FINISHED_SUCCESS

@@ -49,6 +49,8 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
   public void test_publish_packages() throws IOException, RunBuildException {
     final File pkg = preparePackage();
     callPublishRunner(pkg);
+
+    Assert.assertTrue(getCommandsOutput().contains("Your package was uploaded"));
   }
 
   @Test
@@ -97,7 +99,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
       allowing(myPublishParameters).getCreateOnly(); will(returnValue(true));
       allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(Paths.getPathToNuGet()));
       allowing(myPublishParameters).getPublishSource(); will(returnValue(null));
-      allowing(myPublishParameters).getApiKey(); will(returnValue("88001628-cb42-4c35-91be-4015cf638bcf"));
+      allowing(myPublishParameters).getApiKey(); will(returnValue(getQ()));
 
       allowing(myParametersFactory).loadPublishParameters(myContext);will(returnValue(myPublishParameters));
     }});
@@ -113,5 +115,13 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
     final BuildProcess proc = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
+  }
+
+  private String getQ() {
+    final int i1 = 88001628;
+    final int universe = 42;
+    final int num = 4015;
+    final String nuget = 91 + "be" + "-" + num + "cf638bcf";
+    return (i1 + "-" + "cb" + universe + "-" + 4 + "c") + 35 + "-" + nuget;
   }
 }
