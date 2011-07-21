@@ -40,29 +40,14 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   @NotNull
   public NuGetFetchParameters loadNuGetFetchParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
     return new NuGetFetchParameters() {
-
-      private File resolvePath(@NotNull final String runnerParameter, @NotNull String name) throws RunBuildException {
-        String path = getParameter(context, runnerParameter);
-        if (StringUtil.isEmptyOrSpaces(path))
-          throw new RunBuildException("Runner parameter '" + runnerParameter + "' was not found");
-
-        File file = FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
-        if (!file.exists()) {
-          throw new RunBuildException("Failed to find " + name + " at " + file);
-        }
-
-        return file;
-      }
-
-
       @NotNull
       public File getSolutionFile() throws RunBuildException {
-        return resolvePath(SLN_PATH, "Visual Studio .sln file");
+        return getFile(context, SLN_PATH, "Visual Studio .sln file");
       }
 
       @NotNull
       public File getNuGetExeFile() throws RunBuildException {
-        return resolvePath(NUGET_PATH, "nuget.exe");
+        return getFile(context, NUGET_PATH, "nuget.exe");
       }
 
       @NotNull
@@ -75,6 +60,23 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       }
     };
   }
+
+  @NotNull
+  private File getFile(@NotNull final BuildRunnerContext context,
+                       @NotNull final String runnerParameter,
+                       @NotNull final String fileName) throws RunBuildException {
+    String path = getParameter(context, runnerParameter);
+    if (StringUtil.isEmptyOrSpaces(path))
+      throw new RunBuildException("Runner parameter '" + runnerParameter + "' was not found");
+
+    File file = FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
+    if (!file.exists()) {
+      throw new RunBuildException("Failed to find " + fileName + " at " + file);
+    }
+
+    return file;
+  }
+
 
   private Collection<String> getMultilineParameter(BuildRunnerContext context, String nugetSources) {
     String sources = getParameter(context, nugetSources);
@@ -137,6 +139,34 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       @NotNull
       public Collection<String> getPackagesToUpdate() {
         return getMultilineParameter(context, NUGET_UPDATE_PACKAGE_IDS);
+      }
+    };
+  }
+
+  @NotNull
+  public NuGetPublishParameters loadPublishParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
+    return new NuGetPublishParameters() {
+      public String getPublishSource() throws RunBuildException {
+        return getParameter(context, NUGET_PUBLISH_SOURCE);
+      }
+
+      @NotNull
+      public String getApiKey() throws RunBuildException {
+        return getParameter(context, NUGET_API_KEY);
+      }
+
+      @NotNull
+      public Collection<String> getFiles() throws RunBuildException {
+        return getMultilineParameter(context, NUGET_PUBLISH_FILES);
+      }
+
+      public boolean getCreateOnly() {
+        return getBoolean(context, NUGET_PUBLISH_CREATE_ONLY);
+      }
+
+      @NotNull
+      public File getNuGetExeFile() throws RunBuildException {
+        return getFile(context, NUGET_PATH, "nuget.exe");
       }
     };
   }

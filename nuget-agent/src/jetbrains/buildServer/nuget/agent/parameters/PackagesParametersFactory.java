@@ -43,4 +43,8 @@ public interface PackagesParametersFactory {
   @Nullable
   PackagesUpdateParameters loadUpdatePackagesParameters(@NotNull final BuildRunnerContext context,
                                                         @NotNull final NuGetFetchParameters nuget) throws RunBuildException;
+
+
+  @NotNull
+  NuGetPublishParameters loadPublishParameters(@NotNull final BuildRunnerContext context) throws RunBuildException;
 }
