@@ -58,7 +58,7 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
 
   private void createStages(@NotNull final BuildRunnerContext context,
                             @NotNull final InstallStages stages) throws RunBuildException {
-    final NuGetFetchParameters parameters = myParametersFactory.loadNuGetParameters(context);
+    final NuGetFetchParameters parameters = myParametersFactory.loadNuGetFetchParameters(context);
     final PackagesInstallParameters installParameters = myParametersFactory.loadInstallPackagesParameters(context, parameters);
     final PackagesUpdateParameters updateParameters = myParametersFactory.loadUpdatePackagesParameters(context, parameters);
 

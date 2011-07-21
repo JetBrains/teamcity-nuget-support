@@ -34,7 +34,7 @@ public interface PackagesParametersFactory {
    * @throws RunBuildException if failed to create parameters
    */
   @NotNull
-  NuGetFetchParameters loadNuGetParameters(@NotNull final BuildRunnerContext context) throws RunBuildException;
+  NuGetFetchParameters loadNuGetFetchParameters(@NotNull final BuildRunnerContext context) throws RunBuildException;
 
   @Nullable
   PackagesInstallParameters loadInstallPackagesParameters(@NotNull final BuildRunnerContext context,

@@ -38,7 +38,7 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  */
 public class PackagesParametersFactoryImpl implements PackagesParametersFactory {
   @NotNull
-  public NuGetFetchParameters loadNuGetParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
+  public NuGetFetchParameters loadNuGetFetchParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
     return new NuGetFetchParameters() {
 
       private File resolvePath(@NotNull final String runnerParameter, @NotNull String name) throws RunBuildException {

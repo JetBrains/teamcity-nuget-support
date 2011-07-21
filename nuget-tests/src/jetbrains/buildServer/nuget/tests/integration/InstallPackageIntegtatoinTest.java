@@ -254,7 +254,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
                              @Nullable Collection<PackageInfo> detectedPackages) throws RunBuildException {
 
     m.checking(new Expectations() {{
-      allowing(myParametersFactory).loadNuGetParameters(myContext);
+      allowing(myParametersFactory).loadNuGetFetchParameters(myContext);
       will(returnValue(myNuGet));
       allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);
       will(returnValue(myInstall));
