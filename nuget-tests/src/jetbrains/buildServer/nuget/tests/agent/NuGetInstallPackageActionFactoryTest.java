@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
@@ -55,7 +56,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
     m = new Mockery();
     myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
     PackageUsages pu = m.mock(PackageUsages.class);
-    i = new NuGetActionFactoryImpl(myProcessFactory, pu);
+    i = new NuGetActionFactoryImpl(myProcessFactory, pu, new CommandFactoryImpl());
     ctx = m.mock(BuildRunnerContext.class);
     ps = m.mock(PackagesInstallParameters.class);
     nugetParams = m.mock(NuGetFetchParameters.class);
