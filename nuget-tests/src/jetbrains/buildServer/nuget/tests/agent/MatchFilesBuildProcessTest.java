@@ -22,6 +22,7 @@ import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.publish.MatchFilesBuildProcess;
+import jetbrains.buildServer.nuget.tests.Strings;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
@@ -63,10 +64,13 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
     match = new MatchFilesBuildProcess(ctx, params, cb);
     root = createTempDir();
 
-    m.checking(new Expectations(){{
-      allowing(params).getFiles(); will(returnValue(files));
-      allowing(ctx).getBuild(); will(returnValue(build));
-      allowing(build).getCheckoutDirectory(); will(returnValue(root));
+    m.checking(new Expectations() {{
+      allowing(params).getFiles();
+      will(returnValue(files));
+      allowing(ctx).getBuild();
+      will(returnValue(build));
+      allowing(build).getCheckoutDirectory();
+      will(returnValue(root));
     }});
   }
 
@@ -75,11 +79,27 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
     final File dest = new File(root, "aaa.txt");
     FileUtil.writeFile(dest, "some content");
 
-    m.checking(new Expectations(){{
+    m.checking(new Expectations() {{
       oneOf(cb).fileFound(dest);
     }});
 
     files.add("aaa.txt");
+    assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_match_relative_file_worng_symbols() throws RunBuildException {
+    final File dest = new File(root, "aaa.txt");
+    FileUtil.writeFile(dest, "some content");
+
+    m.checking(new Expectations() {{
+      oneOf(cb).fileFound(dest);
+    }});
+
+    files.add("aaa.txt");
+    files.add(Strings.EXOTIC);
     assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
 
     m.assertIsSatisfied();
@@ -91,11 +111,58 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
     FileUtil.createParentDirs(dest);
     FileUtil.writeFile(dest, "some content");
 
-    m.checking(new Expectations(){{
+    m.checking(new Expectations() {{
       oneOf(cb).fileFound(dest);
     }});
 
     files.add("**/*.txt");
+    assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_match_relative_file_wildcard3() throws RunBuildException {
+    final File dest = new File(root, "q/e/r/t/aaa.txt");
+    FileUtil.createParentDirs(dest);
+    FileUtil.writeFile(dest, "some content");
+
+    final File dest2 = new File(root, "q/v/i/k/abbb.txt");
+    FileUtil.createParentDirs(dest2);
+    FileUtil.writeFile(dest2, "some content");
+
+    m.checking(new Expectations() {{
+      oneOf(cb).fileFound(dest);
+      oneOf(cb).fileFound(dest2);
+    }});
+
+    files.add("**/*a.txt");
+    files.add("**/*b.txt");
+    assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_match_relative_file_wildcard2() throws RunBuildException {
+    final File dest = new File(root, "q/e/r/t/aaa.txt");
+    FileUtil.createParentDirs(dest);
+    FileUtil.writeFile(dest, "some content");
+
+    final File dest2 = new File(root, "q/e/p/t/aaa.txt");
+    FileUtil.createParentDirs(dest2);
+    FileUtil.writeFile(dest2, "some content");
+
+    final File dest3 = new File(root, "q/e/p/z/bbb.txt");
+    FileUtil.createParentDirs(dest3);
+    FileUtil.writeFile(dest3, "some content");
+
+    m.checking(new Expectations() {{
+      oneOf(cb).fileFound(dest);
+      oneOf(cb).fileFound(dest2);
+    }});
+
+    files.add("**/a*.txt");
     assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
 
     m.assertIsSatisfied();
@@ -107,7 +174,7 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
     final File dest = new File(root, "aaa.txt");
     FileUtil.writeFile(dest, "some content");
 
-    m.checking(new Expectations(){{
+    m.checking(new Expectations() {{
       oneOf(cb).fileFound(dest);
     }});
 
@@ -123,7 +190,7 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
     FileUtil.createParentDirs(dest);
     FileUtil.writeFile(dest, "some content");
 
-    m.checking(new Expectations(){{
+    m.checking(new Expectations() {{
       oneOf(cb).fileFound(dest);
     }});
 
