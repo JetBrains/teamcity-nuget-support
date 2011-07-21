@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.agent;
 
+import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildRunnerContext;
@@ -70,42 +71,66 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
   }
 
   @Test
-  public void test_match_relative_file() {
+  public void test_match_relative_file() throws RunBuildException {
     final File dest = new File(root, "aaa.txt");
     FileUtil.writeFile(dest, "some content");
 
+    m.checking(new Expectations(){{
+      oneOf(cb).fileFound(dest);
+    }});
+
     files.add("aaa.txt");
     assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
   }
 
   @Test
-  public void test_match_relative_file_wildcard() {
+  public void test_match_relative_file_wildcard() throws RunBuildException {
     final File dest = new File(root, "q/e/r/t/aaa.txt");
     FileUtil.createParentDirs(dest);
     FileUtil.writeFile(dest, "some content");
 
+    m.checking(new Expectations(){{
+      oneOf(cb).fileFound(dest);
+    }});
+
     files.add("**/*.txt");
     assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
   }
 
 
   @Test
-  public void test_match_fullPath_file() {
+  public void test_match_fullPath_file() throws RunBuildException {
     final File dest = new File(root, "aaa.txt");
     FileUtil.writeFile(dest, "some content");
 
+    m.checking(new Expectations(){{
+      oneOf(cb).fileFound(dest);
+    }});
+
     files.add(FileUtil.getCanonicalFile(dest).getPath());
     assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
   }
 
   @Test
-  public void test_match_fullPath_file2() {
+  public void test_match_fullPath_file2() throws RunBuildException {
     final File dest = new File(root, "a/b/c/aaa.txt");
     FileUtil.createParentDirs(dest);
     FileUtil.writeFile(dest, "some content");
 
+    m.checking(new Expectations(){{
+      oneOf(cb).fileFound(dest);
+    }});
+
     files.add(FileUtil.getCanonicalFile(dest).getPath());
     assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -113,6 +138,8 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
     final File dest = new File(root, "aaa.txt");
     FileUtil.writeFile(dest, "some content");
 
-    assertRunException(match, "fick");
+    assertRunException(match, "Failed to find files to publish matching");
+
+    m.assertIsSatisfied();
   }
 }

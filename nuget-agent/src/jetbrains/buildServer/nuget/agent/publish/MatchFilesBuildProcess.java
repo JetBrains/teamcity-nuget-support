@@ -24,11 +24,14 @@ import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.agent.util.AntPatternFileFinder;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -52,7 +55,26 @@ public class MatchFilesBuildProcess extends BuildProcessBase {
   @NotNull
   @Override
   protected BuildFinishedStatus waitForImpl() throws RunBuildException {
-    final Collection<String> files = myParameters.getFiles();
+    final List<String> files = new ArrayList<String>(myParameters.getFiles());
+
+    boolean found = false;
+
+    for(Iterator<String> it = files.iterator(); it.hasNext();) {
+      final String pattern = it.next().trim();
+      if (StringUtil.isEmptyOrSpaces(pattern)) {
+        it.remove();
+        continue;
+      }
+
+      final File file = new File(pattern);
+      if (file.isAbsolute()) {
+        found = true;
+        LOG.debug("Found nugkg to push: " + file);
+        myCallback.fileFound(file);
+        it.remove();
+      }
+    }
+
     final String[] includes = files.toArray(new String[files.size()]);
     AntPatternFileFinder finder = new AntPatternFileFinder(
             includes,
@@ -60,19 +82,21 @@ public class MatchFilesBuildProcess extends BuildProcessBase {
             SystemInfo.isFileSystemCaseSensitive
     );
 
+    final File root = myContext.getBuild().getCheckoutDirectory();
     try {
-      final File root = myContext.getBuild().getCheckoutDirectory();
       final File[] result = finder.findFiles(root);
-      if (result.length == 0) {
-        throw new RunBuildException("Failed to find files to publish matching: " + files + " under " + root + ". No packages to publish. ");
-      }
 
       for (File file : result) {
         LOG.debug("Found nugkg to push: " + file);
+        found = true;
         myCallback.fileFound(file);
       }
     } catch (IOException e) {
       throw new RunBuildException("Failed to find packages to publish. " + e.getMessage(), e);
+    }
+
+    if (!found) {
+      throw new RunBuildException("Failed to find files to publish matching: " + files + " under " + root + ". No packages to publish. ");
     }
 
     return BuildFinishedStatus.FINISHED_SUCCESS;
