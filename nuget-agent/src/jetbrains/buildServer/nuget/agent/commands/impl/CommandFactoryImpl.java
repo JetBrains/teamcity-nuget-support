@@ -72,11 +72,17 @@ public class CommandFactoryImpl implements CommandFactory {
   public <T> T createPush(@NotNull final NuGetPublishParameters params,
                           @NotNull final File packagePath,
                           @NotNull final Callback<T> factory) throws RunBuildException {
-    return executeNuGet(params, Arrays.asList(params.getPublishSource()),
-            Arrays.asList(
-                    packagePath.getPath(),
-                    params.getApiKey()
-            ),
+    final List<String> arguments = new ArrayList<String>();
+    arguments.add(packagePath.getPath());
+    arguments.add(params.getApiKey());
+    if (params.getCreateOnly()) {
+      arguments.add("-CreateOnly");
+    }
+
+    return executeNuGet(
+            params,
+            Arrays.asList(params.getPublishSource()),
+            arguments,
             packagePath.getParentFile(),
             factory);
   }
