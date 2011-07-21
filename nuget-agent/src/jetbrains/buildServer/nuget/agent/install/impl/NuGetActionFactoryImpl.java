@@ -23,7 +23,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
@@ -95,7 +95,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
 
   @NotNull
   public BuildProcess createUsageReport(@NotNull final BuildRunnerContext context,
-                                        @NotNull final NuGetParameters params,
+                                        @NotNull final NuGetFetchParameters params,
                                         @NotNull final File packagesConfig,
                                         @NotNull final File targetFolder) throws RunBuildException {
     return new BuildProcessBase() {
@@ -110,7 +110,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
 
   @NotNull
   private BuildProcess executeNuGet(@NotNull final BuildRunnerContext context,
-                                    @NotNull final NuGetParameters nuget,
+                                    @NotNull final NuGetFetchParameters nuget,
                                     @NotNull final Collection<String> arguments,
                                     @NotNull final File workingDirectory) throws RunBuildException {
     final List<String> argz = new ArrayList<String>(arguments);

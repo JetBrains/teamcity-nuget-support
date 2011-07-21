@@ -10,7 +10,7 @@ import java.util.Collection;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 10.07.11 14:27
  */
-public interface NuGetParameters {
+public interface NuGetFetchParameters {
   /**
    * @return path to nuget.exe file
    * @throws jetbrains.buildServer.RunBuildException if nuget was not found

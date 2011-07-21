@@ -20,7 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
@@ -44,7 +44,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   private NuGetActionFactoryImpl i;
   private BuildRunnerContext ctx;
   private PackagesInstallParameters ps;
-  private NuGetParameters nugetParams;
+  private NuGetFetchParameters nugetParams;
   private File myTarget;
   private File myConfig;
 
@@ -58,7 +58,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
     i = new NuGetActionFactoryImpl(myProcessFactory, pu);
     ctx = m.mock(BuildRunnerContext.class);
     ps = m.mock(PackagesInstallParameters.class);
-    nugetParams = m.mock(NuGetParameters.class);
+    nugetParams = m.mock(NuGetFetchParameters.class);
 
     myTarget = createTempDir();
     myConfig = createTempFile();

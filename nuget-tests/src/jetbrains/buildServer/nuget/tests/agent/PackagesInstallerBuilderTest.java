@@ -23,7 +23,7 @@ import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.install.impl.InstallStages;
 import jetbrains.buildServer.nuget.agent.install.impl.PackagesInstallerBuilder;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
@@ -49,7 +49,7 @@ public class PackagesInstallerBuilderTest extends BaseTestCase {
   private BuildProcessContinuation postUpdate;
   private BuildProcessContinuation report;
   private BuildRunnerContext context;
-  private NuGetParameters nugetSettings;
+  private NuGetFetchParameters nugetSettings;
   private PackagesInstallParameters installParameters;
   private PackagesUpdateParameters updateParameters;
   private File myTaget;
@@ -77,7 +77,7 @@ public class PackagesInstallerBuilderTest extends BaseTestCase {
     context = m.mock(BuildRunnerContext.class);
     installParameters = m.mock(PackagesInstallParameters.class);
     updateParameters = m.mock(PackagesUpdateParameters.class);
-    nugetSettings = m.mock(NuGetParameters.class);
+    nugetSettings = m.mock(NuGetFetchParameters.class);
 
     final InstallStages is = m.mock(InstallStages.class);
     final BuildProcess reportProcess = m.mock(BuildProcess.class, "report process");

@@ -38,8 +38,8 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  */
 public class PackagesParametersFactoryImpl implements PackagesParametersFactory {
   @NotNull
-  public NuGetParameters loadNuGetParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
-    return new NuGetParameters() {
+  public NuGetFetchParameters loadNuGetParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
+    return new NuGetFetchParameters() {
 
       private File resolvePath(@NotNull final String runnerParameter, @NotNull String name) throws RunBuildException {
         String path = getParameter(context, runnerParameter);
@@ -101,10 +101,10 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
 
   public PackagesInstallParameters loadInstallPackagesParameters(@NotNull final BuildRunnerContext context,
-                                                                 @NotNull final NuGetParameters nuget) throws RunBuildException {
+                                                                 @NotNull final NuGetFetchParameters nuget) throws RunBuildException {
     return new PackagesInstallParameters() {
       @NotNull
-      public NuGetParameters getNuGetParameters() {
+      public NuGetFetchParameters getNuGetParameters() {
         return nuget;
       }
 
@@ -115,12 +115,12 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   }
 
   public PackagesUpdateParameters loadUpdatePackagesParameters(@NotNull final BuildRunnerContext context,
-                                                               @NotNull final NuGetParameters nuget) throws RunBuildException {
+                                                               @NotNull final NuGetFetchParameters nuget) throws RunBuildException {
     if (!getBoolean(context, NUGET_UPDATE_PACKAGES)) return null;
 
     return new PackagesUpdateParameters() {
       @NotNull
-      public NuGetParameters getNuGetParameters() {
+      public NuGetFetchParameters getNuGetParameters() {
         return nuget;
       }
 

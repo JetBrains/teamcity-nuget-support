@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.agent.install;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +45,7 @@ public interface NuGetActionFactory {
 
   @NotNull
   BuildProcess createUsageReport(@NotNull BuildRunnerContext context,
-                                 @NotNull NuGetParameters params,
+                                 @NotNull NuGetFetchParameters params,
                                  @NotNull File packagesConfig,
                                  @NotNull File targetFolder) throws RunBuildException;
 }

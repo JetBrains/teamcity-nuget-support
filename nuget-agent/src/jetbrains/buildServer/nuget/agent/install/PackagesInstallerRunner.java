@@ -22,7 +22,7 @@ import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.nuget.agent.install.impl.InstallStages;
 import jetbrains.buildServer.nuget.agent.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.install.impl.PackagesInstallerBuilder;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
@@ -58,7 +58,7 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
 
   private void createStages(@NotNull final BuildRunnerContext context,
                             @NotNull final InstallStages stages) throws RunBuildException {
-    final NuGetParameters parameters = myParametersFactory.loadNuGetParameters(context);
+    final NuGetFetchParameters parameters = myParametersFactory.loadNuGetParameters(context);
     final PackagesInstallParameters installParameters = myParametersFactory.loadInstallPackagesParameters(context, parameters);
     final PackagesUpdateParameters updateParameters = myParametersFactory.loadUpdatePackagesParameters(context, parameters);
 

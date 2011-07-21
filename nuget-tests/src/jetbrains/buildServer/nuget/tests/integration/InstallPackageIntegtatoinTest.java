@@ -27,7 +27,7 @@ import jetbrains.buildServer.nuget.agent.install.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesConfigParser;
 import jetbrains.buildServer.nuget.agent.install.impl.PackageUsagesImpl;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
@@ -61,7 +61,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
   private PackagesParametersFactory myParametersFactory;
   private PackagesInstallParameters myInstall;
   private PackagesUpdateParameters myUpdate;
-  private NuGetParameters myNuGet;
+  private NuGetFetchParameters myNuGet;
   private BuildProcess myMockProcess;
 
   @BeforeMethod
@@ -77,7 +77,7 @@ public class InstallPackageIntegtatoinTest extends BuildProcessTestCase {
     myInstall = m.mock(PackagesInstallParameters.class);
     myUpdate = m.mock(PackagesUpdateParameters.class);
     myMockProcess = m.mock(BuildProcess.class);
-    myNuGet = m.mock(NuGetParameters.class);
+    myNuGet = m.mock(NuGetFetchParameters.class);
 
     m.checking(new Expectations() {{
       allowing(myContext).getBuild();

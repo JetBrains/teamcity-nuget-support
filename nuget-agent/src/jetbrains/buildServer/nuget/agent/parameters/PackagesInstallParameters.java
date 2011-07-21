@@ -20,7 +20,7 @@ package jetbrains.buildServer.nuget.agent.parameters;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 16:18
  */
-public interface PackagesInstallParameters extends NuGetParametersHolder{
+public interface PackagesInstallParameters extends NuGetFetchParametersHolder {
   /**
    * @return true if pacakges are expected to be installed
    *         without version
