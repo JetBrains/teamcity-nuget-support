@@ -29,9 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_API_KEY;
-import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_PATH;
-import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_PUBLISH_FILES;
+import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -75,7 +73,7 @@ public class PublishRunType extends RunType {
         }
 
         if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PUBLISH_FILES))) {
-          checks.add(new InvalidProperty(NUGET_API_KEY, "Specify at least one package to pusblish"));
+          checks.add(new InvalidProperty(NUGET_PUBLISH_FILES, "Specify at least one package to pusblish"));
         }
 
         return checks;
@@ -105,4 +103,32 @@ public class PublishRunType extends RunType {
     return list;
   }
 
+  @NotNull
+  @Override
+  public String describeParameters(@NotNull Map<String, String> parameters) {
+    StringBuilder sb = new StringBuilder();
+    final String source = parameters.get(NUGET_PUBLISH_SOURCE);
+    if (!StringUtil.isEmptyOrSpaces(source)) {
+      sb.append("Publish to:").append(source).append("\n");
+    }
+
+    final String packages = parameters.get(NUGET_PUBLISH_FILES);
+    if (!StringUtil.isEmptyOrSpaces(packages)) {
+      sb.append("Packages: ");
+      boolean isFirst = true;
+      for (String split : packages.split("[\r\n]+")) {
+        if (!StringUtil.isEmptyOrSpaces(split)) {
+          if (!isFirst) {sb.append(", ");} else {isFirst = false; }
+          sb.append(StringUtil.truncateStringValueWithDotsAtCenter(split, 50));
+        }
+      }
+    }
+
+    final String doNotPublish = parameters.get(NUGET_PUBLISH_CREATE_ONLY);
+    if (!StringUtil.isEmptyOrSpaces(doNotPublish)) {
+      sb.append("\nDo not pusblish uploaded package");
+    }
+
+    return sb.toString();
+  }
 }

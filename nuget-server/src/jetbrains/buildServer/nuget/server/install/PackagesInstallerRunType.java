@@ -83,7 +83,7 @@ public class PackagesInstallerRunType extends RunType {
   @NotNull
   @Override
   public String describeParameters(@NotNull Map<String, String> parameters) {
-    return getDescription() + "\nSolution: " + parameters.get(SLN_PATH);
+    return "Solution: " + parameters.get(SLN_PATH);
   }
 
   @Override
