@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.install.PackagesInstallerRunType;
+import jetbrains.buildServer.nuget.server.publish.PublishRunType;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jmock.Mockery;
 import org.testng.Assert;
@@ -43,6 +44,12 @@ public class RunTypeNameTest extends BaseTestCase {
   @Test
   public void test_installPackagesRunTypeIdLendth() {
     final String type = new PackagesInstallerRunType(descr).getType();
+    Assert.assertTrue(type.length() < 30);
+  }
+
+  @Test
+  public void test_publishPackagesRunTypeIdLendth() {
+    final String type = new PublishRunType(descr).getType();
     Assert.assertTrue(type.length() < 30);
   }
 }
