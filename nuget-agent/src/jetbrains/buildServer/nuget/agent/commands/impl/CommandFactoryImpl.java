@@ -18,14 +18,13 @@ package jetbrains.buildServer.nuget.agent.commands.impl;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -70,12 +69,29 @@ public class CommandFactoryImpl implements CommandFactory {
   }
 
   @NotNull
+  public <T> T createPush(@NotNull final NuGetPublishParameters params,
+                          @NotNull final File packagePath,
+                          @NotNull final Callback<T> factory) throws RunBuildException {
+    return executeNuGet(params, Arrays.asList(params.getPublishSource()),
+            Arrays.asList(
+                    packagePath.getPath(),
+                    params.getApiKey()
+            ),
+            packagePath.getParentFile(),
+            factory);
+  }
+
+  @NotNull
   private <T> T executeNuGet(@NotNull final NuGetFetchParameters nuget,
                              @NotNull final Collection<String> arguments,
                              @NotNull final File workingDir,
                              @NotNull final Callback<T> factory) throws RunBuildException {
+    return executeNuGet(nuget, nuget.getNuGetPackageSources(), arguments, workingDir, factory);
+  }
+
+  private <T> T executeNuGet(NuGetParameters nuget, Collection<String> sources, Collection<String> arguments, File workingDir, Callback<T> factory) throws RunBuildException {
     final List<String> argz = new ArrayList<String>(arguments);
-    for (String source : nuget.getNuGetPackageSources()) {
+    for (String source : sources) {
       argz.add("-Source");
       argz.add(source);
     }
