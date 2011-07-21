@@ -51,6 +51,7 @@ public interface CommandFactory {
      * @return some result object depending of caller's desire
      * @throws RunBuildException if failed to create/execure command
      */
+    @NotNull
     T createCommand(@NotNull File program,
                     @NotNull final File workingDir,
                     @NotNull Collection<String> argz) throws RunBuildException;
