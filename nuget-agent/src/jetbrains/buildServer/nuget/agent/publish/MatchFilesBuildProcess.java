@@ -64,7 +64,7 @@ public class MatchFilesBuildProcess extends BuildProcessBase {
       final File root = myContext.getBuild().getCheckoutDirectory();
       final File[] result = finder.findFiles(root);
       if (result.length == 0) {
-        throw new RunBuildException("Failed to find files to push mathing: " + files + " under " + root + ". No packages to publish. ");
+        throw new RunBuildException("Failed to find files to publish matching: " + files + " under " + root + ". No packages to publish. ");
       }
 
       for (File file : result) {
@@ -72,7 +72,7 @@ public class MatchFilesBuildProcess extends BuildProcessBase {
         myCallback.fileFound(file);
       }
     } catch (IOException e) {
-      throw new RunBuildException("Failed to find packages to push. " + e.getMessage(), e);
+      throw new RunBuildException("Failed to find packages to publish. " + e.getMessage(), e);
     }
 
     return BuildFinishedStatus.FINISHED_SUCCESS;
