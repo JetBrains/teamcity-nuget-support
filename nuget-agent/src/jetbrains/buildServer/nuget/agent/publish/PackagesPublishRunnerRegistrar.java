@@ -16,19 +16,16 @@
 
 package jetbrains.buildServer.nuget.agent.publish;
 
-import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.runner.BuildServiceAdapter;
-import jetbrains.buildServer.agent.runner.ProgramCommandLine;
+import jetbrains.buildServer.agent.impl.BuildRunnerRegistry;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 21.07.11 15:17
+ * Date: 21.07.11 20:00
  */
-public class PublishService extends BuildServiceAdapter {
-  @NotNull
-  @Override
-  public ProgramCommandLine makeProgramCommandLine() throws RunBuildException {
-    throw new RunBuildException("Not implemented");
+public class PackagesPublishRunnerRegistrar {
+  public PackagesPublishRunnerRegistrar(@NotNull final BuildRunnerRegistry reg,
+                                        @NotNull final PackagesPublishRunner runner) {
+    reg.registerRunner(runner);
   }
 }

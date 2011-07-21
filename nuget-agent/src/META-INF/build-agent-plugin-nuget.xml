@@ -13,6 +13,9 @@
   <bean class="jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner"/>
   <bean class="jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunnerRegistrar"/>
 
+  <bean class="jetbrains.buildServer.nuget.agent.publish.PackagesPublishRunner"/>
+  <bean class="jetbrains.buildServer.nuget.agent.publish.PackagesPublishRunnerRegistrar"/>
+
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl"/>
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.LoggingNuGetActionFactoryImpl">
     <constructor-arg>
