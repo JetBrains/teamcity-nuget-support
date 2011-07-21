@@ -20,7 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
+import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.install.impl.InstallStages;
 import jetbrains.buildServer.nuget.agent.install.impl.PackagesInstallerBuilder;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;

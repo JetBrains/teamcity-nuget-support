@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.install.impl;
+package jetbrains.buildServer.nuget.agent.commands.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
@@ -22,7 +22,7 @@ import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
-import jetbrains.buildServer.nuget.agent.install.NuGetActionFactory;
+import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
@@ -39,8 +39,6 @@ import java.util.Collection;
  * Date: 07.07.11 17:49
  */
 public class NuGetActionFactoryImpl implements NuGetActionFactory {
-  private static final Logger LOG = Logger.getInstance(NuGetActionFactoryImpl.class.getName());
-
   private final CommandFactory myCommandFactory;
   private final CommandlineBuildProcessFactory myFactory;
   private final PackageUsages myPackageUsages;

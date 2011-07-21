@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.agent.install;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.install.impl.InstallStages;
 import jetbrains.buildServer.nuget.agent.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.install.impl.PackagesInstallerBuilder;
