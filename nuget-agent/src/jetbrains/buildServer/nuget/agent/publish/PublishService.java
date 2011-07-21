@@ -29,6 +29,6 @@ public class PublishService extends BuildServiceAdapter {
   @NotNull
   @Override
   public ProgramCommandLine makeProgramCommandLine() throws RunBuildException {
-    return null;
+    throw new RunBuildException("Not implemented");
   }
 }

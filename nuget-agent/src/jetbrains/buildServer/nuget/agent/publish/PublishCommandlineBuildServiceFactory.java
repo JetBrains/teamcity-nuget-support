@@ -33,7 +33,7 @@ public class PublishCommandlineBuildServiceFactory implements CommandLineBuildSe
   private static final Logger LOG = Logger.getInstance(PublishCommandlineBuildServiceFactory.class.getName());
   @NotNull
   public CommandLineBuildService createService() {
-    return null;
+    return new PublishService();
   }
 
   @NotNull
