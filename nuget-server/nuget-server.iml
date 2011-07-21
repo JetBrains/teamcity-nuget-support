@@ -8,6 +8,9 @@
           <file>jar://$TeamCityDistribution$/webapps/ROOT/WEB-INF/lib/server.jar!/META-INF/buildServerSpring.xml</file>
           <file>jar://$TeamCityDistribution$/webapps/ROOT/WEB-INF/lib/server.jar!/META-INF/buildServerPermissions.xml</file>
           <file>file://$MODULE_DIR$/fake-teamcity-server-plugin-context.xml</file>
+          <file>file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerSpringWeb.xml</file>
+          <file>file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerPluginsSupportWeb.xml</file>
+          <file>file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerConfigurator.xml</file>
         </fileset>
       </configuration>
     </facet>
