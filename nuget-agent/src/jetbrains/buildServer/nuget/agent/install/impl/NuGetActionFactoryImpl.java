@@ -55,6 +55,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
 
   private CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context) {
     return new CommandFactory.Callback<BuildProcess>() {
+      @NotNull
       public BuildProcess createCommand(@NotNull File program,
                                         @NotNull File workingDir,
                                         @NotNull Collection<String> argz) throws RunBuildException {
