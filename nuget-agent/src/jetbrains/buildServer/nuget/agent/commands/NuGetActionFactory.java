@@ -20,6 +20,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import org.jetbrains.annotations.NotNull;
@@ -48,4 +49,11 @@ public interface NuGetActionFactory {
                                  @NotNull NuGetFetchParameters params,
                                  @NotNull File packagesConfig,
                                  @NotNull File targetFolder) throws RunBuildException;
+
+
+  @NotNull
+  BuildProcess createPush(@NotNull BuildRunnerContext context,
+                          @NotNull NuGetPublishParameters params,
+                          @NotNull File packagePath) throws RunBuildException;
+
 }

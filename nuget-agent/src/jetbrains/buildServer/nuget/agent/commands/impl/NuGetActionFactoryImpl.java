@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.agent.commands.impl;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
@@ -25,6 +24,7 @@ import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
@@ -97,5 +97,12 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
         return BuildFinishedStatus.FINISHED_SUCCESS;
       }
     };
+  }
+
+  @NotNull
+  public BuildProcess createPush(@NotNull BuildRunnerContext context,
+                                 @NotNull NuGetPublishParameters params,
+                                 @NotNull File packagePath) throws RunBuildException {
+    return myCommandFactory.createPush(params, packagePath, getCallback(context));
   }
 }

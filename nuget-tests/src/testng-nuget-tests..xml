@@ -7,8 +7,10 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.PackagesWatcherTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.LocateNuGetConfigBuildProcessTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackagesInstallerBuilderTest"/>
+
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetInstallPackageActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetUpdatePackageActionFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPushActoinFactoryTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.common.PackageDependenciesStoreTest"/>
 

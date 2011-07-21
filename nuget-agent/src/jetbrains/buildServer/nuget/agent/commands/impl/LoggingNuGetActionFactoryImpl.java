@@ -22,6 +22,7 @@ import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
@@ -52,26 +53,20 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
                                     @NotNull final File config,
                                     @NotNull final File targetFolder) {
     return new DelegatingBuildProcess(
-            new DelegatingBuildProcess.Action() {
-              private final BuildProgressLogger logger = context.getBuild().getBuildLogger();
-
+            new LoggingAction(context, config, "install") {
               @NotNull
-              public BuildProcess startImpl() throws RunBuildException {
-                String pathToLog = FileUtil.getRelativePath(context.getBuild().getCheckoutDirectory(), config);
-                if (pathToLog == null) pathToLog = config.getPath();
-                logger.activityStarted("install", "Installing NuGet packages for " + pathToLog, "nuget");
-
-
+              @Override
+              protected BuildProcess delegateToActualAction() throws RunBuildException {
                 return myActionFactory.createInstall(
                         context,
                         params,
                         config,
-                        targetFolder)
-                        ;
+                        targetFolder);
               }
 
-              public void finishedImpl() {
-                logger.activityFinished("install", "nuget");
+              @Override
+              protected String getBlockDescription(@NotNull String pathToLog) {
+                return "Installing NuGet packages for " + pathToLog;
               }
             }
     );
@@ -83,28 +78,81 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
                                    @NotNull final File config,
                                    @NotNull final File targetFolder) {
     return new DelegatingBuildProcess(
-            new DelegatingBuildProcess.Action() {
-              private final BuildProgressLogger logger = context.getBuild().getBuildLogger();
-
+            new LoggingAction(context, config, "update") {
               @NotNull
-              public BuildProcess startImpl() throws RunBuildException {
-                String pathToLog = FileUtil.getRelativePath(context.getBuild().getCheckoutDirectory(), config);
-                if (pathToLog == null) pathToLog = config.getPath();
-                logger.activityStarted("update", "Updating NuGet packages for " + pathToLog, "nuget");
-
+              @Override
+              protected BuildProcess delegateToActualAction() throws RunBuildException {
                 return myActionFactory.createUpdate(
                         context,
                         params,
                         config,
-                        targetFolder)
-                        ;
+                        targetFolder);
               }
 
-              public void finishedImpl() {
-                logger.activityFinished("update", "nuget");
+              @Override
+              protected String getBlockDescription(@NotNull String pathToLog) {
+                return "Updating NuGet packages for " + pathToLog;
               }
             }
     );
+  }
+
+  @NotNull
+  public BuildProcess createPush(@NotNull BuildRunnerContext context,
+                                 @NotNull NuGetPublishParameters params,
+                                 @NotNull File packagePath) throws RunBuildException {
+    return new DelegatingBuildProcess(
+            new LoggingAction(context, packagePath, "push") {
+      @NotNull
+      @Override
+      protected BuildProcess delegateToActualAction() throws RunBuildException {
+        return null;
+      }
+
+      @Override
+      protected String getBlockDescription(@NotNull String pathToLog) {
+        return null;
+      }
+    });
+  }
+
+  private abstract class LoggingAction implements DelegatingBuildProcess.Action {
+    private final BuildRunnerContext myContext;
+    private final File myFileToLog;
+    private final String myBlockName;
+
+    protected LoggingAction(@NotNull final BuildRunnerContext context,
+                            @NotNull final File fileToLog,
+                            @NotNull final String blockName) {
+      myContext = context;
+      myFileToLog = fileToLog;
+      myBlockName = blockName;
+    }
+
+    @NotNull
+    protected abstract BuildProcess delegateToActualAction() throws RunBuildException;
+
+    protected abstract String getBlockDescription(@NotNull String pathToLog);
+
+
+    @NotNull
+    public BuildProcess startImpl() throws RunBuildException {
+      String pathToLog = FileUtil.getRelativePath(myContext.getBuild().getCheckoutDirectory(), myFileToLog);
+      if (pathToLog == null) pathToLog = myFileToLog.getPath();
+
+      getLogger().activityStarted(myBlockName, getBlockDescription(pathToLog), "nuget");
+
+      return delegateToActualAction();
+    }
+
+    @NotNull
+    private BuildProgressLogger getLogger() {
+      return myContext.getBuild().getBuildLogger();
+    }
+
+    public void finishedImpl() {
+      getLogger().activityFinished(myBlockName, "nuget");
+    }
   }
 
 }
