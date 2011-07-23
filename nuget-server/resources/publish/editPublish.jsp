@@ -42,7 +42,7 @@
   <tr>
     <th>API key:<l:star/></th>
     <td>
-      <props:textProperty name="${ib.apiKey}" className="longField"/>
+      <props:passwordProperty name="${ib.apiKey}" className="longField"/>
       <span class="smallNote">
         Specify API key to access NuGet source.
       </span>
