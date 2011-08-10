@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Tests" type="TestNG" factoryName="TestNG">
-    <extension name="coverage" enabled="true" merge="false" sample_coverage="true" runner="idea">
+  <configuration default="false" name="Run Integration Tests" type="TestNG" factoryName="TestNG">
+    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
         <option name="PATTERN" value="jetbrains.*" />
         <option name="ENABLED" value="true" />
@@ -9,7 +9,7 @@
     <module name="nuget-tests" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
-    <option name="SUITE_NAME" value="$PROJECT_DIR$/nuget-tests/src/testng-nuget-tests..xml" />
+    <option name="SUITE_NAME" value="$PROJECT_DIR$/nuget-tests/src/testng-nuget-integration.xml" />
     <option name="PACKAGE_NAME" value="" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
@@ -33,8 +33,6 @@
     <RunnerSettings RunnerId="Profile ">
       <option name="myExternalizedOptions" value="&#13;&#10;snapshots-dir=&#13;&#10;additional-options2=onexit\=snapshot&#13;&#10;" />
     </RunnerSettings>
-    <RunnerSettings RunnerId="Run" />
-    <ConfigurationWrapper RunnerId="Run" />
     <method />
   </configuration>
 </component>
