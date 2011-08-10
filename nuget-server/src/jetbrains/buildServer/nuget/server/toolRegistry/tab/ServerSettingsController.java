@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
@@ -36,13 +37,18 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ServerSettingsController extends BaseController {
   private final String myPath;
+  private final NuGetToolManager myToolsManager;
+  private final PluginDescriptor myDescriptor;
 
   public ServerSettingsController(@NotNull final SBuildServer server,
                                   @NotNull final AuthorizationInterceptor auth,
                                   @NotNull final PermissionChecker checker,
                                   @NotNull final WebControllerManager web,
+                                  @NotNull final NuGetToolManager toolsManager,
                                   @NotNull final PluginDescriptor descriptor) {
     super(server);
+    myToolsManager = toolsManager;
+    myDescriptor = descriptor;
     myPath = descriptor.getPluginResourcesPath("tool/nuget-server-tab.html");
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
       public void checkPermissions(@NotNull AuthorityHolder authorityHolder, @NotNull HttpServletRequest request) throws AccessDeniedException {
@@ -59,6 +65,8 @@ public class ServerSettingsController extends BaseController {
 
   @Override
   protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    return simpleView("Empty nuget tab content");
+    ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/tools.jsp"));
+    mv.getModelMap().put("tools", new ToolsModel());
+    return mv;
   }
 }

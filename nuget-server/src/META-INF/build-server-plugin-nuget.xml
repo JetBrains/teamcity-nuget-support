@@ -35,4 +35,6 @@
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.ServerSettingsTab"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.ServerSettingsController"/>
+
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolManagerImpl"/>
 </beans>
