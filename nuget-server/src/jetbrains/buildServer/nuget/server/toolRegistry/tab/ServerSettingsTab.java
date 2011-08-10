@@ -34,7 +34,7 @@ public class ServerSettingsTab extends SimpleCustomTab {
                            @NotNull final PermissionChecker checker) {
     super(pagePlaces,
             PlaceId.ADMIN_SERVER_CONFIGURATION_TAB,
-            "toolLoadTab",
+            "nugetServerSettingsTab",
             controller.getPath(),
             "NuGet");
     myChecker = checker;
