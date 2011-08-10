@@ -39,6 +39,7 @@ API gaps TeamCity:
  - Tools server extension: 
    - no way to provide own UI
    - no way to implement custom downloader
+   - user may tweak download url to download malicious file instead of expected one => checkes required
 
 API gaps NuGet:
  - Allow to call nuget.exe with plugins without installing them into %USERPROFILE%
