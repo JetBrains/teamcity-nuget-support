@@ -16,10 +16,18 @@
 <%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="tools" type="jetbrains.buildServer.nuget.server.toolRegistry.tab.ToolsModel" scope="request"/>
 
-<h3>Installed NuGet Versions</h3>
+<c:set var="installedPluginsCount" value="${fn:length(tools.installed)}"/>
+<p>
+  TeamCity NuGet plugin requires to configure NuGet.Exe Command Line clients.
+  There are
+  <strong><c:out value="${installedPluginsCount}"/></strong>
+  plugin<bs:s val="${installedPluginsCount}"/> installed.
+</p>
+
+<h2 class="noBorder">Installed NuGet Versions</h2>
 <c:choose>
   <c:when test="${fn:length(tools.installed) eq 0}">
-    No NuGet packages installed
+    <div>There are no installed NuGet.exe</div>
   </c:when>
   <c:otherwise>
     <c:forEach var="tool" items="${tools.installed}">
@@ -29,24 +37,35 @@
     </c:forEach>
   </c:otherwise>
 </c:choose>
-<div class="addNew"><a href="#">Download NuGet</a></div>
-<div class="addNew"><a href="#">Install custom NuGet.exe</a></div>
 
+<div class="addNew">
+  <a href="#" onclick="return BS.NuGet.InstallPopup.show();">Install NuGet.exe Command Line client</a>
+</div>
 
-<%--
-<h3>Available NuGet Versions</h3>
-<c:choose>
-  <c:when test="${tools.toolsToInstallComputed}">
-    <c:forEach var="tool" items="${tools.toolsToInstall}">
-      <div>
-        NuGet version: <c:out value="${tool.version}"/> <a href="#" class="addNew">Install</a>
-      </div>
-    </c:forEach>
-  </c:when>
-  <c:otherwise>
+<script type="text/javascript">
+  if (!BS) BS = {};
+  if (!BS.NuGet) BS.NuGet = {};
+  BS.NuGet.InstallPopup = OO.extend(BS.AbstractModalDialog, {
+    getContainer : function() {
+      return $('nugetInstallFormDialog');
+    },
 
-  </c:otherwise>
-</c:choose>
+    show : function() {
+      this.showCentered();
+      return false;
+    },
 
+    save : function() {
+      alert('save');
+    }
+  });
+</script>
 
---%>
+<bs:modalDialog
+        formId="nugetInstallForm"
+        title="Install NuGet.exe Command Line"
+        action="foo.html"
+        closeCommand="BS.NuGet.InstallPopup.close();"
+        saveCommand="BS.NuGet.InstallPopup.save();">
+  This is modal dialog
+</bs:modalDialog>
