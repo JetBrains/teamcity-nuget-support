@@ -16,7 +16,7 @@
 <%@ include file="/include-internal.jsp" %>
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <jsp:useBean id="available"
-             type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.tab.InstallableTool>"
+             type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool>"
              scope="request"/>
 <div id="nugetInstallFormResreshInner">
   <c:choose>
@@ -24,39 +24,27 @@
       No other NuGet.exe Command Line packages available
     </c:when>
     <c:otherwise>
-      <h4>Select NuGet.exe Command Line version to install:</h4>
-      <table style="padding-left: 5em;">
-        <c:forEach var="t" items="${available}">
-          <tr>
-            <td style="width: 10em; text-align: left;">
-              NuGet <c:out value="${t.version}"/>
-            </td>
-            <td>
-              <c:choose>
-              <c:when test="${t.allreadyInstalled}">
-              <strong>installed</strong>
-              </c:when>
-              <c:otherwise>
-              <input type="button" value="Install"/>
-              </c:otherwise>
-              </c:choose>
-          </tr>
-        </c:forEach>
+      <table class="runnerFormTable">
+        <tr>
+          <td colspan="2">
+            Select NuGet.exe Command Line to install:
+          </td>
+        </tr>
+        <tr>
+          <th><label for="tools">Version:<l:star/></label></th>
+          <td>
+            <forms:select name="tools" style="width:15em;">
+              <forms:option value="">-- Please choose version --</forms:option>
+              <c:forEach var="t" items="${available}">
+                <forms:option value="${t.id}"><c:out value="${t.version}"/></forms:option>
+              </c:forEach>
+            </forms:select>
+            <span class="smallNote">
+              Choose version of NuGet Commandline Tools to install.
+            </span>
+          </td>
+        </tr>
       </table>
     </c:otherwise>
   </c:choose>
-
-  <h4>Upload your own NuGet.exe Command Line:</h4>
-  <table>
-    <tr>
-      <td>NuGet Version<l:star/>:</td>
-      <td><props:textProperty name="version"/></td>
-    </tr>
-    <tr>
-      <td>NuGet.exe file<l:star/>:</td>
-      <td><input type="file" name="file"></td>
-    </tr>
-  </table>
-  <input type="button" value="Upload"/>
-
 </div>

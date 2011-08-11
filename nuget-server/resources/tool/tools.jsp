@@ -14,10 +14,10 @@
   ~ limitations under the License.
   --%>
 <%@ include file="/include-internal.jsp" %>
-<jsp:useBean id="tools" type="jetbrains.buildServer.nuget.server.toolRegistry.tab.ToolsModel" scope="request"/>
+<jsp:useBean id="tools" type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.tab.LocalTool>" scope="request"/>
 <jsp:useBean id="installerUrl" type="java.lang.String" scope="request"/>
 
-<c:set var="installedPluginsCount" value="${fn:length(tools.installed)}"/>
+<c:set var="installedPluginsCount" value="${fn:length(tools)}"/>
 <p>
   TeamCity NuGet plugin requires to configure NuGet.Exe Command Line clients.
   There are
@@ -27,48 +27,47 @@
 
 <h2 class="noBorder">Installed NuGet Versions</h2>
 <c:choose>
-  <c:when test="${fn:length(tools.installed) eq 0}">
+  <c:when test="${installedPluginsCount eq 0}">
     <div>There are no installed NuGet.exe</div>
   </c:when>
   <c:otherwise>
-    <c:forEach var="tool" items="${tools.installed}">
-      <div>
-        NuGet version: <c:out value="${tool.version}"/>
-      </div>
-    </c:forEach>
+      <table class="dark borderBottom" cellpadding="0" cellspacing="0" style="width: 30em;">
+        <thead>
+        <tr>
+          <th class="header" style="width: 66%">Version</th>
+          <th class="header"></th>
+        </tr>
+        </thead>
+        <tbody>
+          <c:forEach var="tool" items="${tools}">
+            <tr>
+              <td><c:out value="${tool.version}"/></td>
+              <td>
+                <c:choose>
+                  <c:when test="${tool.state.installed}">
+                    <a href="#">Uninstall</a>
+                  </c:when>
+                  <c:when test="${tool.state.installing}">
+                    <bs:commentIcon text="Messages"/>
+                    Installing...
+                  </c:when>
+                </c:choose>
+              </td>
+            </tr>
+          </c:forEach>
+        </tbody>
+    </table>
   </c:otherwise>
 </c:choose>
 
 <div class="addNew">
   <a href="#" onclick="return BS.NuGet.InstallPopup.show();">
-    Install NuGet.exe Command Line client
+    Install
+    <c:if test="${installedPluginsCount gt 0}">addintional versions of</c:if>
+    NuGet.exe Command Line
     <forms:saving id="nugetInstallLinkSaving"/>
   </a>
 </div>
-
-<script type="text/javascript">
-  if (!BS) BS = {};
-  if (!BS.NuGet) BS.NuGet = {};
-  BS.NuGet.InstallPopup = OO.extend(BS.AbstractModalDialog, {
-    getContainer : function() {
-      return $('nugetInstallFormDialog');
-    },
-
-    show : function() {
-      var that = this;
-      that.showCentered();
-      $('nugetInstallFormResresh').refresh("nugetInstallLinkSaving", null, function() {
-          that.showCentered();
-      });
-
-      return false;
-    },
-
-    save : function() {
-      alert('save');
-    }
-  });
-</script>
 
 <bs:modalDialog
         formId="nugetInstallForm"
@@ -80,9 +79,10 @@
   <bs:refreshable containerId="nugetInstallFormResresh" pageUrl="${actualInstallerUrl}">
     <jsp:include page="installTool-loading.jsp"/>
   </bs:refreshable>
+
   <div class="popupSaveButtonsBlock">
-    <a href="javascript://" onclick="BS.NuGet.InstallPopup.close();" class="cancel">Close</a>
+    <a href="javascript://" onclick="BS.NuGet.InstallPopup.close();" class="cancel">Cancel</a>
+    <input class="submitButton" type="button" value="Install" id="agentPoolNameApplyButton" onclick="BS.NuGet.InstallPopup.save();"/>
     <br clear="all"/>
   </div>
-
 </bs:modalDialog>

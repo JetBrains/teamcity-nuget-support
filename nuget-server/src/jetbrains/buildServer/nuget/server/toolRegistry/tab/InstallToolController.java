@@ -31,10 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -54,7 +51,8 @@ public class InstallToolController extends BaseFormXmlController {
     myDescriptor = descriptor;
     myPath = descriptor.getPluginResourcesPath("tool/nuget-server-tab-install-tool.html");
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
-      public void checkPermissions(@NotNull AuthorityHolder authorityHolder, @NotNull HttpServletRequest request) throws AccessDeniedException {
+      public void checkPermissions(@NotNull AuthorityHolder authorityHolder,
+                                   @NotNull HttpServletRequest request) throws AccessDeniedException {
         checker.assertAccess(authorityHolder);
       }
     });
@@ -71,18 +69,10 @@ public class InstallToolController extends BaseFormXmlController {
   protected ModelAndView doGet(HttpServletRequest request, HttpServletResponse response) {
     ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/installTool-show.jsp"));
 
-    mv.getModelMap().put("available", getInstallableTools());
+    mv.getModelMap().put("available", myToolsManager.getAvailableTools());
     mv.getModelMap().put("propertiesBean", new BasePropertiesBean(new HashMap<String, String>()));
 
     return mv;
-  }
-
-  @NotNull
-  private Collection<InstallableTool> getInstallableTools() {
-    List<InstallableTool> list = new ArrayList<InstallableTool>();
-    list.add(new InstallableTool("t1", "4.3.4.555", false));
-    list.add(new InstallableTool("t2", "6.2.4.535", true));
-    return list;
   }
 
   @Override

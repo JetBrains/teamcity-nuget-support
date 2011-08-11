@@ -32,6 +32,12 @@ public interface NuGetToolManager {
   Collection<NuGetInstalledTool> getInstalledTools();
 
   /**
+   * @return list of tools that are installing now
+   */
+  @NotNull
+  Collection<NuGetInstallingTool> getInstallingTool();
+
+  /**
    * @return fetches the full list of available and supported nuget tools
    */
   @NotNull

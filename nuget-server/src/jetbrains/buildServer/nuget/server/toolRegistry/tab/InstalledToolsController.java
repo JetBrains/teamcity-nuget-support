@@ -19,6 +19,8 @@ package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstallingTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
@@ -29,18 +31,22 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 10.08.11 20:38
  */
-public class ServerSettingsController extends BaseController {
+public class InstalledToolsController extends BaseController {
   private final String myPath;
   private final NuGetToolManager myToolsManager;
   private final InstallToolController myInstaller;
   private final PluginDescriptor myDescriptor;
 
-  public ServerSettingsController(@NotNull final AuthorizationInterceptor auth,
+  public InstalledToolsController(@NotNull final AuthorizationInterceptor auth,
                                   @NotNull final PermissionChecker checker,
                                   @NotNull final WebControllerManager web,
                                   @NotNull final NuGetToolManager toolsManager,
@@ -49,7 +55,7 @@ public class ServerSettingsController extends BaseController {
     myToolsManager = toolsManager;
     myInstaller = installer;
     myDescriptor = descriptor;
-    myPath = descriptor.getPluginResourcesPath("tool/nuget-server-tab.html");
+    myPath = descriptor.getPluginResourcesPath("tool/nuget-server-tools.html");
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
       public void checkPermissions(@NotNull AuthorityHolder authorityHolder, @NotNull HttpServletRequest request) throws AccessDeniedException {
        checker.assertAccess(authorityHolder);
@@ -66,8 +72,33 @@ public class ServerSettingsController extends BaseController {
   @Override
   protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
     ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/tools.jsp"));
-    mv.getModelMap().put("tools", new ToolsModel());
+    mv.getModelMap().put("tools", getModel());
     mv.getModelMap().put("installerUrl", myInstaller.getPath());
     return mv;
+  }
+
+  @NotNull
+  private Collection<LocalTool> getModel() {
+    final List<LocalTool> tools = new ArrayList<LocalTool>();
+
+    for (NuGetInstalledTool tool : myToolsManager.getInstalledTools()) {
+      tools.add(new LocalTool(
+              tool.getId(),
+              tool.getVersion(),
+              LocalToolState.INSTALLED, 
+              Collections.<String>emptyList()
+      ));
+    }
+
+    for (NuGetInstallingTool tool : myToolsManager.getInstallingTool()) {
+      tools.add(new LocalTool(
+              tool.getId(),
+              tool.getVersion(),
+              LocalToolState.INSTALLING,
+              tool.getInstallMessages()
+      ));
+    }
+
+    return tools;
   }
 }

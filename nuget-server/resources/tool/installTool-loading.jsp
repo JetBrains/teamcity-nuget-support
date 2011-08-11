@@ -15,7 +15,7 @@
   --%>
 <%@ include file="/include-internal.jsp" %>
 <div id="nugetInstallFormResreshInner">
-  <forms:saving/>
-  Fetching available NuGet.exe Command Line versions
+  <forms:saving style="display: block"/>
+  Discovering available NuGet.exe Command Line versions
 </div>
 

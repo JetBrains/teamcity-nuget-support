@@ -16,10 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 
-import jetbrains.buildServer.web.openapi.PagePlaces;
-import jetbrains.buildServer.web.openapi.PlaceId;
-import jetbrains.buildServer.web.openapi.PositionConstraint;
-import jetbrains.buildServer.web.openapi.SimpleCustomTab;
+import jetbrains.buildServer.web.openapi.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,7 +27,8 @@ public class ServerSettingsTab extends SimpleCustomTab {
   private final PermissionChecker myChecker;
 
   public ServerSettingsTab(@NotNull final PagePlaces pagePlaces,
-                           @NotNull final ServerSettingsController controller,
+                           @NotNull final PluginDescriptor descriptor,
+                           @NotNull final InstalledToolsController controller,
                            @NotNull final PermissionChecker checker) {
     super(pagePlaces,
             PlaceId.ADMIN_SERVER_CONFIGURATION_TAB,
@@ -39,6 +37,8 @@ public class ServerSettingsTab extends SimpleCustomTab {
             "NuGet");
     myChecker = checker;
     setPosition(PositionConstraint.last());
+    addCssFile(descriptor.getPluginResourcesPath("tool/tools.css"));
+    addJsFile(descriptor.getPluginResourcesPath("tool/tools.js"));
     register();
   }
 
