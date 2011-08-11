@@ -16,10 +16,10 @@
 
 package jetbrains.buildServer.nuget.server.feed.reader;
 
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.core4j.Enumerable;
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.consumer.ODataConsumer;
+import org.odata4j.core.OEntity;
 
 import java.io.IOException;
 
@@ -36,12 +36,23 @@ public class NuGetFeedReader {
 
   public void queryPackage(@NotNull String feedUrl,
                            @NotNull String packageId) throws IOException {
+    final ODataConsumer consumer = ODataConsumer.create(feedUrl);
+
+    for (String s : consumer.getEntitySets()) {
+      System.out.println("s = " + s);
+    }
+    //filter("Id eq '" + packageId + "'")
+    final Enumerable<OEntity> entries = consumer.getEntities("Packages").execute();
+    for (OEntity entry : entries) {
+      System.out.println(entry);
+    }
+/*
     HttpGet get = new HttpGet(feedUrl + "/Packages()");
     get.getParams().setParameter("$filter", "Id eq '" + packageId + "'");
     get.setHeader(HttpHeaders.ACCEPT_ENCODING, "application/xml");
     final HttpResponse execute = myClient.getClient().execute(get);
 
     System.out.println(execute);
-    execute.getEntity().writeTo(System.out);
+    execute.getEntity().writeTo(System.out);*/
   }
 }
