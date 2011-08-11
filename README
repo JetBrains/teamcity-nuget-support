@@ -40,6 +40,7 @@ API gaps TeamCity:
    - no way to provide own UI
    - no way to implement custom downloader
    - user may tweak download url to download malicious file instead of expected one => checkes required
+ - Add an API to provide pluginData path without use of ServerPaths class and specifying names explicitly
 
 API gaps NuGet:
  - Allow to call nuget.exe with plugins without installing them into %USERPROFILE%
