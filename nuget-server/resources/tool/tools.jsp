@@ -45,7 +45,7 @@
               <td>
                 <c:choose>
                   <c:when test="${tool.state.installed}">
-                    <a href="#">Uninstall</a>
+                    <a href="#">Remove</a>
                   </c:when>
                   <c:when test="${tool.state.installing}">
                     <bs:commentIcon text="Messages"/>
