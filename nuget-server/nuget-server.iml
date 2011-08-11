@@ -39,6 +39,7 @@
     <orderEntry type="module" module-name="nuget-common" />
     <orderEntry type="library" name="Common-Impl" level="project" />
     <orderEntry type="library" name="commons-http" level="project" />
+    <orderEntry type="library" name="odata4j" level="project" />
   </component>
 </module>
 
