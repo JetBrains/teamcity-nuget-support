@@ -15,6 +15,7 @@
   --%>
 <%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="tools" type="jetbrains.buildServer.nuget.server.toolRegistry.tab.ToolsModel" scope="request"/>
+<jsp:useBean id="installerUrl" type="java.lang.String" scope="request"/>
 
 <c:set var="installedPluginsCount" value="${fn:length(tools.installed)}"/>
 <p>
@@ -39,7 +40,10 @@
 </c:choose>
 
 <div class="addNew">
-  <a href="#" onclick="return BS.NuGet.InstallPopup.show();">Install NuGet.exe Command Line client</a>
+  <a href="#" onclick="return BS.NuGet.InstallPopup.show();">
+    Install NuGet.exe Command Line client
+    <forms:saving id="nugetInstallLinkSaving"/>
+  </a>
 </div>
 
 <script type="text/javascript">
@@ -51,7 +55,12 @@
     },
 
     show : function() {
-      this.showCentered();
+      var that = this;
+      that.showCentered();
+      $('nugetInstallFormResresh').refresh("nugetInstallLinkSaving", null, function() {
+          that.showCentered();
+      });
+
       return false;
     },
 
@@ -67,5 +76,13 @@
         action="foo.html"
         closeCommand="BS.NuGet.InstallPopup.close();"
         saveCommand="BS.NuGet.InstallPopup.save();">
-  This is modal dialog
+  <c:set var="actualInstallerUrl"><c:url value="${installerUrl}"/></c:set>
+  <bs:refreshable containerId="nugetInstallFormResresh" pageUrl="${actualInstallerUrl}">
+    <jsp:include page="installTool-loading.jsp"/>
+  </bs:refreshable>
+  <div class="popupSaveButtonsBlock">
+    <a href="javascript://" onclick="BS.NuGet.InstallPopup.close();" class="cancel">Close</a>
+    <br clear="all"/>
+  </div>
+
 </bs:modalDialog>

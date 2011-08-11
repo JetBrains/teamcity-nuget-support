@@ -16,20 +16,34 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 11.08.11 0:58
+ * Date: 11.08.11 12:41
  */
-public class ToolsModel {
+public class InstallableTool {
+  private String myId;
+  private String myVersion;
+  private boolean myIsAllreadyInstalled;
+
+  public InstallableTool(String id, String version, boolean isAllreadyInstalled) {
+    myId = id;
+    myVersion = version;
+    myIsAllreadyInstalled = isAllreadyInstalled;
+  }
+
   @NotNull
-  public Collection<NuGetInstalledTool> getInstalled() {
-    return Collections.emptyList();
+  public String getId() {
+    return myId;
+  }
+
+  @NotNull
+  public String getVersion() {
+    return myVersion;
+  }
+
+  public boolean isAllreadyInstalled() {
+    return myIsAllreadyInstalled;
   }
 }

@@ -17,42 +17,45 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
-import jetbrains.buildServer.controllers.BaseController;
+import jetbrains.buildServer.controllers.BaseFormXmlController;
+import jetbrains.buildServer.controllers.BasePropertiesBean;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 10.08.11 20:38
+ * Date: 11.08.11 12:12
  */
-public class ServerSettingsController extends BaseController {
+public class InstallToolController extends BaseFormXmlController {
   private final String myPath;
   private final NuGetToolManager myToolsManager;
-  private final InstallToolController myInstaller;
   private final PluginDescriptor myDescriptor;
 
-  public ServerSettingsController(@NotNull final AuthorizationInterceptor auth,
-                                  @NotNull final PermissionChecker checker,
-                                  @NotNull final WebControllerManager web,
-                                  @NotNull final NuGetToolManager toolsManager,
-                                  @NotNull final InstallToolController installer,
-                                  @NotNull final PluginDescriptor descriptor) {
+  public InstallToolController(@NotNull final AuthorizationInterceptor auth,
+                               @NotNull final PermissionChecker checker,
+                               @NotNull final WebControllerManager web,
+                               @NotNull final NuGetToolManager toolsManager,
+                               @NotNull final PluginDescriptor descriptor) {
     myToolsManager = toolsManager;
-    myInstaller = installer;
     myDescriptor = descriptor;
-    myPath = descriptor.getPluginResourcesPath("tool/nuget-server-tab.html");
+    myPath = descriptor.getPluginResourcesPath("tool/nuget-server-tab-install-tool.html");
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
       public void checkPermissions(@NotNull AuthorityHolder authorityHolder, @NotNull HttpServletRequest request) throws AccessDeniedException {
-       checker.assertAccess(authorityHolder);
+        checker.assertAccess(authorityHolder);
       }
     });
     web.registerController(myPath, this);
@@ -63,11 +66,27 @@ public class ServerSettingsController extends BaseController {
     return myPath;
   }
 
+
   @Override
-  protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/tools.jsp"));
-    mv.getModelMap().put("tools", new ToolsModel());
-    mv.getModelMap().put("installerUrl", myInstaller.getPath());
+  protected ModelAndView doGet(HttpServletRequest request, HttpServletResponse response) {
+    ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/installTool-show.jsp"));
+
+    mv.getModelMap().put("available", getInstallableTools());
+    mv.getModelMap().put("propertiesBean", new BasePropertiesBean(new HashMap<String, String>()));
+
     return mv;
+  }
+
+  @NotNull
+  private Collection<InstallableTool> getInstallableTools() {
+    List<InstallableTool> list = new ArrayList<InstallableTool>();
+    list.add(new InstallableTool("t1", "4.3.4.555", false));
+    list.add(new InstallableTool("t2", "6.2.4.535", true));
+    return list;
+  }
+
+  @Override
+  protected void doPost(HttpServletRequest request, HttpServletResponse response, Element xmlResponse) {
+
   }
 }
