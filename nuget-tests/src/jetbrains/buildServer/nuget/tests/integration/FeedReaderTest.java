@@ -20,6 +20,10 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedConstants;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -51,6 +55,12 @@ public class FeedReaderTest extends BaseTestCase {
 
   @Test
   public void testRead() throws IOException {
+    enableDebug();
+
+    final Logger logger = Logger.getLogger("org.apache.commons");
+    logger.setLevel(Level.DEBUG);
+    logger.addAppender(new ConsoleAppender(new SimpleLayout()));
+
     myReader.queryPackage(FeedConstants.FEED_URL, "NuGet.CommandLine");
   }
 }
