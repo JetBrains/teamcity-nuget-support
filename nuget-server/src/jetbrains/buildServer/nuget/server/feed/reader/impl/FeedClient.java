@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.feed.reader.impl;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.jetbrains.annotations.NotNull;
 
