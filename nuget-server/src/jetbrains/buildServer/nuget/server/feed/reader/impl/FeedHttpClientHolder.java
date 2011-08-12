@@ -48,11 +48,6 @@ public class FeedHttpClientHolder implements FeedClient {
   }
 
   @NotNull
-  public HttpClient getClient() {
-    return myClient;
-  }
-
-  @NotNull
   public HttpResponse execute(@NotNull HttpUriRequest request) throws IOException {
     return myClient.execute(request);
   }
