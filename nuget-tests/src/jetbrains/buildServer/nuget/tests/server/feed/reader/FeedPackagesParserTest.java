@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.server;
+package jetbrains.buildServer.nuget.tests.server.feed.reader;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
