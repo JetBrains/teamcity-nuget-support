@@ -20,12 +20,9 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.XmlUtil;
-import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.ClientPNames;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
@@ -39,38 +36,19 @@ import java.net.URISyntaxException;
  */
 public class NuGetFeedReader {
   private static final Logger LOG = Logger.getInstance(NuGetFeedReader.class.getName());
-  private FeedClient myClient;
+  private final FeedClient myClient;
+  private final UrlResolver myResolver;
 
-  public NuGetFeedReader(FeedClient client) {
+  public NuGetFeedReader(FeedClient client, UrlResolver resolver) {
     myClient = client;
+    myResolver = resolver;
   }
 
-  @NotNull
-  private Pair<String, HttpResponse> resolvePath(@NotNull String feedUrl) throws IOException {
-    for(int _ = 100; _-->0;) {
-      HttpGet ping = new HttpGet(feedUrl);
-      ping.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
-      final HttpResponse execute = myClient.getClient().execute(ping);
-      final int statusCode = execute.getStatusLine().getStatusCode();
-      if (statusCode / 100 == 3) {
-        final Header location = execute.getFirstHeader("Location");
-        if (location != null) {
-          feedUrl = location.getValue();
-          continue;
-        }
-      }
-      if (statusCode != HttpStatus.SC_OK) {
-        throw new IOException("Failed to connect to " + feedUrl);
-      }
-      return Pair.create(feedUrl, execute);
-    }
-    throw new IOException("Failed to resolve redirects");
-  }
 
   public void queryPackage(@NotNull String feedUrl,
-                           @NotNull String packageId) throws IOException, URISyntaxException {
+                           @NotNull String packageId) throws IOException {
     LOG.debug("Connecting to NuGet feed url: " + feedUrl);
-    final Pair<String, HttpResponse> pair = resolvePath(feedUrl);
+    final Pair<String, HttpResponse> pair = myResolver.resolvePath(feedUrl);
     feedUrl = pair.first;
     LOG.debug("Resolved NuGet feed URL to " + feedUrl);
     final Element element = toDocument(pair.second);

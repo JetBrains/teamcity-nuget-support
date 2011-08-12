@@ -20,6 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedConstants;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
+import jetbrains.buildServer.nuget.server.feed.reader.UrlResolver;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -43,7 +44,7 @@ public class FeedReaderTest extends BaseTestCase {
   protected void setUp() throws Exception {
     super.setUp();
     myClient = new FeedClient();
-    myReader = new NuGetFeedReader(myClient);
+    myReader = new NuGetFeedReader(myClient, new UrlResolver(myClient));
   }
 
   @AfterMethod
