@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.server;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParser;
+import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
 import org.jdom.Element;
@@ -34,7 +35,7 @@ import java.util.Collection;
  * Date: 12.08.11 13:44
  */
 public class FeedPackagesParserTest extends BaseTestCase {
-  private PackagesFeedParser myParser = new PackagesFeedParser();
+  private PackagesFeedParser myParser = new PackagesFeedParserImpl();
 
   @Test
   public void test_ParseRealFeed() throws JDOMException, IOException {

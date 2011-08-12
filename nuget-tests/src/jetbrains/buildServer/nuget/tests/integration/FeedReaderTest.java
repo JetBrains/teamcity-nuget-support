@@ -41,15 +41,15 @@ import java.util.zip.ZipInputStream;
  */
 public class FeedReaderTest extends BaseTestCase {
   private NuGetFeedReader myReader;
-  private FeedClient myClient;
+  private FeedHttpClientHolder myClient;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    myClient = new FeedClient();
+    myClient = new FeedHttpClientHolder();
     final FeedGetMethodFactory methods = new FeedGetMethodFactory();
-    myReader = new NuGetFeedReaderImpl(myClient, new UrlResolver(myClient, methods), methods, new PackagesFeedParser());
+    myReader = new NuGetFeedReaderImpl(myClient, new UrlResolverImpl(myClient, methods), methods, new PackagesFeedParserImpl());
   }
 
   @AfterMethod

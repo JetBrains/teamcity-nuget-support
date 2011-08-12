@@ -16,40 +16,14 @@
 
 package jetbrains.buildServer.nuget.server.feed.reader.impl;
 
-import jetbrains.buildServer.version.ServerVersionHolder;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 11.08.11 16:24
+ * Date: 12.08.11 15:13
  */
-public class FeedClient {
-  private final HttpClient myClient;
-
-  public FeedClient() {
-    myClient = new DefaultHttpClient(new ThreadSafeClientConnManager());
-    final HttpParams params = myClient.getParams();
-
-    HttpConnectionParams.setConnectionTimeout(params, 10000);
-    HttpConnectionParams.setSoTimeout(params, 10000);
-
-    final String serverVersion = ServerVersionHolder.getVersion().getDisplayVersion();
-    HttpProtocolParams.setUserAgent(params, "JetBrains TeamCity " + serverVersion);
-  }
-
+public interface FeedClient {
   @NotNull
-  public HttpClient getClient() {
-    return myClient;
-  }
-
-  public void dispose() {
-    myClient.getConnectionManager().shutdown();
-  }
-
+  HttpClient getClient();
 }

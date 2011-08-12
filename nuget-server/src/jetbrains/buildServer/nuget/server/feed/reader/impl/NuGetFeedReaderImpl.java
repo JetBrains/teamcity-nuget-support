@@ -44,7 +44,10 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
   private final FeedGetMethodFactory myMethodFactory;
   private final PackagesFeedParser myParser;
 
-  public NuGetFeedReaderImpl(FeedClient client, UrlResolver resolver, FeedGetMethodFactory methodFactory, PackagesFeedParser parser) {
+  public NuGetFeedReaderImpl(@NotNull final FeedClient client,
+                             @NotNull final UrlResolver resolver,
+                             @NotNull final FeedGetMethodFactory methodFactory,
+                             @NotNull final PackagesFeedParser parser) {
     myClient = client;
     myResolver = resolver;
     myMethodFactory = methodFactory;
