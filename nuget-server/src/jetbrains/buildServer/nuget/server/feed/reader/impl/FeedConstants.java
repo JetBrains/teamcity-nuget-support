@@ -14,30 +14,12 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.reader;
-
-import org.apache.http.NameValuePair;
-import org.jetbrains.annotations.NotNull;
+package jetbrains.buildServer.nuget.server.feed.reader.impl;
 
 /**
-* Created by Eugene Petrenko (eugene.petrenko@gmail.com)
-* Date: 12.08.11 12:50
-*/
-public class Param implements NameValuePair {
-  private final String myName;
-  private final String myValue;
-
-  public Param(@NotNull final String name, @NotNull final String value) {
-    myName = name;
-    myValue = value;
-  }
-
-  public String getName() {
-    return myName;
-  }
-
-  @NotNull
-  public String getValue() {
-    return myValue;
-  }
+ * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 11.08.11 16:04
+ */
+public class FeedConstants {
+  public static final String FEED_URL = "https://go.microsoft.com/fwlink/?LinkID=206669";
 }

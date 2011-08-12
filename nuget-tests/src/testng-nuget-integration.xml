@@ -5,6 +5,7 @@
       <class name="jetbrains.buildServer.nuget.tests.integration.InstallPackageIntegtatoinTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.NuGetExecutorTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.PackagesPublishIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.FeedReaderTest"/>
     </classes>
   </test>
 </suite>

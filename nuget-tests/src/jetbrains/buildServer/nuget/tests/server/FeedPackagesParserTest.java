@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
-import jetbrains.buildServer.nuget.server.feed.reader.PackagesFeedParser;
+import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParser;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
 import org.jdom.Element;

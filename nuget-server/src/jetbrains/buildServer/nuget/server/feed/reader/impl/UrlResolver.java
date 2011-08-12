@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.reader;
+package jetbrains.buildServer.nuget.server.feed.reader.impl;
 
 import com.intellij.openapi.util.Pair;
 import org.apache.http.Header;

@@ -17,16 +17,16 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.reader.*;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
+import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
+import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
+import jetbrains.buildServer.nuget.server.feed.reader.impl.*;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -42,7 +42,7 @@ public class FeedReaderTest extends BaseTestCase {
     super.setUp();
     myClient = new FeedClient();
     final FeedGetMethodFactory methods = new FeedGetMethodFactory();
-    myReader = new NuGetFeedReader(myClient, new UrlResolver(myClient, methods), methods);
+    myReader = new NuGetFeedReaderImpl(myClient, new UrlResolver(myClient, methods), methods, new PackagesFeedParser());
   }
 
   @AfterMethod
@@ -54,12 +54,14 @@ public class FeedReaderTest extends BaseTestCase {
 
   @Test
   public void testRead() throws IOException {
-    enableDebug();
+    final Collection<FeedPackage> feedPackages = myReader.queryPackageVersions(FeedConstants.FEED_URL, "NuGet.CommandLine");
+    Assert.assertTrue(feedPackages.size() > 0);
 
-    final Logger logger = Logger.getLogger("org.apache.commons");
-    logger.setLevel(Level.DEBUG);
-    logger.addAppender(new ConsoleAppender(new SimpleLayout()));
-
-    myReader.queryPackage(FeedConstants.FEED_URL, "NuGet.CommandLine");
+    boolean hasLatest = false;
+    for (FeedPackage feedPackage : feedPackages) {
+      Assert.assertFalse(hasLatest && feedPackage.isLatestVersion(), "There could be only one latest");
+      hasLatest |= feedPackage.isLatestVersion();
+      System.out.println("feedPackage = " + feedPackage);
+    }
   }
 }

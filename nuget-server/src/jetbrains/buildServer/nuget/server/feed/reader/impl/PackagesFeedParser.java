@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.reader;
+package jetbrains.buildServer.nuget.server.feed.reader.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.util.StringUtil;
 import org.jdom.Element;
 import org.jdom.Namespace;
