@@ -23,12 +23,14 @@ import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.Collection;
 
 /**
@@ -51,7 +53,7 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
 
   @NotNull
   public Collection<FeedPackage> queryPackageVersions(@NotNull String feedUrl,
-                           @NotNull String packageId) throws IOException {
+                                                      @NotNull String packageId) throws IOException {
     LOG.debug("Connecting to NuGet feed url: " + feedUrl);
     final Pair<String, HttpResponse> pair = myResolver.resolvePath(feedUrl);
     feedUrl = pair.first;
@@ -61,13 +63,35 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
 
     final HttpGet get = myMethodFactory.createGet(feedUrl + "/Packages()",
             new Param("$filter", "Id eq '" + packageId + "'")
-            );
+    );
     get.setHeader(HttpHeaders.ACCEPT_ENCODING, "application/atom+xml");
 
     LOG.debug("Query for packages: " + get.getURI());
 
     final HttpResponse execute = myClient.getClient().execute(get);
     return myParser.readPackages(toDocument(execute));
+  }
+
+  public void downloadPackage(@NotNull FeedPackage pkg, @NotNull File file) throws IOException {
+    FileUtil.createParentDirs(file);
+    final String url = pkg.getDownloadUrl();
+
+    final HttpGet get = myMethodFactory.createGet(url);
+    final HttpResponse resp = myClient.getClient().execute(get);
+    final StatusLine statusLine = resp.getStatusLine();
+    if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
+      throw new IOException("Failed to download package " + pkg + ". Server returned " + statusLine);
+    }
+
+    OutputStream os = null;
+    try {
+      os = new BufferedOutputStream(new FileOutputStream(file));
+      resp.getEntity().writeTo(os);
+    } catch (final IOException e) {
+      throw new IOException("Failed to download package " + pkg + ". " + e.getMessage()) {{ initCause(e); }};
+    } finally {
+      FileUtil.close(os);
+    }
   }
 
   private Element toDocument(HttpResponse response) throws IOException {

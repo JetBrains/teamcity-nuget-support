@@ -22,4 +22,5 @@ package jetbrains.buildServer.nuget.server.feed.reader.impl;
  */
 public class FeedConstants {
   public static final String FEED_URL = "https://go.microsoft.com/fwlink/?LinkID=206669";
+  public static final String NUGET_COMMANDLINE = "NuGet.CommandLine";
 }

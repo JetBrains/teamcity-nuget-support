@@ -20,13 +20,19 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.*;
+import jetbrains.buildServer.util.FileUtil;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -63,5 +69,37 @@ public class FeedReaderTest extends BaseTestCase {
       hasLatest |= feedPackage.isLatestVersion();
       System.out.println("feedPackage = " + feedPackage);
     }
+  }
+
+  @Test
+  public void testDownloadLatest() throws IOException {
+    final Collection<FeedPackage> packages = myReader.queryPackageVersions(FeedConstants.FEED_URL, "NuGet.CommandLine");
+    FeedPackage latest = null;
+    for (FeedPackage aPackage : packages) {
+      if (aPackage.isLatestVersion()) {
+        latest = aPackage;
+      }
+    }
+    Assert.assertNotNull(latest, "there should be the latest package");
+
+    final File pkd = createTempFile();
+    myReader.downloadPackage(latest, pkd);
+
+    Assert.assertTrue(pkd.length() > 100);
+    boolean hasNuGetExe = false;
+    ZipInputStream zip = new ZipInputStream(new BufferedInputStream(new FileInputStream(pkd)));
+    try {
+      for (ZipEntry ze = zip.getNextEntry(); ze != null; ze = zip.getNextEntry()) {
+        String name = ze.getName();
+        System.out.println("ze = " + name);
+        name = name.toLowerCase();
+        hasNuGetExe |= name.endsWith("/NuGet.exe".toLowerCase());
+        hasNuGetExe |= name.endsWith("\\NuGet.exe".toLowerCase());
+      }
+    } finally {
+      FileUtil.close(zip);
+    }
+
+    Assert.assertTrue(hasNuGetExe, "package should contain nuget.exe");
   }
 }

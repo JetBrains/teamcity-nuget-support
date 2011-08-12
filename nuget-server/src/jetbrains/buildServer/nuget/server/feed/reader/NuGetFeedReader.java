@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.reader;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
@@ -29,4 +30,7 @@ public interface NuGetFeedReader {
   @NotNull
   Collection<FeedPackage> queryPackageVersions(@NotNull String feedUrl,
                                                @NotNull String packageId) throws IOException;
+
+  void downloadPackage(@NotNull FeedPackage pkg,
+                       @NotNull File destFile) throws IOException;
 }
