@@ -55,7 +55,7 @@ public class UrlResolverImpl implements UrlResolver {
       HttpGet ping = myMethods.createGet(feedUrl);
       ping.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
 
-      final HttpResponse execute = myClient.getClient().execute(ping);
+      final HttpResponse execute = myClient.execute(ping);
       final int statusCode = execute.getStatusLine().getStatusCode();
       if (statusCode / 100 == 3) {
         final Header location = execute.getFirstHeader("Location");

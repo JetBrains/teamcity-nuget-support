@@ -16,8 +16,12 @@
 
 package jetbrains.buildServer.nuget.server.feed.reader.impl;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -25,5 +29,5 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface FeedClient {
   @NotNull
-  HttpClient getClient();
+  HttpResponse execute(@NotNull HttpUriRequest request) throws IOException;
 }

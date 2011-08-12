@@ -17,13 +17,17 @@
 package jetbrains.buildServer.nuget.server.feed.reader.impl;
 
 import jetbrains.buildServer.version.ServerVersionHolder;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -46,6 +50,11 @@ public class FeedHttpClientHolder implements FeedClient {
   @NotNull
   public HttpClient getClient() {
     return myClient;
+  }
+
+  @NotNull
+  public HttpResponse execute(@NotNull HttpUriRequest request) throws IOException {
+    return myClient.execute(request);
   }
 
   public void dispose() {

@@ -71,7 +71,7 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
 
     LOG.debug("Query for packages: " + get.getURI());
 
-    final HttpResponse execute = myClient.getClient().execute(get);
+    final HttpResponse execute = myClient.execute(get);
     return myParser.readPackages(toDocument(execute));
   }
 
@@ -80,7 +80,7 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     final String url = pkg.getDownloadUrl();
 
     final HttpGet get = myMethodFactory.createGet(url);
-    final HttpResponse resp = myClient.getClient().execute(get);
+    final HttpResponse resp = myClient.execute(get);
     final StatusLine statusLine = resp.getStatusLine();
     if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
       throw new IOException("Failed to download package " + pkg + ". Server returned " + statusLine);
