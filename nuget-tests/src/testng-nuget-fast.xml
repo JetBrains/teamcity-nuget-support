@@ -27,6 +27,7 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.MatchFilesBuildProcessTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.FeedPackagesParserTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.FeedGetMethodFactoryTest"/>
     </classes>
   </test>
 </suite>
