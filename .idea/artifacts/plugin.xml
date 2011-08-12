@@ -31,6 +31,7 @@
             <element id="dir-copy" path="$PROJECT_DIR$/nuget-server/resources" />
           </element>
         </element>
+        <element id="library" level="project" name="commons-http" />
       </element>
       <element id="file-copy" path="$PROJECT_DIR$/nuget-server/teamcity-server-plugin.xml" output-file-name="teamcity-plugin.xml" />
       <element id="directory" name="bin">
