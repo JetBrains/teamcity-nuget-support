@@ -1,6 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="nuget">
-
   <test name="fast tests">
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.RunTypeNameTest"/>
@@ -26,6 +25,8 @@
       <class name="jetbrains.buildServer.nuget.tests.server.NamedPackagesUpdateCheckerTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.agent.MatchFilesBuildProcessTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.server.FeedPackagesParserTest"/>
     </classes>
   </test>
 </suite>

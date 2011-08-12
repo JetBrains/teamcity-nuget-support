@@ -28,7 +28,6 @@ import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -38,12 +37,13 @@ public class NuGetFeedReader {
   private static final Logger LOG = Logger.getInstance(NuGetFeedReader.class.getName());
   private final FeedClient myClient;
   private final UrlResolver myResolver;
+  private final FeedGetMethodFactory myMethodFactory;
 
-  public NuGetFeedReader(FeedClient client, UrlResolver resolver) {
+  public NuGetFeedReader(FeedClient client, UrlResolver resolver, FeedGetMethodFactory methodFactory) {
     myClient = client;
     myResolver = resolver;
+    myMethodFactory = methodFactory;
   }
-
 
   public void queryPackage(@NotNull String feedUrl,
                            @NotNull String packageId) throws IOException {
@@ -52,12 +52,16 @@ public class NuGetFeedReader {
     feedUrl = pair.first;
     LOG.debug("Resolved NuGet feed URL to " + feedUrl);
     final Element element = toDocument(pair.second);
-
     LOG.debug("Recieved xml: " + XmlUtil.to_s(element));
-    HttpGet get = new HttpGet(feedUrl + "/Packages()?$filter=Id%20eq%20'" + packageId +"'");
-    get.setHeader(HttpHeaders.ACCEPT_ENCODING, "application/atom+xml");
-    final HttpResponse execute = myClient.getClient().execute(get);
 
+    final HttpGet get = myMethodFactory.createGet(feedUrl + "/Packages()",
+            new Param("$filter", "Id eq '" + packageId + "'")
+            );
+    get.setHeader(HttpHeaders.ACCEPT_ENCODING, "application/atom+xml");
+
+    LOG.debug("Query for packages: " + get.getURI());
+
+    final HttpResponse execute = myClient.getClient().execute(get);
     System.out.println(execute);
     execute.getEntity().writeTo(System.out);
   }

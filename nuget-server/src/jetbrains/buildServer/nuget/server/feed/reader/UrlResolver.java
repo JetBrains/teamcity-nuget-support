@@ -32,9 +32,12 @@ import java.io.IOException;
  */
 public class UrlResolver {
   private final FeedClient myClient;
+  private final FeedGetMethodFactory myMethods;
 
-  public UrlResolver(FeedClient client) {
+  public UrlResolver(@NotNull final FeedClient client,
+                     @NotNull final FeedGetMethodFactory methods) {
     myClient = client;
+    myMethods = methods;
   }
 
   /**
@@ -49,8 +52,9 @@ public class UrlResolver {
   @NotNull
   public Pair<String, HttpResponse> resolvePath(@NotNull String feedUrl) throws IOException {
     for(int _ = 100; _-->0;) {
-      HttpGet ping = new HttpGet(feedUrl);
+      HttpGet ping = myMethods.createGet(feedUrl);
       ping.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
+
       final HttpResponse execute = myClient.getClient().execute(ping);
       final int statusCode = execute.getStatusLine().getStatusCode();
       if (statusCode / 100 == 3) {
@@ -60,6 +64,7 @@ public class UrlResolver {
           continue;
         }
       }
+
       if (statusCode != HttpStatus.SC_OK) {
         throw new IOException("Failed to connect to " + feedUrl);
       }
