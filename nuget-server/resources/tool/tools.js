@@ -19,8 +19,23 @@ if (!BS) BS = {};
 if (!BS.NuGet) BS.NuGet = {};
 
 BS.NuGet.Tools = {
+  installUrl : '',
+
   refreshPackagesList : function() {
     $('nugetPackagesList').refresh();
+  },
+
+  removeTool : function(toolId) {
+    BS.ajaxRequest(this.installUrl, {
+      parameters : {
+        whatToDo : "remove",
+        toolId : toolId
+      },
+
+      onComplete: function() {
+        BS.NuGet.Tools.refreshPackagesList();
+      }
+    })
   },
 
   InstallPopup : OO.extend(BS.PluginPropertiesForm, OO.extend(BS.AbstractModalDialog, {

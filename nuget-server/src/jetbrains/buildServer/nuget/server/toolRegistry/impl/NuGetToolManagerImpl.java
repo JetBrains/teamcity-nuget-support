@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,7 +54,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   @NotNull
   public Collection<NuGetInstallingTool> getInstallingTool() {
-    return mockInstallingTools();
+    return Collections.emptyList();
   }
 
   @NotNull

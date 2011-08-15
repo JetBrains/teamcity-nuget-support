@@ -96,7 +96,7 @@ public class InstallToolController extends BaseFormXmlController {
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response, Element xmlResponse) {
-    final String toolId = request.getParameter("prop:toolId");
+    String toolId = request.getParameter("toolId");
     if (StringUtil.isEmptyOrSpaces(toolId)) {
       ActionErrors ae = new ActionErrors();
       ae.addError("toolId", "Select NuGet.Commandline package version to install");
@@ -104,6 +104,14 @@ public class InstallToolController extends BaseFormXmlController {
       return;
     }
 
-    myToolsManager.installTool(toolId);
+    final String whatToDo = request.getParameter("whatToDo");
+    if ("install".equals(whatToDo)) {
+      myToolsManager.installTool(toolId);
+      return;
+    }
+
+    if ("remove".equals(whatToDo)) {
+      myToolsManager.removeTool(toolId);
+    }
   }
 }

@@ -48,7 +48,7 @@
               <td>
                 <c:choose>
                   <c:when test="${tool.state.installed}">
-                    <a href="#">Remove</a>
+                    <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
                   </c:when>
                   <c:when test="${tool.state.installing}">
                     <bs:commentIcon text="Messages"/>
@@ -99,5 +99,6 @@
 </bs:modalDialog>
 
 <script type="text/javascript">
+  BS.NuGet.Tools.installUrl = "<bs:forJs>${actualInstallerUrl}</bs:forJs>";
   BS.NuGet.Tools.InstallPopup.disableSubmit();
 </script>

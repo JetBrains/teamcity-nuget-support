@@ -14,7 +14,6 @@
   ~ limitations under the License.
   --%>
 <%@ include file="/include-internal.jsp" %>
-<%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <jsp:useBean id="available"
              type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool>"
              scope="request"/>
@@ -33,12 +32,13 @@
         <tr>
           <th><label for="toolId">Version:<l:star/></label></th>
           <td>
-            <props:selectProperty name="toolId" style="width:15em;">
-              <props:option value="">-- Please choose version --</props:option>
+            <input type="hidden" name="whatToDo" value="install" />
+            <forms:select name="toolId" style="width:15em;">
+              <forms:option value="">-- Please choose version --</forms:option>
               <c:forEach var="t" items="${available}">
                 <forms:option value="${t.id}"><c:out value="${t.version}"/></forms:option>
               </c:forEach>
-            </props:selectProperty>
+            </forms:select>
             <span class="smallNote">
               Choose version of NuGet Commandline Tools to install.
             </span>
