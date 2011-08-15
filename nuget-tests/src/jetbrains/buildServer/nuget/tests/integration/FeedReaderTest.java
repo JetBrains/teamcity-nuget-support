@@ -22,15 +22,14 @@ import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.*;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.SimpleHttpServerBase;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -102,5 +101,66 @@ public class FeedReaderTest extends BaseTestCase {
     }
 
     Assert.assertTrue(hasNuGetExe, "package should contain nuget.exe");
+  }
+
+
+  @Test
+  public void test_connection_leaks() throws Exception {
+    final SimpleHttpServerBase server = new SimpleHttpServerBase(){
+      @Override
+      protected Response getResponse(String s) {
+        if (s.startsWith("GET /aaa")) {
+          return redirectedResponse("bbb");
+        }
+        if (s.startsWith("GET /bbb")) {
+          return redirectedResponse("ccc");
+        }
+        if (s.startsWith("GET /ccc")) {
+          return redirectedResponse("ddd");
+        }
+        if (s.startsWith("GET /ddd")) {
+          return redirectedResponse("qqq");
+        }
+        if (s.startsWith("GET /qqq")) {
+          return new Response("HTTP/1.0 200 Ok", Arrays.asList("Encoding: utf-8", "Content-Type: text/xml")) {
+            @Override
+            public void printContent(PrintStream printStream) throws IOException {
+              final File path = Paths.getTestDataPath("feed/reader/feed-response.xml");
+              InputStream fis = new BufferedInputStream(new FileInputStream(path));
+              FileUtil.copyStreams(fis, printStream);
+            }
+
+            @Override
+            public Integer getLength() {
+              return null;
+            }
+          };
+        }
+        return null;
+      }
+
+      private Response redirectedResponse(String next) {
+        final String url = "http://localhost:" + getPort() + "/" + next;
+        return new Response("HTTP/1.0 301 Moved", Arrays.asList("Location: " + url)) {
+          @Override
+          public void printContent(PrintStream printStream) throws IOException {
+          }
+
+          @Override
+          public Integer getLength() {
+            return null;
+          }
+        };
+      }
+    };
+
+    server.start();
+    try {
+      for(int i = 0; i <100; i++) {
+        myReader.queryPackageVersions("http://localhost:" + server.getPort() + "/aaa", "NuGet");
+      }
+    } finally {
+      server.stop();
+    }
   }
 }
