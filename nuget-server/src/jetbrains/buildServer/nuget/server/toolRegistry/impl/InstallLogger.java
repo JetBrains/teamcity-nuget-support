@@ -49,11 +49,11 @@ public interface InstallLogger {
 
   void agentToolPackFinished(@NotNull FeedPackage tool);
 
-  void agentToolPubslishStarted(@NotNull FeedPackage tool, @NotNull File agentTool);
+  void agentToolPublishStarted(@NotNull FeedPackage tool, @NotNull File agentTool);
 
   void agentToolPublishFailed(@NotNull FeedPackage tool, @NotNull File agentTool, @NotNull Exception e);
 
-  void agentToolPuglishFinished(@NotNull FeedPackage tool, @NotNull File agentTool);
+  void agentToolPublishFinished(@NotNull FeedPackage tool, @NotNull File agentTool);
 
   void finished(@NotNull String packageId, @Nullable FeedPackage tool);
 }

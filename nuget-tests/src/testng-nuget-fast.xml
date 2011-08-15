@@ -30,6 +30,7 @@
       <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.FeedGetMethodFactoryTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolPackerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolsInstallerTest"/>
     </classes>
   </test>
 </suite>

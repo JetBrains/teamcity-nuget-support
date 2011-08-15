@@ -77,7 +77,7 @@ public class NuGetToolsInstaller {
 
   @NotNull
   private File registerAgentPlugins(InstallLogger logger, FeedPackage tool, File agentTool) {
-    logger.agentToolPubslishStarted(tool, agentTool);
+    logger.agentToolPublishStarted(tool, agentTool);
 
     try {
       final File dest = myNaming.getAgetToolFilePath(tool);
@@ -90,7 +90,7 @@ public class NuGetToolsInstaller {
       logger.agentToolPublishFailed(tool, agentTool, e);
       throw new ProcessedException();
     } finally {
-      logger.agentToolPuglishFinished(tool, agentTool);
+      logger.agentToolPublishFinished(tool, agentTool);
     }
   }
 

@@ -8,11 +8,11 @@
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstalledToolsController"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstallToolController"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsStateImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolManagerImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPacker"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPaths"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPathsImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming"/>
 </beans>
