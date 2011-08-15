@@ -51,7 +51,7 @@ public class NuGetToolsInstaller {
     myNaming = naming;
   }
 
-  public InstallResult installNuGet(@NotNull final String packageId, @NotNull final InstallLogger logger) {
+  public void installNuGet(@NotNull final String packageId, @NotNull final InstallLogger logger) {
     logger.started(packageId);
 
     FeedPackage tool = null;
@@ -59,20 +59,17 @@ public class NuGetToolsInstaller {
       tool = myState.findTool(packageId);
       if (tool == null) {
         logger.packageNotFound(packageId);
-        return null;
+        return;
       }
 
       final File pkg = downloadPackage(logger, tool);
       final File dest = extractPackage(logger, tool, pkg);
       File agentTool = packAgentPlugin(logger, tool, dest);
-      agentTool = registerAgentPlugins(logger, tool, agentTool);
-
-      return new InstallResult(dest, agentTool);
+      registerAgentPlugins(logger, tool, agentTool);
     } catch (ProcessedException e) {
-      return null;
+      //NOP;
     } catch (Exception e) {
       LOG.warn("Failed to install NuGet.Commandline package. " + e.getMessage(), e);
-      return null;
     } finally {
       logger.finished(packageId, tool);
     }
