@@ -80,14 +80,24 @@
         action="${actualInstallerUrl}"
         closeCommand="BS.NuGet.Tools.InstallPopup.close();"
         saveCommand="BS.NuGet.Tools.InstallPopup.save();">
+  <div id="nugetInstallFormLoading">
+    <forms:saving style="float: left; display:block;"/>
+    Discovering available NuGet.exe Command Line versions
+  </div>
+
   <bs:refreshable containerId="nugetInstallFormResresh" pageUrl="${actualInstallerUrl}">
-    <jsp:include page="installTool-loading.jsp"/>
+
   </bs:refreshable>
 
   <div class="popupSaveButtonsBlock">
     <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.close();" class="cancel">Cancel</a>
-    <input class="submitButton" type="button" value="Install" id="installNuGetApplyButton" onclick="BS.NuGet.Tools.InstallPopup.save();"/>
+    <input class="submitButton" type="submit" value="Install" id="installNuGetApplyButton" />
+    <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" class="cancel">Refresh</a>
     <forms:saving id="installNuGetApplyProgress"/>
     <br clear="all"/>
   </div>
 </bs:modalDialog>
+
+<script type="text/javascript">
+  BS.NuGet.Tools.InstallPopup.disableSubmit();
+</script>

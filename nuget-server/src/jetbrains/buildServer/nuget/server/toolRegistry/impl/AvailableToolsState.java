@@ -19,7 +19,9 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedConstants;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.TimeService;
@@ -28,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -49,16 +50,19 @@ public class AvailableToolsState {
   }
 
   @NotNull
-  public Collection<NuGetTool> getAvailable() {
+  public Collection<NuGetTool> getAvailable(ToolsPolicy policy) throws FetchException {
     Collection<NuGetTool> nuGetTools = myTools;
-    if (nuGetTools == null || lastRequest + TIMEOUT < myTime.now()) {
+    if (policy == ToolsPolicy.FetchNew
+            || nuGetTools == null
+            || lastRequest + TIMEOUT < myTime.now()) {
+      myTools = null;
       myTools = nuGetTools = fetchAvailable();
       lastRequest = myTime.now();
     }
     return nuGetTools;
   }
 
-  private Collection<NuGetTool> fetchAvailable() {
+  private Collection<NuGetTool> fetchAvailable() throws FetchException {
     try {
       final Collection<FeedPackage> packages = myReader.queryPackageVersions(FeedConstants.FEED_URL, FeedConstants.NUGET_COMMANDLINE);
       return CollectionsUtil.filterAndConvertCollection(
@@ -92,9 +96,7 @@ public class AvailableToolsState {
       );
 
     } catch (IOException e) {
-      e.printStackTrace();
-      //TODO: handle exception
-      return Collections.emptyList();
+      throw new FetchException(e.getMessage(), e);
     }
   }
 
@@ -120,4 +122,5 @@ public class AvailableToolsState {
       return myPackage;
     }
   }
+
 }

@@ -16,12 +16,12 @@
 <%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="errorText" scope="request" type="java.lang.String"/>
 <div id="nugetInstallFormResreshInner">
-  <div class="error">
-    <p>Failed to fetch latest NuGet packages from default feed.</p>
-    <p><c:out value="${errorText}"/></p>
-    <p>Press <a href="#" onclick="BS.NuGet.Tools.InstallPopup.refreshForm()">Refresh</a> to try again.</p>
-    <script type="text/javascript">
-      BS.NuGet.Tools.InstallPopup.disableSubmit();
-    </script>
+  <div class="error" style="margin-left: 0">
+    <div>
+      Failed to fetch latest NuGet packages from default feed.
+    </div>
+    <div>
+      <c:out value="${errorText}"/>
+    </div>
   </div>
 </div>

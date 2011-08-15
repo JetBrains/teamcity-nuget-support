@@ -33,18 +33,21 @@ BS.NuGet.Tools = {
     },
 
     disableSubmit : function() {
-      $('installNuGetApplyButton').disabled = true;
+      $('installNuGetApplyButton').disabled = 'disabled';
     },
 
     enableSubmit : function() {
-      $('installNuGetApplyButton').disabled = false;
+      $('installNuGetApplyButton').disabled = '';
     },
 
-    refreshForm : function() {
-      var that = this;
-      that.enableSubmit();
-      $('nugetInstallFormResresh').refresh("nugetInstallLinkSaving", null, function() {
-        that.showCentered();
+    refreshForm : function(fresh) {
+      this.disableSubmit();
+      BS.Util.hide($('nugetInstallFormResresh'));
+      BS.Util.show($('nugetInstallFormLoading'));
+      $('nugetInstallFormResresh').refresh("nugetInstallLinkSaving", fresh ? "fresh=1": "", function() {
+        BS.Util.hide($('nugetInstallFormLoading'));
+        BS.Util.show($('nugetInstallFormResresh'));
+        BS.NuGet.Tools.InstallPopup.showCentered();
       });
       return false;
     },
@@ -67,9 +70,12 @@ BS.NuGet.Tools = {
           if (!wereErrors) {
             BS.NuGet.Tools.refreshPackagesList();
             form.close();
+          } else {
+            BS.Util.reenableForm(form.formElement());
           }
         }
       }));
+      return false;
     }
   }))
 };

@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
+import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.util.StringUtil;
@@ -68,13 +69,17 @@ public class InstallToolController extends BaseFormXmlController {
     return myPath;
   }
 
-
   @Override
   protected ModelAndView doGet(HttpServletRequest request, HttpServletResponse response) {
     final Collection<NuGetTool> availableTools = new ArrayList<NuGetTool>();
 
+    final ToolsPolicy pol =
+            StringUtil.isEmptyOrSpaces(request.getParameter("fresh"))
+                    ? ToolsPolicy.ReturnCached
+                    : ToolsPolicy.FetchNew;
+
     try {
-      availableTools.addAll(myToolsManager.getAvailableTools());
+      availableTools.addAll(myToolsManager.getAvailableTools(pol));
     } catch (Exception e) {
       ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/installTool-error.jsp"));
       mv.getModel().put("errorText", e.getMessage());

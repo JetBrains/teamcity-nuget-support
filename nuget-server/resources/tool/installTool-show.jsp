@@ -22,9 +22,6 @@
   <c:choose>
     <c:when test="${fn:length(available) eq 0}">
       No other NuGet.exe Command Line packages available
-      <script type="text/javascript">
-        BS.NuGet.Tools.InstallPopup.disableSubmit();
-      </script>
     </c:when>
     <c:otherwise>
       <table class="runnerFormTable">
@@ -51,4 +48,8 @@
       </table>
     </c:otherwise>
   </c:choose>
+  <script type="text/javascript">
+    BS.NuGet.Tools.InstallPopup.enableSubmit();
+  </script>
 </div>
+

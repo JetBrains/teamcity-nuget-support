@@ -45,11 +45,10 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     return mockInstallingTools();
   }
 
-
   @NotNull
-  public Collection<NuGetTool> getAvailableTools() {
+  public Collection<NuGetTool> getAvailableTools(@NotNull ToolsPolicy policy) throws FetchException {
     //This must be cached to make if work faster!
-    return myAvailables.getAvailable();
+    return myAvailables.getAvailable(policy);
   }
 
   public void installTool(@NotNull String toolId) {

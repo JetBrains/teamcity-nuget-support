@@ -38,14 +38,18 @@ public interface NuGetToolManager {
   Collection<NuGetInstallingTool> getInstallingTool();
 
   /**
+   * @param policy kind of packages to return
    * @return fetches the full list of available and supported nuget tools
+   * @throws FetchException on fetch error if it was called
    */
   @NotNull
-  Collection<NuGetTool> getAvailableTools();
+  Collection<NuGetTool> getAvailableTools(@NotNull final ToolsPolicy policy) throws FetchException;
 
   /**
    * Downloads and installs nuget tools for both server and agent
    * @param toolId tool id for tool to install
    */
   void installTool(@NotNull String toolId);
+
+
 }
