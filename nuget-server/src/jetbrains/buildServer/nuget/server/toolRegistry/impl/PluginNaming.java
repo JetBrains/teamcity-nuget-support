@@ -34,7 +34,7 @@ public class PluginNaming {
   }
 
   @NotNull
-  public String getAgentToolFileName(@NotNull String version) {
+  private String getAgentToolFileName(@NotNull String version) {
     return "nuget-commnadline-" + version + ".zip";
   }
 
