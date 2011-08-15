@@ -45,8 +45,8 @@ public class FeedHttpClientHolder implements FeedClient {
     HttpParams ps = new BasicHttpParams();
     DefaultHttpClient.setDefaultHttpParams(ps);
 
-    HttpConnectionParams.setConnectionTimeout(ps, 10000);
-    HttpConnectionParams.setSoTimeout(ps, 10000);
+    HttpConnectionParams.setConnectionTimeout(ps, 300 * 1000);
+    HttpConnectionParams.setSoTimeout(ps, 300 * 1000);
     HttpProtocolParams.setUserAgent(ps, "JetBrains TeamCity " + serverVersion);
 
     final DefaultHttpClient client = new ContentEncodingHttpClient(new ThreadSafeClientConnManager(), ps);
