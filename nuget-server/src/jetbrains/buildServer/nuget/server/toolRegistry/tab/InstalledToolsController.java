@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
@@ -41,6 +42,8 @@ import java.util.List;
  * Date: 10.08.11 20:38
  */
 public class InstalledToolsController extends BaseController {
+  private static final Logger LOG = Logger.getInstance(InstalledToolsController.class.getName());
+
   private final String myPath;
   private final NuGetToolManager myToolsManager;
   private final InstallToolController myInstaller;
@@ -74,6 +77,7 @@ public class InstalledToolsController extends BaseController {
     ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/tools.jsp"));
     mv.getModelMap().put("tools", getModel());
     mv.getModelMap().put("installerUrl", myInstaller.getPath());
+    mv.getModelMap().put("updateUrl", this.getPath());
     return mv;
   }
 

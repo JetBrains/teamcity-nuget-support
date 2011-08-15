@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
+import jetbrains.buildServer.util.TimeService;
 import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,13 +35,30 @@ import java.util.Collections;
  * Date: 15.08.11 16:33
  */
 public class AvailableToolsState {
-  private final NuGetFeedReader myReader;
+  private static final long TIMEOUT = 1000 * 60 * 15; //15 min
 
-  public AvailableToolsState(@NotNull final NuGetFeedReader reader) {
+  private final NuGetFeedReader myReader;
+  private final TimeService myTime;
+  private Collection<NuGetTool> myTools;
+  private long lastRequest = 0;
+
+  public AvailableToolsState(@NotNull final NuGetFeedReader reader,
+                             @NotNull final TimeService time) {
     myReader = reader;
+    myTime = time;
   }
 
+  @NotNull
   public Collection<NuGetTool> getAvailable() {
+    Collection<NuGetTool> nuGetTools = myTools;
+    if (nuGetTools == null || lastRequest + TIMEOUT < myTime.now()) {
+      myTools = nuGetTools = fetchAvailable();
+      lastRequest = myTime.now();
+    }
+    return nuGetTools;
+  }
+
+  private Collection<NuGetTool> fetchAvailable() {
     try {
       final Collection<FeedPackage> packages = myReader.queryPackageVersions(FeedConstants.FEED_URL, FeedConstants.NUGET_COMMANDLINE);
       return CollectionsUtil.filterAndConvertCollection(

@@ -45,8 +45,7 @@ public interface NuGetToolManager {
 
   /**
    * Downloads and installs nuget tools for both server and agent
-   * @param tool tool to download
-   * @param progress callback for showing messages
+   * @param toolId tool id for tool to install
    */
-  void installTool(@NotNull NuGetTool tool, @NotNull ActionProgress progress);
+  void installTool(@NotNull String toolId);
 }

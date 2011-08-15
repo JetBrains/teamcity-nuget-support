@@ -18,23 +18,63 @@ if (!BS) BS = {};
 
 if (!BS.NuGet) BS.NuGet = {};
 
-BS.NuGet.InstallPopup = OO.extend(BS.AbstractModalDialog, {
-  getContainer : function() {
-    return $('nugetInstallFormDialog');
+BS.NuGet.Tools = {
+  refreshPackagesList : function() {
+    $('nugetPackagesList').refresh();
   },
 
-  show : function() {
-    var that = this;
-    that.showCentered();
-    $('nugetInstallFormResresh').refresh("nugetInstallLinkSaving", null, function() {
+  InstallPopup : OO.extend(BS.PluginPropertiesForm, OO.extend(BS.AbstractModalDialog, {
+    getContainer : function() {
+      return $('nugetInstallFormDialog');
+    },
+
+    formElement : function() {
+      return $('nugetInstallForm');
+    },
+
+    disableSubmit : function() {
+      $('installNuGetApplyButton').disabled = true;
+    },
+
+    enableSubmit : function() {
+      $('installNuGetApplyButton').disabled = false;
+    },
+
+    refreshForm : function() {
+      var that = this;
+      that.enableSubmit();
+      $('nugetInstallFormResresh').refresh("nugetInstallLinkSaving", null, function() {
+        that.showCentered();
+      });
+      return false;
+    },
+
+    show : function() {
+      var that = this;
       that.showCentered();
-    });
+      that.refreshForm();
+      return false;
+    },
 
-    return false;
-  },
+    save : function() {
 
-  save : function() {
-    alert('save');
-  }
-});
+      BS.Util.show($('installNuGetApplyProgress'));
+      BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
+        onCompleteSave: function(form, responseXML, err) {
+          BS.Util.hide($('installNuGetApplyProgress'));
+          var wereErrors = BS.XMLResponse.processErrors(responseXML, {}, form.propertiesErrorsHandler);
+          BS.ErrorsAwareListener.onCompleteSave(form, responseXML, err);
+
+          alert("wereError = " + wereErrors);
+          if (!wereErrors) {
+            BS.NuGet.Tools.refreshPackagesList();
+            //form.close();
+          }
+        }
+      }));
+    }
+  }))
+};
+
+
 

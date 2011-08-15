@@ -22,6 +22,9 @@
   <c:choose>
     <c:when test="${fn:length(available) eq 0}">
       No other NuGet.exe Command Line packages available
+      <script type="text/javascript">
+        BS.NuGet.Tools.InstallPopup.disableSubmit();
+      </script>
     </c:when>
     <c:otherwise>
       <table class="runnerFormTable">
@@ -31,17 +34,18 @@
           </td>
         </tr>
         <tr>
-          <th><label for="tools">Version:<l:star/></label></th>
+          <th><label for="toolId">Version:<l:star/></label></th>
           <td>
-            <forms:select name="tools" style="width:15em;">
-              <forms:option value="">-- Please choose version --</forms:option>
+            <props:selectProperty name="toolId" style="width:15em;">
+              <props:option value="">-- Please choose version --</props:option>
               <c:forEach var="t" items="${available}">
                 <forms:option value="${t.id}"><c:out value="${t.version}"/></forms:option>
               </c:forEach>
-            </forms:select>
+            </props:selectProperty>
             <span class="smallNote">
               Choose version of NuGet Commandline Tools to install.
             </span>
+            <span class="error" id="error_toolId"></span>
           </td>
         </tr>
       </table>

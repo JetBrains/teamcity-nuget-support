@@ -16,13 +16,13 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 
-import jetbrains.buildServer.controllers.AuthorizationInterceptor;
-import jetbrains.buildServer.controllers.BaseFormXmlController;
-import jetbrains.buildServer.controllers.BasePropertiesBean;
-import jetbrains.buildServer.controllers.RequestPermissionsChecker;
+import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.controllers.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jdom.Element;
@@ -31,6 +31,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -38,6 +40,8 @@ import java.util.HashMap;
  * Date: 11.08.11 12:12
  */
 public class InstallToolController extends BaseFormXmlController {
+  private static final Logger LOG = Logger.getInstance(InstallToolController.class.getName());
+
   private final String myPath;
   private final NuGetToolManager myToolsManager;
   private final PluginDescriptor myDescriptor;
@@ -67,9 +71,19 @@ public class InstallToolController extends BaseFormXmlController {
 
   @Override
   protected ModelAndView doGet(HttpServletRequest request, HttpServletResponse response) {
-    ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/installTool-show.jsp"));
+    final Collection<NuGetTool> availableTools = new ArrayList<NuGetTool>();
 
-    mv.getModelMap().put("available", myToolsManager.getAvailableTools());
+    try {
+      availableTools.addAll(myToolsManager.getAvailableTools());
+    } catch (Exception e) {
+      ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/installTool-error.jsp"));
+      mv.getModel().put("errorText", e.getMessage());
+      LOG.warn("Failed to fetch NuGet.Commandline package versions. " + e.getMessage(), e);
+      return mv;
+    }
+
+    ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/installTool-show.jsp"));
+    mv.getModelMap().put("available", availableTools);
     mv.getModelMap().put("propertiesBean", new BasePropertiesBean(new HashMap<String, String>()));
 
     return mv;
@@ -77,6 +91,14 @@ public class InstallToolController extends BaseFormXmlController {
 
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response, Element xmlResponse) {
+    final String toolId = request.getParameter("prop:toolId");
+    if (StringUtil.isEmptyOrSpaces(toolId)) {
+      ActionErrors ae = new ActionErrors();
+      ae.addError("toolId", "Select NuGet.Commandline package version to install");
+      ae.serialize(xmlResponse);
+      return;
+    }
 
+    myToolsManager.installTool(toolId);
   }
 }

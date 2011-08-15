@@ -14,11 +14,14 @@
   ~ limitations under the License.
   --%>
 <%@ include file="/include-internal.jsp" %>
+<jsp:useBean id="errorText" scope="request" type="java.lang.String"/>
 <div id="nugetInstallFormResreshInner">
-  <forms:saving style="float: left; display:block;"/>
-  Discovering available NuGet.exe Command Line versions
-  <script type="text/javascript">
-    BS.NuGet.Tools.InstallPopup.disableSubmit();
-  </script>
+  <div class="error">
+    <p>Failed to fetch latest NuGet packages from default feed.</p>
+    <p><c:out value="${errorText}"/></p>
+    <p>Press <a href="#" onclick="BS.NuGet.Tools.InstallPopup.refreshForm()">Refresh</a> to try again.</p>
+    <script type="text/javascript">
+      BS.NuGet.Tools.InstallPopup.disableSubmit();
+    </script>
+  </div>
 </div>
-

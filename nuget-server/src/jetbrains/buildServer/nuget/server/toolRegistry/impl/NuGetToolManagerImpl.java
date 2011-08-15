@@ -52,8 +52,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     return myAvailables.getAvailable();
   }
 
-
-  public void installTool(@NotNull NuGetTool tool, @NotNull ActionProgress progress) {
+  public void installTool(@NotNull String toolId) {
 
   }
 

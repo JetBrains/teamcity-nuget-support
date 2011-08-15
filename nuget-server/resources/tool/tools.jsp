@@ -16,7 +16,10 @@
 <%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="tools" type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.tab.LocalTool>" scope="request"/>
 <jsp:useBean id="installerUrl" type="java.lang.String" scope="request"/>
+<jsp:useBean id="updateUrl" type="java.lang.String" scope="request"/>
 
+<c:set var="actualUpdateUrl"><c:url value="${updateUrl}"/></c:set>
+<bs:refreshable containerId="nugetPackagesList" pageUrl="${actualUpdateUrl}">
 <c:set var="installedPluginsCount" value="${fn:length(tools)}"/>
 <p>
   TeamCity NuGet plugin requires to configure NuGet.Exe Command Line clients.
@@ -59,9 +62,10 @@
     </table>
   </c:otherwise>
 </c:choose>
+</bs:refreshable>
 
 <div class="addNew">
-  <a href="#" onclick="return BS.NuGet.InstallPopup.show();">
+  <a href="#" onclick="return BS.NuGet.Tools.InstallPopup.show();">
     Install
     <c:if test="${installedPluginsCount gt 0}">addintional versions of</c:if>
     NuGet.exe Command Line
@@ -69,20 +73,21 @@
   </a>
 </div>
 
+<c:set var="actualInstallerUrl"><c:url value="${installerUrl}"/></c:set>
 <bs:modalDialog
         formId="nugetInstallForm"
         title="Install NuGet.exe Command Line"
-        action="foo.html"
-        closeCommand="BS.NuGet.InstallPopup.close();"
-        saveCommand="BS.NuGet.InstallPopup.save();">
-  <c:set var="actualInstallerUrl"><c:url value="${installerUrl}"/></c:set>
+        action="${actualInstallerUrl}"
+        closeCommand="BS.NuGet.Tools.InstallPopup.close();"
+        saveCommand="BS.NuGet.Tools.InstallPopup.save();">
   <bs:refreshable containerId="nugetInstallFormResresh" pageUrl="${actualInstallerUrl}">
     <jsp:include page="installTool-loading.jsp"/>
   </bs:refreshable>
 
   <div class="popupSaveButtonsBlock">
-    <a href="javascript://" onclick="BS.NuGet.InstallPopup.close();" class="cancel">Cancel</a>
-    <input class="submitButton" type="button" value="Install" id="agentPoolNameApplyButton" onclick="BS.NuGet.InstallPopup.save();"/>
+    <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.close();" class="cancel">Cancel</a>
+    <input class="submitButton" type="button" value="Install" id="installNuGetApplyButton" onclick="BS.NuGet.Tools.InstallPopup.save();"/>
+    <forms:saving id="installNuGetApplyProgress"/>
     <br clear="all"/>
   </div>
 </bs:modalDialog>
