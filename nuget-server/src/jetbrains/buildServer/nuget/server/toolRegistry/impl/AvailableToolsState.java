@@ -27,6 +27,7 @@ import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.TimeService;
 import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -40,7 +41,7 @@ public class AvailableToolsState {
 
   private final NuGetFeedReader myReader;
   private final TimeService myTime;
-  private Collection<NuGetTool> myTools;
+  private Collection<InstallableTool> myTools;
   private long lastRequest = 0;
 
   public AvailableToolsState(@NotNull final NuGetFeedReader reader,
@@ -49,9 +50,22 @@ public class AvailableToolsState {
     myTime = time;
   }
 
+  @Nullable
+  public FeedPackage findTool(@NotNull final String id) {
+    final Collection<InstallableTool> tools = myTools;
+    if (tools != null) {
+      for (InstallableTool tool : tools) {
+        if(tool.getPackage().getAtomId().equals(id)) {
+          return tool.getPackage();
+        }
+      }
+    }
+    return null;
+  }
+
   @NotNull
-  public Collection<NuGetTool> getAvailable(ToolsPolicy policy) throws FetchException {
-    Collection<NuGetTool> nuGetTools = myTools;
+  public Collection<? extends NuGetTool> getAvailable(ToolsPolicy policy) throws FetchException {
+    Collection<InstallableTool> nuGetTools = myTools;
     if (policy == ToolsPolicy.FetchNew
             || nuGetTools == null
             || lastRequest + TIMEOUT < myTime.now()) {
@@ -62,13 +76,13 @@ public class AvailableToolsState {
     return nuGetTools;
   }
 
-  private Collection<NuGetTool> fetchAvailable() throws FetchException {
+  private Collection<InstallableTool> fetchAvailable() throws FetchException {
     try {
       final Collection<FeedPackage> packages = myReader.queryPackageVersions(FeedConstants.FEED_URL, FeedConstants.NUGET_COMMANDLINE);
       return CollectionsUtil.filterAndConvertCollection(
               packages,
-              new Converter<NuGetTool, FeedPackage>() {
-                public NuGetTool createFrom(@NotNull FeedPackage source) {
+              new Converter<InstallableTool, FeedPackage>() {
+                public InstallableTool createFrom(@NotNull FeedPackage source) {
                   return new InstallableTool(source);
                 }
               },

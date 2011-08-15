@@ -16,10 +16,13 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -29,15 +32,23 @@ import java.util.List;
  * Date: 11.08.11 1:07
  */
 public class NuGetToolManagerImpl implements NuGetToolManager {
-  private final AvailableToolsState myAvailables;
+  private static final Logger LOG = Logger.getInstance(NuGetToolManagerImpl.class.getName());
 
-  public NuGetToolManagerImpl(AvailableToolsState availables) {
+  private final AvailableToolsState myAvailables;
+  private final NuGetToolsInstaller myInstaller;
+  private final ToolsRegistry myInstalled;
+
+  public NuGetToolManagerImpl(@NotNull final AvailableToolsState availables,
+                              @NotNull final NuGetToolsInstaller installer,
+                              @NotNull final ToolsRegistry installed) {
     myAvailables = availables;
+    myInstaller = installer;
+    myInstalled = installed;
   }
 
   @NotNull
   public Collection<NuGetInstalledTool> getInstalledTools() {
-    return mockInstalledTools();
+    return myInstalled.getTools();
   }
 
   @NotNull
@@ -46,13 +57,27 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   @NotNull
-  public Collection<NuGetTool> getAvailableTools(@NotNull ToolsPolicy policy) throws FetchException {
+  public Collection<? extends NuGetTool> getAvailableTools(@NotNull ToolsPolicy policy) throws FetchException {
     //This must be cached to make if work faster!
     return myAvailables.getAvailable(policy);
   }
 
   public void installTool(@NotNull String toolId) {
-
+    myInstaller.installNuGet(
+            toolId,
+            (InstallLogger) Proxy.newProxyInstance(getClass().getClassLoader(),
+                    new Class<?>[]{InstallLogger.class},
+                    new InvocationHandler() {
+                      public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(method.getName());
+                        for (Object arg : args) {
+                          sb.append(" ").append(arg);
+                        }
+                        LOG.debug(sb.toString());
+                        return null;
+                      }
+                    }));
   }
 
   private List<NuGetInstallingTool> mockInstallingTools() {
@@ -71,43 +96,6 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
               @NotNull
               public String getVersion() {
                 return "ii.1.2.43";
-              }
-            }
-    );
-  }
-
-  private List<NuGetInstalledTool> mockInstalledTools() {
-    return Arrays.<NuGetInstalledTool>asList(
-            new NuGetInstalledTool() {
-              @NotNull
-              public File getPath() {
-                return new File(".");
-              }
-
-              @NotNull
-              public String getId() {
-                return "i1";
-              }
-
-              @NotNull
-              public String getVersion() {
-                return "i1.2.3.5";
-              }
-            },
-            new NuGetInstalledTool() {
-              @NotNull
-              public File getPath() {
-                return new File(".");
-              }
-
-              @NotNull
-              public String getId() {
-                return "i2";
-              }
-
-              @NotNull
-              public String getVersion() {
-                return "i2.4.5.7";
               }
             }
     );

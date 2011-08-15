@@ -43,7 +43,7 @@ public interface NuGetToolManager {
    * @throws FetchException on fetch error if it was called
    */
   @NotNull
-  Collection<NuGetTool> getAvailableTools(@NotNull final ToolsPolicy policy) throws FetchException;
+  Collection<? extends NuGetTool> getAvailableTools(@NotNull final ToolsPolicy policy) throws FetchException;
 
   /**
    * Downloads and installs nuget tools for both server and agent
