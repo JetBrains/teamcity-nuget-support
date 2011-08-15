@@ -11,6 +11,9 @@
           <file>file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerSpringWeb.xml</file>
           <file>file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerPluginsSupportWeb.xml</file>
           <file>file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerConfigurator.xml</file>
+          <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-tools.xml</file>
+          <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-feed.xml</file>
+          <file>file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerSpringStatistics.xml</file>
         </fileset>
       </configuration>
     </facet>
@@ -39,6 +42,7 @@
     <orderEntry type="module" module-name="nuget-common" />
     <orderEntry type="library" name="Common-Impl" level="project" />
     <orderEntry type="library" name="TeamCity server runtime" level="project" />
+    <orderEntry type="library" name="commons-http" level="project" />
   </component>
 </module>
 

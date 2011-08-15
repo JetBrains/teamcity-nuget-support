@@ -31,22 +31,4 @@
   <bean class="jetbrains.buildServer.nuget.server.publish.PublishRunTypeRegistrar"/>
   <bean class="jetbrains.buildServer.nuget.server.publish.PublishRunType"/>
 
-
-
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.ServerSettingsTab"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstalledToolsController"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstallToolController"/>
-
-
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolManagerImpl"/>
-
-
-
-  <bean class="jetbrains.buildServer.nuget.server.feed.reader.impl.FeedHttpClientHolder" destroy-method="dispose"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.reader.impl.NuGetFeedReaderImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.reader.impl.FeedGetMethodFactory"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl"/>
-
 </beans>
