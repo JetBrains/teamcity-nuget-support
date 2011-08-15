@@ -18,14 +18,13 @@ package jetbrains.buildServer.nuget.server.feed.reader.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
-import jetbrains.buildServer.nuget.server.feed.reader.*;
+import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
+import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.XmlUtil;
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.StatusLine;
+import org.apache.http.*;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +71,11 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     LOG.debug("Query for packages: " + get.getURI());
 
     final HttpResponse execute = myClient.execute(get);
-    return myParser.readPackages(toDocument(execute));
+    try {
+      return myParser.readPackages(toDocument(execute));
+    } finally {
+      get.abort();
+    }
   }
 
   public void downloadPackage(@NotNull FeedPackage pkg, @NotNull File file) throws IOException {
@@ -98,12 +101,15 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
   }
 
   private Element toDocument(HttpResponse response) throws IOException {
+    final HttpEntity entity = response.getEntity();
     try {
-      return FileUtil.parseDocument(response.getEntity().getContent(), false);
+      return FileUtil.parseDocument(entity.getContent(), false);
     } catch (final JDOMException e) {
       throw new IOException("Failed to parse xml document. " + e.getMessage()) {{
         initCause(e);
       }};
+    } finally {
+      EntityUtils.consume(entity);
     }
   }
 }

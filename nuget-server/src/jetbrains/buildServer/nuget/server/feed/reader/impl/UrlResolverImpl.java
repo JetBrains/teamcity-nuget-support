@@ -28,6 +28,7 @@ import org.apache.http.client.params.ClientPNames;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.util.EntityUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,6 +71,7 @@ public class UrlResolverImpl implements UrlResolver {
       if (redirected != null) {
         LOG.debug("Redirected to " + redirected);
         feedUrl = redirected;
+        EntityUtils.consume(execute.getEntity());
         continue;
       }
 
