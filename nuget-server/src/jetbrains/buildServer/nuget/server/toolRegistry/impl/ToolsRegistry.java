@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
+import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -36,28 +37,55 @@ public class ToolsRegistry {
   }
 
   @NotNull
-  public Collection<NuGetInstalledTool> getTools() {
+  public Collection<? extends NuGetInstalledTool> getTools() {
+    return getToolsInternal();
+  }
+
+  private Collection<InstalledTool> getToolsInternal() {
     final File[] tools = myPaths.getTools().listFiles();
     if (tools == null) return Collections.emptyList();
-    final Collection<NuGetInstalledTool> result = new ArrayList<NuGetInstalledTool>();
+    final Collection<InstalledTool> result = new ArrayList<InstalledTool>();
     for (final File path : tools) {
-      result.add(new NuGetInstalledTool() {
-        @NotNull
-        public File getPath() {
-          return new File(path, "tools/NuGet.exe");
-        }
-
-        @NotNull
-        public String getId() {
-          return path.getName();
-        }
-
-        @NotNull
-        public String getVersion() {
-          return path.getName();
-        }
-      });
+      result.add(new InstalledTool(path));
     }
     return result;
+  }
+
+  public void removeTool(@NotNull final String toolId) {
+    for (InstalledTool tool : getToolsInternal()) {
+      if (tool.getId().equals(toolId)) {
+        tool.delete();
+        return;
+      }
+    }
+  }
+
+  private static class InstalledTool implements NuGetInstalledTool {
+    private final File myPath;
+
+    public InstalledTool(@NotNull final File path) {
+      myPath = path;
+    }
+
+    public void delete() {
+      while(myPath.exists()) {
+        FileUtil.delete(myPath);
+      }
+    }
+
+    @NotNull
+    public File getPath() {
+      return new File(myPath, "tools/NuGet.exe");
+    }
+
+    @NotNull
+    public String getId() {
+      return myPath.getName();
+    }
+
+    @NotNull
+    public String getVersion() {
+      return myPath.getName();
+    }
   }
 }

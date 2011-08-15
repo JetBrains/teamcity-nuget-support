@@ -47,7 +47,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   @NotNull
-  public Collection<NuGetInstalledTool> getInstalledTools() {
+  public Collection<? extends NuGetInstalledTool> getInstalledTools() {
     return myInstalled.getTools();
   }
 
@@ -78,6 +78,10 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
                         return null;
                       }
                     }));
+  }
+
+  public void removeTool(@NotNull String toolId) {
+    myInstalled.removeTool(toolId);
   }
 
   private List<NuGetInstallingTool> mockInstallingTools() {

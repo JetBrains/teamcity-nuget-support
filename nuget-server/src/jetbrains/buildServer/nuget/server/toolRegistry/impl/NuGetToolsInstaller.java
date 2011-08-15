@@ -22,7 +22,6 @@ import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.zip.ZipInputStream;
@@ -49,17 +48,12 @@ public class NuGetToolsInstaller {
     myPacker = packer;
   }
 
-  @Nullable
-  private FeedPackage findTool(@NotNull final String packageId) {
-    return myState.findTool(packageId);
-  }
-
   public InstallResult installNuGet(@NotNull final String packageId, @NotNull final InstallLogger logger) {
     logger.started(packageId);
 
     FeedPackage tool = null;
     try {
-      tool = findTool(packageId);
+      tool = myState.findTool(packageId);
       if (tool == null) {
         logger.packageNotFound(packageId);
         return null;

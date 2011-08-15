@@ -29,7 +29,7 @@ public interface NuGetToolManager {
    * @return list of installed nuget tools
    */
   @NotNull
-  Collection<NuGetInstalledTool> getInstalledTools();
+  Collection<? extends NuGetInstalledTool> getInstalledTools();
 
   /**
    * @return list of tools that are installing now
@@ -51,5 +51,11 @@ public interface NuGetToolManager {
    */
   void installTool(@NotNull String toolId);
 
+
+  /**
+   * Removes tool from server and build agents
+   * @param toolId tool id from {@link #getInstalledTools()} method
+   */
+  void removeTool(@NotNull String toolId);
 
 }
