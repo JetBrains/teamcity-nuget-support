@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
+import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -42,14 +43,35 @@ public class AvailableToolsState {
   public Collection<NuGetTool> getAvailable() {
     try {
       final Collection<FeedPackage> packages = myReader.queryPackageVersions(FeedConstants.FEED_URL, FeedConstants.NUGET_COMMANDLINE);
-      return CollectionsUtil.convertCollection(
+      return CollectionsUtil.filterAndConvertCollection(
               packages,
               new Converter<NuGetTool, FeedPackage>() {
                 public NuGetTool createFrom(@NotNull FeedPackage source) {
                   return new InstallableTool(source);
                 }
+              },
+              new Filter<FeedPackage>() {
+                public boolean accept(@NotNull FeedPackage data) {
+                  final String[] version = data.getInfo().getVersion().split("\\.");
+                  if (version.length < 2) return false;
+                  int major = parse(version[0]);
+                  if (major < 1) return false;
+
+                  int minor = parse(version[1]);
+                  if (minor < 4) return false;
+
+                  return true;
+                }
+
+                private int parse(String s) {
+                  try {
+                    return Integer.parseInt(s.trim());
+                  } catch (Exception e) {
+                    return -1;
+                  }
+                }
               }
-              );
+      );
 
     } catch (IOException e) {
       e.printStackTrace();
