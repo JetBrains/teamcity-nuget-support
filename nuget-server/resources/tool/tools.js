@@ -57,7 +57,6 @@ BS.NuGet.Tools = {
     },
 
     save : function() {
-
       BS.Util.show($('installNuGetApplyProgress'));
       BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
         onCompleteSave: function(form, responseXML, err) {
@@ -65,10 +64,9 @@ BS.NuGet.Tools = {
           var wereErrors = BS.XMLResponse.processErrors(responseXML, {}, form.propertiesErrorsHandler);
           BS.ErrorsAwareListener.onCompleteSave(form, responseXML, err);
 
-          alert("wereError = " + wereErrors);
           if (!wereErrors) {
             BS.NuGet.Tools.refreshPackagesList();
-            //form.close();
+            form.close();
           }
         }
       }));
