@@ -37,15 +37,18 @@ public class NuGetToolsInstaller {
   private final NuGetFeedReader myClient;
   private final AvailableToolsState myState;
   private final ToolPacker myPacker;
+  private final PluginNaming myNaming;
 
   public NuGetToolsInstaller(@NotNull final ToolPaths toolPaths,
                              @NotNull final NuGetFeedReader client,
                              @NotNull final AvailableToolsState state,
-                             @NotNull final ToolPacker packer) {
+                             @NotNull final ToolPacker packer,
+                             @NotNull final PluginNaming naming) {
     myToolPaths = toolPaths;
     myClient = client;
     myState = state;
     myPacker = packer;
+    myNaming = naming;
   }
 
   public InstallResult installNuGet(@NotNull final String packageId, @NotNull final InstallLogger logger) {
@@ -80,7 +83,7 @@ public class NuGetToolsInstaller {
     logger.agentToolPubslishStarted(tool, agentTool);
 
     try {
-      final File dest = new File(myToolPaths.getAgentPluginsPath(), agentTool.getName());
+      final File dest = myNaming.getAgetToolFilePath(tool);
       if (!agentTool.renameTo(dest)) {
         FileUtil.copy(agentTool, dest);
         FileUtil.delete(agentTool);
@@ -94,12 +97,16 @@ public class NuGetToolsInstaller {
     }
   }
 
+  private String getAgentToolFileName(@NotNull String version) {
+    return "nuget-commnadline-" + version;
+  }
+
   private File packAgentPlugin(@NotNull final InstallLogger logger,
                                @NotNull final FeedPackage tool,
                                @NotNull final File dest) {
     logger.agentToolPackStarted(tool, dest);
     try {
-      return myPacker.packTool("nuget-commandline-" + tool.getInfo().getVersion(), dest);
+      return myPacker.packTool(getAgentToolFileName(tool.getInfo().getVersion()), dest);
     } catch (Exception e) {
       logger.agentToolPackFailed(tool, dest, e);
       LOG.warn("Failed to pack agent tool " + tool);

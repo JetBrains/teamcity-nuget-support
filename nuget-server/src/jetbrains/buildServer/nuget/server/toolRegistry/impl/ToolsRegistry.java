@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
@@ -30,10 +31,14 @@ import java.util.Collections;
  * Date: 16.08.11 0:25
  */
 public class ToolsRegistry {
+  private static final Logger LOG = Logger.getInstance(ToolsRegistry.class.getName());
   private final ToolPaths myPaths;
+  private final PluginNaming myNaming;
 
-  public ToolsRegistry(@NotNull final ToolPaths paths) {
+  public ToolsRegistry(@NotNull final ToolPaths paths,
+                       @NotNull final PluginNaming naming) {
     myPaths = paths;
+    myNaming = naming;
   }
 
   @NotNull
@@ -54,7 +59,15 @@ public class ToolsRegistry {
   public void removeTool(@NotNull final String toolId) {
     for (InstalledTool tool : getToolsInternal()) {
       if (tool.getId().equals(toolId)) {
-        tool.delete();
+        LOG.info("Removing NuGet plugin: " + tool);
+
+        final File agentPlugin = myNaming.getAgetToolFilePath(tool);
+        LOG.info("Removing NuGet plugin agent tool : " + agentPlugin);
+        FileUtil.delete(agentPlugin);
+
+        final File toolHome = tool.getRootPath();
+        LOG.info("Removing NuGet files from: " + toolHome);
+        FileUtil.delete(toolHome);
         return;
       }
     }
@@ -67,15 +80,19 @@ public class ToolsRegistry {
       myPath = path;
     }
 
-    public void delete() {
-      while(myPath.exists()) {
-        FileUtil.delete(myPath);
-      }
+    @NotNull
+    public File getRootPath() {
+      return myPath;
     }
 
     @NotNull
     public File getPath() {
       return new File(myPath, "tools/NuGet.exe");
+    }
+
+    @NotNull
+    public String getAgentToolName() {
+      return "nuget-commandline-" + getVersion() + ".zip";
     }
 
     @NotNull
