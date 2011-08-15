@@ -22,14 +22,63 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 11.08.11 1:07
  */
 public class NuGetToolManagerImpl implements NuGetToolManager {
+  private final AvailableToolsState myAvailables;
+
+  public NuGetToolManagerImpl(AvailableToolsState availables) {
+    myAvailables = availables;
+  }
+
   @NotNull
   public Collection<NuGetInstalledTool> getInstalledTools() {
+    return mockInstalledTools();
+  }
+
+  @NotNull
+  public Collection<NuGetInstallingTool> getInstallingTool() {
+    return mockInstallingTools();
+  }
+
+
+  @NotNull
+  public Collection<NuGetTool> getAvailableTools() {
+    //This must be cached to make if work faster!
+    return myAvailables.getAvailable();
+  }
+
+
+  public void installTool(@NotNull NuGetTool tool, @NotNull ActionProgress progress) {
+
+  }
+
+  private List<NuGetInstallingTool> mockInstallingTools() {
+    return Arrays.<NuGetInstallingTool>asList(
+            new NuGetInstallingTool() {
+              @NotNull
+              public Collection<String> getInstallMessages() {
+                return Arrays.asList("mgs1", "msg2", "msg3");
+              }
+
+              @NotNull
+              public String getId() {
+                return "ii-1";
+              }
+
+              @NotNull
+              public String getVersion() {
+                return "ii.1.2.43";
+              }
+            }
+    );
+  }
+
+  private List<NuGetInstalledTool> mockInstalledTools() {
     return Arrays.<NuGetInstalledTool>asList(
             new NuGetInstalledTool() {
               @NotNull
@@ -64,63 +113,5 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
               }
             }
     );
-  }
-
-  @NotNull
-  public Collection<NuGetInstallingTool> getInstallingTool() {
-    return Arrays.<NuGetInstallingTool>asList(
-            new NuGetInstallingTool() {
-              @NotNull
-              public Collection<String> getInstallMessages() {
-                return Arrays.asList("mgs1", "msg2", "msg3");
-              }
-
-              @NotNull
-              public String getId() {
-                return "ii-1";
-              }
-
-              @NotNull
-              public String getVersion() {
-                return "ii.1.2.43";
-              }
-            }
-    );
-  }
-
-  @NotNull
-  public Collection<NuGetTool> getAvailableTools() {
-    return Arrays.<NuGetTool>asList(
-            new NuGetTool() {
-              @NotNull
-              public String getId() {
-                return "a-1";
-              }
-
-              @NotNull
-              public String getVersion() {
-                return "a.3.5.6";
-              }
-            },
-            new NuGetTool() {
-              @NotNull
-              public String getId() {
-                return "a-2";
-              }
-
-              @NotNull
-              public String getVersion() {
-                return "a2.5.6.6";
-              }
-            }
-    );
-  }
-
-  public void installTool(@NotNull NuGetTool tool, @NotNull ActionProgress progress) {
-
-  }
-
-  public void registerCustomTool(@NotNull NuGetUserTool tool, @NotNull ActionProgress progress) {
-
   }
 }

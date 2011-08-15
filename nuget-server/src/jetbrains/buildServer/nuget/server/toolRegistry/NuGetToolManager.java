@@ -49,11 +49,4 @@ public interface NuGetToolManager {
    * @param progress callback for showing messages
    */
   void installTool(@NotNull NuGetTool tool, @NotNull ActionProgress progress);
-
-  /**
-   * Registers user-provided NuGet tool from given NuGetInstalledTool i
-   * @param tool tool description to install
-   * @param progress action progress callback
-   */
-  void registerCustomTool(@NotNull NuGetUserTool tool, @NotNull ActionProgress progress);
 }
