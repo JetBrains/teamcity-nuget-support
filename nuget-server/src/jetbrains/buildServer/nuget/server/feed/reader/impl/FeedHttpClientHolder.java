@@ -20,8 +20,11 @@ import jetbrains.buildServer.version.ServerVersionHolder;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.ContentEncodingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
@@ -37,14 +40,19 @@ public class FeedHttpClientHolder implements FeedClient {
   private final HttpClient myClient;
 
   public FeedHttpClientHolder() {
-    myClient = new DefaultHttpClient(new ThreadSafeClientConnManager());
-    final HttpParams params = myClient.getParams();
-
-    HttpConnectionParams.setConnectionTimeout(params, 10000);
-    HttpConnectionParams.setSoTimeout(params, 10000);
-
     final String serverVersion = ServerVersionHolder.getVersion().getDisplayVersion();
-    HttpProtocolParams.setUserAgent(params, "JetBrains TeamCity " + serverVersion);
+
+    HttpParams ps = new BasicHttpParams();
+    DefaultHttpClient.setDefaultHttpParams(ps);
+
+    HttpConnectionParams.setConnectionTimeout(ps, 10000);
+    HttpConnectionParams.setSoTimeout(ps, 10000);
+    HttpProtocolParams.setUserAgent(ps, "JetBrains TeamCity " + serverVersion);
+
+    final DefaultHttpClient client = new ContentEncodingHttpClient(new ThreadSafeClientConnManager(), ps);
+    client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(3, true));
+
+    myClient = client;
   }
 
   @NotNull
