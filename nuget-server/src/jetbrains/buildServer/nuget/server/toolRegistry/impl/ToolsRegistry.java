@@ -91,11 +91,6 @@ public class ToolsRegistry {
     }
 
     @NotNull
-    public String getAgentToolName() {
-      return "nuget-commandline-" + getVersion() + ".zip";
-    }
-
-    @NotNull
     public String getId() {
       return myPath.getName();
     }
