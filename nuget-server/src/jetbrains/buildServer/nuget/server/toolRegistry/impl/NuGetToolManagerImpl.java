@@ -84,25 +84,4 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   public void removeTool(@NotNull String toolId) {
     myInstalled.removeTool(toolId);
   }
-
-  private List<NuGetInstallingTool> mockInstallingTools() {
-    return Arrays.<NuGetInstallingTool>asList(
-            new NuGetInstallingTool() {
-              @NotNull
-              public Collection<String> getInstallMessages() {
-                return Arrays.asList("mgs1", "msg2", "msg3");
-              }
-
-              @NotNull
-              public String getId() {
-                return "ii-1";
-              }
-
-              @NotNull
-              public String getVersion() {
-                return "ii.1.2.43";
-              }
-            }
-    );
-  }
 }
