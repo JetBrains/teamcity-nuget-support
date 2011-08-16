@@ -19,12 +19,11 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
-import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
-import java.util.zip.ZipInputStream;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -36,19 +35,16 @@ public class NuGetToolsInstaller {
   private final ToolPaths myToolPaths;
   private final NuGetFeedReader myClient;
   private final AvailableToolsState myState;
-  private final ToolPacker myPacker;
-  private final PluginNaming myNaming;
+  private final ToolsWatcher myWatcher;
 
   public NuGetToolsInstaller(@NotNull final ToolPaths toolPaths,
                              @NotNull final NuGetFeedReader client,
                              @NotNull final AvailableToolsState state,
-                             @NotNull final ToolPacker packer,
-                             @NotNull final PluginNaming naming) {
+                             @NotNull final ToolsWatcher watcher) {
     myToolPaths = toolPaths;
     myClient = client;
     myState = state;
-    myPacker = packer;
-    myNaming = naming;
+    myWatcher = watcher;
   }
 
   public void installNuGet(@NotNull final String packageId, @NotNull final InstallLogger logger) {
@@ -62,98 +58,27 @@ public class NuGetToolsInstaller {
         return;
       }
 
-      final File pkg = downloadPackage(logger, tool);
-      final File dest = extractPackage(logger, tool, pkg);
-      File agentTool = packAgentPlugin(logger, tool, dest);
-      registerAgentPlugins(logger, tool, agentTool);
-    } catch (ProcessedException e) {
-      //NOP;
+      logger.packageDownloadStarted(tool);
+      File dest = new File(myToolPaths.getPackages(), tool.getInfo().getId() + "." + tool.getInfo().getVersion() + ".nupkg");
+      try {
+        File tmp = File.createTempFile(dest.getName(), ".nupkg");
+        FileUtil.createParentDirs(tmp);
+        myClient.downloadPackage(tool, tmp);
+        if (!tmp.renameTo(dest)) {
+          throw new IOException("Failed to plug downloaded package to " + dest);
+        }
+      } catch (Exception e) {
+        LOG.warn("Failed to download package " + tool + ". " + e.getMessage(), e);
+        logger.packageDownloadFailed(tool, e);
+        return;
+      } finally {
+        logger.packageDownloadFinished(tool);
+      }
+      myWatcher.checkNow();
     } catch (Exception e) {
       LOG.warn("Failed to install NuGet.Commandline package. " + e.getMessage(), e);
     } finally {
       logger.finished(packageId, tool);
     }
-  }
-
-  @NotNull
-  private File registerAgentPlugins(InstallLogger logger, FeedPackage tool, File agentTool) {
-    logger.agentToolPublishStarted(tool, agentTool);
-
-    try {
-      final File dest = myNaming.getAgetToolFilePath(tool);
-      if (!agentTool.renameTo(dest)) {
-        FileUtil.copy(agentTool, dest);
-        FileUtil.delete(agentTool);
-      }
-      return dest;
-    } catch (Exception e) {
-      logger.agentToolPublishFailed(tool, agentTool, e);
-      throw new ProcessedException();
-    } finally {
-      logger.agentToolPublishFinished(tool, agentTool);
-    }
-  }
-
-  private String getAgentToolFileName(@NotNull String version) {
-    return "nuget-commnadline-" + version;
-  }
-
-  private File packAgentPlugin(@NotNull final InstallLogger logger,
-                               @NotNull final FeedPackage tool,
-                               @NotNull final File dest) {
-    logger.agentToolPackStarted(tool, dest);
-    try {
-      return myPacker.packTool(getAgentToolFileName(tool.getInfo().getVersion()), dest);
-    } catch (Exception e) {
-      logger.agentToolPackFailed(tool, dest, e);
-      LOG.warn("Failed to pack agent tool " + tool);
-      throw new ProcessedException();
-    } finally {
-      logger.agentToolPackFinished(tool);
-    }
-  }
-
-  @NotNull
-  private File extractPackage(@NotNull final InstallLogger logger,
-                              @NotNull final FeedPackage tool,
-                              @NotNull final File pkg) {
-    logger.packageUnpackStarted(tool, pkg);
-    File dest = null;
-    try {
-      dest = new File(myToolPaths.getTools(), tool.getInfo().getVersion());
-      FileUtil.createDir(dest);
-      final ZipInputStream zip = new ZipInputStream(new BufferedInputStream(new FileInputStream(pkg)));
-      if (!ArchiveUtil.unpackZip(zip, dest)) {
-        throw new IOException("Failed to unpack package " + tool.getInfo() + " to " + dest);
-      }
-      return dest;
-    } catch (Exception e) {
-      logger.packageUnpackFailed(tool, pkg, dest);
-      LOG.warn("Failed to unpack nuget package " + tool + ". " + e.getMessage(), e);
-      throw new ProcessedException();
-    } finally {
-      logger.packageUnpackFinished(tool, pkg, dest);
-    }
-  }
-
-  @NotNull
-  private File downloadPackage(@NotNull final InstallLogger logger,
-                               @NotNull final FeedPackage tool) {
-    logger.packageDownloadStarted(tool);
-    File pkg = null;
-    try {
-      pkg = FileUtil.createTempFile("nuget.commandline", ".nupkg");
-      myClient.downloadPackage(tool, pkg);
-      return pkg;
-    } catch (Exception e) {
-      LOG.warn("Failed to download package " + tool + (pkg != null ? " to file " + pkg : ""));
-      logger.packageDownloadFailed(tool, pkg, e);
-      throw new ProcessedException();
-    } finally {
-      logger.packageDownloadFinished(tool, pkg);
-    }
-  }
-
-  private static class ProcessedException extends RuntimeException {
   }
 }

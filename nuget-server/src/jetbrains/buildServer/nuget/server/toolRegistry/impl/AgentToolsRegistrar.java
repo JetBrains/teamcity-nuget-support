@@ -16,40 +16,24 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
-import jetbrains.buildServer.serverSide.ServerPaths;
+import jetbrains.buildServer.serverSide.impl.agent.AgentPluginsHolder;
+import jetbrains.buildServer.serverSide.impl.agent.AgentPluginsHolderBase;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 15.08.11 20:47
+ * Date: 16.08.11 15:21
  */
-public class ToolPathsImpl implements ToolPaths {
-  private final File myPluginRoot;
-
-  public ToolPathsImpl(@NotNull final ServerPaths paths) {
-    myPluginRoot = new File(paths.getPluginDataDirectory(), "jetbrains.nuget");
-  }
-
-  private File relative(@NotNull final String path) {
-    final File pkgs = new File(myPluginRoot, path);
-    //noinspection ResultOfMethodCallIgnored
-    pkgs.mkdirs();
-    return pkgs;
-  }
-
-  @NotNull
-  public File getPackages() {
-    return relative("nupkg");
-  }
-
-  @NotNull
-  public File getTools() {
-    return relative("tools");
-  }
-
-  public File getAgentPluginsPath() {
-    return relative("agent");
+public class AgentToolsRegistrar {
+  public AgentToolsRegistrar(@NotNull final AgentPluginsHolder holder,
+                             @NotNull final ToolPaths paths) {
+    holder.addAgentPlugins(new AgentPluginsHolderBase() {
+      @Override
+      protected File getAgentPluginsDirectory() {
+        return paths.getAgentPluginsPath();
+      }
+    });
   }
 }

@@ -16,12 +16,12 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
-import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -35,16 +35,25 @@ public class PluginNaming {
   }
 
   @NotNull
-  private String getAgentToolFileName(@NotNull String version) {
-    return PackagesConstants.NUGET_TOOL_NAME_PREFIX + version + ".zip";
+  public File getUnpackedFolder(@NotNull final File packageFile) {
+    //here we could take a look into .nuspec to fetch version and name
+    return new File(myPaths.getTools(), packageFile.getName());
   }
 
-  public File getAgentToolFilePath(@NotNull NuGetTool tool) {
-    return new File(myPaths.getAgentPluginsPath(), getAgentToolFileName(tool.getVersion()));
+  @NotNull
+  public File getAgentFile(@NotNull final File packageFile) {
+    //here we could take a look into .nuspec to fetch version and name
+    return new File(myPaths.getAgentPluginsPath(), packageFile.getName() + ".zip");
   }
 
-  public File getAgetToolFilePath(@NotNull FeedPackage tool) {
-    return new File(myPaths.getAgentPluginsPath(), getAgentToolFileName(tool.getInfo().getVersion()));
+  @NotNull
+  public String getVersion(@NotNull final File plugin) {
+    Pattern pt = Pattern.compile("\\d+(\\.\\d+)+");
+    final Matcher matcher = pt.matcher(plugin.getName());
+    String match = "N/A";
+    while (matcher.find()) {
+      match = matcher.group();
+    }
+    return StringUtil.isEmptyOrSpaces(match) ? "N/A" : match;
   }
-
 }

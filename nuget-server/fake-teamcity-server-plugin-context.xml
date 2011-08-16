@@ -7,4 +7,5 @@
   <!-- this is a fake spring context xml to make IDEA know all implicit beans that are available for plugin -->
   <bean class="jetbrains.buildServer.web.openapi.PluginDescriptor"/>
   <bean class="jetbrains.buildServer.plugins.bean.PluginInfo"/>
+  <bean class="jetbrains.buildServer.serverSide.ServerPaths"/>
 </beans>

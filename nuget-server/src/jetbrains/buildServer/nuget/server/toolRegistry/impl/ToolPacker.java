@@ -33,9 +33,8 @@ import java.util.zip.ZipOutputStream;
  */
 public class ToolPacker {
 
-  public File packTool(@NotNull final String toolId,
-                       @NotNull final File rootDir) throws IOException {
-    final File tool = new File(FileUtil.getTempDirectory(), toolId + ".zip");
+  public void packTool(@NotNull final File tool, @NotNull final File rootDir) throws IOException {
+    FileUtil.createParentDirs(tool);
     final ZipOutputStream fos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(tool)));
     try {
       fos.putNextEntry(new ZipEntry("teamcity-plugin.xml"));
@@ -47,8 +46,6 @@ public class ToolPacker {
     } finally {
       FileUtil.close(fos);
     }
-
-    return tool;
   }
 
   private static final String TOOL_DESCRIPTOR = "" +

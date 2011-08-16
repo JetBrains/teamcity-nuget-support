@@ -15,6 +15,10 @@
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPacker"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolUnpacker"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPathsImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming"/>
+
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.AgentToolsRegistrar"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher" init-method="start" destroy-method="dispose"/>
 </beans>

@@ -33,9 +33,9 @@ public interface InstallLogger {
 
   void packageDownloadStarted(@NotNull FeedPackage tool);
 
-  void packageDownloadFinished(@NotNull FeedPackage tool, @Nullable File pkg);
+  void packageDownloadFinished(@NotNull FeedPackage tool);
 
-  void packageDownloadFailed(@NotNull FeedPackage tool, @Nullable File pkg, @NotNull Exception e);
+  void packageDownloadFailed(@NotNull FeedPackage tool, @NotNull Exception e);
 
   void packageUnpackStarted(@NotNull FeedPackage tool, @NotNull File pkg);
 

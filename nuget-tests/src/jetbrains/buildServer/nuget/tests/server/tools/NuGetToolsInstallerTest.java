@@ -58,9 +58,11 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
             myPaths,
             myFeed,
             myState,
-            new ToolPacker(),
-            new PluginNaming(myPaths)
-    );
+            new ToolsWatcher(
+                    myPaths,
+                    new ToolPacker(),
+                    new ToolUnpacker()
+            ));
 
     m.checking(new Expectations(){{
       allowing(myPaths).getTools(); will(returnValue(myToolsPath));
@@ -90,7 +92,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
 
       oneOf(myLogger).started("pkd");
       oneOf(myLogger).packageDownloadStarted(pkd);
-      oneOf(myLogger).packageDownloadFinished(with(equal(pkd)), with(any(File.class)));
+      oneOf(myLogger).packageDownloadFinished(with(equal(pkd)));
       oneOf(myLogger).packageUnpackStarted(with(equal(pkd)), with(any(File.class)));
       oneOf(myLogger).packageUnpackFinished(with(equal(pkd)), with(any(File.class)), with(any(File.class)));
 

@@ -23,6 +23,7 @@ import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,13 +34,17 @@ import java.util.Collections;
  */
 public class ToolsRegistry {
   private static final Logger LOG = Logger.getInstance(ToolsRegistry.class.getName());
+
   private final ToolPaths myPaths;
   private final PluginNaming myNaming;
+  private final ToolsWatcher myWatcher;
 
   public ToolsRegistry(@NotNull final ToolPaths paths,
-                       @NotNull final PluginNaming naming) {
+                       @NotNull final PluginNaming naming,
+                       @NotNull final ToolsWatcher watcher) {
     myPaths = paths;
     myNaming = naming;
+    myWatcher = watcher;
   }
 
   @NotNull
@@ -48,17 +53,18 @@ public class ToolsRegistry {
   }
 
   private Collection<InstalledTool> getToolsInternal() {
-    final File[] tools = myPaths.getTools().listFiles();
+    final File[] tools = myPaths.getPackages().listFiles(IS_PACKAGE);
     if (tools == null) return Collections.emptyList();
+
     final Collection<InstalledTool> result = new ArrayList<InstalledTool>();
     for (final File path : tools) {
-      final InstalledTool e = new InstalledTool(path);
+      final InstalledTool e = new InstalledTool(myNaming, path);
       if (!e.getPath().isFile()) {
         LOG.warn("NuGet.exe is not found at " + e);
         continue;
       }
 
-      if (!myNaming.getAgentToolFilePath(e).isFile()) {
+      if (!e.getAgentPluginFile().isFile()) {
         LOG.warn("NuGet tool is not packed for agent. " + e);
         continue;
       }
@@ -71,44 +77,43 @@ public class ToolsRegistry {
     for (InstalledTool tool : getToolsInternal()) {
       if (tool.getId().equals(toolId)) {
         LOG.info("Removing NuGet plugin: " + tool);
-
-        final File agentPlugin = myNaming.getAgentToolFilePath(tool);
-        LOG.info("Removing NuGet plugin agent tool : " + agentPlugin);
-        FileUtil.delete(agentPlugin);
-
-        final File toolHome = tool.getRootPath();
-        LOG.info("Removing NuGet files from: " + toolHome);
-        FileUtil.delete(toolHome);
-        return;
+        tool.delete();
       }
     }
+    myWatcher.checkNow();
   }
 
   private static class InstalledTool implements NuGetInstalledTool {
+    private final PluginNaming myNaming;
     private final File myPath;
 
-    public InstalledTool(@NotNull final File path) {
+    public InstalledTool(PluginNaming naming, @NotNull final File path) {
+      myNaming = naming;
       myPath = path;
     }
 
     @NotNull
-    public File getRootPath() {
-      return myPath;
+    public File getPath() {
+      return FileUtil.getCanonicalFile(new File(myNaming.getUnpackedFolder(myPath), PackagesConstants.NUGET_TOOL_REL_PATH));
     }
 
     @NotNull
-    public File getPath() {
-      return FileUtil.getCanonicalFile(new File(myPath, PackagesConstants.NUGET_TOOL_REL_PATH));
+    public File getAgentPluginFile() {
+      return FileUtil.getCanonicalFile(myNaming.getAgentFile(myPath));
+    }
+
+    public void delete() {
+      FileUtil.delete(myPath);
     }
 
     @NotNull
     public String getId() {
-      return myPath.getName();
+      return getVersion();
     }
 
     @NotNull
     public String getVersion() {
-      return myPath.getName();
+      return myNaming.getVersion(myPath);
     }
 
     @Override
@@ -118,4 +123,11 @@ public class ToolsRegistry {
               '}';
     }
   }
+
+  private final FileFilter IS_PACKAGE = new FileFilter() {
+    public boolean accept(File pathname) {
+      return pathname.isFile() && pathname.getName().endsWith(".nupkg");
+    }
+  };
+
 }

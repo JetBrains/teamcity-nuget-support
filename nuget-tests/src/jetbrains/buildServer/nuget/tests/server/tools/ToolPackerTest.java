@@ -47,29 +47,30 @@ public class ToolPackerTest extends BaseTestCase {
 
   @Test
   public void testPack() throws IOException {
-    final String toolId = "3.4.56.3";
     final File root = createTempDir();
-    final File plugin = myPacker.packTool(toolId, root);
+    final File plugin = createTempFile();
+    myPacker.packTool(plugin, root);
 
     assertZip(plugin, "teamcity-plugin.xml");
   }
 
   @Test
   public void testPack_oneFile() throws IOException {
-    final String toolId = "3.4.56.3";
     final File root = createTempDir();
     FileUtil.writeFile(new File(root, "aaa.txt"), "content");
-    final File plugin = myPacker.packTool(toolId, root);
+    final File plugin = createTempFile();
+    myPacker.packTool(plugin, root);
+
 
     assertZip(plugin, "teamcity-plugin.xml", "aaa.txt");
   }
 
   @Test
   public void testPack_oneFile2() throws IOException {
-    final String toolId = "3.4.56.3";
     final File root = createTempDir();
     FileUtil.writeFile(new File(root, "a/b/c/d/aaa.txt"){{getParentFile().mkdirs();}}, "content");
-    final File plugin = myPacker.packTool(toolId, root);
+    final File plugin = createTempFile();
+    myPacker.packTool(plugin, root);
 
     assertZip(plugin, "teamcity-plugin.xml", "a/b/c/d/aaa.txt");
   }
