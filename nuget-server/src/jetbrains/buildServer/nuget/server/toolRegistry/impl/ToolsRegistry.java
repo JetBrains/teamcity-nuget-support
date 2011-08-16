@@ -51,7 +51,17 @@ public class ToolsRegistry {
     if (tools == null) return Collections.emptyList();
     final Collection<InstalledTool> result = new ArrayList<InstalledTool>();
     for (final File path : tools) {
-      result.add(new InstalledTool(path));
+      final InstalledTool e = new InstalledTool(path);
+      if (!e.getPath().isFile()) {
+        LOG.warn("NuGet.exe is not found at " + e);
+        continue;
+      }
+
+      if (myNaming.getAgentToolFilePath(e).isFile()) {
+        LOG.warn("NuGet tool is not packed for agent. " + e);
+        continue;
+      }
+      result.add(e);
     }
     return result;
   }
@@ -61,7 +71,7 @@ public class ToolsRegistry {
       if (tool.getId().equals(toolId)) {
         LOG.info("Removing NuGet plugin: " + tool);
 
-        final File agentPlugin = myNaming.getAgetToolFilePath(tool);
+        final File agentPlugin = myNaming.getAgentToolFilePath(tool);
         LOG.info("Removing NuGet plugin agent tool : " + agentPlugin);
         FileUtil.delete(agentPlugin);
 
@@ -98,6 +108,13 @@ public class ToolsRegistry {
     @NotNull
     public String getVersion() {
       return myPath.getName();
+    }
+
+    @Override
+    public String toString() {
+      return "InstalledTool{version=" + getVersion() +
+              ", myPath=" + myPath +
+              '}';
     }
   }
 }

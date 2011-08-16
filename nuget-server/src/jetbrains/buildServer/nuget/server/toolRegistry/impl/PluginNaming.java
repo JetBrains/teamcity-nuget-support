@@ -38,7 +38,7 @@ public class PluginNaming {
     return "nuget-commnadline-" + version + ".zip";
   }
 
-  public File getAgetToolFilePath(@NotNull NuGetTool tool) {
+  public File getAgentToolFilePath(@NotNull NuGetTool tool) {
     return new File(myPaths.getAgentPluginsPath(), getAgentToolFileName(tool.getVersion()));
   }
 
