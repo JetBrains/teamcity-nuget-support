@@ -69,10 +69,9 @@ public class PackagesInstallerRunType extends RunType {
 
         String sln = properties.get(SLN_PATH);
         if (StringUtil.isEmptyOrSpaces(sln)) {
-          checks.add(new InvalidProperty(NUGET_PATH, "Path to solution file should be specified"));
-        }
-        if (!sln.toLowerCase().endsWith(".sln")) {
-          checks.add(new InvalidProperty(NUGET_PATH, "File extension must be .sln. Specify path to .sln file."));
+          checks.add(new InvalidProperty(SLN_PATH, "Path to solution file should be specified"));
+        } else if (!sln.toLowerCase().endsWith(".sln")) {
+          checks.add(new InvalidProperty(SLN_PATH, "File extension must be .sln. Specify path to .sln file."));
         }
 
         return checks;
