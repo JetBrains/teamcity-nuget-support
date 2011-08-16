@@ -22,23 +22,69 @@
 <jsp:useBean id="clazz" scope="request" type="java.lang.String"/>
 <jsp:useBean id="style" scope="request" type="java.lang.String"/>
 <jsp:useBean id="value" scope="request" type="java.lang.String"/>
+<jsp:useBean id="customValue" scope="request" type="java.lang.String"/>
 <jsp:useBean id="settingsUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="items" scope="request" type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.ui.ToolInfo >"/>
 
-<props:selectProperty name="${name}" className="${clazz}" style="${style}">
+<props:hiddenProperty name="${name}" value="${value}"/>
+
+<props:selectProperty name="nugetPathSelector" className="${clazz}" style="${style}" onchange="BS.NuGet.RunnerSettings.selectionChanged();">
   <c:set var="isSelected" value="${value eq ''}"/>
   <props:option value="" selected="${isSelected}">-- Select NuGet version to run --</props:option>
+
   <c:set var="hasSelected" value="${isSelected}"/>
   <c:forEach var="it" items="${items}">
     <c:set var="isSelected" value="${it.id eq value}"/>
     <props:option value="${it.id}" selected="${isSelected}"><c:out value="${it.version}"/></props:option>
     <c:if test="${isSelected}"><c:set var="hasSelected" value="${true}"/></c:if>
   </c:forEach>
-  <c:if test="${not hasSelected}">
-    <props:option value="${value}" selected="${true}">Custom: <c:out value="${value}"/></props:option>
-  </c:if>
+  <props:option value="custom" selected="${not hasSelected}">Custom</props:option>
 </props:selectProperty>
 <span class="smallNote">Specify NuGet.exe version.
   Check intalled NuGet Commandline tools in <a href="<c:url value="${settingsUrl}"/>">NuGet Settings</a>
 </span>
+
+<div id="customPathContainer">
+  <props:textProperty name="nugetCustomPath" className="${clazz}" style="${style}" onchange="BS.NuGet.RunnerSettings.customPathChanged();"/>
+  <span class="smallNote">Specify custom path to NuGet.exe</span>
+</div>
 <span class="error" id="error_${name}"></span>
+
+<script type="text/javascript">
+  if (!BS) BS = {};
+  if (!BS.NuGet) BS.NuGet = {};
+  BS.NuGet.RunnerSettings = {
+    isPackage : function(x) {
+      return x.length > 0 && x.charAt(0) == '?';
+    },
+
+    setValue : function(x) {
+      $('${name}').value = x;
+    },
+
+    getValue : function() {
+      return $('${name}').value;
+    },
+
+    selectionChanged : function() {
+      var selected = $('nugetPathSelector').value;
+      if (this.isPackage(selected)) {
+        this.setValue(selected);
+        BS.Util.hide($('customPathContainer'));
+      } else if(selected == "custom") {
+        var val = this.getValue();
+        $('nugetCustomPath').value = this.isPackage(val) ? "<bs:forJs>${customValue}</bs:forJs>" : val;
+        this.customPathChanged();
+        BS.Util.show($('customPathContainer'));
+      } else {
+        this.setValue("");
+      }
+      BS.MultilineProperties.updateVisible();
+    },
+    customPathChanged : function() {
+      $('${name}').value = $('nugetCustomPath').value;
+    }
+  };
+
+  BS.NuGet.RunnerSettings.selectionChanged();
+</script>

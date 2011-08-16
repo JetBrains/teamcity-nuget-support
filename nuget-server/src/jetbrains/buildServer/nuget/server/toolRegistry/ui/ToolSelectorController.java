@@ -59,7 +59,7 @@ public class ToolSelectorController extends BaseController {
   @Override
   protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
     final String name = safe(request.getParameter("name"));
-    String value = parseValue(request, name);
+    String value = parseValue(request, "value", name);
     final Collection<ToolInfo> tools = getTools();
     ensureVersion(value, tools);
 
@@ -67,6 +67,7 @@ public class ToolSelectorController extends BaseController {
     ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/runnerSettings.jsp"));
     mv.getModel().put("name", name);
     mv.getModel().put("value", value);
+    mv.getModel().put("customValue", safe(parseValue(request, "customValue", "nugetCustomPath")));
     mv.getModel().put("clazz", safe(request.getParameter("class")));
     mv.getModel().put("style", safe(request.getParameter("style")));
     mv.getModel().put("items", tools);
@@ -97,15 +98,15 @@ public class ToolSelectorController extends BaseController {
   }
 
   @NotNull
-  private String parseValue(HttpServletRequest request, String name) {
+  private String parseValue(HttpServletRequest request, final String requestName, String propertyName) {
     String value = null;
 
     final BasePropertiesBean bean = (BasePropertiesBean)request.getAttribute("propertiesBean");
     if (bean != null) {
-      value = bean.getProperties().get(name);
+      value = bean.getProperties().get(propertyName);
     }
     if (value == null) {
-      value = request.getParameter("value");
+      value = request.getParameter(requestName);
     }
     if (value == null) {
       value = "";
