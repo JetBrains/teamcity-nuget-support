@@ -24,10 +24,8 @@ import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -68,45 +66,6 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
       allowing(myPaths).getTools(); will(returnValue(myToolsPath));
       allowing(myPaths).getAgentPluginsPath(); will(returnValue(myPluginsPath));
     }});
-  }
-
-  @Test
-  public void test_noPackageFound() {
-    m.checking(new Expectations() {{
-      oneOf(myState).findTool("pkd"); will(returnValue(null));
-      oneOf(myLogger).started("pkd");
-      oneOf(myLogger).packageNotFound("pkd");
-      oneOf(myLogger).finished(with(equal("pkd")), with(any(FeedPackage.class)));
-    }});
-    myInstaller.installNuGet("pkd", myLogger);
-
-    m.assertIsSatisfied();
-  }
-
-  @Test
-  public void test_packageFound() throws IOException {
-    final FeedPackage pkd = feedPackage();
-    m.checking(new Expectations() {{
-      oneOf(myState).findTool("pkd");  will(returnValue(pkd));
-      oneOf(myFeed).downloadPackage(with(equal(pkd)), with(any(File.class)));
-
-      oneOf(myLogger).started("pkd");
-      oneOf(myLogger).packageDownloadStarted(pkd);
-      oneOf(myLogger).packageDownloadFinished(with(equal(pkd)));
-      oneOf(myLogger).packageUnpackStarted(with(equal(pkd)), with(any(File.class)));
-      oneOf(myLogger).packageUnpackFinished(with(equal(pkd)), with(any(File.class)), with(any(File.class)));
-
-      oneOf(myLogger).agentToolPublishStarted(with(equal(pkd)), with(any(File.class)));
-      oneOf(myLogger).agentToolPublishFinished(with(equal(pkd)), with(any(File.class)));
-
-      oneOf(myLogger).agentToolPackStarted(with(equal(pkd)), with(any(File.class)));
-      oneOf(myLogger).agentToolPackFinished(with(equal(pkd)));
-
-      oneOf(myLogger).finished(with(equal("pkd")), with(pkd));
-    }});
-    myInstaller.installNuGet("pkd", myLogger);
-
-    m.assertIsSatisfied();
   }
 
   private FeedPackage feedPackage() {
