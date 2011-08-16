@@ -19,6 +19,8 @@ package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 import jetbrains.buildServer.web.openapi.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 10.08.11 20:35
@@ -37,7 +39,7 @@ public class ServerSettingsTab extends SimpleCustomTab {
             controller.getPath(),
             "NuGet");
     myChecker = checker;
-    setPosition(PositionConstraint.last());
+    setPosition(PositionConstraint.between(Arrays.asList("pluginsTab"), Arrays.asList("toolLoadTab", "usage-statistics")));
     addCssFile(descriptor.getPluginResourcesPath("tool/tools.css"));
     addJsFile(descriptor.getPluginResourcesPath("tool/tools.js"));
     register();
