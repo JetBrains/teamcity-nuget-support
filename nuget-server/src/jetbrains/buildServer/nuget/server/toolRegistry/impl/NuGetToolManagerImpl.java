@@ -27,8 +27,7 @@ import java.io.File;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -61,8 +60,20 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   @NotNull
   public Collection<? extends NuGetTool> getAvailableTools(@NotNull ToolsPolicy policy) throws FetchException {
+    final Set<String> installed = new HashSet<String>();
+    for (NuGetInstalledTool tool : getInstalledTools()) {
+      installed.add(tool.getVersion());
+    }
     //This must be cached to make if work faster!
-    return myAvailables.getAvailable(policy);
+    final Collection<NuGetTool> available = new ArrayList<NuGetTool>(myAvailables.getAvailable(policy));
+    final Iterator<NuGetTool> it = available.iterator();
+    while (it.hasNext()) {
+      NuGetTool next = it.next();
+      if (installed.contains(next.getVersion())) {
+        it.remove();
+      }
+    }
+    return available;
   }
 
   public void installTool(@NotNull String toolId) {
