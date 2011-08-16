@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 10.08.11 20:35
  */
 public class ServerSettingsTab extends SimpleCustomTab {
+  public static final String TAB_ID = "nugetServerSettingsTab";
   private final PermissionChecker myChecker;
 
   public ServerSettingsTab(@NotNull final PagePlaces pagePlaces,
@@ -32,7 +33,7 @@ public class ServerSettingsTab extends SimpleCustomTab {
                            @NotNull final PermissionChecker checker) {
     super(pagePlaces,
             PlaceId.ADMIN_SERVER_CONFIGURATION_TAB,
-            "nugetServerSettingsTab",
+            TAB_ID,
             controller.getPath(),
             "NuGet");
     myChecker = checker;

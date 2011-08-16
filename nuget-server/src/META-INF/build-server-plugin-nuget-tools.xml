@@ -3,6 +3,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.ui.ToolSelectorController"/>
+
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.ServerSettingsTab"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstalledToolsController"/>

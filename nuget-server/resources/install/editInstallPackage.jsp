@@ -21,11 +21,9 @@
 
 <l:settingsGroup title="NuGet settings">
   <tr>
-    <th>Path to NuGet.exe<l:star/></th>
+    <th>NuGet.exe<l:star/></th>
     <td>
-      <props:textProperty name="${ib.nuGetPathKey}" className="longField"/>
-      <span class="smallNote">Specify path to NuGet.exe</span>
-      <span class="error" id="error_${ib.nuGetPathKey}"></span>
+      <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
     </td>
   </tr>
   <tr>

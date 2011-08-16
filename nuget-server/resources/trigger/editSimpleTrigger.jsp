@@ -20,11 +20,9 @@
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.trigger.TriggerBean" scope="request"/>
 
 <tr>
-  <td>NuGet path:<l:star/></td>
+  <th>NuGet.exe<l:star/></th>
   <td>
-    <props:textProperty name="${ib.nuGetExeKey}" style="width:20em;" />
-    <span class="smallNote">Specify path to NuGet.exe </span>
-    <span class="error" id="error_${ib.sourceKey}"></span>
+    <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetExeKey}&style=width:20em"/>
   </td>
 </tr>
 
