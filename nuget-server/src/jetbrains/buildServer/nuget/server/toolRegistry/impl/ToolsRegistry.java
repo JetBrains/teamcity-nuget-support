@@ -58,7 +58,7 @@ public class ToolsRegistry {
         continue;
       }
 
-      if (myNaming.getAgentToolFilePath(e).isFile()) {
+      if (!myNaming.getAgentToolFilePath(e).isFile()) {
         LOG.warn("NuGet tool is not packed for agent. " + e);
         continue;
       }
