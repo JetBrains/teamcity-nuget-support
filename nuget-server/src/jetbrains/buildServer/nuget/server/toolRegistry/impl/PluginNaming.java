@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
+import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +36,7 @@ public class PluginNaming {
 
   @NotNull
   private String getAgentToolFileName(@NotNull String version) {
-    return "nuget-commnadline-" + version + ".zip";
+    return PackagesConstants.NUGET_TOOL_NAME_PREFIX + version + ".zip";
   }
 
   public File getAgentToolFilePath(@NotNull NuGetTool tool) {

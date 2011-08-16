@@ -18,6 +18,8 @@ package jetbrains.buildServer.nuget.agent.parameters.impl;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.agent.BundledTool;
+import jetbrains.buildServer.agent.BundledToolsRegistry;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.FileUtil;
@@ -37,6 +39,12 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  * Date: 07.07.11 18:09
  */
 public class PackagesParametersFactoryImpl implements PackagesParametersFactory {
+  private final BundledToolsRegistry myBundledTools;
+
+  public PackagesParametersFactoryImpl(@NotNull final BundledToolsRegistry bundledTools) {
+    myBundledTools = bundledTools;
+  }
+
   @NotNull
   public NuGetFetchParameters loadNuGetFetchParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
     return new NuGetFetchParameters() {
@@ -47,7 +55,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       @NotNull
       public File getNuGetExeFile() throws RunBuildException {
-        return getFile(context, NUGET_PATH, "nuget.exe");
+        return getPathToNuGet(context);
       }
 
       @NotNull
@@ -59,6 +67,26 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
         return getBoolean(context, NUGET_EXCLUDE_VERSION);
       }
     };
+  }
+
+  private File getPathToNuGet(BuildRunnerContext context) throws RunBuildException {
+    String path = getParameter(context, NUGET_PATH);
+    if (StringUtil.isEmptyOrSpaces(path))
+      throw new RunBuildException("Runner parameter '" + NUGET_PATH + "' was not found");
+
+    if (path.startsWith("?")) {
+      final BundledTool tool = myBundledTools.findTool(NUGET_TOOL_NAME_PREFIX + path.substring(1));
+      if (tool != null) {
+        path = new File(tool.getRootPath(), NUGET_TOOL_REL_PATH).getPath();
+      }
+    }
+
+    File file = FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
+    if (!file.exists()) {
+      throw new RunBuildException("Failed to find " + "nuget.exe" + " at " + file);
+    }
+
+    return file;
   }
 
   @NotNull
@@ -166,7 +194,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       @NotNull
       public File getNuGetExeFile() throws RunBuildException {
-        return getFile(context, NUGET_PATH, "nuget.exe");
+        return getPathToNuGet(context);
       }
     };
   }

@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
@@ -97,7 +98,7 @@ public class ToolsRegistry {
 
     @NotNull
     public File getPath() {
-      return new File(myPath, "tools/NuGet.exe");
+      return FileUtil.getCanonicalFile(new File(myPath, PackagesConstants.NUGET_TOOL_REL_PATH));
     }
 
     @NotNull

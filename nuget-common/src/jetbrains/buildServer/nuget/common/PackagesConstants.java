@@ -46,4 +46,8 @@ public interface PackagesConstants {
   public static final String NUGET_PUBLISH_FILES = "nuget.publish.files";
   public static final String NUGET_PUBLISH_SOURCE = "nuget.publish.source";
   public static final String NUGET_API_KEY = Constants.SECURE_PROPERTY_PREFIX + "nuget.api.key";
+
+
+  public static final String NUGET_TOOL_NAME_PREFIX = "nuget-commnadline-";
+  public static final String NUGET_TOOL_REL_PATH = "tools/NuGet.exe";
 }
