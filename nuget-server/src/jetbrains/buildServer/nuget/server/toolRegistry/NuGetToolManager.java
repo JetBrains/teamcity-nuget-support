@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -58,4 +59,11 @@ public interface NuGetToolManager {
    */
   void removeTool(@NotNull String toolId);
 
+  /**
+   * Resolves path to NuGet.exe tool
+   * @param path path to tool
+   * @return resolved path of given path
+   */
+  @Nullable
+  String getNuGetPath(@Nullable String path);
 }

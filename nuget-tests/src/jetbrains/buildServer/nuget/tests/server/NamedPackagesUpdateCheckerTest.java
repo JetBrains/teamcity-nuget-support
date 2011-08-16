@@ -21,6 +21,7 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker;
 import jetbrains.buildServer.nuget.server.trigger.TriggerConstants;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
@@ -46,6 +47,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   private NamedPackagesUpdateChecker checker;
   private BuildTriggerDescriptor desr;
   private CustomDataStorage store;
+  private NuGetToolManager manager;
   private Map<String, String> params;
   private File nugetFakePath;
 
@@ -59,15 +61,18 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     desr = m.mock(BuildTriggerDescriptor.class);
     store = m.mock(CustomDataStorage.class);
     params = new TreeMap<String, String>();
+    manager = m.mock(NuGetToolManager.class);
 
-    checker = new NamedPackagesUpdateChecker(cmd);
+    checker = new NamedPackagesUpdateChecker(cmd, manager);
+    nugetFakePath = Paths.getNuGetRunnerPath();
+    final String path = nugetFakePath.getPath();
 
     m.checking(new Expectations(){{
       allowing(desr).getProperties(); will(returnValue(params));
+      allowing(manager).getNuGetPath(path); will(returnValue(path));
     }});
-    nugetFakePath = Paths.getNuGetRunnerPath();
 
-    params.put(TriggerConstants.NUGET_EXE, nugetFakePath.getPath());
+    params.put(TriggerConstants.NUGET_EXE, path);
     params.put(TriggerConstants.PACKAGE, "NUnit");
   }
 

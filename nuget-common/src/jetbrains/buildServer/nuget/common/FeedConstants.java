@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.reader;
+package jetbrains.buildServer.nuget.common;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)

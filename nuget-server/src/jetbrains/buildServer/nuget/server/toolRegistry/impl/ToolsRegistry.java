@@ -20,7 +20,9 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -50,6 +52,17 @@ public class ToolsRegistry {
   @NotNull
   public Collection<? extends NuGetInstalledTool> getTools() {
     return getToolsInternal();
+  }
+
+  @Nullable
+  public File getNuGetPath(@NotNull String path) {
+    if (StringUtil.isEmptyOrSpaces(path)) return null;
+    for (NuGetInstalledTool tool : getToolsInternal()) {
+      if (tool.getId().equals(path)) {
+        return tool.getPath();
+      }
+    }
+    return null;
   }
 
   private Collection<InstalledTool> getToolsInternal() {
@@ -108,7 +121,7 @@ public class ToolsRegistry {
 
     @NotNull
     public String getId() {
-      return getVersion();
+      return myPath.getName();
     }
 
     @NotNull

@@ -5,6 +5,7 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -21,14 +22,17 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
 
   public static final String KEY = "hash";
   private final ListPackagesCommand myCommand;
+  private final NuGetToolManager myManager;
 
-  public NamedPackagesUpdateChecker(@NotNull final ListPackagesCommand command) {
+  public NamedPackagesUpdateChecker(@NotNull final ListPackagesCommand command,
+                                    @NotNull final NuGetToolManager manager) {
     myCommand = command;
+    myManager = manager;
   }
 
   public BuildStartReason checkChanges(@NotNull BuildTriggerDescriptor descriptor,
                                        @NotNull CustomDataStorage storage) throws BuildTriggerException {
-    final String path = descriptor.getProperties().get(TriggerConstants.NUGET_EXE);
+    final String path = myManager.getNuGetPath(descriptor.getProperties().get(TriggerConstants.NUGET_EXE));
     final String pkgId = descriptor.getProperties().get(TriggerConstants.PACKAGE);
     final String version = descriptor.getProperties().get(TriggerConstants.VERSION);
     final String source = descriptor.getProperties().get(TriggerConstants.SOURCE);

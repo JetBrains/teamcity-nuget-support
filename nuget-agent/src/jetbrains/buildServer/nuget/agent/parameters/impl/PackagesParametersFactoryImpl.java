@@ -75,7 +75,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       throw new RunBuildException("Runner parameter '" + NUGET_PATH + "' was not found");
 
     if (path.startsWith("?")) {
-      final BundledTool tool = myBundledTools.findTool(NUGET_TOOL_NAME_PREFIX + path.substring(1));
+      final BundledTool tool = myBundledTools.findTool(path.substring(1));
       if (tool != null) {
         path = new File(tool.getRootPath(), NUGET_TOOL_REL_PATH).getPath();
       }

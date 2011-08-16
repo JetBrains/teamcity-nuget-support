@@ -17,16 +17,18 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -83,5 +85,19 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   public void removeTool(@NotNull String toolId) {
     myInstalled.removeTool(toolId);
+  }
+
+  @Nullable
+  public String getNuGetPath(@Nullable final String path) {
+    if (path == null || StringUtil.isEmptyOrSpaces(path)) return path;
+    if (!path.startsWith("?")) {
+      return path;
+    }
+    final String id = path.substring(1);
+    final File nuGetPath = myInstalled.getNuGetPath(id);
+    if (nuGetPath != null) {
+      return nuGetPath.getPath();
+    }
+    throw new RuntimeException("Failed to find " + FeedConstants.NUGET_COMMANDLINE + " version " + id);
   }
 }
