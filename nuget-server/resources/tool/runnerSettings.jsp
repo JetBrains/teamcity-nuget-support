@@ -41,7 +41,7 @@
   <props:option value="custom" selected="${not hasSelected}">Custom</props:option>
 </props:selectProperty>
 <span class="smallNote">Specify NuGet.exe version.
-  Check intalled NuGet Commandline tools in <a href="<c:url value="${settingsUrl}"/>">NuGet Settings</a>
+  Check installed NuGet Commandline tools in <a href="<c:url value="${settingsUrl}"/>">NuGet Settings</a>
 </span>
 
 <div id="customPathContainer">
@@ -78,11 +78,16 @@
         BS.Util.show($('customPathContainer'));
       } else {
         this.setValue("");
+        BS.Util.hide($('customPathContainer'));
       }
       BS.MultilineProperties.updateVisible();
     },
     customPathChanged : function() {
       $('${name}').value = $('nugetCustomPath').value;
+      var selected = $('nugetPathSelector').value;
+      if (selected != "custom") {
+        $('nugetPathSelector').value = "custom";
+      }
     }
   };
 
