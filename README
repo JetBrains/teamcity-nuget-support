@@ -29,6 +29,8 @@ Supported features:
 
 - Build Runner to publish created NuGet packages to NuGet feeds
 
+- TeamCity is able to download and distribute NuGet.Commandline within all build agents
+
 
 API gaps TeamCity:
  - Reuse ComposideBuildProcess and DelegatingBuildProcess
