@@ -26,6 +26,7 @@ import jetbrains.buildServer.agent.Constants;
 public interface PackagesConstants {
   public static final String INSTALL_RUN_TYPE = "jb.nuget.installer"; //no more than 30 chars
   public static final String PUBLISH_RUN_TYPE = "jb.nuget.publish"; //run-type could never exceed 30 chars
+  public static final String PACK_RUN_TYPE = "jb.nuget.pack"; //run-type could never exceed 30 chars
 
   public static final String NUGET_PATH = "nuget.path";
   public static final String NUGET_SOURCES = "nuget.sources";
@@ -50,4 +51,15 @@ public interface PackagesConstants {
 
   public static final String NUGET_TOOL_NAME_PREFIX = "nuget-commnadline-";
   public static final String NUGET_TOOL_REL_PATH = "tools/NuGet.exe";
+
+
+  public static final String NUGET_PACK_OUTPUT_DIR = "nuget.pack.output.directory";
+  public static final String NUGET_PACK_BASE_DIR = "nuget.pack.base.directory";
+  public static final String NUGET_PACK_VERSION = "nuget.pack.version";
+  public static final String NUGET_PACK_SPEC_FILE = "nuget.pack.specFile";
+  public static final String NUGET_PACK_EXCLUDE_FILES = "nuget.pack.excludes";
+  public static final String NUGET_PACK_PROPERTIES = "nuget.pack.properties";
+  public static final String NUGET_PACK_CUSOM_COMMANDLINE= "nuget.pack.commandline";
+  public static final String NUGET_PACK_AS_TOOL= "nuget.pack.pack.mode.tool";
+  public static final String NUGET_PACK_INCLUDE_SOURCES = "nuget.pack.include.sources" ;
 }
