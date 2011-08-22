@@ -49,15 +49,17 @@ public interface NuGetToolManager {
   /**
    * Downloads and installs nuget tools for both server and agent
    * @param toolId tool id for tool to install
+   * @throws ToolException on tool installation error
    */
-  void installTool(@NotNull String toolId);
+  void installTool(@NotNull String toolId) throws ToolException;
 
 
   /**
    * Removes tool from server and build agents
    * @param toolId tool id from {@link #getInstalledTools()} method
+   * @throws ToolException on tool installation error
    */
-  void removeTool(@NotNull String toolId);
+  void removeTool(@NotNull String toolId) throws ToolException;
 
   /**
    * Resolves path to NuGet.exe tool

@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
+import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
@@ -105,13 +106,19 @@ public class InstallToolController extends BaseFormXmlController {
     }
 
     final String whatToDo = request.getParameter("whatToDo");
-    if ("install".equals(whatToDo)) {
-      myToolsManager.installTool(toolId);
-      return;
-    }
+    try {
+      if ("install".equals(whatToDo)) {
+        myToolsManager.installTool(toolId);
+        return;
+      }
 
-    if ("remove".equals(whatToDo)) {
-      myToolsManager.removeTool(toolId);
+      if ("remove".equals(whatToDo)) {
+        myToolsManager.removeTool(toolId);
+      }
+    } catch (ToolException e) {
+      ActionErrors ae = new ActionErrors();
+      ae.addError("toolId", "Failed to install package: " + e.getMessage());
+      ae.serialize(xmlResponse);
     }
   }
 }

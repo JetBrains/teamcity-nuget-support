@@ -37,7 +37,6 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
   private File myPluginsPath;
   private ToolPaths myPaths;
   private NuGetFeedReader myFeed;
-  private InstallLogger myLogger;
   private AvailableToolsState myState;
   private Mockery m;
 
@@ -49,7 +48,6 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
     m = new Mockery();
     myPaths = m.mock(ToolPaths.class);
     myFeed = m.mock(NuGetFeedReader.class);
-    myLogger = m.mock(InstallLogger.class);
     myState = m.mock(AvailableToolsState.class);
 
     myInstaller = new NuGetToolsInstaller(

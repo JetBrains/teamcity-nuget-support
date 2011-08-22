@@ -24,9 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.*;
 
 /**
@@ -76,22 +73,8 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     return available;
   }
 
-  public void installTool(@NotNull String toolId) {
-    myInstaller.installNuGet(
-            toolId,
-            (InstallLogger) Proxy.newProxyInstance(getClass().getClassLoader(),
-                    new Class<?>[]{InstallLogger.class},
-                    new InvocationHandler() {
-                      public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append(method.getName());
-                        for (Object arg : args) {
-                          sb.append(" ").append(arg);
-                        }
-                        LOG.debug(sb.toString());
-                        return null;
-                      }
-                    }));
+  public void installTool(@NotNull String toolId) throws ToolException {
+    myInstaller.installNuGet(toolId);
   }
 
   public void removeTool(@NotNull String toolId) {

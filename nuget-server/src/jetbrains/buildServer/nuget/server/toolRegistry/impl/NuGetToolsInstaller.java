@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
+import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,38 +48,26 @@ public class NuGetToolsInstaller {
     myWatcher = watcher;
   }
 
-  public void installNuGet(@NotNull final String packageId, @NotNull final InstallLogger logger) {
-    logger.started(packageId);
+  public void installNuGet(@NotNull final String packageId) throws ToolException {
+    LOG.info("Start installing package " + packageId);
 
-    FeedPackage tool = null;
-    try {
-      tool = myState.findTool(packageId);
-      if (tool == null) {
-        logger.packageNotFound(packageId);
-        return;
-      }
-
-      logger.packageDownloadStarted(tool);
-      File dest = new File(myToolPaths.getPackages(), tool.getInfo().getId() + "." + tool.getInfo().getVersion() + ".nupkg");
-      try {
-        File tmp = File.createTempFile(dest.getName(), ".nupkg");
-        FileUtil.createParentDirs(tmp);
-        myClient.downloadPackage(tool, tmp);
-        if (!tmp.renameTo(dest)) {
-          throw new IOException("Failed to plug downloaded package to " + dest);
-        }
-      } catch (Exception e) {
-        LOG.warn("Failed to download package " + tool + ". " + e.getMessage(), e);
-        logger.packageDownloadFailed(tool, e);
-        return;
-      } finally {
-        logger.packageDownloadFinished(tool);
-      }
-      myWatcher.checkNow();
-    } catch (Exception e) {
-      LOG.warn("Failed to install NuGet.Commandline package. " + e.getMessage(), e);
-    } finally {
-      logger.finished(packageId, tool);
+    final FeedPackage tool = myState.findTool(packageId);
+    if (tool == null) {
+      throw new ToolException("Failed to find package " + packageId);
     }
+
+    LOG.info("Downloading package from: " + tool.getDownloadUrl());
+    File dest = new File(myToolPaths.getPackages(), tool.getInfo().getId() + "." + tool.getInfo().getVersion() + ".nupkg");
+    try {
+      File tmp = File.createTempFile(dest.getName(), ".nupkg");
+      FileUtil.createParentDirs(tmp);
+      myClient.downloadPackage(tool, tmp);
+      if (!tmp.renameTo(dest)) {
+        throw new IOException("Failed to plug downloaded package to " + dest);
+      }
+    } catch (Exception e) {
+      throw new ToolException("Failed to download package " + tool + ". " + e.getMessage(), e);
+    }
+    myWatcher.checkNow();
   }
 }

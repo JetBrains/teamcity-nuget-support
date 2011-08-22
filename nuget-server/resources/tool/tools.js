@@ -78,7 +78,6 @@ BS.NuGet.Tools = {
       BS.Util.show($('installNuGetApplyProgress'));
       BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
         onCompleteSave: function(form, responseXML, err) {
-          BS.Util.hide($('installNuGetApplyProgress'));
           var wereErrors = BS.XMLResponse.processErrors(responseXML, {}, form.propertiesErrorsHandler);
           BS.ErrorsAwareListener.onCompleteSave(form, responseXML, err);
 
