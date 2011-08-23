@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,8 +72,9 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
   private File getPathToNuGet(BuildRunnerContext context) throws RunBuildException {
     String path = getParameter(context, NUGET_PATH);
-    if (StringUtil.isEmptyOrSpaces(path))
+    if (path == null || StringUtil.isEmptyOrSpaces(path)) {
       throw new RunBuildException("Runner parameter '" + NUGET_PATH + "' was not found");
+    }
 
     if (path.startsWith("?")) {
       final BundledTool tool = myBundledTools.findTool(path.substring(1));
@@ -121,7 +123,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   private File resolveParameterPath(@NotNull final BuildRunnerContext context,
                                     @NotNull final String runnerParameter) throws RunBuildException {
     String path = getParameter(context, runnerParameter);
-    if (StringUtil.isEmptyOrSpaces(path))
+    if (path == null || StringUtil.isEmptyOrSpaces(path))
       throw new RunBuildException("Runner parameter '" + runnerParameter + "' was not found");
 
     return FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
@@ -149,8 +151,18 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
     return !StringUtil.isEmptyOrSpaces(getParameter(context, key));
   }
 
+  @Nullable
   private String getParameter(@NotNull BuildRunnerContext context, @NotNull String key) {
     return context.getRunnerParameters().get(key);
+  }
+
+  @NotNull
+  private String getParameter(@NotNull BuildRunnerContext context, @NotNull String key, @NotNull String errorMessage) throws RunBuildException {
+    final String value = getParameter(context, key);
+    if (value == null || StringUtil.isEmptyOrSpaces(value)) {
+      throw new RunBuildException("Parameter '" + key + "' is not found. " + errorMessage);
+    }
+    return value;
   }
 
 
@@ -204,7 +216,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       @NotNull
       public String getApiKey() throws RunBuildException {
-        return getParameter(context, NUGET_API_KEY);
+        return getParameter(context, NUGET_API_KEY, "NuGet Api key must be specified");
       }
 
       @NotNull
@@ -254,7 +266,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       @NotNull
       public File getBaseDirectory() throws RunBuildException {
         String path = getParameter(context, NUGET_PACK_BASE_DIR);
-        if (StringUtil.isEmptyOrSpaces(path)) {
+        if (path == null || StringUtil.isEmptyOrSpaces(path)) {
           return context.getBuild().getCheckoutDirectory();
         }
 
@@ -272,8 +284,8 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       }
 
       @NotNull
-      public String getVersion() {
-        return getParameter(context, NUGET_PACK_VERSION);
+      public String getVersion() throws RunBuildException {
+        return getParameter(context, NUGET_PACK_VERSION, "Version must be specified");
       }
 
       public boolean packSymbols() {

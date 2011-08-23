@@ -47,7 +47,7 @@ public interface NuGetPackParameters extends NuGetParameters {
   File getBaseDirectory() throws RunBuildException;
 
   @NotNull
-  String getVersion();
+  String getVersion() throws RunBuildException;
 
   boolean packSymbols();
   boolean packTool();
