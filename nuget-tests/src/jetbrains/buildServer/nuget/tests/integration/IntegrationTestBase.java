@@ -21,6 +21,15 @@ import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
+import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
+import jetbrains.buildServer.nuget.agent.commands.impl.LoggingNuGetActionFactoryImpl;
+import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
+import jetbrains.buildServer.nuget.agent.install.NuGetPackagesCollector;
+import jetbrains.buildServer.nuget.agent.install.PackageUsages;
+import jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesCollectorImpl;
+import jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesConfigParser;
+import jetbrains.buildServer.nuget.agent.install.impl.PackageUsagesImpl;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
@@ -45,10 +54,9 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected BuildRunnerContext myContext;
   protected BuildProgressLogger myLogger;
   protected PackagesParametersFactory myParametersFactory;
-  protected PackagesInstallParameters myInstall;
-  protected PackagesUpdateParameters myUpdate;
-  protected NuGetPublishParameters myPublishParameters;
   protected NuGetFetchParameters myNuGet;
+  protected NuGetPackagesCollector myCollector;
+  protected NuGetActionFactory myActionFactory;
   private BuildProcess myMockProcess;
 
   @NotNull
@@ -67,11 +75,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myContext = m.mock(BuildRunnerContext.class);
     myLogger = m.mock(BuildProgressLogger.class);
     myParametersFactory = m.mock(PackagesParametersFactory.class);
-    myInstall = m.mock(PackagesInstallParameters.class);
-    myUpdate = m.mock(PackagesUpdateParameters.class);
     myMockProcess = m.mock(BuildProcess.class);
     myNuGet = m.mock(NuGetFetchParameters.class);
-    myPublishParameters = m.mock(NuGetPublishParameters.class);
 
     m.checking(new Expectations() {{
       allowing(myContext).getBuild();
@@ -86,14 +91,15 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
 
       allowing(myLogger).message(with(any(String.class)));
-      allowing(myLogger).activityStarted(with(equal("install")), with(any(String.class)), with(any(String.class)));
-      allowing(myLogger).activityFinished(with(equal("install")), with(any(String.class)));
-
-      allowing(myInstall).getNuGetParameters();
-      will(returnValue(myNuGet));
-      allowing(myUpdate).getNuGetParameters();
-      will(returnValue(myNuGet));
     }});
+
+    myCollector = new NuGetPackagesCollectorImpl();
+    PackageUsages pu = new PackageUsagesImpl(
+            myCollector,
+            new NuGetPackagesConfigParser()
+    );
+
+    myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(executingFactory(), pu, new CommandFactoryImpl()));
   }
 
   @NotNull
@@ -101,7 +107,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     return Paths.getTestDataPath("integration/" + path);
   }
 
-  protected CommandlineBuildProcessFactory executingFactory() {
+  @NotNull
+  private CommandlineBuildProcessFactory executingFactory() {
     return new CommandlineBuildProcessFactory() {
       public BuildProcess executeCommandLine(@NotNull final BuildRunnerContext hostContext,
                                              @NotNull final File program,

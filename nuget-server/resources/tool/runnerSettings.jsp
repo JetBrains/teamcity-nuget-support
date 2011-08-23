@@ -41,7 +41,7 @@
   <props:option value="custom" selected="${not hasSelected}">Custom</props:option>
 </props:selectProperty>
 <span class="smallNote">Specify NuGet.exe version.
-  Check installed NuGet Commandline tools in <a href="<c:url value="${settingsUrl}"/>">NuGet Settings</a>
+  Check installed NuGet Commandline tools in <a href="<c:url value="${settingsUrl}"/>" target="_blank">NuGet Settings</a>
 </span>
 
 <div id="customPathContainer">

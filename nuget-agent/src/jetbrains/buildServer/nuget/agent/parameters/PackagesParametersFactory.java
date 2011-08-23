@@ -47,4 +47,7 @@ public interface PackagesParametersFactory {
 
   @NotNull
   NuGetPublishParameters loadPublishParameters(@NotNull final BuildRunnerContext context) throws RunBuildException;
+
+  @NotNull
+  NuGetPackParameters loadPackParameters(@NotNull final BuildRunnerContext context) throws RunBuildException;
 }

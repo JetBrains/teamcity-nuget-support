@@ -66,6 +66,50 @@ public class CommandFactoryImpl implements CommandFactory {
     return executeNuGet(params.getNuGetParameters(), argz, packagesConfig.getParentFile(), factory);
   }
 
+  public <T> T createPack(@NotNull final NuGetPackParameters params,
+                          @NotNull final File workdir,
+                          @NotNull final Callback<T> factory) throws RunBuildException {
+    final List<String> arguments = new ArrayList<String>();
+    arguments.add("pack");
+    arguments.add(params.getSpecFile().getPath());
+
+    arguments.add("-OutputDirectory");
+    arguments.add(params.getOutputDirectory().getPath());
+
+    arguments.add("-BasePath");
+    arguments.add(params.getBaseDirectory().getPath());
+
+    arguments.add("-Verbose");
+
+    arguments.add("-Version");
+    arguments.add(params.getVersion());
+
+    for (String exclude : params.getExclude()) {
+      arguments.add("-Exclude");
+      arguments.add(exclude);
+    }
+
+    if (params.packSymbols()) {
+      arguments.add("-Symbols");
+    }
+
+    if (params.packTool()) {
+      arguments.add("-Tool");
+    }
+
+    for (String prop : params.getProperties()) {
+      arguments.add("-Properties");
+      arguments.add(prop);
+    }
+
+    for (String cmd : params.getCustomCommandline()) {
+      //TODO: check if -Build was added
+      arguments.add(cmd);
+    }
+
+    return executeNuGet(params, Collections.<String>emptyList(), arguments, workdir, factory);
+  }
+
   @NotNull
   public <T> T createPush(@NotNull final NuGetPublishParameters params,
                           @NotNull final File packagePath,

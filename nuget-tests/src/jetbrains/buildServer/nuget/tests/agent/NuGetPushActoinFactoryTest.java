@@ -72,6 +72,8 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
     }});
 
     i.createPush(ctx, ps, myFile);
+
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -86,6 +88,8 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
     }});
 
     i.createPush(ctx, ps, myFile);
+
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -100,6 +104,8 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
     }});
 
     i.createPush(ctx, ps, myFile);
+
+    m.assertIsSatisfied();
   }
 
 }

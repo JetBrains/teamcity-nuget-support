@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.agent.commands;
 
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
@@ -46,6 +47,10 @@ public interface CommandFactory {
   @NotNull
   <T> T createPush(@NotNull NuGetPublishParameters params,
                    @NotNull File packagePath,
+                   @NotNull Callback<T> factory) throws RunBuildException;
+
+  <T> T createPack(@NotNull NuGetPackParameters params,
+                   @NotNull File workdir,
                    @NotNull Callback<T> factory) throws RunBuildException;
 
   public interface Callback<T> {

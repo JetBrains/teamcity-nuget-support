@@ -19,19 +19,17 @@ package jetbrains.buildServer.nuget.tests.integration;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
-import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
-import jetbrains.buildServer.nuget.agent.install.PackageUsages;
 import jetbrains.buildServer.nuget.agent.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesCollectorImpl;
-import jetbrains.buildServer.nuget.agent.install.impl.NuGetPackagesConfigParser;
-import jetbrains.buildServer.nuget.agent.install.impl.PackageUsagesImpl;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.ArchiveUtil;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -42,6 +40,27 @@ import java.util.*;
  * Date: 08.07.11 2:15
  */
 public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
+  protected PackagesInstallParameters myInstall;
+  protected PackagesUpdateParameters myUpdate;
+
+  @BeforeMethod
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+
+    myInstall = m.mock(PackagesInstallParameters.class);
+    myUpdate = m.mock(PackagesUpdateParameters.class);
+
+    m.checking(new Expectations(){{
+      allowing(myInstall).getNuGetParameters();
+      will(returnValue(myNuGet));
+      allowing(myUpdate).getNuGetParameters();
+      will(returnValue(myNuGet));
+
+      allowing(myLogger).activityStarted(with(equal("install")), with(any(String.class)), with(any(String.class)));
+      allowing(myLogger).activityFinished(with(equal("install")), with(any(String.class)));
+    }});
+  }
 
   @Test
   public void test_01_online_sources() throws RunBuildException {
@@ -207,23 +226,18 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       will(returnValue(update ? myUpdate : null));
     }});
 
-    NuGetPackagesCollectorImpl collector = new NuGetPackagesCollectorImpl();
-    PackageUsages pu = new PackageUsagesImpl(
-            collector,
-            new NuGetPackagesConfigParser()
-    );
-
     BuildProcess proc = new PackagesInstallerRunner(
-            new NuGetActionFactoryImpl(executingFactory(), pu, new CommandFactoryImpl()),
+            myActionFactory,
             myParametersFactory
     ).createBuildProcess(myBuild, myContext);
+    ((NuGetPackagesCollectorImpl)myCollector).removeAllPackages();
 
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
 
-    System.out.println(collector.getPackages());
+    System.out.println(myCollector.getPackages());
     if (detectedPackages != null) {
       Assert.assertEquals(
-              new TreeSet<PackageInfo>(collector.getPackages().getPackages()),
+              new TreeSet<PackageInfo>(myCollector.getPackages().getPackages()),
               new TreeSet<PackageInfo>(detectedPackages));
     }
 
