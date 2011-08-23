@@ -19,4 +19,46 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.pack.PackBean" scope="request"/>
 
-TBD
+
+<div class="parameter">
+  Path to NuGet.exe: <strong><props:displayValue name="${ib.nuGetPathKey}"/></strong>
+</div>
+
+
+<div class="parameter">
+  Specification file: <strong><props:displayValue name="${ib.packSpecFile}"/></strong>
+</div>
+
+<div class="parameter">
+  Version: <strong><props:displayValue name="${ib.packVersion}"/></strong>
+</div>
+
+<div class="parameter">
+  Base Directory: <strong><props:displayValue name="${ib.packBaseDirectory}"/></strong>
+</div>
+
+<div class="parameter">
+  Output Directory: <strong><props:displayValue name="${ib.packOutputDirectory}"/></strong>
+</div>
+
+<div class="parameter">
+  Exclude files: <props:displayValue name="${ib.packExcludePatterns}" showInPopup="${true}"/>
+</div>
+
+<div class="parameter">
+  Properties: <props:displayValue name="${ib.packProperties}" showInPopup="${true}"/>
+</div>
+
+<div class="parameter">
+  Create tool package: <strong><props:displayCheckboxValue name="${ib.packAsTool}"/></strong>
+</div>
+
+<div class="parameter">
+  Include symbols and sources: <strong><props:displayCheckboxValue name="${ib.packSources}"/></strong>
+</div>
+
+<div class="parameter">
+  Custom commandline: <strong><props:displayValue name="${ib.packCustomCommandline}" showInPopup="${true}"/></strong>
+</div>
+
+

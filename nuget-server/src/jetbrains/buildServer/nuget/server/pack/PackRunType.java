@@ -17,17 +17,21 @@
 package jetbrains.buildServer.nuget.server.pack;
 
 import jetbrains.buildServer.agent.ServerProvidedProperties;
+import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.nuget.server.util.BasePropertiesProcessor;
+import jetbrains.buildServer.parameters.ReferencesResolverUtil;
+import jetbrains.buildServer.requirements.Requirement;
+import jetbrains.buildServer.requirements.RequirementType;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.serverSide.RunType;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -56,12 +60,30 @@ public class PackRunType extends RunType {
     return "Creates NuGet package from a given spec file";
   }
 
+  @NotNull
+  @Override
+  public String describeParameters(@NotNull Map<String, String> parameters) {
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("Pack: ").append(parameters.get(PackagesConstants.NUGET_PACK_SPEC_FILE)).append("\n");
+    sb.append("Version: ").append(parameters.get(PackagesConstants.NUGET_PACK_VERSION)).append("\n");
+    return sb.toString();
+  }
+
   @Override
   public PropertiesProcessor getRunnerPropertiesProcessor() {
-    return new PropertiesProcessor() {
-      public Collection<InvalidProperty> process(Map<String, String> properties) {
-        final ArrayList<InvalidProperty> result = new ArrayList<InvalidProperty>();
-        return result;
+    return new BasePropertiesProcessor() {
+      @Override
+      protected void checkProperties(@NotNull Map<String, String> map, @NotNull Collection<InvalidProperty> result) {
+        notEmpty(NUGET_PATH, "Path to nuget.exe must be specified", map, result);
+        notEmpty(NUGET_PACK_SPEC_FILE, "Package definition file must be specified", map, result);
+        notEmpty(NUGET_PACK_OUTPUT_DIR, "Package creation output directory must be specified", map, result);
+        final String version = notEmpty(NUGET_PACK_VERSION, "Version must be specified", map, result);
+        if (version != null && !ReferencesResolverUtil.containsReference(version) && !version.matches("\\d+(\\.\\d+){0,3}")) {
+          result.add(new InvalidProperty(NUGET_PACK_VERSION, "Version must be in assmebly version format: D[.D[.D[.D]]], i.e. 1.2.3 or 5.4.3.2"));
+        }
+
+        //TODO: check properties are well-formed
       }
     };
   }
@@ -81,5 +103,12 @@ public class PackRunType extends RunType {
     return new HashMap<String, String>(){{
       put(PackagesConstants.NUGET_PACK_VERSION, "%" + ServerProvidedProperties.BUILD_NUMBER_PROP + "%");
     }};
+  }
+
+  @Override
+  public List<Requirement> getRunnerSpecificRequirements(@NotNull Map<String, String> runParameters) {
+    List<Requirement> list = new ArrayList<Requirement>(super.getRunnerSpecificRequirements(runParameters));
+    list.add(new Requirement(DotNetConstants.DOT_NET_FRAMEWORK_4_x86, null, RequirementType.EXISTS));
+    return list;
   }
 }
