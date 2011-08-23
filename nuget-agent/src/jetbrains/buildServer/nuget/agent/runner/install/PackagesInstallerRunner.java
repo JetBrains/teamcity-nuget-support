@@ -16,20 +16,20 @@
 
 package jetbrains.buildServer.nuget.agent.runner.install;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.agent.AgentRunningBuild;
+import jetbrains.buildServer.agent.BuildProcess;
+import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStages;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.*;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStages;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.PackagesInstallerBuilder;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
-import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,16 +37,10 @@ import org.jetbrains.annotations.NotNull;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 13:55
  */
-public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunnerInfo {
-  private static final Logger LOG = Logger.getInstance(PackagesInstallerRunner.class.getName());
-
-  private final NuGetActionFactory myNuGetActionFactory;
-  private final PackagesParametersFactory myParametersFactory;
-
-  public PackagesInstallerRunner(@NotNull final NuGetActionFactory nuGetActionFactory,
+public class PackagesInstallerRunner extends NuGetRunnerBase {
+  public PackagesInstallerRunner(@NotNull final NuGetActionFactory actionFactory,
                                  @NotNull final PackagesParametersFactory parametersFactory) {
-    myNuGetActionFactory = nuGetActionFactory;
-    myParametersFactory = parametersFactory;
+    super(actionFactory, parametersFactory);
   }
 
   @NotNull
@@ -72,7 +66,7 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
             parameters,
             context.getBuild().getBuildLogger(),
             new PackagesInstallerBuilder(
-                    myNuGetActionFactory,
+                    myActionFactory,
                     stages,
                     context,
                     installParameters,
@@ -83,26 +77,7 @@ public class PackagesInstallerRunner implements AgentBuildRunner, AgentBuildRunn
   }
 
   @NotNull
-  public AgentBuildRunnerInfo getRunnerInfo() {
-    return this;
-  }
-
-  @NotNull
   public String getType() {
     return PackagesConstants.INSTALL_RUN_TYPE;
-  }
-
-  public boolean canRun(@NotNull BuildAgentConfiguration agentConfiguration) {
-    if (!agentConfiguration.getSystemInfo().isWindows()) {
-      LOG.warn("NuGet packages installer available only under windows");
-      return false;
-    }
-
-    if (!agentConfiguration.getConfigurationParameters().containsKey(DotNetConstants.DOT_NET_FRAMEWORK_4_x86)) {
-      LOG.warn("NuGet requires .NET Framework 4.0 x86 installed");
-      return false;
-    }
-
-    return true;
   }
 }

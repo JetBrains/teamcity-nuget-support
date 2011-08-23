@@ -16,15 +16,16 @@
 
 package jetbrains.buildServer.nuget.agent.runner.publish;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.agent.AgentRunningBuild;
+import jetbrains.buildServer.agent.BuildProcess;
+import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
+import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
 import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
-import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,16 +35,10 @@ import java.io.File;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 21.07.11 15:15
  */
-public class PackagesPublishRunner implements AgentBuildRunner, AgentBuildRunnerInfo {
-  private static final Logger LOG = Logger.getInstance(PackagesPublishRunner.class.getName());
-
-  private final NuGetActionFactory myActionFactory;
-  private final PackagesParametersFactory myParametersFactory;
-
+public class PackagesPublishRunner extends NuGetRunnerBase {
   public PackagesPublishRunner(@NotNull final NuGetActionFactory actionFactory,
                                @NotNull final PackagesParametersFactory parametersFactory) {
-    myActionFactory = actionFactory;
-    myParametersFactory = parametersFactory;
+    super(actionFactory, parametersFactory);
   }
 
   @NotNull
@@ -64,26 +59,7 @@ public class PackagesPublishRunner implements AgentBuildRunner, AgentBuildRunner
   }
 
   @NotNull
-  public AgentBuildRunnerInfo getRunnerInfo() {
-    return this;
-  }
-
-  @NotNull
   public String getType() {
     return PackagesConstants.PUBLISH_RUN_TYPE;
-  }
-
-  public boolean canRun(@NotNull BuildAgentConfiguration agentConfiguration) {
-    if (!agentConfiguration.getSystemInfo().isWindows()) {
-      LOG.warn("NuGet packages installer available only under windows");
-      return false;
-    }
-
-    if (!agentConfiguration.getConfigurationParameters().containsKey(DotNetConstants.DOT_NET_FRAMEWORK_4_x86)) {
-      LOG.warn("NuGet requires .NET Framework 4.0 x86 installed");
-      return false;
-    }
-
-    return true;
   }
 }
