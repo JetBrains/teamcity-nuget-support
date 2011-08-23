@@ -7,6 +7,7 @@
           <file>file://$MODULE_DIR$/src/META-INF/build-agent-plugin-nuget.xml</file>
           <file>jar://$TeamCityDistribution$/buildAgent/lib/agent.jar!/META-INF/buildAgentSpring.xml</file>
           <file>jar://$TeamCityDistribution$/buildAgent/lib/agent.jar!/META-INF/buildAgentPlugins.xml</file>
+          <file>file://$MODULE_DIR$/src/META-INF/build-agent-plugin-nuget-pack.xml</file>
         </fileset>
       </configuration>
     </facet>

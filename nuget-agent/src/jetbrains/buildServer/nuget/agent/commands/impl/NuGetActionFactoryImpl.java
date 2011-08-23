@@ -23,10 +23,7 @@ import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.install.PackageUsages;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import org.jetbrains.annotations.NotNull;
@@ -104,5 +101,10 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                                  @NotNull NuGetPublishParameters params,
                                  @NotNull File packagePath) throws RunBuildException {
     return myCommandFactory.createPush(params, packagePath, getCallback(context));
+  }
+
+  @NotNull
+  public BuildProcess createPack(@NotNull BuildRunnerContext context, @NotNull NuGetPackParameters params) throws RunBuildException {
+    return myCommandFactory.createPack(params, context.getBuild().getCheckoutDirectory(), getCallback(context));
   }
 }

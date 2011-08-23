@@ -21,10 +21,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
@@ -64,6 +61,7 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
                         targetFolder);
               }
 
+              @NotNull
               @Override
               protected String getBlockDescription(@NotNull String pathToLog) {
                 return "Installing NuGet packages for " + pathToLog;
@@ -89,6 +87,7 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
                         targetFolder);
               }
 
+              @NotNull
               @Override
               protected String getBlockDescription(@NotNull String pathToLog) {
                 return "Updating NuGet packages for " + pathToLog;
@@ -98,22 +97,42 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
-  public BuildProcess createPush(@NotNull BuildRunnerContext context,
-                                 @NotNull NuGetPublishParameters params,
-                                 @NotNull File packagePath) throws RunBuildException {
+  public BuildProcess createPush(@NotNull final BuildRunnerContext context,
+                                 @NotNull final NuGetPublishParameters params,
+                                 @NotNull final File packagePath) throws RunBuildException {
     return new DelegatingBuildProcess(
             new LoggingAction(context, packagePath, "push") {
       @NotNull
       @Override
       protected BuildProcess delegateToActualAction() throws RunBuildException {
-        return null;
+        return myActionFactory.createPush(context, params, packagePath);
       }
 
+      @NotNull
       @Override
       protected String getBlockDescription(@NotNull String pathToLog) {
-        return null;
+        return "Publish package " + pathToLog;
       }
     });
+  }
+
+  @NotNull
+  public BuildProcess createPack(@NotNull final BuildRunnerContext context,
+                                 @NotNull final NuGetPackParameters params) throws RunBuildException {
+    return new DelegatingBuildProcess(
+            new LoggingAction(context, params.getSpecFile(), "pack") {
+              @NotNull
+              @Override
+              protected BuildProcess delegateToActualAction() throws RunBuildException {
+                return myActionFactory.createPack(context, params);
+              }
+
+              @NotNull
+              @Override
+              protected String getBlockDescription(@NotNull String pathToLog) {
+                return "Create NuGet package from " + pathToLog;
+              }
+            });
   }
 
   private abstract class LoggingAction implements DelegatingBuildProcess.Action {
@@ -131,7 +150,7 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
 
     @NotNull
     protected abstract BuildProcess delegateToActualAction() throws RunBuildException;
-
+    @NotNull
     protected abstract String getBlockDescription(@NotNull String pathToLog);
 
 

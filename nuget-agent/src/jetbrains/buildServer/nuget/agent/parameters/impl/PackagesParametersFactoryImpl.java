@@ -90,23 +90,47 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   }
 
   @NotNull
-  private File getFile(@NotNull final BuildRunnerContext context,
-                       @NotNull final String runnerParameter,
-                       @NotNull final String fileName) throws RunBuildException {
-    String path = getParameter(context, runnerParameter);
-    if (StringUtil.isEmptyOrSpaces(path))
-      throw new RunBuildException("Runner parameter '" + runnerParameter + "' was not found");
+  private File getDirectory(@NotNull final BuildRunnerContext context,
+                            @NotNull final String runnerParameter,
+                            @NotNull final String errorMessage) throws RunBuildException {
+    final File file = resolveParameterPath(context, runnerParameter);
+    if (!file.isDirectory()) {
+      //noinspection ResultOfMethodCallIgnored
+      file.mkdirs();
+    }
 
-    File file = FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
-    if (!file.exists()) {
-      throw new RunBuildException("Failed to find " + fileName + " at " + file);
+    if (!file.isDirectory()) {
+      throw new RunBuildException("Failed to find or create " + errorMessage + " at " + file);
     }
 
     return file;
   }
 
+  @NotNull
+  private File getFile(@NotNull final BuildRunnerContext context,
+                       @NotNull final String runnerParameter,
+                       @NotNull final String errorMessage) throws RunBuildException {
+    final File file = resolveParameterPath(context, runnerParameter);
+    if (!file.exists()) {
+      throw new RunBuildException("Failed to find " + errorMessage + " at " + file);
+    }
 
-  private Collection<String> getMultilineParameter(BuildRunnerContext context, String nugetSources) {
+    return file;
+  }
+
+  private File resolveParameterPath(@NotNull final BuildRunnerContext context,
+                                    @NotNull final String runnerParameter) throws RunBuildException {
+    String path = getParameter(context, runnerParameter);
+    if (StringUtil.isEmptyOrSpaces(path))
+      throw new RunBuildException("Runner parameter '" + runnerParameter + "' was not found");
+
+    return FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
+  }
+
+
+  @NotNull
+  private Collection<String> getMultilineParameter(@NotNull final BuildRunnerContext context,
+                                                   @NotNull final String nugetSources) {
     String sources = getParameter(context, nugetSources);
     if (sources == null) return Collections.emptyList();
 
@@ -190,6 +214,74 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       public boolean getCreateOnly() {
         return getBoolean(context, NUGET_PUBLISH_CREATE_ONLY);
+      }
+
+      @NotNull
+      public File getNuGetExeFile() throws RunBuildException {
+        return getPathToNuGet(context);
+      }
+    };
+  }
+
+  @NotNull
+  public NuGetPackParameters loadPackParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
+    return new NuGetPackParameters() {
+      @NotNull
+      public File getSpecFile() throws RunBuildException {
+        return getFile(context, NUGET_PACK_SPEC_FILE, "NuGet .nuspec of project file");
+      }
+
+      @NotNull
+      public Collection<String> getExclude() {
+        return getMultilineParameter(context, NUGET_PACK_EXCLUDE_FILES);
+      }
+
+      @NotNull
+      public Collection<String> getProperties() {
+        return getMultilineParameter(context, NUGET_PACK_PROPERTIES);
+      }
+
+      @NotNull
+      public Collection<String> getCustomCommandline() {
+        return getMultilineParameter(context, NUGET_PACK_CUSOM_COMMANDLINE);
+      }
+
+      @NotNull
+      public File getOutputDirectory() throws RunBuildException {
+        return getDirectory(context, NUGET_PACK_OUTPUT_DIR, "output directory");
+      }
+
+      @NotNull
+      public File getBaseDirectory() throws RunBuildException {
+        String path = getParameter(context, NUGET_PACK_BASE_DIR);
+        if (StringUtil.isEmptyOrSpaces(path)) {
+          return context.getBuild().getCheckoutDirectory();
+        }
+
+        final File file = FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
+        if (!file.isDirectory()) {
+          //noinspection ResultOfMethodCallIgnored
+          file.mkdirs();
+        }
+
+        if (!file.isDirectory()) {
+          throw new RunBuildException("Failed to find or create base directory at " + file);
+        }
+
+        return file;
+      }
+
+      @NotNull
+      public String getVersion() {
+        return getParameter(context, NUGET_PACK_VERSION);
+      }
+
+      public boolean packSymbols() {
+        return getBoolean(context, NUGET_PACK_INCLUDE_SOURCES);
+      }
+
+      public boolean packTool() {
+        return getBoolean(context, NUGET_PACK_AS_TOOL);
       }
 
       @NotNull
