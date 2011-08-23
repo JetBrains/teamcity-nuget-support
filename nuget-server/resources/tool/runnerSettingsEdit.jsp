@@ -13,6 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
 <%@ include file="/include-internal.jsp"%>
 <%@ taglib prefix="forms" tagdir="/WEB-INF/tags/forms" %>
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
@@ -73,7 +74,8 @@
         BS.Util.hide($('customPathContainer'));
       } else if(selected == "custom") {
         var val = this.getValue();
-        $('nugetCustomPath').value = this.isPackage(val) ? "<bs:forJs>${customValue}</bs:forJs>" : val;
+        val = this.isPackage(val) ? "<bs:forJs>${customValue}</bs:forJs>" : val;
+        $('nugetCustomPath').value = this.isPackage(val) ? "" : val;
         this.customPathChanged();
         BS.Util.show($('customPathContainer'));
       } else {

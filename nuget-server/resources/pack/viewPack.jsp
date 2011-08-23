@@ -21,9 +21,8 @@
 
 
 <div class="parameter">
-  Path to NuGet.exe: <strong><props:displayValue name="${ib.nuGetPathKey}"/></strong>
+  Path to NuGet.exe: <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetPathKey}&class=longField&view=1"/>
 </div>
-
 
 <div class="parameter">
   Specification file: <strong><props:displayValue name="${ib.packSpecFile}"/></strong>

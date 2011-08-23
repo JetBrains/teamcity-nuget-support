@@ -61,26 +61,40 @@ public class ToolSelectorController extends BaseController {
     final String name = safe(request.getParameter("name"));
     String value = parseValue(request, "value", name);
     final Collection<ToolInfo> tools = getTools();
-    ensureVersion(value, tools);
+    final ToolInfo bundledTool = ensureVersion(value, tools);
 
-
-    ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/runnerSettings.jsp"));
-    mv.getModel().put("name", name);
-    mv.getModel().put("value", value);
-    mv.getModel().put("customValue", safe(parseValue(request, "customValue", "nugetCustomPath")));
-    mv.getModel().put("clazz", safe(request.getParameter("class")));
-    mv.getModel().put("style", safe(request.getParameter("style")));
-    mv.getModel().put("items", tools);
-    mv.getModel().put("settingsUrl", "/admin/serverConfig.html?init=1&tab=" + ServerSettingsTab.TAB_ID);
-    return mv;
+    if (!StringUtil.isEmptyOrSpaces(request.getParameter("view"))) {
+      ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/runnerSettingsView.jsp"));
+      if (bundledTool != null) {
+        mv.getModel().put("tool", bundledTool.getVersion());
+        mv.getModel().put("bundled", true);
+      } else {
+        mv.getModel().put("tool", value);
+        mv.getModel().put("bundled", false);
+      }
+      return mv;
+    } else {
+      ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/runnerSettingsEdit.jsp"));
+      mv.getModel().put("name", name);
+      mv.getModel().put("value", value);
+      mv.getModel().put("customValue", safe(parseValue(request, "customValue", "nugetCustomPath")));
+      mv.getModel().put("clazz", safe(request.getParameter("class")));
+      mv.getModel().put("style", safe(request.getParameter("style")));
+      mv.getModel().put("items", tools);
+      mv.getModel().put("settingsUrl", "/admin/serverConfig.html?init=1&tab=" + ServerSettingsTab.TAB_ID);
+      return mv;
+    }
   }
 
-  private void ensureVersion(@NotNull final String version, @NotNull Collection<ToolInfo> actionInfos) {
-    if (!version.startsWith("?")) return;
+  @Nullable
+  private ToolInfo ensureVersion(@NotNull final String version, @NotNull Collection<ToolInfo> actionInfos) {
+    if (!version.startsWith("?")) return null;
     for (ToolInfo actionInfo : actionInfos) {
-      if (actionInfo.getId().equals(version)) return;
+      if (actionInfo.getId().equals(version)) return actionInfo;
     }
-    actionInfos.add(new ToolInfo(version, "Not Installed: " + version.substring(1)));
+    final ToolInfo notInstalled = new ToolInfo(version, "Not Installed: " + version.substring(1));
+    actionInfos.add(notInstalled);
+    return notInstalled;
   }
 
   @NotNull
