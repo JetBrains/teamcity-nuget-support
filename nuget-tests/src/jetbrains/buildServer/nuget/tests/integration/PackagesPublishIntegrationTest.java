@@ -47,6 +47,10 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
   protected void setUp() throws Exception {
     super.setUp();
     myPublishParameters = m.mock(NuGetPublishParameters.class);
+    m.checking(new Expectations(){{
+      allowing(myLogger).activityStarted(with(equal("push")), with(any(String.class)), with(any(String.class)));
+      allowing(myLogger).activityFinished(with(equal("push")), with(any(String.class)));
+    }});
   }
 
   @Test
