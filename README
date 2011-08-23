@@ -31,6 +31,8 @@ Supported features:
 
 - TeamCity is able to download and distribute NuGet.Commandline within all build agents
 
+- Build runner to create nuget package
+
 
 API gaps TeamCity:
  - Reuse ComposideBuildProcess and DelegatingBuildProcess
