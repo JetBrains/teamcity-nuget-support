@@ -31,6 +31,8 @@
 
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolPackerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolsInstallerTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackActionFactoryTest"/>
     </classes>
   </test>
 </suite>
