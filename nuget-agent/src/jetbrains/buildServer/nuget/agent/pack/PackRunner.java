@@ -61,7 +61,7 @@ public class PackRunner implements AgentBuildRunner, AgentBuildRunnerInfo {
 
   @NotNull
   public String getType() {
-    return PackagesConstants.PUBLISH_RUN_TYPE;
+    return PackagesConstants.PACK_RUN_TYPE;
   }
 
   public boolean canRun(@NotNull BuildAgentConfiguration agentConfiguration) {
