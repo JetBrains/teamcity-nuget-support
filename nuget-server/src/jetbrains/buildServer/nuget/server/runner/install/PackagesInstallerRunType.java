@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.install;
+package jetbrains.buildServer.nuget.server.runner.install;
 
 import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.requirements.Requirement;

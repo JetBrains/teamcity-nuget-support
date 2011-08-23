@@ -17,8 +17,8 @@
 package jetbrains.buildServer.nuget.tests;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.install.PackagesInstallerRunType;
-import jetbrains.buildServer.nuget.server.publish.PublishRunType;
+import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunType;
+import jetbrains.buildServer.nuget.server.runner.publish.PublishRunType;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jmock.Mockery;
 import org.testng.Assert;

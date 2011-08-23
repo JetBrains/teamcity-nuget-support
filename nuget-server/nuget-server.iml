@@ -14,7 +14,8 @@
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-tools.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-feed.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-pack-runner.xml</file>
-          <file>file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerSpringStatistics.xml</file>
+          <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-install-runner.xml</file>
+          <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-publish-runner.xml</file>
         </fileset>
       </configuration>
     </facet>

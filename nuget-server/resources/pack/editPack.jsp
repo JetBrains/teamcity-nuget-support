@@ -17,7 +17,7 @@
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.pack.PackBean" scope="request"/>
+<jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.runner.pack.PackBean" scope="request"/>
 
 <l:settingsGroup title="NuGet settings">
   <tr>

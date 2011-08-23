@@ -9,12 +9,7 @@
   <bean class="jetbrains.buildServer.nuget.server.NuGetPublishRunType"/>
   <bean class="jetbrains.buildServer.nuget.server.show.NuGetDownloadedPackagesTab"/>
   <bean class="jetbrains.buildServer.nuget.server.NuGetDownloadFeature"/>
-
 -->
-
-  <bean class="jetbrains.buildServer.nuget.server.install.PackageInstallerRunTypeRegistrar"/>
-  <bean class="jetbrains.buildServer.nuget.server.install.PackagesInstallerRunType"/>
-
 
   <bean class="jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProviderImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.exec.NuGetExecutorImpl"/>
@@ -26,9 +21,5 @@
 
 
   <bean class="jetbrains.buildServer.nuget.server.show.NuGetDownloadedPackagesTab"/>
-
-
-  <bean class="jetbrains.buildServer.nuget.server.publish.PublishRunTypeRegistrar"/>
-  <bean class="jetbrains.buildServer.nuget.server.publish.PublishRunType"/>
 
 </beans>

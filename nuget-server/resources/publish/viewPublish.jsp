@@ -17,7 +17,7 @@
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.publish.PublishBean" scope="request"/>
+<jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.runner.publish.PublishBean" scope="request"/>
 
 <div class="parameter">
   Path to NuGet.exe: <strong><props:displayValue name="${ib.nuGetPathKey}"/></strong>

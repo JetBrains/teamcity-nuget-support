@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.pack;
+package jetbrains.buildServer.nuget.server.runner.pack;
 
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 
