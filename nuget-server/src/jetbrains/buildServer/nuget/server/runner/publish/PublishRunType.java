@@ -16,13 +16,10 @@
 
 package jetbrains.buildServer.nuget.server.runner.publish;
 
-import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.requirements.Requirement;
-import jetbrains.buildServer.requirements.RequirementType;
+import jetbrains.buildServer.nuget.server.runner.NuGetRunType;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
-import jetbrains.buildServer.serverSide.RunType;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
@@ -35,11 +32,9 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 21.07.11 14:15
  */
-public class PublishRunType extends RunType {
-  private final PluginDescriptor myDescriptor;
-
+public class PublishRunType extends NuGetRunType {
   public PublishRunType(@NotNull final PluginDescriptor descriptor) {
-    myDescriptor = descriptor;
+    super(descriptor);
   }
 
   @NotNull
@@ -58,6 +53,7 @@ public class PublishRunType extends RunType {
     return "Pushes and publishes NuGet package to a given feed";
   }
 
+  @NotNull
   @Override
   public PropertiesProcessor getRunnerPropertiesProcessor() {
     return new PropertiesProcessor() {
@@ -81,26 +77,21 @@ public class PublishRunType extends RunType {
     };
   }
 
+  @NotNull
   @Override
-  public String getEditRunnerParamsJspFilePath() {
-    return myDescriptor.getPluginResourcesPath("publish/editPublish.jsp");
+  protected String getEditJsp() {
+    return "publish/editPublish.jsp";
   }
 
+  @NotNull
   @Override
-  public String getViewRunnerParamsJspFilePath() {
-    return myDescriptor.getPluginResourcesPath("publish/viewPublish.jsp");
+  protected String getViewJsp() {
+    return "publish/viewPublish.jsp";
   }
 
   @Override
   public Map<String, String> getDefaultRunnerProperties() {
     return Collections.emptyMap();
-  }
-
-  @Override
-  public List<Requirement> getRunnerSpecificRequirements(@NotNull Map<String, String> runParameters) {
-    List<Requirement> list = new ArrayList<Requirement>(super.getRunnerSpecificRequirements(runParameters));
-    list.add(new Requirement(DotNetConstants.DOT_NET_FRAMEWORK_4_x86, null, RequirementType.EXISTS));
-    return list;
   }
 
   @NotNull

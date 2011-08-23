@@ -17,19 +17,18 @@
 package jetbrains.buildServer.nuget.server.runner.pack;
 
 import jetbrains.buildServer.agent.ServerProvidedProperties;
-import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.nuget.server.runner.NuGetRunType;
 import jetbrains.buildServer.nuget.server.util.BasePropertiesProcessor;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
-import jetbrains.buildServer.requirements.Requirement;
-import jetbrains.buildServer.requirements.RequirementType;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
-import jetbrains.buildServer.serverSide.RunType;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
 
@@ -37,11 +36,9 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 22.08.11 21:05
  */
-public class PackRunType extends RunType {
-  private final PluginDescriptor myDescriptor;
-
+public class PackRunType extends NuGetRunType {
   public PackRunType(@NotNull final PluginDescriptor descriptor) {
-    myDescriptor = descriptor;
+    super(descriptor);
   }
 
   @NotNull
@@ -70,6 +67,7 @@ public class PackRunType extends RunType {
     return sb.toString();
   }
 
+  @NotNull
   @Override
   public PropertiesProcessor getRunnerPropertiesProcessor() {
     return new BasePropertiesProcessor() {
@@ -88,14 +86,16 @@ public class PackRunType extends RunType {
     };
   }
 
+  @NotNull
   @Override
-  public String getEditRunnerParamsJspFilePath() {
-    return myDescriptor.getPluginResourcesPath("pack/editPack.jsp");
+  protected String getEditJsp() {
+    return "pack/editPack.jsp";
   }
 
+  @NotNull
   @Override
-  public String getViewRunnerParamsJspFilePath() {
-    return myDescriptor.getPluginResourcesPath("pack/viewPack.jsp");
+  protected String getViewJsp() {
+    return "pack/viewPack.jsp";
   }
 
   @Override
@@ -103,12 +103,5 @@ public class PackRunType extends RunType {
     return new HashMap<String, String>(){{
       put(PackagesConstants.NUGET_PACK_VERSION, "%" + ServerProvidedProperties.BUILD_NUMBER_PROP + "%");
     }};
-  }
-
-  @Override
-  public List<Requirement> getRunnerSpecificRequirements(@NotNull Map<String, String> runParameters) {
-    List<Requirement> list = new ArrayList<Requirement>(super.getRunnerSpecificRequirements(runParameters));
-    list.add(new Requirement(DotNetConstants.DOT_NET_FRAMEWORK_4_x86, null, RequirementType.EXISTS));
-    return list;
   }
 }

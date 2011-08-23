@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.runner.install;
+package jetbrains.buildServer.nuget.server.runner;
 
 import jetbrains.buildServer.serverSide.RunTypeRegistry;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 09.07.11 12:08
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 23.08.11 18:52
  */
-public class PackageInstallerRunTypeRegistrar {
-  public PackageInstallerRunTypeRegistrar(@NotNull final PackagesInstallerRunType rt,
-                                          @NotNull final RunTypeRegistry reg) {
-    reg.registerRunType(rt);
+public class NuGetRunTypesRegistrar {
+  public NuGetRunTypesRegistrar(@NotNull final RunTypeRegistry registry,
+                                @NotNull final Collection<NuGetRunType> types) {
+    for (NuGetRunType type : types) {
+      registry.registerRunType(type);
+    }
   }
 }

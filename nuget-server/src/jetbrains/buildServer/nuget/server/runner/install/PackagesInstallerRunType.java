@@ -16,12 +16,9 @@
 
 package jetbrains.buildServer.nuget.server.runner.install;
 
-import jetbrains.buildServer.nuget.common.DotNetConstants;
-import jetbrains.buildServer.requirements.Requirement;
-import jetbrains.buildServer.requirements.RequirementType;
+import jetbrains.buildServer.nuget.server.runner.NuGetRunType;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
-import jetbrains.buildServer.serverSide.RunType;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
@@ -34,11 +31,9 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 08.07.11 20:45
  */
-public class PackagesInstallerRunType extends RunType {
-  private final PluginDescriptor myDescriptor;
-
+public class PackagesInstallerRunType extends NuGetRunType {
   public PackagesInstallerRunType(@NotNull final PluginDescriptor descriptor) {
-    myDescriptor = descriptor;
+    super(descriptor);
   }
 
   @NotNull
@@ -57,6 +52,7 @@ public class PackagesInstallerRunType extends RunType {
     return "Installs and updates missing NuGet packages";
   }
 
+  @NotNull
   @Override
   public PropertiesProcessor getRunnerPropertiesProcessor() {
     return new PropertiesProcessor() {
@@ -85,21 +81,16 @@ public class PackagesInstallerRunType extends RunType {
     return "Solution: " + parameters.get(SLN_PATH);
   }
 
+  @NotNull
   @Override
-  public List<Requirement> getRunnerSpecificRequirements(@NotNull Map<String, String> runParameters) {
-    List<Requirement> list = new ArrayList<Requirement>(super.getRunnerSpecificRequirements(runParameters));
-    list.add(new Requirement(DotNetConstants.DOT_NET_FRAMEWORK_4_x86, null, RequirementType.EXISTS));
-    return list;
+  protected String getEditJsp() {
+    return "install/editInstallPackage.jsp";
   }
 
+  @NotNull
   @Override
-  public String getEditRunnerParamsJspFilePath() {
-    return myDescriptor.getPluginResourcesPath("install/editInstallPackage.jsp");
-  }
-
-  @Override
-  public String getViewRunnerParamsJspFilePath() {
-    return myDescriptor.getPluginResourcesPath("install/viewInstallPackage.jsp");
+  protected String getViewJsp() {
+    return "install/viewInstallPackage.jsp";
   }
 
   @Override

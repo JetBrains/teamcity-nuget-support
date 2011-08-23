@@ -5,6 +5,5 @@
        default-autowire="constructor">
 
 
-  <bean class="jetbrains.buildServer.nuget.server.runner.pack.PackRunTypeRegistrar"/>
   <bean class="jetbrains.buildServer.nuget.server.runner.pack.PackRunType"/>
 </beans>
