@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.install;
+package jetbrains.buildServer.nuget.agent.dependencies;
 
-import jetbrains.buildServer.agent.impl.BuildRunnerRegistry;
+import jetbrains.buildServer.nuget.common.PackageDependencies;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 07.07.11 15:39
+ * Date: 18.07.11 22:43
  */
-public class PackagesInstallerRunnerRegistrar {
-  public PackagesInstallerRunnerRegistrar(@NotNull final BuildRunnerRegistry reg,
-                                          @NotNull final PackagesInstallerRunner runner) {
-    reg.registerRunner(runner);
-  }
+public interface NuGetPackagesCollector {
+
+  void addPackage(@NotNull final String packageId,
+                  @NotNull final String version,
+                  @Nullable final String allowedVersions);
+
+  /**
+   * @return sorted list of packages that were registered
+   */
+  @NotNull
+  public PackageDependencies getPackages();
 }

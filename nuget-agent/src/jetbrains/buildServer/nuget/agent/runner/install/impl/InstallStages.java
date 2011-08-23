@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.pack;
+package jetbrains.buildServer.nuget.agent.runner.install.impl;
 
-import jetbrains.buildServer.agent.impl.BuildRunnerRegistry;
+import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 23.08.11 12:13
+ * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 18.07.11 23:36
  */
-public class PackRunnerRegistrar {
-  public PackRunnerRegistrar(@NotNull final BuildRunnerRegistry reg,
-                             @NotNull final PackRunner runner) {
-    reg.registerRunner(runner);
-  }
+public interface InstallStages {
+  @NotNull
+  BuildProcessContinuation getLocateStage();
+
+  @NotNull
+  BuildProcessContinuation getInstallStage();
+
+  @NotNull
+  BuildProcessContinuation getUpdateStage();
+
+  @NotNull
+  BuildProcessContinuation getPostUpdateStart();
+
+  @NotNull
+  BuildProcessContinuation getReportStage();
 }

@@ -5,9 +5,11 @@
       <configuration>
         <fileset id="fileset1" name="nuget-agent" removed="false">
           <file>file://$MODULE_DIR$/src/META-INF/build-agent-plugin-nuget.xml</file>
+          <file>file://$MODULE_DIR$/src/META-INF/build-agent-plugin-nuget-pack.xml</file>
           <file>jar://$TeamCityDistribution$/buildAgent/lib/agent.jar!/META-INF/buildAgentSpring.xml</file>
           <file>jar://$TeamCityDistribution$/buildAgent/lib/agent.jar!/META-INF/buildAgentPlugins.xml</file>
-          <file>file://$MODULE_DIR$/src/META-INF/build-agent-plugin-nuget-pack.xml</file>
+          <file>file://$MODULE_DIR$/src/META-INF/build-agent-plugin-nuget-publish.xml</file>
+          <file>file://$MODULE_DIR$/src/META-INF/build-agent-plugin-nuget-install.xml</file>
         </fileset>
       </configuration>
     </facet>

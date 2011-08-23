@@ -22,7 +22,7 @@ import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
-import jetbrains.buildServer.nuget.agent.install.PackageUsages;
+import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import org.jmock.Expectations;
@@ -132,9 +132,11 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
   public void test_custom_commandline() throws RunBuildException {
     myExtra.add("arg1");
     myExtra.add("arg2");
-    m.checking(new Expectations(){{
-      allowing(myPackParameters).packTool(); will(returnValue(false));
-      allowing(myPackParameters).packSymbols(); will(returnValue(false));
+    m.checking(new Expectations() {{
+      allowing(myPackParameters).packTool();
+      will(returnValue(false));
+      allowing(myPackParameters).packSymbols();
+      will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet,
               Arrays.asList(

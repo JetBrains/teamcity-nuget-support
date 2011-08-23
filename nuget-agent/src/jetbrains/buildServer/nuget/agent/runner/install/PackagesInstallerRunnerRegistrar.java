@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.publish;
+package jetbrains.buildServer.nuget.agent.runner.install;
 
 import jetbrains.buildServer.agent.impl.BuildRunnerRegistry;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 21.07.11 20:00
+ * Date: 07.07.11 15:39
  */
-public class PackagesPublishRunnerRegistrar {
-  public PackagesPublishRunnerRegistrar(@NotNull final BuildRunnerRegistry reg,
-                                        @NotNull final PackagesPublishRunner runner) {
+public class PackagesInstallerRunnerRegistrar {
+  public PackagesInstallerRunnerRegistrar(@NotNull final BuildRunnerRegistry reg,
+                                          @NotNull final PackagesInstallerRunner runner) {
     reg.registerRunner(runner);
   }
 }

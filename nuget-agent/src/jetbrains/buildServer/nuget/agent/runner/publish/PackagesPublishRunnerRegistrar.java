@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.install.impl;
+package jetbrains.buildServer.nuget.agent.runner.publish;
 
-import jetbrains.buildServer.nuget.agent.install.NuGetPackagesCollector;
+import jetbrains.buildServer.agent.impl.BuildRunnerRegistry;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 18.07.11 23:00
+ * Date: 21.07.11 20:00
  */
-public interface NuGetPackagesCollectorEx extends NuGetPackagesCollector {
-  void removeAllPackages();
+public class PackagesPublishRunnerRegistrar {
+  public PackagesPublishRunnerRegistrar(@NotNull final BuildRunnerRegistry reg,
+                                        @NotNull final PackagesPublishRunner runner) {
+    reg.registerRunner(runner);
+  }
 }

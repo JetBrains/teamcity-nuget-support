@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.install;
+package jetbrains.buildServer.nuget.agent.runner.install.impl;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
+import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 18.07.11 23:50
+ * Date: 18.07.11 23:00
  */
-public interface PackageUsages {
-  void createReport(@NotNull File packagesConfig);
+public interface NuGetPackagesCollectorEx extends NuGetPackagesCollector {
+  void removeAllPackages();
 }

@@ -5,7 +5,7 @@
                            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
 
-  <bean class="jetbrains.buildServer.nuget.agent.runner.pack.PackRunner"/>
-  <bean class="jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerRegistrar"/>
+  <bean class="jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner"/>
+  <bean class="jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunnerRegistrar"/>
 
 </beans>

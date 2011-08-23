@@ -21,7 +21,7 @@ import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
-import jetbrains.buildServer.nuget.agent.publish.MatchFilesBuildProcess;
+import jetbrains.buildServer.nuget.agent.runner.publish.MatchFilesBuildProcess;
 import jetbrains.buildServer.nuget.tests.Strings;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.FileUtil;

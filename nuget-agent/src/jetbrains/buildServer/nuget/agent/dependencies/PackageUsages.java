@@ -14,28 +14,16 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.install.impl;
+package jetbrains.buildServer.nuget.agent.dependencies;
 
-import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 18.07.11 23:36
+ * Date: 18.07.11 23:50
  */
-public interface InstallStages {
-  @NotNull
-  BuildProcessContinuation getLocateStage();
-
-  @NotNull
-  BuildProcessContinuation getInstallStage();
-
-  @NotNull
-  BuildProcessContinuation getUpdateStage();
-
-  @NotNull
-  BuildProcessContinuation getPostUpdateStart();
-
-  @NotNull
-  BuildProcessContinuation getReportStage();
+public interface PackageUsages {
+  void createReport(@NotNull File packagesConfig);
 }

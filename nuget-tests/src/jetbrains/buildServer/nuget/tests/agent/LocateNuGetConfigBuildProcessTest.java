@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
-import jetbrains.buildServer.nuget.agent.install.LocateNuGetConfigBuildProcess;
+import jetbrains.buildServer.nuget.agent.runner.install.LocateNuGetConfigBuildProcess;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.FileUtil;
