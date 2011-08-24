@@ -18,6 +18,7 @@
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.runner.pack.PackBean" scope="request"/>
+<jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
 
 
 <div class="parameter">
@@ -38,6 +39,7 @@
 
 <div class="parameter">
   Output Directory: <strong><props:displayValue name="${ib.packOutputDirectory}"/></strong>
+  <c:if test="${not empty propertiesBean.properties[ib.packOutputClear]}">(cleaned on start)</c:if>
 </div>
 
 <div class="parameter">

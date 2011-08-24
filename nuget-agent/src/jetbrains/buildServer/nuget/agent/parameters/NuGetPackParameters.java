@@ -43,6 +43,8 @@ public interface NuGetPackParameters extends NuGetParameters {
   @NotNull
   File getOutputDirectory() throws RunBuildException;
 
+  boolean cleanOutputDirectory() throws RunBuildException;
+
   @NotNull
   File getBaseDirectory() throws RunBuildException;
 

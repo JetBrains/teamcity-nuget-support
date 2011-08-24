@@ -53,6 +53,7 @@ public interface PackagesConstants {
   public static final String NUGET_TOOL_REL_PATH = "tools/NuGet.exe";
 
 
+  public static final String NUGET_PACK_OUTPUT_CLEAR = "nuget.pack.output.clean";
   public static final String NUGET_PACK_OUTPUT_DIR = "nuget.pack.output.directory";
   public static final String NUGET_PACK_BASE_DIR = "nuget.pack.base.directory";
   public static final String NUGET_PACK_VERSION = "nuget.pack.version";

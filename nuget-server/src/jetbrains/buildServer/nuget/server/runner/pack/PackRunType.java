@@ -102,6 +102,7 @@ public class PackRunType extends NuGetRunType {
   public Map<String, String> getDefaultRunnerProperties() {
     return new HashMap<String, String>(){{
       put(PackagesConstants.NUGET_PACK_VERSION, "%" + ServerProvidedProperties.BUILD_NUMBER_PROP + "%");
+      put(PackagesConstants.NUGET_PACK_OUTPUT_CLEAR, "checked");
     }};
   }
 }

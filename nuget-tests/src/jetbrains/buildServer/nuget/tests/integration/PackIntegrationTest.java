@@ -23,6 +23,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
+import jetbrains.buildServer.agent.SmartDirectoryCleaner;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.util.FileUtil;
@@ -43,6 +44,7 @@ import java.util.zip.ZipInputStream;
  */
 public class PackIntegrationTest extends IntegrationTestBase {
   protected NuGetPackParameters myPackParameters;
+  private SmartDirectoryCleaner myCleaner;
   private File myOutputDir;
 
   @BeforeMethod
@@ -50,6 +52,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
   protected void setUp() throws Exception {
     super.setUp();
     myPackParameters = m.mock(NuGetPackParameters.class);
+    myCleaner = m.mock(SmartDirectoryCleaner.class);
 
     m.checking(new Expectations(){{
       oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(myPackParameters));
@@ -67,7 +70,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
     final File spec = new File(myRoot, "SamplePackage.nuspec");
     FileUtil.copy(getTestDataPath("SamplePackage.nuspec"), spec);
 
-    callRunner(spec, false, false);
+    callRunner(spec, false, false, false);
 
     Assert.assertTrue(myOutputDir.list(new FilenameFilter() {
       public boolean accept(File dir, String name) {
@@ -85,7 +88,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
     msbuild(new File(myRoot, "nuget-proj.sln"));
 
-    callRunner(spec, false, false);
+    callRunner(spec, false, false, false);
 
     Assert.assertTrue(nupkgs().length == 1, "There should be only one package created");
 
@@ -107,7 +110,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
     msbuild(new File(myRoot, "nuget-proj.sln"));
 
-    callRunner(spec, true, false);
+    callRunner(spec, true, false, false);
 
     Assert.assertTrue(nupkgs().length == 1, "There should be only one package created");
     final File nupkg = nupkgs()[0];
@@ -128,7 +131,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
     msbuild(new File(myRoot, "nuget-proj.sln"));
 
-    callRunner(spec, false, true);
+    callRunner(spec, false, true, false);
 
     Assert.assertTrue(nupkgs().length == 1, "There should be only one package created");
     Assert.assertTrue(symbolsNupkgs().length == 1, "There should be only one symbols package created");
@@ -173,7 +176,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
     Assert.assertEquals(0, result.getExitCode());
   }
 
-  private void callRunner(@NotNull final File spec, final boolean packAsTool, final boolean symbols) throws RunBuildException {
+  private void callRunner(@NotNull final File spec, final boolean packAsTool, final boolean symbols, final boolean cleanOutput) throws RunBuildException {
     m.checking(new Expectations(){{
       allowing(myPackParameters).getCustomCommandline(); will(returnValue(Collections.<String>emptyList()));
       allowing(myPackParameters).getProperties(); will(returnValue(Collections.<String>emptyList()));
@@ -183,12 +186,13 @@ public class PackIntegrationTest extends IntegrationTestBase {
       allowing(myPackParameters).getExclude(); will(returnValue(Collections.<String>emptyList()));
       allowing(myPackParameters).getVersion(); will(returnValue("45.239.32.12"));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(myOutputDir));
+      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(cleanOutput));
 
       allowing(myPackParameters).packTool(); will(returnValue(packAsTool));
       allowing(myPackParameters).packSymbols(); will(returnValue(symbols));
     }});
 
-    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory);
+    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
     final BuildProcess proc = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
   }

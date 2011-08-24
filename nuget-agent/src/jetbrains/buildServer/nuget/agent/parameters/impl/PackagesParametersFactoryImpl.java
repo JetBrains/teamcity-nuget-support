@@ -263,6 +263,10 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
         return getDirectory(context, NUGET_PACK_OUTPUT_DIR, "output directory");
       }
 
+      public boolean cleanOutputDirectory() throws RunBuildException {
+        return getBoolean(context, NUGET_PACK_OUTPUT_CLEAR);
+      }
+
       @NotNull
       public File getBaseDirectory() throws RunBuildException {
         String path = getParameter(context, NUGET_PACK_BASE_DIR);

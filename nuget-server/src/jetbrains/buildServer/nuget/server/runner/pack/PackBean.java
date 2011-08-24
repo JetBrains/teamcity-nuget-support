@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.common.PackagesConstants;
 public class PackBean {
   public String getNuGetPathKey() { return PackagesConstants.NUGET_PATH; }
   public String getPackOutputDirectory() { return PackagesConstants.NUGET_PACK_OUTPUT_DIR; }
+  public String getPackOutputClear() { return PackagesConstants.NUGET_PACK_OUTPUT_CLEAR; }
   public String getPackBaseDirectory() { return PackagesConstants.NUGET_PACK_BASE_DIR;}
   public String getPackVersion() { return PackagesConstants.NUGET_PACK_VERSION; }
   public String getPackSpecFile() { return PackagesConstants.NUGET_PACK_SPEC_FILE;}
