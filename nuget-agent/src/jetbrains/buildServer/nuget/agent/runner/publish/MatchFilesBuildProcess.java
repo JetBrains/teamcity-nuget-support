@@ -30,7 +30,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -55,27 +54,28 @@ public class MatchFilesBuildProcess extends BuildProcessBase {
   @NotNull
   @Override
   protected BuildFinishedStatus waitForImpl() throws RunBuildException {
-    final List<String> files = new ArrayList<String>(myParameters.getFiles());
 
     boolean found = false;
 
-    for(Iterator<String> it = files.iterator(); it.hasNext();) {
-      final String pattern = it.next().trim();
+    final List<String> patterns = new ArrayList<String>();
+    for (String _pattern : myParameters.getFiles()) {
+      final String pattern = _pattern.trim();
       if (StringUtil.isEmptyOrSpaces(pattern)) {
-        it.remove();
         continue;
       }
 
       final File file = new File(pattern);
       if (file.isAbsolute()) {
         found = true;
-        LOG.debug("Found nugkg to push: " + file);
+        LOG.debug("Found .nugkg to push: " + file);
         myCallback.fileFound(file);
-        it.remove();
+        continue;
       }
+
+      patterns.add(pattern.replace('\\', '/'));
     }
 
-    final String[] includes = files.toArray(new String[files.size()]);
+    final String[] includes = patterns.toArray(new String[patterns.size()]);
     AntPatternFileFinder finder = new AntPatternFileFinder(
             includes,
             new String[0],
@@ -96,7 +96,7 @@ public class MatchFilesBuildProcess extends BuildProcessBase {
     }
 
     if (!found) {
-      throw new RunBuildException("Failed to find files to publish matching: " + files + " under " + root + ". No packages to publish. ");
+      throw new RunBuildException("Failed to find files to publish matching: " + new ArrayList<String>(myParameters.getFiles()) + " under " + root + ". No packages to publish. ");
     }
 
     return BuildFinishedStatus.FINISHED_SUCCESS;

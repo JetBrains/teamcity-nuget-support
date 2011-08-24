@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.agent;
 
+import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
@@ -100,6 +101,40 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
 
     files.add("aaa.txt");
     files.add(Strings.EXOTIC);
+    assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_match_relative_file_windows_slashes() throws RunBuildException {
+    if (!SystemInfo.isWindows) return;
+    final File dest = new File(root, "a/b/c/d/e/aaa.txt");
+    FileUtil.createParentDirs(dest);
+    FileUtil.writeFile(dest, "some content");
+
+    m.checking(new Expectations() {{
+      oneOf(cb).fileFound(dest);
+    }});
+
+    files.add("a\\b\\c\\d\\e\\aaa.txt");
+    assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_match_relative_file_slashes() throws RunBuildException {
+    if (!SystemInfo.isWindows) return;
+    final File dest = new File(root, "a/b/c/d/e/aaa.txt");
+    FileUtil.createParentDirs(dest);
+    FileUtil.writeFile(dest, "some content");
+
+    m.checking(new Expectations() {{
+      oneOf(cb).fileFound(dest);
+    }});
+
+    files.add("a/b/c/d/e/aaa.txt");
     assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
 
     m.assertIsSatisfied();
