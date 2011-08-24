@@ -1,5 +1,16 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="nuget">
+  <test name="fs scanner">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.DirectoryFileFilesystemTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestAntPatternState"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestAntPatternUtil"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestDirectoryScanner"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestReadFileSystem"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestWildcard"/>
+    </classes>
+  </test>
+
   <test name="fast tests">
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.RunTypeNameTest"/>
@@ -34,17 +45,6 @@
 
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackRunnerTest"/>
-    </classes>
-  </test>
-
-  <test name="fs scanner">
-    <classes>
-      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.DirectoryFileFilesystemTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestAntPatternState"/>
-      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestAntPatternUtil"/>
-      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestDirectoryScanner"/>
-      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestReadFileSystem"/>
-      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestWildcard"/>
     </classes>
   </test>
 </suite>

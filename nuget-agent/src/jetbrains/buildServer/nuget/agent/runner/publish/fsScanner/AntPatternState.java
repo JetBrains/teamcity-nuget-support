@@ -75,30 +75,37 @@ public class AntPatternState {
 
     //TODO:replace list with array operations
 
-    List<Integer> newPositions = new ArrayList<Integer>(myPatternPositions.size());
+    final List<Integer> newPositions = new ArrayList<Integer>(myPatternPositions.size());
+
     for (int pos : myPatternPositions) {
-      Wildcard wildcard = myPatternParts.get(pos);
+      final Wildcard wildcard = myPatternParts.get(pos);
+
       if (wildcard != null) {
-        if (wildcard.IsMatch(component))
-          if (pos == myPatternParts.size() - 1)
+        if (wildcard.IsMatch(component)) {
+          if (pos == myPatternParts.size() - 1) {
             match = MatchResult.YES;
-          else if (pos == myPatternParts.size() - 2 && myPatternParts.get(pos + 1) == null) {
+          } else if (pos == myPatternParts.size() - 2 && myPatternParts.get(pos + 1) == null) {
             match = MatchResult.YES;
             newPositions.add(pos + 1);
-          } else newPositions.add(pos + 1);
-        else if (match == MatchResult.MAYBELATER) match = MatchResult.NO;
+          } else {
+            newPositions.add(pos + 1);
+          }
+        } else if (match == MatchResult.MAYBELATER) {
+          match = MatchResult.NO;
+        }
       } else {
         // **
         newPositions.add(pos);
 
-        if (pos == myPatternParts.size() - 1)
+        if (pos == myPatternParts.size() - 1) {
           match = MatchResult.YES;
-        else {
+        } else {
           if (myPatternParts.get(pos + 1).IsMatch(component)) {
-            if (pos == myPatternParts.size() - 2)
+            if (pos == myPatternParts.size() - 2) {
               match = MatchResult.YES;
-            else
+            } else {
               newPositions.add(pos + 2);
+            }
           }
         }
       }
