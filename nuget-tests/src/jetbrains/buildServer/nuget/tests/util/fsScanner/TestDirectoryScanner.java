@@ -25,17 +25,14 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class TestDirectoryScanner extends BaseTestCase {
   private void AssertScannerResult(String[] fsDescription, String[] includePatterns, String[] excludePatterns, String[] expectedResult) throws IOException {
     File fsp = createTempDir();
 
     CreateDirectories(fsDescription, fsp);
-    Collection<File> findFiles = DirectoryScanner.FindFiles(fsp, includePatterns, excludePatterns);
+    Collection<File> findFiles = DirectoryScanner.FindFiles(fsp, Arrays.asList(includePatterns), Arrays.asList(excludePatterns));
 
     Set<File> expected = new TreeSet<File>();
     for (String s : expectedResult) {
@@ -192,7 +189,7 @@ public class TestDirectoryScanner extends BaseTestCase {
     File atxtFsp = new File(fsp, "a.txt");
     FileUtil.writeFile(atxtFsp, "text");
 
-    Collection<File> files = DirectoryScanner.FindFiles(fsp, new String[]{atxtFsp.getPath()}, new String[0]);
+    Collection<File> files = DirectoryScanner.FindFiles(fsp, Arrays.asList(atxtFsp.getPath()), Collections.<String>emptyList());
     Assert.assertEquals(1, files.size());
     Assert.assertEquals(PreparePath(atxtFsp), PreparePath(files.iterator().next()));
   }

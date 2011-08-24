@@ -30,11 +30,11 @@ import java.util.List;
 public class DirectoryScanner {
   private static final Logger LOG = Logger.getInstance(DirectoryScanner.class.getName());
 
-  public static Collection<File> FindFiles(@NotNull File root, String[] includes, String[] excludes) {
+  public static Collection<File> FindFiles(@NotNull File root, Collection<String> includes, Collection<String> excludes) {
     return FindFiles(new RealFileSystem(), new RealDirectoryEntry(new FileSystemPath(root)), includes, excludes);
   }
 
-  private static Collection<File> FindFiles(IFileSystem fs, IDirectoryEntry root, String[] includes, String[] excludes) {
+  private static Collection<File> FindFiles(IFileSystem fs, IDirectoryEntry root, Collection<String> includes, Collection<String> excludes) {
     List<Wildcard> basePath = BuildSearchPrefix(root, fs.CaseSensitive());
 
     List<FileSystemPath> result = new ArrayList<FileSystemPath>();
@@ -63,7 +63,7 @@ public class DirectoryScanner {
     return wildcardPrefix;
   }
 
-  private static List<AntPatternState> ToAntPatternState(IFileSystem fs, List<Wildcard> wildcardPrefix, boolean caseSensitive, String[] patterns) {
+  private static List<AntPatternState> ToAntPatternState(IFileSystem fs, List<Wildcard> wildcardPrefix, boolean caseSensitive, Collection<String> patterns) {
     List<AntPatternState> result = new ArrayList<AntPatternState>();
     for (String x : patterns) {
       result.add(new AntPatternState(ParsePattern(fs, wildcardPrefix, caseSensitive, x)));

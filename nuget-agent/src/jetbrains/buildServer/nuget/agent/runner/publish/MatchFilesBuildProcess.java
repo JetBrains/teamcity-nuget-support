@@ -17,19 +17,19 @@
 package jetbrains.buildServer.nuget.agent.runner.publish;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.agent.util.AntPatternFileFinder;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
+import jetbrains.buildServer.nuget.agent.runner.publish.fsScanner.DirectoryScanner;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,42 +64,18 @@ public class MatchFilesBuildProcess extends BuildProcessBase {
         continue;
       }
 
-      if (SystemInfo.isWindows
-              && (pattern.startsWith("/") || pattern.startsWith("\\"))
-              && !(pattern.startsWith("//") || pattern.startsWith("\\\\"))) {
-        pattern = pattern.substring(1);
-      }
-
-      if (!pattern.contains("*") && !pattern.contains("?")) {
-        final File file = new File(pattern);
-        if (file.isAbsolute()) {
-          found = true;
-          LOG.debug("Found .nugkg to push: " + file);
-          myCallback.fileFound(file);
-          continue;
-        }
-      }
-
-      patterns.add(pattern.replace('\\', '/'));
+      patterns.add(pattern);
     }
-
-    final String[] includes = patterns.toArray(new String[patterns.size()]);
-    AntPatternFileFinder finder = new AntPatternFileFinder(
-            includes,
-            new String[0],
-            SystemInfo.isFileSystemCaseSensitive
-    );
 
     final File root = myContext.getBuild().getCheckoutDirectory();
     try {
-      final File[] result = finder.findFiles(root);
-
+      final Collection<File> result = DirectoryScanner.FindFiles(root, patterns, Collections.<String>emptyList());
       for (File file : result) {
         LOG.debug("Found nugkg to push: " + file);
         found = true;
         myCallback.fileFound(file);
       }
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new RunBuildException("Failed to find packages to publish. " + e.getMessage(), e);
     }
 
