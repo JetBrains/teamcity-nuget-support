@@ -59,17 +59,25 @@ public class MatchFilesBuildProcess extends BuildProcessBase {
 
     final List<String> patterns = new ArrayList<String>();
     for (String _pattern : myParameters.getFiles()) {
-      final String pattern = _pattern.trim();
+      String pattern = _pattern.trim();
       if (StringUtil.isEmptyOrSpaces(pattern)) {
         continue;
       }
 
-      final File file = new File(pattern);
-      if (file.isAbsolute()) {
-        found = true;
-        LOG.debug("Found .nugkg to push: " + file);
-        myCallback.fileFound(file);
-        continue;
+      if (SystemInfo.isWindows
+              && (pattern.startsWith("/") || pattern.startsWith("\\"))
+              && !(pattern.startsWith("//") || pattern.startsWith("\\\\"))) {
+        pattern = pattern.substring(1);
+      }
+
+      if (!pattern.contains("*") && !pattern.contains("?")) {
+        final File file = new File(pattern);
+        if (file.isAbsolute()) {
+          found = true;
+          LOG.debug("Found .nugkg to push: " + file);
+          myCallback.fileFound(file);
+          continue;
+        }
       }
 
       patterns.add(pattern.replace('\\', '/'));

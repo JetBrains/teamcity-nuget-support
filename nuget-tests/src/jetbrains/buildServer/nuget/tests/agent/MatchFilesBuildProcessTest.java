@@ -220,6 +220,23 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
   }
 
   @Test
+  public void test_match_full_file_wildcard3() throws RunBuildException {
+    final File dest = new File(root, "q/e/r/t/aaa.txt");
+    FileUtil.createParentDirs(dest);
+    FileUtil.writeFile(dest, "some content");
+
+    m.checking(new Expectations() {{
+      oneOf(cb).fileFound(dest);
+    }});
+
+    files.add(dest.getParentFile() + "/*");
+    assertRunSuccessfully(match, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
+  }
+
+
+  @Test
   public void test_match_fullPath_file2() throws RunBuildException {
     final File dest = new File(root, "a/b/c/aaa.txt");
     FileUtil.createParentDirs(dest);
