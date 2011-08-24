@@ -36,5 +36,16 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.PackRunnerTest"/>
     </classes>
   </test>
+
+  <test name="fs scanner">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.DirectoryFileFilesystemTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestAntPatternState"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestAntPatternUtil"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestDirectoryScanner"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestReadFileSystem"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestWildcard"/>
+    </classes>
+  </test>
 </suite>
 
