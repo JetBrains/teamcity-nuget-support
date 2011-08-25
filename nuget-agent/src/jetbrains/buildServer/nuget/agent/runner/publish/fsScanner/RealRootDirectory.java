@@ -22,66 +22,62 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-public class RealRootDirectory implements IDirectoryEntry
-  {
-    @NotNull
-    public String Name()
-    {
-      return "";
-    }
+public class RealRootDirectory implements IDirectoryEntry {
+  @NotNull
+  public String Name() {
+    return "";
+  }
 
-    public IDirectoryEntry Parent()
-    {
-      return null;
-    }
+  public IDirectoryEntry Parent() {
+    return null;
+  }
 
-    @NotNull
-    public IDirectoryEntry[] Subdirectories()
-    {
-      {
-        ArrayList<IDirectoryEntry> result = new ArrayList<IDirectoryEntry>();
-        if (SystemInfo.isWindows)
-        {          
-          for (File drive : File.listRoots())
-          {
-            result.add(new RealDirectoryEntry(new FileSystemPath(drive)));
-          }         
-        } else
-        {
-          for (File ch : new File("/").listFiles(new FileFilter() {
-            public boolean accept(File pathname) {
-              return pathname.isDirectory();
-            }
-          }))
-          {
-            result.add(new RealDirectoryEntry(new FileSystemPath(ch)));
-          }
-        }
-
-        return result.toArray(new IDirectoryEntry[result.size()]);
+  @NotNull
+  public IDirectoryEntry[] Subdirectories() {
+    ArrayList<IDirectoryEntry> result = new ArrayList<IDirectoryEntry>();
+    if (SystemInfo.isWindows) {
+      for (File drive : File.listRoots()) {
+        result.add(new RealDirectoryEntry(new FileSystemPath(drive)));
+      }
+    } else {
+      for (File ch : new File("/").listFiles(DIRECTORY_FILTER)) {
+        result.add(new RealDirectoryEntry(new FileSystemPath(ch)));
       }
     }
 
-    @NotNull
-    public IDirectoryEntry[] Subdirectories(Collection<String> names) {
-      return Subdirectories();
-    }
-
-    @NotNull
-    public IFileEntry[] Files()
-    {
-      return new IFileEntry[0];
-    }
-
-    @NotNull
-    public IFileEntry[] Files(Collection<String> names) {
-      return new IFileEntry[0];
-    }
-
-    @Override
-    public String toString()
-    {
-      return "{d:FS_META_ROOT}";
-    }
+    return result.toArray(new IDirectoryEntry[result.size()]);
   }
+
+  @NotNull
+  public IDirectoryEntry[] Subdirectories(Collection<String> names) {
+    List<IDirectoryEntry> entries = new ArrayList<IDirectoryEntry>(names.size());
+    for (String name : names) {
+      entries.add(new RealDirectoryEntry(new FileSystemPath(new File(SystemInfo.isWindows ? name : "/" + name))));
+    }
+    return entries.toArray(new IDirectoryEntry[entries.size()]);
+  }
+
+  @NotNull
+  public IFileEntry[] Files() {
+    return new IFileEntry[0];
+  }
+
+  @NotNull
+  public IFileEntry[] Files(Collection<String> names) {
+    return new IFileEntry[0];
+  }
+
+  @Override
+  public String toString() {
+    return "{d:FS_META_ROOT}";
+  }
+
+  private final FileFilter DIRECTORY_FILTER = new FileFilter() {
+    public boolean accept(File pathname) {
+      return pathname.isDirectory();
+    }
+  };
+
+}
