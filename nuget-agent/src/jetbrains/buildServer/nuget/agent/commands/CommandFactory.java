@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -59,12 +60,14 @@ public interface CommandFactory {
      * @param program program to run
      * @param workingDir working firectory of program
      * @param argz arguments array
+     * @param additionalEnvironment environment variables that has to be added
      * @return some result object depending of caller's desire
      * @throws RunBuildException if failed to create/execure command
      */
     @NotNull
     T createCommand(@NotNull File program,
-                    @NotNull final File workingDir,
-                    @NotNull Collection<String> argz) throws RunBuildException;
+                    @NotNull File workingDir,
+                    @NotNull Collection<String> argz,
+                    @NotNull Map<String, String> additionalEnvironment) throws RunBuildException;
   }
 }

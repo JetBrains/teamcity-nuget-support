@@ -43,7 +43,8 @@ public class CommandFactoryImpl implements CommandFactory {
     argz.add("-OutputDirectory");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 
-    return executeNuGet(params.getNuGetParameters(), argz, packagesConfig.getParentFile(), factory);
+    final NuGetFetchParameters nuget = params.getNuGetParameters();
+    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), factory);
   }
 
   @NotNull
@@ -63,7 +64,8 @@ public class CommandFactoryImpl implements CommandFactory {
       argz.add(id);
     }
 
-    return executeNuGet(params.getNuGetParameters(), argz, packagesConfig.getParentFile(), factory);
+    final NuGetFetchParameters nuget = params.getNuGetParameters();
+    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), factory);
   }
 
   public <T> T createPack(@NotNull final NuGetPackParameters params,
@@ -114,10 +116,12 @@ public class CommandFactoryImpl implements CommandFactory {
   public <T> T createPush(@NotNull final NuGetPublishParameters params,
                           @NotNull final File packagePath,
                           @NotNull final Callback<T> factory) throws RunBuildException {
+    final String apiKey = "teamcity_nuget_api_key_" + System.currentTimeMillis();
+
     final List<String> arguments = new ArrayList<String>();
     arguments.add("push");
     arguments.add(packagePath.getPath());
-    arguments.add(params.getApiKey());
+    arguments.add("%%" + apiKey + "%%");
     if (params.getCreateOnly()) {
       arguments.add("-CreateOnly");
     }
@@ -130,18 +134,24 @@ public class CommandFactoryImpl implements CommandFactory {
                     : Arrays.asList(source),
             arguments,
             packagePath.getParentFile(),
+            Collections.singletonMap(apiKey, params.getApiKey()),
             factory);
   }
 
-  @NotNull
-  private <T> T executeNuGet(@NotNull final NuGetFetchParameters nuget,
+  private <T> T executeNuGet(@NotNull final NuGetParameters nuget,
+                             @NotNull final Collection<String> sources,
                              @NotNull final Collection<String> arguments,
                              @NotNull final File workingDir,
                              @NotNull final Callback<T> factory) throws RunBuildException {
-    return executeNuGet(nuget, nuget.getNuGetPackageSources(), arguments, workingDir, factory);
+    return executeNuGet(nuget, sources, arguments, workingDir, Collections.<String,String>emptyMap(), factory);
   }
 
-  private <T> T executeNuGet(NuGetParameters nuget, Collection<String> sources, Collection<String> arguments, File workingDir, Callback<T> factory) throws RunBuildException {
+  private <T> T executeNuGet(@NotNull final NuGetParameters nuget,
+                             @NotNull final Collection<String> sources,
+                             @NotNull final Collection<String> arguments,
+                             @NotNull final File workingDir,
+                             @NotNull final Map<String,String> additionalEnvironment,
+                             @NotNull final Callback<T> factory) throws RunBuildException {
     final List<String> argz = new ArrayList<String>(arguments);
     for (String source : sources) {
       argz.add("-Source");
@@ -151,7 +161,8 @@ public class CommandFactoryImpl implements CommandFactory {
     return factory.createCommand(
             nuget.getNuGetExeFile(),
             workingDir,
-            argz
+            argz,
+            additionalEnvironment
     );
   }
 

@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -54,13 +54,14 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
       @NotNull
       public BuildProcess createCommand(@NotNull File program,
                                         @NotNull File workingDir,
-                                        @NotNull Collection<String> argz) throws RunBuildException {
+                                        @NotNull Collection<String> argz,
+                                        @NotNull Map<String, String> additionalEnvironment) throws RunBuildException {
         return myFactory.executeCommandLine(
                 context,
                 program,
                 argz,
                 workingDir,
-                Collections.<String, String>emptyMap()
+                additionalEnvironment
         );
       }
     };
