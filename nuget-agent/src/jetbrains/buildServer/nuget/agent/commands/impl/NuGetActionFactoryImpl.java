@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -58,7 +59,8 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                 context,
                 program,
                 argz,
-                workingDir
+                workingDir,
+                Collections.<String, String>emptyMap()
         );
       }
     };

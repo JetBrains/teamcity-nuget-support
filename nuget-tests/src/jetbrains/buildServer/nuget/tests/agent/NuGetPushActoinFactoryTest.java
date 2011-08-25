@@ -31,6 +31,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -68,7 +69,8 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid", "-Source", "push-feed"), myFile.getParentFile());
+      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid", "-Source", "push-feed"), myFile.getParentFile(),Collections.<String, String>emptyMap()
+      );
     }});
 
     i.createPush(ctx, ps, myFile);
@@ -84,7 +86,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue(null));
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid"), myFile.getParentFile());
+      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid"), myFile.getParentFile(), Collections.<String, String>emptyMap());
     }});
 
     i.createPush(ctx, ps, myFile);
@@ -100,7 +102,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
       allowing(ps).getCreateOnly(); will(returnValue(true));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid", "-CreateOnly", "-Source", "push-feed"), myFile.getParentFile());
+      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid", "-CreateOnly", "-Source", "push-feed"), myFile.getParentFile(), Collections.<String, String>emptyMap());
     }});
 
     i.createPush(ctx, ps, myFile);

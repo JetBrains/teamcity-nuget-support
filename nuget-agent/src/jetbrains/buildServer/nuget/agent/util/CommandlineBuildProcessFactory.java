@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -33,5 +34,6 @@ public interface CommandlineBuildProcessFactory {
   BuildProcess executeCommandLine(@NotNull BuildRunnerContext hostContext,
                                   @NotNull File program,
                                   @NotNull Collection<String> argz,
-                                  @NotNull File workingDir) throws RunBuildException;
+                                  @NotNull File workingDir,
+                                  @NotNull Map<String, String> additionalEnvironment) throws RunBuildException;
 }

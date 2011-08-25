@@ -41,6 +41,8 @@ import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -114,7 +116,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       public BuildProcess executeCommandLine(@NotNull final BuildRunnerContext hostContext,
                                              @NotNull final File program,
                                              @NotNull final Collection<String> argz,
-                                             @NotNull final File workingDir) throws RunBuildException {
+                                             @NotNull final File workingDir,
+                                             @NotNull final Map<String, String> additionalEnvironment) throws RunBuildException {
         return new BuildProcessBase() {
           @NotNull
           @Override
@@ -125,6 +128,11 @@ public class IntegrationTestBase extends BuildProcessTestCase {
               cmd.addParameter(arg);
             }
             cmd.setWorkingDirectory(workingDir);
+
+            Map<String, String> env = new HashMap<String, String>();
+            env.putAll(System.getenv());
+            env.putAll(additionalEnvironment);
+            cmd.setEnvParams(env);
 
             System.out.println("Run: " + cmd.getCommandLineString());
 

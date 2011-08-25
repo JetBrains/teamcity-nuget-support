@@ -81,7 +81,8 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
               ctx,
               nuget,
               Arrays.asList("install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath()),
-              myConfig.getParentFile()
+              myConfig.getParentFile(),
+              Collections.<String, String>emptyMap()
       );
     }});
 
@@ -101,7 +102,8 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
               ctx,
               nuget,
               Arrays.asList("install", myConfig.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath()),
-              myConfig.getParentFile()
+              myConfig.getParentFile(),
+              Collections.<String, String>emptyMap()
       );
     }});
 
@@ -121,7 +123,8 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
               ctx,
               nuget,
               Arrays.asList("install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
-              myConfig.getParentFile()
+              myConfig.getParentFile(),
+              Collections.<String, String>emptyMap()
       );
     }});
 

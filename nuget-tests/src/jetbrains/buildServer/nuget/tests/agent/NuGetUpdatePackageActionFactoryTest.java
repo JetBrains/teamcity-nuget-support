@@ -81,7 +81,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
               ctx,
               nuget,
               Arrays.asList("update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath()),
-              myConfig.getParentFile()
+              myConfig.getParentFile(),
+              Collections.<String, String>emptyMap()
       );
     }});
 
@@ -102,7 +103,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
               ctx,
               nuget,
               Arrays.asList("update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Id", "aaa", "-Id", "bbb"),
-              myConfig.getParentFile()
+              myConfig.getParentFile(),
+              Collections.<String, String>emptyMap()
       );
     }});
 
@@ -123,7 +125,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
               ctx,
               nuget,
               Arrays.asList("update", myConfig.getPath(), "-Safe", "-Verbose", "-RepositoryPath", myTarget.getPath()),
-              myConfig.getParentFile()
+              myConfig.getParentFile(),
+              Collections.<String, String>emptyMap()
       );
     }});
 
@@ -144,13 +147,13 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
               ctx,
               nuget,
               Arrays.asList("update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
-              myConfig.getParentFile()
+              myConfig.getParentFile(),
+              Collections.<String, String>emptyMap()
       );
     }});
 
     i.createUpdate(ctx, ps, myConfig, myTarget);
     m.assertIsSatisfied();
   }
-
 
 }

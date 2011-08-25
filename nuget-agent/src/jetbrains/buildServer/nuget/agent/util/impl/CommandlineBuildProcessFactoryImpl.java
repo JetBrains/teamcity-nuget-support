@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -42,13 +43,18 @@ public class CommandlineBuildProcessFactoryImpl implements CommandlineBuildProce
   public BuildProcess executeCommandLine(@NotNull BuildRunnerContext hostContext,
                                          @NotNull File program,
                                          @NotNull Collection<String> argz,
-                                         @NotNull File workingDir) throws RunBuildException {
+                                         @NotNull File workingDir,
+                                         @NotNull final Map<String, String> additionalEnvironment) throws RunBuildException {
     BuildRunnerContext context = myFacade.createBuildRunnerContext(
             hostContext.getBuild(),
             SimpleRunnerConstants.TYPE,
             workingDir.getPath(),
             hostContext
     );
+
+    for (Map.Entry<String, String> entry : additionalEnvironment.entrySet()) {
+      context.addEnvironmentVariable(entry.getKey(), entry.getValue());
+    }
 
     context.addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, program.getPath());
     context.addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, joinCommandLineArguments(argz));
