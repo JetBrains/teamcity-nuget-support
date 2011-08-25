@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.agent.commands.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
@@ -26,10 +27,13 @@ import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,6 +41,8 @@ import java.util.Map;
  * Date: 07.07.11 17:49
  */
 public class NuGetActionFactoryImpl implements NuGetActionFactory {
+  private static final Logger LOG = Logger.getInstance(NuGetActionFactoryImpl.class.getName());
+
   private final CommandFactory myCommandFactory;
   private final CommandlineBuildProcessFactory myFactory;
   private final PackageUsages myPackageUsages;
@@ -54,11 +60,22 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
       @NotNull
       public BuildProcess createCommand(@NotNull File program,
                                         @NotNull File workingDir,
-                                        @NotNull Collection<String> argz,
+                                        @NotNull Collection<String> _argz,
                                         @NotNull Map<String, String> additionalEnvironment) throws RunBuildException {
+        String cmd = context.getBuildParameters().getEnvironmentVariables().get("ComSpec");
+        if (StringUtil.isEmptyOrSpaces(cmd)) {
+          LOG.warn("Failed to find path to cmd.exe in %ComSpec% environment variable");
+          cmd = "cmd.exe";
+        }
+
+        List<String> argz = new ArrayList<String>();
+        argz.add("/c");
+        argz.add(program.getPath());
+        argz.addAll(_argz);
+
         return myFactory.executeCommandLine(
                 context,
-                program,
+                cmd,
                 argz,
                 workingDir,
                 additionalEnvironment

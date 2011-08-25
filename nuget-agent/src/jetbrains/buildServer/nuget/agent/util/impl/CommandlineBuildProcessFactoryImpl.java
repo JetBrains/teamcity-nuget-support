@@ -25,9 +25,7 @@ import jetbrains.buildServer.runner.SimpleRunnerConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,15 +41,10 @@ public class CommandlineBuildProcessFactoryImpl implements CommandlineBuildProce
 
   @NotNull
   public BuildProcess executeCommandLine(@NotNull BuildRunnerContext hostContext,
-                                         @NotNull File program,
-                                         @NotNull Collection<String> _argz,
+                                         @NotNull String program,
+                                         @NotNull Collection<String> argz,
                                          @NotNull File workingDir,
                                          @NotNull final Map<String, String> additionalEnvironment) throws RunBuildException {
-    final List<String> argz = new ArrayList<String>();
-    argz.add("/c");
-    argz.add(program.getPath());
-    argz.addAll(_argz);
-
     BuildRunnerContext context = myFacade.createBuildRunnerContext(
             hostContext.getBuild(),
             SimpleRunnerConstants.TYPE,
@@ -63,7 +56,7 @@ public class CommandlineBuildProcessFactoryImpl implements CommandlineBuildProce
       context.addEnvironmentVariable(entry.getKey(), entry.getValue());
     }
 
-    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "%env.ComSpec%");
+    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, program);
     context.addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, joinCommandLineArguments(argz));
 
     return myFacade.createExecutable(hostContext.getBuild(), context);

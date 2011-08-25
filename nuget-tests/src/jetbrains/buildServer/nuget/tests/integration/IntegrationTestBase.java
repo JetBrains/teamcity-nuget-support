@@ -41,6 +41,7 @@ import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,6 +61,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected NuGetPackagesCollector myCollector;
   protected NuGetActionFactory myActionFactory;
   private BuildProcess myMockProcess;
+  protected BuildParametersMap myBuildParametersMap;
+  protected String cmd;
 
   @NotNull
   protected String getCommandsOutput() {
@@ -79,8 +82,14 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myParametersFactory = m.mock(PackagesParametersFactory.class);
     myMockProcess = m.mock(BuildProcess.class);
     myNuGet = m.mock(NuGetFetchParameters.class);
+    myBuildParametersMap = m.mock(BuildParametersMap.class);
 
-    m.checking(new Expectations() {{
+    cmd = System.getenv("ComSpec");
+
+    m.checking(new Expectations(){{
+      allowing(myContext).getBuildParameters(); will(returnValue(myBuildParametersMap));
+      allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
+
       allowing(myContext).getBuild();
       will(returnValue(myBuild));
       allowing(myBuild).getBuildLogger();
@@ -114,7 +123,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     return new CommandlineBuildProcessFactory() {
       @NotNull
       public BuildProcess executeCommandLine(@NotNull final BuildRunnerContext hostContext,
-                                             @NotNull final File program,
+                                             @NotNull final String program,
                                              @NotNull final Collection<String> argz,
                                              @NotNull final File workingDir,
                                              @NotNull final Map<String, String> additionalEnvironment) throws RunBuildException {
@@ -123,9 +132,9 @@ public class IntegrationTestBase extends BuildProcessTestCase {
           @Override
           protected BuildFinishedStatus waitForImpl() throws RunBuildException {
             GeneralCommandLine cmd = new GeneralCommandLine();
-            cmd.setExePath(program.getPath());
+            cmd.setExePath(program);
             for (String arg : argz) {
-              cmd.addParameter(arg);
+              cmd.addParameter(arg.replaceAll("%+", "%"));
             }
             cmd.setWorkingDirectory(workingDir);
 

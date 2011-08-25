@@ -18,20 +18,25 @@ package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildParametersMap;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -45,6 +50,9 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
   private NuGetPublishParameters ps;
   private File myFile;
   private File myNuGet;
+  private String cmd;
+  private BuildParametersMap myBuildParametersMap;
+
 
   @BeforeMethod
   @Override
@@ -57,8 +65,63 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
     ctx = m.mock(BuildRunnerContext.class);
     ps = m.mock(NuGetPublishParameters.class);
 
+    myBuildParametersMap = m.mock(BuildParametersMap.class);
+    cmd = System.getenv("ComSpec");
+
+    m.checking(new Expectations(){{
+      allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
+      allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
+    }});
+
     myFile = createTempFile();
     myNuGet = createTempFile();
+  }
+
+  private org.hamcrest.Matcher<List<String>> arguments(final String... args) {
+    return new BaseMatcher<List<String>>() {
+      public boolean matches(Object o) {
+        List<String> text = (List<String>) o;
+
+        if (text.size() != args.length) {
+          return false;
+        }
+
+        for (int i = 0; i < args.length; i++) {
+          if (args[i].startsWith("%%teamcity_nuget_api_key_")) {
+            final String actual = text.get(i).replaceAll("%%teamcity_nuget_api_key_\\d+%%", "%%teamcity_nuget_api_key_DDD%%");
+            if (!actual.equals(args[i])) return false;
+          }
+        }
+        return true;
+      }
+
+      public void describeTo(Description description) {
+        description.appendText("Should match: [");
+        for (String arg : args) {
+          description.appendValue(arg);
+          description.appendText(", ");
+        }
+        description.appendText("]");
+      }
+    };
+  }
+
+  private org.hamcrest.Matcher<Map<String, String>> envApi(@NotNull final String key) {
+    return new BaseMatcher<Map<String, String>>() {
+      public boolean matches(Object o) {
+        Map<String, String> map = (Map<String, String>) o;
+        for (Map.Entry<String, String> e : map.entrySet()) {
+          if (e.getKey().startsWith("teamcity_nuget_api_key_")) {
+            return key.equals(e.getValue());
+          }
+        }
+        return false;
+      }
+
+      public void describeTo(Description description) {
+        description.appendText("Environment map should contain value: ").appendValue(key);
+      }
+    };
   }
 
   @Test
@@ -69,7 +132,10 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid", "-Source", "push-feed"), myFile.getParentFile(),Collections.<String, String>emptyMap()
+      oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(cmd)),
+              with(arguments("/c", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-Source", "push-feed")),
+              with(equal(myFile.getParentFile())),
+              with(envApi("api-key-guid"))
       );
     }});
 
@@ -86,7 +152,11 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue(null));
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid"), myFile.getParentFile(), Collections.<String, String>emptyMap());
+      oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(cmd)),
+              with(arguments("/c", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%")),
+              with(equal(myFile.getParentFile())),
+              with(envApi("api-key-guid"))
+      );
     }});
 
     i.createPush(ctx, ps, myFile);
@@ -102,7 +172,11 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
       allowing(ps).getCreateOnly(); will(returnValue(true));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet, Arrays.asList("push", myFile.getPath(), "api-key-guid", "-CreateOnly", "-Source", "push-feed"), myFile.getParentFile(), Collections.<String, String>emptyMap());
+      oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(cmd)),
+              with(arguments("/c", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-CreateOnly", "-Source", "push-feed")),
+              with(equal(myFile.getParentFile())),
+              with(envApi("api-key-guid"))
+      );
     }});
 
     i.createPush(ctx, ps, myFile);

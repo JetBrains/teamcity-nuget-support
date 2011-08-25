@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildParametersMap;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
@@ -48,6 +49,9 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   private PackagesUpdateParameters ps;
   private File myTarget;
   private File myConfig;
+  private String cmd;
+  private BuildParametersMap myBuildParametersMap;
+
 
   @BeforeMethod
   @Override
@@ -63,7 +67,14 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
 
     myTarget = createTempDir();
     myConfig = createTempFile();
+
+    myBuildParametersMap = m.mock(BuildParametersMap.class);
+    cmd = System.getenv("ComSpec");
+
     m.checking(new Expectations(){{
+      allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
+      allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
+
       allowing(ps).getNuGetParameters(); will(returnValue(nugetParams));
     }});
   }
@@ -79,8 +90,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              nuget,
-              Arrays.asList("update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath()),
+              cmd,
+              Arrays.asList("/c", nuget.getPath(), "update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath()),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -101,8 +112,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              nuget,
-              Arrays.asList("update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Id", "aaa", "-Id", "bbb"),
+              cmd,
+              Arrays.asList("/c", nuget.getPath(), "update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Id", "aaa", "-Id", "bbb"),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -123,8 +134,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              nuget,
-              Arrays.asList("update", myConfig.getPath(), "-Safe", "-Verbose", "-RepositoryPath", myTarget.getPath()),
+              cmd,
+              Arrays.asList("/c", nuget.getPath(), "update", myConfig.getPath(), "-Safe", "-Verbose", "-RepositoryPath", myTarget.getPath()),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -145,8 +156,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              nuget,
-              Arrays.asList("update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
+              cmd,
+              Arrays.asList("/c", nuget.getPath(), "update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );

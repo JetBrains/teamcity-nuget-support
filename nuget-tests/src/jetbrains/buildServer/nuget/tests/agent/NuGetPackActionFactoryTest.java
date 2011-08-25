@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
+import jetbrains.buildServer.agent.BuildParametersMap;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
@@ -55,6 +56,9 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
   private Collection<String> myExcludes;
   private Collection<String> myProperties;
   private Collection<String> myExtra;
+  private String cmd;
+  private BuildParametersMap myBuildParametersMap;
+
 
 
   @BeforeMethod
@@ -78,8 +82,14 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
     myExcludes = new ArrayList<String>();
     myProperties = new ArrayList<String>();
     myExtra = new ArrayList<String>();
+    myBuildParametersMap = m.mock(BuildParametersMap.class);
+    cmd = System.getenv("ComSpec");
 
     m.checking(new Expectations(){{
+      allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
+      allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
+
+
       allowing(ctx).getBuild(); will(returnValue(build));
       allowing(build).getCheckoutDirectory(); will(returnValue(myWorkingDir));
       allowing(myPackParameters).getSpecFile(); will(returnValue(myFile));
@@ -101,9 +111,9 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool(); will(returnValue(false));
       allowing(myPackParameters).packSymbols(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet,
+      oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12")
+                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -120,9 +130,9 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool(); will(returnValue(false));
       allowing(myPackParameters).packSymbols(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet,
+      oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Properties", "p1=p2", "-Properties", "p3=p24")
+                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Properties", "p1=p2", "-Properties", "p3=p24")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -141,9 +151,9 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packSymbols();
       will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet,
+      oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "arg1", "arg2")
+                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "arg1", "arg2")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -160,9 +170,9 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool(); will(returnValue(false));
       allowing(myPackParameters).packSymbols(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet,
+      oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Exclude", "aaa", "-Exclude", "d/v/de")
+                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Exclude", "aaa", "-Exclude", "d/v/de")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -177,9 +187,9 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool(); will(returnValue(true));
       allowing(myPackParameters).packSymbols(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet,
+      oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Tool")
+                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Tool")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -194,9 +204,9 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool(); will(returnValue(false));
       allowing(myPackParameters).packSymbols(); will(returnValue(true));
 
-      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet,
+      oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Symbols")
+                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Symbols")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
