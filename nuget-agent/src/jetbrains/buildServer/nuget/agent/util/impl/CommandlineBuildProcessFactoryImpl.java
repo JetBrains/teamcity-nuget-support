@@ -38,6 +38,7 @@ public class CommandlineBuildProcessFactoryImpl implements CommandlineBuildProce
     myFacade = facade;
   }
 
+  @NotNull
   public BuildProcess executeCommandLine(@NotNull BuildRunnerContext hostContext,
                                          @NotNull File program,
                                          @NotNull Collection<String> argz,

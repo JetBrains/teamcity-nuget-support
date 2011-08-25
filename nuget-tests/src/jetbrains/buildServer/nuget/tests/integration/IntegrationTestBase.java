@@ -110,6 +110,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   @NotNull
   private CommandlineBuildProcessFactory executingFactory() {
     return new CommandlineBuildProcessFactory() {
+      @NotNull
       public BuildProcess executeCommandLine(@NotNull final BuildRunnerContext hostContext,
                                              @NotNull final File program,
                                              @NotNull final Collection<String> argz,

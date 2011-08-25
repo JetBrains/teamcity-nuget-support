@@ -29,6 +29,7 @@ import java.util.Collection;
  * Date: 07.07.11 15:36
  */
 public interface CommandlineBuildProcessFactory {
+  @NotNull
   BuildProcess executeCommandLine(@NotNull BuildRunnerContext hostContext,
                                   @NotNull File program,
                                   @NotNull Collection<String> argz,
