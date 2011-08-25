@@ -16,9 +16,7 @@
 package jetbrains.buildServer.nuget.tests.util.fsScanner;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.agent.runner.publish.fsScanner.AntPatternState;
-import jetbrains.buildServer.nuget.agent.runner.publish.fsScanner.AntPatternUtil;
-import jetbrains.buildServer.nuget.agent.runner.publish.fsScanner.Wildcard;
+import jetbrains.buildServer.nuget.agent.runner.publish.fsScanner.*;
 import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -28,20 +26,20 @@ import java.util.List;
 
 public class TestAntPatternState extends BaseTestCase {
   private static void AssertPatternState(String pattern, @Nullable List<Integer> pos, String enter, String expectedResult) {
-    List<Wildcard> wildcards = AntPatternUtil.ParsePattern(pattern, false);
+    List<Wildcard> wildcards = AntPatternUtil.parsePattern(pattern, false);
 
     AntPatternState state = pos == null
             ? new AntPatternState(wildcards)
             : new AntPatternState(wildcards, pos);
 
-    final AntPatternState.AntPatternStateMatch e = state.Enter(enter);
-    AntPatternState.MatchResult match = e.getResult();
+    final AntPatternStateMatch e = state.enter(enter);
+    MatchResult match = e.getResult();
     AntPatternState newState = e.getState();
 
     StringBuilder sb = new StringBuilder();
     sb.append(match);
     sb.append(" ");
-    for (int p : newState.PatternPositions()) {
+    for (int p : newState.getPatternPositions()) {
       sb.append(p);
       sb.append(":");
     }

@@ -13,29 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package jetbrains.buildServer.nuget.agent.runner.publish.fsScanner;
 
 import org.jetbrains.annotations.NotNull;
 
-public class RealFileEntry implements FileEntry {
-  private final FileSystemPath myPath;
+/**
+* @author Eugene Petrenko (eugene.petrenko@gmail.com)
+*         Date: 25.08.11 11:56
+*/
+public class AntPatternStateMatch {
+  private final MatchResult myResult;
+  private final AntPatternState myState;
 
-  public RealFileEntry(FileSystemPath path) {
-    myPath = path;
+  public AntPatternStateMatch(@NotNull final MatchResult result,
+                              @NotNull final AntPatternState state) {
+    myResult = result;
+    myState = state;
   }
 
   @NotNull
-  public String getName() {
-    return myPath.getName();
+  public MatchResult getResult() {
+    return myResult;
   }
 
   @NotNull
-  public FileSystemPath getPath() {
-    return myPath;
-  }
-
-  @Override
-  public String toString() {
-    return "{f:" + myPath.getFilePath() + "|" + getName() + "}";
+  public AntPatternState getState() {
+    return myState;
   }
 }

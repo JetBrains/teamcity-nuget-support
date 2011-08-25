@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class RealDirectoryEntry implements IDirectoryEntry {
+public class RealDirectoryEntry implements DirectoryEntry {
   private final FileSystemPath myPath;
 
   public RealDirectoryEntry(FileSystemPath path) {
@@ -34,61 +34,57 @@ public class RealDirectoryEntry implements IDirectoryEntry {
   }
 
   @NotNull
-  public String Name() {
-    {
-      String name = myPath.Name();
-      if (SystemInfo.isWindows) {
-        if (name.length() == 3 && name.charAt(1) == ':')
-          return name.charAt(0) + ":";
-      }
+  public String getName() {
 
-      return name;
+    String name = myPath.getName();
+    if (SystemInfo.isWindows) {
+      if (name.length() == 3 && name.charAt(1) == ':')
+        return name.charAt(0) + ":";
     }
+
+    return name;
+
   }
 
-  public IDirectoryEntry Parent() {
-    if (StringUtil.isEmptyOrSpaces(myPath.FilePath().getPath()))
+  public DirectoryEntry getParent() {
+    if (StringUtil.isEmptyOrSpaces(myPath.getFilePath().getPath()))
       return RealFileSystem.ROOT;
 
-    String parent = myPath.FilePath().getParent();
+    String parent = myPath.getFilePath().getParent();
     if (parent == null)
       return RealFileSystem.ROOT;
 
     FileSystemPath parentPath = new FileSystemPath(parent);
-    if (StringUtil.isEmptyOrSpaces(parentPath.FilePath().getPath()))
+    if (StringUtil.isEmptyOrSpaces(parentPath.getFilePath().getPath()))
       return RealFileSystem.ROOT;
 
     return new RealDirectoryEntry(parentPath);
   }
 
   @NotNull
-  public IDirectoryEntry[] Subdirectories() {
+  public DirectoryEntry[] getSubdirectories() {
     try {
-      List<IDirectoryEntry> list = new ArrayList<IDirectoryEntry>();
-      for (File dir : FilePath().listFiles(new FileFilter() {
-        public boolean accept(File pathname) {
-          return pathname.isDirectory();
-        }
-      })) {
+      List<DirectoryEntry> list = new ArrayList<DirectoryEntry>();
+      for (File dir : FilePath().listFiles(DIRECTORY_FILTER)) {
         list.add(new RealDirectoryEntry(new FileSystemPath(dir)));
       }
-      return list.toArray(new IDirectoryEntry[list.size()]);
+      return list.toArray(new DirectoryEntry[list.size()]);
     } catch (Exception e) {
-      return new IDirectoryEntry[0];
+      return new DirectoryEntry[0];
     }
   }
 
   @NotNull
-  public IDirectoryEntry[] Subdirectories(Collection<String> names) {
-    List<IDirectoryEntry> entries = new ArrayList<IDirectoryEntry>(names.size());
+  public DirectoryEntry[] getSubdirectories(Collection<String> names) {
+    List<DirectoryEntry> entries = new ArrayList<DirectoryEntry>(names.size());
     for (String name : names) {
       entries.add(new RealDirectoryEntry(new FileSystemPath(new File(FilePath(), name))));
     }
-    return entries.toArray(new IDirectoryEntry[entries.size()]);
+    return entries.toArray(new DirectoryEntry[entries.size()]);
   }
 
   private File FilePath() {
-    String filePath = myPath.FilePath().getPath();
+    String filePath = myPath.getFilePath().getPath();
 
     if (SystemInfo.isWindows && filePath.endsWith(":")) {
       return new File(filePath + "\\");
@@ -101,36 +97,45 @@ public class RealDirectoryEntry implements IDirectoryEntry {
   }
 
   @NotNull
-  public IFileEntry[] Files() {
+  public FileEntry[] getFiles() {
 
     try {
-      List<IFileEntry> list = new ArrayList<IFileEntry>();
-      for (File dir : FilePath().listFiles(new FileFilter() {
-        public boolean accept(File pathname) {
-          return pathname.isFile();
-        }
-      })) {
+      List<FileEntry> list = new ArrayList<FileEntry>();
+      for (File dir : FilePath().listFiles(FILE_FILTER)) {
         list.add(new RealFileEntry(new FileSystemPath(dir)));
       }
-      return list.toArray(new IFileEntry[list.size()]);
+      return list.toArray(new FileEntry[list.size()]);
     } catch (Exception e) {
-      return new IFileEntry[0];
+      return new FileEntry[0];
     }
   }
 
   @NotNull
-  public IFileEntry[] Files(Collection<String> names) {
-    List<IFileEntry> list = new ArrayList<IFileEntry>();
+  public FileEntry[] getFiles(@NotNull Collection<String> names) {
+    List<FileEntry> list = new ArrayList<FileEntry>();
     for (String name : names) {
       final File file = new File(FilePath(), name);
       if (!file.isFile()) continue;
       list.add(new RealFileEntry(new FileSystemPath(file)));
     }
-    return list.toArray(new IFileEntry[list.size()]);
+    return list.toArray(new FileEntry[list.size()]);
   }
 
   @Override
   public String toString() {
-    return "{d:" + myPath.FilePath() + "|" + Name() + "}";
+    return "{d:" + myPath.getFilePath() + "|" + getName() + "}";
   }
+
+  private final FileFilter DIRECTORY_FILTER = new FileFilter() {
+    public boolean accept(File pathname) {
+      return pathname.isDirectory();
+    }
+  };
+
+  private final FileFilter FILE_FILTER = new FileFilter() {
+    public boolean accept(File pathname) {
+      return pathname.isFile();
+    }
+  };
+
 }

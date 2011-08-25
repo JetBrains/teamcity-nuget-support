@@ -27,40 +27,52 @@ import java.util.*;
 public class DirectoryScanner {
   private static final Logger LOG = Logger.getInstance(DirectoryScanner.class.getName());
 
-  public static Collection<File> FindFiles(@NotNull File root, Collection<String> includes, Collection<String> excludes) {
-    return FindFiles(new RealFileSystem(), new RealDirectoryEntry(new FileSystemPath(root)), includes, excludes);
+  public static Collection<File> findFiles(@NotNull File root,
+                                           @NotNull final Collection<String> includes,
+                                           @NotNull final Collection<String> excludes) {
+    return findFiles(new RealFileSystem(), new RealDirectoryEntry(new FileSystemPath(root)), includes, excludes);
   }
 
-  public static Collection<File> FindFiles(IFileSystem fs, IDirectoryEntry root, Collection<String> includes, Collection<String> excludes) {
-    List<Wildcard> basePath = BuildSearchPrefix(root, fs.CaseSensitive());
+  public static Collection<File> findFiles(@NotNull final FileSystem fs,
+                                           @NotNull final DirectoryEntry root,
+                                           @NotNull final Collection<String> includes,
+                                           @NotNull final Collection<String> excludes) {
+    List<Wildcard> basePath = buildSearchPrefix(root, fs.caseSensitive());
 
     List<FileSystemPath> result = new ArrayList<FileSystemPath>();
-    FindFilesRec(
-            fs.Root(),
+    findFilesRec(
+            fs.getRoot(),
             result,
-            ToAntPatternState(fs, basePath, fs.CaseSensitive(), includes),
-            ToAntPatternState(fs, basePath, fs.CaseSensitive(), excludes)
+            toAntPatternState(fs, basePath, fs.caseSensitive(), includes),
+            toAntPatternState(fs, basePath, fs.caseSensitive(), excludes)
     );
 
     Set<File> foundFiles = new TreeSet<File>();
     for (FileSystemPath path : result) {
-      foundFiles.add(path.FilePath());
+      foundFiles.add(path.getFilePath());
     }
     return foundFiles;
   }
 
-  private static List<Wildcard> BuildSearchPrefix(@NotNull IDirectoryEntry root, boolean caseSensitive) {
+  private static List<Wildcard> buildSearchPrefix(@NotNull DirectoryEntry root, boolean caseSensitive) {
     List<Wildcard> wildcardPrefix = new ArrayList<Wildcard>();
-    while (root.Parent() != null) {
-      wildcardPrefix.add(new Wildcard(root.Name(), caseSensitive));
-      root = root.Parent();
+    while (true) {
+      final DirectoryEntry parent = root.getParent();
+      if (parent == null) break;
+
+      wildcardPrefix.add(new Wildcard(root.getName(), caseSensitive));
+      root = parent;
     }
     Collections.reverse(wildcardPrefix);
 
     return wildcardPrefix;
   }
 
-  private static List<AntPatternState> ToAntPatternState(IFileSystem fs, List<Wildcard> wildcardPrefix, boolean caseSensitive, Collection<String> patterns) {
+  @NotNull
+  private static List<AntPatternState> toAntPatternState(@NotNull final FileSystem fs,
+                                                         @NotNull final List<Wildcard> wildcardPrefix,
+                                                         boolean caseSensitive,
+                                                         @NotNull final Collection<String> patterns) {
     List<AntPatternState> result = new ArrayList<AntPatternState>();
     for (String x : patterns) {
       result.add(new AntPatternState(ParsePattern(fs, wildcardPrefix, caseSensitive, x)));
@@ -68,10 +80,14 @@ public class DirectoryScanner {
     return result;
   }
 
-  private static List<Wildcard> ParsePattern(IFileSystem fs, List<Wildcard> rootPrefix, boolean caseSensitive, String pattern) {
-    List<Wildcard> wildcards = AntPatternUtil.ParsePattern(pattern, caseSensitive);
+  @NotNull
+  private static List<Wildcard> ParsePattern(@NotNull final FileSystem fs,
+                                             @NotNull final List<Wildcard> rootPrefix,
+                                             boolean caseSensitive,
+                                             @NotNull final String pattern) {
+    List<Wildcard> wildcards = AntPatternUtil.parsePattern(pattern, caseSensitive);
 
-    if (fs.IsPathAbsolute(pattern))
+    if (fs.isPathAbsolute(pattern))
       return wildcards;
 
     List<Wildcard> result = new ArrayList<Wildcard>();
@@ -80,17 +96,16 @@ public class DirectoryScanner {
     return result;
   }
 
-  private interface AnyPredicate {
-    boolean matches(AntPatternState.MatchResult r);
-  }
-
-  private static boolean Any(List<AntPatternState> state, String component, AnyPredicate predicate, List<AntPatternState> newState) {
+  private static boolean any(@NotNull final List<AntPatternState> state,
+                             @NotNull final String component,
+                             @NotNull final AnyPredicate predicate,
+                             @NotNull final List<AntPatternState> newState) {
     boolean any = false;
     newState.clear();
 
     for (AntPatternState aState : state) {
-      final AntPatternState.AntPatternStateMatch enter = aState.Enter(component);
-      AntPatternState.MatchResult match = enter.getResult();
+      final AntPatternStateMatch enter = aState.enter(component);
+      MatchResult match = enter.getResult();
       newState.add(enter.getState());
 
       if (predicate.matches(match))
@@ -100,8 +115,11 @@ public class DirectoryScanner {
     return any;
   }
 
-  private static void FindFilesRec(IDirectoryEntry directory, List<FileSystemPath> result, List<AntPatternState> includeState, List<AntPatternState> excludeState) {
-    LOG.debug("Scanning directory: " + directory.Name());
+  private static void findFilesRec(@NotNull final DirectoryEntry directory,
+                                   @NotNull final List<FileSystemPath> result,
+                                   @NotNull final List<AntPatternState> includeState,
+                                   @NotNull final List<AntPatternState> excludeState) {
+    LOG.debug("Scanning directory: " + directory.getName());
 
     boolean mayContainFiles = false;
     Collection<String> explicits = new ArrayList<String>();
@@ -119,46 +137,50 @@ public class DirectoryScanner {
     }
 
     if (mayContainFiles) {
-      for (IFileEntry file : explicits != null ? directory.Files(explicits) : directory.Files()) {
+      for (FileEntry file : explicits != null ? directory.getFiles(explicits) : directory.getFiles()) {
         List<AntPatternState> newState = new ArrayList<AntPatternState>();
 
-        if (!Any(includeState, file.Name(), equal(AntPatternState.MatchResult.YES), newState))
+        if (!any(includeState, file.getName(), equal(MatchResult.YES), newState))
           continue;
 
-        if (Any(excludeState, file.Name(), equal(AntPatternState.MatchResult.YES), newState))
+        if (any(excludeState, file.getName(), equal(MatchResult.YES), newState))
           continue;
 
-        result.add(file.Path());
+        result.add(file.getPath());
       }
     }
 
 
-    for (IDirectoryEntry subEntry : explicits != null ? directory.Subdirectories(explicits) : directory.Subdirectories()) {
-      String name = subEntry.Name();
+    for (DirectoryEntry subEntry : explicits != null ? directory.getSubdirectories(explicits) : directory.getSubdirectories()) {
+      String name = subEntry.getName();
 
       List<AntPatternState> newIncludeState = new ArrayList<AntPatternState>();
-      if (!Any(includeState, name, notEqual(AntPatternState.MatchResult.NO), newIncludeState))
+      if (!any(includeState, name, notEqual(MatchResult.NO), newIncludeState))
         continue;
 
       List<AntPatternState> newExcludeState = new ArrayList<AntPatternState>();
-      if (Any(excludeState, name, equal(AntPatternState.MatchResult.YES), newExcludeState))
+      if (any(excludeState, name, equal(MatchResult.YES), newExcludeState))
         continue;
 
-      FindFilesRec(subEntry, result, newIncludeState, newExcludeState);
+      findFilesRec(subEntry, result, newIncludeState, newExcludeState);
     }
   }
 
-  private static AnyPredicate notEqual(@NotNull final AntPatternState.MatchResult result) {
+  private interface AnyPredicate {
+    boolean matches(@NotNull MatchResult r);
+  }
+
+  private static AnyPredicate notEqual(@NotNull final MatchResult result) {
     return new AnyPredicate() {
-      public boolean matches(AntPatternState.MatchResult r) {
+      public boolean matches(@NotNull MatchResult r) {
         return result != r;
       }
     };
   }
 
-  private static AnyPredicate equal(@NotNull final AntPatternState.MatchResult result) {
+  private static AnyPredicate equal(@NotNull final MatchResult result) {
     return new AnyPredicate() {
-      public boolean matches(AntPatternState.MatchResult r) {
+      public boolean matches(@NotNull MatchResult r) {
         return result == r;
       }
     };

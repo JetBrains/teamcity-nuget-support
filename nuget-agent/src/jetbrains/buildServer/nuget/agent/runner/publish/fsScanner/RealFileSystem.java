@@ -20,25 +20,23 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public class RealFileSystem implements IFileSystem {
-  public static final IDirectoryEntry ROOT = new RealRootDirectory();
+public class RealFileSystem implements FileSystem {
+  public static final DirectoryEntry ROOT = new RealRootDirectory();
 
-  public boolean IsPathAbsolute(@NotNull String path) {
+  public boolean isPathAbsolute(@NotNull String path) {
     if (SystemInfo.isWindows) {
-      if ((path.startsWith("/") || path.startsWith("\\")))
-        return false;
-
+      if ((path.startsWith("/") || path.startsWith("\\"))) return false;
       return new File(path).isAbsolute();
     }
     return path.startsWith("/");
   }
 
   @NotNull
-  public IDirectoryEntry Root() {
+  public DirectoryEntry getRoot() {
     return ROOT;
   }
 
-  public boolean CaseSensitive() {
+  public boolean caseSensitive() {
     return SystemInfo.isFileSystemCaseSensitive;
   }
 }

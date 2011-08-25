@@ -27,10 +27,10 @@ import java.util.List;
 
 public class TestAntPatternUtil extends BaseTestCase {
   private static void AssertParseResult(String pattern, String expectedResult) {
-    List<Wildcard> wildcards = AntPatternUtil.ParsePattern(pattern, false);
+    List<Wildcard> wildcards = AntPatternUtil.parsePattern(pattern, false);
     StringBuilder sb = new StringBuilder();
     for (Wildcard w : wildcards) {
-      sb.append(w == null ? "**" : w.Pattern());
+      sb.append(w == null ? "**" : w.getPattern());
       sb.append(":");
     }
     String result = StringUtil.trimEnd(sb.toString(), ":");
@@ -39,19 +39,19 @@ public class TestAntPatternUtil extends BaseTestCase {
 
   @Test
   public void IsFileNameMatch() {
-    Assert.assertTrue(AntPatternUtil.IsFileNameMatch("a*/**b**", "abc/ss/aa/vv/ggbbhh/qq"));
-    Assert.assertFalse(AntPatternUtil.IsFileNameMatch("a*/**b**", "abc/ss/aa/vv/gghh/qq"));
-    Assert.assertTrue(AntPatternUtil.IsFileNameMatch("**/bin/**.exe", "My/BiN/Debug/program.exe"));
-    Assert.assertFalse(AntPatternUtil.IsFileNameMatch("**/bin/**.exe", "My/BiN/Debug/program.dll"));
-    Assert.assertTrue(AntPatternUtil.IsFileNameMatch("**/bin/**.exe", "bin/program.exe"));
+    Assert.assertTrue(AntPatternUtil.isFileNameMatch("a*/**b**", "abc/ss/aa/vv/ggbbhh/qq"));
+    Assert.assertFalse(AntPatternUtil.isFileNameMatch("a*/**b**", "abc/ss/aa/vv/gghh/qq"));
+    Assert.assertTrue(AntPatternUtil.isFileNameMatch("**/bin/**.exe", "My/BiN/Debug/program.exe"));
+    Assert.assertFalse(AntPatternUtil.isFileNameMatch("**/bin/**.exe", "My/BiN/Debug/program.dll"));
+    Assert.assertTrue(AntPatternUtil.isFileNameMatch("**/bin/**.exe", "bin/program.exe"));
 
-    Assert.assertTrue(AntPatternUtil.IsFileNameMatch("**aaa**ddd***ccc**", "aaa/aaa/ddd/ddd/ccc/ccc"));
-    Assert.assertFalse(AntPatternUtil.IsFileNameMatch("**aaa**ddd***ccc**", "aaa/aaa/ccc/ccc"));
+    Assert.assertTrue(AntPatternUtil.isFileNameMatch("**aaa**ddd***ccc**", "aaa/aaa/ddd/ddd/ccc/ccc"));
+    Assert.assertFalse(AntPatternUtil.isFileNameMatch("**aaa**ddd***ccc**", "aaa/aaa/ccc/ccc"));
 
-    Assert.assertTrue(AntPatternUtil.IsFileNameMatch(".\\s.slN", "S.sln"));
-    Assert.assertTrue(AntPatternUtil.IsFileNameMatch("s.slN", ".\\S.sln"));
+    Assert.assertTrue(AntPatternUtil.isFileNameMatch(".\\s.slN", "S.sln"));
+    Assert.assertTrue(AntPatternUtil.isFileNameMatch("s.slN", ".\\S.sln"));
 
-    Assert.assertFalse(AntPatternUtil.IsFileNameMatch(".", ""));
+    Assert.assertFalse(AntPatternUtil.isFileNameMatch(".", ""));
   }
 
   @Test

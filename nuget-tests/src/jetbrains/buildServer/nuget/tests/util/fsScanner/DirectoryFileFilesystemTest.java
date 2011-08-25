@@ -47,6 +47,6 @@ public class DirectoryFileFilesystemTest extends BaseTestCase {
 
   private static void DoAbsTest(String path, boolean result) {
     RealFileSystem fs = new RealFileSystem();
-    Assert.assertEquals(result, fs.IsPathAbsolute(path));
+    Assert.assertEquals(result, fs.isPathAbsolute(path));
   }
 }

@@ -36,7 +36,7 @@ public class TestReadFileSystem extends BaseTestCase {
 
   @Test
   public void TestCaseSensitive() {
-    Assert.assertEquals(!SystemInfo.isWindows, new RealFileSystem().CaseSensitive());
+    Assert.assertEquals(!SystemInfo.isWindows, new RealFileSystem().caseSensitive());
   }
 
   private void TestFSTest(FilesAction a) throws IOException {
@@ -63,9 +63,9 @@ public class TestReadFileSystem extends BaseTestCase {
   public void TestNames() throws IOException {
     TestFSTest(new FilesAction() {
       public void action(RealDirectoryEntry r1, RealDirectoryEntry r2, RealDirectoryEntry r3, RealDirectoryEntry r4) {
-        Assert.assertEquals("ccc", r4.Name());
-        Assert.assertEquals("bbb", r3.Name());
-        Assert.assertEquals("aaa", r2.Name());
+        Assert.assertEquals("ccc", r4.getName());
+        Assert.assertEquals("bbb", r3.getName());
+        Assert.assertEquals("aaa", r2.getName());
       }
     });
   }
@@ -75,14 +75,14 @@ public class TestReadFileSystem extends BaseTestCase {
     TestFSTest(
             new FilesAction() {
               public void action(RealDirectoryEntry r1, RealDirectoryEntry r2, RealDirectoryEntry r3, RealDirectoryEntry r4) {
-                AssertDirectoriesEqual(r4.Parent(), r3);
-                AssertDirectoriesEqual(r4.Parent().Parent(), r2);
-                AssertDirectoriesEqual(r4.Parent().Parent().Parent(), r1);
+                AssertDirectoriesEqual(r4.getParent(), r3);
+                AssertDirectoriesEqual(r4.getParent().getParent(), r2);
+                AssertDirectoriesEqual(r4.getParent().getParent().getParent(), r1);
 
-                AssertDirectoriesEqual(r3.Parent(), r2);
-                AssertDirectoriesEqual(r3.Parent().Parent(), r1);
+                AssertDirectoriesEqual(r3.getParent(), r2);
+                AssertDirectoriesEqual(r3.getParent().getParent(), r1);
 
-                AssertDirectoriesEqual(r2.Parent(), r1);
+                AssertDirectoriesEqual(r2.getParent(), r1);
 
 
               }
@@ -94,14 +94,14 @@ public class TestReadFileSystem extends BaseTestCase {
     TestFSTest(
             new FilesAction() {
               public void action(RealDirectoryEntry r1, RealDirectoryEntry r2, RealDirectoryEntry r3, RealDirectoryEntry r4) {
-                Assert.assertEquals(0, r4.Subdirectories().length);
-                Assert.assertEquals(1, r3.Subdirectories().length);
-                Assert.assertEquals(1, r2.Subdirectories().length);
-                Assert.assertEquals(1, r1.Subdirectories().length);
+                Assert.assertEquals(0, r4.getSubdirectories().length);
+                Assert.assertEquals(1, r3.getSubdirectories().length);
+                Assert.assertEquals(1, r2.getSubdirectories().length);
+                Assert.assertEquals(1, r1.getSubdirectories().length);
 
-                AssertDirectoriesEqual(r3.Subdirectories()[0], r4);
-                AssertDirectoriesEqual(r2.Subdirectories()[0], r3);
-                AssertDirectoriesEqual(r1.Subdirectories()[0], r2);
+                AssertDirectoriesEqual(r3.getSubdirectories()[0], r4);
+                AssertDirectoriesEqual(r2.getSubdirectories()[0], r3);
+                AssertDirectoriesEqual(r1.getSubdirectories()[0], r2);
 
               }
             });
@@ -110,19 +110,19 @@ public class TestReadFileSystem extends BaseTestCase {
   @Test
   public void TestRootSubdirectories() {
     RealRootDirectory root = new RealRootDirectory();
-    Assert.assertTrue(root.Subdirectories().length > 0);
+    Assert.assertTrue(root.getSubdirectories().length > 0);
   }
 
   @Test(enabled = false)
   public void TestRootSubdirectoriesWalk() {
     int k = 10;
-    for (IDirectoryEntry sub1 : new RealRootDirectory().Subdirectories()) {
+    for (DirectoryEntry sub1 : new RealRootDirectory().getSubdirectories()) {
       if (k-- < 0) break;
       int j = 10;
-      for (IDirectoryEntry sub2 : sub1.Subdirectories()) {
+      for (DirectoryEntry sub2 : sub1.getSubdirectories()) {
         if (j-- < 0) break;
         int i = 10;
-        for (IDirectoryEntry sub3 : sub2.Subdirectories()) {
+        for (DirectoryEntry sub3 : sub2.getSubdirectories()) {
           if (i-- < 0) break;
           System.out.println("sub3 = " + sub3);
         }
@@ -134,18 +134,18 @@ public class TestReadFileSystem extends BaseTestCase {
 
   @Test
   public void TestRealRoot() {
-    IDirectoryEntry root = RealFileSystem.ROOT;
+    DirectoryEntry root = RealFileSystem.ROOT;
     DumpItem(root);
-    Assert.assertTrue(root.Subdirectories().length > 0);
+    Assert.assertTrue(root.getSubdirectories().length > 0);
   }
 
-  private static void DumpItem(IDirectoryEntry e) {
+  private static void DumpItem(DirectoryEntry e) {
     Assert.assertNotNull(e);
     System.out.println("entry = " + e);
-    for (IDirectoryEntry sub : e.Subdirectories()) {
+    for (DirectoryEntry sub : e.getSubdirectories()) {
       System.out.println("entry->sub = " + sub);
     }
-    for (IFileEntry fileEntry : e.Files()) {
+    for (FileEntry fileEntry : e.getFiles()) {
       System.out.println("entry->file = " + fileEntry);
     }
   }
@@ -157,12 +157,12 @@ public class TestReadFileSystem extends BaseTestCase {
     path.mkdirs();
 
 
-    IDirectoryEntry e = cd(path);
-    IDirectoryEntry p = e.Parent();
+    DirectoryEntry e = cd(path);
+    DirectoryEntry p = e.getParent();
     Assert.assertNotNull(p);
 
-    for (IDirectoryEntry dir : p.Subdirectories()) {
-      if (dir.Name().equals(e.Name())) {
+    for (DirectoryEntry dir : p.getSubdirectories()) {
+      if (dir.getName().equals(e.getName())) {
         AssertDirectoriesEqual(dir, e);
         return;
       }
@@ -177,9 +177,9 @@ public class TestReadFileSystem extends BaseTestCase {
 
   @Test
   public void TestShouldFindRootFS() throws IOException {
-    IDirectoryEntry r = cd(createTempDir());
+    DirectoryEntry r = cd(createTempDir());
     while (true) {
-      IDirectoryEntry p = r.Parent();
+      DirectoryEntry p = r.getParent();
       if (p == null) break;
       r = p;
     }
@@ -197,27 +197,27 @@ public class TestReadFileSystem extends BaseTestCase {
       path.mkdirs();
     }
 
-    IDirectoryEntry test = new RealDirectoryEntry(new FileSystemPath(path));
+    DirectoryEntry test = new RealDirectoryEntry(new FileSystemPath(path));
 
     List<String> loop = new ArrayList<String>();
     while (true) {
       System.out.println("p = " + test);
-      loop.add(test.Name());
-      IDirectoryEntry p = test.Parent();
+      loop.add(test.getName());
+      DirectoryEntry p = test.getParent();
       if (p == null) break;
       test = p;
     }
     Collections.reverse(loop);
 
 
-    IDirectoryEntry root = new RealRootDirectory();
-    Assert.assertEquals(root.Name(), loop.get(0));
+    DirectoryEntry root = new RealRootDirectory();
+    Assert.assertEquals(root.getName(), loop.get(0));
     loop.remove(0);
 
     for (String name : loop) {
       boolean found = false;
-      for (IDirectoryEntry sub : root.Subdirectories()) {
-        if (sub.Name().equals(name)) {
+      for (DirectoryEntry sub : root.getSubdirectories()) {
+        if (sub.getName().equals(name)) {
           found = true;
           root = sub;
         }
@@ -233,7 +233,7 @@ public class TestReadFileSystem extends BaseTestCase {
 
   }
 
-  private static void AssertDirectoriesEqual(IDirectoryEntry e1, IDirectoryEntry e2) {
+  private static void AssertDirectoriesEqual(DirectoryEntry e1, DirectoryEntry e2) {
     Assert.assertEquals(e1.toString(), e2.toString());
   }
 
@@ -247,12 +247,12 @@ public class TestReadFileSystem extends BaseTestCase {
   public void TestParentDirectory() throws IOException {
     File path = createTempDir();
 
-    List<IDirectoryEntry> entries = new ArrayList<IDirectoryEntry>();
-    IDirectoryEntry e = new RealDirectoryEntry(new FileSystemPath(path));
-    while (e.Parent() != null) {
+    List<DirectoryEntry> entries = new ArrayList<DirectoryEntry>();
+    DirectoryEntry e = new RealDirectoryEntry(new FileSystemPath(path));
+    while (e.getParent() != null) {
       System.out.println("e = " + e);
       entries.add(e);
-      e = e.Parent();
+      e = e.getParent();
     }
   }
 }

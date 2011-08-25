@@ -24,19 +24,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class RealRootDirectory implements IDirectoryEntry {
+public class RealRootDirectory implements DirectoryEntry {
   @NotNull
-  public String Name() {
+  public String getName() {
     return "";
   }
 
-  public IDirectoryEntry Parent() {
+  public DirectoryEntry getParent() {
     return null;
   }
 
   @NotNull
-  public IDirectoryEntry[] Subdirectories() {
-    ArrayList<IDirectoryEntry> result = new ArrayList<IDirectoryEntry>();
+  public DirectoryEntry[] getSubdirectories() {
+    ArrayList<DirectoryEntry> result = new ArrayList<DirectoryEntry>();
     if (SystemInfo.isWindows) {
       for (File drive : File.listRoots()) {
         result.add(new RealDirectoryEntry(new FileSystemPath(drive)));
@@ -47,26 +47,26 @@ public class RealRootDirectory implements IDirectoryEntry {
       }
     }
 
-    return result.toArray(new IDirectoryEntry[result.size()]);
+    return result.toArray(new DirectoryEntry[result.size()]);
   }
 
   @NotNull
-  public IDirectoryEntry[] Subdirectories(Collection<String> names) {
-    List<IDirectoryEntry> entries = new ArrayList<IDirectoryEntry>(names.size());
+  public DirectoryEntry[] getSubdirectories(Collection<String> names) {
+    List<DirectoryEntry> entries = new ArrayList<DirectoryEntry>(names.size());
     for (String name : names) {
       entries.add(new RealDirectoryEntry(new FileSystemPath(new File(SystemInfo.isWindows ? name : "/" + name))));
     }
-    return entries.toArray(new IDirectoryEntry[entries.size()]);
+    return entries.toArray(new DirectoryEntry[entries.size()]);
   }
 
   @NotNull
-  public IFileEntry[] Files() {
-    return new IFileEntry[0];
+  public FileEntry[] getFiles() {
+    return new FileEntry[0];
   }
 
   @NotNull
-  public IFileEntry[] Files(Collection<String> names) {
-    return new IFileEntry[0];
+  public FileEntry[] getFiles(@NotNull Collection<String> names) {
+    return new FileEntry[0];
   }
 
   @Override

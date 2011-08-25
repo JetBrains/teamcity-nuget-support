@@ -15,8 +15,12 @@
  */
 package jetbrains.buildServer.nuget.agent.runner.publish.fsScanner;
 
-public interface IFileEntry
-  {
-    String Name();
-    FileSystemPath Path();
-  }
+import org.jetbrains.annotations.NotNull;
+
+public interface FileEntry {
+  @NotNull
+  String getName();
+
+  @NotNull
+  FileSystemPath getPath();
+}

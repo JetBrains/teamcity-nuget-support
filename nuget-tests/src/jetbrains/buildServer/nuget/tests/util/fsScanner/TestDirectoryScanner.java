@@ -32,7 +32,7 @@ public class TestDirectoryScanner extends BaseTestCase {
     File fsp = createTempDir();
 
     CreateDirectories(fsDescription, fsp);
-    Collection<File> findFiles = DirectoryScanner.FindFiles(fsp, Arrays.asList(includePatterns), Arrays.asList(excludePatterns));
+    Collection<File> findFiles = DirectoryScanner.findFiles(fsp, Arrays.asList(includePatterns), Arrays.asList(excludePatterns));
 
     Set<File> expected = new TreeSet<File>();
     for (String s : expectedResult) {
@@ -188,7 +188,7 @@ public class TestDirectoryScanner extends BaseTestCase {
     File atxtFsp = new File(fsp, "a.txt");
     FileUtil.writeFile(atxtFsp, "text");
 
-    Collection<File> files = DirectoryScanner.FindFiles(fsp, Arrays.asList(atxtFsp.getPath()), Collections.<String>emptyList());
+    Collection<File> files = DirectoryScanner.findFiles(fsp, Arrays.asList(atxtFsp.getPath()), Collections.<String>emptyList());
     Assert.assertEquals(1, files.size());
     Assert.assertEquals(PreparePath(atxtFsp), PreparePath(files.iterator().next()));
   }

@@ -33,38 +33,38 @@ public class DirectoryScannerMockFSTest extends BaseTestCase {
   @Test
   public void test_should_not_list_folders_for_known_paths() {
     Mockery m = new Mockery();
-    final IFileSystem fs = m.mock(IFileSystem.class);
-    final IDirectoryEntry root = m.mock(IDirectoryEntry.class, "root");
-    final IDirectoryEntry a = m.mock(IDirectoryEntry.class, "a");
-    final IDirectoryEntry proot = m.mock(IDirectoryEntry.class, "proot");
-    final IDirectoryEntry fsRoot = m.mock(IDirectoryEntry.class, "fsRoot");
-    final IFileEntry c_txt = m.mock(IFileEntry.class, "c.txt");
+    final FileSystem fs = m.mock(FileSystem.class);
+    final DirectoryEntry root = m.mock(DirectoryEntry.class, "root");
+    final DirectoryEntry a = m.mock(DirectoryEntry.class, "a");
+    final DirectoryEntry proot = m.mock(DirectoryEntry.class, "proot");
+    final DirectoryEntry fsRoot = m.mock(DirectoryEntry.class, "fsRoot");
+    final FileEntry c_txt = m.mock(FileEntry.class, "c.txt");
 
     m.checking(new Expectations(){{
-      allowing(fs).CaseSensitive(); will(returnValue(true));
-      allowing(fs).Root(); will(returnValue(fsRoot));
-      oneOf(fs).IsPathAbsolute("a/c.txt"); will(returnValue(false));
+      allowing(fs).caseSensitive(); will(returnValue(true));
+      allowing(fs).getRoot(); will(returnValue(fsRoot));
+      oneOf(fs).isPathAbsolute("a/c.txt"); will(returnValue(false));
 
-      allowing(fsRoot).Name(); will(returnValue("fsRoot"));
-      allowing(fsRoot).Parent(); will(returnValue(null));
-      allowing(fsRoot).Subdirectories(Arrays.asList("root")); will(returnValue(new IDirectoryEntry[]{ root} ));
+      allowing(fsRoot).getName(); will(returnValue("fsRoot"));
+      allowing(fsRoot).getParent(); will(returnValue(null));
+      allowing(fsRoot).getSubdirectories(Arrays.asList("root")); will(returnValue(new DirectoryEntry[]{ root} ));
 
-      allowing(root).Parent(); will(returnValue(proot));
-      allowing(root).Name(); will(returnValue("root"));
-      allowing(root).Subdirectories(Arrays.asList("a")); will(returnValue(new IDirectoryEntry[] { a }));
-      allowing(root).Files(Arrays.asList("a")); will(returnValue(new IFileEntry[0]));
-      allowing(proot).Parent(); will(returnValue(null));
-      allowing(proot).Name(); will(returnValue("proot"));
+      allowing(root).getParent(); will(returnValue(proot));
+      allowing(root).getName(); will(returnValue("root"));
+      allowing(root).getSubdirectories(Arrays.asList("a")); will(returnValue(new DirectoryEntry[] { a }));
+      allowing(root).getFiles(Arrays.asList("a")); will(returnValue(new FileEntry[0]));
+      allowing(proot).getParent(); will(returnValue(null));
+      allowing(proot).getName(); will(returnValue("proot"));
 
-      allowing(a).Name(); will(returnValue("a"));
-      allowing(a).Files(Arrays.asList("c.txt")); will(returnValue(new IFileEntry[]{c_txt} ));
-      allowing(a).Subdirectories(Arrays.asList("c.txt")); will(returnValue(new IDirectoryEntry[0]));
+      allowing(a).getName(); will(returnValue("a"));
+      allowing(a).getFiles(Arrays.asList("c.txt")); will(returnValue(new FileEntry[]{c_txt} ));
+      allowing(a).getSubdirectories(Arrays.asList("c.txt")); will(returnValue(new DirectoryEntry[0]));
 
-      allowing(c_txt).Name(); will(returnValue("c.txt"));
-      allowing(c_txt).Path(); will(returnValue(new FileSystemPath("ccc")));
+      allowing(c_txt).getName(); will(returnValue("c.txt"));
+      allowing(c_txt).getPath(); will(returnValue(new FileSystemPath("ccc")));
     }});
 
-    DirectoryScanner.FindFiles(fs, root, Arrays.asList("a/c.txt"), Collections.<String>emptyList());
+    DirectoryScanner.findFiles(fs, root, Arrays.asList("a/c.txt"), Collections.<String>emptyList());
 
     m.assertIsSatisfied();
   }

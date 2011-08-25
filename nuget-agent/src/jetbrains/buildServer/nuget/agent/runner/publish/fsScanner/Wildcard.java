@@ -32,11 +32,11 @@ public class Wildcard {
     myPattern = !caseSensitive ? pattern.toLowerCase() : pattern;
   }
 
-  public String Pattern() {
+  public String getPattern() {
     return myPattern;
   }
 
-  public boolean IsMatch(@NotNull String str) {
+  public boolean isMatch(@NotNull String str) {
     String pattern = myPattern;
 
     if (StringUtil.isEmptyOrSpaces(pattern))
@@ -65,13 +65,13 @@ public class Wildcard {
           if (pat == patlen - 1)
             return true;
 
-          if (MatchChars(pattern.charAt(pat + 1), c)) {
+          if (matchChars(pattern.charAt(pat + 1), c)) {
             if (pat == patlen - 2 && j == str.length() - 1)
               return true;
             positions.add(pat + 2);
           }
         } else {
-          if (MatchChars(pattern.charAt(pat), c)) {
+          if (matchChars(pattern.charAt(pat), c)) {
             if (pat == patlen - 1 && j == str.length() - 1)
               return true;
 
@@ -91,7 +91,7 @@ public class Wildcard {
     return false;
   }
 
-  private static boolean MatchChars(char pat, char c) {
+  private static boolean matchChars(char pat, char c) {
     return pat == '?' || pat == c;
   }
 

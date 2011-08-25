@@ -69,7 +69,7 @@ public class MatchFilesBuildProcess extends BuildProcessBase {
 
     final File root = myContext.getBuild().getCheckoutDirectory();
     try {
-      final Collection<File> result = DirectoryScanner.FindFiles(root, patterns, Collections.<String>emptyList());
+      final Collection<File> result = DirectoryScanner.findFiles(root, patterns, Collections.<String>emptyList());
       for (File file : result) {
         LOG.debug("Found nugkg to push: " + file);
         found = true;

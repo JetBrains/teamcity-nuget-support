@@ -28,12 +28,12 @@ public class FileSystemPath {
     myPath = new File(path);
   }
 
-  public FileSystemPath(File path) {
+  public FileSystemPath(@NotNull final File path) {
     myPath = path;
   }
 
   @NotNull
-  public String Name() {
+  public String getName() {
 
     String name = myPath.getName();
     if (name == null || name.length() == 0) return myPath.getPath();
@@ -42,7 +42,7 @@ public class FileSystemPath {
   }
 
   @NotNull
-  public File FilePath() {
+  public File getFilePath() {
     return myPath;
   }
 }

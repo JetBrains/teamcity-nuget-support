@@ -15,6 +15,7 @@
  */
 package jetbrains.buildServer.nuget.agent.runner.publish.fsScanner;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -22,12 +23,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class AntPatternState {
-  public enum MatchResult {
-    YES,
-    NO,
-    MAYBELATER
-  }
-
   private final List<Wildcard> myPatternParts;
   //NDA state of mathing of pattern. Every ** produces new state
   private final List<Integer> myPatternPositions;
@@ -47,26 +42,8 @@ public class AntPatternState {
     return list;
   }
 
-  public List<Integer> PatternPositions() {
+  public List<Integer> getPatternPositions() {
     return myPatternPositions;
-  }
-
-  public static class AntPatternStateMatch {
-    private final MatchResult myResult;
-    private final AntPatternState myState;
-
-    public AntPatternStateMatch(MatchResult result, AntPatternState state) {
-      myResult = result;
-      myState = state;
-    }
-
-    public MatchResult getResult() {
-      return myResult;
-    }
-
-    public AntPatternState getState() {
-      return myState;
-    }
   }
 
   /**
@@ -81,7 +58,7 @@ public class AntPatternState {
       if (wd == null) return null;
 
       if (wd.containsNoPatterns()) {
-        result.add(wd.Pattern());
+        result.add(wd.getPattern());
       } else {
         return null;
       }
@@ -100,7 +77,7 @@ public class AntPatternState {
   }
 
 
-  public AntPatternStateMatch Enter(String component) {
+  public AntPatternStateMatch enter(@NotNull final String component) {
     if (myPatternParts.size() == 0) {
       return new AntPatternStateMatch(MatchResult.NO, this);
     }
@@ -115,7 +92,7 @@ public class AntPatternState {
       final Wildcard wildcard = myPatternParts.get(pos);
 
       if (wildcard != null) {
-        if (wildcard.IsMatch(component)) {
+        if (wildcard.isMatch(component)) {
           if (pos == myPatternParts.size() - 1) {
             match = MatchResult.YES;
           } else if (pos == myPatternParts.size() - 2 && myPatternParts.get(pos + 1) == null) {
@@ -134,7 +111,7 @@ public class AntPatternState {
         if (pos == myPatternParts.size() - 1) {
           match = MatchResult.YES;
         } else {
-          if (myPatternParts.get(pos + 1).IsMatch(component)) {
+          if (myPatternParts.get(pos + 1).isMatch(component)) {
             if (pos == myPatternParts.size() - 2) {
               match = MatchResult.YES;
             } else {

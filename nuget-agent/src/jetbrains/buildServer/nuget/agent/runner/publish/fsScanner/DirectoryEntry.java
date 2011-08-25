@@ -20,30 +20,30 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-public interface IDirectoryEntry {
+public interface DirectoryEntry {
   @NotNull
-  String Name();
+  String getName();
 
   @Nullable
-  IDirectoryEntry Parent();
+  DirectoryEntry getParent();
 
   @NotNull
-  IDirectoryEntry[] Subdirectories();
+  DirectoryEntry[] getSubdirectories();
 
   /**
    * @param names names filter
    * @return redured list of items filtered (if possible) by given names
    */
   @NotNull
-  IDirectoryEntry[] Subdirectories(Collection<String> names);
+  DirectoryEntry[] getSubdirectories(Collection<String> names);
 
   @NotNull
-  IFileEntry[] Files();
+  FileEntry[] getFiles();
 
   /**
    * @param names names filter
    * @return returns list of existing file names, i.e. subset of given names
    */
   @NotNull
-  IFileEntry[] Files(Collection<String> names);
+  FileEntry[] getFiles(@NotNull Collection<String> names);
 }
