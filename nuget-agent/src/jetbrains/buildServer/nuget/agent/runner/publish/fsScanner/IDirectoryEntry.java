@@ -18,16 +18,32 @@ package jetbrains.buildServer.nuget.agent.runner.publish.fsScanner;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+
 public interface IDirectoryEntry {
-    @NotNull
-    String Name();
+  @NotNull
+  String Name();
 
-    @Nullable
-    IDirectoryEntry Parent();
-      
-    @NotNull
-    IDirectoryEntry[] Subdirectories();
+  @Nullable
+  IDirectoryEntry Parent();
 
-    @NotNull
-    IFileEntry[] Files();
-  }
+  @NotNull
+  IDirectoryEntry[] Subdirectories();
+
+  /**
+   * @param names names filter
+   * @return redured list of items filtered (if possible) by given names
+   */
+  @NotNull
+  IDirectoryEntry[] Subdirectories(Collection<String> names);
+
+  @NotNull
+  IFileEntry[] Files();
+
+  /**
+   * @param names names filter
+   * @return returns list of existing file names, i.e. subset of given names
+   */
+  @NotNull
+  IFileEntry[] Files(Collection<String> names);
+}

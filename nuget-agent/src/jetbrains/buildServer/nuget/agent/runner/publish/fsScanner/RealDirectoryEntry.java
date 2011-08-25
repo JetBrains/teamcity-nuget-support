@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class RealDirectoryEntry implements IDirectoryEntry {
@@ -77,6 +78,15 @@ public class RealDirectoryEntry implements IDirectoryEntry {
     }
   }
 
+  @NotNull
+  public IDirectoryEntry[] Subdirectories(Collection<String> names) {
+    List<IDirectoryEntry> entries = new ArrayList<IDirectoryEntry>(names.size());
+    for (String name : names) {
+      entries.add(new RealDirectoryEntry(new FileSystemPath(new File(FilePath(), name))));
+    }
+    return entries.toArray(new IDirectoryEntry[entries.size()]);
+  }
+
   private File FilePath() {
     String filePath = myPath.FilePath().getPath();
 
@@ -106,6 +116,17 @@ public class RealDirectoryEntry implements IDirectoryEntry {
     } catch (Exception e) {
       return new IFileEntry[0];
     }
+  }
+
+  @NotNull
+  public IFileEntry[] Files(Collection<String> names) {
+    List<IFileEntry> list = new ArrayList<IFileEntry>();
+    for (String name : names) {
+      final File file = new File(FilePath(), name);
+      if (!file.isFile()) continue;
+      list.add(new RealFileEntry(new FileSystemPath(file)));
+    }
+    return list.toArray(new IFileEntry[list.size()]);
   }
 
   @Override

@@ -19,10 +19,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /// <summary>
 /// Nant-syntax wildcard matcher on file system trees
@@ -34,7 +31,7 @@ public class DirectoryScanner {
     return FindFiles(new RealFileSystem(), new RealDirectoryEntry(new FileSystemPath(root)), includes, excludes);
   }
 
-  private static Collection<File> FindFiles(IFileSystem fs, IDirectoryEntry root, Collection<String> includes, Collection<String> excludes) {
+  public static Collection<File> FindFiles(IFileSystem fs, IDirectoryEntry root, Collection<String> includes, Collection<String> excludes) {
     List<Wildcard> basePath = BuildSearchPrefix(root, fs.CaseSensitive());
 
     List<FileSystemPath> result = new ArrayList<FileSystemPath>();
@@ -45,7 +42,7 @@ public class DirectoryScanner {
             ToAntPatternState(fs, basePath, fs.CaseSensitive(), excludes)
     );
 
-    List<File> foundFiles = new ArrayList<File>();
+    Set<File> foundFiles = new TreeSet<File>();
     for (FileSystemPath path : result) {
       foundFiles.add(path.FilePath());
     }
@@ -80,7 +77,6 @@ public class DirectoryScanner {
     List<Wildcard> result = new ArrayList<Wildcard>();
     result.addAll(rootPrefix);
     result.addAll(wildcards);
-
     return result;
   }
 
@@ -106,38 +102,64 @@ public class DirectoryScanner {
 
   private static void FindFilesRec(IDirectoryEntry directory, List<FileSystemPath> result, List<AntPatternState> includeState, List<AntPatternState> excludeState) {
     LOG.debug("Scanning directory: " + directory.Name());
-    for (IFileEntry file : directory.Files()) {
-      List<AntPatternState> newState = new ArrayList<AntPatternState>();
 
-      if (!Any(includeState, file.Name(), Predicate(false, AntPatternState.MatchResult.YES), newState))
-        continue;
-
-      newState.clear();
-      if (Any(excludeState, file.Name(), Predicate(false, AntPatternState.MatchResult.YES), newState))
-        continue;
-
-      result.add(file.Path());
+    boolean mayContainFiles = false;
+    Collection<String> explicits = new ArrayList<String>();
+    for (AntPatternState state : includeState) {
+      final Collection<String> nextTokens = state.nextTokes();
+      if (nextTokens == null) {
+        explicits = null;
+        mayContainFiles = true;
+        break;
+      }
+      if (!mayContainFiles) {
+        mayContainFiles = state.hasLastState();
+      }
+      explicits.addAll(nextTokens);
     }
 
-    for (IDirectoryEntry subEntry : directory.Subdirectories()) {
+    if (mayContainFiles) {
+      for (IFileEntry file : explicits != null ? directory.Files(explicits) : directory.Files()) {
+        List<AntPatternState> newState = new ArrayList<AntPatternState>();
+
+        if (!Any(includeState, file.Name(), equal(AntPatternState.MatchResult.YES), newState))
+          continue;
+
+        if (Any(excludeState, file.Name(), equal(AntPatternState.MatchResult.YES), newState))
+          continue;
+
+        result.add(file.Path());
+      }
+    }
+
+
+    for (IDirectoryEntry subEntry : explicits != null ? directory.Subdirectories(explicits) : directory.Subdirectories()) {
       String name = subEntry.Name();
 
       List<AntPatternState> newIncludeState = new ArrayList<AntPatternState>();
-      if (!Any(includeState, name, Predicate(true, AntPatternState.MatchResult.NO), newIncludeState))
+      if (!Any(includeState, name, notEqual(AntPatternState.MatchResult.NO), newIncludeState))
         continue;
 
       List<AntPatternState> newExcludeState = new ArrayList<AntPatternState>();
-      if (Any(excludeState, name, Predicate(false, AntPatternState.MatchResult.YES), newExcludeState))
+      if (Any(excludeState, name, equal(AntPatternState.MatchResult.YES), newExcludeState))
         continue;
 
       FindFilesRec(subEntry, result, newIncludeState, newExcludeState);
     }
   }
 
-  public static AnyPredicate Predicate(final boolean not, final AntPatternState.MatchResult state) {
+  private static AnyPredicate notEqual(@NotNull final AntPatternState.MatchResult result) {
     return new AnyPredicate() {
       public boolean matches(AntPatternState.MatchResult r) {
-        return not ? state != r : state == r;
+        return result != r;
+      }
+    };
+  }
+
+  private static AnyPredicate equal(@NotNull final AntPatternState.MatchResult result) {
+    return new AnyPredicate() {
+      public boolean matches(AntPatternState.MatchResult r) {
+        return result == r;
       }
     };
   }

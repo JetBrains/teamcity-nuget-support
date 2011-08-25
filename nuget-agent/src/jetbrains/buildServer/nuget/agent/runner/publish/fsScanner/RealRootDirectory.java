@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class RealRootDirectory implements IDirectoryEntry
   {
@@ -63,8 +64,18 @@ public class RealRootDirectory implements IDirectoryEntry
     }
 
     @NotNull
+    public IDirectoryEntry[] Subdirectories(Collection<String> names) {
+      return Subdirectories();
+    }
+
+    @NotNull
     public IFileEntry[] Files()
     {
+      return new IFileEntry[0];
+    }
+
+    @NotNull
+    public IFileEntry[] Files(Collection<String> names) {
       return new IFileEntry[0];
     }
 

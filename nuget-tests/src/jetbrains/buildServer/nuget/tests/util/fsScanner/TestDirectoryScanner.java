@@ -50,9 +50,7 @@ public class TestDirectoryScanner extends BaseTestCase {
     final Iterator<File> eIt = expected.iterator();
     final Iterator<File> aIt = actual.iterator();
 
-    for (int i = 0; i < expected.size(); i++)
-
-    {
+    for (int i = 0; i < expected.size(); i++) {
       final File eNext = eIt.next();
       final File aNext = aIt.next();
       Assert.assertEquals(PreparePath(eNext), PreparePath(aNext));
@@ -66,10 +64,11 @@ public class TestDirectoryScanner extends BaseTestCase {
       if (f.startsWith("f:")) {
         FileUtil.createParentDirs(path);
         FileUtil.writeFile(path, "text");
-      } else if (f.startsWith("d:"))
+      } else if (f.startsWith("d:")) {
         path.mkdirs();
-      else
+      } else {
         Assert.fail("Wrong fsDescription: " + f);
+      }
     }
   }
 

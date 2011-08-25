@@ -8,6 +8,7 @@
       <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestDirectoryScanner"/>
       <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestReadFileSystem"/>
       <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestWildcard"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.DirectoryScannerMockFSTest"/>
     </classes>
   </test>
 

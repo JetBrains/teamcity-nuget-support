@@ -15,7 +15,10 @@
  */
 package jetbrains.buildServer.nuget.agent.runner.publish.fsScanner;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class AntPatternState {
@@ -26,6 +29,7 @@ public class AntPatternState {
   }
 
   private final List<Wildcard> myPatternParts;
+  //NDA state of mathing of pattern. Every ** produces new state
   private final List<Integer> myPatternPositions;
 
   public AntPatternState(List<Wildcard> patternParts, List<Integer> patternPositions) {
@@ -63,6 +67,36 @@ public class AntPatternState {
     public AntPatternState getState() {
       return myState;
     }
+  }
+
+  /**
+   * @return list of next tokends that are matching or null of there are at least one ** in pattern
+   */
+  @Nullable
+  public Collection<String> nextTokes() {
+    List<String> result = new ArrayList<String>();
+    for (int position : myPatternPositions) {
+      Wildcard wd = myPatternParts.get(position);
+      //** is here
+      if (wd == null) return null;
+
+      if (wd.containsNoPatterns()) {
+        result.add(wd.Pattern());
+      } else {
+        return null;
+      }
+    }
+    return result;
+  }
+
+  public boolean hasLastState() {
+    final int totalStates = myPatternParts.size();
+
+    for (int position : myPatternPositions) {
+      if (position == totalStates - 1) return true;
+    }
+
+    return false;
   }
 
 
