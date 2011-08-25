@@ -47,6 +47,7 @@ API gaps TeamCity:
  - Add an API to provide pluginData path without use of ServerPaths class and specifying names explicitly
  - Extract interfaces from jetbrains.buildServer.controllers.admin.projects.EditBuildTypeFormFactory#getOrCreateForm to make it available in open API
  - No Ant Path matcher component to convert relative and absolute patterns to list of files.
+ - Option for commandline runner to avoid dumping executing commandline  (I need to hide passwords)
 
 API gaps NuGet:
  - Allow to call nuget.exe with plugins without installing them into %USERPROFILE%
