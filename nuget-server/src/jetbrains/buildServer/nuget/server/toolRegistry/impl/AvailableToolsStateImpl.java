@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -37,6 +39,8 @@ import java.util.Collection;
  * Date: 15.08.11 16:33
  */
 public class AvailableToolsStateImpl implements AvailableToolsState {
+  private static final Logger LOG = Logger.getInstance(AvailableToolsStateImpl.class.getName());
+
   private static final long TIMEOUT = 1000 * 60 * 15; //15 min
 
   private final NuGetFeedReader myReader;
@@ -77,41 +81,45 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
   }
 
   private Collection<InstallableTool> fetchAvailable() throws FetchException {
-    try {
-      final Collection<FeedPackage> packages = myReader.queryPackageVersions(FeedConstants.FEED_URL, FeedConstants.NUGET_COMMANDLINE);
-      return CollectionsUtil.filterAndConvertCollection(
-              packages,
-              new Converter<InstallableTool, FeedPackage>() {
-                public InstallableTool createFrom(@NotNull FeedPackage source) {
-                  return new InstallableTool(source);
-                }
-              },
-              new Filter<FeedPackage>() {
-                public boolean accept(@NotNull FeedPackage data) {
-                  final String[] version = data.getInfo().getVersion().split("\\.");
-                  if (version.length < 2) return false;
-                  int major = parse(version[0]);
-                  if (major < 1) return false;
+    FetchException exception = null;
+    for (String feedUrl : Arrays.asList(FeedConstants.MS_REF_FEED, FeedConstants.NUGET_FEED)) {
+      try {
+        final Collection<FeedPackage> packages = myReader.queryPackageVersions(feedUrl, FeedConstants.NUGET_COMMANDLINE);
+        return CollectionsUtil.filterAndConvertCollection(
+                packages,
+                new Converter<InstallableTool, FeedPackage>() {
+                  public InstallableTool createFrom(@NotNull FeedPackage source) {
+                    return new InstallableTool(source);
+                  }
+                },
+                new Filter<FeedPackage>() {
+                  public boolean accept(@NotNull FeedPackage data) {
+                    final String[] version = data.getInfo().getVersion().split("\\.");
+                    if (version.length < 2) return false;
+                    int major = parse(version[0]);
+                    if (major < 1) return false;
 
-                  int minor = parse(version[1]);
-                  if (minor < 4) return false;
+                    int minor = parse(version[1]);
+                    if (minor < 4) return false;
 
-                  return true;
-                }
+                    return true;
+                  }
 
-                private int parse(String s) {
-                  try {
-                    return Integer.parseInt(s.trim());
-                  } catch (Exception e) {
-                    return -1;
+                  private int parse(String s) {
+                    try {
+                      return Integer.parseInt(s.trim());
+                    } catch (Exception e) {
+                      return -1;
+                    }
                   }
                 }
-              }
-      );
-
-    } catch (IOException e) {
-      throw new FetchException(e.getMessage(), e);
+        );
+      } catch (IOException e) {
+        LOG.warn("Failed to fetch versions from: " + feedUrl + ". " + e.getMessage(), e);
+        exception = new FetchException(e.getMessage(), e);
+      }
     }
+    throw exception;
   }
 
   private static class InstallableTool implements NuGetTool {

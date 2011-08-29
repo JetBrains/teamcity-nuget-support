@@ -59,8 +59,17 @@ public class FeedReaderTest extends BaseTestCase {
   }
 
   @Test
-  public void testRead() throws IOException {
-    final Collection<FeedPackage> feedPackages = myReader.queryPackageVersions(FeedConstants.FEED_URL, "NuGet.CommandLine");
+  public void testRead_MS() throws IOException {
+    readFeed(FeedConstants.MS_REF_FEED);
+  }
+
+  @Test
+  public void testRead_NUGET() throws IOException {
+    readFeed(FeedConstants.NUGET_FEED);
+  }
+
+  private void readFeed(String msRefFeed) throws IOException {
+    final Collection<FeedPackage> feedPackages = myReader.queryPackageVersions(msRefFeed, "NuGet.CommandLine");
     Assert.assertTrue(feedPackages.size() > 0);
 
     boolean hasLatest = false;
@@ -72,8 +81,17 @@ public class FeedReaderTest extends BaseTestCase {
   }
 
   @Test
-  public void testDownloadLatest() throws IOException {
-    final Collection<FeedPackage> packages = myReader.queryPackageVersions(FeedConstants.FEED_URL, "NuGet.CommandLine");
+  public void testDownloadLatest_MS() throws IOException {
+    downloadLatest(FeedConstants.MS_REF_FEED);
+  }
+
+  @Test
+  public void testDownloadLatest_NUGET() throws IOException {
+    downloadLatest(FeedConstants.NUGET_FEED);
+  }
+
+  private void downloadLatest(String feed) throws IOException {
+    final Collection<FeedPackage> packages = myReader.queryPackageVersions(feed, "NuGet.CommandLine");
     FeedPackage latest = null;
     for (FeedPackage aPackage : packages) {
       if (aPackage.isLatestVersion()) {
