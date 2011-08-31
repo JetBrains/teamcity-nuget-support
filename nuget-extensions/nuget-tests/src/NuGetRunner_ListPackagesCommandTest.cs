@@ -5,7 +5,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
 {
   [Ignore("Not yet needed in TeamCity NuGet support")]
   [TestFixture]
-  public class NuGetRunner_ListPackagesCommandTest_Remote
+  public abstract class NuGetRunner_ListPackagesCommandTest_Remote_Base : NuGetIntegrationTestBase
   {
     [Test]
     public void TestCommand_ListPublic()
@@ -17,7 +17,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
                               "<NuGet-Request Source=\"" + NuGetConstants.DefaultFeedUrl +
                               "\"><Requests><Request Id='NUnit'/></Requests></NuGet-Request>");
 
-            ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.NuGetExe,
+            ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, NuGetExe,
                                            "TeamCity.ListPackages", "-Request", file)
               .Dump()
               .AssertExitedSuccessfully()
@@ -38,7 +38,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
                               "<NuGet-Request Source=\"" + NuGetConstants.DefaultFeedUrl +
                               "\"><Requests><Request Id='NUnit' Versions='(1.1.1,2.5.8]'/></Requests></NuGet-Request>");
 
-            ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.NuGetExe,
+            ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, NuGetExe,
                                            "TeamCity.ListPackages", "-Request", file)
               .Dump()
               .AssertExitedSuccessfully()

@@ -5,11 +5,9 @@ using System.Net;
 using NUnit.Framework;
 
 namespace JetBrains.TeamCity.NuGet.Tests
-{
-  [Explicit]
+{  
   [TestFixture("bt4")]
-  [TestFixture("bt22")]
-  [TestFixture("bt21")]  
+  [TestFixture("bt23")]  
   public class NuGetRunnerWithTrunk
   {
     private readonly Lazy<string> home;
