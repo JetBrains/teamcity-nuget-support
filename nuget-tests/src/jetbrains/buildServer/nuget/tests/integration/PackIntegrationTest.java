@@ -62,15 +62,16 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
     }});
     myOutputDir = new File(myRoot, "out");
+    //noinspection ResultOfMethodCallIgnored
     myOutputDir.mkdirs();
   }
 
-  @Test
-  public void test_simple() throws IOException, RunBuildException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_simple(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     final File spec = new File(myRoot, "SamplePackage.nuspec");
     FileUtil.copy(getTestDataPath("SamplePackage.nuspec"), spec);
 
-    callRunner(spec, false, false, false);
+    callRunner(nuget, spec, false, false, false);
 
     Assert.assertTrue(myOutputDir.list(new FilenameFilter() {
       public boolean accept(File dir, String name) {
@@ -81,14 +82,14 @@ public class PackIntegrationTest extends IntegrationTestBase {
     m.assertIsSatisfied();
   }
 
-  @Test
-  public void test_vs_solution() throws IOException, RunBuildException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_vs_solution(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     ZipUtil.extract(getTestDataPath("solution.zip"), myRoot, null);
     final File spec = new File(myRoot, "nuget-proj/nuget-proj.csproj");
 
     msbuild(new File(myRoot, "nuget-proj.sln"));
 
-    callRunner(spec, false, false, false);
+    callRunner(nuget, spec, false, false, false);
 
     Assert.assertTrue(nupkgs().length == 1, "There should be only one package created");
 
@@ -103,14 +104,14 @@ public class PackIntegrationTest extends IntegrationTestBase {
     m.assertIsSatisfied();
   }
 
-  @Test
-  public void test_vs_solution_tool() throws IOException, RunBuildException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_vs_solution_tool(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     ZipUtil.extract(getTestDataPath("solution.zip"), myRoot, null);
     final File spec = new File(myRoot, "nuget-proj/nuget-proj.csproj");
 
     msbuild(new File(myRoot, "nuget-proj.sln"));
 
-    callRunner(spec, true, false, false);
+    callRunner(nuget, spec, true, false, false);
 
     Assert.assertTrue(nupkgs().length == 1, "There should be only one package created");
     final File nupkg = nupkgs()[0];
@@ -124,14 +125,14 @@ public class PackIntegrationTest extends IntegrationTestBase {
     m.assertIsSatisfied();
   }
 
-  @Test
-  public void test_vs_solution_symbols() throws IOException, RunBuildException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_vs_solution_symbols(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     ZipUtil.extract(getTestDataPath("solution.zip"), myRoot, null);
     final File spec = new File(myRoot, "nuget-proj/nuget-proj.csproj");
 
     msbuild(new File(myRoot, "nuget-proj.sln"));
 
-    callRunner(spec, false, true, false);
+    callRunner(nuget, spec, false, true, false);
 
     Assert.assertTrue(nupkgs().length == 1, "There should be only one package created");
     Assert.assertTrue(symbolsNupkgs().length == 1, "There should be only one symbols package created");
@@ -176,12 +177,12 @@ public class PackIntegrationTest extends IntegrationTestBase {
     Assert.assertEquals(0, result.getExitCode());
   }
 
-  private void callRunner(@NotNull final File spec, final boolean packAsTool, final boolean symbols, final boolean cleanOutput) throws RunBuildException {
+  private void callRunner(@NotNull final NuGet nuget, @NotNull final File spec, final boolean packAsTool, final boolean symbols, final boolean cleanOutput) throws RunBuildException {
     m.checking(new Expectations(){{
       allowing(myPackParameters).getCustomCommandline(); will(returnValue(Collections.<String>emptyList()));
       allowing(myPackParameters).getProperties(); will(returnValue(Collections.<String>emptyList()));
       allowing(myPackParameters).getSpecFile(); will(returnValue(spec));
-      allowing(myPackParameters).getNuGetExeFile(); will(returnValue(Paths.getPathToNuGet()));
+      allowing(myPackParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
       allowing(myPackParameters).getBaseDirectory(); will(returnValue(myRoot));
       allowing(myPackParameters).getExclude(); will(returnValue(Collections.<String>emptyList()));
       allowing(myPackParameters).getVersion(); will(returnValue("45.239.32.12"));

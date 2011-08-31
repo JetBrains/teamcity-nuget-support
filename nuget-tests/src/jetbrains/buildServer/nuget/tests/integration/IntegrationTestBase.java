@@ -38,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 
 import java.io.File;
 import java.util.Collection;
@@ -67,6 +68,17 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   @NotNull
   protected String getCommandsOutput() {
     return myCommandsOutput.toString();
+  }
+
+
+  public static final String NUGET_VERSIONS = "nuget_versions";
+
+  @DataProvider(name = NUGET_VERSIONS)
+  public Object[][] dataProviderNuGetVersions() {
+    return new Object[][]{
+            new Object[] { NuGet.NuGet_1_4},
+            new Object[] { NuGet.NuGet_1_5},
+    };
   }
 
   @BeforeMethod

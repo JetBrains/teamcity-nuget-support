@@ -22,28 +22,23 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 14.07.11 18:44
- */
-public class Paths {
-  @NotNull
-  public static File getTestDataPath() {
-    return FileUtil.getCanonicalFile(new File("./nuget-tests/testData"));
-  }
+* Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+* Date: 31.08.11 10:39
+*/
+public enum NuGet {
+  NuGet_1_4,
+  NuGet_1_5,
+  ;
 
   @NotNull
-  public static File getTestDataPath(@NotNull final String p) {
-    return FileUtil.getCanonicalFile(new File(getTestDataPath(), p));
+  public File getPath() {
+    switch (this) {
+      case NuGet_1_4:
+        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.4/NuGet.exe"));
+      case NuGet_1_5:
+        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.4/NuGet.exe"));
+      default:
+        throw new IllegalArgumentException("Failed to find nuget " + this);
+    }
   }
-
-  @NotNull
-  public static File getNuGetRunnerPath() {
-    return FileUtil.getCanonicalFile(new File("./nuget-extensions/bin/JetBrains.TeamCity.NuGetRunner.exe"));
-  }
-
-  @NotNull
-  public NuGet[] getNuGets() {
-    return NuGet.values();
-  }
-
 }

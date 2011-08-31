@@ -53,10 +53,19 @@ public class NuGetExecutorTest extends BaseTestCase {
   }
 
   @Test
-  public void test_teamcityPing() {
+  public void test_ping_1_4() {
+    doPingTest(NuGet.NuGet_1_4);
+  }
+
+  @Test
+  public void test_ping_1_5() {
+    doPingTest(NuGet.NuGet_1_5);
+  }
+
+  private void doPingTest(NuGet nuget) {
 
     int code = exec.executeNuGet(
-            Paths.getPathToNuGet(),
+            nuget.getPath(),
             Arrays.asList("TeamCity.Ping"),
             new NuGetOutputProcessor<Integer>() {
               private int myExitCode;

@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.ArchiveUtil;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
 import org.testng.Assert;
@@ -62,11 +63,11 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     }});
   }
 
-  @Test
-  public void test_01_online_sources() throws RunBuildException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_01_online_sources(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false,
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, nuget,
             Arrays.asList(
                     new PackageInfo("Machine.Specifications", "0.4.13.0"),
                     new PackageInfo("NUnit", "2.5.7.10213"),
@@ -82,8 +83,8 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertEquals(4, packageses.size());
   }
 
-  @Test
-  public void test_01_online_sources_update_forConfig() throws RunBuildException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_01_online_sources_update_forConfig(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     m.checking(new Expectations() {{
@@ -95,7 +96,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
 
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
@@ -108,8 +109,8 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertEquals(5, packageses.size());
   }
 
-  @Test
-  public void test_01_online_sources_update_forSln() throws RunBuildException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_01_online_sources_update_forSln(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     m.checking(new Expectations() {{
@@ -124,7 +125,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
 
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
@@ -137,8 +138,8 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertEquals(5, packageses.size());
   }
 
-  @Test
-  public void test_01_online_sources_update_safe() throws RunBuildException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_01_online_sources_update_safe(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     m.checking(new Expectations() {{
@@ -153,7 +154,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
 
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
@@ -166,11 +167,11 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertEquals(5, packageses.size());
   }
 
-  @Test
-  public void test_01_online_sources_ecludeVersion() throws RunBuildException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_01_online_sources_ecludeVersion(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true, false,
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true, false, nuget,
             Arrays.asList(
                     new PackageInfo("Machine.Specifications", "0.4.13.0"),
                     new PackageInfo("NUnit", "2.5.7.10213"),
@@ -185,13 +186,13 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertEquals(4, packageses.size());
   }
 
-  @Test(enabled = false, dependsOnGroups = "Need to understand how to check NuGet uses only specified sources")
-  public void test_01_local_sources() throws RunBuildException {
+  @Test(enabled = false, dependsOnGroups = "Need to understand how to check NuGet uses only specified sources", dataProvider = NUGET_VERSIONS)
+  public void test_01_local_sources(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
     File sourcesDir = new File(myRoot, "js");
     ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01-sources.zip"), "", sourcesDir);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false, false, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false, false, nuget, null);
 
     List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
     System.out.println("installed packageses = " + packageses);
@@ -206,6 +207,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
                              final List<String> sources,
                              final boolean excludeVersion,
                              final boolean update,
+                             @NotNull final NuGet nuget,
                              @Nullable Collection<PackageInfo> detectedPackages) throws RunBuildException {
 
     m.checking(new Expectations() {{
@@ -215,7 +217,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       will(returnValue(myInstall));
 
       allowing(myNuGet).getNuGetExeFile();
-      will(returnValue(Paths.getPathToNuGet()));
+      will(returnValue(nuget.getPath()));
       allowing(myNuGet).getSolutionFile();
       will(returnValue(sln));
       allowing(myNuGet).getNuGetPackageSources();

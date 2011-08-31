@@ -53,27 +53,27 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     }});
   }
 
-  @Test
-  public void test_publish_packages() throws IOException, RunBuildException {
-    final File pkg = preparePackage();
-    callPublishRunner(pkg);
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_publish_packages(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    final File pkg = preparePackage(nuget);
+    callPublishRunner(nuget, pkg);
 
     Assert.assertTrue(getCommandsOutput().contains("Your package was uploaded"));
   }
 
-  @Test
-  public void test_create_mock_package() throws IOException {
-    final File file = preparePackage();
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_create_mock_package(@NotNull final NuGet nuget) throws IOException {
+    final File file = preparePackage(nuget);
     System.out.println(file);
   }
 
-  private File preparePackage() throws IOException {
+  private File preparePackage(@NotNull final NuGet nuget) throws IOException {
     @NotNull final File root = createTempDir();
     final File spec = new File(root, "SamplePackage.nuspec");
     FileUtil.copy(getTestDataPath("SamplePackage.nuspec"), spec);
 
     GeneralCommandLine cmd = new GeneralCommandLine();
-    cmd.setExePath(Paths.getPathToNuGet().getPath());
+    cmd.setExePath(nuget.getPath().getPath());
     cmd.setWorkingDirectory(root);
     cmd.addParameter("pack");
     cmd.addParameter(spec.getPath());
@@ -99,12 +99,12 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     return pkg;
   }
 
-  private void callPublishRunner(@NotNull final File pkg) throws RunBuildException {
+  private void callPublishRunner(@NotNull final NuGet nuget, @NotNull final File pkg) throws RunBuildException {
 
     m.checking(new Expectations(){{
       allowing(myPublishParameters).getFiles(); will(returnValue(Arrays.asList(pkg.getPath())));
       allowing(myPublishParameters).getCreateOnly(); will(returnValue(true));
-      allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(Paths.getPathToNuGet()));
+      allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
       allowing(myPublishParameters).getPublishSource(); will(returnValue(null));
       allowing(myPublishParameters).getApiKey(); will(returnValue(getQ()));
 
