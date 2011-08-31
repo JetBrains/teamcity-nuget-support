@@ -20,9 +20,11 @@ import jetbrains.buildServer.version.ServerVersionHolder;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.ContentEncodingHttpClient;
+import org.apache.http.client.protocol.RequestAcceptEncoding;
+import org.apache.http.client.protocol.ResponseContentEncoding;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
+import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -31,6 +33,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.ProxySelector;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -42,17 +45,23 @@ public class FeedHttpClientHolder implements FeedClient {
   public FeedHttpClientHolder() {
     final String serverVersion = ServerVersionHolder.getVersion().getDisplayVersion();
 
-    HttpParams ps = new BasicHttpParams();
-    DefaultHttpClient.setDefaultHttpParams(ps);
+    final HttpParams ps = new BasicHttpParams();
 
+    DefaultHttpClient.setDefaultHttpParams(ps);
     HttpConnectionParams.setConnectionTimeout(ps, 300 * 1000);
     HttpConnectionParams.setSoTimeout(ps, 300 * 1000);
     HttpProtocolParams.setUserAgent(ps, "JetBrains TeamCity " + serverVersion);
 
-    final DefaultHttpClient client = new ContentEncodingHttpClient(new ThreadSafeClientConnManager(), ps);
-    client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(3, true));
+    DefaultHttpClient httpclient = new DefaultHttpClient(new ThreadSafeClientConnManager(), ps);
 
-    myClient = client;
+    httpclient.setRoutePlanner(new ProxySelectorRoutePlanner(
+            httpclient.getConnectionManager().getSchemeRegistry(),
+            ProxySelector.getDefault()));
+    httpclient.addRequestInterceptor(new RequestAcceptEncoding());
+    httpclient.addResponseInterceptor(new ResponseContentEncoding());
+    httpclient.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(3, true));
+
+    myClient = httpclient;
   }
 
   @NotNull
