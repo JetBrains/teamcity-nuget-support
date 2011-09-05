@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.render;
 
+import jetbrains.buildServer.util.Dates;
 import org.jetbrains.annotations.NotNull;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -23,8 +24,8 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.TimeZone;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -78,7 +79,7 @@ public class NuGetFeedRenderer {
 
   private String formatDate(NuGetContext context) {
     //TODO:fix timezon printing
-    return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(context.getUpdated());
+    return Dates.formatDate(context.getUpdated(), "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }
 
   private void renderItem(@NotNull NuGetContext context, @NotNull NuGetItem item, @NotNull XMLStreamWriter w) throws XMLStreamException {

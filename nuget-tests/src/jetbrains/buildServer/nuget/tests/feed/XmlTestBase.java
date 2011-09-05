@@ -39,11 +39,11 @@ public abstract class XmlTestBase extends BaseTestCase {
   protected void assertXml(String gold, String actual) throws JDOMException, IOException {
     final String xml = p(actual);
 
+    System.out.println(xml);
+
     File goldFile = getTestDataPath(gold);
     File tmp = new File(goldFile.getPath() + ".tmp");
     FileUtil.writeFile(tmp, xml);
-
-    System.out.println(xml);
 
     final String expected = p(new String(FileUtil.loadFileText(goldFile, "utf-8")));
 
