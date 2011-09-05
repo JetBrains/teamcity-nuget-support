@@ -42,4 +42,8 @@ public class NuGetContext {
   public String getEncoding() {
     return "utf-8";
   }
+
+  public String resolveUrl(String downloadPath) {
+    return "http://feed-url/" + downloadPath;
+  }
 }

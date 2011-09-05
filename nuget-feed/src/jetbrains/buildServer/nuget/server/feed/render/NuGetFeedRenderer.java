@@ -25,6 +25,7 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.Date;
 import java.util.TimeZone;
 
 /**
@@ -32,6 +33,8 @@ import java.util.TimeZone;
  * Date: 05.09.11 23:43
  */
 public class NuGetFeedRenderer {
+  private final String M = "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata";
+  private final String D = "http://schemas.microsoft.com/ado/2007/08/dataservices";
 
   public void renderFeed(@NotNull final NuGetContext context,
                          @NotNull final Collection<NuGetItem> items,
@@ -42,8 +45,8 @@ public class NuGetFeedRenderer {
     w.writeStartElement("feed");
     w.setDefaultNamespace("http://www.w3.org/2005/Atom");
     w.writeDefaultNamespace("http://www.w3.org/2005/Atom");
-    w.writeNamespace("d", "http://schemas.microsoft.com/ado/2007/08/dataservices");
-    w.writeNamespace("m", "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
+    w.writeNamespace("d", D);
+    w.writeNamespace("m", M);
     w.writeAttribute("xml:base", context.getBaseUri());
 
     w.writeStartElement("title");
@@ -56,7 +59,7 @@ public class NuGetFeedRenderer {
     w.writeEndElement();
 
     w.writeStartElement("updated");
-    w.writeCharacters(formatDate(context));
+    w.writeCharacters(formatDate(context.getUpdated()));
     w.writeEndElement();
 
     w.writeStartElement("link");
@@ -65,11 +68,9 @@ public class NuGetFeedRenderer {
     w.writeAttribute("href", context.getTitle());
     w.writeEndElement();
 
-    if (!items.isEmpty()) {
+    for (NuGetItem item : items) {
       w.writeStartElement("entry");
-      for (NuGetItem item : items) {
-        renderItem(context, item, w);
-      }
+      renderItem(context, item, w);
       w.writeEndElement();
     }
 
@@ -77,12 +78,62 @@ public class NuGetFeedRenderer {
     w.writeEndDocument();
   }
 
-  private String formatDate(NuGetContext context) {
+  private String formatDate(@NotNull Date date) {
     //TODO:fix timezon printing
-    return Dates.formatDate(context.getUpdated(), "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
+    return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }
 
   private void renderItem(@NotNull NuGetContext context, @NotNull NuGetItem item, @NotNull XMLStreamWriter w) throws XMLStreamException {
     w.writeComment("Item " + item);
+
+    w.writeStartElement("id");
+    w.writeCharacters(item.getItemId());
+    w.writeEndElement();
+
+    w.writeStartElement("title");
+    w.writeAttribute("type", "text");
+    w.writeCharacters(item.getItemTitle());
+    w.writeEndElement();
+
+    w.writeStartElement("summaty");
+    w.writeAttribute("type", "text");
+    w.writeCharacters(item.getItemSummary());
+
+    w.writeStartElement("updated");
+    w.writeComment(formatDate(item.getItemUpdated()));
+    w.writeEndElement();
+
+    w.writeStartElement("author");
+    w.writeStartElement("name");
+    w.writeComment(item.getItemAuthors());
+    w.writeEndElement();
+    w.writeEndElement();
+
+    //link tags omitted
+
+    w.writeStartElement("category");
+    w.writeAttribute("term", "Gallery.Infrastructure.FeedModels.PublishedPackage");
+    w.writeAttribute("scheme", "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme");
+    w.writeEndElement();
+
+    w.writeStartElement("content");
+    w.writeAttribute("type", "application/zip");
+    w.writeAttribute("src", context.resolveUrl(item.getDownloadPath()));
+    w.writeEndElement();
+
+
+    w.writeStartElement(M, "properties");
+    w.writeNamespace("m", M);
+    w.writeNamespace("d", D);
+
+    renderProperties(w, context, item);
+
+    w.writeEndElement();
+  }
+
+  private void renderProperties(@NotNull final XMLStreamWriter w,
+                                @NotNull final NuGetContext context,
+                                @NotNull final NuGetItem item) {
+
   }
 }
