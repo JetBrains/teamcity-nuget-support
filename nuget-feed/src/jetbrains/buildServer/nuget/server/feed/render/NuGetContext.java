@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.feed.render;
 
+import java.util.Date;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 05.09.11 23:59
@@ -23,5 +25,21 @@ package jetbrains.buildServer.nuget.server.feed.render;
 public class NuGetContext {
   public String getBaseUri() {
     return "http://packages.nuget.org/v1/FeedService.svc/";
+  }
+
+  public String getFeedId() {
+    return getBaseUri() + getTitle();
+  }
+
+  public Date getUpdated() {
+    return new Date();
+  }
+
+  public String getTitle() {
+    return "Packages";
+  }
+
+  public String getEncoding() {
+    return "utf-8";
   }
 }

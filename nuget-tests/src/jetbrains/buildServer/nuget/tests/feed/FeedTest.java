@@ -17,11 +17,8 @@
 package jetbrains.buildServer.nuget.tests.feed;
 
 import com.sun.jersey.api.core.ExtendedUriInfo;
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.FeedDescriptor;
 import jetbrains.buildServer.nuget.server.feed.PackageEntry;
-import jetbrains.buildServer.util.FileUtil;
-import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
@@ -34,12 +31,10 @@ import org.odata4j.format.FormatWriterFactory;
 import org.odata4j.producer.EntitiesResponse;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.resources.OptionsQueryParser;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import javax.ws.rs.core.MediaType;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URI;
@@ -52,7 +47,7 @@ import java.util.List;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 18.07.11 1:03
  */
-public class FeedTest extends BaseTestCase {
+public class FeedTest extends XmlTestBase {
   private Mockery m;
   private ExtendedUriInfo info;
 
@@ -103,49 +98,9 @@ public class FeedTest extends BaseTestCase {
 
     StringWriter sw = new StringWriter();
     atom.write(info, sw, responce);
-    final String xml = p(sw.toString());
-
-    File goldFile = getTestDataPath(gold);
-    File tmp = new File(goldFile.getPath() + ".tmp");
-    FileUtil.writeFile(tmp, xml);
-
-    System.out.println(xml);
-
-    final String expected = p(new String(FileUtil.loadFileText(goldFile, "utf-8")));
-
-    Assert.assertEquals(expected, xml);
-    FileUtil.delete(tmp);
-  }
-
-  private String p(String s) throws JDOMException {
-    Element el = XmlUtil.from_s(s);
-
-
-    Collection<XmlPatchAction> repaces = Arrays.asList(
-            new SetContentXmlPatchAction("/x:feed/x:updated", ".*Z", "UPDATED"),
-            new SetContentXmlPatchAction("/x:feed/x:id", "http://(feed.jonnyzzz.name/path/Packages)|(http://packages.nuget.org/v1/FeedService.svc/Packages)", "URL"),
-            new RemoveElement("/x:feed/x:entry/x:link[@rel='edit']"),
-            new RemoveElement("/x:feed/x:entry/x:link[@rel='edit-media']")
-            );
-
-    for (XmlPatchAction replace : repaces) {
-      XPath xPath = XPath.newInstance(replace.getXPath());
-      xPath.addNamespace("x", "http://www.w3.org/2005/Atom");
-
-      List list = xPath.selectNodes(el);
-      for (Object o : list) {
-        if (o instanceof Element) {
-          replace.action((Element) o);
-        }
-      }
-    }
-
-    return XmlUtil.to_s(el).trim().replaceAll("[\r\n]+", "\n");
+    final String actual = sw.toString();
+    assertXml(gold, actual);
   }
 
 
-  @NotNull
-  private File getTestDataPath(String prefix) {
-    return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/feed", prefix));
-  }
 }

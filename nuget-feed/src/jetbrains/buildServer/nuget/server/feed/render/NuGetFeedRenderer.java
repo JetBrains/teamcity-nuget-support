@@ -23,6 +23,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 
 /**
@@ -35,16 +36,52 @@ public class NuGetFeedRenderer {
                          @NotNull final Collection<NuGetItem> items,
                          @NotNull final Writer output) throws IOException, XMLStreamException {
     final XMLOutputFactory factory = XMLOutputFactory.newInstance();
-
     final XMLStreamWriter w = factory.createXMLStreamWriter(output);
-    w.writeStartDocument();
+    w.writeStartDocument(context.getEncoding(),  "1.0");
     w.writeStartElement("feed");
     w.setDefaultNamespace("http://www.w3.org/2005/Atom");
-    w.writeNamespace("base", context.getBaseUri());
+    w.writeDefaultNamespace("http://www.w3.org/2005/Atom");
     w.writeNamespace("d", "http://schemas.microsoft.com/ado/2007/08/dataservices");
     w.writeNamespace("m", "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
+    w.writeAttribute("xml:base", context.getBaseUri());
+
+    w.writeStartElement("title");
+    w.writeAttribute("type", "text");
+    w.writeCharacters("Packages");
+    w.writeEndElement();
+
+    w.writeStartElement("id");
+    w.writeCharacters(context.getFeedId());
+    w.writeEndElement();
+
+    w.writeStartElement("updated");
+    w.writeCharacters(formatDate(context));
+    w.writeEndElement();
+
+    w.writeStartElement("link");
+    w.writeAttribute("rel", "self");
+    w.writeAttribute("title", context.getTitle());
+    w.writeAttribute("href", context.getTitle());
+    w.writeEndElement();
+
+    if (!items.isEmpty()) {
+      w.writeStartElement("entry");
+      for (NuGetItem item : items) {
+        renderItem(context, item, w);
+      }
+      w.writeEndElement();
+    }
 
     w.writeEndElement();
     w.writeEndDocument();
+  }
+
+  private String formatDate(NuGetContext context) {
+    //TODO:fix timezon printing
+    return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").format(context.getUpdated());
+  }
+
+  private void renderItem(@NotNull NuGetContext context, @NotNull NuGetItem item, @NotNull XMLStreamWriter w) throws XMLStreamException {
+    w.writeComment("Item " + item);
   }
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes"?>
+<feed xml:base="http://packages.nuget.org/v1/FeedService.svc/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">Packages</title>
+  <id>http://packages.nuget.org/v1/FeedService.svc/Packages</id>
+  <updated>2011-09-05T23:11:23Z</updated>
+  <author>
+    <name />
+  </author>
+  <link rel="self" title="Packages" href="Packages" />
+</feed>

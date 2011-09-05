@@ -16,11 +16,10 @@
 
 package jetbrains.buildServer.nuget.tests.feed;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetContext;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetFeedRenderer;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetItem;
-import jetbrains.buildServer.util.XmlUtil;
+import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -35,7 +34,7 @@ import java.util.Collections;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 05.09.11 23:56
  */
-public class NuGetFeedRendererTest extends BaseTestCase {
+public class NuGetFeedRendererTest extends XmlTestBase {
   private NuGetFeedRenderer myRenderer;
 
   @BeforeMethod
@@ -52,9 +51,9 @@ public class NuGetFeedRendererTest extends BaseTestCase {
   }
 
   @Test
-  public void test_empty_feed() throws XMLStreamException, IOException {
+  public void test_empty_feed() throws XMLStreamException, IOException, JDOMException {
     String s = testRender(Collections.<NuGetItem>emptyList());
-    s = XmlUtil.to_s(XmlUtil.from_s(s));
-    System.out.println("s = \n" + s);
+
+    assertXml("reader/feed-empty.xml", s);
   }
 }
