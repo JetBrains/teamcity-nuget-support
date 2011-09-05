@@ -1,0 +1,977 @@
+﻿<feed xml:base="http://packages.nuget.org/v1/FeedService.svc/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">Packages</title>
+  <id>http://packages.nuget.org/v1/FeedService.svc/Packages</id>
+  <updated>2011-08-12T09:37:47Z</updated>
+  <link rel="self" title="Packages" href="Packages" />
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.0.11220.26')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-01-16T02:09:47-08:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.0.11220.26')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.0.11220.26')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.0.11220.26')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.0.11220.26" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.0.11220.26</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>CdHaDY256ZkPkolX02H6LkkS/RtjWwgDafJHIXr65ePiFY5u3+4tM0TVUXNim7eIOzihnQhXXNjdu9M/kTMdnA==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">131297</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">90</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-01-07T07:57:50.387</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-01-16T02:09:47.61</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-01-16T02:09:54.94</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl>/Media/Default/Packages/NuGet.CommandLine/1.0.11220.26/nuget-64x64.png</d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.0.11220.26</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.0.11220.26</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.1.2120.134')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-01-20T01:20:55-08:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.1.2120.134')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.1.2120.134')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.1.2120.134')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.1.2120.134" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.1.2120.134</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>xGfEKOnyk+AgzZHcsdSjVL4jycFmDtV70eh/uIamhyAQqGF5LkS2RmVPE+/nkl/zMQpC3AF/2cHT7xIt4JTAnw==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">140927</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">80</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-01-20T01:20:55.597</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-01-20T01:20:55.597</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-01-20T01:20:55.907</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.1.2120.134</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.1.2120.134</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.1.2120.136')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-01-20T20:26:50-08:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.1.2120.136')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.1.2120.136')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.1.2120.136')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.1.2120.136" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.1.2120.136</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>Obo270Tcmx5W4Uc1Xfve/DlMZue+8lRrJ8CPHfYo8z6H8zpu2QfJ/0y/yoSLIOooU9Z4EUZUCGKdX1EVRU/pgw==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">142675</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">77</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-01-20T20:26:50.16</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-01-20T20:26:50.16</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-01-20T20:26:50.44</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.1.2120.136</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.1.2120.136</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.1.2121.140')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-01-21T02:12:26-08:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.1.2121.140')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.1.2121.140')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.1.2121.140')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.1.2121.140" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.1.2121.140</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>6qxF7h9NJRfLno58qnsmEizGsuMEkIpVfgmqjvXpkKWZbEeh77UektDWcZaauxHVnBQDoFUSDVP+hXMaBJ5Sgg==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">142869</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">82</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-01-21T02:12:26.517</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-01-21T02:12:26.517</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-01-21T02:12:26.957</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.1.2121.140</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.1.2121.140</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.1.2122.156')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-01-22T09:11:47-08:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.1.2122.156')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.1.2122.156')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.1.2122.156')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.1.2122.156" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.1.2122.156</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>hf1vvXOxkqCa11aP6x/50lYc9uCsjjeQFcdxJGa3vlXlXZhiGhq0EAE4DdnV4ntj5ZwqEzACBjALVwHEVdKELA==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">144898</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">108</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-01-22T09:11:47.16</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-01-22T09:11:47.16</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-01-22T09:11:47.517</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.1.2122.156</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.1.2122.156</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.20216.59')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-02-16T06:00:06-08:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20216.59')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20216.59')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.20216.59')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.20216.59" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.20216.59</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>O++ZhwMFjWf1ZP1hrT/pQ4HLcRqW31sx5t/Yl1Ku4Aq6qMTODUNlGdiQSRRJmX8Lf4sQJN6fsM4OrZhvsdf5iA==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">149670</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">253</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-02-16T06:00:06.047</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-02-16T06:00:06.047</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-02-16T06:00:06.733</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.20216.59</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.20216.59</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.20310.1')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-03-10T20:52:36-08:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20310.1')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20310.1')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.20310.1')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.20310.1" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.20310.1</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>lqqAnj4a9/XZ0TjGFzEJrcAyomM130pjwkGPNTnDDVKpCnzBrqiassb2QveZcpje9nnUL+jhh8e2picx039aBQ==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">160705</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">77</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-03-10T20:52:36.097</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-03-10T20:52:36.097</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-03-10T20:52:37.19</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.20310.1</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.20310.1</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.20311.3')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-03-11T23:41:13-08:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20311.3')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20311.3')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.20311.3')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.20311.3" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.20311.3</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>cG0mwva/959xYIgRiiRdtv6yrQZeHacBZKY49lKIny177LF4Hz2QJq1Xfl8gYRdcUAAf7uGDrXMjzyu65Vb9CA==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">163523</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">206</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-03-11T23:41:13.727</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-03-11T23:41:13.727</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-03-11T23:41:14.04</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.20311.3</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.20311.3</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.20325.10')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-03-31T06:44:05-07:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20325.10')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20325.10')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.20325.10')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.20325.10" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.20325.10</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>5b5GhAi2up+FMtYGFoBuERBmUg+jTjkPAgrgyBT7rnR/P2Art+CB6zKPLn2lJ1xWOMCpZsD8GvRuLdpbfzCQag==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">163825</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">143</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-03-31T06:44:05.937</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-03-31T06:44:05.937</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-03-31T06:44:06.39</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.20325.10</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.20325.10</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.20401.11')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-04-02T01:29:10-07:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20401.11')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20401.11')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.20401.11')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.20401.11" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.20401.11</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>GucKIezAxoaDayGFWHBpU2foLo08yefzYaMBMDb4/6WP78QkDtQXu+SWt939DGiQ7kqtU+WQ7360+y7/bMgAAA==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">163977</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">163</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-04-02T01:29:10.287</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-04-02T01:29:10.287</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-04-02T01:29:10.74</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.20401.11</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.20401.11</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.20409.25')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet Command Line Tool</summary>
+    <updated>2011-04-14T06:07:04-07:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20409.25')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20409.25')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.20409.25')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.20409.25" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.20409.25</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet Command Line Tool</d:Summary>
+      <d:Description>NuGet Command Line Tool</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>RbpiILSeerRprKnf6J+27TXqzP8v8ddvVd5JYycQQn2h3ZyTvdVGFHdsLOzIwRSpyuNP+JfTHNeb92K479eyWA==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">181974</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">5</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">1</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">101</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-04-14T06:07:04.913</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-04-14T06:07:04.913</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-04-14T06:07:05.27</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl>http://nuget.codeplex.com/license</d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags m:null="true">
+      </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.20409.25</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.20409.25</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.20415.26')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet Command Line Tool</summary>
+    <updated>2011-04-16T05:21:16-07:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20415.26')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20415.26')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.20415.26')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.20415.26" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.20415.26</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet Command Line Tool</d:Summary>
+      <d:Description>NuGet Command Line Tool</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>xXJRheYRC4VoJ1mXyYWfodYWXsJySuqG7YKIDfwfD0iy6+DyKEZtGLpaufXHItjM+VZbJrbSpFDcd2lGqVdxjA==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">181811</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">73</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-04-16T05:21:16.52</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-04-16T05:21:16.52</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-04-16T05:21:16.99</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl>http://nuget.codeplex.com/license</d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags m:null="true">
+      </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.20415.26</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.20415.26</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.20416.28')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-04-17T18:53:31-07:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20416.28')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20416.28')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.20416.28')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.20416.28" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.20416.28</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>2cD3v+hbCjXfCtLyZmyCuUya5Asn78p/s+hPdFKMi1iFkegCPS4L5SnUGRq1o/LSFZXiWjt3vKYf26UJBwDRIA==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">169134</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">33</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-04-17T18:53:31.897</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-04-17T18:53:31.897</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-04-17T18:53:32.24</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.20416.28</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.20416.28</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.20416.30')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet Command Line Tool</summary>
+    <updated>2011-04-17T23:57:12-07:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20416.30')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20416.30')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.20416.30')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.20416.30" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.20416.30</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet Command Line Tool</d:Summary>
+      <d:Description>NuGet Command Line Tool</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>lDjpNDOgvjo4JaJBrqE5+oFUSTKwrC8S5agCkiFxFoApGnaG7pdHc0Diqfi6231ZY/QrHFFQlgCx4zeiQOS52g==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">169044</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">33</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-04-17T23:57:12.207</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-04-17T23:57:12.207</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-04-17T23:57:12.567</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl>http://nuget.codeplex.com/license</d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags m:null="true">
+      </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.20416.30</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.20416.30</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.20417.31')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet Command Line Tool</summary>
+    <updated>2011-04-18T06:34:05-07:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20417.31')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.20417.31')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.20417.31')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.20417.31" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.20417.31</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet Command Line Tool</d:Summary>
+      <d:Description>NuGet Command Line Tool</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>PdpsL76kbBazF/FxhaLrgqY56bqGg5Ajff8KszxAJ/mP3Flyo05ypbg1vHL1znli1ybRkxdIvsYC8gtZXlDnWQ==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">170105</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">573</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-04-18T06:34:05.287</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-04-18T06:34:05.287</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-04-18T06:34:05.617</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl>http://nuget.codeplex.com/license</d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags m:null="true">
+      </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.20417.31</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.20417.31</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.2.2128.11')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet command line tool used to create and push packages.</summary>
+    <updated>2011-01-28T08:33:10-08:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.2128.11')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.2.2128.11')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.2.2128.11')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.2.2128.11" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.2.2128.11</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet command line tool used to create and push packages.</d:Summary>
+      <d:Description>NuGet command line tool used to create and push packages.</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>Zr4xcwA++qSqVxBn71V16g/Lb3CnV8IUZqfkiZ79eQWzFWnViVihL/bkzqYvK6RaXFZAn6vvv8836jBoE95BGQ==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">147564</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">258</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-01-28T08:33:10.583</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-01-28T08:33:10.583</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-01-28T08:33:11.1</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl m:null="true">
+      </d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags xml:space="preserve"> nuget </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.2.2128.11</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.2.2128.11</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.3.20425.372')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet Command Line Tool</summary>
+    <updated>2011-04-26T18:03:37-07:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.3.20425.372')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.3.20425.372')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.3.20425.372')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.3.20425.372" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.3.20425.372</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet Command Line Tool</d:Summary>
+      <d:Description>NuGet Command Line Tool</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>F+arxhGXvOtn0BRK/3XEl1QvSGesWU1Pc0wBRSkZPtDIFoRrmTJeI5NyJe3/nUMjPgkuHf+e0NhXEKrUuCvtdw==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">174811</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">3429</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-04-26T18:03:37.583</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-04-26T18:03:37.583</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-04-26T18:03:37.99</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl>http://nuget.codeplex.com/license</d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags m:null="true">
+      </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.3.20425.372</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.3.20425.372</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='NuGet.CommandLine',Version='1.4.20615.182')</id>
+    <title type="text">NuGet.CommandLine</title>
+    <summary type="text">NuGet Command Line Tool</summary>
+    <updated>2011-06-17T22:40:31-07:00</updated>
+    <author>
+      <name>Outercurve Foundation</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.4.20615.182')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='NuGet.CommandLine',Version='1.4.20615.182')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='NuGet.CommandLine',Version='1.4.20615.182')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/NuGet.CommandLine/1.4.20615.182" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NuGet.CommandLine</d:Id>
+      <d:Version>1.4.20615.182</d:Version>
+      <d:Title>NuGet.CommandLine</d:Title>
+      <d:Authors>Outercurve Foundation</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>NuGet Command Line Tool</d:Summary>
+      <d:Description>NuGet Command Line Tool</d:Description>
+      <d:Copyright m:null="true">
+      </d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>IsySDzcP5nYd6wxY5WTsemUoNlhTRdBmME7JTyaSHmcoUFQarC/iMN8Rczwq0m5SM6c+ScpNICF/cUQ4zz4d4A==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">201729</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">4346</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-06-17T22:40:31.563</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-06-17T22:40:31.563</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-06-17T22:40:33.253</d:Published>
+      <d:ExternalPackageUrl m:null="true">
+      </d:ExternalPackageUrl>
+      <d:ProjectUrl>http://nuget.codeplex.com/</d:ProjectUrl>
+      <d:LicenseUrl>http://nuget.codeplex.com/license</d:LicenseUrl>
+      <d:IconUrl m:null="true">
+      </d:IconUrl>
+      <d:Rating m:type="Edm.Double">5</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">1</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">10125</d:DownloadCount>
+      <d:Categories m:null="true">
+      </d:Categories>
+      <d:Tags m:null="true">
+      </d:Tags>
+      <d:Dependencies>
+      </d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/NuGet.CommandLine/1.4.20615.182</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/NuGet.CommandLine/1.4.20615.182</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+</feed>
