@@ -16,12 +16,43 @@
 
 package jetbrains.buildServer.nuget.server.feed.render;
 
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 06.09.11 1:39
  */
 public interface NuGetProperties {
-  Map<String, Object> getProperties();
+  String getId();
+  String getVersion();
+  String getTitle();
+  String getAuthors();
+  String getPackageType();
+  String getSummaty();
+  String getCopyright();
+  String getPackageHashAlgorithm();
+  String getPackageHash();
+  long getPackageSize();
+  BigDecimal getPrice();
+  boolean getRequireLicenseAcceptance();
+  boolean getIsLatestVersion();
+  String getReleaseNotes();
+  double getVersionRating();
+  int getVersionRatingsCount();
+  Date getCreated();
+  Date getLastUpdated();
+  Date getPublished();
+  String getExternalPackageUrl();
+  String getProjectUrl();
+  String getLicenseUrl();
+  String getIconUrl();
+  double getRating();
+  int getRatingsCount();
+  int getDownloadCount();
+  String getCategories();
+  String getTags();
+  String getDependencies();
+  String getReportAbuseUrl();
+  String getGalleryDetailsUrl();
 }

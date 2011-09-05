@@ -26,9 +26,10 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -140,20 +141,33 @@ public class NuGetFeedRenderer {
                                 @NotNull final NuGetContext context,
                                 @NotNull final NuGetItem pitem) throws XMLStreamException {
     final NuGetProperties p = pitem.getProperties();
+    for (Method method : NuGetProperties.class.getMethods()) {
+      String name = method.getName();
+      if (name.startsWith("get")) {
+        name = name.substring(3);
+        Object value;
+        try {
+          value = method.invoke(p);
+        } catch (IllegalAccessException e) {
+          throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+          throw new RuntimeException(e);
+        }
 
-    for (Map.Entry<String, Object> e : p.getProperties().entrySet()) {
-      writeTypedProperty(w, e.getKey(), e.getValue());
+        writeTypedProperty(w, name, value, method.getReturnType());
+      }
     }
   }
 
   private void writeTypedProperty(@NotNull final XMLStreamWriter w,
                                   @NotNull final String key,
-                                  @Nullable final Object value) throws XMLStreamException {
+                                  @Nullable final Object value,
+                                  @Nullable Class<?> clazz) throws XMLStreamException {
     w.writeStartElement(D, key);
     if (value == null) {
       w.writeAttribute(M, "null", "true");
     } else {
-      final String type = getType(value);
+      final String type = getType(clazz);
       if (type != null) {
         w.writeAttribute(M, "type", type);
       }
@@ -163,9 +177,10 @@ public class NuGetFeedRenderer {
   }
 
   @Nullable
-  private String getType(Object o) {
-    if (o instanceof String) return null;
-    final EdmType edmType = EdmType.forJavaType(o.getClass());
+  private String getType(Class<?> clazz) {
+    if (clazz.equals(String.class)) return null;
+
+    final EdmType edmType = EdmType.forJavaType(clazz);
     if (edmType != null) {
       return edmType.toTypeString();
     }
