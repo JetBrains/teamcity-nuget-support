@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.render.atom;
+package jetbrains.buildServer.nuget.server.feed.render;
+
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 05.09.11 23:36
+ * Date: 06.09.11 1:39
  */
-public interface AtomItem {
-  String getId();
-  String getTitle();
-  String getSummary();
-  String getAuthorName();
-
+public interface NuGetProperties {
+  Map<String, Object> getProperties();
 }

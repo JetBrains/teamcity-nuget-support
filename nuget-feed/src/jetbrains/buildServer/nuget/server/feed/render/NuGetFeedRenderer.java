@@ -18,6 +18,8 @@ package jetbrains.buildServer.nuget.server.feed.render;
 
 import jetbrains.buildServer.util.Dates;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.odata4j.edm.EdmType;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -26,6 +28,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 
 /**
@@ -83,8 +86,10 @@ public class NuGetFeedRenderer {
     return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }
 
-  private void renderItem(@NotNull NuGetContext context, @NotNull NuGetItem item, @NotNull XMLStreamWriter w) throws XMLStreamException {
-    w.writeComment("Item " + item);
+  private void renderItem(@NotNull NuGetContext context,
+                          @NotNull NuGetItem pitem,
+                          @NotNull XMLStreamWriter w) throws XMLStreamException {
+    final NuGetAtomItem item = pitem.getAtomItem();
 
     w.writeStartElement("id");
     w.writeCharacters(item.getItemId());
@@ -126,14 +131,44 @@ public class NuGetFeedRenderer {
     w.writeNamespace("m", M);
     w.writeNamespace("d", D);
 
-    renderProperties(w, context, item);
+    renderProperties(w, context, pitem);
 
     w.writeEndElement();
   }
 
   private void renderProperties(@NotNull final XMLStreamWriter w,
                                 @NotNull final NuGetContext context,
-                                @NotNull final NuGetItem item) {
+                                @NotNull final NuGetItem pitem) throws XMLStreamException {
+    final NuGetProperties p = pitem.getProperties();
 
+    for (Map.Entry<String, Object> e : p.getProperties().entrySet()) {
+      writeTypedProperty(w, e.getKey(), e.getValue());
+    }
+  }
+
+  private void writeTypedProperty(@NotNull final XMLStreamWriter w,
+                                  @NotNull final String key,
+                                  @Nullable final Object value) throws XMLStreamException {
+    w.writeStartElement(D, key);
+    if (value == null) {
+      w.writeAttribute(M, "null", "true");
+    } else {
+      final String type = getType(value);
+      if (type != null) {
+        w.writeAttribute(M, "type", type);
+      }
+      w.writeCharacters(value.toString());
+    }
+    w.writeEndElement();
+  }
+
+  @Nullable
+  private String getType(Object o) {
+    if (o instanceof String) return null;
+    final EdmType edmType = EdmType.forJavaType(o.getClass());
+    if (edmType != null) {
+      return edmType.toTypeString();
+    }
+    return null;
   }
 }
