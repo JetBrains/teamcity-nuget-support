@@ -171,7 +171,11 @@ public class NuGetFeedRenderer {
       if (type != null) {
         w.writeAttribute(M, "type", type);
       }
-      w.writeCharacters(value.toString());
+      if (value instanceof Date) {
+        w.writeCharacters(formatDate((Date) value));
+      } else {
+        w.writeCharacters(value.toString());
+      }
     }
     w.writeEndElement();
   }
