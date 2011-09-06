@@ -18,8 +18,8 @@ package jetbrains.buildServer.nuget.tests.feed;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetAtomItem;
+import jetbrains.buildServer.nuget.server.feed.render.NuGetItem;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetProperties;
-import jetbrains.buildServer.nuget.server.feed.render.impl.LocalNuGetPackageItem;
 import jetbrains.buildServer.nuget.server.feed.render.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +52,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
     final File pkg = Paths.getTestDataPath("packages/Ninject.MVC3.2.2.2.0.nupkg");
     Assert.assertTrue(pkg.isFile());
 
-    final LocalNuGetPackageItem aPackage = myFactory.createPackage(pkg);
+    final NuGetItem aPackage = myFactory.createPackage(pkg);
 
     final NuGetAtomItem atomItem = aPackage.getAtomItem();
     final NuGetProperties properties = aPackage.getProperties();
