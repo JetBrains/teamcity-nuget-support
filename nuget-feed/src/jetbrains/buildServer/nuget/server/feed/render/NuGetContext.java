@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.feed.render;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Date;
 
 /**
@@ -44,6 +46,10 @@ public class NuGetContext {
   }
 
   public String resolveUrl(String downloadPath) {
-    return "http://feed-url/" + downloadPath;
+    return getBaseUri() + downloadPath;
+  }
+
+  public String createId(@NotNull final String itemName, @NotNull final String itemVersion) {
+    return getBaseUri() + "Packages(id='" + itemName + "',Version='" + itemVersion + "')";
   }
 }

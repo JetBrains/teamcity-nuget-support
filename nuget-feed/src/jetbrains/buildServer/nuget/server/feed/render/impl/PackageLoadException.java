@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.render;
-
-import java.util.Date;
+package jetbrains.buildServer.nuget.server.feed.render.impl;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 06.09.11 1:37
+ * Date: 07.09.11 20:49
  */
-public interface NuGetAtomItem {
-  String getItemName();
+public class PackageLoadException extends Exception {
+  public PackageLoadException(String message) {
+    super(message);
+  }
 
-  String getItemVersion();
-
-  String getItemTitle();
-
-  String getItemSummary();
-
-  Date getItemUpdated();
-
-  String getItemAuthors();
-
-  /**
-   * @return relative path for download, i.e. PackageName/Version
-   */
-  String getDownloadPath();
+  public PackageLoadException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

@@ -93,7 +93,7 @@ public class NuGetFeedRenderer {
     final NuGetAtomItem item = pitem.getAtomItem();
 
     w.writeStartElement("id");
-    w.writeCharacters(item.getItemId());
+    w.writeCharacters(context.createId(item.getItemName(), item.getItemVersion()));
     w.writeEndElement();
 
     w.writeStartElement("title");

@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.server.feed.render.NuGetAtomItem;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetItem;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetProperties;
 import jetbrains.buildServer.nuget.server.feed.render.impl.LocalNuGetPackageItemsFactory;
+import jetbrains.buildServer.nuget.server.feed.render.impl.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
@@ -48,11 +49,11 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   }
 
   @Test
-  public void test_NinjectMVC() throws InvocationTargetException, IllegalAccessException {
+  public void test_NinjectMVC() throws InvocationTargetException, IllegalAccessException, PackageLoadException {
     final File pkg = Paths.getTestDataPath("packages/Ninject.MVC3.2.2.2.0.nupkg");
     Assert.assertTrue(pkg.isFile());
 
-    final NuGetItem aPackage = myFactory.createPackage(pkg);
+    final NuGetItem aPackage = myFactory.createPackage("detailsUrl", pkg);
 
     final NuGetAtomItem atomItem = aPackage.getAtomItem();
     final NuGetProperties properties = aPackage.getProperties();

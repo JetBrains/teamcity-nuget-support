@@ -17,7 +17,9 @@
 package jetbrains.buildServer.nuget.server.feed.render.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.server.feed.render.NuGetAtomItem;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetItem;
+import jetbrains.buildServer.nuget.server.feed.render.NuGetProperties;
 import jetbrains.buildServer.util.FileUtil;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -28,6 +30,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -37,15 +41,234 @@ import java.util.zip.ZipInputStream;
  */
 public class LocalNuGetPackageItemsFactory {
   private static final Logger LOG = Logger.getInstance(LocalNuGetPackageItemsFactory.class.getName());
+  public static final String NS = "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd";
 
   @NotNull
-  public NuGetItem createPackage(@NotNull final File nupkg) {
-    final Element spec = parseNuSpec(nupkg);
+  public NuGetItem createPackage(@NotNull final String detailsUrl, @NotNull final File nupkg) throws PackageLoadException {
+    final Element root = parseNuSpec(nupkg);
 
+    if (root == null) {
+      throw new PackageLoadException("Failed to fetch .nuspec from package");
+    }
 
+    final String id = parseProperty(root, "id");
+    final String version = parseProperty(root, "version");
+    final String authors = parseProperty(root, "authors");
+    final String owners = parseProperty(root, "owners");
+    final String requireLicenseAcceptanse = parseProperty(root, "requireLicenseAcceptance");
+    final String description = parseProperty(root, "description");
+    final String summary = parseProperty(root, "summary");
+    final Date updated = new Date(nupkg.lastModified());
+    final long size = nupkg.length();
+    final String licenseUrl = parseProperty(root, "licenseUrl");
+    final String projectUrl = parseProperty(root, "projectUrl");
+    final String iconUrl = parseProperty(root, "iconUrl");
+    final String dependencies = parseDependencies(root);
+    final String tags = parseProperty(root,"tags");
 
-    return null;
+    return new NuGetItem() {
+      @NotNull
+      public NuGetAtomItem getAtomItem() {
+        return new NuGetAtomItem() {
+          public String getItemName() {
+            return id;
+          }
+
+          public String getItemVersion() {
+            return version;
+          }
+
+          public String getItemTitle() {
+            return id;
+          }
+
+          public String getItemSummary() {
+            return summary;
+          }
+
+          public Date getItemUpdated() {
+            return updated;
+          }
+
+          public String getItemAuthors() {
+            return authors;
+          }
+
+          public String getDownloadPath() {
+            //TODO: connect to context to make it easy to resolve
+            return id + "." + version + ".nupkg";
+          }
+        };
+      }
+
+      @NotNull
+      public NuGetProperties getProperties() {
+        return new NuGetProperties() {
+          public String getId() {
+            return id;
+          }
+
+          public String getVersion() {
+            return version;
+          }
+
+          public String getTitle() {
+            return id;
+          }
+
+          public String getAuthors() {
+            return authors;
+          }
+
+          public String getPackageType() {
+            return "Packages";
+          }
+
+          public String getSummaty() {
+            return summary;
+          }
+
+          public String getCopyright() {
+            return null;
+          }
+
+          public String getPackageHashAlgorithm() {
+            return "SHA512";
+          }
+
+          public String getPackageHash() {
+            return "TBD";
+          }
+
+          public long getPackageSize() {
+            return size;
+          }
+
+          public BigDecimal getPrice() {
+            return BigDecimal.ZERO;
+          }
+
+          public boolean getRequireLicenseAcceptance() {
+            return "true".equalsIgnoreCase(requireLicenseAcceptanse);
+          }
+
+          public boolean getIsLatestVersion() {
+            //TODO
+            return false;
+          }
+
+          public String getReleaseNotes() {
+            //TODO:
+            return null;
+          }
+
+          public double getVersionRating() {
+            return 0;
+          }
+
+          public int getVersionRatingsCount() {
+            return 0;
+          }
+
+          public Date getCreated() {
+            return updated;
+          }
+
+          public Date getLastUpdated() {
+            return updated;
+          }
+
+          public Date getPublished() {
+            return updated;
+          }
+
+          public String getExternalPackageUrl() {
+            return null;
+          }
+
+          public String getProjectUrl() {
+            return projectUrl;
+          }
+
+          public String getLicenseUrl() {
+            return licenseUrl;
+          }
+
+          public String getIconUrl() {
+            return iconUrl;
+          }
+
+          public double getRating() {
+            return 0;
+          }
+
+          public int getRatingsCount() {
+            return 0;
+          }
+
+          public int getDownloadCount() {
+            return 42;
+          }
+
+          public String getCategories() {
+            return null;
+          }
+
+          public String getTags() {
+            return tags;
+          }
+
+          public String getDependencies() {
+            return dependencies;
+          }
+
+          public String getReportAbuseUrl() {
+            return detailsUrl;
+          }
+
+          public String getGalleryDetailsUrl() {
+            return detailsUrl;
+          }
+        };
+      }
+    };
+
   }
+
+  @Nullable
+  private String parseProperty(@NotNull final Element root, final @NotNull String name) {
+    Element metadata = getMetadata(root);
+    if (metadata == null) return null;
+
+    final Element child = metadata.getChild(name);
+    return child == null ? null : child.getTextNormalize();
+  }
+
+  @Nullable
+  private Element getMetadata(@NotNull final Element root) {
+    Element metadata = root.getChild("metadata");
+    if (metadata == null) {
+      metadata = root.getChild("metadata", root.getNamespace(NS));
+    }
+    return metadata;
+  }
+
+  private String parseDependencies(@NotNull final Element root) {
+    final Element metadata = getMetadata(root);
+    if (metadata == null) return null;
+    final Element dependencies = metadata.getChild("dependencies");
+    if (dependencies == null) return null;
+    final StringBuilder sb = new StringBuilder();
+    for (Object _dependency : dependencies.getChildren("dependency")) {
+      Element dep = (Element) _dependency;
+      final String id = dep.getAttributeValue("id");
+      final String versionConstraint = dep.getAttributeValue("version");
+      if (sb.length() != 0) sb.append("|");
+      sb.append(id).append(":").append(versionConstraint);
+    }
+    return sb.toString();
+  }
+
 
   @Nullable
   private Element parseNuSpec(@NotNull final File nupkg) {
