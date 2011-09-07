@@ -29,7 +29,8 @@ public interface NuGetProperties {
   String getTitle();
   String getAuthors();
   String getPackageType();
-  String getSummaty();
+  String getSummary();
+  String getDescription();
   String getCopyright();
   String getPackageHashAlgorithm();
   String getPackageHash();
@@ -40,6 +41,7 @@ public interface NuGetProperties {
   String getReleaseNotes();
   double getVersionRating();
   int getVersionRatingsCount();
+  int getVersionDownloadCount();
   Date getCreated();
   Date getLastUpdated();
   Date getPublished();

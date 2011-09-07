@@ -101,17 +101,18 @@ public class NuGetFeedRenderer {
     w.writeCharacters(item.getItemTitle());
     w.writeEndElement();
 
-    w.writeStartElement("summaty");
+    w.writeStartElement("summary");
     w.writeAttribute("type", "text");
     w.writeCharacters(item.getItemSummary());
+    w.writeEndElement();
 
     w.writeStartElement("updated");
-    w.writeComment(formatDate(item.getItemUpdated()));
+    w.writeCharacters(formatDate(item.getItemUpdated()));
     w.writeEndElement();
 
     w.writeStartElement("author");
     w.writeStartElement("name");
-    w.writeComment(item.getItemAuthors());
+    w.writeCharacters(item.getItemAuthors());
     w.writeEndElement();
     w.writeEndElement();
 
@@ -188,6 +189,11 @@ public class NuGetFeedRenderer {
     if (edmType != null) {
       return edmType.toTypeString();
     }
+
+    if (Date.class.isAssignableFrom(clazz)) {
+      return EdmType.DATETIME.toTypeString();
+    }
+
     return null;
   }
 }

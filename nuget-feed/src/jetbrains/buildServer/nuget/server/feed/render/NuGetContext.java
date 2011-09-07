@@ -50,6 +50,6 @@ public class NuGetContext {
   }
 
   public String createId(@NotNull final String itemName, @NotNull final String itemVersion) {
-    return getBaseUri() + "Packages(id='" + itemName + "',Version='" + itemVersion + "')";
+    return getBaseUri() + "Packages(Id='" + itemName + "',Version='" + itemVersion + "')";
   }
 }

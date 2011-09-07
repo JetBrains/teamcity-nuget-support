@@ -19,6 +19,9 @@ package jetbrains.buildServer.nuget.tests.feed;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetContext;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetFeedRenderer;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetItem;
+import jetbrains.buildServer.nuget.server.feed.render.impl.LocalNuGetPackageItemsFactory;
+import jetbrains.buildServer.nuget.server.feed.render.impl.PackageLoadException;
+import jetbrains.buildServer.nuget.tests.integration.Paths;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.BeforeMethod;
@@ -27,6 +30,7 @@ import org.testng.annotations.Test;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -55,5 +59,14 @@ public class NuGetFeedRendererTest extends XmlTestBase {
     String s = testRender(Collections.<NuGetItem>emptyList());
 
     assertXml("reader/feed-empty.xml", s);
+  }
+
+  @Test
+  public void test_one_package_ninject_mvc_2_2_2_0() throws XMLStreamException, IOException, JDOMException, PackageLoadException {
+    LocalNuGetPackageItemsFactory f = new LocalNuGetPackageItemsFactory();
+    final NuGetItem item = f.createPackage("aaa", Paths.getTestDataPath("packages/Ninject.MVC3.2.2.2.0.nupkg"));
+    String s = testRender(Arrays.asList(item));
+
+    assertXml("reader/feed-ninject.mvc3.latest.xml", s);
   }
 }

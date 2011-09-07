@@ -124,8 +124,12 @@ public class LocalNuGetPackageItemsFactory {
             return "Packages";
           }
 
-          public String getSummaty() {
+          public String getSummary() {
             return summary;
+          }
+
+          public String getDescription() {
+            return description;
           }
 
           public String getCopyright() {
@@ -167,6 +171,10 @@ public class LocalNuGetPackageItemsFactory {
           }
 
           public int getVersionRatingsCount() {
+            return 0;
+          }
+
+          public int getVersionDownloadCount() {
             return 0;
           }
 
