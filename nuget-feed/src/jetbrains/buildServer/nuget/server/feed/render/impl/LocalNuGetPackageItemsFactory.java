@@ -31,7 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -237,29 +237,35 @@ public class LocalNuGetPackageItemsFactory {
 
   @Nullable
   private String parseProperty(@NotNull final Element root, final @NotNull String name) {
-    Element metadata = getMetadata(root);
-    if (metadata == null) return null;
-
-    final Element child = metadata.getChild(name);
+    final Element child = getChild(getChild(root, "metadata"), name);
     return child == null ? null : child.getTextNormalize();
   }
 
   @Nullable
-  private Element getMetadata(@NotNull final Element root) {
-    Element metadata = root.getChild("metadata");
-    if (metadata == null) {
-      metadata = root.getChild("metadata", root.getNamespace(NS));
+  private Element getChild(@Nullable final Element root, final String child) {
+    if (root == null) return null;
+    Element metadata = root.getChild(child);
+    if (metadata != null) return metadata;
+    return root.getChild(child, root.getNamespace(NS));
+  }
+
+  @NotNull
+  private List<Element> getChildren(@Nullable final Element root, final String child) {
+    if (root == null) return Collections.emptyList();
+    List<Element> result = new ArrayList<Element>();
+    for (List list : Arrays.asList(root.getChildren(child), root.getChildren(child, root.getNamespace(NS)))) {
+      for (Object o : list) {
+        result.add((Element)o);
+      }
     }
-    return metadata;
+    return result;
   }
 
   private String parseDependencies(@NotNull final Element root) {
-    final Element metadata = getMetadata(root);
-    if (metadata == null) return null;
-    final Element dependencies = metadata.getChild("dependencies");
-    if (dependencies == null) return null;
+    final Element metadata = getChild(root, "metadata");
+    final Element dependencies = getChild(metadata, "dependencies");
     final StringBuilder sb = new StringBuilder();
-    for (Object _dependency : dependencies.getChildren("dependency")) {
+    for (Object _dependency : getChildren(dependencies, "dependency")) {
       Element dep = (Element) _dependency;
       final String id = dep.getAttributeValue("id");
       final String versionConstraint = dep.getAttributeValue("version");
@@ -279,7 +285,7 @@ public class LocalNuGetPackageItemsFactory {
       zos = new ZipInputStream(new BufferedInputStream(new FileInputStream(nupkg)));
       ZipEntry ze;
       while ((ze = zos.getNextEntry()) != null) {
-        if (ze.getName().startsWith(name) && ze.getName().endsWith(".nuspec")) {
+        if (ze.getName().endsWith(".nuspec")) {
           try {
             return FileUtil.parseDocument(zos, false);
           } catch (JDOMException e) {

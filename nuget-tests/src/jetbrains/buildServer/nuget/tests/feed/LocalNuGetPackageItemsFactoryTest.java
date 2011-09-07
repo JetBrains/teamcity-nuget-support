@@ -58,8 +58,48 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
     final NuGetAtomItem atomItem = aPackage.getAtomItem();
     final NuGetProperties properties = aPackage.getProperties();
 
-    Assert.assertEquals(serializeObject(NuGetAtomItem.class, atomItem), "");
-    Assert.assertEquals(serializeObject(NuGetProperties.class, properties), "");
+    Assert.assertEquals(
+            serializeObject(NuGetAtomItem.class, atomItem),
+            "DownloadPath = Ninject.MVC3.2.2.2.0.nupkg\n" +
+            "ItemAuthors = Remo Gloor, Ian Davis\n" +
+            "ItemName = Ninject.MVC3\n" +
+            "ItemSummary = Extension for Ninject providing integration with ASP.NET MVC3\n" +
+            "ItemTitle = Ninject.MVC3\n" +
+            "ItemUpdated = Tue Sep 06 22:25:36 CEST 2011\n" +
+            "ItemVersion = 2.2.2.0");
+    Assert.assertEquals(
+            serializeObject(NuGetProperties.class, properties),
+            "Authors = Remo Gloor, Ian Davis\n" +
+                    "Categories = null\n" +
+                    "Copyright = null\n" +
+                    "Created = Tue Sep 06 22:25:36 CEST 2011\n" +
+                    "Dependencies = Ninject:[2.2.0.0, 2.3.0.0)|WebActivator:1.4\n" +
+                    "DownloadCount = 42\n" +
+                    "ExternalPackageUrl = null\n" +
+                    "GalleryDetailsUrl = detailsUrl\n" +
+                    "IconUrl = https://github.com/ninject/ninject/raw/master/logos/Ninject-Logo32.png\n" +
+                    "Id = Ninject.MVC3\n" +
+                    "IsLatestVersion = false\n" +
+                    "LastUpdated = Tue Sep 06 22:25:36 CEST 2011\n" +
+                    "LicenseUrl = https://github.com/ninject/ninject.web.mvc/raw/master/mvc3/LICENSE.txt\n" +
+                    "PackageHash = TBD\n" +
+                    "PackageHashAlgorithm = SHA512\n" +
+                    "PackageSize = 34857\n" +
+                    "PackageType = Packages\n" +
+                    "Price = 0\n" +
+                    "ProjectUrl = http://www.ninject.org\n" +
+                    "Published = Tue Sep 06 22:25:36 CEST 2011\n" +
+                    "Rating = 0.0\n" +
+                    "RatingsCount = 0\n" +
+                    "ReleaseNotes = null\n" +
+                    "ReportAbuseUrl = detailsUrl\n" +
+                    "RequireLicenseAcceptance = true\n" +
+                    "Summaty = Extension for Ninject providing integration with ASP.NET MVC3\n" +
+                    "Tags = Ninject ioc di web mvc3\n" +
+                    "Title = Ninject.MVC3\n" +
+                    "Version = 2.2.2.0\n" +
+                    "VersionRating = 0.0\n" +
+                    "VersionRatingsCount = 0");
   }
 
   private <T> String serializeObject(@NotNull final Class<T> clazz, Object t) throws InvocationTargetException, IllegalAccessException {
@@ -70,13 +110,14 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
       String name = method.getName();
       if (!name.startsWith("get")) continue;
       name = name.substring(3);
-      map.put(name, method.invoke(t).toString());
+      final Object invoke = method.invoke(t);
+      map.put(name, invoke == null ? null : invoke.toString());
     }
 
     StringBuilder sb = new StringBuilder();
     for (Map.Entry<String, String> e : map.entrySet()) {
       sb.append(e.getKey()).append(" = ").append(e.getValue()).append("\n");
     }
-    return sb.toString();
+    return sb.toString().trim();
   }
 }
