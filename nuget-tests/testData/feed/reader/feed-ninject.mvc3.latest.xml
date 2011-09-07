@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes"?>
+<feed xml:base="http://packages.nuget.org/v1/FeedService.svc/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">Packages</title>
+  <id>http://packages.nuget.org/v1/FeedService.svc/Packages</id>
+  <updated>2011-09-07T19:22:49Z</updated>
+  <link rel="self" title="Packages" href="Packages" />
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='Ninject.MVC3',Version='2.2.2.0')</id>
+    <title type="text">Ninject.MVC3</title>
+    <summary type="text">Extension for Ninject providing integration with ASP.NET MVC3</summary>
+    <updated>2011-05-07T12:18:42-07:00</updated>
+    <author>
+      <name>Remo Gloor,  Ian Davis</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='Ninject.MVC3',Version='2.2.2.0')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='Ninject.MVC3',Version='2.2.2.0')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='Ninject.MVC3',Version='2.2.2.0')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/Ninject.MVC3/2.2.2.0" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>Ninject.MVC3</d:Id>
+      <d:Version>2.2.2.0</d:Version>
+      <d:Title>Ninject.MVC3</d:Title>
+      <d:Authors>Remo Gloor,  Ian Davis</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>Extension for Ninject providing integration with ASP.NET MVC3</d:Summary>
+      <d:Description>Extension for Ninject providing integration with ASP.NET MVC3</d:Description>
+      <d:Copyright>Copyright 2011 by Ninject Project Contributors</d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>vAG563nUohsNV8gsOOARPS3RJubWWSzUQ+JRLTne4yzE7/TR/rDjD1eS9klB682FvInUP2x48OuQoIgpwKqaIA==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">34857</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">true</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:Prerelease m:type="Edm.Boolean">false</d:Prerelease>
+      <d:VersionRating m:type="Edm.Double">4.2</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">5</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">6018</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-05-05T00:46:53.367</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-05-07T12:18:42.133</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-05-07T12:18:51.587</d:Published>
+      <d:ExternalPackageUrl m:null="true"></d:ExternalPackageUrl>
+      <d:ProjectUrl>http://www.ninject.org/</d:ProjectUrl>
+      <d:LicenseUrl>https://github.com/ninject/ninject.web.mvc/raw/master/mvc3/LICENSE.txt</d:LicenseUrl>
+      <d:IconUrl>/Media/Default/Packages/Ninject.MVC3/2.2.2.0/Ninject-Logo100.png</d:IconUrl>
+      <d:Rating m:type="Edm.Double">4.333333333333333</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">6</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">11186</d:DownloadCount>
+      <d:Categories m:null="true"></d:Categories>
+      <d:Tags xml:space="preserve"> Ninject ioc di web mvc3 </d:Tags>
+      <d:Dependencies>Ninject:[2.2.0.0, 2.3.0.0)|WebActivator:1.4</d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/Ninject.MVC3/2.2.2.0</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/Ninject.MVC3/2.2.2.0</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+</feed>
