@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -56,7 +55,10 @@ public class LocalNuGetPackageItemsFactory {
   }
 
   @NotNull
-  public NuGetItem createPackage(@NotNull final String detailsUrl, @NotNull final File nupkg) throws PackageLoadException {
+  public NuGetItem createPackage(@NotNull final String detailsUrl,
+                                 @NotNull final File nupkg,
+                                 final boolean isLatest,
+                                 final boolean isPrerelease) throws PackageLoadException {
     final Element root = parseNuSpec(nupkg);
 
     if (root == null) {
@@ -130,15 +132,11 @@ public class LocalNuGetPackageItemsFactory {
           }
 
           public boolean getPrerelease() {
-            return false;
+            return isPrerelease;
           }
 
           public String getAuthors() {
             return authors;
-          }
-
-          public String getPackageType() {
-            return "Packages";
           }
 
           public String getSummary() {
@@ -165,17 +163,12 @@ public class LocalNuGetPackageItemsFactory {
             return size;
           }
 
-          public BigDecimal getPrice() {
-            return BigDecimal.ZERO;
-          }
-
           public boolean getRequireLicenseAcceptance() {
             return "true".equalsIgnoreCase(requireLicenseAcceptanse);
           }
 
           public boolean getIsLatestVersion() {
-            //TODO
-            return false;
+            return isLatest;
           }
 
           public String getReleaseNotes() {
@@ -183,27 +176,7 @@ public class LocalNuGetPackageItemsFactory {
             return null;
           }
 
-          public double getVersionRating() {
-            return 0;
-          }
-
-          public int getVersionRatingsCount() {
-            return 0;
-          }
-
-          public int getVersionDownloadCount() {
-            return 0;
-          }
-
           public Date getCreated() {
-            return updated;
-          }
-
-          public Date getLastUpdated() {
-            return updated;
-          }
-
-          public Date getPublished() {
             return updated;
           }
 
@@ -221,18 +194,6 @@ public class LocalNuGetPackageItemsFactory {
 
           public String getIconUrl() {
             return iconUrl;
-          }
-
-          public double getRating() {
-            return 0;
-          }
-
-          public int getRatingsCount() {
-            return 0;
-          }
-
-          public int getDownloadCount() {
-            return 42;
           }
 
           public String getCategories() {
@@ -299,7 +260,6 @@ public class LocalNuGetPackageItemsFactory {
     }
     return sb.toString();
   }
-
 
   @Nullable
   private Element parseNuSpec(@NotNull final File nupkg) {

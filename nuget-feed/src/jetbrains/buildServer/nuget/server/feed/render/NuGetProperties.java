@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.feed.render;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -28,35 +27,24 @@ public interface NuGetProperties {
   String getVersion();
   String getTitle();
   String getAuthors();
-  String getPackageType();
   String getSummary();
   String getDescription();
   String getCopyright();
   String getPackageHashAlgorithm();
   String getPackageHash();
   long getPackageSize();
-  BigDecimal getPrice();
   boolean getRequireLicenseAcceptance();
   boolean getIsLatestVersion();
   String getReleaseNotes();
-  double getVersionRating();
-  int getVersionRatingsCount();
-  int getVersionDownloadCount();
   Date getCreated();
-  Date getLastUpdated();
-  Date getPublished();
   String getExternalPackageUrl();
   String getProjectUrl();
   String getLicenseUrl();
   String getIconUrl();
-  double getRating();
-  int getRatingsCount();
-  int getDownloadCount();
   String getCategories();
   String getTags();
   String getDependencies();
   String getReportAbuseUrl();
   String getGalleryDetailsUrl();
-
   boolean getPrerelease();
 }
