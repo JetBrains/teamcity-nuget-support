@@ -10,6 +10,7 @@
     <orderEntry type="library" name="testng" level="project" />
     <orderEntry type="library" name="jmock" level="project" />
     <orderEntry type="library" name="Test-Api" level="project" />
+    <orderEntry type="library" name="Commons-Codec" level="project" />
     <orderEntry type="module" module-name="nuget-agent" />
     <orderEntry type="module" module-name="nuget-common" />
     <orderEntry type="module" module-name="nuget-server" />

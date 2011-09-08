@@ -57,4 +57,6 @@ public interface NuGetProperties {
   String getDependencies();
   String getReportAbuseUrl();
   String getGalleryDetailsUrl();
+
+  boolean getPrerelease();
 }

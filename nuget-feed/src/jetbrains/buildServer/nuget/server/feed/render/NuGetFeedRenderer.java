@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.render;
 
 import jetbrains.buildServer.util.Dates;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.edm.EdmType;
@@ -26,8 +27,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
@@ -133,42 +133,56 @@ public class NuGetFeedRenderer {
     w.writeNamespace("m", M);
     w.writeNamespace("d", D);
 
-    renderProperties(w, context, pitem);
+
+    final NuGetProperties p = pitem.getProperties();
+    writeTypedProperty(w, "Id", p.getId());
+    writeTypedProperty(w, "Version", p.getVersion());
+    writeTypedProperty(w, "Title", p.getTitle());
+    writeTypedProperty(w, "Authors", p.getAuthors());
+    writeTypedProperty(w, "PackageType", "Packages");
+    writeTypedProperty(w, "Summary", p.getSummary());
+    writeTypedProperty(w, "Description", p.getDescription());
+    writeTypedProperty(w, "Copyright", p.getCopyright());
+    writeTypedProperty(w, "PackageHashAlgorithm", p.getPackageHashAlgorithm());
+    writeTypedProperty(w, "PackageHash", p.getPackageHash());
+    writeTypedProperty(w, "PackageSize", p.getPackageSize());
+    writeTypedProperty(w, "Price", BigDecimal.ZERO);
+    writeTypedProperty(w, "RequireLicenseAcceptance", p.getRequireLicenseAcceptance());
+    writeTypedProperty(w, "IsLatestVersion", p.getIsLatestVersion());
+    writeTypedProperty(w, "ReleaseNotes", p.getReleaseNotes());
+    writeTypedProperty(w, "Prerelease", p.getPrerelease());
+    writeTypedProperty(w, "VersionRating", 4.5);
+    writeTypedProperty(w, "VersionRatingsCount", 1);
+    writeTypedProperty(w, "VersionDownloadCount", 0);
+    writeTypedProperty(w, "Created", p.getCreated());
+    writeTypedProperty(w, "LastUpdated", p.getCreated());
+    writeTypedProperty(w, "Published", p.getCreated());
+    writeTypedProperty(w, "ExternalPackageUrl", p.getExternalPackageUrl());
+    writeTypedProperty(w, "ProjectUrl", p.getProjectUrl());
+    writeTypedProperty(w, "LicenseUrl", p.getLicenseUrl());
+    writeTypedProperty(w, "IconUrl", p.getIconUrl());
+    writeTypedProperty(w, "Rating", 4.333);
+    writeTypedProperty(w, "RatingsCount", 1);
+    writeTypedProperty(w, "DownloadCount", 1);
+    writeTypedProperty(w, "Categories", p.getCategories());
+
+    writeTags(w, p.getTags());
+
+    writeTypedProperty(w, "Dependencies", p.getDependencies());
+    writeTypedProperty(w, "ReportAbuseUrl", p.getReportAbuseUrl());
+    writeTypedProperty(w, "GalleryDetailsUrl", p.getGalleryDetailsUrl());
 
     w.writeEndElement();
   }
 
-  private void renderProperties(@NotNull final XMLStreamWriter w,
-                                @NotNull final NuGetContext context,
-                                @NotNull final NuGetItem pitem) throws XMLStreamException {
-    final NuGetProperties p = pitem.getProperties();
-    for (Method method : NuGetProperties.class.getMethods()) {
-      String name = method.getName();
-      if (name.startsWith("get")) {
-        name = name.substring(3);
-        Object value;
-        try {
-          value = method.invoke(p);
-        } catch (IllegalAccessException e) {
-          throw new RuntimeException(e);
-        } catch (InvocationTargetException e) {
-          throw new RuntimeException(e);
-        }
-
-        writeTypedProperty(w, name, value, method.getReturnType());
-      }
-    }
-  }
-
   private void writeTypedProperty(@NotNull final XMLStreamWriter w,
                                   @NotNull final String key,
-                                  @Nullable final Object value,
-                                  @Nullable Class<?> clazz) throws XMLStreamException {
+                                  @Nullable final Object value) throws XMLStreamException {
     w.writeStartElement(D, key);
     if (value == null) {
       w.writeAttribute(M, "null", "true");
     } else {
-      final String type = getType(clazz);
+      final String type = getType(value.getClass());
       if (type != null) {
         w.writeAttribute(M, "type", type);
       }
@@ -177,6 +191,18 @@ public class NuGetFeedRenderer {
       } else {
         w.writeCharacters(value.toString());
       }
+    }
+    w.writeEndElement();
+  }
+
+  private void writeTags(@NotNull final XMLStreamWriter w,
+                                  @Nullable final String value) throws XMLStreamException {
+    w.writeStartElement(D, "Tags");
+    if (value != null && !StringUtil.isEmptyOrSpaces(value)) {
+      w.writeAttribute("xml:space", "preserve");
+      w.writeCharacters(" " + value.trim() + " ");
+    } else {
+      w.writeAttribute(M, "null", "true");
     }
     w.writeEndElement();
   }

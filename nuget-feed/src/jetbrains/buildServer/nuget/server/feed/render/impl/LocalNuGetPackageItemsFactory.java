@@ -21,15 +21,14 @@ import jetbrains.buildServer.nuget.server.feed.render.NuGetAtomItem;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetItem;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetProperties;
 import jetbrains.buildServer.util.FileUtil;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -42,6 +41,19 @@ import java.util.zip.ZipInputStream;
 public class LocalNuGetPackageItemsFactory {
   private static final Logger LOG = Logger.getInstance(LocalNuGetPackageItemsFactory.class.getName());
   public static final String NS = "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd";
+
+  @NotNull
+  private String sha512(@NotNull final File file) throws PackageLoadException {
+    InputStream is = null;
+    try {
+      is = new BufferedInputStream(new FileInputStream(file));
+      return Base64.encodeBase64String(DigestUtils.sha512(is));
+    } catch (IOException e) {
+      throw new PackageLoadException("Failed to compute SHA-512 for " + file);
+    } finally {
+      FileUtil.close(is);
+    }
+  }
 
   @NotNull
   public NuGetItem createPackage(@NotNull final String detailsUrl, @NotNull final File nupkg) throws PackageLoadException {
@@ -65,6 +77,7 @@ public class LocalNuGetPackageItemsFactory {
     final String iconUrl = parseProperty(root, "iconUrl");
     final String dependencies = parseDependencies(root);
     final String tags = parseProperty(root,"tags");
+    final String sha = sha512(nupkg);
 
     return new NuGetItem() {
       @NotNull
@@ -116,6 +129,10 @@ public class LocalNuGetPackageItemsFactory {
             return id;
           }
 
+          public boolean getPrerelease() {
+            return false;
+          }
+
           public String getAuthors() {
             return authors;
           }
@@ -141,7 +158,7 @@ public class LocalNuGetPackageItemsFactory {
           }
 
           public String getPackageHash() {
-            return "TBD";
+            return sha;
           }
 
           public long getPackageSize() {
