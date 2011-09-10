@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.feed;
 
 import jetbrains.buildServer.nuget.server.feed.render.NuGetContext;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetFeedRenderer;
+import jetbrains.buildServer.nuget.server.feed.render.NuGetPackagesFeedRenderer;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetItem;
 import jetbrains.buildServer.nuget.server.feed.render.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.render.impl.PackageLoadException;
@@ -39,19 +40,29 @@ import java.util.Collections;
  * Date: 05.09.11 23:56
  */
 public class NuGetFeedRendererTest extends XmlTestBase {
-  private NuGetFeedRenderer myRenderer;
+  private NuGetPackagesFeedRenderer myRenderer;
+  private NuGetFeedRenderer myFeedRenderer;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    myRenderer = new NuGetFeedRenderer();
+    myRenderer = new NuGetPackagesFeedRenderer();
+    myFeedRenderer = new NuGetFeedRenderer();
   }
 
   private String testRender(@NotNull Collection<NuGetItem> items) throws XMLStreamException, IOException {
     StringWriter sw = new StringWriter();
     myRenderer.renderFeed(new NuGetContext(), items, sw);
     return sw.toString();
+  }
+
+  @Test
+  public void test_foot_feed() throws Exception {
+    StringWriter sw = new StringWriter();
+    myFeedRenderer.renderFeed(new NuGetContext(), sw);
+
+   assertXml("feedRoot.xml", sw.toString(), new RemoveElement("/a:service/a:workspace/a:collection[@href='Screenshots']"));
   }
 
   @Test

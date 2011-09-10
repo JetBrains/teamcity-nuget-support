@@ -155,13 +155,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             env.putAll(additionalEnvironment);
             cmd.setEnvParams(env);
 
-            System.out.println("Run: " + cmd.getCommandLineString());
-
-            ExecResult result = SimpleCommandLineProcessRunner.runCommand(cmd, new byte[0]);
-
-            System.out.println(result.getStdout());
-            System.out.println(result.getStderr());
-
+            final ExecResult result = ProcessRunner.runProces(cmd);
             myCommandsOutput.append(result.getStdout()).append("\n\n").append(result.getStderr()).append("\n\n");
 
             return result.getExitCode() == 0
