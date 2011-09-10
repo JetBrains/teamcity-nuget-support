@@ -14,31 +14,30 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.integration;
+package jetbrains.buildServer.nuget.server.feed.render;
 
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
+import java.io.*;
 
 /**
-* Created by Eugene Petrenko (eugene.petrenko@gmail.com)
-* Date: 31.08.11 10:39
-*/
-public enum NuGet {
-  NuGet_1_4,
-  NuGet_1_5,
-  ;
+ * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 10.09.11 21:32
+ */
+public class FeedMetadataRenderer extends NuGetRendererBase {
+  public void renderFeed(@NotNull final NuGetContext context, @NotNull final Writer out) throws IOException {
+    final InputStream stream = getClass().getResourceAsStream("feed.metadata.xml");
+    try {
+      final Reader rdr = new BufferedReader(new InputStreamReader(stream, "utf-8"));
 
-  @NotNull
-  public File getPath() {
-    switch (this) {
-      case NuGet_1_4:
-        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.4/NuGet.exe"));
-      case NuGet_1_5:
-        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.5/NuGet.exe"));
-      default:
-        throw new IllegalArgumentException("Failed to find nuget " + this);
+      char[] buff = new char[65536];
+      int v;
+      while ((v = rdr.read(buff)) > 0) {
+        out.write(buff, 0, v);
+      }
+    } finally {
+      FileUtil.close(stream);
     }
   }
 }
