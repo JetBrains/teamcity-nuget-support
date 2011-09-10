@@ -10,7 +10,7 @@
     <summary type="text">Extension for Ninject providing integration with ASP.NET MVC3</summary>
     <updated>2011-05-07T12:18:42-07:00</updated>
     <author>
-      <name>Remo Gloor,  Ian Davis</name>
+      <name>Remo Gloor, Ian Davis</name>
     </author>
     <link rel="edit-media" title="PublishedPackage" href="Packages(Id='Ninject.MVC3',Version='2.2.2.0')/$value" />
     <link rel="edit" title="PublishedPackage" href="Packages(Id='Ninject.MVC3',Version='2.2.2.0')" />
