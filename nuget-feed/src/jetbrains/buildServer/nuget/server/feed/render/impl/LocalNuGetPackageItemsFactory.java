@@ -65,20 +65,28 @@ public class LocalNuGetPackageItemsFactory {
       throw new PackageLoadException("Failed to fetch .nuspec from package");
     }
 
+    //see  http://docs.nuget.org/docs/reference/nuspec-reference
     final String id = parseProperty(root, "id");
     final String version = parseProperty(root, "version");
+    //    final String title = parseProperty(root, "title");
     final String authors = parseProperty(root, "authors");
     final String owners = parseProperty(root, "owners");
-    final String requireLicenseAcceptanse = parseProperty(root, "requireLicenseAcceptance");
     final String description = parseProperty(root, "description");
+    final String releaseNotes = parseProperty(root, "releaseNotes");
     final String summary = parseProperty(root, "summary");
-    final Date updated = new Date(nupkg.lastModified());
-    final long size = nupkg.length();
-    final String licenseUrl = parseProperty(root, "licenseUrl");
+    //    final String language = parseProperty(root, "language");
     final String projectUrl = parseProperty(root, "projectUrl");
     final String iconUrl = parseProperty(root, "iconUrl");
+    final String licenseUrl = parseProperty(root, "licenseUrl");
+    final String copyright = parseProperty(root, "copyrights");
+    final String requireLicenseAcceptanse = parseProperty(root, "requireLicenseAcceptance");
     final String dependencies = parseDependencies(root);
+    //references
+    //framework assemblies
     final String tags = parseProperty(root,"tags");
+
+    final Date updated = new Date(nupkg.lastModified());
+    final long size = nupkg.length();
     final String sha = sha512(nupkg);
 
     return new NuGetItem() {
@@ -148,7 +156,7 @@ public class LocalNuGetPackageItemsFactory {
           }
 
           public String getCopyright() {
-            return null;
+            return copyright;
           }
 
           public String getPackageHashAlgorithm() {
@@ -172,8 +180,7 @@ public class LocalNuGetPackageItemsFactory {
           }
 
           public String getReleaseNotes() {
-            //TODO:
-            return null;
+            return releaseNotes;
           }
 
           public Date getCreated() {
@@ -181,7 +188,7 @@ public class LocalNuGetPackageItemsFactory {
           }
 
           public String getExternalPackageUrl() {
-            return null;
+            return detailsUrl;
           }
 
           public String getProjectUrl() {

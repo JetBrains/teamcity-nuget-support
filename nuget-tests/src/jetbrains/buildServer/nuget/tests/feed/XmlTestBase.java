@@ -27,7 +27,7 @@ import org.testng.Assert;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,6 +36,31 @@ import java.util.List;
  * Date: 06.09.11 1:02
  */
 public abstract class XmlTestBase extends BaseTestCase {
+  public static final String ATOM = "http://www.w3.org/2005/Atom";
+
+  protected static enum Schemas {
+    X("x", ATOM),
+    M("m", "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"),
+    D("d", "http://schemas.microsoft.com/ado/2007/08/dataservices")
+    ;
+    private final String myMappged;
+    private final String myUrl;
+
+    Schemas(String mappged, String url) {
+      myMappged = mappged;
+      myUrl = url;
+    }
+
+    public String getMappged() {
+      return myMappged;
+    }
+
+    public String getUrl() {
+      return myUrl;
+    }
+  }
+
+
   protected void assertXml(String gold, String actual) throws JDOMException, IOException {
     final String xml = p(actual);
 
@@ -57,19 +82,24 @@ public abstract class XmlTestBase extends BaseTestCase {
     return XmlUtil.to_s(el).trim().replaceAll("[\r\n]+", "\n");
   }
 
-
-  protected void preprocessXml(Element el) throws JDOMException {
-    Collection<XmlPatchAction> repaces = Arrays.asList(
-            new SetContentXmlPatchAction("/x:feed/x:updated", ".*", "UPDATED"),
-            new RemoveElement("/x:feed/x:author")
+  protected void registerXmlPreprocessors(@NotNull Collection<XmlPatchAction> result) throws JDOMException {
+//    result.add(new SetContentXmlPatchAction("/x:feed/x:updated", ".*", "UPDATED"));
+//    result.add(new RemoveElement("/x:feed/x:author"));
 //            new SetContentXmlPatchAction("/x:feed/x:id", "http://(feed.jonnyzzz.name/path/Packages)|(http://packages.nuget.org/v1/FeedService.svc/Packages)", "URL"),
 //            new RemoveElement("/x:feed/x:entry/x:link[@rel='edit']"),
 //            new RemoveElement("/x:feed/x:entry/x:link[@rel='edit-media']")
-    );
+  }
+
+  protected void preprocessXml(Element el) throws JDOMException {
+    final Collection<XmlPatchAction> repaces = new ArrayList<XmlPatchAction>();
+
+    registerXmlPreprocessors(repaces);
 
     for (XmlPatchAction replace : repaces) {
       XPath xPath = XPath.newInstance(replace.getXPath());
-      xPath.addNamespace("x", "http://www.w3.org/2005/Atom");
+      for (Schemas e : Schemas.values()) {
+        xPath.addNamespace(e.getMappged(), e.getUrl());
+      }
 
       List list = xPath.selectNodes(el);
       for (Object o : list) {

@@ -17,7 +17,13 @@
 package jetbrains.buildServer.nuget.tests.feed;
 
 import org.jdom.Element;
+import org.jdom.Namespace;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 
 /**
 * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -33,6 +39,23 @@ public abstract class XmlPatchAction {
   @NotNull
   public String getXPath() {
     return myXPath;
+  }
+
+  @Nullable
+  protected Namespace findNamespace(@NotNull Element element, @NotNull XmlTestBase.Schemas schema) {
+    for (Element el : Arrays.asList(element, element.getDocument().getRootElement())) {
+      for (Object o : el.getAdditionalNamespaces()) {
+        Namespace ns = (Namespace) o;
+        try {
+          if (new URI(ns.getURI()).equals(new URI(schema.getUrl()))) {
+            return ns;
+          }
+        } catch (URISyntaxException e) {
+          //NOP
+        }
+      }
+    }
+    return element.getNamespace(schema.getMappged());
   }
 
   protected abstract void action(@NotNull Element element);
