@@ -18,99 +18,98 @@ package jetbrains.buildServer.nuget.tests.integration.feed;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
 import jetbrains.buildServer.ExecResult;
-import jetbrains.buildServer.nuget.server.feed.FeedServer;
-import jetbrains.buildServer.nuget.server.feed.render.FeedMetadataRenderer;
-import jetbrains.buildServer.nuget.server.feed.render.NuGetContext;
-import jetbrains.buildServer.nuget.server.feed.render.NuGetFeedRenderer;
-import jetbrains.buildServer.nuget.server.feed.render.NuGetPackagesFeedRenderer;
-import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.ProcessRunner;
-import jetbrains.buildServer.util.StringUtil;
-import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URLDecoder;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 10.09.11 20:33
  */
-public class NuGetFeedIntegrationTest extends IntegrationTestBase {
+public class NuGetFeedIntegrationTest extends NuGetFeedIntegrationTestBase {
 
   @Test
-  public void doTest() throws IOException {
-    final NuGetContext context = new NuGetContext();
-    final FeedServer server = new FeedServer(context, new NuGetFeedRenderer(), new FeedMetadataRenderer(), new NuGetPackagesFeedRenderer());
-    final String baseUrl = "/feed";
-
-    SimpleHttpServerBase serverBase = new SimpleHttpServerBase(){
-      private Map<String, String> parseArguments(@Nullable String query) throws UnsupportedEncodingException {
-        if (query == null || StringUtil.isEmptyOrSpaces(query)) return Collections.emptyMap();
-
-        final String[] split = query.split("&");
-        final Map<String, String> map = new TreeMap<String, String>();
-        for (String s : split) {
-          String[] kv = s.split("=");
-          if (kv.length != 2) continue;
-          //TODO: decode
-          final String key = URLDecoder.decode(kv[0], "utf-8");
-          final String value = URLDecoder.decode(kv[1], "utf-8");
-          map.put(key, value);
-        }
-        System.out.println("HTTP params: " + map);
-        return map;
-      }
-      @Override
-      protected Response getResponse(String requestString) {
-        final String requestPath = getRequestPath(requestString);
-        System.out.println("\r\n\r\n");
-        System.out.println("HTTP request: " + requestString);
-        System.out.println("HTTP path: " + requestPath);
-
-        if (requestPath == null || !requestPath.startsWith(baseUrl)) {
-          return createStreamResponse(STATUS_LINE_404, Collections.<String>emptyList(), new byte[0]);
-        }
-        final String[] split = requestPath.substring(baseUrl.length()).split("\\?", 2);
-        final String path = split[0];
-        System.out.println("Mapped path: " + path);
-
-        try {
-          Writer w = new StringWriter();
-          Map<String, String> argz = parseArguments(split.length > 1 ? split[1] : null);
-          server.handleRequest(path, argz, w);
-          return createStreamResponse(STATUS_LINE_200, Collections.<String>emptyList(), w.toString().getBytes());
-        } catch (IOException e) {
-          e.printStackTrace();
-          return createStreamResponse(STATUS_LINE_500, Collections.<String>emptyList(), e.toString().getBytes());
-        }
-      }
-    };
-
-
+  public void test_list_all() throws IOException {
     final NuGet nuget = NuGet.NuGet_1_5;
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("list");
+    cmd.addParameter("-Source");
+    cmd.addParameter(myFeedUrl);
 
-    serverBase.start();
-    try {
-
-      GeneralCommandLine cmd = new GeneralCommandLine();
-      cmd.setExePath(nuget.getPath().getPath());
-      cmd.addParameter("list");
-      cmd.addParameter("-Source");
-      cmd.addParameter("http://localhost:" + serverBase.getPort() + baseUrl);
-
-      final ExecResult execResult = ProcessRunner.runProces(cmd);
-      Assert.assertEquals(execResult.getExitCode(), 0, "Exit code must be 0");
-    } finally {
-      serverBase.stop();
-    }
+    final ExecResult execResult = ProcessRunner.runProces(cmd);
+    Assert.assertEquals(execResult.getExitCode(), 0, "Exit code must be 0");
   }
+
+  @Test
+  public void test_list_name() throws IOException {
+    final NuGet nuget = NuGet.NuGet_1_5;
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("list");
+    cmd.addParameter("jpkg");
+    cmd.addParameter("-Source");
+    cmd.addParameter(myFeedUrl);
+
+    final ExecResult execResult = ProcessRunner.runProces(cmd);
+    Assert.assertEquals(execResult.getExitCode(), 0, "Exit code must be 0");
+  }
+
+  @Test
+  public void test_list_versions() throws IOException {
+    final NuGet nuget = NuGet.NuGet_1_5;
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("list");
+    cmd.addParameter("jpkg");
+    cmd.addParameter("-AllVersions");
+    cmd.addParameter("-Source");
+    cmd.addParameter(myFeedUrl);
+
+    final ExecResult execResult = ProcessRunner.runProces(cmd);
+    Assert.assertEquals(execResult.getExitCode(), 0, "Exit code must be 0");
+  }
+
+  @Test
+  public void test_install_any() throws IOException {
+    final NuGet nuget = NuGet.NuGet_1_5;
+    final File temp = createTempDir();
+
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("install");
+    cmd.addParameter("jpkg");
+    cmd.addParameter("-Source");
+    cmd.addParameter(myFeedUrl);
+    cmd.addParameter("-OutputDirectory");
+    cmd.addParameter(temp.getPath());
+
+    final ExecResult execResult = ProcessRunner.runProces(cmd);
+    Assert.assertEquals(execResult.getExitCode(), 0, "Exit code must be 0");
+  }
+
+  @Test
+  public void test_install_version() throws IOException {
+    final NuGet nuget = NuGet.NuGet_1_5;
+    final File temp = createTempDir();
+
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("install");
+    cmd.addParameter("jpkg");
+    cmd.addParameter("-Version");
+    cmd.addParameter("5.4.32");
+    cmd.addParameter("-Source");
+    cmd.addParameter(myFeedUrl);
+    cmd.addParameter("-OutputDirectory");
+    cmd.addParameter(temp.getPath());
+
+    final ExecResult execResult = ProcessRunner.runProces(cmd);
+    Assert.assertEquals(execResult.getExitCode(), 0, "Exit code must be 0");
+  }
+
 }
