@@ -28,6 +28,7 @@ import org.testng.Assert;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -36,12 +37,12 @@ import java.util.List;
  * Date: 06.09.11 1:02
  */
 public abstract class XmlTestBase extends BaseTestCase {
-  public static final String ATOM = "http://www.w3.org/2005/Atom";
 
   protected static enum Schemas {
-    X("x", ATOM),
+    X("x", "http://www.w3.org/2005/Atom"),
     M("m", "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"),
-    D("d", "http://schemas.microsoft.com/ado/2007/08/dataservices")
+    D("d", "http://schemas.microsoft.com/ado/2007/08/dataservices"),
+    A("a", "http://www.w3.org/2007/app"),
     ;
     private final String myMappged;
     private final String myUrl;
@@ -61,8 +62,9 @@ public abstract class XmlTestBase extends BaseTestCase {
   }
 
 
-  protected void assertXml(String gold, String actual) throws JDOMException, IOException {
-    final String xml = p(actual);
+  protected void assertXml(String gold, String actual, XmlPatchAction... extra) throws JDOMException, IOException {
+    Collection<XmlPatchAction> extras = Arrays.asList(extra);
+    final String xml = p(actual, extras);
 
     System.out.println(xml);
 
@@ -70,15 +72,15 @@ public abstract class XmlTestBase extends BaseTestCase {
     File tmp = new File(goldFile.getPath() + ".tmp");
     FileUtil.writeFile(tmp, xml);
 
-    final String expected = p(new String(FileUtil.loadFileText(goldFile, "utf-8")));
+    final String expected = p(new String(FileUtil.loadFileText(goldFile, "utf-8")), extras);
 
     Assert.assertEquals(xml, expected);
     FileUtil.delete(tmp);
   }
 
-  protected String p(String s) throws JDOMException {
+  protected String p(String s, Collection<XmlPatchAction> extra) throws JDOMException {
     Element el = XmlUtil.from_s(s);
-    preprocessXml(el);
+    preprocessXml(el, extra);
     return XmlUtil.to_s(el).trim().replaceAll("[\r\n]+", "\n");
   }
 
@@ -90,10 +92,10 @@ public abstract class XmlTestBase extends BaseTestCase {
 //            new RemoveElement("/x:feed/x:entry/x:link[@rel='edit-media']")
   }
 
-  protected void preprocessXml(Element el) throws JDOMException {
+  protected void preprocessXml(Element el, Collection<XmlPatchAction> extra) throws JDOMException {
     final Collection<XmlPatchAction> repaces = new ArrayList<XmlPatchAction>();
-
     registerXmlPreprocessors(repaces);
+    repaces.addAll(extra);
 
     for (XmlPatchAction replace : repaces) {
       XPath xPath = XPath.newInstance(replace.getXPath());
