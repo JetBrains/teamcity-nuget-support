@@ -64,9 +64,31 @@ public class NuGetFeedRendererTest extends XmlTestBase {
   @Test
   public void test_one_package_ninject_mvc_2_2_2_0() throws XMLStreamException, IOException, JDOMException, PackageLoadException {
     LocalNuGetPackageItemsFactory f = new LocalNuGetPackageItemsFactory();
-    final NuGetItem item = f.createPackage("aaa", Paths.getTestDataPath("packages/Ninject.MVC3.2.2.2.0.nupkg"));
+    final NuGetItem item = f.createPackage("teamcity url", Paths.getTestDataPath("packages/Ninject.MVC3.2.2.2.0.nupkg"), true, false);
     String s = testRender(Arrays.asList(item));
 
     assertXml("reader/feed-ninject.mvc3.latest.xml", s);
+  }
+
+  @Override
+  protected void registerXmlPreprocessors(@NotNull Collection<XmlPatchAction> result) throws JDOMException {
+    super.registerXmlPreprocessors(result);
+    result.add(new SetContentXmlPatchAction("/x:feed/x:updated", ".*", "UPDATED"));
+    result.add(new SetContentXmlPatchAction("/x:feed/x:entry/x:updated", ".*", "UPDATED"));
+    result.add(new RemoveElement("/x:feed/x:author"));
+    result.add(new RemoveElement("/x:feed/x:entry/x:link[@rel='edit']"));
+    result.add(new RemoveElement("/x:feed/x:entry/x:link[@rel='edit-media']"));
+    result.add(new RemoveElement("/x:feed/x:entry/x:link[@title='Screenshots']"));
+
+    for (String name : Arrays.asList(
+            "Copyright", "VersionRating", "VersionRatingsCount",
+            "VersionDownloadCount",  "Created", "LastUpdated",
+            "Published", "ExternalPackageUrl", "IconUrl",
+            "Rating", "RatingsCount", "DownloadCount",
+            "ReportAbuseUrl", "GalleryDetailsUrl")) {
+      result.add(new CleanElement("/x:feed/x:entry/m:properties/d:" + name));
+    }
+
+    result.add(new CleanAttribute("/x:feed/x:entry/x:content", Schemas.X, "src"));
   }
 }

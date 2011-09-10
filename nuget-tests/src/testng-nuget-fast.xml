@@ -12,6 +12,13 @@
     </classes>
   </test>
 
+  <test name="feed">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.feed.NuGetFeedRendererTest"/>
+    </classes>
+  </test>
+
   <test name="fast tests">
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.RunTypeNameTest"/>
