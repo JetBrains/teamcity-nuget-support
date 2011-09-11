@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/nuget-feed/nuget-feed.iml" filepath="$PROJECT_DIR$/nuget-feed/nuget-feed.iml" />
       <module fileurl="file://$PROJECT_DIR$/nuget-server/nuget-server.iml" filepath="$PROJECT_DIR$/nuget-server/nuget-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/nuget-tests/nuget-tests.iml" filepath="$PROJECT_DIR$/nuget-tests/nuget-tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/odata4j/odata4j.iml" filepath="$PROJECT_DIR$/odata4j/odata4j.iml" />
     </modules>
   </component>
 </project>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="core4j">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/core4j/core4j-0.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/core4j/core4j-0.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
