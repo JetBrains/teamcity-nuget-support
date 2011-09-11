@@ -36,7 +36,7 @@ public enum NuGet {
       case NuGet_1_4:
         return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.4/NuGet.exe"));
       case NuGet_1_5:
-        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.4/NuGet.exe"));
+        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.5/NuGet.exe"));
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }
