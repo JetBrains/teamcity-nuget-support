@@ -21,7 +21,7 @@
 
 <l:settingsGroup title="NuGet settings">
   <tr>
-    <th>NuGet.exe<l:star/></th>
+    <th>NuGet.exe<l:star/>:</th>
     <td>
       <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
     </td>

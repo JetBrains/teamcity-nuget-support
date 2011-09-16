@@ -21,13 +21,13 @@
 
 <l:settingsGroup title="NuGet settings">
   <tr>
-    <th>NuGet.exe<l:star/></th>
+    <th>NuGet.exe<l:star/>:</th>
     <td>
       <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
     </td>
   </tr>
   <tr>
-    <th>Package Sources</th>
+    <th>Package Sources:</th>
     <td>
       <props:multilineProperty name="${ib.nuGetSourcesKey}"
                                linkTitle="Sources"
@@ -35,7 +35,7 @@
                                expanded="${true}"/>
       <span class="smallNote">
         Specify NuGet package sources.
-        Leave blank to let NuGet decided what package repository to use (nuget.org by default).
+        Leave blank to let NuGet decide what package repository to use.
       </span>
       <span class="error" id="error_${ib.nuGetSourcesKey}"></span>
     </td>
@@ -44,7 +44,7 @@
 
 <l:settingsGroup title="Packages">
   <tr>
-    <th>Path to solution file</th>
+    <th>Path to solution file:</th>
     <td>
       <props:textProperty name="${ib.solutionPathKey}" className="longField"/>
       <span class="smallNote">Specify path to Visual Studio solution file (.sln)</span>
@@ -52,7 +52,7 @@
     </td>
   </tr>
   <tr>
-    <th>Options</th>
+    <th>Options:</th>
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       Exclude version from package folder names

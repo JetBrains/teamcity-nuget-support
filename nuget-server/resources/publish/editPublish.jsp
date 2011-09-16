@@ -21,24 +21,24 @@
 
 <l:settingsGroup title="NuGet settings">
   <tr>
-    <th>NuGet.exe<l:star/></th>
+    <th>NuGet.exe<l:star/>:</th>
     <td>
       <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
     </td>
   </tr>
   <tr>
-    <th>Package Sources</th>
+    <th>Package Sources:</th>
     <td>
       <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
       <span class="smallNote">
         Specify NuGet package sources to push package.
-        Leave blank to let NuGet decided what package repository to use (nuget.org by default).
+        Leave blank to let NuGet decide what package repository to use.
       </span>
       <span class="error" id="error_${ib.nuGetSourceKey}"></span>
     </td>
   </tr>
   <tr>
-    <th>API key:<l:star/></th>
+    <th>API key<l:star/>:</th>
     <td>
       <props:passwordProperty name="${ib.apiKey}" className="longField"/>
       <span class="smallNote">
@@ -51,7 +51,7 @@
 
 <l:settingsGroup title="Packages">
   <tr>
-    <th>Packages to uploads:<l:star/></th>
+    <th>Packages to upload<l:star/>:</th>
     <td>
       <props:multilineProperty name="${ib.nuGetPublishFilesKey}" linkTitle="Packages files"
                                cols="60" rows="5"
@@ -65,7 +65,7 @@
     <th>Options:</th>
     <td>
       <props:checkboxProperty name="${ib.nuGetPublishCreateOnlyKey}"/>
-      Only upload package but do not pusblish it to feed.
+      Only upload package but do not publish it to feed.
       <span class="smallNote">
         Specifies if the package should be created and uploaded to the server but not published to the server.
       </span>

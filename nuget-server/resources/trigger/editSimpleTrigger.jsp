@@ -20,7 +20,7 @@
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.trigger.TriggerBean" scope="request"/>
 
 <tr>
-  <th>NuGet.exe<l:star/></th>
+  <th>NuGet.exe<l:star/>:</th>
   <td>
     <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetExeKey}&style=width:20em"/>
   </td>
