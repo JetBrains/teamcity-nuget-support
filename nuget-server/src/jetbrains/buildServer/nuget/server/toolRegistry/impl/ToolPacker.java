@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
@@ -32,8 +33,10 @@ import java.util.zip.ZipOutputStream;
  * Date: 15.08.11 20:51
  */
 public class ToolPacker {
+  private static final Logger LOG = Logger.getInstance(ToolPacker.class.getName());
 
   public void packTool(@NotNull final File tool, @NotNull final File rootDir) throws IOException {
+    LOG.info("Creating nuget agent tool package at: " + tool);
     FileUtil.createParentDirs(tool);
     final ZipOutputStream fos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(tool)));
     try {
