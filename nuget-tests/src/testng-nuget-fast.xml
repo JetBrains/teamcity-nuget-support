@@ -47,6 +47,8 @@
 
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackRunnerTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.AgentToolsRegistrarTest"/>
     </classes>
   </test>
 </suite>

@@ -16,16 +16,25 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
-import jetbrains.buildServer.serverSide.impl.agent.AgentPluginsHolder;
+import jetbrains.buildServer.serverSide.impl.agent.AgentPluginsHolderBase;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 16.08.11 15:21
- */
-public class AgentToolsRegistrar {
-  public AgentToolsRegistrar(@NotNull final AgentPluginsHolder holder,
-                             @NotNull final ToolPaths paths) {
-    holder.addAgentPlugins(new NuGetAgentToolHolder(paths));
+* @author Eugene Petrenko (eugene.petrenko@gmail.com)
+*         Date: 22.09.11 11:53
+*/
+public class NuGetAgentToolHolder extends AgentPluginsHolderBase {
+  private final ToolPaths myPaths;
+
+  public NuGetAgentToolHolder(@NotNull final ToolPaths paths) {
+    myPaths = paths;
+  }
+
+  @NotNull
+  @Override
+  protected File getAgentPluginsDirectory() {
+    return myPaths.getAgentPluginsPath();
   }
 }
