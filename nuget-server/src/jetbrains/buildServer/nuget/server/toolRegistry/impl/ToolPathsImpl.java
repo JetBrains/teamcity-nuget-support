@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import jetbrains.buildServer.serverSide.ServerPaths;
+import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -36,7 +37,7 @@ public class ToolPathsImpl implements ToolPaths {
     final File pkgs = new File(myPluginRoot, path);
     //noinspection ResultOfMethodCallIgnored
     pkgs.mkdirs();
-    return pkgs;
+    return FileUtil.getCanonicalFile(pkgs);
   }
 
   @NotNull
