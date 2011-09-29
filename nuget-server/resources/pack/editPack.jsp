@@ -33,7 +33,7 @@
     <th><label for="${ib.packSpecFile}">Specification file</label><l:star/>:</th>
     <td>
       <props:textProperty name="${ib.packSpecFile}" className="longField"/>
-      <span class="smallNote">Specify path to project of .nuspec file</span>
+      <span class="smallNote">Specify path to project of .nuspec file or to a project file (.csproj)</span>
       <span id="error_${ib.packSpecFile}" class="error"></span>
     </td>
   </tr>
