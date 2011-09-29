@@ -24,7 +24,6 @@ import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPathsImpl;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
-import org.jmock.Mockery;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -44,8 +43,6 @@ public class AgentToolsRegistrarTest extends BaseTestCase {
 
     final File home = new File(createTempDir(), "aAbB");
 
-
-    Mockery m = new Mockery();
     final ToolPaths paths = new ToolPathsImpl(new ServerPaths(home.getPath().toUpperCase()));
     NuGetAgentToolHolder h = new NuGetAgentToolHolder(paths);
 
