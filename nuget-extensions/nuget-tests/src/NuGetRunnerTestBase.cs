@@ -44,7 +44,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
             File.Copy(NuGetExe, destNuGet);            
             File.Copy(Files.NuGetRunnerExe, destRunner);
             const string ext = "JetBrains.TeamCity.NuGet.ExtendedCommands.dll";
-            File.Copy(Path.Combine(Files.NuGetRunnerExe, "../" + ext), Path.Combine(home, ext));
+            Directory.CreateDirectory(Path.Combine(home, "plugins4"));
+            File.Copy(Path.Combine(Files.NuGetRunnerExe, "../plugins4/" + ext), Path.Combine(home, "plugins4/" + ext));
 
             ProcessExecutor.ExecuteProcess(destRunner, destNuGet, "TeamCity.Ping")
               .Dump()

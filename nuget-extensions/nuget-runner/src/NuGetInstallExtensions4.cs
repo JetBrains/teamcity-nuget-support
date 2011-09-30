@@ -4,11 +4,11 @@ using System.IO;
 
 namespace JetBrains.TeamCity.NuGetRunner
 {
-  public class NuGetInstallExtensions
+  public class NuGetInstallExtensions4
   {
-    public NuGetInstallExtensions(NuGetRunner runner, IEnumerable<string> extensions)
+    public NuGetInstallExtensions4(NuGetRunner runner, IEnumerable<string> extensions)
     {
-      Func<string> computeHome = () => Path.Combine(runner.NuGetExtensionsPath.Value, "TeamCity.Extensions");
+      Func<string> computeHome = () => Path.Combine(runner.LocateNuGetExtensionsPath(), "TeamCity.Extensions");
       runner.BeforeNuGetStarted += (_, __) =>
                                      {
                                        string home = computeHome();

@@ -43,11 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Annotations.cs" />
     <Compile Include="src\AssemblyHelper.cs" />
-    <Compile Include="src\NuGetInstallExtensions.cs" />
+    <Compile Include="src\CommandLineHelper.cs" />
+    <Compile Include="src\NuGetInstallExtensions4.cs" />
+    <Compile Include="src\NuGetInstallExtensions5.cs" />
     <Compile Include="src\NuGetLoadException.cs" />
     <Compile Include="src\NuGetRunMutex.cs" />
     <Compile Include="src\NuGetRunner.cs" />
+    <Compile Include="src\NuGetRunnerExtensions.cs" />
     <Compile Include="src\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

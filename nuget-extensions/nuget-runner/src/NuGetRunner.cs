@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace JetBrains.TeamCity.NuGetRunner
@@ -15,6 +14,7 @@ namespace JetBrains.TeamCity.NuGetRunner
     private readonly Assembly myNuGetAssembly;
     private readonly List<EventHandler> myStartEvents = new List<EventHandler>();
     private readonly List<EventHandler> myFinishEvents = new List<EventHandler>();
+    private readonly Dictionary<string, string> myEnv = new Dictionary<string, string>();
 
     public NuGetRunner(string NuGetExe)
     {
@@ -29,33 +29,23 @@ namespace JetBrains.TeamCity.NuGetRunner
       catch (Exception e)
       {
         throw new NuGetLoadException("Failed to load NuGet assembly into AppDomain. " + e.Message, e);
-      }
-
-      NuGetExtensionsPath = new Lazy<string>(LocateNuGetExtensionsPath);
+      }    
     }
 
-    private string LocateNuGetExtensionsPath()
+    public Version NuGetVersion
     {
-      var mi = myNuGetAssembly.EntryPoint.DeclaringType;
-      foreach (
-        var type in
-          new Func<Type>[] {() => mi.DeclaringType, () => myNuGetAssembly.GetType("NuGet.Program")}.Select(Compute).
-            Where(x => x != null))
-      {
-        var field = type.GetField("ExtensionsDirectoryRoot",
-                                  BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
-        if (field != null && field.FieldType == typeof (string))
-        {
-          var extensionsPath = field.GetValue(null) as string;
-          if (extensionsPath != null)
-            return extensionsPath;
-        }
-      }
-      //This is explicit path value taken from NuGet source code
-      return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NuGet", "Commands");
+      get { return myNuGetAssembly.GetName().Version; }
     }
 
-    public Lazy<string> NuGetExtensionsPath { get; private set; }
+    public Assembly NuGetAssembly
+    {
+      get { return myNuGetAssembly; }
+    }
+
+    public void AddEnvironmentVariable(string key, string value)
+    {
+      myEnv.Add(key, value);
+    }
 
     public event EventHandler BeforeNuGetStarted { add { myStartEvents.Add(value); } remove { myStartEvents.Remove(value);  } }
     public event EventHandler AfterNuGetFinished { add { myFinishEvents.Add(value); } remove { myFinishEvents.Remove(value); } }
@@ -80,17 +70,23 @@ namespace JetBrains.TeamCity.NuGetRunner
 
       try
       {
-        var process = Process.Start(new ProcessStartInfo
-                                      {
-                                        FileName = myNuGetExe,
-                                        //TODO use escapring safe escaping here.
-                                        Arguments = string.Join(" ", argz.Select(x=>x.IndexOfAny(" \t\n\r".ToCharArray()) >=0 ? "\"" + x + "\"" : x)),
-                                        UseShellExecute = false,
-                                        RedirectStandardInput = true, 
-                                        RedirectStandardError = true, 
-                                        RedirectStandardOutput = true, 
-                                        CreateNoWindow = true,
-                                      });
+        var pi = new ProcessStartInfo
+                                 {
+                                   FileName = myNuGetExe,
+                                   //TODO use escapring safe escaping here.
+                                   Arguments = CommandLineHelper.Join(argz),
+                                   UseShellExecute = false,
+                                   RedirectStandardInput = true, 
+                                   RedirectStandardError = true, 
+                                   RedirectStandardOutput = true, 
+                                   CreateNoWindow = true,                                        
+                                 };
+        foreach (var e in myEnv)
+        {          
+          pi.EnvironmentVariables.Add(e.Key, e.Value);
+        }
+        var process = Process.Start(pi);
+        
 
         process.StandardInput.Close();
         Func<StreamReader, TextWriter, Thread> readOutput = (si, so) =>
@@ -120,18 +116,6 @@ namespace JetBrains.TeamCity.NuGetRunner
       finally
       {
         CallEvents(Enumerable.Reverse(myFinishEvents));
-      }
-    }
-
-    private static T Compute<T>(Func<T> func) where T : class
-    {
-      try
-      {
-        return func();
-      }
-      catch
-      {
-        return null;
       }
     }
   }
