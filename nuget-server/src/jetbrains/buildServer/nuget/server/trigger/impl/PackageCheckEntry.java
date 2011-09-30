@@ -38,8 +38,8 @@ public class PackageCheckEntry {
   private final AtomicReference<CheckResult> myResult = new AtomicReference<CheckResult>();
   private final AtomicBoolean myExecuting = new AtomicBoolean();
 
-  PackageCheckEntry(@NotNull final PackageCheckRequest key,
-                    @NotNull final TimeService time) {
+  public PackageCheckEntry(@NotNull final PackageCheckRequest key,
+                           @NotNull final TimeService time) {
     myKey = key;
     myTime = time;
     updateTimes();
