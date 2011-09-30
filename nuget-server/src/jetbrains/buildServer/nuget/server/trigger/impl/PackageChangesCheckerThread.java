@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.util.NamedDeamonThreadFactory;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,11 +32,11 @@ import java.util.concurrent.TimeUnit;
  *         Date: 30.09.11 14:30
  */
 public class PackageChangesCheckerThread {
-  private final ScheduledExecutorService myExecutor = Executors.newScheduledThreadPool(4, new NamedDeamonThreadFactory("NuGet triggers"));
-  private final PackageChangesManagerImpl myHolder;
+  private final ScheduledExecutorService myExecutor = Executors.newScheduledThreadPool(TeamCityProperties.getInteger("teamcity.nuget.trigger.pool", 4), new NamedDeamonThreadFactory("NuGet triggers"));
+  private final PackageCheckQueue myHolder;
   private final Collection<PackageChecker> myCheckers;
 
-  public PackageChangesCheckerThread(@NotNull final PackageChangesManagerImpl holder,
+  public PackageChangesCheckerThread(@NotNull final PackageCheckQueue holder,
                                      @NotNull final Collection<PackageChecker> checkers) {
     myHolder = holder;
     myCheckers = checkers;

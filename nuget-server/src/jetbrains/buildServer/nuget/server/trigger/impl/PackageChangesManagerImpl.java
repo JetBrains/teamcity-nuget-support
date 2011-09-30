@@ -29,7 +29,7 @@ import java.util.List;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 30.09.11 14:11
  */
-public class PackageChangesManagerImpl implements PackageChangesManager {
+public class PackageChangesManagerImpl implements PackageChangesManager, PackageCheckQueue {
   private static final long CHECK_THREASHOLD = 10 * 1000; //tasks precision in 10sec
   private static final long MAX_SLEEP_THREASHOLD = 5 * 60 * 1000; //check triggers every 5mins
 
