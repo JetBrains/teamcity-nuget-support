@@ -35,6 +35,7 @@
 
       <class name="jetbrains.buildServer.nuget.tests.server.ThreadedBuildTriggerPolicyTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.NamedPackagesUpdateCheckerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesManagerTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.agent.MatchFilesBuildProcessTest"/>
 
