@@ -31,8 +31,13 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       return packageRepository.GetPackages().Where(Expression.Lambda<Func<IPackage, bool>>(result, param));
     }
 
-    protected static void PrintPackageInfo(IPackage p)
-    {
+    /// <summary>
+    /// There was a change in signature in NuGet poset 1.5. IPackage.get_Version now returns Semantic version instead of Version
+    /// Here is no difference here, so we can stick to dynamic object as there are tests for this method.
+    /// </summary>
+    /// <param name="p">IPackage</param>
+    protected static void PrintPackageInfo(dynamic p)
+    {    
       var msg = ServiceMessageFormatter.FormatMessage(
         "nuget-package",
         new ServiceMessageProperty("Id", p.Id),

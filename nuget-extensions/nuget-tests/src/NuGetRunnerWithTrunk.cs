@@ -7,7 +7,6 @@ using NUnit.Framework;
 namespace JetBrains.TeamCity.NuGet.Tests
 {  
   [TestFixture("bt4")]
-  [TestFixture("bt23")]  
   public class NuGetRunnerWithTrunk
   {
     private readonly Lazy<string> home;

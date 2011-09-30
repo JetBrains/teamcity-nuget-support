@@ -45,8 +45,9 @@ namespace JetBrains.TeamCity.NuGetRunner
 
     private static void ConfigureExtensions(NuGetRunner runner)
     {
-      if (runner.NuGetVersion.Major == 1 && runner.NuGetVersion.Minor == 4)
+      if (runner.NuGetVersion.Major == 1 && runner.NuGetVersion.Minor <= 4 && runner.NuGetVersion.Revision < 20905)
       {
+        Console.Out.WriteLine("Using shared plugin and mutex");
         new NuGetRunMutex(runner);
         new NuGetInstallExtensions4(runner, Extensions(runner));
       }
