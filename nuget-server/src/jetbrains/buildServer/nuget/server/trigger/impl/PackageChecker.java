@@ -18,20 +18,21 @@ package jetbrains.buildServer.nuget.server.trigger.impl;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
+import java.util.Collection;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 30.09.11 15:23
+ *         Date: 30.09.11 16:37
  */
-public class CheckRequestModeFactory {
-  @NotNull
-  public CheckRequestMode createNuGetChecker(@NotNull final File nugetPath) {
-    return new CheckRequestModeNuGet(nugetPath);
-  }
+public interface PackageChecker {
 
-  @NotNull
-  public CheckRequestMode craeteJavaChecker() {
-    return new CheckRequestModeTeamCity();
-  }
+  boolean accept(@NotNull PackageCheckRequest request);
+
+  /**
+   * Implementation should schedule update of given type as a task in the executor
+   * @param executor executor to perform work
+   * @param entries requests to check
+   */
+  void update(@NotNull ExecutorService executor, @NotNull Collection<PackageCheckEntry> entries);
 }

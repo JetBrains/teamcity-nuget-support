@@ -31,7 +31,6 @@ import org.testng.annotations.Test;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -102,9 +101,6 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     advanceTime(10000);
 
     Assert.assertEquals(myManager.getItemsToCheckNow().size(), 2);
-    for (List<PackageCheckEntry> set : myManager.getItemsToCheckNow().values()) {
-      Assert.assertEquals(set.size(),  1);
-    }
   }
 
   @Test
@@ -117,9 +113,6 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     advanceTime(10000);
 
     Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
-    for (List<PackageCheckEntry> set : myManager.getItemsToCheckNow().values()) {
-      Assert.assertEquals(set.size(),  1);
-    }
   }
 
   @Test
@@ -131,10 +124,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     checkAll(a1, a2, a3);
     advanceTime(10000);
 
-    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
-    for (List<PackageCheckEntry> set : myManager.getItemsToCheckNow().values()) {
-      Assert.assertEquals(set.size(),  3);
-    }
+    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 3);
   }
 
 

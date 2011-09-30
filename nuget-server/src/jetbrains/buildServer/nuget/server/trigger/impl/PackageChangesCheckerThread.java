@@ -16,12 +16,12 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
-import jetbrains.buildServer.util.MultiMap;
 import jetbrains.buildServer.util.NamedDeamonThreadFactory;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,9 +33,12 @@ import java.util.concurrent.TimeUnit;
 public class PackageChangesCheckerThread {
   private final ScheduledExecutorService myExecutor = Executors.newScheduledThreadPool(4, new NamedDeamonThreadFactory("NuGet triggers"));
   private final PackageChangesManagerImpl myHolder;
+  private final Collection<PackageChecker> myCheckers;
 
-  public PackageChangesCheckerThread(@NotNull final PackageChangesManagerImpl holder) {
+  public PackageChangesCheckerThread(@NotNull final PackageChangesManagerImpl holder,
+                                     @NotNull final Collection<PackageChecker> checkers) {
     myHolder = holder;
+    myCheckers = checkers;
   }
 
   public void stopPackagesCheck() {
@@ -45,23 +48,32 @@ public class PackageChangesCheckerThread {
   public void startPackagesCheck() {
     myExecutor.submit(new Runnable() {
       public void run() {
-        final MultiMap<CheckRequestMode,PackageCheckEntry> toCheck = myHolder.getItemsToCheckNow();
-        for (final Map.Entry<CheckRequestMode, List<PackageCheckEntry>> entry : toCheck.entrySet()) {
-
-          final CheckRequestMode mode = entry.getKey();
-          final List<PackageCheckEntry> values = entry.getValue();
-
-          for (PackageCheckEntry p : values) {
-            p.setExecuting();
+        for (final PackageChecker checker : myCheckers) {
+          final List<PackageCheckEntry> items = getMatchedItems(checker, myHolder.getItemsToCheckNow());
+          if (items.size() > 0) {
+            checker.update(myExecutor, items);
           }
-
-          mode.checkForUpdates(myExecutor, values);
         }
 
         myHolder.cleaupObsolete();
         myExecutor.schedule(this, myHolder.getSleepTime(), TimeUnit.MILLISECONDS);
       }
+
+      @NotNull
+      private List<PackageCheckEntry> getMatchedItems(@NotNull final PackageChecker checker,
+                                                      @NotNull final Collection<PackageCheckEntry> toCheck) {
+        final List<PackageCheckEntry> items = new ArrayList<PackageCheckEntry>();
+        for (PackageCheckEntry entry : toCheck) {
+          if (checker.accept(entry.getRequest())) {
+            //mark as pending
+            entry.setExecuting();
+            items.add(entry);
+          }
+        }
+        return items;
+      }
     });
   }
+
 
 }

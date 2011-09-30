@@ -16,22 +16,9 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 30.09.11 15:23
+ *         Date: 30.09.11 16:44
  */
-public class CheckRequestModeFactory {
-  @NotNull
-  public CheckRequestMode createNuGetChecker(@NotNull final File nugetPath) {
-    return new CheckRequestModeNuGet(nugetPath);
-  }
-
-  @NotNull
-  public CheckRequestMode craeteJavaChecker() {
-    return new CheckRequestModeTeamCity();
-  }
+public class CheckRequestModeTeamCity implements CheckRequestMode {
 }

@@ -8,7 +8,14 @@
   <bean class="jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.NuGetSimpleTrigger"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesManagerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesCheckerThread"/>
+  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesCheckerThread">
+    <constructor-arg>
+      <list>
+        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerTeamCity"/>
+        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGet"/>
+      </list>
+    </constructor-arg>
+  </bean>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeFactory"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesCheckerStarter"/>
 

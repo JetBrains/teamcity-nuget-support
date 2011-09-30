@@ -16,20 +16,9 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
-import java.util.concurrent.ScheduledExecutorService;
-
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 30.09.11 13:56
  */
 public interface CheckRequestMode {
-  /**
-   * Implementation should schedule update of given type as a task in the executor
-   * @param executor executor to perform work
-   * @param value requests to check
-   */
-  void checkForUpdates(@NotNull ScheduledExecutorService executor, @NotNull Collection<PackageCheckEntry> value);
 }

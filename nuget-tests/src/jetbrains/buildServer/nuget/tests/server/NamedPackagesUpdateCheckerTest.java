@@ -66,9 +66,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     store = m.mock(CustomDataStorage.class);
     params = new TreeMap<String, String>();
     manager = m.mock(NuGetToolManager.class);
-    final NuGetFeedReader reader = m.mock(NuGetFeedReader.class);
 
-    checker = new NamedPackagesUpdateChecker(manager, new PackageChangesManagerImpl(new SystemTimeService()), new CheckRequestModeFactory(reader, cmd));
+    checker = new NamedPackagesUpdateChecker(manager, new PackageChangesManagerImpl(new SystemTimeService()), new CheckRequestModeFactory());
     nugetFakePath = Paths.getNuGetRunnerPath();
     final String path = nugetFakePath.getPath();
 

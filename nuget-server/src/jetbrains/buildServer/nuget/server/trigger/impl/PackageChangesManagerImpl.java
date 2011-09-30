@@ -16,12 +16,12 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
-import jetbrains.buildServer.util.MultiMap;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -77,8 +77,8 @@ public class PackageChangesManagerImpl implements PackageChangesManager {
   }
 
   @NotNull
-  public MultiMap<CheckRequestMode, PackageCheckEntry> getItemsToCheckNow() {
-    final MultiMap<CheckRequestMode, PackageCheckEntry> entries = new MultiMap<CheckRequestMode, PackageCheckEntry>();
+  public Collection<PackageCheckEntry> getItemsToCheckNow() {
+    final Collection<PackageCheckEntry> entries = new ArrayList<PackageCheckEntry>();
     final long now = myTimeService.now();
 
     synchronized (myEntries) {
@@ -86,7 +86,7 @@ public class PackageChangesManagerImpl implements PackageChangesManager {
         if (entry.isExecuting()) continue;
         //skip other mode
         if (entry.getNextCheckTime() - now < CHECK_THREASHOLD) {
-          entries.putValue(entry.getMode(), entry);
+          entries.add(entry);
         }
       }
     }
