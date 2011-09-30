@@ -20,5 +20,5 @@
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming"/>
 
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.AgentToolsRegistrar"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher" init-method="start" destroy-method="dispose"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcherImpl" init-method="start" destroy-method="dispose"/>
 </beans>

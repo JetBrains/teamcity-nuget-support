@@ -28,6 +28,7 @@ public interface ToolPaths {
   @NotNull
   File getTools();
 
+  @NotNull
   File getAgentPluginsPath();
 
   @NotNull

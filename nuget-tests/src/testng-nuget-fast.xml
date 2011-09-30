@@ -50,6 +50,7 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.PackRunnerTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AgentToolsRegistrarTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolsRegistryTest"/>
     </classes>
   </test>
 </suite>

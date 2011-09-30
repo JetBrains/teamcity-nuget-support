@@ -26,9 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -69,7 +67,7 @@ public class ToolsRegistry {
     final File[] tools = myPaths.getPackages().listFiles(IS_PACKAGE);
     if (tools == null) return Collections.emptyList();
 
-    final Collection<InstalledTool> result = new ArrayList<InstalledTool>();
+    final List<InstalledTool> result = new ArrayList<InstalledTool>();
     for (final File path : tools) {
       final InstalledTool e = new InstalledTool(myNaming, path);
       if (!e.getPath().isFile()) {
@@ -83,6 +81,38 @@ public class ToolsRegistry {
       }
       result.add(e);
     }
+
+    Collections.sort(result, new Comparator<InstalledTool>() {
+      private int parse(String s) {
+        try {
+          s = s.trim();
+          return Integer.parseInt(s);
+        } catch (Throwable t) {
+          return -1;
+        }
+      }
+
+      public int compare(InstalledTool o1, InstalledTool o2) {
+        final String[] version1 = o1.getVersion().split("\\.");
+        final String[] version2 = o2.getVersion().split("\\.");
+
+        for(int j = 0, jmax = Math.min(version1.length, version2.length); j < jmax; j++) {
+          int v1 = parse(version1[j]);
+          int v2 = parse(version2[j]);
+          if (v1 < v2) return -1;
+          if (v1 > v2) return 1;
+
+          int i;
+          if (v1 == -1 && v2 == -1 && (i = version1[j].compareToIgnoreCase(version2[j]))!= 0) {
+            return i;
+          }
+        }
+
+        if (version1.length > version2.length) return -1;
+        return 1;
+      }
+    });
+
     return result;
   }
 

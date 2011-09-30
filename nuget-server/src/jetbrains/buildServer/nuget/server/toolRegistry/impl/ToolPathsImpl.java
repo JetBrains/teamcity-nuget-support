@@ -50,6 +50,7 @@ public class ToolPathsImpl implements ToolPaths {
     return relative("tools");
   }
 
+  @NotNull
   public File getAgentPluginsPath() {
     return relative("agent");
   }

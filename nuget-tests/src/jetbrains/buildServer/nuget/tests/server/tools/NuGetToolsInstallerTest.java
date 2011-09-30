@@ -54,7 +54,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
             myPaths,
             myFeed,
             myState,
-            new ToolsWatcher(
+            new ToolsWatcherImpl(
                     myPaths,
                     new ToolPacker(),
                     new ToolUnpacker()
