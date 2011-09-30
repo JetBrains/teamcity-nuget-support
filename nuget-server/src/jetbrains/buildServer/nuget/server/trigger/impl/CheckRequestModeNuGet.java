@@ -35,4 +35,18 @@ public class CheckRequestModeNuGet implements CheckRequestMode {
   public File getNuGetPath() {
     return myNuGetPath;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CheckRequestModeNuGet that = (CheckRequestModeNuGet) o;
+    return myNuGetPath.equals(that.myNuGetPath);
+  }
+
+  @Override
+  public int hashCode() {
+    return myNuGetPath.hashCode();
+  }
 }

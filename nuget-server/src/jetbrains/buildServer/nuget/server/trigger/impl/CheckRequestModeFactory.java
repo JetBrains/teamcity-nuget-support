@@ -25,13 +25,15 @@ import java.io.File;
  *         Date: 30.09.11 15:23
  */
 public class CheckRequestModeFactory {
+  private final CheckRequestModeTeamCity myTeamCityMode = new CheckRequestModeTeamCity();
+
   @NotNull
   public CheckRequestMode createNuGetChecker(@NotNull final File nugetPath) {
     return new CheckRequestModeNuGet(nugetPath);
   }
 
   @NotNull
-  public CheckRequestMode craeteJavaChecker() {
-    return new CheckRequestModeTeamCity();
+  public CheckRequestMode createTeamCityChecker() {
+    return myTeamCityMode;
   }
 }

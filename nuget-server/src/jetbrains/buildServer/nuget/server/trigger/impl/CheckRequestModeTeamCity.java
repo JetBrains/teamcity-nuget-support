@@ -21,4 +21,5 @@ package jetbrains.buildServer.nuget.server.trigger.impl;
  *         Date: 30.09.11 16:44
  */
 public class CheckRequestModeTeamCity implements CheckRequestMode {
+
 }
