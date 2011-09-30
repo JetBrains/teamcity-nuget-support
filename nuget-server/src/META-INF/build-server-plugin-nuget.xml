@@ -15,15 +15,6 @@
   <bean class="jetbrains.buildServer.nuget.server.exec.NuGetExecutorImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.exec.ListPackagesCommandImpl"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.trigger.ThreadedBuildTriggetFactoryImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.NuGetSimpleTrigger"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesManagerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesCheckerThread"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeFactory"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesCheckerStarter"/>
-
-
   <bean class="jetbrains.buildServer.nuget.server.show.NuGetDownloadedPackagesTab"/>
 
 
