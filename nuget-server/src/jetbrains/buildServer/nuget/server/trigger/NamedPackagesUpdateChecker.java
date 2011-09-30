@@ -68,10 +68,15 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     );
 
 
-    final CheckResult result = myPackageChangesManager.checkPackage(checkRequest);
-    //no change available
-    if (result == null) return null;
+    CheckResult result;
+    try {
+      result = myPackageChangesManager.checkPackage(checkRequest);
+      //no change available
+    } catch (Throwable t) {
+      result = CheckResult.failed(t.getMessage());
+    }
 
+    if (result == null) return null;
     final String error = result.getError();
     if (error != null) {
       throw new BuildTriggerException("Failed to check for package versions. " + error);
