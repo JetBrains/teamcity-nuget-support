@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NuGet">
@@ -43,6 +45,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\nuget-runner\src\Annotations.cs">
+      <Link>src\Annotations.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-runner\src\AssemblyHelper.cs">
+      <Link>src\AssemblyHelper.cs</Link>
+    </Compile>
+    <Compile Include="src\AssemblyResolver.cs" />
     <Compile Include="src\CommandBase.cs" />
     <Compile Include="src\ListCommandBase.cs" />
     <Compile Include="src\NuGetTeamCityListCommand.cs" />

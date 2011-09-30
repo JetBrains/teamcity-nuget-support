@@ -3,8 +3,17 @@ using NUnit.Framework;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {
-  [Ignore("Not yet needed in TeamCity NuGet support")]
+  
   [TestFixture]
+  public class NuGetRunner_ListPackagesCommandTest_Remote_1_5 : NuGetRunner_ListPackagesCommandTest_Remote_Base
+  {
+    protected override string NuGetExe
+    {
+      get { return Files.NuGetExe_1_5; }
+    }
+  }
+
+
   public abstract class NuGetRunner_ListPackagesCommandTest_Remote_Base : NuGetIntegrationTestBase
   {
     [Test]

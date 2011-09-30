@@ -1,20 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using NUnit.Framework;
 
 namespace JetBrains.TeamCity.NuGet.Tests
-{  
-  [TestFixture("bt4")]
-  public class NuGetRunnerWithTrunk
+{ 
+  [TestFixture]
+  public class NuGetRunnerWithTrunk : NuGetBlackBoxIntegrationTestBase
   {
-    private readonly Lazy<string> home;
-    
+    private readonly Lazy<string> home;    
     private readonly Lazy<string> nuget;
 
-    public NuGetRunnerWithTrunk(string bt)
+    public NuGetRunnerWithTrunk()
     {
+      const string bt = "bt4";
 
       home = new Lazy<string>(() =>
                                 {
@@ -46,35 +45,9 @@ namespace JetBrains.TeamCity.NuGet.Tests
       }
     }
 
-    [Test]
-    public void Test_Ping()
+    protected override ProcessExecutor.Result DoTest(params string[] argz)
     {
-      DoTest("TeamCity.Ping");
-    }
-
-    [Test]
-    public void Test_List_NUnit_Remote()
-    {
-      DoTest("TeamCity.List", "-Id", "NUnit")
-        .AssertOutputContains("##teamcity[nuget-package Id='NUnit' Version='2.5.10.11092']");
-    }
-
-    [Test]
-    public void Test_List_NUnit_Local()
-    {
-      DoTest("TeamCity.List", "-Id", "Web", "-Source", Files.LocalFeed)
-        .AssertOutputContains("##teamcity[nuget-package Id='Web' Version='1.1.1']");
-    }
-    
-    private ProcessExecutor.Result DoTest(params string[] argz)
-    {
-      var az = new List<string>();
-      az.Add(nuget.Value);
-      az.AddRange(argz);
-
-      return ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, az.ToArray())
-        .Dump()
-        .AssertExitedSuccessfully();
+      return DoTest(nuget.Value, argz);
     }
   }
 }

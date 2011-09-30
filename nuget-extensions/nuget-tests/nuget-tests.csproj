@@ -48,7 +48,9 @@
       <Link>src\AssemblyHelper.cs</Link>
     </Compile>
     <Compile Include="src\Files.cs" />
+    <Compile Include="src\NuGetBlackBoxIntegrationTestBase.cs" />
     <Compile Include="src\NuGetConstants.cs" />
+    <Compile Include="src\NuGetRunnerLatestPackageTest.cs" />
     <Compile Include="src\NuGetRunnerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\NuGetRunnerTestBase.cs" />

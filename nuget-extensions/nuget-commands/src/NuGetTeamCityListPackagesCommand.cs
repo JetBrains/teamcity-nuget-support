@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml.Serialization;
 using NuGet;
 using System.Linq;
+using JetBrains.TeamCity.NuGetRunner;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
@@ -15,6 +16,8 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     protected override void ExecuteCommandImpl()
     {
+      new AssemblyResolver(GetType().Assembly.GetAssemblyDirectory());
+
       var req = LoadRequests();
 
       if (string.IsNullOrWhiteSpace(req.Source))
