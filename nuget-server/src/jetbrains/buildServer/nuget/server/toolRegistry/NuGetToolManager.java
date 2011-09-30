@@ -34,7 +34,7 @@ public interface NuGetToolManager {
 
 
   @Nullable
-  NuGetInstalledTool getLatestTools();
+  NuGetInstalledTool getLatestNuGetTool();
 
   /**
    * @return list of tools that are installing now
