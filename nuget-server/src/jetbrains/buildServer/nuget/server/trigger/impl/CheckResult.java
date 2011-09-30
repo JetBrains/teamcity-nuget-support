@@ -35,8 +35,8 @@ public class CheckResult {
     myError = error;
   }
 
-  public static CheckResult failed(@NotNull final String error) {
-    return new CheckResult(null, error);
+  public static CheckResult failed(@Nullable final String error) {
+    return new CheckResult(null, error == null ? "Error" : error);
   }
 
   public static CheckResult succeeded(@NotNull final Collection<SourcePackageInfo> infos) {

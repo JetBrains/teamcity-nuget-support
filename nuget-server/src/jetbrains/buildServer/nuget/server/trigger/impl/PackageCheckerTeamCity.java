@@ -16,10 +16,12 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
+import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +35,8 @@ import java.util.concurrent.ExecutorService;
  *         Date: 30.09.11 16:43
  */
 public class PackageCheckerTeamCity implements PackageChecker {
+  private static final Logger LOG = Logger.getInstance(PackageCheckerTeamCity.class.getName());
+
   private final NuGetFeedReader myReader;
 
   public PackageCheckerTeamCity(@NotNull NuGetFeedReader reader) {
@@ -62,7 +66,7 @@ public class PackageCheckerTeamCity implements PackageChecker {
   public void update(@NotNull ExecutorService executor, @NotNull Collection<PackageCheckEntry> entries) {
     for (final PackageCheckEntry entry : entries) {
       entry.setExecuting();
-      executor.submit(new Runnable() {
+      executor.submit(ExceptionUtil.catchAll("Check update of NuGet package " + entry.getRequest().getPackageId(), new Runnable() {
         public void run() {
           final PackageCheckRequest req = entry.getRequest();
           try {
@@ -73,10 +77,11 @@ public class PackageCheckerTeamCity implements PackageChecker {
             }
             entry.setResult(CheckResult.succeeded(infos));
           } catch (Throwable e) {
+            LOG.warn("Failed to check changes of " + req.getPackageId() + ". " + e.getMessage(), e);
             entry.setResult(CheckResult.failed(e.getMessage()));
           }
         }
-      });
+      }));
     }
   }
 }

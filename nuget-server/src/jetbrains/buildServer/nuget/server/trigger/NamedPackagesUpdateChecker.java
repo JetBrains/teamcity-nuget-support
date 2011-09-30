@@ -73,6 +73,7 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       result = myPackageChangesManager.checkPackage(checkRequest);
       //no change available
     } catch (Throwable t) {
+      LOG.warn("Failed to ckeck changes for package: " + pkgId + ". " + t.getMessage(), t);
       result = CheckResult.failed(t.getMessage());
     }
 

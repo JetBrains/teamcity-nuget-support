@@ -29,7 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
  *         Date: 30.09.11 14:30
  */
 public class PackageChangesCheckerThread {
-  private final ScheduledExecutorService myExecutor = Executors.newScheduledThreadPool(TeamCityProperties.getInteger("teamcity.nuget.trigger.pool", 4), new NamedDeamonThreadFactory("NuGet triggers"));
+  private final ScheduledExecutorService myExecutor = Executors.newScheduledThreadPool(TeamCityProperties.getInteger("teamcity.nuget.trigger.pool", 4), new NamedDeamonThreadFactory("NuGet Packages Version Checker"));
   private final PackageCheckQueue myHolder;
   private final Collection<PackageChecker> myCheckers;
 
