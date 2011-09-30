@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.trigger;
+package jetbrains.buildServer.nuget.server.trigger.impl;
 
-import jetbrains.buildServer.buildTriggers.BuildTriggeringPolicy;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
+import java.util.concurrent.ScheduledExecutorService;
+
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 14.07.11 15:31
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 30.09.11 13:56
  */
-public class ThreadedBuildTriggetFactoryImpl implements ThreadedBuildTriggetFactory{
-  public BuildTriggeringPolicy createTrigger(@NotNull TriggerUpdateChecker updateChecker) {
-    return new ThreadedBuildTriggerPolicy(updateChecker);
-  }
+public interface CheckRequestMode {
+  /**
+   * Implementation should schedule update of given type as a task in the executor
+   * @param executor executor to perform work
+   * @param value requests to check
+   */
+  void checkForUpdates(@NotNull ScheduledExecutorService executor, @NotNull Collection<PackageCheckEntry> value);
 }

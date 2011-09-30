@@ -21,11 +21,15 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker;
 import jetbrains.buildServer.nuget.server.trigger.TriggerConstants;
+import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeFactory;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesManagerImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
+import jetbrains.buildServer.util.SystemTimeService;
 import junit.framework.Assert;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -62,8 +66,9 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     store = m.mock(CustomDataStorage.class);
     params = new TreeMap<String, String>();
     manager = m.mock(NuGetToolManager.class);
+    final NuGetFeedReader reader = m.mock(NuGetFeedReader.class);
 
-    checker = new NamedPackagesUpdateChecker(cmd, manager);
+    checker = new NamedPackagesUpdateChecker(manager, new PackageChangesManagerImpl(new SystemTimeService()), new CheckRequestModeFactory(reader, cmd));
     nugetFakePath = Paths.getNuGetRunnerPath();
     final String path = nugetFakePath.getPath();
 

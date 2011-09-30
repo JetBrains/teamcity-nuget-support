@@ -3,12 +3,16 @@ package jetbrains.buildServer.nuget.server.trigger;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
-import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
+import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeFactory;
+import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesManager;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
@@ -21,15 +25,20 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
   private static final Logger LOG = Logger.getInstance(NamedPackagesUpdateChecker.class.getName());
 
   public static final String KEY = "hash";
-  private final ListPackagesCommand myCommand;
   private final NuGetToolManager myManager;
+  private final PackageChangesManager myPackageChangesManager;
+  private final CheckRequestModeFactory myModeFactory;
 
-  public NamedPackagesUpdateChecker(@NotNull final ListPackagesCommand command,
-                                    @NotNull final NuGetToolManager manager) {
-    myCommand = command;
+
+  public NamedPackagesUpdateChecker(@NotNull final NuGetToolManager manager,
+                                    @NotNull final PackageChangesManager packageChangesManager,
+                                    @NotNull final CheckRequestModeFactory modeFactory) {
     myManager = manager;
+    myPackageChangesManager = packageChangesManager;
+    myModeFactory = modeFactory;
   }
 
+  @Nullable
   public BuildStartReason checkChanges(@NotNull BuildTriggerDescriptor descriptor,
                                        @NotNull CustomDataStorage storage) throws BuildTriggerException {
     final String path = myManager.getNuGetPath(descriptor.getProperties().get(TriggerConstants.NUGET_EXE));
@@ -45,18 +54,30 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       throw new BuildTriggerException("Package Id must be specified");
     }
 
-    File nugetPath = new File(path);
+    final File nugetPath = new File(path);
     if (!nugetPath.isFile()) {
       throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
     }
 
-    Collection<SourcePackageInfo> result;
-    try {
-      result = myCommand.checkForChanges(nugetPath, source, pkgId, version);
-    } catch (Throwable t) {
-      throw new BuildTriggerException("Failed to check for package versions. " + t.getMessage(), t);
+
+    final PackageCheckRequest checkRequest = new PackageCheckRequest(
+            myModeFactory.createNuGetChecker(nugetPath),
+            source,
+            pkgId,
+            version
+    );
+
+
+    final CheckResult result = myPackageChangesManager.checkPackage(checkRequest);
+    //no change available
+    if (result == null) return null;
+
+    final String error = result.getError();
+    if (error != null) {
+      throw new BuildTriggerException("Failed to check for package versions. " + error);
     }
-    final String hash = serializeHashcode(result);
+
+    final String hash = serializeHashcode(result.getInfos());
     final String oldHash = storage.getValue(KEY);
 
     LOG.debug("Recieved packages hash: " + hash);

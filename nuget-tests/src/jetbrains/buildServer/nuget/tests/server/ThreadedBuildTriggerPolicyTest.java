@@ -57,7 +57,7 @@ public class ThreadedBuildTriggerPolicyTest extends BaseTestCase {
     m = new Mockery();
     executor = m.mock(ExecutorService.class);
     checker = m.mock(TriggerUpdateChecker.class);
-    policy = new ThreadedBuildTriggerPolicy(executor, checker);
+    policy = new ThreadedBuildTriggerPolicy(checker);
     ctx = m.mock(PolledTriggerContext.class, "ctx1");
     ctx2 = m.mock(PolledTriggerContext.class, "ctx2");
     future = m.mock(Future.class, "future1");

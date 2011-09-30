@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.trigger;
+package jetbrains.buildServer.nuget.server.trigger.impl;
 
-import jetbrains.buildServer.buildTriggers.BuildTriggeringPolicy;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 14.07.11 15:31
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 30.09.11 14:01
  */
-public class ThreadedBuildTriggetFactoryImpl implements ThreadedBuildTriggetFactory{
-  public BuildTriggeringPolicy createTrigger(@NotNull TriggerUpdateChecker updateChecker) {
-    return new ThreadedBuildTriggerPolicy(updateChecker);
-  }
+public interface PackageChangesManager {
+  /**
+   * Registers package for check and returns start reason if change were detected
+   * @param request check request
+   * @return return version string of current plugin
+   */
+  @Nullable
+  CheckResult checkPackage(@NotNull PackageCheckRequest request);
 }
