@@ -81,7 +81,8 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
         String s1 = o1.getSource();
         String s2 = o2.getSource();
         if (s1 == null && s2 == null) return 0;
-        if (s1 == null ^ s2 == null) return 1;
+        if (s1 == null && s2 != null) return 1;
+        if (s1 != null && s2 == null) return -1;
         if (0 != (i = s1.compareTo(s2))) return i;
         if (0 != (i = o1.getPackageId().compareTo(o2.getPackageId()))) return i;
         if (0 != (i = o1.getVersion().compareTo(o2.getVersion()))) return i;
