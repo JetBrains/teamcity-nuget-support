@@ -4,7 +4,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
 
-  <bean class="jetbrains.buildServer.nuget.server.trigger.ThreadedBuildTriggetFactoryImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.NuGetSimpleTrigger"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesManagerImpl"/>
