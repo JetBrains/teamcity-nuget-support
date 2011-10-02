@@ -10,9 +10,38 @@
     <autodetection-disabled>
       <facet-type id="Spring">
         <modules>
+          <module name="idea-resolve-helper">
+            <files>
+              <file url="file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/build-server-plugin-buildFailures.xml" />
+              <file url="file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/build-server-plugin-freespace.xml" />
+              <file url="file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerConfigurator.xml" />
+              <file url="file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerPluginsSupportWeb.xml" />
+              <file url="file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerSpringStatistics.xml" />
+              <file url="file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerSpringWeb.xml" />
+            </files>
+          </module>
+          <module name="nuget-agent">
+            <files>
+              <file url="file://$PROJECT_DIR$/nuget-agent/src/META-INF/build-agent-plugin-nuget-install.xml" />
+              <file url="file://$PROJECT_DIR$/nuget-agent/src/META-INF/build-agent-plugin-nuget-pack.xml" />
+              <file url="file://$PROJECT_DIR$/nuget-agent/src/META-INF/build-agent-plugin-nuget-publish.xml" />
+              <file url="file://$PROJECT_DIR$/nuget-agent/src/META-INF/build-agent-plugin-nuget.xml" />
+            </files>
+          </module>
           <module name="nuget-common">
             <files>
               <file url="file://$PROJECT_DIR$/nuget-common/src/META-INF/spring-nuget-common.xml" />
+            </files>
+          </module>
+          <module name="nuget-server">
+            <files>
+              <file url="file://$PROJECT_DIR$/nuget-server/fake-teamcity-server-plugin-context.xml" />
+              <file url="file://$PROJECT_DIR$/nuget-server/src/META-INF/build-server-plugin-nuget-feed.xml" />
+              <file url="file://$PROJECT_DIR$/nuget-server/src/META-INF/build-server-plugin-nuget-install-runner.xml" />
+              <file url="file://$PROJECT_DIR$/nuget-server/src/META-INF/build-server-plugin-nuget-pack-runner.xml" />
+              <file url="file://$PROJECT_DIR$/nuget-server/src/META-INF/build-server-plugin-nuget-publish-runner.xml" />
+              <file url="file://$PROJECT_DIR$/nuget-server/src/META-INF/build-server-plugin-nuget-tools.xml" />
+              <file url="file://$PROJECT_DIR$/nuget-server/src/META-INF/build-server-plugin-nuget.xml" />
             </files>
           </module>
         </modules>
