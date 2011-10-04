@@ -53,4 +53,24 @@ public class CheckResult {
   public String getError() {
     return myError;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CheckResult that = (CheckResult) o;
+
+    if (myError != null ? !myError.equals(that.myError) : that.myError != null) return false;
+    if (myInfos != null ? !myInfos.equals(that.myInfos) : that.myInfos != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = myInfos != null ? myInfos.hashCode() : 0;
+    result = 31 * result + (myError != null ? myError.hashCode() : 0);
+    return result;
+  }
 }
