@@ -63,7 +63,6 @@ public class PackageCheckerNuGetBulk implements PackageChecker {
       entries.putValue(getNuGetPath(entry.getRequest()), entry);
     }
 
-    //TODO: join into one request
     for (Map.Entry<File, List<PackageCheckEntry>> nuget : entries.entrySet()) {
       final Map<SourcePackageReference, PackageCheckEntry> map = new HashMap<SourcePackageReference, PackageCheckEntry>();
       for (PackageCheckEntry e : nuget.getValue()) {

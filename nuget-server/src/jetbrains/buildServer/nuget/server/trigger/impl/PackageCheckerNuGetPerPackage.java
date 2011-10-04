@@ -62,7 +62,6 @@ public class PackageCheckerNuGetPerPackage implements PackageChecker {
       entries.putValue(getNuGetPath(entry.getRequest()), entry);
     }
 
-    //TODO: join into one request
     for (Map.Entry<File, List<PackageCheckEntry>> nuget : entries.entrySet()) {
       final File nugetPath = nuget.getKey();
       for (final PackageCheckEntry packageCheckEntry : nuget.getValue()) {
