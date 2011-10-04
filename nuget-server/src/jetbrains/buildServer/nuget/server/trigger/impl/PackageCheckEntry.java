@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 30.09.11 14:34
  */
-public class PackageCheckEntry {
+public class PackageCheckEntry implements CheckablePackage {
   private final TimeService myTime;
   private final PackageCheckerSettings mySettings;
   private final PackageCheckRequest myKey;
@@ -52,6 +53,16 @@ public class PackageCheckEntry {
     long now = myTime.now();
     myNextCheckTime = now + myCheckInterval;
     myRemoveTime = now + myRemoveInterval;
+  }
+
+  @NotNull
+  public CheckRequestMode getMode() {
+    return getRequest().getMode();
+  }
+
+  @NotNull
+  public SourcePackageReference getPackage() {
+    return getRequest().getPackage();
   }
 
   private long removeInterval(@NotNull final PackageCheckRequest request) {

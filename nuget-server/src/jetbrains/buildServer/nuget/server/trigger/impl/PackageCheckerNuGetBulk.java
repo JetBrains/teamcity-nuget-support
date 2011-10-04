@@ -20,7 +20,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.MultiMap;
 import org.jetbrains.annotations.NotNull;
@@ -43,7 +42,7 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
   private final PackageCheckerSettings mySettings;
 
   public PackageCheckerNuGetBulk(@NotNull final ListPackagesCommand command,
-                                 @NotNull final NuGetToolManager toolManager,
+                                 @NotNull final NuGetPathCalculator toolManager,
                                  @NotNull final PackageCheckerSettings settings) {
     super(toolManager);
     myCommand = command;
@@ -54,16 +53,16 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
     return mySettings.alowBulkMode(request) && super.accept(request);
   }
 
-  public void update(@NotNull ExecutorService executor, @NotNull Collection<PackageCheckEntry> data) {
-    final MultiMap<File, PackageCheckEntry> entries = new MultiMap<File, PackageCheckEntry>();
-    for (PackageCheckEntry entry : data) {
-      entries.putValue(getNuGetPath(entry.getRequest()), entry);
+  public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> data) {
+    final MultiMap<File, CheckablePackage> entries = new MultiMap<File, CheckablePackage>();
+    for (CheckablePackage entry : data) {
+      entries.putValue(getNuGetPath(entry.getMode()), entry);
     }
 
-    for (Map.Entry<File, List<PackageCheckEntry>> nuget : entries.entrySet()) {
-      final Map<SourcePackageReference, PackageCheckEntry> map = new HashMap<SourcePackageReference, PackageCheckEntry>();
-      for (PackageCheckEntry e : nuget.getValue()) {
-        map.put(e.getRequest().getPackage(), e);
+    for (Map.Entry<File, List<CheckablePackage>> nuget : entries.entrySet()) {
+      final Map<SourcePackageReference, CheckablePackage> map = new HashMap<SourcePackageReference, CheckablePackage>();
+      for (CheckablePackage e : nuget.getValue()) {
+        map.put(e.getPackage(), e);
         e.setExecuting();
       }
 
@@ -76,21 +75,21 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
 
             for (Map.Entry<SourcePackageReference, Collection<SourcePackageInfo>> e : result.entrySet()) {
               final SourcePackageReference ref = e.getKey();
-              final PackageCheckEntry p = map.get(ref);
+              final CheckablePackage p = map.get(ref);
               if (p != null) {
                 p.setResult(CheckResult.succeeded(e.getValue()));
                 map.remove(ref);
               }
             }
 
-            for (PackageCheckEntry entry : map.values()) {
-              LOG.warn("No information returned for package: " + entry.getRequest().getPackage());
+            for (CheckablePackage entry : map.values()) {
+              LOG.warn("No information returned for package: " + entry.getPackage());
               entry.setResult(CheckResult.failed("No information returned from bulk command"));
             }
 
           } catch (Throwable t) {
             LOG.warn("Failed to bulk check changes of NuGet packages. " + t.getMessage(), t);
-            for (PackageCheckEntry entry : map.values()) {
+            for (CheckablePackage entry : map.values()) {
               entry.setResult(CheckResult.failed(t.getMessage()));
             }
           }

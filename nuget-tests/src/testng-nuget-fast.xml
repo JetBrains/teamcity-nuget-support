@@ -39,6 +39,7 @@
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.CheckRequestModeFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesCheckerThreadTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetBulkTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.agent.MatchFilesBuildProcessTest"/>
 

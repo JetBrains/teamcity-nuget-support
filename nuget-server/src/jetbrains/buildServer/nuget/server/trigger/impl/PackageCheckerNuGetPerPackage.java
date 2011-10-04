@@ -20,7 +20,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.MultiMap;
 import org.jetbrains.annotations.NotNull;
@@ -42,7 +41,7 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
   private final PackageCheckerSettings mySettings;
 
   public PackageCheckerNuGetPerPackage(@NotNull final ListPackagesCommand command,
-                                       @NotNull final NuGetToolManager toolManager,
+                                       @NotNull final NuGetPathCalculator toolManager,
                                        @NotNull PackageCheckerSettings settings) {
     super(toolManager);
     myCommand = command;
@@ -53,22 +52,21 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
     return !mySettings.alowBulkMode(request) && super.accept(request);
   }
 
-  public void update(@NotNull ExecutorService executor, @NotNull Collection<PackageCheckEntry> data) {
-    final MultiMap<File, PackageCheckEntry> entries = new MultiMap<File, PackageCheckEntry>();
-    for (PackageCheckEntry entry : data) {
-      entries.putValue(getNuGetPath(entry.getRequest()), entry);
+  public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> data) {
+    final MultiMap<File, CheckablePackage> entries = new MultiMap<File, CheckablePackage>();
+    for (CheckablePackage entry : data) {
+      entries.putValue(getNuGetPath(entry.getMode()), entry);
     }
 
-    for (Map.Entry<File, List<PackageCheckEntry>> nuget : entries.entrySet()) {
+    for (Map.Entry<File, List<CheckablePackage>> nuget : entries.entrySet()) {
       final File nugetPath = nuget.getKey();
-      for (final PackageCheckEntry packageCheckEntry : nuget.getValue()) {
+      for (final CheckablePackage packageCheckEntry : nuget.getValue()) {
         packageCheckEntry.setExecuting();
-        final String packageId = packageCheckEntry.getRequest().getPackage().getPackageId();
+        final String packageId = packageCheckEntry.getPackage().getPackageId();
         executor.submit(ExceptionUtil.catchAll("Check update of NuGet package " + packageId, new Runnable() {
           public void run() {
-            final PackageCheckRequest req = packageCheckEntry.getRequest();
             try {
-              final SourcePackageReference pkg = req.getPackage();
+              final SourcePackageReference pkg = packageCheckEntry.getPackage();
               final Collection<SourcePackageInfo> infos = myCommand.checkForChanges(nugetPath, pkg);
               packageCheckEntry.setResult(CheckResult.succeeded(infos));
             } catch (Throwable t) {

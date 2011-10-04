@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.trigger.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.util.ExceptionUtil;
@@ -44,7 +45,7 @@ public class PackageCheckerTeamCity implements PackageChecker {
 
   public boolean accept(@NotNull PackageCheckRequest request) {
     if (!(request.getMode() instanceof CheckRequestModeTeamCity)) return false;
-    String uri = getUri(request);
+    String uri = getUri(request.getPackage());
     try {
       new URI(uri);
     } catch (Throwable t) {
@@ -55,24 +56,23 @@ public class PackageCheckerTeamCity implements PackageChecker {
   }
 
   @NotNull
-  private String getUri(@NotNull PackageCheckRequest request) {
-    String uri = request.getPackage().getSource();
+  private String getUri(@NotNull SourcePackageReference request) {
+    String uri = request.getSource();
     if (uri == null) uri = FeedConstants.MS_REF_FEED;
     return uri;
   }
 
-  public void update(@NotNull ExecutorService executor, @NotNull Collection<PackageCheckEntry> entries) {
-    for (final PackageCheckEntry entry : entries) {
+  public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> entries) {
+    for (final CheckablePackage entry : entries) {
       entry.setExecuting();
-      executor.submit(ExceptionUtil.catchAll("Check update of NuGet package " + entry.getRequest().getPackage().getPackageId(), new Runnable() {
+      executor.submit(ExceptionUtil.catchAll("Check update of NuGet package " + entry.getPackage().getPackageId(), new Runnable() {
         public void run() {
-          final PackageCheckRequest req = entry.getRequest();
-          final String packageId = req.getPackage().getPackageId();
+          final String packageId = entry.getPackage().getPackageId();
           try {
-            final Collection<FeedPackage> packages = myReader.queryPackageVersions(getUri(req), packageId);
+            final Collection<FeedPackage> packages = myReader.queryPackageVersions(getUri(entry.getPackage()), packageId);
             final Collection<SourcePackageInfo> infos = new ArrayList<SourcePackageInfo>();
             for (FeedPackage aPackage : packages) {
-              infos.add(new SourcePackageInfo(req.getPackage().getSource(), packageId, aPackage.getInfo().getVersion()));
+              infos.add(new SourcePackageInfo(entry.getPackage().getSource(), packageId, aPackage.getInfo().getVersion()));
             }
             entry.setResult(CheckResult.succeeded(infos));
           } catch (Throwable e) {

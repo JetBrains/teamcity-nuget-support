@@ -43,7 +43,7 @@ public class PackageChangesCheckerThreadTask {
 
   public void checkForUpdates() {
     for (final PackageChecker checker : myCheckers) {
-      final List<PackageCheckEntry> items = getMatchedItems(checker, myHolder.getItemsToCheckNow());
+      final List<CheckablePackage> items = getMatchedItems(checker, myHolder.getItemsToCheckNow());
       if (items.size() > 0) {
         checker.update(myExecutor, items);
       }
@@ -66,9 +66,9 @@ public class PackageChangesCheckerThreadTask {
   }
 
   @NotNull
-  private List<PackageCheckEntry> getMatchedItems(@NotNull final PackageChecker checker,
+  private List<CheckablePackage> getMatchedItems(@NotNull final PackageChecker checker,
                                                   @NotNull final Collection<PackageCheckEntry> toCheck) {
-    final List<PackageCheckEntry> items = new ArrayList<PackageCheckEntry>();
+    final List<CheckablePackage> items = new ArrayList<CheckablePackage>();
     for (PackageCheckEntry entry : toCheck) {
       if (checker.accept(entry.getRequest())) {
         //mark as pending

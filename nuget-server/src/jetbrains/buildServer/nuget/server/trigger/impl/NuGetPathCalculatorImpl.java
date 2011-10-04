@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,21 +25,26 @@ import java.io.File;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 04.10.11 20:15
+ *         Date: 04.10.11 20:23
  */
-public class PackageCheckerNuGetBase {
-  private final NuGetPathCalculator myCalculator;
+public class NuGetPathCalculatorImpl implements NuGetPathCalculator {
+  private final NuGetToolManager myToolManager;
 
-  public PackageCheckerNuGetBase(NuGetPathCalculator calculator) {
-    myCalculator = calculator;
-  }
-
-  public boolean accept(@NotNull PackageCheckRequest request) {
-    return getNuGetPath(request.getMode()) != null;
+  public NuGetPathCalculatorImpl(@NotNull final NuGetToolManager toolManager) {
+    myToolManager = toolManager;
   }
 
   @Nullable
-  protected File getNuGetPath(@NotNull CheckRequestMode entry) {
-    return myCalculator.getNuGetPath(entry);
+  public File getNuGetPath(@NotNull CheckRequestMode mode) {
+    if (mode instanceof CheckRequestModeNuGet) {
+      return ((CheckRequestModeNuGet) mode).getNuGetPath();
+    }
+
+    final NuGetInstalledTool tool = myToolManager.getLatestNuGetTool();
+    if (tool != null) {
+      return tool.getPath();
+    }
+
+    return null;
   }
 }

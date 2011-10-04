@@ -83,7 +83,7 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
       oneOf(myQueue).cleaupObsolete();
 
       oneOf(myChecker1).accept(req.getRequest()); will(returnValue(true));
-      oneOf(myChecker1).update(with(equal(myService)), with(equal(Arrays.asList(req))));
+      oneOf(myChecker1).update(with(equal(myService)), with(equal(Arrays.<CheckablePackage>asList(req))));
 
       oneOf(myQueue).getSleepTime(); will(returnValue(1234L));
       oneOf(myService).schedule(with(any(Runnable.class)), with(any(long.class)), with(any(TimeUnit.class)));
@@ -93,7 +93,7 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
   }
 
   private PackageCheckEntry createEntry() {
-    return new PackageCheckEntry(createRequest(), myTime, new PackageCheckerSettings());
+    return new PackageCheckEntry(createRequest(), myTime, new PackageCheckerSettingsImpl());
   }
 
   @Test
@@ -107,7 +107,7 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
 
       oneOf(myChecker1).accept(req.getRequest()); will(returnValue(false));
       oneOf(myChecker2).accept(req.getRequest()); will(returnValue(true));
-      oneOf(myChecker2).update(with(equal(myService)), with(equal(Arrays.asList(req))));
+      oneOf(myChecker2).update(with(equal(myService)), with(equal(Arrays.<CheckablePackage>asList(req))));
 
       oneOf(myQueue).getSleepTime(); will(returnValue(1234L));
       oneOf(myService).schedule(with(any(Runnable.class)), with(any(long.class)), with(any(TimeUnit.class)));
@@ -117,7 +117,7 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
   }
 
   private PackageCheckRequest createRequest() {
-    return new PackageCheckRequestFactory(new PackageCheckerSettings()).createRequest(mode1, null, "id", null);
+    return new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()).createRequest(mode1, null, "id", null);
   }
 
   private final CheckRequestMode mode1 = new CheckRequestMode() {  };

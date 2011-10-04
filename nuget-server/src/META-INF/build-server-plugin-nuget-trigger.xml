@@ -19,6 +19,8 @@
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeFactory"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesCheckerStarter"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings"/>
+  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettingsImpl"/>
+
+  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.NuGetPathCalculatorImpl"/>
 
 </beans>

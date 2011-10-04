@@ -48,7 +48,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    final PackageCheckerSettings settings = new PackageCheckerSettings();
+    final PackageCheckerSettings settings = new PackageCheckerSettingsImpl();
     myFactory = new PackageCheckRequestFactory(settings);
     myManager = new PackageChangesManagerImpl(this, settings);
   }

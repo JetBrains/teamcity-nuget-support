@@ -16,23 +16,21 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 30.09.11 16:37
+ *         Date: 04.10.11 20:40
  */
-public interface PackageChecker {
+public interface CheckablePackage {
+  @NotNull
+  CheckRequestMode getMode();
 
-  boolean accept(@NotNull PackageCheckRequest request);
+  @NotNull
+  SourcePackageReference getPackage();
 
-  /**
-   * Implementation should schedule update of given type as a task in the executor
-   * @param executor executor to perform work
-   * @param entries requests to check
-   */
-  void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> entries);
+  void setExecuting();
+
+  void setResult(@NotNull CheckResult result);
 }
