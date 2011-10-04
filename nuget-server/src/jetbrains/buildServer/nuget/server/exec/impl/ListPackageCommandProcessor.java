@@ -16,10 +16,9 @@
 
 package jetbrains.buildServer.nuget.server.exec.impl;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageParserCallback;
-import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
+import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessorAdapter;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -35,8 +34,7 @@ import java.util.List;
 * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
 * Date: 14.07.11 13:23
 */
-public class ListPackageCommandProcessor implements NuGetOutputProcessor<Collection<SourcePackageInfo>> {
-  private static final Logger LOG = Logger.getInstance(ListPackageCommandProcessor.class.getName());
+public class ListPackageCommandProcessor extends NuGetOutputProcessorAdapter<Collection<SourcePackageInfo>> {
   private final String mySource;
   private final List<SourcePackageInfo> myPackages = new ArrayList<SourcePackageInfo>();
 
@@ -44,11 +42,8 @@ public class ListPackageCommandProcessor implements NuGetOutputProcessor<Collect
     mySource = source;
   }
 
-  public void onStdOutput(String text) {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug(text);
-    }
-
+  public void onStdOutput(@NotNull String text) {
+    super.onStdOutput(text);
     ServiceMessage.parse(text, new ServiceMessageParserCallback() {
       public void regularText(@NotNull String s) {
       }
@@ -62,27 +57,11 @@ public class ListPackageCommandProcessor implements NuGetOutputProcessor<Collect
         if (StringUtil.isEmptyOrSpaces(version)) return;
 
         myPackages.add(new SourcePackageInfo(mySource, id, version));
-
       }
 
       public void parseException(@NotNull ParseException e, @NotNull String s) {
       }
     });
-  }
-
-  public void onStdError(String text) {
-    if (!StringUtil.isEmptyOrSpaces(text)) {
-      LOG.warn(text);
-    }
-  }
-
-  public void onFinished(int exitCode) {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("NuGet TeamCity.List command exited with " + exitCode);
-    }
-    if (exitCode != 0) {
-      throw new RuntimeException("Failed to execute TeamCity.List command. Exit code was " + exitCode);
-    }
   }
 
   @NotNull

@@ -49,7 +49,7 @@ public class ListPackagesCommandProcessorTest extends BaseTestCase {
   public void test_should_throw_on_exit_code() {
     try {
       p.onFinished(1);
-    } catch (RuntimeException e) {
+    } catch (Exception e) {
       return;
     }
     Assert.fail("Exception expected");

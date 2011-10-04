@@ -20,6 +20,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
 import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
@@ -45,7 +46,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
   @NotNull
   public <T> T executeNuGet(@NotNull final File nugetExePath,
                             @NotNull final List<String> arguments,
-                            @NotNull final NuGetOutputProcessor<T> listener) {
+                            @NotNull final NuGetOutputProcessor<T> listener) throws NuGetExecutionException {
 
     GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(myNuGetTeamCityProvider.getNuGetRunnerPath().getPath());

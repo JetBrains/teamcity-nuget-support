@@ -55,6 +55,10 @@ public class SourcePackageReference {
     return myVersionSpec;
   }
 
+  public SourcePackageInfo toInfo(@NotNull final String version) {
+    return new SourcePackageInfo(getSource(), getPackageId(), version);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -75,5 +79,14 @@ public class SourcePackageReference {
     result = 31 * result + myPackageId.hashCode();
     result = 31 * result + (myVersionSpec != null ? myVersionSpec.hashCode() : 0);
     return result;
+  }
+
+  @Override
+  public String toString() {
+    return "SourcePackageReference{" +
+            "mySource='" + mySource + '\'' +
+            ", myPackageId='" + myPackageId + '\'' +
+            ", myVersionSpec='" + myVersionSpec + '\'' +
+            '}';
   }
 }

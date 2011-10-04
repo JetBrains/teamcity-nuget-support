@@ -29,5 +29,5 @@ public interface NuGetExecutor {
   @NotNull
   <T> T executeNuGet(@NotNull File nugetExePath,
                      @NotNull List<String> arguments,
-                     @NotNull NuGetOutputProcessor<T> listener);
+                     @NotNull NuGetOutputProcessor<T> listener) throws NuGetExecutionException;
 }

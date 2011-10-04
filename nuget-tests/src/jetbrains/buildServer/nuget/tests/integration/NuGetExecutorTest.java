@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
@@ -53,27 +54,27 @@ public class NuGetExecutorTest extends BaseTestCase {
   }
 
   @Test
-  public void test_ping_1_4() {
+  public void test_ping_1_4() throws NuGetExecutionException {
     doPingTest(NuGet.NuGet_1_4);
   }
 
   @Test
-  public void test_ping_1_5() {
+  public void test_ping_1_5() throws NuGetExecutionException {
     doPingTest(NuGet.NuGet_1_5);
   }
 
-  private void doPingTest(NuGet nuget) {
+  private void doPingTest(NuGet nuget) throws NuGetExecutionException {
 
     int code = exec.executeNuGet(
             nuget.getPath(),
             Arrays.asList("TeamCity.Ping"),
             new NuGetOutputProcessor<Integer>() {
               private int myExitCode;
-      public void onStdOutput(String text) {
+      public void onStdOutput(@NotNull String text) {
         System.out.println(text);
       }
 
-      public void onStdError(String text) {
+      public void onStdError(@NotNull String text) {
         System.out.println(text);
       }
 

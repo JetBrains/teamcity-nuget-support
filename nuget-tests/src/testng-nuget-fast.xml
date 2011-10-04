@@ -30,6 +30,7 @@
       <class name="jetbrains.buildServer.nuget.tests.util.CompositeBuildProcessTest"/>
       <class name="jetbrains.buildServer.nuget.tests.util.DelegatingBuildProcessTest"/>
 
+      <class name="jetbrains.buildServer.nuget.tests.server.ListPackagesArgumentsTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.ListPackagesCommandTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.ListPackagesCommandProcessorTest"/>
 

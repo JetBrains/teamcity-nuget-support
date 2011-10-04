@@ -29,11 +29,11 @@ import java.util.Map;
 public interface ListPackagesCommand {
   @NotNull
   Collection<SourcePackageInfo> checkForChanges(@NotNull File nugetPath,
-                                                @NotNull SourcePackageReference ref);
+                                                @NotNull SourcePackageReference ref) throws NuGetExecutionException;
 
 
   Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath,
-                                                                             @NotNull Collection<SourcePackageReference> refs);
+                                                                             @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException;
 
 
 }

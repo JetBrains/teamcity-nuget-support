@@ -16,14 +16,14 @@
 
 package jetbrains.buildServer.nuget.server.exec.impl;
 
-import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
-import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
-import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
-import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
+import jetbrains.buildServer.TempFolderProvider;
+import jetbrains.buildServer.nuget.server.exec.*;
+import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -31,14 +31,17 @@ import java.util.*;
  * Date: 14.07.11 13:10
  */
 public class ListPackagesCommandImpl implements ListPackagesCommand {
-  private NuGetExecutor myExec;
+  private final NuGetExecutor myExec;
+  private final TempFolderProvider myTempFiles;
 
-  public ListPackagesCommandImpl(NuGetExecutor exec) {
+  public ListPackagesCommandImpl(@NotNull final NuGetExecutor exec,
+                                 @NotNull final TempFolderProvider tempFiles) {
     myExec = exec;
+    myTempFiles = tempFiles;
   }
 
   @NotNull
-  public Collection<SourcePackageInfo> checkForChanges(@NotNull File nugetPath, @NotNull SourcePackageReference ref) {
+  public Collection<SourcePackageInfo> checkForChanges(@NotNull File nugetPath, @NotNull SourcePackageReference ref) throws NuGetExecutionException {
     List<String> cmd = new ArrayList<String>();
 
     cmd.add("TeamCity.List");
@@ -58,7 +61,49 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
   }
 
 
-  public Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath, @NotNull Collection<SourcePackageReference> refs) {
-    return Collections.emptyMap();
+  public Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath, @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException {
+    final File spec = createTempFile("trigger.spec");
+    final File result = createTempFile("trigget.result");
+
+    final ListPackagesArguments argz = new ListPackagesArguments();
+    try {
+      argz.encodeParameters(spec, refs);
+    } catch (IOException e) {
+      throw new NuGetExecutionException("Failed to encode parameters. " + e.getMessage(), e);
+    }
+
+    try {
+      final List<String> cmd = new ArrayList<String>();
+      cmd.add("TeamCity.ListPackages");
+      cmd.add("-Request");
+      cmd.add(FileUtil.getCanonicalFile(spec).getPath());
+      cmd.add("-Response");
+      cmd.add(FileUtil.getCanonicalFile(result).getPath());
+
+
+      return myExec.executeNuGet(nugetPath, cmd, new NuGetOutputProcessorAdapter<Map<SourcePackageReference,Collection<SourcePackageInfo>>>() {
+        @NotNull
+        public Map<SourcePackageReference, Collection<SourcePackageInfo>> getResult() throws NuGetExecutionException {
+          try {
+          return argz.decodeParameters(result);
+          } catch (IOException e) {
+            throw new NuGetExecutionException("Failed to decode parameters. " + e.getMessage(), e);
+          }
+        }
+      });
+    } finally {
+      FileUtil.delete(spec);
+      FileUtil.delete(result);
+    }
+  }
+
+  private File createTempFile(@NotNull String infix) throws NuGetExecutionException {
+    final File tempDirectory = myTempFiles.getTempDirectory();
+    try {
+      tempDirectory.mkdirs();
+      return FileUtil.createTempFile(tempDirectory, "nuget", infix + ".xml", true);
+    } catch (IOException e) {
+      throw new NuGetExecutionException("Failed to create temp file at " + tempDirectory + ". " + e.getMessage(), e);
+    }
   }
 }

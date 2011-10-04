@@ -16,17 +16,16 @@
 
 package jetbrains.buildServer.nuget.server.exec;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
-* Created by Eugene Petrenko (eugene.petrenko@gmail.com)
-* Date: 14.07.11 13:23
-*/
-public interface NuGetOutputProcessor<T> {
-  void onStdOutput(@NotNull String text);
-  void onStdError(@NotNull String text);
-  void onFinished(int exitCode) throws NuGetExecutionException;
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 04.10.11 18:41
+ */
+public class NuGetExecutionException extends Exception {
+  public NuGetExecutionException(String message) {
+    super(message);
+  }
 
-  @NotNull
-  T getResult() throws NuGetExecutionException;
+  public NuGetExecutionException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }
