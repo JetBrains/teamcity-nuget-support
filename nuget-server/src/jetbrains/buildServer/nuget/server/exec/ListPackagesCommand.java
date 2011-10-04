@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -27,7 +28,12 @@ import java.util.Collection;
  */
 public interface ListPackagesCommand {
   @NotNull
-  Collection<SourcePackageInfo> checkForChanges(
-          @NotNull File nugetPath,
-          @NotNull SourcePackageReference ref);
+  Collection<SourcePackageInfo> checkForChanges(@NotNull File nugetPath,
+                                                @NotNull SourcePackageReference ref);
+
+
+  Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath,
+                                                                             @NotNull Collection<SourcePackageReference> refs);
+
+
 }

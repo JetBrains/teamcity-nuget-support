@@ -35,12 +35,12 @@ import java.util.List;
 * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
 * Date: 14.07.11 13:23
 */
-public class ListPackagesCommandProcessor implements NuGetOutputProcessor<Collection<SourcePackageInfo>> {
-  private static final Logger LOG = Logger.getInstance(ListPackagesCommandProcessor.class.getName());
+public class ListPackageCommandProcessor implements NuGetOutputProcessor<Collection<SourcePackageInfo>> {
+  private static final Logger LOG = Logger.getInstance(ListPackageCommandProcessor.class.getName());
   private final String mySource;
   private final List<SourcePackageInfo> myPackages = new ArrayList<SourcePackageInfo>();
 
-  public ListPackagesCommandProcessor(@Nullable final String source) {
+  public ListPackageCommandProcessor(@Nullable final String source) {
     mySource = source;
   }
 

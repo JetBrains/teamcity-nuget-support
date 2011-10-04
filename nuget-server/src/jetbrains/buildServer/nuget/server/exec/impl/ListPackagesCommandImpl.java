@@ -24,9 +24,7 @@ import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -56,7 +54,11 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
       cmd.add(ref.getVersionSpec());
     }
 
-    return myExec.executeNuGet(nugetPath, cmd, new ListPackagesCommandProcessor(ref.getSource()));
+    return myExec.executeNuGet(nugetPath, cmd, new ListPackageCommandProcessor(ref.getSource()));
   }
 
+
+  public Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath, @NotNull Collection<SourcePackageReference> refs) {
+    return Collections.emptyMap();
+  }
 }

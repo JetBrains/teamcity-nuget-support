@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandProcessor;
+import jetbrains.buildServer.nuget.server.exec.impl.ListPackageCommandProcessor;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -31,13 +31,13 @@ import java.util.Iterator;
  * Date: 14.07.11 14:28
  */
 public class ListPackagesCommandProcessorTest extends BaseTestCase {
-  private  ListPackagesCommandProcessor p;
+  private ListPackageCommandProcessor p;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    p = new ListPackagesCommandProcessor("source5");
+    p = new ListPackageCommandProcessor("source5");
   }
 
   @Test
@@ -79,7 +79,7 @@ public class ListPackagesCommandProcessorTest extends BaseTestCase {
 
   @Test
   public void test_parse_service_message_no_source() {
-    p = new ListPackagesCommandProcessor(null);
+    p = new ListPackageCommandProcessor(null);
     p.onStdOutput("##teamcity[nuget-package Id='NUnit' Version='2.5.10.11092']");
 
     Collection<SourcePackageInfo> result = p.getResult();

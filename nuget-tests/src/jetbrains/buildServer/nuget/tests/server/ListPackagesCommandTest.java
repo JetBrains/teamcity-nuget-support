@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.server;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
-import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandProcessor;
+import jetbrains.buildServer.nuget.server.exec.impl.ListPackageCommandProcessor;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -49,7 +49,7 @@ public class ListPackagesCommandTest extends BaseTestCase {
   private void allowCommandLineCall(final String... cmd) {
     final List<String> list = new ArrayList<String>(Arrays.<String>asList(cmd));
     m.checking(new Expectations(){{
-      oneOf(exec).executeNuGet(with(any(File.class)), with(equal(list)), with(any(ListPackagesCommandProcessor.class)));
+      oneOf(exec).executeNuGet(with(any(File.class)), with(equal(list)), with(any(ListPackageCommandProcessor.class)));
       will(returnValue(Collections.<SourcePackageInfo>emptyList()));
     }});
   }
