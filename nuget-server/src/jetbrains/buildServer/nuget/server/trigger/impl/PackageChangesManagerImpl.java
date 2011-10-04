@@ -64,16 +64,15 @@ public class PackageChangesManagerImpl implements PackageChangesManager, Package
 
   public long getSleepTime() {
     final long now = myTimeService.now();
-    long span = now * 2;
+    long span = mySettings.getMaxSleepInterval();
 
     synchronized (myEntries) {
       for (PackageCheckEntry entry : myEntries) {
-        final long time = entry.getNextCheckTime();
-        span = Math.min(time - now, span);
+        span = Math.min(entry.getNextCheckTime() - now, span);
       }
     }
 
-    return Math.min(Math.max(mySettings.getCheckChangesThreashold(), span), mySettings.getMaxSleepInterval());
+    return Math.max(mySettings.getCheckChangesThreashold(), span);
   }
 
   @NotNull
