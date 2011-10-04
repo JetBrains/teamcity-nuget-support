@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
 import jetbrains.buildServer.serverSide.TeamCityProperties;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -42,5 +43,9 @@ public class PackageCheckerSettings {
 
   public int getCheckerThreads() {
     return TeamCityProperties.getInteger("teamcity.nuget.trigger.pool", 4);
+  }
+
+  public boolean alowBulkMode(@NotNull PackageCheckRequest request) {
+    return TeamCityProperties.getBooleanOrTrue("teamcity.nuget.trigger.bulkMode");
   }
 }

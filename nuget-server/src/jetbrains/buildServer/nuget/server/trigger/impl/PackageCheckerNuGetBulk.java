@@ -29,28 +29,32 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 30.09.11 16:51
+ *         Date: 04.10.11 19:31
  */
-public class PackageCheckerNuGet implements PackageChecker {
-  private static final Logger LOG = Logger.getInstance(PackageCheckerNuGet.class.getName());
+public class PackageCheckerNuGetBulk implements PackageChecker {
+  private static final Logger LOG = Logger.getInstance(PackageCheckerNuGetPerPackage.class.getName());
 
   private final ListPackagesCommand myCommand;
+  private final PackageCheckerSettings mySettings;
   private final NuGetToolManager myToolManager;
 
-  public PackageCheckerNuGet(@NotNull final ListPackagesCommand command,
-                             @NotNull final NuGetToolManager toolManager) {
+  public PackageCheckerNuGetBulk(@NotNull final ListPackagesCommand command,
+                                 @NotNull final NuGetToolManager toolManager,
+                                 @NotNull final PackageCheckerSettings settings) {
     myCommand = command;
     myToolManager = toolManager;
+    mySettings = settings;
   }
 
   public boolean accept(@NotNull PackageCheckRequest request) {
-    return getNuGetPath(request) != null;
+    return mySettings.alowBulkMode(request) && getNuGetPath(request) != null;
   }
 
   public void update(@NotNull ExecutorService executor, @NotNull Collection<PackageCheckEntry> data) {
@@ -61,24 +65,40 @@ public class PackageCheckerNuGet implements PackageChecker {
 
     //TODO: join into one request
     for (Map.Entry<File, List<PackageCheckEntry>> nuget : entries.entrySet()) {
+      final Map<SourcePackageReference, PackageCheckEntry> map = new HashMap<SourcePackageReference, PackageCheckEntry>();
+      for (PackageCheckEntry e : nuget.getValue()) {
+        map.put(e.getRequest().getPackage(), e);
+      }
+
       final File nugetPath = nuget.getKey();
-      for (final PackageCheckEntry packageCheckEntry : nuget.getValue()) {
-        packageCheckEntry.setExecuting();
-        final String packageId = packageCheckEntry.getRequest().getPackage().getPackageId();
-        executor.submit(ExceptionUtil.catchAll("Check update of NuGet package " + packageId, new Runnable() {
-          public void run() {
-            final PackageCheckRequest req = packageCheckEntry.getRequest();
-            try {
-              final SourcePackageReference pkg = req.getPackage();
-              final Collection<SourcePackageInfo> infos = myCommand.checkForChanges(nugetPath, pkg);
-              packageCheckEntry.setResult(CheckResult.succeeded(infos));
-            } catch (Throwable t) {
-              LOG.warn("Failed to check changes of " + packageId + ". " + t.getMessage(), t);
-              packageCheckEntry.setResult(CheckResult.failed(t.getMessage()));
+
+      executor.submit(ExceptionUtil.catchAll("Bulk check for update of NuGet packages", new Runnable() {
+        public void run() {
+          try {
+            final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = myCommand.checkForChanges(nugetPath, map.keySet());
+
+            for (Map.Entry<SourcePackageReference, Collection<SourcePackageInfo>> e : result.entrySet()) {
+              final SourcePackageReference ref = e.getKey();
+              final PackageCheckEntry p = map.get(ref);
+              if (p != null) {
+                p.setResult(CheckResult.succeeded(e.getValue()));
+                map.remove(ref);
+              }
+            }
+
+            for (PackageCheckEntry entry : map.values()) {
+              LOG.warn("No information returned for package: " + entry.getRequest().getPackage());
+              entry.setResult(CheckResult.failed("No information returned from bulk command"));
+            }
+
+          } catch (Throwable t) {
+            LOG.warn("Failed to bulk check changes of NuGet packages. " + t.getMessage(), t);
+            for (PackageCheckEntry entry : map.values()) {
+              entry.setResult(CheckResult.failed(t.getMessage()));
             }
           }
-        }));
-      }
+        }
+      }));
     }
   }
 

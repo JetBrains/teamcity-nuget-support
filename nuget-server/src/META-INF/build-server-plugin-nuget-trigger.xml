@@ -11,7 +11,8 @@
     <constructor-arg>
       <list>
         <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerTeamCity"/>
-        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGet"/>
+        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGetPerPackage"/>
+        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGetBulk"/>
       </list>
     </constructor-arg>
   </bean>
