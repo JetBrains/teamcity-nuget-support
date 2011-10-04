@@ -16,19 +16,12 @@
 
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
-import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
-import jetbrains.buildServer.util.TimeService;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.api.Invocation;
-import org.jmock.lib.action.CustomAction;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -36,43 +29,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.ExecutorService;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 04.10.11 20:52
  */
-public class PackageCheckerNuGetPerPackageTest extends BaseTestCase {
+public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<PackageCheckerNuGetPerPackage> {
 
-  private Mockery m;
-  private ListPackagesCommand myCommand;
-  private NuGetPathCalculator myCalculator;
-  private PackageCheckerSettings mySettings;
-  private PackageCheckerNuGetPerPackage myChecker;
-  private ExecutorService myExecutor;
-  private TimeService myTime;
-
-  @BeforeMethod
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    m = new Mockery();
-    myCommand = m.mock(ListPackagesCommand.class);
-    myCalculator = m.mock(NuGetPathCalculator.class);
-    mySettings = m.mock(PackageCheckerSettings.class);
-    myExecutor = m.mock(ExecutorService.class);
-    myChecker = new PackageCheckerNuGetPerPackage(myCommand, myCalculator, mySettings);
-
-    m.checking(new Expectations(){{
-      allowing(myCalculator).getNuGetPath(with(any(CheckRequestMode.class))); will(returnValue(new File("aaa")));
-      allowing(myExecutor).submit(with(any(Runnable.class))); will(new CustomAction("Execute task in same thread") {
-        public Object invoke(Invocation invocation) throws Throwable {
-          Runnable action = (Runnable) invocation.getParameter(0);
-          action.run();
-          return null;
-        }
-      });
-    }});
+  protected PackageCheckerNuGetPerPackage createChecker() {
+    return new PackageCheckerNuGetPerPackage(myCommand, myCalculator, mySettings);
   }
 
   @Test
@@ -157,13 +123,4 @@ public class PackageCheckerNuGetPerPackageTest extends BaseTestCase {
 
     m.assertIsSatisfied();
   }
-
-  private SourcePackageReference ref() {
-    return new SourcePackageReference("a","a", "a");
-  }
-
-  private CheckRequestModeNuGet nugetMode() {
-    return new CheckRequestModeNuGet(new File("bbb"));
-  }
-
 }
