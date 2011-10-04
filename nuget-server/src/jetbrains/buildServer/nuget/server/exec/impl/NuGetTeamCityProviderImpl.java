@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.exec;
+package jetbrains.buildServer.nuget.server.exec.impl;
 
+import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.plugins.bean.PluginInfo;
 import org.jetbrains.annotations.NotNull;
 

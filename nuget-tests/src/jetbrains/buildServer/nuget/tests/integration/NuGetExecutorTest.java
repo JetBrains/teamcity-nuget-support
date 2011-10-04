@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
-import jetbrains.buildServer.nuget.server.exec.NuGetExecutorImpl;
+import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
 import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import org.jetbrains.annotations.NotNull;

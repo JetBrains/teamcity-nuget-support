@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.exec;
+package jetbrains.buildServer.nuget.server.exec.impl;
 
+import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

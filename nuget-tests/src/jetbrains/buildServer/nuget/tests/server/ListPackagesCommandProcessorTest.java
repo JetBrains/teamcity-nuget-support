@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.exec.ListPackagesCommandProcessor;
+import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandProcessor;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;

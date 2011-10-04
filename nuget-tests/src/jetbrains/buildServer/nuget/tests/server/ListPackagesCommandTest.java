@@ -18,6 +18,8 @@ package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.*;
+import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
+import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandProcessor;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
