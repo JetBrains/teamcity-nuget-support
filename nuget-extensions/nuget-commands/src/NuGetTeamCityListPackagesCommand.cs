@@ -147,7 +147,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       get { return Source ?? NuGetConstants.DefaultFeedUrl; }
     }
 
-    [XmlArray("entries")]
+    [XmlArray("package-entries")]
     [XmlArrayItem("package-entry")]
     public NuGetPackageEntry[] Entries
     {
