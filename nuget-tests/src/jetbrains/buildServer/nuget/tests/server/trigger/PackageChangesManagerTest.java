@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
@@ -27,9 +28,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -83,6 +84,87 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
 
     advanceTime(100L * 10 * 60 * 1001);
 
+    myManager.cleaupObsolete();
+    Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
+  }
+
+  @Test
+  public void test_sameRequestsWithDifferentTimes() {
+    final PackageCheckRequest a = req("a");
+    final PackageCheckRequest b = req("a");
+    final PackageCheckRequest c = req("a");
+
+    a.setCheckInterval(1000 * 1000);
+    b.setCheckInterval(5000 * 1000);
+    c.setCheckInterval(9000 * 1000);
+
+    checkAll(b,c,a);
+
+    Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
+
+    advanceTime(1000 * 1000 + 1);
+    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
+
+    advanceTime(8000 * 1000 + 1);
+    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
+
+    final PackageCheckEntry next = myManager.getItemsToCheckNow().iterator().next();
+    setResult(next);
+
+    advanceTime(1000 * 1000);
+    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
+  }
+
+  private void setResult(PackageCheckEntry next) {
+    next.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
+  }
+
+
+  @Test
+  public void test_should_remove_old_task() {
+    final PackageCheckRequest a = req("a");
+    a.setCheckInterval(1000 * 1000);
+
+    checkAll(a);
+    advanceTime(1000 * 1000 + 1);
+
+    int totalTimes = 10;
+    while(true) {
+      Assert.assertTrue(totalTimes-- > 0, "Task must be removed as absolete");
+
+      final Collection<PackageCheckEntry> items = myManager.getItemsToCheckNow();
+      if (items.isEmpty()) return;
+
+      final PackageCheckEntry next = items.iterator().next();
+      setResult(next);
+
+      myManager.cleaupObsolete();
+      advanceTime(1000 * 1000 + 1);
+    }
+  }
+
+  @Test
+  public void test_should_update_remove_time() {
+    final PackageCheckRequest a = req("a");
+    final PackageCheckRequest b = req("a");
+    a.setCheckInterval(1000 * 1000);
+    b.setCheckInterval(10000 * 1000);
+
+    checkAll(a, b);
+    advanceTime(1000 * 1000 + 1);
+
+    for(int totalTimes = 10; totalTimes-- > 0; ) {
+      final Collection<PackageCheckEntry> items = myManager.getItemsToCheckNow();
+      Assert.assertFalse(items.isEmpty());
+
+      final PackageCheckEntry next = items.iterator().next();
+      setResult(next);
+
+      myManager.cleaupObsolete();
+      advanceTime(1000 * 1000 + 1);
+    }
+
+    advanceTime(11 * 10000 * 1000);
     myManager.cleaupObsolete();
     Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
   }
@@ -153,10 +235,6 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     if (myModes.containsKey(id)) return myModes.get(id);
 
     final CheckRequestMode checkRequestMode = new CheckRequestMode() {
-      public void checkForUpdates(@NotNull ScheduledExecutorService executor, @NotNull Collection<PackageCheckEntry> value) {
-
-      }
-
       @Override
       public String toString() {
         return "Mode: " + id;

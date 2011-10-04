@@ -30,13 +30,15 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PackageCheckEntry {
   private final TimeService myTime;
   private final PackageCheckerSettings mySettings;
-
   private final PackageCheckRequest myKey;
-  private long myNextCheckTime;
-  private long myRemoveTime;
-
   private final AtomicReference<CheckResult> myResult = new AtomicReference<CheckResult>();
   private final AtomicBoolean myExecuting = new AtomicBoolean();
+
+  private volatile long myNextCheckTime;
+  private volatile long myRemoveTime;
+
+  private volatile long myCheckInterval;
+  private volatile long myRemoveInterval;
 
   public PackageCheckEntry(@NotNull final PackageCheckRequest key,
                            @NotNull final TimeService time,
@@ -44,13 +46,16 @@ public class PackageCheckEntry {
     myKey = key;
     myTime = time;
     mySettings = settings;
-    updateTimes();
+    myCheckInterval = key.getCheckInterval();
+    myRemoveInterval = removeInterval(key);
+
+    long now = myTime.now();
+    myNextCheckTime = now + myCheckInterval;
+    myRemoveTime = now + myRemoveInterval;
   }
 
-  private void updateTimes() {
-    long now = myTime.now();
-    myNextCheckTime = now + myKey.getCheckInterval();
-    myRemoveTime = now + mySettings.getPackageCheckRequestIdleRemoveInterval(myKey.getCheckInterval());
+  private long removeInterval(@NotNull final PackageCheckRequest request) {
+    return mySettings.getPackageCheckRequestIdleRemoveInterval(request.getCheckInterval());
   }
 
   public boolean forRequest(@NotNull final PackageCheckRequest request) {
@@ -64,9 +69,12 @@ public class PackageCheckEntry {
   public void update(@NotNull final PackageCheckRequest request) {
     if (!forRequest(request)) throw new IllegalArgumentException("Incompatible request");
 
+    myCheckInterval = Math.min(myCheckInterval, request.getCheckInterval());
+    myRemoveInterval = Math.max(myRemoveInterval, removeInterval(request));
+
     long now = myTime.now();
-    myNextCheckTime = Math.min(myNextCheckTime, now + request.getCheckInterval());
-    myRemoveTime = Math.max(myRemoveTime, now + mySettings.getPackageCheckRequestIdleRemoveInterval(request.getCheckInterval()));
+    myNextCheckTime = Math.min(myNextCheckTime, now + myCheckInterval);
+    myRemoveTime = Math.max(myRemoveTime, now + myRemoveInterval);
   }
 
   private boolean equals(Object a, Object b) {
@@ -101,7 +109,7 @@ public class PackageCheckEntry {
   }
 
   public void setResult(@NotNull CheckResult result) {
-    updateTimes();
+    myNextCheckTime = myTime.now() + myCheckInterval;
 
     myResult.set(result);
     myExecuting.set(false);
