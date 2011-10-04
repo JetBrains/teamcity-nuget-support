@@ -1,61 +1,105 @@
+using System;
 using System.IO;
+using System.Xml;
 using NUnit.Framework;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {
-  
   [TestFixture]
-  public class NuGetRunner_ListPackagesCommandTest_Remote_1_5 : NuGetRunner_ListPackagesCommandTest_Remote_Base
+  public class NuGetRunner_ListPackagesCommandTest
   {
-    protected override string NuGetExe
-    {
-      get { return Files.NuGetExe_1_5; }
-    }
-  }
-
-
-  public abstract class NuGetRunner_ListPackagesCommandTest_Remote_Base : NuGetIntegrationTestBase
-  {
-    [Test]
-    public void TestCommand_ListPublic()
+    [TestCase(NuGetVersion.NuGet_1_4)]
+    [TestCase(NuGetVersion.NuGet_1_5)]
+    public void TestCommand_ListPublic(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
-        file =>
-          {
-            File.WriteAllText(file,
-                              "<NuGet-Request Source=\"" + NuGetConstants.DefaultFeedUrl +
-                              "\"><Requests><Request Id='NUnit'/></Requests></NuGet-Request>");
+        fileOut =>
+        TempFilesHolder.WithTempFile(
+          fileIn =>
+            {
+              File.WriteAllText(fileIn,
+                                @"<nuget-packages>
+                                    <packages>
+                                       <package source='" +
+                                NuGetConstants.DefaultFeedUrl +
+                                @"' id='NUnit' />
+                                    </packages>
+                                   </nuget-packages>");
 
-            ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, NuGetExe,
-                                           "TeamCity.ListPackages", "-Request", file)
-              .Dump()
-              .AssertExitedSuccessfully()
-              .AssertNoErrorOutput()
-              .AssertOutputContains("##teamcity[nuget-package Id='NUnit' Version='2.5.7.10213']")
-              .AssertOutputContains("##teamcity[nuget-package Id='NUnit' Version='2.5.10.11092']")
-              ;
-          });
+              ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version),
+                                             "TeamCity.ListPackages", "-Request", fileIn, "-Response", fileOut)
+                .Dump()
+                .AssertExitedSuccessfully()
+                ;
+
+              Console.Out.WriteLine("Result: " + File.ReadAllText(fileOut));
+
+              var doc = new XmlDocument();
+              doc.Load(fileOut);
+              Assert.True(doc.SelectNodes("//package[@id='NUnit']//package-entry").Count > 0);              
+            }));
     }
 
-    [Test]
-    public void TestCommand_ListPublicVersions()
+
+    [TestCase(NuGetVersion.NuGet_1_4)]
+    [TestCase(NuGetVersion.NuGet_1_5)]
+    public void TestCommand_ListPublic_Multiple(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
-        file =>
-          {
-            File.WriteAllText(file,
-                              "<NuGet-Request Source=\"" + NuGetConstants.DefaultFeedUrl +
-                              "\"><Requests><Request Id='NUnit' Versions='(1.1.1,2.5.8]'/></Requests></NuGet-Request>");
+        fileOut =>
+        TempFilesHolder.WithTempFile(
+          fileIn =>
+            {
+              File.WriteAllText(fileIn,
+                                @"<nuget-packages>
+                                    <packages>
+                                       <package source='" + NuGetConstants.DefaultFeedUrl + @"' id='NUnit' />
+                                       <package source='" + NuGetConstants.DefaultFeedUrl + @"' id='YouTrackSharp' />
+                                    </packages>
+                                   </nuget-packages>");
 
-            ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, NuGetExe,
-                                           "TeamCity.ListPackages", "-Request", file)
-              .Dump()
-              .AssertExitedSuccessfully()
-              .AssertNoErrorOutput()
-              .AssertOutputContains("##teamcity[nuget-package Id='NUnit' Version='2.5.7.10213']")
-              ;
-          });
+              ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version),
+                                             "TeamCity.ListPackages", "-Request", fileIn, "-Response", fileOut)
+                .Dump()
+                .AssertExitedSuccessfully()
+                ;
+
+              Console.Out.WriteLine("Result: " + File.ReadAllText(fileOut));
+
+              var doc = new XmlDocument();
+              doc.Load(fileOut);
+              Assert.True(doc.SelectNodes("//package[@id='NUnit']//package-entry").Count > 0);              
+              Assert.True(doc.SelectNodes("//package[@id='YouTrackSharp']//package-entry").Count > 0);              
+            }));
     }
 
+    [TestCase(NuGetVersion.NuGet_1_4)]
+    [TestCase(NuGetVersion.NuGet_1_5)]
+    public void TestCommand_ListPublicVersions(NuGetVersion version)
+    {
+      TempFilesHolder.WithTempFile(
+        fileOut =>
+        TempFilesHolder.WithTempFile(
+          fileIn =>
+            {
+              File.WriteAllText(fileIn,
+                                @"<nuget-packages>
+                                    <packages>
+                                       <package source='" + NuGetConstants.DefaultFeedUrl + @"' id='NUnit' versions='(1.1.1,2.5.8]'/>
+                                    </packages>
+                                   </nuget-packages>");
+
+              ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version),
+                                             "TeamCity.ListPackages", "-Request", fileIn, "-Response", fileOut)
+                .Dump()
+                .AssertExitedSuccessfully()
+                ;
+
+              var text = File.ReadAllText(fileOut);
+              Assert.False(text.Contains("package-entry version=\"2.5.10.11092\""));
+
+              Console.Out.WriteLine("Result: " + text);
+            }));
+    }
   }
 }

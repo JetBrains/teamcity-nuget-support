@@ -22,11 +22,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
       var param = Expression.Parameter(typeof (IPackageMetadata));
 
-      Expression result = Expression.Constant(true);
-      foreach (var id in ids)
-      {
-        result = Expression.Equal(Expression.Property(param, "Id"), Expression.Constant(id));
-      }
+      Expression result = ids
+        .Select(id => Expression.Equal(Expression.Property(param, "Id"), Expression.Constant(id)))
+        .Aggregate<BinaryExpression, Expression>(null, (current, action) => current != null ? Expression.Or(action, current) : action);
 
       return packageRepository.GetPackages().Where(Expression.Lambda<Func<IPackage, bool>>(result, param));
     }
@@ -34,18 +32,24 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     /// <summary>
     /// There was a change in signature in NuGet poset 1.5. IPackage.get_Version now returns Semantic version instead of Version
     /// Here is no difference here, so we can stick to dynamic object as there are tests for this method.
-    /// </summary>
-    /// <param name="p">IPackage</param>
-    protected static void PrintPackageInfo(dynamic p)
+    /// </summary>    
+    protected static void PrintPackageInfo(string id, string version)
     {    
       var msg = ServiceMessageFormatter.FormatMessage(
         "nuget-package",
-        new ServiceMessageProperty("Id", p.Id),
-        new ServiceMessageProperty("Version", p.Version.ToString())
+        new ServiceMessageProperty("Id", id),
+        new ServiceMessageProperty("Version", version)
         );
 
       System.Console.Out.WriteLine(msg);
     }
+  }
 
+  public static class PackageExtensions
+  {
+    public static string VersionString(this IPackage package)
+    {
+      return ((dynamic) package).Version.ToString(); 
+    }
   }
 }

@@ -56,9 +56,6 @@
     <Compile Include="src\NuGetRunnerTestBase.cs" />
     <Compile Include="src\NuGetRunnerWithTrunk.cs" />
     <Compile Include="src\NuGetRunner_ListCommandTest.cs" />
-    <Compile Include="src\NuGetRunner_ListCommandTest_Local.cs" />
-    <Compile Include="src\NuGetRunner_ListCommandTest_Local_Base.cs" />
-    <Compile Include="src\NuGetRunner_ListCommandTest_Remote_Base.cs" />
     <Compile Include="src\NuGetRunner_ListPackagesCommandTest.cs" />
     <Compile Include="src\NuGetIntegrationTestBase.cs" />
     <Compile Include="src\PathSearcher.cs" />

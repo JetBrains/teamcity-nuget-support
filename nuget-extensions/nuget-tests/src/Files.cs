@@ -13,5 +13,24 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string NuGetExe_1_5 { get { return ourCachedNuGetExe_1_5.Value; } }
     public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
     public static string LocalFeed { get { return ourLocalFeed.Value; } }
+
+    public static string GetNuGetExe(NuGetVersion version)
+    {
+      switch (version)
+      {
+        case NuGetVersion.NuGet_1_4:
+          return NuGetExe_1_4;
+        case NuGetVersion.NuGet_1_5:
+          return NuGetExe_1_5;
+        default:
+          throw new Exception("Unsupported nuget version: " + version);
+      }
+    }
+  }
+
+  public enum NuGetVersion
+  {
+    NuGet_1_4,
+    NuGet_1_5,
   }
 }

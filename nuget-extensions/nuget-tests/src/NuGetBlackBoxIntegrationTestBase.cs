@@ -24,7 +24,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       DoTest("TeamCity.List", "-Id", "Web", "-Source", Files.LocalFeed).AssertOutputContains("##teamcity[nuget-package Id='Web' Version='1.1.1']");
     }
 
-    [Test]
+    [Test, Ignore]
     public void TestCommand_ListPublic()
     {
       TempFilesHolder.WithTempFile(

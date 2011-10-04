@@ -29,7 +29,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       System.Console.Out.WriteLine("Checking for latest version...");
 
       foreach (var p in GetPackages())
-        PrintPackageInfo(p);
+        PrintPackageInfo(p.Id, p.VersionString());
     }
 
     private IEnumerable<IPackage> GetPackages()
