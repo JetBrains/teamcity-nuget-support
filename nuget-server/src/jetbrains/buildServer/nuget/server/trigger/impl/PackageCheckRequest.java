@@ -29,7 +29,7 @@ public class PackageCheckRequest {
   @NotNull private final String myPacakgeId;
   @Nullable private final String myVersionSpec;
 
-  private long myCheckInterval = 60 * 1000; //60s is default
+  private long myCheckInterval = 5 * 60 * 1000; //60s is default
 
   public PackageCheckRequest(@NotNull final CheckRequestMode mode,
                              @Nullable final String packageSource,
