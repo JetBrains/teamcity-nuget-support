@@ -20,6 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker;
 import jetbrains.buildServer.nuget.server.trigger.TriggerConstants;
@@ -259,9 +260,10 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
           if (!(o instanceof PackageCheckRequest)) return false;
           PackageCheckRequest r = (PackageCheckRequest) o;
 
-          if (!r.getPackageId().equals(id)) return false;
-          if (!equals(r.getPackageSource(), source)) return false;
-          if (!equals(r.getVersionSpec(), version)) return false;
+          final SourcePackageReference pkg = r.getPackage();
+          if (!pkg.getPackageId().equals(id)) return false;
+          if (!equals(pkg.getSource(), source)) return false;
+          if (!equals(pkg.getVersionSpec(), version)) return false;
 
           final CheckRequestMode mode = r.getMode();
           if (!(mode instanceof CheckRequestModeNuGet)) return false;

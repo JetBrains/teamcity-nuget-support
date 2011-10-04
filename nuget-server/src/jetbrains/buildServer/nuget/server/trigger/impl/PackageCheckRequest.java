@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -25,20 +25,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PackageCheckRequest {
   @NotNull private final CheckRequestMode myMode; //way to check version, i.e. java base, nuget base
-  @Nullable private final String myPackageSource;
-  @NotNull private final String myPacakgeId;
-  @Nullable private final String myVersionSpec;
+  @NotNull private final SourcePackageReference myPackage;
 
   private long myCheckInterval = 5 * 60 * 1000; //5min is default, see jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings
 
   public PackageCheckRequest(@NotNull final CheckRequestMode mode,
-                             @Nullable final String packageSource,
-                             @NotNull final String pacakgeId,
-                             @Nullable final String versionSpec) {
+                             @NotNull final SourcePackageReference aPackage) {
     myMode = mode;
-    myPackageSource = packageSource;
-    myPacakgeId = pacakgeId;
-    myVersionSpec = versionSpec;
+    myPackage = aPackage;
   }
 
   /**
@@ -61,18 +55,8 @@ public class PackageCheckRequest {
     return myMode;
   }
 
-  @Nullable
-  public String getPackageSource() {
-    return myPackageSource;
-  }
-
   @NotNull
-  public String getPackageId() {
-    return myPacakgeId;
-  }
-
-  @Nullable
-  public String getVersionSpec() {
-    return myVersionSpec;
+  public SourcePackageReference getPackage() {
+    return myPackage;
   }
 }

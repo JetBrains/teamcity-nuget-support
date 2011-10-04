@@ -59,11 +59,7 @@ public class PackageCheckEntry {
   }
 
   public boolean forRequest(@NotNull final PackageCheckRequest request) {
-    if (!equals(myKey.getMode(), request.getMode())) return false;
-    if (!equals(myKey.getPackageId(), request.getPackageId())) return false;
-    if (!equals(myKey.getPackageSource(), request.getPackageSource())) return false;
-    if (!equals(myKey.getVersionSpec(), request.getVersionSpec())) return false;
-    return true;
+    return equals(myKey.getMode(), request.getMode()) && myKey.getPackage().equals(request.getPackage());
   }
 
   public void update(@NotNull final PackageCheckRequest request) {

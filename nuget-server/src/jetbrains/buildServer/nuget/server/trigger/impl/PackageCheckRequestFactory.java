@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +36,7 @@ public class PackageCheckRequestFactory {
                                            @Nullable final String packageSource,
                                            @NotNull final String pacakgeId,
                                            @Nullable final String versionSpec) {
-    return new PackageCheckRequest(mode, packageSource, pacakgeId, versionSpec) {
+    return new PackageCheckRequest(mode, new SourcePackageReference(packageSource, pacakgeId, versionSpec)) {
       {
         setCheckInterval(mySettings.getPackageCheckInterval());
       }

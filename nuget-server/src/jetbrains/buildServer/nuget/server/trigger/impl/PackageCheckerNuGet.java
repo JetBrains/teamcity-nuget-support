@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.trigger.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.util.ExceptionUtil;
@@ -63,14 +64,16 @@ public class PackageCheckerNuGet implements PackageChecker {
       final File nugetPath = nuget.getKey();
       for (final PackageCheckEntry packageCheckEntry : nuget.getValue()) {
         packageCheckEntry.setExecuting();
-        executor.submit(ExceptionUtil.catchAll("Check update of NuGet package " + packageCheckEntry.getRequest().getPackageId(), new Runnable() {
+        final String packageId = packageCheckEntry.getRequest().getPackage().getPackageId();
+        executor.submit(ExceptionUtil.catchAll("Check update of NuGet package " + packageId, new Runnable() {
           public void run() {
             final PackageCheckRequest req = packageCheckEntry.getRequest();
             try {
-              final Collection<SourcePackageInfo> infos = myCommand.checkForChanges(nugetPath, req.getPackageSource(), req.getPackageId(), req.getVersionSpec());
+              final SourcePackageReference pkg = req.getPackage();
+              final Collection<SourcePackageInfo> infos = myCommand.checkForChanges(nugetPath, pkg.getSource(), pkg.getPackageId(), pkg.getVersionSpec());
               packageCheckEntry.setResult(CheckResult.succeeded(infos));
             } catch (Throwable t) {
-              LOG.warn("Failed to check changes of " + req.getPackageId() + ". " + t.getMessage(), t);
+              LOG.warn("Failed to check changes of " + packageId + ". " + t.getMessage(), t);
               packageCheckEntry.setResult(CheckResult.failed(t.getMessage()));
             }
           }
