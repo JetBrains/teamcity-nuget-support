@@ -20,12 +20,10 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.MultiMap;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
@@ -37,23 +35,22 @@ import java.util.concurrent.ExecutorService;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 30.09.11 16:51
  */
-public class PackageCheckerNuGetPerPackage implements PackageChecker {
+public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase implements PackageChecker {
   private static final Logger LOG = Logger.getInstance(PackageCheckerNuGetPerPackage.class.getName());
 
   private final ListPackagesCommand myCommand;
   private final PackageCheckerSettings mySettings;
-  private final NuGetToolManager myToolManager;
 
   public PackageCheckerNuGetPerPackage(@NotNull final ListPackagesCommand command,
                                        @NotNull final NuGetToolManager toolManager,
                                        @NotNull PackageCheckerSettings settings) {
+    super(toolManager);
     myCommand = command;
-    myToolManager = toolManager;
     mySettings = settings;
   }
 
   public boolean accept(@NotNull PackageCheckRequest request) {
-    return !mySettings.alowBulkMode(request) && getNuGetPath(request) != null;
+    return !mySettings.alowBulkMode(request) && super.accept(request);
   }
 
   public void update(@NotNull ExecutorService executor, @NotNull Collection<PackageCheckEntry> data) {
@@ -82,20 +79,5 @@ public class PackageCheckerNuGetPerPackage implements PackageChecker {
         }));
       }
     }
-  }
-
-  @Nullable
-  private File getNuGetPath(@NotNull PackageCheckRequest entry) {
-    final CheckRequestMode mode = entry.getMode();
-    if (mode instanceof CheckRequestModeNuGet) {
-      return ((CheckRequestModeNuGet) mode).getNuGetPath();
-    }
-
-    final NuGetInstalledTool tool = myToolManager.getLatestNuGetTool();
-    if (tool != null) {
-      return tool.getPath();
-    }
-
-    return null;
   }
 }
