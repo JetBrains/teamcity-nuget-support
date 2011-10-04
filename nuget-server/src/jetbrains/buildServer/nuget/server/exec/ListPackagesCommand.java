@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.exec;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
@@ -30,7 +29,5 @@ public interface ListPackagesCommand {
   @NotNull
   Collection<SourcePackageInfo> checkForChanges(
           @NotNull File nugetPath,
-          @Nullable String source,
-          @NotNull String packageId,
-          @Nullable String versionSpec);
+          @NotNull SourcePackageReference ref);
 }

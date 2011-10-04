@@ -70,7 +70,7 @@ public class PackageCheckerNuGet implements PackageChecker {
             final PackageCheckRequest req = packageCheckEntry.getRequest();
             try {
               final SourcePackageReference pkg = req.getPackage();
-              final Collection<SourcePackageInfo> infos = myCommand.checkForChanges(nugetPath, pkg.getSource(), pkg.getPackageId(), pkg.getVersionSpec());
+              final Collection<SourcePackageInfo> infos = myCommand.checkForChanges(nugetPath, pkg);
               packageCheckEntry.setResult(CheckResult.succeeded(infos));
             } catch (Throwable t) {
               LOG.warn("Failed to check changes of " + packageId + ". " + t.getMessage(), t);

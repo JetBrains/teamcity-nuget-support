@@ -19,9 +19,9 @@ package jetbrains.buildServer.nuget.server.exec.impl;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,27 +40,23 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
   }
 
   @NotNull
-  public Collection<SourcePackageInfo> checkForChanges(
-          @NotNull final File nugetPath,
-          @Nullable final String source,
-          @NotNull final String packageId,
-          @Nullable final String versionSpec) {
+  public Collection<SourcePackageInfo> checkForChanges(@NotNull File nugetPath, @NotNull SourcePackageReference ref) {
     List<String> cmd = new ArrayList<String>();
 
     cmd.add("TeamCity.List");
-    if (!StringUtil.isEmptyOrSpaces(source)) {
+    if (!StringUtil.isEmptyOrSpaces(ref.getSource())) {
       cmd.add("-Source");
-      cmd.add(source);
+      cmd.add(ref.getSource());
     }
     cmd.add("-Id");
-    cmd.add(packageId);
+    cmd.add(ref.getPackageId());
 
-    if (!StringUtil.isEmptyOrSpaces(versionSpec)) {
+    if (!StringUtil.isEmptyOrSpaces(ref.getVersionSpec())) {
       cmd.add("-Version");
-      cmd.add(versionSpec);
+      cmd.add(ref.getVersionSpec());
     }
 
-    return myExec.executeNuGet(nugetPath, cmd, new ListPackagesCommandProcessor(source));
+    return myExec.executeNuGet(nugetPath, cmd, new ListPackagesCommandProcessor(ref.getSource()));
   }
 
 }

@@ -64,7 +64,7 @@ public class ListPackagesCommandTest extends BaseTestCase {
             "package"
     );
 
-    cmd.checkForChanges(new File("nuget"), "source", "package", null);
+    cmd.checkForChanges(new File("nuget"), new SourcePackageReference("source", "package", null));
     m.assertIsSatisfied();
   }
 
@@ -80,7 +80,7 @@ public class ListPackagesCommandTest extends BaseTestCase {
             "version"
     );
 
-    cmd.checkForChanges(new File("nuget"), "source", "package", "version");
+    cmd.checkForChanges(new File("nuget"), new SourcePackageReference("source", "package", "version"));
     m.assertIsSatisfied();
   }
 }
