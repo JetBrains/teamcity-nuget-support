@@ -94,7 +94,8 @@ public class ListPackagesArguments {
       final SourcePackageReference ref = new SourcePackageReference(source, id, spec);
 
       final Collection<SourcePackageInfo> versions = new ArrayList<SourcePackageInfo>();
-      for (Object pEntry : pkg.getChildren("package-entry")) {
+      final Element pkgChild = pkg.getChild("package-entries");
+      for (Object pEntry : pkgChild.getChildren("package-entry")) {
         final Element entry = (Element) pEntry;
 
         final String version = entry.getAttributeValue("version");

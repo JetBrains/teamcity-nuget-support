@@ -71,16 +71,22 @@ public class ListPackagesArgumentsTest extends BaseTestCase {
     final File tmp = createTempFile("<nuget-packages>\n" +
             "  <packages>\n" +
             "    <package id=\"2\" source=\"1\" versions=\"3\">" +
-            "      <package-entry version='1.2.3'/>" +
-            "      <package-entry version='11.22.33' />" +
+            "      <package-entries>" +
+            "        <package-entry version='1.2.3'/>" +
+            "        <package-entry version='11.22.33' />" +
+            "      </package-entries>" +
             "    </package>\n" +
             "    <package id=\"22\" versions=\"33\" >\n" +
-            "      <package-entry version='3.2.3'/>" +
-            "      <package-entry version='31.22.33' />" +
+            "      <package-entries>" +
+            "        <package-entry version='3.2.3'/>" +
+            "        <package-entry version='31.22.33' />" +
+            "      </package-entries>" +
             "    </package>\n" +
             "    <package id=\"222\" >\n" +
-            "      <package-entry version='4.2.3'/>" +
-            "      <package-entry version='41.22.33' />" +
+            "      <package-entries>" +
+            "        <package-entry version='4.2.3'/>" +
+            "        <package-entry version='41.22.33' />" +
+            "      </package-entries>" +
             "    </package>\n" +
             "  </packages>\n" +
             "</nuget-packages>");
@@ -115,6 +121,29 @@ public class ListPackagesArgumentsTest extends BaseTestCase {
       }
       Assert.assertTrue(version.isEmpty());
     }
+  }
+
+  @Test
+  public void testDeserialize_02() throws Exception {
+    final File tmp = createTempFile("<nuget-packages xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
+            "  <packages>\n" +
+            "    <package id=\"NUnit\">\n" +
+            "      <package-entries>\n" +
+            "        <package-entry version=\"2.5.10.11092\" />\n" +
+            "        <package-entry version=\"2.5.7.10213\" />\n" +
+            "        <package-entry version=\"2.5.9.10348\" />\n" +
+            "      </package-entries>\n" +
+            "    </package>\n" +
+            "  </packages>\n" +
+            "</nuget-packages>");
+
+    final Map<SourcePackageReference, Collection<SourcePackageInfo>> map = myArguments.decodeParameters(tmp);
+    Assert.assertEquals(map.size(), 1);
+    final SourcePackageReference ref = new SourcePackageReference(null, "NUnit", null);
+    final Collection<SourcePackageInfo> vs = map.get(ref);
+    Assert.assertNotNull(vs);
+    Assert.assertEquals(new HashSet<SourcePackageInfo>(vs), new HashSet<SourcePackageInfo>(Arrays.asList(ref.toInfo("2.5.10.11092"), ref.toInfo("2.5.7.10213"), ref.toInfo("2.5.9.10348"))));
+
   }
 
   @NotNull

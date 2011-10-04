@@ -60,4 +60,26 @@ public class SourcePackageInfo {
             ", myVersion='" + myVersion + '\'' +
             '}';
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    SourcePackageInfo that = (SourcePackageInfo) o;
+
+    if (!myPackageId.equals(that.myPackageId)) return false;
+    if (mySource != null ? !mySource.equals(that.mySource) : that.mySource != null) return false;
+    if (!myVersion.equals(that.myVersion)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = mySource != null ? mySource.hashCode() : 0;
+    result = 31 * result + myPackageId.hashCode();
+    result = 31 * result + myVersion.hashCode();
+    return result;
+  }
 }
