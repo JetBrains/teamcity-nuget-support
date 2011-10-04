@@ -85,6 +85,46 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    public void TestCommand_ListPublic_Multiple_sameIds(NuGetVersion version)
+    {
+      TempFilesHolder.WithTempFile(
+        fileOut =>
+        TempFilesHolder.WithTempFile(
+          fileIn =>
+            {
+              File.WriteAllText(fileIn,
+                                @"<nuget-packages>
+                                    <packages>
+                                       <package source='" +
+                                NuGetConstants.DefaultFeedUrl +
+                                @"' id='NUnit' />
+                                       <package source='" +
+                                NuGetConstants.DefaultFeedUrl +
+                                @"' id='NUnit' versions='(1.1.1,2.5.8]' />
+                                    </packages>
+                                   </nuget-packages>");
+
+              ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version),
+                                             "TeamCity.ListPackages", "-Request", fileIn, "-Response", fileOut)
+                .Dump()
+                .AssertExitedSuccessfully()
+                ;
+
+              Console.Out.WriteLine("Result: " + File.ReadAllText(fileOut));
+
+              var doc = new XmlDocument();
+              doc.Load(fileOut);
+              Assert.True(doc.SelectNodes("//package[@id='NUnit']//package-entry").Count > 0);
+              Assert.True(doc.SelectNodes("//package[@id='NUnit' and @versions='(1.1.1,2.5.8]']//package-entry").Count < doc.SelectNodes("//package[@id='NUnit' and not(@versions='(1.1.1,2.5.8]')]//package-entry").Count);
+
+
+            }));
+    }
+
+    [TestCase(NuGetVersion.NuGet_1_4)]
+    [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
+    [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_ListPublicVersions(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
