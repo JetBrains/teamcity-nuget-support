@@ -67,6 +67,7 @@ public class PackageCheckerNuGetBulk implements PackageChecker {
       final Map<SourcePackageReference, PackageCheckEntry> map = new HashMap<SourcePackageReference, PackageCheckEntry>();
       for (PackageCheckEntry e : nuget.getValue()) {
         map.put(e.getRequest().getPackage(), e);
+        e.setExecuting();
       }
 
       final File nugetPath = nuget.getKey();
