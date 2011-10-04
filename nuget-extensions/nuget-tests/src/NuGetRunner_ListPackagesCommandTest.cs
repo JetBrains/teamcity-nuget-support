@@ -10,6 +10,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
   {
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
+    [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_ListPublic(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -36,13 +38,15 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
               var doc = new XmlDocument();
               doc.Load(fileOut);
-              Assert.True(doc.SelectNodes("//package[@id='NUnit']//package-entry").Count > 0);              
+              Assert.True(doc.SelectNodes("//package[@id='NUnit']//package-entry").Count > 0);
             }));
     }
 
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
+    [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_ListPublic_Multiple(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -53,8 +57,12 @@ namespace JetBrains.TeamCity.NuGet.Tests
               File.WriteAllText(fileIn,
                                 @"<nuget-packages>
                                     <packages>
-                                       <package source='" + NuGetConstants.DefaultFeedUrl + @"' id='NUnit' />
-                                       <package source='" + NuGetConstants.DefaultFeedUrl + @"' id='YouTrackSharp' />
+                                       <package source='" +
+                                NuGetConstants.DefaultFeedUrl +
+                                @"' id='NUnit' />
+                                       <package source='" +
+                                NuGetConstants.DefaultFeedUrl +
+                                @"' id='YouTrackSharp' />
                                     </packages>
                                    </nuget-packages>");
 
@@ -68,13 +76,15 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
               var doc = new XmlDocument();
               doc.Load(fileOut);
-              Assert.True(doc.SelectNodes("//package[@id='NUnit']//package-entry").Count > 0);              
-              Assert.True(doc.SelectNodes("//package[@id='YouTrackSharp']//package-entry").Count > 0);              
+              Assert.True(doc.SelectNodes("//package[@id='NUnit']//package-entry").Count > 0);
+              Assert.True(doc.SelectNodes("//package[@id='YouTrackSharp']//package-entry").Count > 0);
             }));
     }
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
+    [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_ListPublicVersions(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -85,7 +95,9 @@ namespace JetBrains.TeamCity.NuGet.Tests
               File.WriteAllText(fileIn,
                                 @"<nuget-packages>
                                     <packages>
-                                       <package source='" + NuGetConstants.DefaultFeedUrl + @"' id='NUnit' versions='(1.1.1,2.5.8]'/>
+                                       <package source='" +
+                                NuGetConstants.DefaultFeedUrl +
+                                @"' id='NUnit' versions='(1.1.1,2.5.8]'/>
                                     </packages>
                                    </nuget-packages>");
 
@@ -96,7 +108,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
                 ;
 
               var text = File.ReadAllText(fileOut);
-              Assert.False(text.Contains("package-entry version=\"2.5.10.11092\""));
+              Assert.False(text.Contains("version=\"2.5.10"));
 
               Console.Out.WriteLine("Result: " + text);
             }));
