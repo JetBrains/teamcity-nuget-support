@@ -75,7 +75,7 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
 
   @Test
   public void test_schecule_execution() {
-    final PackageCheckEntry req = new PackageCheckEntry(createRequest(), myTime);
+    final PackageCheckEntry req = createEntry();
 
     m.checking(new Expectations(){{
       oneOf(myQueue).getItemsToCheckNow(); will(returnValue(Arrays.asList(req)));
@@ -92,9 +92,13 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
     myTask.checkForUpdates();
   }
 
+  private PackageCheckEntry createEntry() {
+    return new PackageCheckEntry(createRequest(), myTime, new PackageCheckerSettings());
+  }
+
   @Test
   public void test_schecule_execution2() {
-    final PackageCheckEntry req = new PackageCheckEntry(createRequest(), myTime);
+    final PackageCheckEntry req = createEntry();
 
     m.checking(new Expectations(){{
       oneOf(myQueue).getItemsToCheckNow(); will(returnValue(Arrays.asList(req)));
@@ -113,7 +117,7 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
   }
 
   private PackageCheckRequest createRequest() {
-    return new PackageCheckRequestFactory().createRequest(mode1, null, "id", null);
+    return new PackageCheckRequestFactory(new PackageCheckerSettings()).createRequest(mode1, null, "id", null);
   }
 
   private final CheckRequestMode mode1 = new CheckRequestMode() {  };

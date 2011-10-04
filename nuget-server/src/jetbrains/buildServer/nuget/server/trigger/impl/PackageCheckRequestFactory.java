@@ -24,12 +24,21 @@ import org.jetbrains.annotations.Nullable;
  *         Date: 04.10.11 14:02
  */
 public class PackageCheckRequestFactory {
+  private final PackageCheckerSettings mySettings;
+
+  public PackageCheckRequestFactory(@NotNull final PackageCheckerSettings settings) {
+    mySettings = settings;
+  }
 
   @NotNull
   public PackageCheckRequest createRequest(@NotNull final CheckRequestMode mode,
-                             @Nullable final String packageSource,
-                             @NotNull final String pacakgeId,
-                             @Nullable final String versionSpec) {
-    return new PackageCheckRequest(mode, packageSource, pacakgeId, versionSpec);
+                                           @Nullable final String packageSource,
+                                           @NotNull final String pacakgeId,
+                                           @Nullable final String versionSpec) {
+    return new PackageCheckRequest(mode, packageSource, pacakgeId, versionSpec) {
+      {
+        setCheckInterval(mySettings.getPackageCheckInterval());
+      }
+    };
   }
 }

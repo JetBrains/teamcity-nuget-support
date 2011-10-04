@@ -30,14 +30,14 @@ import java.util.List;
  *         Date: 30.09.11 14:11
  */
 public class PackageChangesManagerImpl implements PackageChangesManager, PackageCheckQueue {
-  private static final long CHECK_THREASHOLD = 10 * 1000; //tasks precision in 10sec
-  private static final long MAX_SLEEP_THREASHOLD = 5 * 60 * 1000; //check triggers every 5mins
-
   private final TimeService myTimeService;
+  private final PackageCheckerSettings mySettings;
   private final List<PackageCheckEntry> myEntries = new ArrayList<PackageCheckEntry>();
 
-  public PackageChangesManagerImpl(@NotNull TimeService timeService) {
+  public PackageChangesManagerImpl(@NotNull final TimeService timeService,
+                                   @NotNull final PackageCheckerSettings settings) {
     myTimeService = timeService;
+    mySettings = settings;
   }
 
   @Nullable
@@ -49,7 +49,7 @@ public class PackageChangesManagerImpl implements PackageChangesManager, Package
         return entry.getResult();
       }
 
-      myEntries.add(new PackageCheckEntry(request, myTimeService));
+      myEntries.add(new PackageCheckEntry(request, myTimeService, mySettings));
       return null;
     }
   }
@@ -73,7 +73,7 @@ public class PackageChangesManagerImpl implements PackageChangesManager, Package
       }
     }
 
-    return Math.min(Math.max(CHECK_THREASHOLD, span), MAX_SLEEP_THREASHOLD);
+    return Math.min(Math.max(mySettings.getCheckChangesThreashold(), span), mySettings.getMaxSleepInterval());
   }
 
   @NotNull
@@ -85,7 +85,7 @@ public class PackageChangesManagerImpl implements PackageChangesManager, Package
       for (PackageCheckEntry entry : myEntries) {
         if (entry.isExecuting()) continue;
         //skip other mode
-        if (entry.getNextCheckTime() - now < CHECK_THREASHOLD) {
+        if (entry.getNextCheckTime() - now < mySettings.getCheckChangesThreashold()) {
           entries.add(entry);
         }
       }

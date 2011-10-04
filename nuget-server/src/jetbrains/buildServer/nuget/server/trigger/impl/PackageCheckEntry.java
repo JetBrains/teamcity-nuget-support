@@ -28,8 +28,8 @@ import java.util.concurrent.atomic.AtomicReference;
  *         Date: 30.09.11 14:34
  */
 public class PackageCheckEntry {
-  private static final long REMOVE_IDLE_TRIGGER_SPAN_TIMES = 5;
   private final TimeService myTime;
+  private final PackageCheckerSettings mySettings;
 
   private final PackageCheckRequest myKey;
   private long myNextCheckTime;
@@ -39,16 +39,18 @@ public class PackageCheckEntry {
   private final AtomicBoolean myExecuting = new AtomicBoolean();
 
   public PackageCheckEntry(@NotNull final PackageCheckRequest key,
-                           @NotNull final TimeService time) {
+                           @NotNull final TimeService time,
+                           @NotNull final PackageCheckerSettings settings) {
     myKey = key;
     myTime = time;
+    mySettings = settings;
     updateTimes();
   }
 
   private void updateTimes() {
     long now = myTime.now();
     myNextCheckTime = now + myKey.getCheckInterval();
-    myRemoveTime = now + myKey.getCheckInterval() * REMOVE_IDLE_TRIGGER_SPAN_TIMES;
+    myRemoveTime = now + mySettings.getPackageCheckRequestIdleRemoveInterval(myKey.getCheckInterval());
   }
 
   public boolean forRequest(@NotNull final PackageCheckRequest request) {
@@ -64,7 +66,7 @@ public class PackageCheckEntry {
 
     long now = myTime.now();
     myNextCheckTime = Math.min(myNextCheckTime, now + request.getCheckInterval());
-    myRemoveTime = Math.max(myRemoveTime, now + request.getCheckInterval() * REMOVE_IDLE_TRIGGER_SPAN_TIMES);
+    myRemoveTime = Math.max(myRemoveTime, now + mySettings.getPackageCheckRequestIdleRemoveInterval(request.getCheckInterval()));
   }
 
   private boolean equals(Object a, Object b) {
@@ -83,11 +85,6 @@ public class PackageCheckEntry {
 
   public long getRemoveTime() {
     return myRemoveTime;
-  }
-
-  @NotNull
-  public CheckRequestMode getMode() {
-    return myKey.getMode();
   }
 
   public boolean isExecuting() {

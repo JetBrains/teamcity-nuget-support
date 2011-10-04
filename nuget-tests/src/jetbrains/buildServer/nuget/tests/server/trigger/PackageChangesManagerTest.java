@@ -40,13 +40,16 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   private Mockery m;
   private PackageChangesManagerImpl myManager;
   private Map<String, CheckRequestMode> myModes = new HashMap<String, CheckRequestMode>();
+  private PackageCheckRequestFactory myFactory;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    myManager = new PackageChangesManagerImpl(this);
+    final PackageCheckerSettings settings = new PackageCheckerSettings();
+    myFactory = new PackageCheckRequestFactory(settings);
+    myManager = new PackageChangesManagerImpl(this, settings);
   }
 
   private void advanceTime(long delta) {
@@ -61,7 +64,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   @Test
   public void test_empty() {
     Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
-    Assert.assertEquals(myManager.getSleepTime(), 10000);
+    Assert.assertEquals(myManager.getSleepTime(), 150000);
     myManager.cleaupObsolete();
   }
 
@@ -133,13 +136,13 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
 
 
   private PackageCheckRequest req(String mode) {
-    final PackageCheckRequest id = new PackageCheckRequestFactory().createRequest(createMode(mode), null, "id", null);
+    final PackageCheckRequest id = myFactory.createRequest(createMode(mode), null, "id", null);
     id.setCheckInterval(1);
     return id;
   }
 
   private PackageCheckRequest reqS(String mode, @Nullable String source) {
-    final PackageCheckRequest id = new PackageCheckRequestFactory().createRequest(createMode(mode), source, "id", null);
+    final PackageCheckRequest id = myFactory.createRequest(createMode(mode), source, "id", null);
     id.setCheckInterval(1);
     return id;
   }

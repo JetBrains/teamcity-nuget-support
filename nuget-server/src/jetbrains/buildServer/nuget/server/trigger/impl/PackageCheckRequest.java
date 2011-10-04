@@ -29,7 +29,7 @@ public class PackageCheckRequest {
   @NotNull private final String myPacakgeId;
   @Nullable private final String myVersionSpec;
 
-  private long myCheckInterval = 5 * 60 * 1000; //60s is default
+  private long myCheckInterval = 5 * 60 * 1000; //5min is default, see jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings
 
   public PackageCheckRequest(@NotNull final CheckRequestMode mode,
                              @Nullable final String packageSource,

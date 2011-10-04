@@ -18,5 +18,6 @@
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeFactory"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesCheckerStarter"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory"/>
+  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings"/>
 
 </beans>
