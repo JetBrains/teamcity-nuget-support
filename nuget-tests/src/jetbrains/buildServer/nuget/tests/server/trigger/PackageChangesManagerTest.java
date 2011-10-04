@@ -17,10 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestMode;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesManagerImpl;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckEntry;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
+import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -136,13 +133,13 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
 
 
   private PackageCheckRequest req(String mode) {
-    final PackageCheckRequest id = new PackageCheckRequest(createMode(mode), null, "id", null);
+    final PackageCheckRequest id = new PackageCheckRequestFactory().createRequest(createMode(mode), null, "id", null);
     id.setCheckInterval(1);
     return id;
   }
 
   private PackageCheckRequest reqS(String mode, @Nullable String source) {
-    final PackageCheckRequest id = new PackageCheckRequest(createMode(mode), source, "id", null);
+    final PackageCheckRequest id = new PackageCheckRequestFactory().createRequest(createMode(mode), source, "id", null);
     id.setCheckInterval(1);
     return id;
   }

@@ -5,10 +5,7 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
-import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeFactory;
-import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesManager;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
+import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -28,14 +25,17 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
   private final NuGetToolManager myManager;
   private final PackageChangesManager myPackageChangesManager;
   private final CheckRequestModeFactory myModeFactory;
+  private final PackageCheckRequestFactory myRequestFactory;
 
 
   public NamedPackagesUpdateChecker(@NotNull final NuGetToolManager manager,
                                     @NotNull final PackageChangesManager packageChangesManager,
-                                    @NotNull final CheckRequestModeFactory modeFactory) {
+                                    @NotNull final CheckRequestModeFactory modeFactory,
+                                    @NotNull final PackageCheckRequestFactory requestFactory) {
     myManager = manager;
     myPackageChangesManager = packageChangesManager;
     myModeFactory = modeFactory;
+    myRequestFactory = requestFactory;
   }
 
   @Nullable
@@ -60,7 +60,7 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     }
 
 
-    final PackageCheckRequest checkRequest = new PackageCheckRequest(
+    final PackageCheckRequest checkRequest = myRequestFactory.createRequest(
             myModeFactory.createNuGetChecker(nugetPath),
             source,
             pkgId,

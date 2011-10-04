@@ -67,7 +67,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     manager = m.mock(NuGetToolManager.class);
     chk = m.mock(PackageChangesManager.class);
 
-    checker = new NamedPackagesUpdateChecker(manager, chk, new CheckRequestModeFactory());
+    checker = new NamedPackagesUpdateChecker(manager, chk, new CheckRequestModeFactory(), new PackageCheckRequestFactory());
     nugetFakePath = Paths.getNuGetRunnerPath();
     final String path = nugetFakePath.getPath();
 
@@ -109,7 +109,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       will(returnValue(CheckResult.succeeded(Arrays.asList(
               new SourcePackageInfo(source, "Common", "1.0.0.21"),
               new SourcePackageInfo(source, "Common", "2.0.0.22")
-              ))));
+      ))));
 
       final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21";
       final String hash2 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:2.0.0.22";
@@ -145,7 +145,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       will(returnValue(CheckResult.succeeded(Arrays.asList(
               new SourcePackageInfo(source, "Common", "1.0.0.21"),
               new SourcePackageInfo(source, "Common", "2.0.0.22")
-              ))));
+      ))));
 
       final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21";
       final String hash2 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:2.0.0.22";
@@ -180,7 +180,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
               new SourcePackageInfo(null, "C3o4mmon", "2.0.0.22"),
               new SourcePackageInfo("s4", "C3o3mmon", "2.0.0.22"),
               new SourcePackageInfo(null, "C3omm5on", "2.0.0.22")
-              ))));
+      ))));
 
       final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:s2|p:C3ommon|v:2.0.0.22|s:s4|p:C3o3mmon|v:2.0.0.22|p:Common|v:2.0.0.22|p:C3ommon|v:2.0.0.22|p:C3o4mmon|v:2.0.0.22|p:C3omm5on|v:2.0.0.22";
       oneOf(store).getValue("hash"); will(returnValue("foo"));
