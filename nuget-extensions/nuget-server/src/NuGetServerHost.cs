@@ -29,7 +29,6 @@ namespace JetBrains.TeamCity.NuGet.Server
         AppDomain.CurrentDomain.UnhandledException +=
           (s, o) => Console.Out.WriteLine("Unhandled Exception: " + (o.ExceptionObject ?? "null"));
 
-
         return RunServer(argz);
       } catch(Exception e)
       {
@@ -91,6 +90,5 @@ namespace JetBrains.TeamCity.NuGet.Server
       }
     }
   }
-
-  
+ 
 }
