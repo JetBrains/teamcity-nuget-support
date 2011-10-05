@@ -27,7 +27,7 @@
 </tr>
 
 <tr>
-  <td>NuGet package source:</td>
+  <th>NuGet package source:</th>
   <td>
     <props:textProperty name="${ib.sourceKey}" style="width:20em;" />
     <span class="smallNote">Specify NuGet packages repository to monitor packages changes. Leave blank to use default NuGet feed</span>
@@ -36,7 +36,7 @@
 </tr>
 
 <tr>
-  <td>Package Id<l:star/>:</td>
+  <th>Package Id<l:star/>:</th>
   <td>
     <props:textProperty name="${ib.packageKey}" style="width:20em;"/>
     <span class="smallNote">Specify package Id to check for updates.</span>
@@ -45,7 +45,7 @@
 </tr>
 
 <tr>
-  <td>Package Version Spec:</td>
+  <th>Package Version Spec:</th>
   <td>
     <props:textProperty name="${ib.versionKey}" style="width:20em;"/>
     <span class="smallNote">Specify package version to check. Leave empty to check for latest version</span>
