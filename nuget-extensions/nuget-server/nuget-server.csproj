@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CassiniDev4-lib">
+      <HintPath>..\lib\CassiniDev\CassiniDev4-lib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -44,7 +47,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="..\nuget-runner\src\Annotations.cs">
+      <Link>src\Annotations.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-runner\src\AssemblyHelper.cs">
+      <Link>src\AssemblyHelper.cs</Link>
+    </Compile>
+    <Compile Include="src\Args.cs" />
+    <Compile Include="src\NuGetServerHost.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
