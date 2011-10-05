@@ -37,7 +37,7 @@ public class ListPackagesCommandProcessorTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    p = new ListPackageCommandProcessor("source5");
+    p = new ListPackageCommandProcessor("source5", "zzz");
   }
 
   @Test
@@ -79,7 +79,7 @@ public class ListPackagesCommandProcessorTest extends BaseTestCase {
 
   @Test
   public void test_parse_service_message_no_source() {
-    p = new ListPackageCommandProcessor(null);
+    p = new ListPackageCommandProcessor(null, "zz");
     p.onStdOutput("##teamcity[nuget-package Id='NUnit' Version='2.5.10.11092']");
 
     Collection<SourcePackageInfo> result = p.getResult();

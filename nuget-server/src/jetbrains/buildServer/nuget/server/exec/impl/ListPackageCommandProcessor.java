@@ -38,7 +38,8 @@ public class ListPackageCommandProcessor extends NuGetOutputProcessorAdapter<Col
   private final String mySource;
   private final List<SourcePackageInfo> myPackages = new ArrayList<SourcePackageInfo>();
 
-  public ListPackageCommandProcessor(@Nullable final String source) {
+  public ListPackageCommandProcessor(@Nullable final String source, @NotNull final String commandName) {
+    super(commandName);
     mySource = source;
   }
 

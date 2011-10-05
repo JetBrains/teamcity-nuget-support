@@ -26,6 +26,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class NuGetOutputProcessorAdapter<T> implements NuGetOutputProcessor<T> {
   protected final Logger LOG = Logger.getInstance(getClass().getName());
+  private final String myCommandName;
+
+  protected NuGetOutputProcessorAdapter(@NotNull final String commandName) {
+    myCommandName = commandName;
+  }
 
   public void onStdOutput(@NotNull String text) {
     if (LOG.isDebugEnabled()) {
@@ -42,10 +47,10 @@ public abstract class NuGetOutputProcessorAdapter<T> implements NuGetOutputProce
 
   public void onFinished(int exitCode) throws NuGetExecutionException {
     if (LOG.isDebugEnabled()) {
-      LOG.debug("NuGet TeamCity.List command exited with " + exitCode);
+      LOG.debug("NuGet " + myCommandName + " command exited with " + exitCode);
     }
     if (exitCode != 0) {
-      throw new NuGetExecutionException("Failed to execute TeamCity.List command. Exit code was " + exitCode);
+      throw new NuGetExecutionException("Failed to execute NuGet " + myCommandName + " command. Exited code was " + exitCode);
     }
   }
 }

@@ -44,7 +44,8 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
   public Collection<SourcePackageInfo> checkForChanges(@NotNull File nugetPath, @NotNull SourcePackageReference ref) throws NuGetExecutionException {
     List<String> cmd = new ArrayList<String>();
 
-    cmd.add("TeamCity.List");
+    final String commandName = "TeamCity.List";
+    cmd.add(commandName);
     if (!StringUtil.isEmptyOrSpaces(ref.getSource())) {
       cmd.add("-Source");
       cmd.add(ref.getSource());
@@ -57,7 +58,7 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
       cmd.add(ref.getVersionSpec());
     }
 
-    return myExec.executeNuGet(nugetPath, cmd, new ListPackageCommandProcessor(ref.getSource()));
+    return myExec.executeNuGet(nugetPath, cmd, new ListPackageCommandProcessor(ref.getSource(), commandName));
   }
 
 
@@ -74,14 +75,15 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
 
     try {
       final List<String> cmd = new ArrayList<String>();
-      cmd.add("TeamCity.ListPackages");
+      final String commandName = "TeamCity.ListPackages";
+      cmd.add(commandName);
       cmd.add("-Request");
       cmd.add(FileUtil.getCanonicalFile(spec).getPath());
       cmd.add("-Response");
       cmd.add(FileUtil.getCanonicalFile(result).getPath());
 
 
-      return myExec.executeNuGet(nugetPath, cmd, new NuGetOutputProcessorAdapter<Map<SourcePackageReference,Collection<SourcePackageInfo>>>() {
+      return myExec.executeNuGet(nugetPath, cmd, new NuGetOutputProcessorAdapter<Map<SourcePackageReference,Collection<SourcePackageInfo>>>(commandName) {
         @NotNull
         public Map<SourcePackageReference, Collection<SourcePackageInfo>> getResult() throws NuGetExecutionException {
           try {
