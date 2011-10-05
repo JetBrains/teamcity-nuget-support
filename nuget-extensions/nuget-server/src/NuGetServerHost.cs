@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading;
 using CassiniDev;
 using JetBrains.TeamCity.NuGetRunner;
 
@@ -10,13 +11,14 @@ namespace JetBrains.TeamCity.NuGet.Server
   {
     static int Main(string[] _args)
     {
-      Console.Out.WriteLine("JetBrains TeamCity NuGet Feed Server " + typeof(NuGetServerHost).Assembly.GetName().Version);
-      Console.Out.WriteLine("Usage: ");
-      Console.Out.WriteLine(" /port:XXX       sets port number to bind");
-      Console.Out.WriteLine(" /hostname:XXX   sets port number to bind");
-      Console.Out.WriteLine("");
-
+      Console.Out.WriteLine("JetBrains TeamCity NuGet Feed Server " + typeof(NuGetServerHost).Assembly.GetName().Version);    
       var argz = new Args(_args);
+      if (argz.Contains("help"))
+      {
+        Usage();
+        return 0;
+      }
+
       try
       {
         return RunServer(argz);
@@ -25,6 +27,14 @@ namespace JetBrains.TeamCity.NuGet.Server
         Console.Error.WriteLine("Application failed with unexpected error: " + e);
         return 1;
       }
+    }
+
+    private static void Usage()
+    {
+      Console.Out.WriteLine("Usage: ");
+      Console.Out.WriteLine(" /port:XXX       sets port number to bind");
+      Console.Out.WriteLine(" /hostname:XXX   sets port number to bind");
+      Console.Out.WriteLine("");
     }
 
     private static int RunServer(Args argz)
@@ -42,11 +52,35 @@ namespace JetBrains.TeamCity.NuGet.Server
       var hostName = argz.Get("hostName", "localhost:" + port);
 
       var server = new CassiniDev.Server(port, "/", webApp, IPAddress.Loopback, hostName, 10000);
-      server.Start();
-      server.RequestComplete += (s, o) => Console.Out.WriteLine("Request {0} Completed.", o.RequestLog.PathTranslated);
-      server.Start();
+      server.RequestComplete += (s, o) => Console.Out.WriteLine("Request {0} : {1}", o.RequestLog.PathTranslated, o.ResponseLog.StatusCode);
 
-      return 0;
+      try
+      {
+        server.Start();
+      } catch(Exception e)
+      {
+        Console.Error.WriteLine("Failed to start CassiniDev server: " + e);
+        return 1;
+      }
+
+      Console.Out.WriteLine("Server is running on http://localhost:{0}", port);
+      return Hung();      
+    }
+
+    private static int Hung()
+    {
+      while (true)
+      {
+        //TODO: check exit signal
+        try
+        {
+          Thread.Sleep(TimeSpan.FromMinutes(10));
+        }
+        catch
+        {
+          return 0;
+        }
+      }
     }
   }
 

@@ -14,6 +14,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-feed", "nuget-feed\nuget-feed.csproj", "{D84D9FE8-6424-40DE-8E90-FBA817481961}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-server", "nuget-server\nuget-server.csproj", "{3943459C-56AA-4088-ABFE-975E911873CA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D84D9FE8-6424-40DE-8E90-FBA817481961} = {D84D9FE8-6424-40DE-8E90-FBA817481961}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
