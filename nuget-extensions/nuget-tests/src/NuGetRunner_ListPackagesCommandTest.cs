@@ -153,5 +153,38 @@ namespace JetBrains.TeamCity.NuGet.Tests
               Console.Out.WriteLine("Result: " + text);
             }));
     }
+
+
+    [TestCase(NuGetVersion.NuGet_1_4)]
+    [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
+    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    public void TestCommand_TeamListPublic_Local(NuGetVersion version)
+    {
+      TempFilesHolder.WithTempFile(
+       fileOut =>
+       TempFilesHolder.WithTempFile(
+         fileIn =>
+         {
+           File.WriteAllText(fileIn,
+                             @"<nuget-packages>
+                                    <packages>
+                                       <package source='" + Files.LocalFeed + @"' id='Web'/>
+                                    </packages>
+                                   </nuget-packages>");
+
+           ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version),
+                                          "TeamCity.ListPackages", "-Request", fileIn, "-Response", fileOut)
+             .Dump()
+             .AssertExitedSuccessfully()
+             ;
+
+           var text = File.ReadAllText(fileOut);
+           Console.Out.WriteLine("Result: " + text);
+
+           Assert.True(text.Contains("version=\"2.2.2"));
+           Assert.True(text.Contains("version=\"1.1.1"));           
+         }));
+    }
   }
 }
