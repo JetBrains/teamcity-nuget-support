@@ -11,7 +11,7 @@ public interface PackageCheckerSettings {
 
   long getPackageCheckRequestIdleRemoveInterval(long checkInterval);
 
-  long getCheckChangesThreashold();
+  long getMinSleepInterval();
 
   long getMaxSleepInterval();
 

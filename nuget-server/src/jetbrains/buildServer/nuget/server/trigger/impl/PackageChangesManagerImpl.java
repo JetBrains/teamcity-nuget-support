@@ -72,7 +72,7 @@ public class PackageChangesManagerImpl implements PackageChangesManager, Package
       }
     }
 
-    return Math.max(mySettings.getCheckChangesThreashold(), span);
+    return Math.max(mySettings.getMinSleepInterval(), span);
   }
 
   @NotNull
@@ -84,7 +84,7 @@ public class PackageChangesManagerImpl implements PackageChangesManager, Package
       for (PackageCheckEntry entry : myEntries) {
         if (entry.isExecuting()) continue;
         //skip other mode
-        if (entry.getNextCheckTime() - now < mySettings.getCheckChangesThreashold()) {
+        if (entry.getNextCheckTime() < now) {
           entries.add(entry);
         }
       }

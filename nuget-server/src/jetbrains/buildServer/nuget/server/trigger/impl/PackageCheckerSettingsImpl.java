@@ -33,12 +33,12 @@ public class PackageCheckerSettingsImpl implements PackageCheckerSettings {
     return 5 * checkInterval;
   }
 
-  public long getCheckChangesThreashold() {
+  public long getMinSleepInterval() {
     return getPackageCheckInterval() / 2;
   }
 
   public long getMaxSleepInterval() {
-    return getPackageCheckInterval() / 2;
+    return 3 * getPackageCheckInterval() / 2;
   }
 
   public int getCheckerThreads() {

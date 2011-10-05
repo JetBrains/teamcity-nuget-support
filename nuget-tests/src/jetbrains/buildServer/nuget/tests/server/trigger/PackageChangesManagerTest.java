@@ -65,7 +65,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   @Test
   public void test_empty() {
     Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
-    Assert.assertEquals(myManager.getSleepTime(), 150000);
+    Assert.assertEquals(myManager.getSleepTime(), 450000);
     myManager.cleaupObsolete();
   }
 
@@ -111,7 +111,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     final PackageCheckEntry next = myManager.getItemsToCheckNow().iterator().next();
     setResult(next);
 
-    advanceTime(1000 * 1000);
+    advanceTime(3000 * 1000);
     Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
   }
 
