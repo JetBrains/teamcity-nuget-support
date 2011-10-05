@@ -51,9 +51,9 @@ namespace JetBrains.TeamCity.NuGet.Server
       var port = argz.GetInt("port", 8411);
       var hostName = argz.Get("hostName", "localhost:" + port);
 
-      var server = new CassiniDev.Server(port, "/", webApp, IPAddress.Loopback, hostName, 10000);
+      var server = new CassiniDev.Server(port, "/", webApp, IPAddress.Loopback, hostName, 10000, false, true);
       server.RequestComplete += (s, o) => Console.Out.WriteLine("Request {0} : {1}", o.RequestLog.PathTranslated, o.ResponseLog.StatusCode);
-
+      
       try
       {
         server.Start();
