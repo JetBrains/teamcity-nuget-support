@@ -37,12 +37,24 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     myModeFactory = modeFactory;
     myRequestFactory = requestFactory;
   }
+  
+  @NotNull 
+  private Collection<String> parsePackageIds(@Nullable String ids) {
+    if (ids == null || StringUtil.isEmptyOrSpaces(ids)) return Collections.emptyList();
+    Set<String> packages = new HashSet<String>();
+    for (String pId : ids.split("[\\r\\n]+")) {
+      final String id = pId.trim();
+      if (id.length() == 0) continue;
+      packages.add(id);
+    }
+    return packages;
+  }
 
   @Nullable
   public BuildStartReason checkChanges(@NotNull BuildTriggerDescriptor descriptor,
                                        @NotNull CustomDataStorage storage) throws BuildTriggerException {
     final String path = myManager.getNuGetPath(descriptor.getProperties().get(TriggerConstants.NUGET_EXE));
-    final String pkgId = descriptor.getProperties().get(TriggerConstants.PACKAGE);
+    final Collection<String> pkgIds = parsePackageIds(descriptor.getProperties().get(TriggerConstants.PACKAGE));
     final String version = descriptor.getProperties().get(TriggerConstants.VERSION);
     final String source = descriptor.getProperties().get(TriggerConstants.SOURCE);
 
@@ -50,7 +62,7 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       throw new BuildTriggerException("Path to NuGet.exe must be specified");
     }
 
-    if (StringUtil.isEmptyOrSpaces(pkgId)) {
+    if (pkgIds.isEmpty()) {
       throw new BuildTriggerException("Package Id must be specified");
     }
 
@@ -59,45 +71,65 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
     }
 
+    BuildStartReason reason = null;
+    BuildTriggerException exception = null;
 
-    final PackageCheckRequest checkRequest = myRequestFactory.createRequest(
-            myModeFactory.createNuGetChecker(nugetPath),
-            source,
-            pkgId,
-            version
-    );
+    for (String pkgId : pkgIds) {
+      final PackageCheckRequest checkRequest = myRequestFactory.createRequest(
+              myModeFactory.createNuGetChecker(nugetPath),
+              source,
+              pkgId,
+              version
+      );
 
 
-    CheckResult result;
-    try {
-      result = myPackageChangesManager.checkPackage(checkRequest);
-      //no change available
-    } catch (Throwable t) {
-      LOG.warn("Failed to ckeck changes for package: " + pkgId + ". " + t.getMessage(), t);
-      result = CheckResult.failed(t.getMessage());
-    }
+      final CheckResult result = getResultAndPostTask(pkgId, checkRequest);
+      if (result == null) continue;
 
-    if (result == null) return null;
-    final String error = result.getError();
-    if (error != null) {
-      throw new BuildTriggerException("Failed to check for package versions. " + error);
-    }
+      final String error = result.getError();
+      if (error != null) {
+        //noinspection ThrowableInstanceNeverThrown
+        exception = new BuildTriggerException("Failed to check for package versions of " + pkgId + ". " + error, exception);
+        continue;
+      }
 
-    final String hash = serializeHashcode(result.getInfos());
-    final String oldHash = storage.getValue(KEY);
+      final String key = KEY + "-" + pkgId;
+      final String hash = serializeHashcode(result.getInfos());
+      final String oldHash = storage.getValue(key);
 
-    LOG.debug("Recieved packages hash: " + hash);
-    LOG.debug("          old hash was: " + oldHash);
-    if (!hash.equals(oldHash)) {
-      storage.putValue(KEY, hash);
-      storage.flush();
+      LOG.debug("Recieved packages hash: " + hash);
+      LOG.debug("          old hash was: " + oldHash);
+      if (!hash.equals(oldHash)) {
+        storage.putValue(key, hash);
+        storage.flush();
 
-      if (oldHash != null) {
-        return new BuildStartReason("NuGet Package " + pkgId + " updated");
+        if (oldHash != null) {
+          //we need to update all triggers to avoid multiple triggering
+          reason = new BuildStartReason(pkgId, reason);
+        }
       }
     }
 
+    //first if there were a change detected let the build start.
+    if (reason != null) return reason;
+
+    //if nothing detected, let it fail
+    if (exception != null) throw exception;
+
+    //ok. let's try again latter
     return null;
+  }
+
+  @Nullable
+  private CheckResult getResultAndPostTask(@NotNull final String pkgId, @NotNull final PackageCheckRequest checkRequest) {
+    try {
+      return myPackageChangesManager.checkPackage(checkRequest);
+      //no change available
+    } catch (Throwable t) {
+      final String msg = "Failed to ckeck changes for package: " + pkgId + ". " + t.getMessage();
+      LOG.warn(msg, t);
+      return CheckResult.failed(msg);
+    }
   }
 
   private String serializeHashcode(@NotNull final Collection<SourcePackageInfo> _packages) {

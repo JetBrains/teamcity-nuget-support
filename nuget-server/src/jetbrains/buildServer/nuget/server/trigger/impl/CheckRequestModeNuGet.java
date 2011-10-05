@@ -49,4 +49,11 @@ public class CheckRequestModeNuGet implements CheckRequestMode {
   public int hashCode() {
     return myNuGetPath.hashCode();
   }
+
+  @Override
+  public String toString() {
+    return "CheckRequestModeNuGet{" +
+            "myNuGetPath=" + myNuGetPath +
+            '}';
+  }
 }

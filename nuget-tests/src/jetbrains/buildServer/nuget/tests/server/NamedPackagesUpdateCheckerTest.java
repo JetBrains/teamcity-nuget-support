@@ -87,12 +87,88 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
       will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
-      oneOf(store).getValue("hash"); will(returnValue(null));
-      oneOf(store).putValue(with(equal("hash")), with(any(String.class)));
+      oneOf(store).getValue("hash-NUnit"); will(returnValue(null));
+      oneOf(store).putValue(with(equal("hash-NUnit")), with(any(String.class)));
       oneOf(store).flush();
     }});
     Assert.assertNull(checker.checkChanges(desr, store));
 
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_should_trigger_multiplePackages() {
+    final String source = "\\\\ServerNameRemoved\\NugetTest\\Repository";
+
+    params.put(TriggerConstants.PACKAGE, "Common\nNUnit");
+    params.put(TriggerConstants.SOURCE, source);
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, source, "Common", null)));
+      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo(source, "Common", "1.0.0.21")))));
+
+      oneOf(chk).checkPackage(with(req(nugetFakePath, source, "NUnit", null)));
+      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo(source, "NUnit", "2.0.0.21")
+      ))));
+
+      final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21";
+      final String hash2 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:NUnit|v:2.0.0.21";
+
+      oneOf(store).getValue("hash-Common"); will(returnValue(hash1));
+      oneOf(store).getValue("hash-NUnit"); will(returnValue(hash2));
+
+    }});
+    Assert.assertNull(checker.checkChanges(desr, store));
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_should_trigger_multiplePackages_change_and_crash() {
+    final String source = "\\\\ServerNameRemoved\\NugetTest\\Repository";
+
+    params.put(TriggerConstants.PACKAGE, "Common\nNUnit");
+    params.put(TriggerConstants.SOURCE, source);
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, source, "Common", null)));
+      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo(source, "Common", "1.0.0.21")))));
+
+      oneOf(chk).checkPackage(with(req(nugetFakePath, source, "NUnit", null)));
+      will(returnValue(CheckResult.failed("error")));
+
+      final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21";
+
+      oneOf(store).getValue("hash-Common"); will(returnValue(hash1+"a"));
+      oneOf(store).putValue("hash-Common", hash1);
+      oneOf(store).flush();
+    }});
+
+    Assert.assertNotNull(checker.checkChanges(desr, store));
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_should_trigger_multiplePackages__crash() {
+    final String source = "\\\\ServerNameRemoved\\NugetTest\\Repository";
+
+    params.put(TriggerConstants.PACKAGE, "Common\nNUnit");
+    params.put(TriggerConstants.SOURCE, source);
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, source, "Common", null)));
+      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo(source, "Common", "1.0.0.21")))));
+
+      oneOf(chk).checkPackage(with(req(nugetFakePath, source, "NUnit", null)));
+      will(returnValue(CheckResult.failed("error")));
+
+      final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21";
+
+      oneOf(store).getValue("hash-Common"); will(returnValue(hash1));
+    }});
+
+    try {
+      checker.checkChanges(desr, store);
+      Assert.fail();
+    } catch (BuildTriggerException e) {
+      //expected
+    }
     m.assertIsSatisfied();
   }
 
@@ -115,12 +191,12 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21";
       final String hash2 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:2.0.0.22";
 
-      oneOf(store).getValue("hash"); will(returnValue(null));
-      oneOf(store).putValue("hash", hash1);
+      oneOf(store).getValue("hash-Common"); will(returnValue(null));
+      oneOf(store).putValue("hash-Common", hash1);
       oneOf(store).flush();
 
-      oneOf(store).getValue("hash"); will(returnValue(hash1));
-      oneOf(store).putValue("hash", hash2);
+      oneOf(store).getValue("hash-Common"); will(returnValue(hash1));
+      oneOf(store).putValue("hash-Common", hash2);
       oneOf(store).flush();
 
     }});
@@ -151,9 +227,9 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21";
       final String hash2 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:2.0.0.22";
 
-      oneOf(store).getValue("hash"); will(returnValue(hash1));
-      oneOf(store).getValue("hash"); will(returnValue(hash1));
-      oneOf(store).putValue("hash", hash2);
+      oneOf(store).getValue("hash-Common"); will(returnValue(hash1));
+      oneOf(store).getValue("hash-Common"); will(returnValue(hash1));
+      oneOf(store).putValue("hash-Common", hash2);
       oneOf(store).flush();
 
     }});
@@ -184,8 +260,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       ))));
 
       final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:s2|p:C3ommon|v:2.0.0.22|s:s4|p:C3o3mmon|v:2.0.0.22|p:Common|v:2.0.0.22|p:C3ommon|v:2.0.0.22|p:C3o4mmon|v:2.0.0.22|p:C3omm5on|v:2.0.0.22";
-      oneOf(store).getValue("hash"); will(returnValue("foo"));
-      oneOf(store).putValue("hash", hash1);
+      oneOf(store).getValue("hash-Common"); will(returnValue("foo"));
+      oneOf(store).putValue("hash-Common", hash1);
       oneOf(store).flush();
 
     }});
@@ -203,9 +279,9 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
       will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
-      oneOf(store).getValue("hash"); will(returnValue("aaa"));
-      oneOf(store).putValue("hash", "|s:src|p:pkg|v:5.6.87");
-      oneOf(store).getValue("hash"); will(returnValue("|s:src|p:pkg|v:5.6.87"));
+      oneOf(store).getValue("hash-NUnit"); will(returnValue("aaa"));
+      oneOf(store).putValue("hash-NUnit", "|s:src|p:pkg|v:5.6.87");
+      oneOf(store).getValue("hash-NUnit"); will(returnValue("|s:src|p:pkg|v:5.6.87"));
       oneOf(store).flush();
     }});
 

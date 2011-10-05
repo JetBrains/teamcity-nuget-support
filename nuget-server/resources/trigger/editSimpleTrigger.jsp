@@ -36,10 +36,10 @@
 </tr>
 
 <tr>
-  <td>Package Id<l:star/>:</td>
+  <td>Package Ids<l:star/>:</td>
   <td>
-    <props:textProperty name="${ib.packageKey}" style="width:20em;"/>
-    <span class="smallNote">Specify package Id to check for updates.</span>
+    <props:multilineProperty name="${ib.packageKey}" cols="40" rows="5" expanded="${true}" linkTitle="Package Ids"/>
+    <span class="smallNote">Specify package Ids seperated by newline.</span>
     <span class="error" id="error_${ib.packageKey}"></span>
   </td>
 </tr>

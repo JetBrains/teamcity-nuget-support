@@ -59,4 +59,13 @@ public class PackageCheckRequest {
   public SourcePackageReference getPackage() {
     return myPackage;
   }
+
+  @Override
+  public String toString() {
+    return "PackageCheckRequest{" +
+            "myMode=" + myMode +
+            ", myPackage=" + myPackage +
+            ", myCheckInterval=" + myCheckInterval +
+            '}';
+  }
 }

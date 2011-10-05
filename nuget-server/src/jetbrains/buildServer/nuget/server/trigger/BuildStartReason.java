@@ -16,21 +16,29 @@
 
 package jetbrains.buildServer.nuget.server.trigger;
 
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
 * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
 * Date: 14.07.11 15:57
 */
 public class BuildStartReason {
-  private final String myReason;
+  private final Set<String> myReasons = new TreeSet<String>();
 
-  public BuildStartReason(@NotNull final String reason) {
-    myReason = reason;
+  public BuildStartReason(@NotNull final String reason, @Nullable BuildStartReason parentReason) {
+    myReasons.add(reason);
+    if (parentReason != null) {
+      myReasons.addAll(parentReason.myReasons);
+    }
   }
 
   @NotNull
   public String getReason() {
-    return myReason;
+    return "NuGet Packages updated: " + StringUtil.join(", ", myReasons);
   }
 }
