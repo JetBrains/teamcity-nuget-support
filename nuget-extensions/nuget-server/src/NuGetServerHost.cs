@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -21,6 +22,14 @@ namespace JetBrains.TeamCity.NuGet.Server
 
       try
       {
+        
+        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+        Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
+        AppDomain.CurrentDomain.UnhandledException +=
+          (s, o) => Console.Out.WriteLine("Unhandled Exception: " + (o.ExceptionObject ?? "null"));
+
+
         return RunServer(argz);
       } catch(Exception e)
       {
@@ -33,7 +42,6 @@ namespace JetBrains.TeamCity.NuGet.Server
     {
       Console.Out.WriteLine("Usage: ");
       Console.Out.WriteLine(" /port:XXX       sets port number to bind");
-      Console.Out.WriteLine(" /hostname:XXX   sets port number to bind");
       Console.Out.WriteLine("");
     }
 
@@ -49,10 +57,9 @@ namespace JetBrains.TeamCity.NuGet.Server
         return 1;
       }
       var port = argz.GetInt("port", 8411);
-      var hostName = argz.Get("hostName", "localhost:" + port);
 
       //TODO: Add code to check if server is still alive.
-      var server = new CassiniDev.Server(port, "/", webApp, IPAddress.Loopback, hostName, 10000, false, true);
+      var server = new CassiniDev.Server(port, "/", webApp, false, true);
       server.RequestComplete += (s, o) => Console.Out.WriteLine("Request {0} : {1}", o.RequestLog.PathTranslated, o.ResponseLog.StatusCode);
       
       try
