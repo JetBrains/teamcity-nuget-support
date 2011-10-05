@@ -33,7 +33,29 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Elmah">
+      <HintPath>..\packages\elmah.corelibrary.1.2\lib\Elmah.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject">
+      <HintPath>..\packages\Ninject.2.2.1.4\lib\net40-Full\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Core">
+      <HintPath>..\packages\NuGet.Core.1.5.20902.9026\lib\net40-Client\NuGet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Server">
+      <HintPath>..\packages\NuGet.Server.1.5.20902.9026\lib\net40\NuGet.Server.dll</HintPath>
+    </Reference>
+    <Reference Include="RouteMagic">
+      <HintPath>..\packages\RouteMagic.1.0\lib\net40\RouteMagic.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.Services" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -49,8 +71,16 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.4.4\lib\net40\WebActivator.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DataServices\Packages.svc" />
+    <Content Include="Default.aspx" />
+    <Content Include="favicon.ico" />
+    <Content Include="license.txt" />
+    <Content Include="Packages\Readme.txt" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -60,10 +90,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataServices\Routes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <Import Project="nuget-feed.Targets" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
@@ -88,15 +123,5 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
-  <Target Name="AfterBuild">
-     <RemoveDir Directories="..\bin-server\feed" ContinueOnError="True" />
-     <MakeDir Directories="..\bin-server\feed" />
-
-     <ItemGroup>
-       <WebApplicationFiles Include="$(OutputPath)\**\*"><Destination>Bin</Destination></WebApplicationFiles>
-       <WebApplicationFiles Include="Web.config"><Destination></Destination></WebApplicationFiles>
-     </ItemGroup>
-
-     <Copy SourceFiles="@(WebApplicationFiles)" DestinationFiles="@(WebApplicationFiles->'..\bin-server\feed\%(Destination)\%(RecursiveDir)%(Filename)%(Extension)')" />
-  </Target>
+  <Target Name="AfterBuild" DependsOnTargets="PackWebApplication"/> 
 </Project>

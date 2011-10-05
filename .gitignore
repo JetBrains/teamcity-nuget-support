@@ -8,3 +8,4 @@ nuget-extensions/**/*.user
 nuget-extensions/*.user
 nuget-extensions/*.cache
 nuget-extensions/_ReSharper*
+nuget-extensions/packages/**/*
