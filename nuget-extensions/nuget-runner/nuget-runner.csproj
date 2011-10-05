@@ -48,6 +48,7 @@
     <Compile Include="src\CommandLineHelper.cs" />
     <Compile Include="src\NuGetInstallExtensions4.cs" />
     <Compile Include="src\NuGetInstallExtensions5.cs" />
+    <Compile Include="src\NuGetInstallExtensionsBase.cs" />
     <Compile Include="src\NuGetLoadException.cs" />
     <Compile Include="src\NuGetRunMutex.cs" />
     <Compile Include="src\NuGetRunner.cs" />

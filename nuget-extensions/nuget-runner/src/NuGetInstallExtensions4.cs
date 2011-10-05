@@ -1,19 +1,16 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace JetBrains.TeamCity.NuGetRunner
 {
-  public class NuGetInstallExtensions4
+  public class NuGetInstallExtensions4 : NuGetInstallExtensionsBase
   {
-    public NuGetInstallExtensions4(NuGetRunner runner, IEnumerable<string> extensions)
-    {
-      Func<string> computeHome = () => Path.Combine(runner.LocateNuGetExtensionsPath(), "TeamCity.Extensions");
+    public NuGetInstallExtensions4(NuGetRunner runner, IEnumerable<string> extensions) : base(runner)
+    {      
       runner.BeforeNuGetStarted += (_, __) =>
                                      {
-                                       string home = computeHome();
-                                       if (Directory.Exists(home))
-                                         Directory.Delete(home, true);
+                                       string home = NuGetSharedExntensions;
+                                       CleanupHome();
 
                                        if (!Directory.Exists(home))
                                          Directory.CreateDirectory(home);
@@ -25,12 +22,7 @@ namespace JetBrains.TeamCity.NuGetRunner
                                        }
                                      };
 
-      runner.AfterNuGetFinished += (_, __) =>
-                                     {
-                                       string home = computeHome();
-                                       if (Directory.Exists(home))
-                                         Directory.Delete(home, true);
-                                     };
+      runner.AfterNuGetFinished += (_, __) => CleanupHome();
     }
   }
 }
