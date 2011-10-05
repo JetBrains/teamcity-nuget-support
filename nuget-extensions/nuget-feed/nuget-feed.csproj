@@ -23,8 +23,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PublishDatabases>false</PublishDatabases>
-    <DesktopBuildPackageLocation>../bin-feed/nuget-feed.zip</DesktopBuildPackageLocation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -89,7 +87,16 @@
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
+  <Target Name="AfterBuild">
+     <RemoveDir Directories="..\bin-server\feed" ContinueOnError="True" />
+     <MakeDir Directories="..\bin-server\feed" />
+
+     <ItemGroup>
+       <WebApplicationFiles Include="$(OutputPath)\**\*"><Destination>Bin</Destination></WebApplicationFiles>
+       <WebApplicationFiles Include="Web.config"><Destination></Destination></WebApplicationFiles>
+     </ItemGroup>
+
+     <Copy SourceFiles="@(WebApplicationFiles)" DestinationFiles="@(WebApplicationFiles->'..\bin-server\feed\%(Destination)\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
 </Project>
