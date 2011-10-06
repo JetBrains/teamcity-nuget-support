@@ -12,7 +12,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
   public class TeamCityPackages : DataService<TeamCityPackagesContext>, IDataServiceStreamProvider, IServiceProvider
-  {
+  {    
     private readonly Func<IQueryable<TeamCityPackage>> myRepository;
 
     public TeamCityPackages()
@@ -39,12 +39,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     public Uri GetReadStreamUri(object entity, DataServiceOperationContext operationContext)
     {
       var package = (TeamCityPackage)entity;
-
-      var rootUrl = HttpContext.Current.Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
-
-      // the URI need to ends with a '/' to be correctly merged so we add it to the application if it       
-      //TODO: use TeamCity provided path here
-      return new Uri(new Uri(rootUrl), package.FullPath);
+      return package.DownloadUrl;
     }
 
     public string GetStreamContentType(object entity, DataServiceOperationContext operationContext)

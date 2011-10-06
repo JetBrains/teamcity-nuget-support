@@ -33,21 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Elmah">
-      <HintPath>..\packages\elmah.corelibrary.1.2\lib\Elmah.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Ninject">
-      <HintPath>..\packages\Ninject.2.2.1.4\lib\net40-Full\Ninject.dll</HintPath>
-    </Reference>
     <Reference Include="NuGet.Core">
       <HintPath>..\packages\NuGet.Core.1.5.20902.9026\lib\net40-Client\NuGet.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="NuGet.Server">
-      <HintPath>..\packages\NuGet.Server.1.5.20902.9026\lib\net40\NuGet.Server.dll</HintPath>
     </Reference>
     <Reference Include="RouteMagic">
       <HintPath>..\packages\RouteMagic.1.0\lib\net40\RouteMagic.dll</HintPath>
@@ -103,7 +94,7 @@
     <Compile Include="DataServices\TeamCityPackages.cs" />
     <Compile Include="DataServices\TeamCityPackagesContext.cs" />
     <Compile Include="DataServices\TeamCityPackagesRepo.cs" />
-    <Compile Include="DataServices\TeamCityZipPackage.cs" />
+    <Compile Include="DataServices\TeamCityZipPackageFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Configuration;
@@ -11,19 +9,18 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   public class LightPackageRepository
   {
-    private readonly IEnumerable<TeamCityPackageSpec> EMPTY_SPEC = new TeamCityPackageSpec[0];
     private readonly XmlSerializerFactory myXmlSerializerFactory = new XmlSerializerFactory();
-
 
     public IQueryable<TeamCityPackage> GetPackages()
     {
+      var repo = FetchPackageSpec();
       return
-        from spec in FetchPackageSpec().AsQueryable()
+        from spec in repo.Specs.AsQueryable()
         let path = spec.PackageFile
-        select new TeamCityZipPackage(path).ToPackage;
+        select TeamCityZipPackageFactory.LoadPackage(repo, spec);
     }
 
-    private IEnumerable<TeamCityPackageSpec> FetchPackageSpec()
+    private TeamCityPackagesRepo FetchPackageSpec()
     {
       var xmlFile = TeamCityPackagesFile;
       if (xmlFile == null) return EMPTY_SPEC;
@@ -35,7 +32,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
         using (var tw = File.OpenRead(xmlFile))
         {
           var info = (TeamCityPackagesRepo)ser.Deserialize(tw);
-          return info.Specs;
+          return info;
         }
       }
       catch
@@ -60,5 +57,12 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
         return fsFile;
       }
     }
+
+    private readonly TeamCityPackagesRepo EMPTY_SPEC =
+      new TeamCityPackagesRepo
+        {
+          ServerUrl = "localhost",
+          Specs = new TeamCityPackageSpec[0]
+        };
   }
 }

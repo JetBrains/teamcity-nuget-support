@@ -8,10 +8,15 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
   {
     [XmlAttribute("buildId")]
     public long BuildId { get; set; }
+    
     [XmlAttribute("downloadUrl")]
     public string DownloadUrl { get; set; }
+
     [XmlAttribute("packageFile")]
     public string PackageFile { get; set; }
+
+    [XmlAttribute("isLatest")]
+    public bool IsLatest { get; set; }
   }
 
   [Serializable]
@@ -21,5 +26,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     [XmlArray("packages")]
     [XmlArrayItem("package")]
     public TeamCityPackageSpec[] Specs { get; set; }
+
+    [XmlAttribute("serverUrl")]
+    public string ServerUrl { get; set; }
   }
 }
