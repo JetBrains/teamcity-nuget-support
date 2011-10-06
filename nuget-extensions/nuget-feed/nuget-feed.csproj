@@ -53,6 +53,7 @@
       <HintPath>..\packages\RouteMagic.1.0\lib\net40\RouteMagic.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Services" />
+    <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Activation" />
     <Reference Include="System.ServiceModel.Web" />
@@ -76,7 +77,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DataServices\Packages.svc" />
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="license.txt" />
@@ -90,7 +90,17 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\nuget-runner\src\Annotations.cs">
+      <Link>Annotations.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-runner\src\AssemblyHelper.cs">
+      <Link>AssemblyHelper.cs</Link>
+    </Compile>
+    <Compile Include="DataServices\LightPackageRepository.cs" />
     <Compile Include="DataServices\Routes.cs" />
+    <Compile Include="DataServices\TeamCityPackages.cs" />
+    <Compile Include="DataServices\TeamCityPackagesContext.cs" />
+    <Compile Include="DataServices\TeamCityZipPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -123,5 +133,5 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
-  <Target Name="AfterBuild" DependsOnTargets="PackWebApplication"/> 
+  <Target Name="AfterBuild" DependsOnTargets="PackWebApplication" />
 </Project>
