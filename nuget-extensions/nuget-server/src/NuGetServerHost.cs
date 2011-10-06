@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using System.Net;
 using System.Threading;
-using CassiniDev;
 using JetBrains.TeamCity.NuGetRunner;
 
 namespace JetBrains.TeamCity.NuGet.Server
@@ -22,7 +20,6 @@ namespace JetBrains.TeamCity.NuGet.Server
 
       try
       {
-        
         Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
         Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
 
@@ -59,7 +56,6 @@ namespace JetBrains.TeamCity.NuGet.Server
 
       //TODO: Add code to check if server is still alive.
       var server = new CassiniDev.Server(port, "/", webApp, false, true);
-      server.RequestComplete += (s, o) => Console.Out.WriteLine("Request {0} : {1}", o.RequestLog.PathTranslated, o.ResponseLog.StatusCode);
       
       try
       {
