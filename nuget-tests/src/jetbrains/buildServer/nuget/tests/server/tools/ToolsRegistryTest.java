@@ -17,9 +17,9 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPaths;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher;
 import jetbrains.buildServer.util.FileUtil;

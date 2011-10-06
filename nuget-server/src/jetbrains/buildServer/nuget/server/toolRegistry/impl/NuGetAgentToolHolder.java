@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
+import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.serverSide.impl.agent.AgentPluginsHolderBase;
 import org.jetbrains.annotations.NotNull;
 

@@ -18,9 +18,9 @@ package jetbrains.buildServer.nuget.tests.server.tools;
 
 import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.ToolPaths;
+import jetbrains.buildServer.nuget.server.impl.ToolPathsImpl;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetAgentToolHolder;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPaths;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPathsImpl;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;

@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry.impl;
+package jetbrains.buildServer.nuget.server;
 
-import jetbrains.buildServer.nuget.server.ToolPaths;
-import jetbrains.buildServer.serverSide.impl.agent.AgentPluginsHolder;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 16.08.11 15:21
+ * Date: 16.08.11 2:00
  */
-public class AgentToolsRegistrar {
-  public AgentToolsRegistrar(@NotNull final AgentPluginsHolder holder,
-                             @NotNull final ToolPaths paths) {
-    holder.addAgentPlugins(new NuGetAgentToolHolder(paths));
-  }
+public interface ToolPaths {
+  @NotNull
+  File getTools();
+
+  @NotNull
+  File getAgentPluginsPath();
+
+  @NotNull
+  File getPackages();
 }

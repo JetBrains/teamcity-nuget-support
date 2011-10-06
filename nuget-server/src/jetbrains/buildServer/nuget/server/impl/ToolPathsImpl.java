@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry.impl;
+package jetbrains.buildServer.nuget.server.impl;
 
+import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;

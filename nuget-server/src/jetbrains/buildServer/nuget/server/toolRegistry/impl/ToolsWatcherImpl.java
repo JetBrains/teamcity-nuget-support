@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FilesWatcher;
+import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
