@@ -26,11 +26,13 @@ import java.io.File;
  */
 public interface ToolPaths {
   @NotNull
-  File getTools();
+  File getNuGetToolsPath();
 
   @NotNull
-  File getAgentPluginsPath();
+  File getNuGetToolsAgentPluginsPath();
 
   @NotNull
-  File getPackages();
+  File getNuGetToolsPackages();
+
+
 }

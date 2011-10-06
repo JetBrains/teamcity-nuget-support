@@ -36,6 +36,6 @@ public class NuGetAgentToolHolder extends AgentPluginsHolderBase {
   @NotNull
   @Override
   protected File getAgentPluginsDirectory() {
-    return myPaths.getAgentPluginsPath();
+    return myPaths.getNuGetToolsAgentPluginsPath();
   }
 }

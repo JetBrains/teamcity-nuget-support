@@ -61,9 +61,9 @@ public class ToolsRegistryTest extends BaseTestCase {
     myWatcher = m.mock(ToolsWatcher.class);
 
     m.checking(new Expectations(){{
-      allowing(path).getTools(); will(returnValue(myToolsHome));
-      allowing(path).getPackages(); will(returnValue(myPackagesHome));
-      allowing(path).getAgentPluginsPath(); will(returnValue(myAgentHome));
+      allowing(path).getNuGetToolsPath(); will(returnValue(myToolsHome));
+      allowing(path).getNuGetToolsPackages(); will(returnValue(myPackagesHome));
+      allowing(path).getNuGetToolsAgentPluginsPath(); will(returnValue(myAgentHome));
     }});
 
     myRegistry = new ToolsRegistry(path, new PluginNaming(path), myWatcher);

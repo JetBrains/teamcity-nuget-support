@@ -38,13 +38,13 @@ public class PluginNaming {
   @NotNull
   public File getUnpackedFolder(@NotNull final File packageFile) {
     //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getTools(), packageFile.getName());
+    return new File(myPaths.getNuGetToolsPath(), packageFile.getName());
   }
 
   @NotNull
   public File getAgentFile(@NotNull final File packageFile) {
     //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getAgentPluginsPath(), packageFile.getName() + ".zip");
+    return new File(myPaths.getNuGetToolsAgentPluginsPath(), packageFile.getName() + ".zip");
   }
 
   @NotNull

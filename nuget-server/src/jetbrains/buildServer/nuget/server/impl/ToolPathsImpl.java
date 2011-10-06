@@ -42,17 +42,17 @@ public class ToolPathsImpl implements ToolPaths {
   }
 
   @NotNull
-  public File getPackages() {
+  public File getNuGetToolsPackages() {
     return relative("nupkg");
   }
 
   @NotNull
-  public File getTools() {
+  public File getNuGetToolsPath() {
     return relative("tools");
   }
 
   @NotNull
-  public File getAgentPluginsPath() {
+  public File getNuGetToolsAgentPluginsPath() {
     return relative("agent");
   }
 }

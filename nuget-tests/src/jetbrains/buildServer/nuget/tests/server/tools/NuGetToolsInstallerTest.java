@@ -62,8 +62,8 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
             ));
 
     m.checking(new Expectations(){{
-      allowing(myPaths).getTools(); will(returnValue(myToolsPath));
-      allowing(myPaths).getAgentPluginsPath(); will(returnValue(myPluginsPath));
+      allowing(myPaths).getNuGetToolsPath(); will(returnValue(myToolsPath));
+      allowing(myPaths).getNuGetToolsAgentPluginsPath(); will(returnValue(myPluginsPath));
     }});
   }
 

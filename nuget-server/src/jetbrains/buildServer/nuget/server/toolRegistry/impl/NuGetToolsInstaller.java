@@ -58,7 +58,7 @@ public class NuGetToolsInstaller {
     }
 
     LOG.info("Downloading package from: " + tool.getDownloadUrl());
-    File dest = new File(myToolPaths.getPackages(), tool.getInfo().getId() + "." + tool.getInfo().getVersion() + ".nupkg");
+    File dest = new File(myToolPaths.getNuGetToolsPackages(), tool.getInfo().getId() + "." + tool.getInfo().getVersion() + ".nupkg");
     try {
       File tmp = File.createTempFile(dest.getName(), ".nupkg");
       FileUtil.createParentDirs(tmp);

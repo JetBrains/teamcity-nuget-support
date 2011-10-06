@@ -65,7 +65,7 @@ public class ToolsRegistry {
   }
 
   private Collection<InstalledTool> getToolsInternal() {
-    final File[] tools = myPaths.getPackages().listFiles(IS_PACKAGE);
+    final File[] tools = myPaths.getNuGetToolsPackages().listFiles(IS_PACKAGE);
     if (tools == null) return Collections.emptyList();
 
     final List<InstalledTool> result = new ArrayList<InstalledTool>();

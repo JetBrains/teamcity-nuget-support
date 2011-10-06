@@ -48,7 +48,7 @@ public class ToolsWatcherImpl implements ToolsWatcher {
     myUnpacker = unpacker;
     myWatcher = new FilesWatcher(new FilesWatcher.WatchedFilesProvider() {
       public File[] getWatchedFiles() {
-        return myPaths.getPackages().listFiles();
+        return myPaths.getNuGetToolsPackages().listFiles();
       }
     });
     myWatcher.registerListener(new ChangeListener() {
@@ -118,12 +118,12 @@ public class ToolsWatcherImpl implements ToolsWatcher {
   @NotNull
   private File getUnpackedFolder(@NotNull final File packages) {
     //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getTools(), packages.getName());
+    return new File(myPaths.getNuGetToolsPath(), packages.getName());
   }
 
   @NotNull
   private File getAgentFile(@NotNull final File packages) {
     //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getAgentPluginsPath(), packages.getName() + ".zip");
+    return new File(myPaths.getNuGetToolsAgentPluginsPath(), packages.getName() + ".zip");
   }
 }
