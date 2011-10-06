@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Threading;
+using System.Xml;
 using JetBrains.TeamCity.NuGetRunner;
 
 namespace JetBrains.TeamCity.NuGet.Server
@@ -37,8 +40,38 @@ namespace JetBrains.TeamCity.NuGet.Server
     private static void Usage()
     {
       Console.Out.WriteLine("Usage: ");
-      Console.Out.WriteLine(" /port:XXX       sets port number to bind");
+      Console.Out.WriteLine(" /port:XXX                         sets port number to bind");
+      Console.Out.WriteLine(" /packageDownloadBaseUrl:XXX       ");
+      Console.Out.WriteLine(" /packageFilesBasePath:XXX         ");
+      Console.Out.WriteLine(" /packageSpecFile:XXX         ");
       Console.Out.WriteLine("");
+    }
+
+    private static void PatchWebConfig(string appHome, Dictionary<string, string> parameters)
+    {
+      var doc = new XmlDocument();
+      var configFile = Path.Combine(appHome, "Web.config");
+      doc.Load(configFile);
+
+      var settingsElement = (XmlElement)doc.SelectSingleNode("configuration/appSettings");
+      if (settingsElement == null)
+        throw new Exception("Failed to patch Web.config");
+
+      foreach (var e in parameters)
+      {
+        var node = (XmlElement)settingsElement.SelectSingleNode("add[@key='" + e.Key + "']");
+        if (node != null)
+        {
+          node.SetAttribute("value", e.Value);
+        } else
+        {
+          node = (XmlElement) settingsElement.AppendChild(doc.CreateElement("add"));
+          node.SetAttribute("key", e.Key);
+          node.SetAttribute("value", e.Value);
+        }
+      }
+
+      doc.Save(configFile);
     }
 
     private static int RunServer(Args argz)
@@ -53,6 +86,25 @@ namespace JetBrains.TeamCity.NuGet.Server
         return 1;
       }
       var port = argz.GetInt("port", 8411);
+
+      //<add key="PackagesSpecFile" value="~/TeamCity.Packages.xml" />
+      //<add key="PackageFilesBasePath" value="E:\Work\TeamCity\trunk\dotNetPackageManagers\nuget-extensions\packages" />
+      //<add key="PackageDownloadBaseUrl" value="http://buildserver.labs.intellij.net" />
+
+      var webContextParameters = new Dictionary<string, string>
+                                   {
+                                     {"PackagesSpecFile", argz.Get("packageSpecFile", "")},
+                                     {"PackageFilesBasePath", argz.Get("packageFilesBasePath", "")},
+                                     {"PackageDownloadBaseUrl", argz.Get("packageDownloadBaseUrl", "")},
+                                   };
+      if (webContextParameters.Values.Any(String.IsNullOrWhiteSpace))
+      {
+        Console.Out.WriteLine("Not All parameters are specified. ");
+        Usage();
+        return 1;
+      }
+
+      PatchWebConfig(webApp, webContextParameters);
 
       //TODO: Add code to check if server is still alive.
       var server = new CassiniDev.Server(port, "/", webApp, false, true);

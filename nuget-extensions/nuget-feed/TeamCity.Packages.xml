@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <package-list xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <packages>
-    <package buildId="545" downloadUrl="favicon.ico" packageFile="E:\Work\TeamCity\trunk\dotNetPackageManagers\nuget-extensions\packages\NuGet.Core.1.5.20902.9026\NuGet.Core.1.5.20902.9026.nupkg" isLatest="false" />
-    <package buildId="42" downloadUrl="qqq/aaa.txt" packageFile="c:\file.zip" isLatest="false" />
+    <package buildId="545" downloadUrl="favicon.ico" packageFile="NuGet.Core.1.5.20902.9026\NuGet.Core.1.5.20902.9026.nupkg" isLatest="false" />    
   </packages>
 </package-list>

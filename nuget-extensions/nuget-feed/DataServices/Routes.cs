@@ -21,14 +21,13 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     private static void MapRoutes(RouteCollection routes)
     {
       // The default route is http://{root}/nuget/Packages
-      var factory = new DataServiceHostFactory();
-      var serviceRoute = new ServiceRoute("nuget", factory, typeof (TeamCityPackages))
-                           {
-                             Defaults = new RouteValueDictionary {{"serviceType", "odata"}},
-                             Constraints = new RouteValueDictionary {{"serviceType", "odata"}}
-                           };
-      
-      routes.Add("nuget", serviceRoute);
+
+      routes.Add("nuget",
+                 new ServiceRoute("nuget", new DataServiceHostFactory(), typeof (TeamCityPackages))
+                   {
+                     Defaults = new RouteValueDictionary {{"serviceType", "odata"}},
+                     Constraints = new RouteValueDictionary {{"serviceType", "odata"}}
+                   });
 
       routes.MapDelegate("addPackage", "addPackage", c =>
                                                        {

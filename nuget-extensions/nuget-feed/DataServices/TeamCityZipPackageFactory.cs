@@ -9,10 +9,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
   {
     private static readonly CryptoHashProvider HashProvider = new CryptoHashProvider();
 
-    public static TeamCityPackage LoadPackage(TeamCityPackageSpec spec)
+    public static TeamCityPackage LoadPackage(string fileName, TeamCityPackageSpec spec)
     {
-      var fileName = spec.PackageFile;
-
       var zip = new ZipPackage(fileName);
       byte[] fileBytes = LoadFileBytes(fileName);
 

@@ -18,9 +18,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       var repo = FetchPackageSpec();
       return
         from spec in repo.Specs.AsQueryable()
-        let path = spec.PackageFile
+        let path = Path.Combine(PackageFilesBasePath, spec.PackageFile)
         where File.Exists(path)
-        select TeamCityZipPackageFactory.LoadPackage(spec);
+        select TeamCityZipPackageFactory.LoadPackage(path, spec);
     }
 
     private TeamCityPackagesRepo FetchPackageSpec()
@@ -94,6 +94,11 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     public Uri BaseServerUrl
     {
       get { return new Uri(WebConfigurationManager.AppSettings["PackageDownloadBaseUrl"] ?? "http://localhost"); }
+    }
+
+    public string PackageFilesBasePath
+    {
+      get { return WebConfigurationManager.AppSettings["PackageFilesBasePath"] ?? HostingEnvironment.MapPath("~"); }
     }
 
     private readonly TeamCityPackagesRepo EMPTY_SPEC =
