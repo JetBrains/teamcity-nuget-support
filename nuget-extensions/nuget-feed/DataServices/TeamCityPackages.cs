@@ -7,15 +7,13 @@ using System.Linq;
 using System.ServiceModel;
 using System.Web;
 using JetBrains.Annotations;
-using NuGet.Server.DataServices;
-using NuGet.Server.Infrastructure;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
   public class TeamCityPackages : DataService<TeamCityPackagesContext>, IDataServiceStreamProvider, IServiceProvider
   {
-    private readonly Func<IQueryable<Package>> myRepository;
+    private readonly Func<IQueryable<TeamCityPackage>> myRepository;
 
     public TeamCityPackages()
     {
@@ -40,14 +38,13 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
     public Uri GetReadStreamUri(object entity, DataServiceOperationContext operationContext)
     {
-      var package = (Package)entity;
+      var package = (TeamCityPackage)entity;
 
-      var context = HttpContext.Current;
-      var rootUrl = context.Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
+      var rootUrl = HttpContext.Current.Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped);
 
-      // the URI need to ends with a '/' to be correctly merged so we add it to the application if it 
-      string downloadUrl = PackageUtility.GetPackageDownloadUrl(package);
-      return new Uri(new Uri(rootUrl), downloadUrl);
+      // the URI need to ends with a '/' to be correctly merged so we add it to the application if it       
+      //TODO: use TeamCity provided path here
+      return new Uri(new Uri(rootUrl), package.FullPath);
     }
 
     public string GetStreamContentType(object entity, DataServiceOperationContext operationContext)

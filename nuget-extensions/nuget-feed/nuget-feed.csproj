@@ -81,6 +81,7 @@
     <Content Include="favicon.ico" />
     <Content Include="license.txt" />
     <Content Include="Packages\Readme.txt" />
+    <Content Include="TeamCity.Packages.xml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -98,8 +99,10 @@
     </Compile>
     <Compile Include="DataServices\LightPackageRepository.cs" />
     <Compile Include="DataServices\Routes.cs" />
+    <Compile Include="DataServices\TeamCityPackage.cs" />
     <Compile Include="DataServices\TeamCityPackages.cs" />
     <Compile Include="DataServices\TeamCityPackagesContext.cs" />
+    <Compile Include="DataServices\TeamCityPackagesRepo.cs" />
     <Compile Include="DataServices\TeamCityZipPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

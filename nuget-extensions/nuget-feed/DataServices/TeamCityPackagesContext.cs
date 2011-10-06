@@ -1,21 +1,20 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
-using NuGet.Server.DataServices;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   public class TeamCityPackagesContext
   {
-    private readonly Func<IQueryable<Package>> myPackages;
+    private readonly Func<IQueryable<TeamCityPackage>> myPackages;
 
-    public TeamCityPackagesContext(Func<IQueryable<Package>> packages)
+    public TeamCityPackagesContext(Func<IQueryable<TeamCityPackage>> packages)
     {
       myPackages = packages;
     }
 
     [UsedImplicitly]
-    public IQueryable<Package> Packages
+    public IQueryable<TeamCityPackage> Packages
     {
       get { return myPackages(); }
     } 

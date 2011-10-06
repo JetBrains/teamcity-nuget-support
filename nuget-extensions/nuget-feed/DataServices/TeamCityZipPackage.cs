@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using NuGet;
-using NuGet.Server.DataServices;
 using NuGet.Server.Infrastructure;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
@@ -17,9 +16,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       Published = File.GetLastWriteTimeUtc(fileName);
     }
 
-    public Package ToPackage
+    public TeamCityPackage ToPackage
     {
-      get { return new Package(this, myDerivedData.Value); }
+      get { return new TeamCityPackage(this, myDerivedData.Value); }
     }
 
     private DerivedPackageData CalculateDerivedData(string path)
