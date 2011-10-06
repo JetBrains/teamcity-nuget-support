@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Web.Configuration;
@@ -10,6 +11,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
   public class LightPackageRepository
   {
     private readonly XmlSerializerFactory myXmlSerializerFactory = new XmlSerializerFactory();
+    private static readonly object CONFIG_ACCESS_LOG = new object();
 
     public IQueryable<TeamCityPackage> GetPackages()
     {
@@ -17,28 +19,64 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       return
         from spec in repo.Specs.AsQueryable()
         let path = spec.PackageFile
-        select TeamCityZipPackageFactory.LoadPackage(repo, spec);
+        where File.Exists(path)
+        select TeamCityZipPackageFactory.LoadPackage(spec);
     }
 
     private TeamCityPackagesRepo FetchPackageSpec()
     {
-      var xmlFile = TeamCityPackagesFile;
-      if (xmlFile == null) return EMPTY_SPEC;
-
-      var ser = myXmlSerializerFactory.CreateSerializer(typeof(TeamCityPackagesRepo));
-      if (ser == null) return EMPTY_SPEC;
-      try
+      lock (CONFIG_ACCESS_LOG)
       {
-        using (var tw = File.OpenRead(xmlFile))
+        var xmlFile = TeamCityPackagesFile;
+        if (xmlFile == null || !File.Exists(xmlFile)) return EMPTY_SPEC;
+
+        var ser = myXmlSerializerFactory.CreateSerializer(typeof (TeamCityPackagesRepo));
+        if (ser == null) return EMPTY_SPEC;
+        try
         {
-          var info = (TeamCityPackagesRepo)ser.Deserialize(tw);
-          return info;
+          using (var tw = File.OpenRead(xmlFile))
+          {
+            var info = (TeamCityPackagesRepo) ser.Deserialize(tw);
+            return info;
+          }
+        }
+        catch
+        {
+          //TODO: catch exception
+          return EMPTY_SPEC;
         }
       }
-      catch
+    }
+
+    private void StorePackagesSpec(TeamCityPackagesRepo spec)
+    {
+      lock (CONFIG_ACCESS_LOG)
       {
-        //TODO: catch exception
-        return EMPTY_SPEC;
+        var xmlFile = TeamCityPackagesFile;
+        if (xmlFile == null || !File.Exists(xmlFile)) return;
+
+        var parent = Path.GetDirectoryName(xmlFile);
+        if (parent == null) return;
+
+        if (!Directory.Exists(parent))
+          Directory.CreateDirectory(parent);
+
+        var ser = myXmlSerializerFactory.CreateSerializer(typeof (TeamCityPackagesRepo));
+        if (ser == null) return;
+        using (var file = File.OpenWrite(xmlFile))
+        {
+          ser.Serialize(file, spec);
+        }
+      }
+    }
+
+    public void RegisterPackage(TeamCityPackageSpec spec)
+    {
+      lock (CONFIG_ACCESS_LOG)
+      {
+        var repo = FetchPackageSpec();
+        repo.AddSpec(spec);
+        StorePackagesSpec(repo);
       }
     }
 
@@ -49,19 +87,18 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       {
         var xmlFile = WebConfigurationManager.AppSettings["PackagesSpecFile"];
         if (xmlFile == null) return null;
-
-        var fsFile = HostingEnvironment.MapPath(xmlFile);
-        if (fsFile == null) return null;
-
-        if (!File.Exists(fsFile)) return null;
-        return fsFile;
+        return HostingEnvironment.MapPath(xmlFile);
       }
+    }
+
+    public Uri BaseServerUrl
+    {
+      get { return new Uri(WebConfigurationManager.AppSettings["PackageDownloadBaseUrl"] ?? "http://localhost"); }
     }
 
     private readonly TeamCityPackagesRepo EMPTY_SPEC =
       new TeamCityPackagesRepo
-        {
-          ServerUrl = "localhost",
+        {          
           Specs = new TeamCityPackageSpec[0]
         };
   }

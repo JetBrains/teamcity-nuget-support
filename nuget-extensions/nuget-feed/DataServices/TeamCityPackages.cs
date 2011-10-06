@@ -3,9 +3,7 @@ using System.Data.Services;
 using System.Data.Services.Common;
 using System.Data.Services.Providers;
 using System.IO;
-using System.Linq;
 using System.ServiceModel;
-using System.Web;
 using JetBrains.Annotations;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
@@ -13,11 +11,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
   [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
   public class TeamCityPackages : DataService<TeamCityPackagesContext>, IDataServiceStreamProvider, IServiceProvider
   {    
-    private readonly Func<IQueryable<TeamCityPackage>> myRepository;
-
-    public TeamCityPackages()
+    private LightPackageRepository Repository
     {
-      myRepository = new LightPackageRepository().GetPackages;
+      get { return TeamCityContext.Repository; }
     }
 
     // This method is called only once to initialize service-wide policies.
@@ -33,13 +29,13 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
     protected override TeamCityPackagesContext CreateDataSource()
     {
-      return new TeamCityPackagesContext(myRepository);
+      return new TeamCityPackagesContext(Repository.GetPackages);
     }
 
     public Uri GetReadStreamUri(object entity, DataServiceOperationContext operationContext)
     {
       var package = (TeamCityPackage)entity;
-      return package.DownloadUrl;
+      return new Uri(Repository.BaseServerUrl, package.DownloadUrl);
     }
 
     public string GetStreamContentType(object entity, DataServiceOperationContext operationContext)

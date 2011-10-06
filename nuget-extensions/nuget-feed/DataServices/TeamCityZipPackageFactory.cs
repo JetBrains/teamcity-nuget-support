@@ -9,7 +9,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
   {
     private static readonly CryptoHashProvider HashProvider = new CryptoHashProvider();
 
-    public static TeamCityPackage LoadPackage(TeamCityPackagesRepo repo, TeamCityPackageSpec spec)
+    public static TeamCityPackage LoadPackage(TeamCityPackageSpec spec)
     {
       var fileName = spec.PackageFile;
 
@@ -40,7 +40,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
                  Published = File.GetCreationTimeUtc(fileName),
 
                  IsLatestVersion = spec.IsLatest,
-                 DownloadUrl = new Uri(new Uri(repo.ServerUrl), spec.DownloadUrl),
+                 DownloadUrl = spec.DownloadUrl,
 
                  DownloadCount = -1,
                  Rating = -1,

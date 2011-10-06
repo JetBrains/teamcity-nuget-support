@@ -1,5 +1,6 @@
 using System;
 using System.Data.Services.Common;
+using System.Xml.Serialization;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
@@ -12,7 +13,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
   [EntityPropertyMapping("Summary", SyndicationItemProperty.Summary, SyndicationTextContentKind.Plaintext, keepInContent: true)]  
   public class TeamCityPackage
   {
-    internal Uri DownloadUrl { get; set; }
+    internal string DownloadUrl { get; set; }
+    
+    public string PacakgeProviderHost { get { return "JetBrains TeamCity"; } set {} }
 
     public string Id { get; set; }
 
