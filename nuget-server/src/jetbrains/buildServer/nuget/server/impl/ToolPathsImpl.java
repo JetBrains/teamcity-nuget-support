@@ -28,14 +28,22 @@ import java.io.File;
  * Date: 15.08.11 20:47
  */
 public class ToolPathsImpl implements ToolPaths {
-  private final File myPluginRoot;
+  private final ServerPaths myPaths;
+  private final String PLUGIN_DIR = "jetbrains.nuget";
 
   public ToolPathsImpl(@NotNull final ServerPaths paths) {
-    myPluginRoot = new File(paths.getPluginDataDirectory(), "jetbrains.nuget");
+    myPaths = paths;
   }
 
-  private File relative(@NotNull final String path) {
-    final File pkgs = new File(myPluginRoot, path);
+  private File relativePluginData(@NotNull final String path) {
+    final File pkgs = new File(new File(myPaths.getPluginDataDirectory(), PLUGIN_DIR), path);
+    //noinspection ResultOfMethodCallIgnored
+    pkgs.mkdirs();
+    return FileUtil.getCanonicalFile(pkgs);
+  }
+
+  private File relativeCache(@NotNull final String path) {
+    final File pkgs = new File(new File(myPaths.getCachesDir(), PLUGIN_DIR), path);
     //noinspection ResultOfMethodCallIgnored
     pkgs.mkdirs();
     return FileUtil.getCanonicalFile(pkgs);
@@ -43,16 +51,26 @@ public class ToolPathsImpl implements ToolPaths {
 
   @NotNull
   public File getNuGetToolsPackages() {
-    return relative("nupkg");
+    return relativePluginData("nupkg");
+  }
+
+  @NotNull
+  public File getNuGetFeedCache() {
+    return relativeCache("feed");
+  }
+
+  @NotNull
+  public File getArtifactsDirectory() {
+    return myPaths.getArtifactsDirectory();
   }
 
   @NotNull
   public File getNuGetToolsPath() {
-    return relative("tools");
+    return relativePluginData("tools");
   }
 
   @NotNull
   public File getNuGetToolsAgentPluginsPath() {
-    return relative("agent");
+    return relativePluginData("agent");
   }
 }

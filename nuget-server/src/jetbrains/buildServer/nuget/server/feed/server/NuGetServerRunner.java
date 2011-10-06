@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry.impl;
+package jetbrains.buildServer.nuget.server.feed.server;
 
+import jetbrains.buildServer.nuget.server.ToolPaths;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 16.08.11 2:00
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 06.10.11 21:05
  */
-public interface ToolPaths {
-  @NotNull
-  File getTools();
+public class NuGetServerRunner {
+  private final ToolPaths myPaths;
 
-  @NotNull
-  File getAgentPluginsPath();
-
-  @NotNull
-  File getPackages();
+  public NuGetServerRunner(@NotNull final ToolPaths paths) {
+    myPaths = paths;
+  }
 }

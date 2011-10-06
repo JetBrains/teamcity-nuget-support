@@ -35,4 +35,9 @@ public interface ToolPaths {
   File getNuGetToolsPackages();
 
 
+  @NotNull
+  File getNuGetFeedCache();
+
+  @NotNull
+  File getArtifactsDirectory();
 }
