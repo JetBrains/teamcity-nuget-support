@@ -132,6 +132,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
       @Override
       public void processTerminated(ProcessEvent event) {
         outputLog.info("NuGet server process is terminated. ");
+        isRunning.set(false);
       }
     });
 

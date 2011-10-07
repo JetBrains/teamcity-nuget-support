@@ -6,5 +6,6 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunner"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerCruiser"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetFeedProxyController"/>
 
 </beans>

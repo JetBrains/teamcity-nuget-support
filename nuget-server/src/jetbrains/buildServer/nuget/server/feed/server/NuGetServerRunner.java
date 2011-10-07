@@ -56,7 +56,7 @@ public class NuGetServerRunner {
       myHandle.set(myExecutor.startNuGetServer(
               port,
               myPaths.getArtifactsDirectory(),
-              new File("TeamCity.Packages.1.0.xml")
+              new File(myPaths.getNuGetFeedCache(), "TeamCity.Packages.1.0.xml")
       ));
     } catch (NuGetExecutionException e) {
       LOG.warn("Failed to start NuGet server. " + e.getMessage(), e);
