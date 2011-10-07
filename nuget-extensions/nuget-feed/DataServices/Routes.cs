@@ -33,12 +33,12 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
                                                        {
                                                          var data = c.HttpContext.Request.Params;
                                                          
+                                                         var buildType = data["buildType"];
                                                          var buildIdString = data["buildId"];
                                                          var downloadUrl = data["downloadUrl"];
                                                          var packageFile = data["packageFile"];
-                                                         var isLatest = data["isLatest"];
 
-                                                         if (downloadUrl == null || packageFile == null || isLatest == null || buildIdString == null)
+                                                         if (downloadUrl == null || packageFile == null || buildIdString == null || buildType == null)
                                                          {
                                                            WriteStatus(c, HttpStatusCode.InternalServerError, "Missing parameters");
                                                            return;
@@ -51,19 +51,21 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
                                                            return;
                                                          }
 
-                                                         if (!File.Exists(packageFile))
+                                                         var repo = TeamCityContext.Repository;
+                                                         var basePath = repo.PackageFilesBasePath;
+                                                         if (basePath == null || !File.Exists(Path.Combine(basePath, packageFile)))
                                                          {
                                                            WriteStatus(c, HttpStatusCode.InternalServerError, "Failed to find file: " + packageFile);
                                                            return;
                                                          }
 
-                                                         TeamCityContext.Repository.RegisterPackage(new TeamCityPackageSpec
-                                                                                                      {
-                                                                                                        BuildId = buildId,
-                                                                                                        DownloadUrl = downloadUrl, 
-                                                                                                        IsLatest = "true".Equals(isLatest, StringComparison.InvariantCultureIgnoreCase),
-                                                                                                        PackageFile = packageFile,                                                                                                        
-                                                                                                      });
+                                                         repo.RegisterPackage(new TeamCityPackageSpec
+                                                                                {
+                                                                                  BuildType = buildType,
+                                                                                  BuildId = buildId,
+                                                                                  DownloadUrl = downloadUrl,
+                                                                                  PackageFile = packageFile,
+                                                                                });
 
                                                          WriteStatus(c, HttpStatusCode.OK, "Package added");
                                                        });

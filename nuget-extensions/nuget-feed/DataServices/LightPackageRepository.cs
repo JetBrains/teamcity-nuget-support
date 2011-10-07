@@ -54,7 +54,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       lock (CONFIG_ACCESS_LOG)
       {
         var xmlFile = TeamCityPackagesFile;
-        if (xmlFile == null || !File.Exists(xmlFile)) return;
+        if (xmlFile == null) return;
 
         var parent = Path.GetDirectoryName(xmlFile);
         if (parent == null) return;

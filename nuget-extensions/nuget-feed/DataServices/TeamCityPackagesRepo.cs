@@ -7,6 +7,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
   [Serializable]
   public class TeamCityPackageSpec
   {
+    [XmlAttribute("buildType")]
+    public string BuildType { get; set; }
+
     [XmlAttribute("buildId")]
     public long BuildId { get; set; }
     
