@@ -18,4 +18,6 @@ public interface PackageCheckerSettings {
   int getCheckerThreads();
 
   boolean allowBulkMode(@NotNull PackageCheckRequest request);
+
+  int getMaxPackagesToQueryInBulk();
 }

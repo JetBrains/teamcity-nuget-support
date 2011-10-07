@@ -48,4 +48,8 @@ public class PackageCheckerSettingsImpl implements PackageCheckerSettings {
   public boolean allowBulkMode(@NotNull PackageCheckRequest request) {
     return TeamCityProperties.getBooleanOrTrue("teamcity.nuget.trigger.bulkMode");
   }
+
+  public int getMaxPackagesToQueryInBulk() {
+    return TeamCityProperties.getInteger("teamcity.nuget.trigger.bulkMode.maxPackagesToQuery", 30);
+  }
 }
