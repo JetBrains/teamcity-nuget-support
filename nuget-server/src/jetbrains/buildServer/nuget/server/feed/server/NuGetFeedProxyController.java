@@ -41,7 +41,7 @@ import java.net.URI;
  */
 public class NuGetFeedProxyController extends BaseController {
   private static final Logger LOG = Logger.getInstance(NuGetFeedProxyController.class.getName());
-  private static final String NUGET_PATH = "/app/nuget";
+  public static final String NUGET_PATH = "/app/nuget";
 
   private final FeedClient myClient;
   private final NuGetServerRunner myRunner;
