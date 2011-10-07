@@ -8,5 +8,6 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerCruiser"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetFeedProxyController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerUri"/>
 
 </beans>
