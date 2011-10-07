@@ -4,6 +4,7 @@ using System.Data.Services.Common;
 using System.Data.Services.Providers;
 using System.IO;
 using System.ServiceModel;
+using System.Web;
 using JetBrains.Annotations;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
@@ -35,7 +36,14 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     public Uri GetReadStreamUri(object entity, DataServiceOperationContext operationContext)
     {
       var package = (TeamCityPackage)entity;
-      return new Uri(Repository.BaseServerUrl, package.DownloadUrl);
+      var context = HttpContext.Current;
+
+      string header = context.Request.Headers["X-TeamCityUrl"];
+      var rootUrl = string.IsNullOrWhiteSpace(header)
+                      ? context.Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)
+                      : header;
+
+      return new Uri(new Uri(rootUrl), package.DownloadUrl);
     }
 
     public string GetStreamContentType(object entity, DataServiceOperationContext operationContext)

@@ -15,10 +15,11 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
     public IQueryable<TeamCityPackage> GetPackages()
     {
-      var repo = FetchPackageSpec();
+      var basePath = PackageFilesBasePath;      
+      var repo = FetchPackageSpec();      
       return
         from spec in repo.Specs.AsQueryable()
-        let path = Path.Combine(PackageFilesBasePath, spec.PackageFile)
+        let path = Path.Combine(basePath, spec.PackageFile)
         where File.Exists(path)
         select TeamCityZipPackageFactory.LoadPackage(path, spec);
     }
@@ -83,19 +84,10 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     [CanBeNull]
     private string TeamCityPackagesFile
     {
-      get
-      {
-        var xmlFile = WebConfigurationManager.AppSettings["PackagesSpecFile"];
-        if (xmlFile == null) return null;
-        return HostingEnvironment.MapPath(xmlFile);
-      }
+      get { return WebConfigurationManager.AppSettings["PackagesSpecFile"]; }
     }
 
-    public Uri BaseServerUrl
-    {
-      get { return new Uri(WebConfigurationManager.AppSettings["PackageDownloadBaseUrl"] ?? "http://localhost"); }
-    }
-
+    [CanBeNull]
     public string PackageFilesBasePath
     {
       get { return WebConfigurationManager.AppSettings["PackageFilesBasePath"] ?? HostingEnvironment.MapPath("~"); }

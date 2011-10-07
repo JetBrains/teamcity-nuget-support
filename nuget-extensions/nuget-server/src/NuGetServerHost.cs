@@ -41,7 +41,6 @@ namespace JetBrains.TeamCity.NuGet.Server
     {
       Console.Out.WriteLine("Usage: ");
       Console.Out.WriteLine(" /port:XXX                         sets port number to bind");
-      Console.Out.WriteLine(" /packageDownloadBaseUrl:XXX       ");
       Console.Out.WriteLine(" /packageFilesBasePath:XXX         ");
       Console.Out.WriteLine(" /packageSpecFile:XXX         ");
       Console.Out.WriteLine("");
@@ -95,7 +94,6 @@ namespace JetBrains.TeamCity.NuGet.Server
                                    {
                                      {"PackagesSpecFile", argz.Get("packageSpecFile", "")},
                                      {"PackageFilesBasePath", argz.Get("packageFilesBasePath", "")},
-                                     {"PackageDownloadBaseUrl", argz.Get("packageDownloadBaseUrl", "")},
                                    };
       if (webContextParameters.Values.Any(String.IsNullOrWhiteSpace))
       {
