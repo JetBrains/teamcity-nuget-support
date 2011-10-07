@@ -10,5 +10,6 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerUriImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerRegister"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.FinishedBuildIndexer"/>
 
 </beans>

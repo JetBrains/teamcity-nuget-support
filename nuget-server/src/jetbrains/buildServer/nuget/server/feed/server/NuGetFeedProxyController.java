@@ -81,24 +81,27 @@ public class NuGetFeedProxyController extends BaseController {
     method.setHeader("X-TeamCityUrl", WebUtil.getRootUrl(request));
 
     final HttpResponse resp = myClient.execute(method);
+    try {
+      response.setStatus(resp.getStatusLine().getStatusCode());
 
-    response.setStatus(resp.getStatusLine().getStatusCode());
+      final HttpEntity entity = resp.getEntity();
+      if (entity == null) return null;
 
-    final HttpEntity entity = resp.getEntity();
-    if (entity == null) return null;
+      final Header encodingHeader = entity.getContentEncoding();
+      if (encodingHeader != null) {
+        response.setCharacterEncoding(encodingHeader.getValue());
+      }
+      final Header contentTypeHeader = entity.getContentType();
+      if (contentTypeHeader != null) {
+        response.setContentType(contentTypeHeader.getValue());
+      }
 
-    final Header encodingHeader = entity.getContentEncoding();
-    if (encodingHeader != null) {
-      response.setCharacterEncoding(encodingHeader.getValue());
+      entity.writeTo(response.getOutputStream());
+
+      return null;
+    } finally {
+      method.abort();
     }
-    final Header contentTypeHeader = entity.getContentType();
-    if (contentTypeHeader != null) {
-      response.setContentType(contentTypeHeader.getValue());
-    }
-
-    entity.writeTo(response.getOutputStream());
-
-    return null;
   }
 
   @NotNull

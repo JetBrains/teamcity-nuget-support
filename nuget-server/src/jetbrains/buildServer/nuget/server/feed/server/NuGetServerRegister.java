@@ -107,12 +107,15 @@ public class NuGetServerRegister {
     final HttpResponse response;
     try {
       response = myClient.execute(get);
+
+      if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+        throw new NuGetFeedException("Request was not acceped by server: " + response.getStatusLine().getReasonPhrase());
+      }
+
     } catch (IOException e) {
       throw new NuGetFeedException("Failed to execute request. " + e.getMessage(), e);
-    }
-
-    if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-      throw new NuGetFeedException("Request was not acceped by server: " + response.getStatusLine().getReasonPhrase());
+    } finally {
+      get.abort();
     }
   }
 }

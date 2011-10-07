@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.reader.impl;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
+package jetbrains.buildServer.nuget.server.feed.server.index;
 
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 12.08.11 15:13
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 07.10.11 19:15
  */
-public interface FeedClient {
-  @NotNull
-  HttpResponse execute(@NotNull HttpUriRequest request) throws IOException;
+public class NuGetIntexerSettings {
+
 }
