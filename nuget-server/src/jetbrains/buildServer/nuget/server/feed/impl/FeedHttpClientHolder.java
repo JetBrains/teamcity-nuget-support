@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.reader.impl;
+package jetbrains.buildServer.nuget.server.feed.impl;
 
+import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.version.ServerVersionHolder;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

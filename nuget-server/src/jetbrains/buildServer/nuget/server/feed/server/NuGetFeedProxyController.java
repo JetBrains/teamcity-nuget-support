@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.nuget.server.feed.reader.impl.FeedClient;
+import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.apache.commons.httpclient.HttpStatus;
