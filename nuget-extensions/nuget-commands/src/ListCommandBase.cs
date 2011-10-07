@@ -24,9 +24,11 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
       Expression result = ids
         .Select(id => Expression.Equal(Expression.Property(param, "Id"), Expression.Constant(id)))
-        .Aggregate<BinaryExpression, Expression>(null, (current, action) => current != null ? Expression.Or(action, current) : action);
+        .Aggregate<Expression, Expression>(null, (acc, element) => acc != null ? Expression.Or(element, acc) : element);
 
-      return packageRepository.GetPackages().Where(Expression.Lambda<Func<IPackage, bool>>(result, param));
+      var items = packageRepository.GetPackages();
+      if (result == null) return items;
+      return items.Where(Expression.Lambda<Func<IPackage, bool>>(result, param));
     }
 
     /// <summary>
