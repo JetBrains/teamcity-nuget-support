@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.feed.reader;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.reader.impl.FeedGetMethodFactory;
+import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.Param;
 import org.apache.http.client.methods.HttpGet;
 import org.testng.Assert;

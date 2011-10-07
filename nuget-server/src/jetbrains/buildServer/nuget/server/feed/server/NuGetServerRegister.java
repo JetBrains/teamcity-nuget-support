@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.server;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.impl.FeedGetMethodFactory;
+import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.Param;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SecurityContextEx;

@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.reader.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.Pair;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
+import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.ProtocolException;

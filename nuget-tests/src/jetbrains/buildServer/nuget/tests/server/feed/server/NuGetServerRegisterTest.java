@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.impl.FeedGetMethodFactory;
+import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetFeedException;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRegister;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerUri;

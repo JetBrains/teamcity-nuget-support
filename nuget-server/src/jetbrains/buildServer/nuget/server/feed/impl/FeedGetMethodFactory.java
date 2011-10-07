@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.reader.impl;
+package jetbrains.buildServer.nuget.server.feed.impl;
 
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;

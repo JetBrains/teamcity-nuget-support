@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.reader;
 import com.intellij.openapi.util.Pair;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.impl.FeedGetMethodFactory;
+import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolver;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
 import org.apache.http.HttpResponse;
