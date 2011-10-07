@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.feed.reader.impl.FeedClient;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -79,6 +80,16 @@ public class NuGetFeedProxyController extends BaseController {
 
     final HttpEntity entity = resp.getEntity();
     if (entity == null) return null;
+
+    final Header encodingHeader = entity.getContentEncoding();
+    if (encodingHeader != null) {
+      response.setCharacterEncoding(encodingHeader.getValue());
+    }
+    final Header contentTypeHeader = entity.getContentType();
+    if (contentTypeHeader != null) {
+      response.setContentType(contentTypeHeader.getValue());
+    }
+
     entity.writeTo(response.getOutputStream());
 
     return null;
