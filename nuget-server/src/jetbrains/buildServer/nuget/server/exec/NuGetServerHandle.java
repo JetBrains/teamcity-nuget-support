@@ -22,6 +22,8 @@ package jetbrains.buildServer.nuget.server.exec;
  *         Date: 07.10.11 14:42
  */
 public interface NuGetServerHandle {
+  int getPort();
+
   boolean isAlive();
 
   void stop();

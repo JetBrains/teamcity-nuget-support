@@ -16,17 +16,71 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
+import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.NetworkUtil;
 import jetbrains.buildServer.nuget.server.ToolPaths;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
+import jetbrains.buildServer.nuget.server.exec.NuGetServerHandle;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 06.10.11 21:05
  */
 public class NuGetServerRunner {
+  private static final Logger LOG = Logger.getInstance(NuGetServerRunner.class.getName());
   private final ToolPaths myPaths;
+  private final NuGetExecutor myExecutor;
 
-  public NuGetServerRunner(@NotNull final ToolPaths paths) {
+  private final AtomicReference<NuGetServerHandle> myHandle = new AtomicReference<NuGetServerHandle>();
+
+  public NuGetServerRunner(@NotNull final ToolPaths paths,
+                           @NotNull final NuGetExecutor executor) {
     myPaths = paths;
+    myExecutor = executor;
+  }
+
+  public void startServer() {
+    stopServer();
+    myHandle.set(null);
+
+    final int port = NetworkUtil.getFreePort(32768);
+    LOG.info("Allocated NuGet server port: " + port);
+
+    try {
+      myHandle.set(myExecutor.startNuGetServer(
+              port,
+              myPaths.getArtifactsDirectory(),
+              new File("TeamCity.Packages.1.0.xml")
+      ));
+    } catch (NuGetExecutionException e) {
+      LOG.warn("Failed to start NuGet server. " + e.getMessage(), e);
+    }
+  }
+
+  public void ensureAlive() {
+    final NuGetServerHandle handle = myHandle.get();
+    if (handle == null || !handle.isAlive()) startServer();
+  }
+
+  public void stopServer() {
+    final NuGetServerHandle handle = myHandle.get();
+    if (handle != null) {
+      handle.stop();
+    }
+  }
+
+  @Nullable
+  public Integer getPort() {
+    final NuGetServerHandle nuGetServerHandle = myHandle.get();
+    if (nuGetServerHandle != null) {
+      return nuGetServerHandle.getPort();
+    }
+    return null;
   }
 }

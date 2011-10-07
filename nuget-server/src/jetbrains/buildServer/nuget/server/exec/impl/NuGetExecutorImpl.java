@@ -83,8 +83,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
 
 
   @NotNull
-  public NuGetServerHandle startNuGetServer(int port,
-                                            @NotNull String serverUrl,
+  public NuGetServerHandle startNuGetServer(final int port,
                                             @NotNull File artifactPaths,
                                             @NotNull File specs) throws NuGetExecutionException {
     final GeneralCommandLine cmd = new GeneralCommandLine();
@@ -93,7 +92,6 @@ public class NuGetExecutorImpl implements NuGetExecutor {
     cmd.setWorkingDirectory(path.getParentFile());
 
     cmd.addParameter("/port:" + port);
-    cmd.addParameter("/packageDownloadBaseUrl:" + serverUrl);
     cmd.addParameter("/packageFilesBasePath:" + artifactPaths.getAbsolutePath());
     cmd.addParameter("/packageSpecFile:" + specs.getAbsolutePath());
 
@@ -139,6 +137,10 @@ public class NuGetExecutorImpl implements NuGetExecutor {
 
     hander.startNotify();
     return new NuGetServerHandle() {
+      public int getPort() {
+        return port;
+      }
+
       public boolean isAlive() {
         return isRunning.get();
       }

@@ -33,7 +33,6 @@ public interface NuGetExecutor {
 
   @NotNull
   NuGetServerHandle startNuGetServer(int port,
-                                     @NotNull String serverUrl,
                                      @NotNull File artifactPaths,
                                      @NotNull File specs) throws NuGetExecutionException;
 }
