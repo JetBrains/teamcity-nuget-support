@@ -46,7 +46,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   @Test
   public void test_available_01() throws IOException {
     m.checking(new Expectations() {{
-      oneOf(mySettings).alowBulkMode(with(any(PackageCheckRequest.class)));
+      oneOf(mySettings).allowBulkMode(with(any(PackageCheckRequest.class)));
       will(returnValue(false));
     }});
     Assert.assertFalse(myChecker.accept(new PackageCheckRequest(nugetMode(), ref())));
@@ -55,7 +55,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   @Test
   public void test_available_02() throws IOException {
     m.checking(new Expectations() {{
-      oneOf(mySettings).alowBulkMode(with(any(PackageCheckRequest.class)));
+      oneOf(mySettings).allowBulkMode(with(any(PackageCheckRequest.class)));
       will(returnValue(true));
     }});
     Assert.assertTrue(myChecker.accept(new PackageCheckRequest(nugetMode(), ref())));
