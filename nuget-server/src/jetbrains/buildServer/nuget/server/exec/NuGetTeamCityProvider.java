@@ -27,4 +27,7 @@ import java.io.File;
 public interface NuGetTeamCityProvider {
   @NotNull
   File getNuGetRunnerPath();
+
+  @NotNull
+  File getNuGetServerRunnerPath();
 }

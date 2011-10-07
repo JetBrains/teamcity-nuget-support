@@ -38,4 +38,9 @@ public class NuGetTeamCityProviderImpl implements NuGetTeamCityProvider {
     return new File(myPluginInfo.getPluginRoot(), "bin/JetBrains.TeamCity.NuGetRunner.exe");
   }
 
+  @NotNull
+  public File getNuGetServerRunnerPath() {
+    return new File(myPluginInfo.getPluginRoot(), "bin-server/JetBrains.TeamCity.NuGet.Server.exe");
+  }
+
 }
