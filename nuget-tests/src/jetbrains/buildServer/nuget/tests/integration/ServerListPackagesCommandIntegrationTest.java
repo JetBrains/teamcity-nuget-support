@@ -20,7 +20,8 @@ import jetbrains.buildServer.TempFolderProvider;
 import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
-import org.jetbrains.annotations.NotNull;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -42,18 +43,17 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
   protected void setUp() throws Exception {
     super.setUp();
 
+    Mockery m = new Mockery();
     final File tmp = createTempDir();
-    myCommand = new ListPackagesCommandImpl(new NuGetExecutorImpl(new NuGetTeamCityProvider() {
-      @NotNull
-      public File getNuGetRunnerPath() {
-        return Paths.getNuGetRunnerPath();
-      }
-    }), new TempFolderProvider() {
-      @NotNull
-      public File getTempDirectory() {
-        return tmp;
-      }
-    });
+    final NuGetTeamCityProvider prov = m.mock(NuGetTeamCityProvider.class);
+    final TempFolderProvider temp = m.mock(TempFolderProvider.class);
+
+    m.checking(new Expectations(){{
+      allowing(prov).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
+      allowing(temp).getTempDirectory(); will(returnValue(tmp));
+    }});
+
+    myCommand = new ListPackagesCommandImpl(new NuGetExecutorImpl(prov), temp);
   }
 
   @Test
