@@ -49,7 +49,7 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
   }
 
   public boolean accept(@NotNull PackageCheckRequest request) {
-    return !mySettings.alowBulkMode(request) && super.accept(request);
+    return !mySettings.allowBulkMode(request) && super.accept(request);
   }
 
   public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> data) {

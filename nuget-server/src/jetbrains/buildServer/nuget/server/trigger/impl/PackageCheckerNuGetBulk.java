@@ -50,7 +50,7 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
   }
 
   public boolean accept(@NotNull PackageCheckRequest request) {
-    return mySettings.alowBulkMode(request) && super.accept(request);
+    return mySettings.allowBulkMode(request) && super.accept(request);
   }
 
   public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> data) {
@@ -60,41 +60,51 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
     }
 
     for (Map.Entry<File, List<CheckablePackage>> nuget : entries.entrySet()) {
-      final Map<SourcePackageReference, CheckablePackage> map = new HashMap<SourcePackageReference, CheckablePackage>();
+      final File nugetPath = nuget.getKey();
+
+      Map<SourcePackageReference, CheckablePackage> map = new HashMap<SourcePackageReference, CheckablePackage>();
       for (CheckablePackage e : nuget.getValue()) {
         map.put(e.getPackage(), e);
         e.setExecuting();
+
+        if (map.size() >= mySettings.getMaxPackagesToQueryInBulk()) {
+          postCkeckTask(executor, map, nugetPath);
+          map = new HashMap<SourcePackageReference, CheckablePackage>();
+        }
       }
+      if (!map.isEmpty()) {
+        postCkeckTask(executor, map, nugetPath);
+      }
+    }
+  }
 
-      final File nugetPath = nuget.getKey();
+  private void postCkeckTask(ExecutorService executor, final Map<SourcePackageReference, CheckablePackage> map, final File nugetPath) {
+    executor.submit(ExceptionUtil.catchAll("Bulk check for update of NuGet packages", new Runnable() {
+      public void run() {
+        try {
+          final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = myCommand.checkForChanges(nugetPath, map.keySet());
 
-      executor.submit(ExceptionUtil.catchAll("Bulk check for update of NuGet packages", new Runnable() {
-        public void run() {
-          try {
-            final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = myCommand.checkForChanges(nugetPath, map.keySet());
-
-            for (Map.Entry<SourcePackageReference, Collection<SourcePackageInfo>> e : result.entrySet()) {
-              final SourcePackageReference ref = e.getKey();
-              final CheckablePackage p = map.get(ref);
-              if (p != null) {
-                p.setResult(CheckResult.succeeded(e.getValue()));
-                map.remove(ref);
-              }
-            }
-
-            for (CheckablePackage entry : map.values()) {
-              LOG.warn("No information returned for package: " + entry.getPackage());
-              entry.setResult(CheckResult.failed("No information returned from bulk command"));
-            }
-
-          } catch (Throwable t) {
-            LOG.warn("Failed to bulk check changes of NuGet packages. " + t.getMessage(), t);
-            for (CheckablePackage entry : map.values()) {
-              entry.setResult(CheckResult.failed(t.getMessage()));
+          for (Map.Entry<SourcePackageReference, Collection<SourcePackageInfo>> e : result.entrySet()) {
+            final SourcePackageReference ref = e.getKey();
+            final CheckablePackage p = map.get(ref);
+            if (p != null) {
+              p.setResult(CheckResult.succeeded(e.getValue()));
+              map.remove(ref);
             }
           }
+
+          for (CheckablePackage entry : map.values()) {
+            LOG.warn("No information returned for package: " + entry.getPackage());
+            entry.setResult(CheckResult.failed("No information returned from bulk command"));
+          }
+
+        } catch (Throwable t) {
+          LOG.warn("Failed to bulk check changes of NuGet packages. " + t.getMessage(), t);
+          for (CheckablePackage entry : map.values()) {
+            entry.setResult(CheckResult.failed(t.getMessage()));
+          }
         }
-      }));
-    }
+      }
+    }));
   }
 }
