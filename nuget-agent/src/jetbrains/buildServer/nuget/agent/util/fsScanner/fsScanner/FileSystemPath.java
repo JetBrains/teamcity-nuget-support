@@ -13,15 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jetbrains.buildServer.nuget.agent.runner.publish.fsScanner;
+package jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface FileSystem {
-  boolean isPathAbsolute(@NotNull String path);
+import java.io.File;
+
+public class FileSystemPath {
+  private final File myPath;
+
+  public FileSystemPath(@NotNull String path) {
+    while (path.endsWith("/") || path.endsWith("\\"))
+      path = path.substring(0, path.length() - 1);
+    myPath = new File(path);
+  }
+
+  public FileSystemPath(@NotNull final File path) {
+    myPath = path;
+  }
 
   @NotNull
-  DirectoryEntry getRoot();
+  public String getName() {
 
-  boolean caseSensitive();
+    String name = myPath.getName();
+    if (name == null || name.length() == 0) return myPath.getPath();
+    return name;
+
+  }
+
+  @NotNull
+  public File getFilePath() {
+    return myPath;
+  }
 }

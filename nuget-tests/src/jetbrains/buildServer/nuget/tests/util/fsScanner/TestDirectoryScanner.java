@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.util.fsScanner;
 
 import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.agent.runner.publish.fsScanner.DirectoryScanner;
+import jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner.DirectoryScanner;
 import jetbrains.buildServer.util.FileUtil;
 import org.testng.Assert;
 import org.testng.annotations.Test;

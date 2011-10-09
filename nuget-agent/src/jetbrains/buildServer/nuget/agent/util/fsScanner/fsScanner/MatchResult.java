@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.runner.publish.fsScanner;
+package jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner;
 
 /**
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
