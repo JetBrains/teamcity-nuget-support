@@ -55,5 +55,6 @@ public interface NuGetActionFactory {
 
   @NotNull
   BuildProcess createPack(@NotNull BuildRunnerContext context,
+                          @NotNull File specFile,
                           @NotNull NuGetPackParameters params) throws RunBuildException;
 }

@@ -26,25 +26,25 @@ import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.LoggingNuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
-import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
+import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl;
-import jetbrains.buildServer.nuget.agent.parameters.*;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -98,6 +98,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
     cmd = System.getenv("ComSpec");
 
+    final Map<String, String> configParameters = new TreeMap<String, String>();
+
     m.checking(new Expectations(){{
       allowing(myContext).getBuildParameters(); will(returnValue(myBuildParametersMap));
       allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
@@ -114,6 +116,16 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
 
       allowing(myLogger).message(with(any(String.class)));
+
+      allowing(myBuild).getSharedConfigParameters(); will(returnValue(Collections.unmodifiableMap(configParameters)));
+      allowing(myBuild).addSharedConfigParameter(with(any(String.class)), with(any(String.class)));
+      will(new CustomAction("Add config parameter") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          configParameters.put((String)invocation.getParameter(0), (String)invocation.getParameter(1));
+          return null;
+        }
+      });
+
     }});
 
     myCollector = new NuGetPackagesCollectorImpl();

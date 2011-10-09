@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 
@@ -22,9 +23,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
               File.WriteAllText(fileIn,
                                 @"<nuget-packages>
                                     <packages>
-                                       <package source='" +
-                                NuGetConstants.DefaultFeedUrl +
-                                @"' id='NUnit' />
+                                       <package source='" + NuGetConstants.DefaultFeedUrl + @"' id='NUnit' />
                                     </packages>
                                    </nuget-packages>");
 
@@ -56,13 +55,9 @@ namespace JetBrains.TeamCity.NuGet.Tests
             {
               File.WriteAllText(fileIn,
                                 @"<nuget-packages>
-                                    <packages>
-                                       <package source='" +
-                                NuGetConstants.DefaultFeedUrl +
-                                @"' id='NUnit' />
-                                       <package source='" +
-                                NuGetConstants.DefaultFeedUrl +
-                                @"' id='YouTrackSharp' />
+                                    <packages> "  +
+                                                  string.Join("\n ", new[]{"NUnit", "YouTrackSharp", "Machine.Specifications", "jquery", "ninject"}.Select(x=>"<package source='" + NuGetConstants.DefaultFeedUrl + @"' id='" + x + "' />")) 
+                                                  + @"
                                     </packages>
                                    </nuget-packages>");
 
@@ -78,6 +73,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
               doc.Load(fileOut);
               Assert.True(doc.SelectNodes("//package[@id='NUnit']//package-entry").Count > 0);
               Assert.True(doc.SelectNodes("//package[@id='YouTrackSharp']//package-entry").Count > 0);
+              Assert.True(doc.SelectNodes("//package[@id='jquery']//package-entry").Count > 0);
             }));
     }
 

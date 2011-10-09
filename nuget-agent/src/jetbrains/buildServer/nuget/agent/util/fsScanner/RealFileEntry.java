@@ -13,15 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jetbrains.buildServer.nuget.agent.runner.publish.fsScanner;
+package jetbrains.buildServer.nuget.agent.util.fsScanner;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface FileSystem {
-  boolean isPathAbsolute(@NotNull String path);
+public class RealFileEntry implements FileEntry {
+  private final FileSystemPath myPath;
+
+  public RealFileEntry(FileSystemPath path) {
+    myPath = path;
+  }
 
   @NotNull
-  DirectoryEntry getRoot();
+  public String getName() {
+    return myPath.getName();
+  }
 
-  boolean caseSensitive();
+  @NotNull
+  public FileSystemPath getPath() {
+    return myPath;
+  }
+
+  @Override
+  public String toString() {
+    return "{f:" + myPath.getFilePath() + "|" + getName() + "}";
+  }
 }

@@ -257,7 +257,7 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
     final File dest = new File(root, "aaa.txt");
     FileUtil.writeFile(dest, "some content");
 
-    assertRunException(match, "Failed to find files to publish matching");
+    assertRunException(match, "Failed to find files to create packages matching");
 
     m.assertIsSatisfied();
   }

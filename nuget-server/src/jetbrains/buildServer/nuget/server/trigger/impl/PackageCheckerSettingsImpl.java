@@ -50,6 +50,6 @@ public class PackageCheckerSettingsImpl implements PackageCheckerSettings {
   }
 
   public int getMaxPackagesToQueryInBulk() {
-    return TeamCityProperties.getInteger("teamcity.nuget.trigger.bulkMode.maxPackagesToQuery", 30);
+    return TeamCityProperties.getInteger("teamcity.nuget.trigger.bulkMode.maxPackagesToQuery", 10);
   }
 }
