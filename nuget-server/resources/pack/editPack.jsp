@@ -32,7 +32,7 @@
   <tr>
     <th><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
     <td>
-      <props:multilineProperty name="${ib.packSpecFile}" linkTitle="Expand files list" cols="60" rows="5" expanded="${true}"/>
+      <props:multilineProperty name="${ib.packSpecFile}" linkTitle="Specification or project files" cols="60" rows="5" expanded="${true}"/>
       <span class="smallNote">Specify paths to .nuspec files or to a project file (.csproj). Wildcards are supported</span>
       <span id="error_${ib.packSpecFile}" class="error"></span>
     </td>
