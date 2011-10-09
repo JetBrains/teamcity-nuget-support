@@ -74,7 +74,7 @@ public class PackRunType extends NuGetRunType {
       @Override
       protected void checkProperties(@NotNull Map<String, String> map, @NotNull Collection<InvalidProperty> result) {
         notEmpty(NUGET_PATH, "Path to nuget.exe must be specified", map, result);
-        notEmpty(NUGET_PACK_SPEC_FILE, "Package definition file must be specified", map, result);
+        notEmpty(NUGET_PACK_SPEC_FILE, "Package definition files must be specified", map, result);
         notEmpty(NUGET_PACK_OUTPUT_DIR, "Package creation output directory must be specified", map, result);
         final String version = notEmpty(NUGET_PACK_VERSION, "Version must be specified", map, result);
         if (version != null && !ReferencesResolverUtil.containsReference(version) && !version.matches("\\d+(\\.\\d+){0,3}")) {
