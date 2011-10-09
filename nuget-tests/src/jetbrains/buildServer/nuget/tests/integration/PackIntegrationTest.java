@@ -181,7 +181,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
     m.checking(new Expectations(){{
       allowing(myPackParameters).getCustomCommandline(); will(returnValue(Collections.<String>emptyList()));
       allowing(myPackParameters).getProperties(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myPackParameters).getSpecFile(); will(returnValue(spec));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(spec));
       allowing(myPackParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
       allowing(myPackParameters).getBaseDirectory(); will(returnValue(myRoot));
       allowing(myPackParameters).getExclude(); will(returnValue(Collections.<String>emptyList()));

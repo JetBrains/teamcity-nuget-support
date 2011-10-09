@@ -239,7 +239,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   public NuGetPackParameters loadPackParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
     return new NuGetPackParameters() {
       @NotNull
-      public File getSpecFile() throws RunBuildException {
+      public File getSpecFiles() throws RunBuildException {
         return getFile(context, NUGET_PACK_SPEC_FILE, "NuGet .nuspec of project file");
       }
 

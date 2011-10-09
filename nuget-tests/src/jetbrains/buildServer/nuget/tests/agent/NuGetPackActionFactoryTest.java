@@ -92,7 +92,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
 
       allowing(ctx).getBuild(); will(returnValue(build));
       allowing(build).getCheckoutDirectory(); will(returnValue(myWorkingDir));
-      allowing(myPackParameters).getSpecFile(); will(returnValue(myFile));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(myFile));
       allowing(myPackParameters).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(myPackParameters).getBaseDirectory(); will(returnValue(myRoot));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(myOut));

@@ -120,7 +120,7 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
   public BuildProcess createPack(@NotNull final BuildRunnerContext context,
                                  @NotNull final NuGetPackParameters params) throws RunBuildException {
     return new DelegatingBuildProcess(
-            new LoggingAction(context, params.getSpecFile(), "pack") {
+            new LoggingAction(context, params.getSpecFiles(), "pack") {
               @NotNull
               @Override
               protected BuildProcess delegateToActualAction() throws RunBuildException {

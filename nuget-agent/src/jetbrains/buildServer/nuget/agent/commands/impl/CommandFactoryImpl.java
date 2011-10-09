@@ -73,7 +73,7 @@ public class CommandFactoryImpl implements CommandFactory {
                           @NotNull final Callback<T> factory) throws RunBuildException {
     final List<String> arguments = new ArrayList<String>();
     arguments.add("pack");
-    arguments.add(params.getSpecFile().getPath());
+    arguments.add(params.getSpecFiles().getPath());
 
     arguments.add("-OutputDirectory");
     arguments.add(params.getOutputDirectory().getPath());
