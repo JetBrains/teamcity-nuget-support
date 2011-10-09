@@ -154,7 +154,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   }
 
   @Test
-  public void test_packRunner_wildcards_files() throws RunBuildException, IOException {
+  public void test_packRunner_wildcards_files_clean() throws RunBuildException, IOException {
     final File temp = createTempDir();
     final File home = createTempDir();
 
@@ -163,7 +163,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
     final File spec3 = new File(home, "3.nuspec") {{ FileUtil.writeFile(this, "aaa"); }};
 
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
+      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(home.getPath() + "/*.nuspec")));
 
@@ -179,6 +179,8 @@ public class PackRunnerTest extends BuildProcessTestCase {
 
       oneOf(myProc).start();
       oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+
+      oneOf(myCleaner).cleanFolder(with(equal(temp)), with(any(SmartDirectoryCleanerCallback.class)));
     }});
 
     final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
