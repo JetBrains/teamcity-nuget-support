@@ -29,6 +29,8 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -36,6 +38,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -52,6 +56,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   private BuildProcess myProc;
   private BuildProgressLogger myLogger;
   private File myCheckoutDir;
+  private Map<String, String> myConfigParameters;
 
 
   @BeforeMethod
@@ -67,11 +72,11 @@ public class PackRunnerTest extends BuildProcessTestCase {
     myPackParameters = m.mock(NuGetPackParameters.class);
     myProc = m.mock(BuildProcess.class);
     myLogger = m.mock(BuildProgressLogger.class);
+    myConfigParameters = new TreeMap<String, String>();
 
     myCheckoutDir = createTempDir();
-
     m.checking(new Expectations(){{
-      allowing(myParametersFactory).loadPackParameters(myContext); will(returnValue(myPackParameters));
+      oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(myPackParameters));
 
       allowing(myBuild).getBuildLogger(); will(returnValue(myLogger));
       allowing(myContext).getBuild(); will(returnValue(myBuild));
@@ -81,6 +86,15 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myLogger).activityStarted(with(any(String.class)), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityStarted(with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(any(String.class)), with(any(String.class)));
+
+      allowing(myBuild).getSharedConfigParameters(); will(returnValue(Collections.unmodifiableMap(myConfigParameters)));
+      allowing(myBuild).addSharedConfigParameter(with(any(String.class)), with(any(String.class)));
+      will(new CustomAction("Add config parameter") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          myConfigParameters.put((String)invocation.getParameter(0), (String)invocation.getParameter(1));
+          return null;
+        }
+      });
     }});
   }
 
@@ -101,6 +115,76 @@ public class PackRunnerTest extends BuildProcessTestCase {
     final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
     final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_packRunners_outputDirectory_cleaned_once() throws RunBuildException, IOException {
+    final File temp = createTempDir();
+    final File spec = createTempFile();
+    m.checking(new Expectations(){{
+      oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(myPackParameters));
+
+      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
+      allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+
+      oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
+      oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
+
+      oneOf(myProc).start();
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+
+      oneOf(myProc).start();
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+
+      oneOf(myCleaner).cleanFolder(with(equal(temp)), with(any(SmartDirectoryCleanerCallback.class)));
+    }});
+
+    for(int i = 0; i < 2; i++) {
+      final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+      final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
+      assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
+    }
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_packRunners_outputDirectory_cleaned_once2() throws RunBuildException, IOException {
+    final File temp = createTempDir();
+    final File spec = createTempFile();
+    final NuGetPackParameters params2 = m.mock(NuGetPackParameters.class, "params2");
+
+    m.checking(new Expectations(){{
+      oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(params2));
+
+      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
+      allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+
+      allowing(params2).cleanOutputDirectory(); will(returnValue(true));
+      allowing(params2).getOutputDirectory(); will(returnValue(temp));
+      allowing(params2).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+
+      oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
+      oneOf(myActionFactory).createPack(myContext, spec, params2); will(returnValue(myProc));
+
+      oneOf(myProc).start();
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+
+      oneOf(myProc).start();
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+
+      oneOf(myLogger).warning("Could not clean output directory, there were another NuGet Packages Pack runner with disabled clean");
+    }});
+
+    for(int i = 0; i < 2; i++) {
+      final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+      final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
+      assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
+    }
 
     m.assertIsSatisfied();
   }

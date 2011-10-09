@@ -53,17 +53,31 @@ public class PackRunner extends NuGetRunnerBase {
     final NuGetPackParameters params = myParametersFactory.loadPackParameters(context);
 
     process.pushBuildProcess(new BuildProcessBase() {
+      private final String CLEAN_OUTPUT_KEY = "teamcity.nuget.pack.cleanOutputDirectory";
+      private final String CLEAN_OUTPUT_VALUE_CLEANED = "cleaned";
+      private final String CLEAN_OUTPUT_VALUE_NOT_CLEANED = "not-cleaned";
+
       @NotNull
       @Override
       protected BuildFinishedStatus waitForImpl() throws RunBuildException {
         final File output = params.getOutputDirectory();
 
-        if (params.cleanOutputDirectory()) {
+        final String clean = runningBuild.getSharedConfigParameters().get(CLEAN_OUTPUT_KEY);
+        if (clean == null && params.cleanOutputDirectory()) {
+          runningBuild.addSharedConfigParameter(CLEAN_OUTPUT_KEY, CLEAN_OUTPUT_VALUE_CLEANED);
           final CleanerCallback callback = new CleanerCallback(runningBuild.getBuildLogger(), Logger.getLogger(getClass()));
           myCleaner.cleanFolder(output, callback);
           if (callback.isHasErrors()) {
             return BuildFinishedStatus.FINISHED_FAILED;
           }
+        } else if (clean == null && !params.cleanOutputDirectory()) {
+          runningBuild.addSharedConfigParameter(CLEAN_OUTPUT_KEY, CLEAN_OUTPUT_VALUE_NOT_CLEANED);
+        } else if (CLEAN_OUTPUT_VALUE_NOT_CLEANED.equals(clean) && params.cleanOutputDirectory()) {
+          final String message = "Could not clean output directory, there were another NuGet Packages Pack runner with disabled clean";
+          LOG.warn(message);
+          runningBuild.getBuildLogger().warning(message);
+        } else if (CLEAN_OUTPUT_VALUE_CLEANED.equals(clean)) {
+          LOG.warn("Will not clean NuGet Pachages Pack runner output, output was cleaned by previous runners");
         }
 
         //noinspection ResultOfMethodCallIgnored
