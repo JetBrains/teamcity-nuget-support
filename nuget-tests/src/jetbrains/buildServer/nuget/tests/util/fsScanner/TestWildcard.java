@@ -15,7 +15,7 @@
  */
 package jetbrains.buildServer.nuget.tests.util.fsScanner;
 
-import jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner.Wildcard;
+import jetbrains.buildServer.nuget.agent.util.fsScanner.Wildcard;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

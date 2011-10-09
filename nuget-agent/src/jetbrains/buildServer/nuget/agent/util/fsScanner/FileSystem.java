@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package jetbrains.buildServer.nuget.agent.util.fsScanner;
 
-package jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner;
+import org.jetbrains.annotations.NotNull;
 
-/**
-* @author Eugene Petrenko (eugene.petrenko@gmail.com)
-*         Date: 25.08.11 11:56
-*/
-public enum MatchResult {
-  YES,
-  NO,
-  MAYBELATER
+public interface FileSystem {
+  boolean isPathAbsolute(@NotNull String path);
+
+  @NotNull
+  DirectoryEntry getRoot();
+
+  boolean caseSensitive();
 }

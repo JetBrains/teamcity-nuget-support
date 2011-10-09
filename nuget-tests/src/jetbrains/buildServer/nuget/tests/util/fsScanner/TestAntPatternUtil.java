@@ -17,8 +17,8 @@ package jetbrains.buildServer.nuget.tests.util.fsScanner;
 
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner.AntPatternUtil;
-import jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner.Wildcard;
+import jetbrains.buildServer.nuget.agent.util.fsScanner.AntPatternUtil;
+import jetbrains.buildServer.nuget.agent.util.fsScanner.Wildcard;
 import jetbrains.buildServer.util.StringUtil;
 import org.testng.Assert;
 import org.testng.annotations.Test;

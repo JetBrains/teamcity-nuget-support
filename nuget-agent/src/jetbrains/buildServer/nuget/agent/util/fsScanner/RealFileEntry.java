@@ -13,36 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner;
+package jetbrains.buildServer.nuget.agent.util.fsScanner;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
+public class RealFileEntry implements FileEntry {
+  private final FileSystemPath myPath;
 
-public class FileSystemPath {
-  private final File myPath;
-
-  public FileSystemPath(@NotNull String path) {
-    while (path.endsWith("/") || path.endsWith("\\"))
-      path = path.substring(0, path.length() - 1);
-    myPath = new File(path);
-  }
-
-  public FileSystemPath(@NotNull final File path) {
+  public RealFileEntry(FileSystemPath path) {
     myPath = path;
   }
 
   @NotNull
   public String getName() {
-
-    String name = myPath.getName();
-    if (name == null || name.length() == 0) return myPath.getPath();
-    return name;
-
+    return myPath.getName();
   }
 
   @NotNull
-  public File getFilePath() {
+  public FileSystemPath getPath() {
     return myPath;
+  }
+
+  @Override
+  public String toString() {
+    return "{f:" + myPath.getFilePath() + "|" + getName() + "}";
   }
 }

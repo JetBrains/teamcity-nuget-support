@@ -16,7 +16,7 @@
 package jetbrains.buildServer.nuget.tests.util.fsScanner;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner.*;
+import jetbrains.buildServer.nuget.agent.util.fsScanner.*;
 import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;

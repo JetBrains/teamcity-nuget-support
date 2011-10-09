@@ -13,32 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner;
+package jetbrains.buildServer.nuget.agent.util.fsScanner;
 
 import org.jetbrains.annotations.NotNull;
 
-/**
-* @author Eugene Petrenko (eugene.petrenko@gmail.com)
-*         Date: 25.08.11 11:56
-*/
-public class AntPatternStateMatch {
-  private final MatchResult myResult;
-  private final AntPatternState myState;
+import java.io.File;
 
-  public AntPatternStateMatch(@NotNull final MatchResult result,
-                              @NotNull final AntPatternState state) {
-    myResult = result;
-    myState = state;
+public class FileSystemPath {
+  private final File myPath;
+
+  public FileSystemPath(@NotNull String path) {
+    while (path.endsWith("/") || path.endsWith("\\"))
+      path = path.substring(0, path.length() - 1);
+    myPath = new File(path);
+  }
+
+  public FileSystemPath(@NotNull final File path) {
+    myPath = path;
   }
 
   @NotNull
-  public MatchResult getResult() {
-    return myResult;
+  public String getName() {
+
+    String name = myPath.getName();
+    if (name == null || name.length() == 0) return myPath.getPath();
+    return name;
+
   }
 
   @NotNull
-  public AntPatternState getState() {
-    return myState;
+  public File getFilePath() {
+    return myPath;
   }
 }

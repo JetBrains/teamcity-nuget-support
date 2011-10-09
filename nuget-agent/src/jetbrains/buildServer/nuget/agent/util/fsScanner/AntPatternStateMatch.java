@@ -13,15 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner;
+
+package jetbrains.buildServer.nuget.agent.util.fsScanner;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface FileSystem {
-  boolean isPathAbsolute(@NotNull String path);
+/**
+* @author Eugene Petrenko (eugene.petrenko@gmail.com)
+*         Date: 25.08.11 11:56
+*/
+public class AntPatternStateMatch {
+  private final MatchResult myResult;
+  private final AntPatternState myState;
+
+  public AntPatternStateMatch(@NotNull final MatchResult result,
+                              @NotNull final AntPatternState state) {
+    myResult = result;
+    myState = state;
+  }
 
   @NotNull
-  DirectoryEntry getRoot();
+  public MatchResult getResult() {
+    return myResult;
+  }
 
-  boolean caseSensitive();
+  @NotNull
+  public AntPatternState getState() {
+    return myState;
+  }
 }

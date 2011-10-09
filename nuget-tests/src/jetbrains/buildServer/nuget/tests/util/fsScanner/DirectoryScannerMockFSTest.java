@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.util.fsScanner;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.agent.util.fsScanner.fsScanner.*;
+import jetbrains.buildServer.nuget.agent.util.fsScanner.*;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.Test;
