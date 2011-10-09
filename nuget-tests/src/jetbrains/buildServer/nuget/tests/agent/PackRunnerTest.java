@@ -34,6 +34,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -65,12 +66,17 @@ public class PackRunnerTest extends BuildProcessTestCase {
     myProc = m.mock(BuildProcess.class);
     myLogger = m.mock(BuildProgressLogger.class);
 
+    final File spec = createTempFile();
+
     m.checking(new Expectations(){{
       allowing(myParametersFactory).loadPackParameters(myContext); will(returnValue(myPackParameters));
-      allowing(myActionFactory).createPack(myContext, myPackParameters); will(returnValue(myProc));
+      allowing(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
+
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
 
       allowing(myBuild).getBuildLogger(); will(returnValue(myLogger));
       allowing(myContext).getBuild(); will(returnValue(myBuild));
+      allowing(myBuild).getCheckoutDirectory(); will(returnValue(createTempDir()));
 
       allowing(myLogger).message(with(any(String.class)));
       allowing(myLogger).activityStarted(with(any(String.class)), with(any(String.class)), with(any(String.class)));

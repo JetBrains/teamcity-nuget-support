@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
+import jetbrains.buildServer.nuget.agent.util.MatchFilesBuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import org.apache.log4j.Logger;
@@ -68,7 +69,7 @@ public class PackRunner extends NuGetRunnerBase {
         //noinspection ResultOfMethodCallIgnored
         output.mkdirs();
         if (!output.isDirectory()) {
-         runningBuild.getBuildLogger().error("Failed to create output directory: " + output);
+          runningBuild.getBuildLogger().error("Failed to create output directory: " + output);
           return BuildFinishedStatus.FINISHED_FAILED;
         }
 
@@ -76,7 +77,14 @@ public class PackRunner extends NuGetRunnerBase {
       }
     });
 
-    process.pushBuildProcess(myActionFactory.createPack(context, params));
+    process.pushBuildProcess(
+            new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcessBase.Callback() {
+              public void fileFound(@NotNull File file) throws RunBuildException {
+                process.pushBuildProcess(myActionFactory.createPack(context, file, params));
+              }
+            })
+    );
+
     return process;
   }
 

@@ -68,12 +68,13 @@ public class CommandFactoryImpl implements CommandFactory {
     return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), factory);
   }
 
-  public <T> T createPack(@NotNull final NuGetPackParameters params,
+  public <T> T createPack(@NotNull final File specFile,
+                          @NotNull final NuGetPackParameters params,
                           @NotNull final File workdir,
                           @NotNull final Callback<T> factory) throws RunBuildException {
     final List<String> arguments = new ArrayList<String>();
     arguments.add("pack");
-    arguments.add(params.getSpecFiles().getPath());
+    arguments.add(specFile.getPath());
 
     arguments.add("-OutputDirectory");
     arguments.add(params.getOutputDirectory().getPath());
