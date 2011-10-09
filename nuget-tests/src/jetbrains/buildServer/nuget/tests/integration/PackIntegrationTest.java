@@ -24,8 +24,8 @@ import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.SmartDirectoryCleaner;
-import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
+import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -34,7 +34,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -78,6 +80,24 @@ public class PackIntegrationTest extends IntegrationTestBase {
         return name.endsWith(".nupkg");
       }
     }).length == 1, "There should be only one package created");
+
+    m.assertIsSatisfied();
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_miltiple_simple(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    final File spec = new File(myRoot, "SamplePackage.nuspec");
+    FileUtil.copy(getTestDataPath("SamplePackage.nuspec"), spec);
+    final File spec2 = new File(myRoot, "SamplePackage2.nuspec");
+    FileUtil.copy(getTestDataPath("SamplePackage2.nuspec"), spec2);
+
+    callRunner(nuget, false, false, false, Arrays.asList(spec.getPath(), spec2.getPath()));
+
+    Assert.assertTrue(myOutputDir.list(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return name.endsWith(".nupkg");
+      }
+    }).length == 2, "There should be only two package created");
 
     m.assertIsSatisfied();
   }
@@ -178,10 +198,14 @@ public class PackIntegrationTest extends IntegrationTestBase {
   }
 
   private void callRunner(@NotNull final NuGet nuget, @NotNull final File spec, final boolean packAsTool, final boolean symbols, final boolean cleanOutput) throws RunBuildException {
+    callRunner(nuget, packAsTool, symbols, cleanOutput, Arrays.asList(spec.getPath()));
+  }
+
+  private void callRunner(final NuGet nuget, final boolean packAsTool, final boolean symbols, final boolean cleanOutput, final List<String> wildcard) throws RunBuildException {
     m.checking(new Expectations(){{
       allowing(myPackParameters).getCustomCommandline(); will(returnValue(Collections.<String>emptyList()));
       allowing(myPackParameters).getProperties(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(spec));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(wildcard));
       allowing(myPackParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
       allowing(myPackParameters).getBaseDirectory(); will(returnValue(myRoot));
       allowing(myPackParameters).getExclude(); will(returnValue(Collections.<String>emptyList()));
