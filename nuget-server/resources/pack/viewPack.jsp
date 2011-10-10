@@ -26,7 +26,7 @@
 </div>
 
 <div class="parameter">
-  Specification file: <strong><props:displayValue showInPopup="true" name="${ib.packSpecFile}"/></strong>
+  Specification files: <strong><props:displayValue showInPopup="true" name="${ib.packSpecFile}"/></strong>
 </div>
 
 <div class="parameter">
