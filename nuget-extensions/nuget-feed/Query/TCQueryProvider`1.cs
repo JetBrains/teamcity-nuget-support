@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Query
 {
@@ -14,75 +13,6 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
       myProvider = provider;
     }
 
-    private bool CheckPropertyEqualExpression(Expression e, string propertyName, Action<object> valueFound)
-    {
-      if (IsPropertyCallExpression(e, propertyName))
-      {
-        valueFound(true);
-        return true;
-      }
-
-      var uExpression = e as UnaryExpression;
-      if (uExpression != null && uExpression.NodeType == ExpressionType.Not && IsPropertyCallExpression(uExpression.Operand, propertyName))
-      {
-        valueFound(false);
-        return true;
-      }
-
-      var expression = e as BinaryExpression;
-      if (expression == null) return false;
-
-      if (expression.NodeType == ExpressionType.Equal)
-      {
-        var leftValue = EvaluateConstant(expression.Left);
-        var rightValue = EvaluateConstant(expression.Right);
-
-        if (leftValue != null && IsPropertyCallExpression(expression.Right, propertyName))
-        {
-          valueFound(leftValue);
-          return true;
-        }
-
-        if (rightValue != null && IsPropertyCallExpression(expression.Left, propertyName))
-        {
-          valueFound(rightValue);
-          return true;
-        }
-        return false;
-      }
-
-      if (expression.NodeType == ExpressionType.Or || expression.NodeType == ExpressionType.OrElse)
-      {
-        return
-          CheckPropertyEqualExpression(expression.Left, propertyName, valueFound)
-          &&
-          CheckPropertyEqualExpression(expression.Right, propertyName, valueFound)
-          ;
-      }
-
-      return false;
-    }
-
-    private object EvaluateConstant(Expression e)
-    {
-      var ce = e as ConstantExpression;
-      if (ce != null)
-        return ce.Value;
-
-      //TODO: handle nulls
-      return null;
-    }
-
-    private bool IsPropertyCallExpression(Expression e, string propertyName)
-    {
-      var me = e as MemberExpression;
-      if (me == null) return false;
-      if (me.Member.Name != propertyName) return false;
-      if (me.Member.DeclaringType != typeof(T)) return false;
-      return me.Member is PropertyInfo;
-    }
-
-
     public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
     {
       var callExpression = expression as MethodCallExpression;
@@ -94,7 +24,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
           var lambda = UpperMostLambdaFinder.UpperMostLambda(whereCall);
           if (lambda != null)
           {
-            CheckPropertyEqualExpression(lambda.Body, "A", val => Console.Out.WriteLine("Found expression: {0}", val));
+            new WhereExpressionVisitor<T>().CheckPropertyEqualExpression(lambda.Body, "A", val => Console.Out.WriteLine("Found expression: {0}", val));
           }
         }
       }

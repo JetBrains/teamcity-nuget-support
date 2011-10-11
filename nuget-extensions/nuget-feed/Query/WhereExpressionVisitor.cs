@@ -1,78 +1,95 @@
-using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
+using JetBrains.Annotations;
+using JetBrains.TeamCity.NuGet.Feed.Query.Tree;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Query
 {
   public class WhereExpressionVisitor<T> : ExpressionVisitor
   {
-    private readonly object myValue;
-    private readonly Dictionary<string, List<string>> myFilters = new Dictionary<string, List<string>>();
-    private bool myIsSupported = true;
-
-    public WhereExpressionVisitor(object value)
+    [CanBeNull]
+    public FilterTreeNode CheckPropertyEqualExpression(Expression e)
     {
-      myValue = value;
+      var propertyCall = IsPropertyCallExpression(e);
+      if (propertyCall != null)
+      {
+        return new FilterEqualsTreeNode(propertyCall, new ConstantValue(true));
+      }
+
+      var uExpression = e as UnaryExpression;
+      if (uExpression != null && uExpression.NodeType == ExpressionType.Not)
+      {
+        var node = IsPropertyCallExpression(uExpression.Operand);
+        if (node != null) return new FilterEqualsTreeNode(node, new ConstantValue(false));
+
+        var result = CheckPropertyEqualExpression(uExpression.Operand);
+        if (result != null) return new FilterNotTreeNode(result);
+        return null;
+      }
+
+      var expression = e as BinaryExpression;
+      if (expression == null) return null;
+
+      if (expression.NodeType == ExpressionType.Equal)
+      {
+        var leftValue = EvaluateConstant(expression.Left);
+        var rightProp = IsPropertyCallExpression(expression.Right);
+
+        if (leftValue != null && rightProp != null)
+        {          
+          return new FilterEqualsTreeNode(rightProp, leftValue);
+        }
+
+        var rightValue = EvaluateConstant(expression.Right);
+        var leftProp = IsPropertyCallExpression(expression.Left);
+        if (rightValue != null && leftProp != null)
+        {
+          return new FilterEqualsTreeNode(leftProp, rightValue);
+        }
+        return null;
+      }
+
+      if (expression.NodeType == ExpressionType.Or || expression.NodeType == ExpressionType.OrElse)
+      {
+        var left = CheckPropertyEqualExpression(expression.Left);
+        var right = CheckPropertyEqualExpression(expression.Right);
+        return left == null || right == null
+                 ? null
+                 : new FilterOrTreeNode(left, right);
+      }
+
+      if (expression.NodeType == ExpressionType.Add || expression.NodeType == ExpressionType.AndAlso)
+      {
+        var left = CheckPropertyEqualExpression(expression.Left);
+        var right = CheckPropertyEqualExpression(expression.Right);
+        return left == null || right == null
+                 ? null
+                 : new FilterAndTreeNode(left, right);
+      }
+
+      return null;
     }
 
-    public Dictionary<string, List<string>> Filters
+    [CanBeNull]
+    private ConstantValue EvaluateConstant(Expression e)
     {
-      get { return myFilters; }
+      var ce = e as ConstantExpression;
+      if (ce != null)
+        return new ConstantValue(ce.Value);
+
+      //TODO: handle nulls
+      return null;
     }
 
-    private void unsupportedExpression()
+    [CanBeNull]
+    private PropertyCall IsPropertyCallExpression(Expression e)
     {
-      myIsSupported = false;
-    }
+      var me = e as MemberExpression;
+      if (me == null) return null;      
+      if (me.Member.DeclaringType != typeof(T)) return null;
+      if (!(me.Member is PropertyInfo)) return null;
 
-    protected override Expression VisitLambda<T1>(Expression<T1> node)
-    {
-      Console.Out.WriteLine("Visit Lambda");
-      return base.VisitLambda(node);
-    }
-
-    protected override Expression VisitUnary(UnaryExpression node)
-    {
-      Console.Out.WriteLine("Visit unary: {0}", node.Method);
-      return base.VisitUnary(node);
-    }
-
-    protected override Expression VisitBinary(BinaryExpression node)
-    {
-      Console.Out.WriteLine("Visit binary: {0}", node.Method);
-      return base.VisitBinary(node);
-    }
-
-    protected override Expression VisitParameter(ParameterExpression node)
-    {
-      Console.Out.WriteLine("Visit parameter");
-      return base.VisitParameter(node);
-    }
-
-    protected override Expression VisitConstant(ConstantExpression node)
-    {
-      Console.Out.WriteLine("Visit constant: {0}", node.Value ?? "<null>");
-      return base.VisitConstant(node);
-    }
-
-    protected override Expression VisitInvocation(InvocationExpression node)
-    {
-      Console.Out.WriteLine("Visist invocation");
-      unsupportedExpression();
-      return base.VisitInvocation(node);
-    }
-
-    protected override Expression VisitLoop(LoopExpression node)
-    {
-      Console.Out.WriteLine("Loop expression");
-      unsupportedExpression();
-      return base.VisitLoop(node);
-    }
-
-    protected override Expression VisitMember(MemberExpression node)
-    {
-      Console.Out.WriteLine("Visit member: {0}", node.Member);
-      return base.VisitMember(node);
+      return new PropertyCall(me.Member.Name);
     }
   }
 }

@@ -102,6 +102,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query\TCQueryProvider.cs" />
     <Compile Include="Query\TCQueryProvider`1.cs" />
+    <Compile Include="Query\Tree\FilterAndTreeNode.cs" />
+    <Compile Include="Query\Tree\FilterEqualsTreeNode.cs" />
+    <Compile Include="Query\Tree\FilterNotTreeNode.cs" />
+    <Compile Include="Query\Tree\FilterOrTreeNode.cs" />
+    <Compile Include="Query\Tree\FilterTreeNode.cs" />
     <Compile Include="Query\TypeInference.cs" />
     <Compile Include="Query\UpperMostLambdaFinder.cs" />
     <Compile Include="Query\WhereExpressionVisitor.cs" />
