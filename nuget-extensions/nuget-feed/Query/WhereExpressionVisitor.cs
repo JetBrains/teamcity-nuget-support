@@ -7,7 +7,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
 {
   public class WhereExpressionVisitor<T> : ExpressionVisitor
   {
-    [CanBeNull]
+    [NotNull]
     public FilterTreeNode CheckPropertyEqualExpression(Expression e)
     {
       var propertyCall = IsPropertyCallExpression(e);
@@ -23,12 +23,11 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
         if (node != null) return new FilterEqualsTreeNode(node, new ConstantValue(false));
 
         var result = CheckPropertyEqualExpression(uExpression.Operand);
-        if (result != null) return new FilterNotTreeNode(result);
-        return null;
+        return new FilterNotTreeNode(result);
       }
 
       var expression = e as BinaryExpression;
-      if (expression == null) return null;
+      if (expression == null) return new FilterUnknownTreeNode();
 
       if (expression.NodeType == ExpressionType.Equal)
       {
@@ -46,7 +45,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
         {
           return new FilterEqualsTreeNode(leftProp, rightValue);
         }
-        return null;
+        return new FilterUnknownTreeNode();
       }
       if (expression.NodeType == ExpressionType.NotEqual)
       {
@@ -64,28 +63,24 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
         {
           return new FilterNotTreeNode(new FilterEqualsTreeNode(leftProp, rightValue));
         }
-        return null;
+        return new FilterUnknownTreeNode();
       }
 
       if (expression.NodeType == ExpressionType.Or || expression.NodeType == ExpressionType.OrElse)
       {
         var left = CheckPropertyEqualExpression(expression.Left);
         var right = CheckPropertyEqualExpression(expression.Right);
-        return left == null || right == null
-                 ? null
-                 : new FilterOrTreeNode(left, right);
+        return new FilterOrTreeNode(left, right);
       }
 
       if (expression.NodeType == ExpressionType.Add || expression.NodeType == ExpressionType.AndAlso)
       {
         var left = CheckPropertyEqualExpression(expression.Left);
         var right = CheckPropertyEqualExpression(expression.Right);
-        return left == null || right == null
-                 ? null
-                 : new FilterAndTreeNode(left, right);
+        return new FilterAndTreeNode(left, right);
       }
 
-      return null;
+      return new FilterUnknownTreeNode();
     }
 
     [CanBeNull]

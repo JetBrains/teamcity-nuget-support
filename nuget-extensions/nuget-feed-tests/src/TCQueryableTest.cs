@@ -93,7 +93,7 @@ namespace JetBrains.TeamCity.NuGet.Feed
     [Test]
     public void Test_OWhere_greather_no_tree()
     {
-      Call(myOQuery.Where(x => x.A > 3));
+      Call(myOQuery.Where(x => x.A > 3), "???");
     }
 
     [Test]
@@ -105,16 +105,16 @@ namespace JetBrains.TeamCity.NuGet.Feed
     [Test]
     public void Test_OWhere_bool_and_lower()
     {
-      Call(myOQuery.Where(x => x.C && x.A < 1));
+      Call(myOQuery.Where(x => x.C && x.A < 1), "( $.C == True ) and ( ??? )");
     }
 
     [Test]
     public void Test_OWhere_bool_or_lower()
     {
-      Call(myOQuery.Where(x => x.C || x.A < 1));
+      Call(myOQuery.Where(x => x.C || x.A < 1), "( $.C == True ) or ( ??? )");
     }
 
-    private void Call<T>(IEnumerable<T> query, string gold = null)
+    private void Call<T>(IEnumerable<T> query, string gold)
     {
       foreach (var t in query)
       {
