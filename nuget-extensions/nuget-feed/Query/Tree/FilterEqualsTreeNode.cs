@@ -33,5 +33,10 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query.Tree
       FieldName = fieldName.PropertyName;
       Value = value.Value;
     }
+
+    public override string ToString()
+    {
+      return string.Format("$.{0} == {1}", FieldName, Value);
+    }
   }
 }

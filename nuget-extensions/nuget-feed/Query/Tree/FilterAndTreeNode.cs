@@ -10,5 +10,11 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query.Tree
       Left = left;
       Right = right;
     }
+
+    public override string ToString()
+    {
+      return string.Format("( {0} ) and ( {1} )", Left, Right);
+    }
+
   }
 }

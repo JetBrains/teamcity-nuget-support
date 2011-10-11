@@ -48,6 +48,24 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
         }
         return null;
       }
+      if (expression.NodeType == ExpressionType.NotEqual)
+      {
+        var leftValue = EvaluateConstant(expression.Left);
+        var rightProp = IsPropertyCallExpression(expression.Right);
+
+        if (leftValue != null && rightProp != null)
+        {          
+          return new FilterNotTreeNode(new FilterEqualsTreeNode(rightProp, leftValue));
+        }
+
+        var rightValue = EvaluateConstant(expression.Right);
+        var leftProp = IsPropertyCallExpression(expression.Left);
+        if (rightValue != null && leftProp != null)
+        {
+          return new FilterNotTreeNode(new FilterEqualsTreeNode(leftProp, rightValue));
+        }
+        return null;
+      }
 
       if (expression.NodeType == ExpressionType.Or || expression.NodeType == ExpressionType.OrElse)
       {

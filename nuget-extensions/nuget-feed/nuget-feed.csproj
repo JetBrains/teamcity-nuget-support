@@ -107,6 +107,7 @@
     <Compile Include="Query\Tree\FilterNotTreeNode.cs" />
     <Compile Include="Query\Tree\FilterOrTreeNode.cs" />
     <Compile Include="Query\Tree\FilterTreeNode.cs" />
+    <Compile Include="Query\Tree\FilterUnknownTreeNode.cs" />
     <Compile Include="Query\TypeInference.cs" />
     <Compile Include="Query\UpperMostLambdaFinder.cs" />
     <Compile Include="Query\WhereExpressionVisitor.cs" />

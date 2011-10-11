@@ -8,5 +8,10 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query.Tree
     {
       Operand = operand;
     }
+
+    public override string ToString()
+    {
+      return "not ( " + Operand + " )";
+    }
   }
 }

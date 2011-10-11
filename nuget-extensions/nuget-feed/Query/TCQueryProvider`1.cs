@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using JetBrains.TeamCity.NuGet.Feed.Query.Tree;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Query
 {
@@ -24,12 +25,25 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
           var lambda = UpperMostLambdaFinder.UpperMostLambda(whereCall);
           if (lambda != null)
           {
-            new WhereExpressionVisitor<T>().CheckPropertyEqualExpression(lambda.Body, "A", val => Console.Out.WriteLine("Found expression: {0}", val));
+            var tree = new WhereExpressionVisitor<T>().CheckPropertyEqualExpression(lambda.Body);            
+            if (tree != null)
+            {
+              var result = OptimizeWhereQuery<TElement>(expression, tree);
+              if (result != null)
+              {
+                return result;
+              }
+            }
           }
         }
       }
       
       return base.CreateQuery<TElement>(expression);
+    }
+
+    protected virtual IQueryable<TElement> OptimizeWhereQuery<TElement>(Expression expression, FilterTreeNode tree)
+    {
+      return null;
     }
 
     public override object Execute(Expression expression)
@@ -39,7 +53,6 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
 
     public override TResult Execute<TResult>(Expression expression)
     {
-      Console.Out.WriteLine("expression = {0}", expression);
       return myProvider.Provider.Execute<TResult>(expression);
     }
 
