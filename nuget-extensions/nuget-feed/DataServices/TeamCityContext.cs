@@ -1,4 +1,5 @@
 using System;
+using JetBrains.TeamCity.NuGet.Feed.Repo;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {

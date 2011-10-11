@@ -88,7 +88,6 @@
     <Compile Include="..\nuget-runner\src\AssemblyHelper.cs">
       <Link>AssemblyHelper.cs</Link>
     </Compile>
-    <Compile Include="DataServices\LightPackageRepository.cs" />
     <Compile Include="DataServices\Routes.cs" />
     <Compile Include="Query\ExpressionTreeModifier.cs" />
     <Compile Include="Query\InnermostWhereFinder.cs" />
@@ -107,8 +106,17 @@
     <Compile Include="Query\TypeInference.cs" />
     <Compile Include="Query\UpperMostLambdaFinder.cs" />
     <Compile Include="Query\WhereExpressionVisitor.cs" />
+    <Compile Include="Repo\LightPackageRepository.cs" />
+    <Compile Include="Repo\PackageEntry.cs" />
+    <Compile Include="Repo\PackageIndex.cs" />
+    <Compile Include="Repo\PackageIndexEntry.cs" />
+    <Compile Include="Repo\PackageIndexFile.cs" />
+    <Compile Include="Repo\PackagesFile.cs" />
+    <Compile Include="Repo\PackagesQueryProvider.cs" />
+    <Compile Include="Repo\PackageStore.cs" />
     <Compile Include="Repo\TeamCityPackage.cs" />
     <Compile Include="Repo\TeamCityPackagesContext.cs" />
+    <Compile Include="Repo\TeamCityPackageSpec.cs" />
     <Compile Include="Repo\TeamCityPackagesRepo.cs" />
     <Compile Include="Repo\TeamCityZipPackageFactory.cs" />
   </ItemGroup>

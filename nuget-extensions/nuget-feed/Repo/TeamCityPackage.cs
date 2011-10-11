@@ -14,7 +14,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
   {
     internal string DownloadUrl { get; set; }
     
-    public string PacakgeProviderHost { get { return "JetBrains TeamCity"; } set {} }
+    public string PacakgeProviderHost { get { return "JetBrains TeamCity"; } }
 
     public string Id { get; set; }
 
