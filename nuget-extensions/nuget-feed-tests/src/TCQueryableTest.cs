@@ -32,6 +32,12 @@ namespace JetBrains.TeamCity.NuGet.Feed
     }
 
     [Test]
+    public void Test_OWhere_eq_toLover()
+    {
+      Call(myOQuery.Where(x => x.B.ToLower() == "q"), "$.B =L= q");
+    }
+
+    [Test]
     public void Test_OWhere_not_eq()
     {
       Call(myOQuery.Where(x => !(x.A == 1)), "not ( $.A == 1 )");

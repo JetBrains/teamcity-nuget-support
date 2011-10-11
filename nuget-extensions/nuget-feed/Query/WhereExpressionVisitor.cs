@@ -97,6 +97,16 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
     [CanBeNull]
     private PropertyCall IsPropertyCallExpression(Expression e)
     {
+      var ie = e as MethodCallExpression;
+      if (ie != null && ie.Method.DeclaringType == typeof(string) && ie.Method.Name == "ToLower")
+      {
+        var expr = IsPropertyCallExpression(ie.Object);
+        if (expr != null)
+        {
+          return new PropertyCall(expr.PropertyName, true);
+        }
+      }
+
       var me = e as MemberExpression;
       if (me == null) return null;      
       if (me.Member.DeclaringType != typeof(T)) return null;
