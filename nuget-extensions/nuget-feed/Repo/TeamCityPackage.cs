@@ -1,8 +1,7 @@
 using System;
 using System.Data.Services.Common;
-using System.Xml.Serialization;
 
-namespace JetBrains.TeamCity.NuGet.Feed.DataServices
+namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   [HasStream]
   [Serializable]

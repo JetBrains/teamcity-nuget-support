@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace JetBrains.TeamCity.NuGet.Feed.DataServices
+namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   [Serializable]
   public class TeamCityPackageSpec

@@ -9,6 +9,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Web;
 using JetBrains.Annotations;
+using JetBrains.TeamCity.NuGet.Feed.Repo;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {

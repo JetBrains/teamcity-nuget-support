@@ -5,6 +5,7 @@ using System.Web.Configuration;
 using System.Web.Hosting;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
+using JetBrains.TeamCity.NuGet.Feed.Repo;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {

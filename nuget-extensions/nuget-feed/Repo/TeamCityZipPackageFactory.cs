@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using NuGet;
 using System.Linq;
+using NuGet;
 
-namespace JetBrains.TeamCity.NuGet.Feed.DataServices
+namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   public static class TeamCityZipPackageFactory
   {

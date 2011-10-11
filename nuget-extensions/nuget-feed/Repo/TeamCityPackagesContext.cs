@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Linq;
 using JetBrains.Annotations;
 
-namespace JetBrains.TeamCity.NuGet.Feed.DataServices
+namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   public class TeamCityPackagesContext
   {

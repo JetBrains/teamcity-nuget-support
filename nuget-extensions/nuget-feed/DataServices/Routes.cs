@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.ServiceModel.Activation;
 using System.Web.Routing;
+using JetBrains.TeamCity.NuGet.Feed.Repo;
 using NuGetRoutes = JetBrains.TeamCity.NuGet.Feed.DataServices.NuGetRoutes;
 using RouteMagic;
 
