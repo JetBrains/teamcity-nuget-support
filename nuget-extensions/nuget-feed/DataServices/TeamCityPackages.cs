@@ -26,6 +26,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     {
       config.SetEntitySetAccessRule("Packages", EntitySetRights.AllRead);
       config.SetEntitySetPageSize("Packages", 100);
+      config.SetServiceOperationAccessRule("Search", ServiceOperationRights.AllRead);
 
       config.DataServiceBehavior.MaxProtocolVersion = DataServiceProtocolVersion.V2;
       config.UseVerboseErrors = true;
