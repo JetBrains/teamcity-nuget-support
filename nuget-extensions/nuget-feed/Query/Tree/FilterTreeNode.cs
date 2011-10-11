@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+
 namespace JetBrains.TeamCity.NuGet.Feed.Query.Tree
 {
   public abstract class FilterTreeNode
@@ -17,6 +19,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query.Tree
     /// </summary>
     /// <param name="propertyName"></param>
     /// <returns></returns>
+    [NotNull]
     public virtual FilterTreeNode Normalize(string propertyName)
     {
       return new FilterUnknownTreeNode();

@@ -10,8 +10,40 @@ namespace JetBrains.TeamCity.NuGet.Feed
     [Test]
     public void test_equals_is_normal()
     {
-      DoNormalizeTest(eq("A", 1), "A", "$.A == 1");
-      DoNormalizeTest(eq("A", 1), "B", "???");
+      var expr = eq("A", 1);
+      DoNormalizeTest(expr, "A", "$.A == 1");
+      DoNormalizeTest(expr, "B", "???");
+    }
+
+    [Test]
+    public void test_not_eq()
+    {
+      var expr = not(eq("A", 1));
+      DoNormalizeTest(expr, "A", "not ( $.A == 1 )");
+    }
+
+    [Test]
+    public void test_not_not_eq()
+    {
+      var expr = not(not(eq("A", 1)));
+      DoNormalizeTest(expr, "A", "$.A == 1");
+    }
+
+    [Test]
+    public void test_not_or_not()
+    {
+      // !( !a or !b) => a and b
+      var expr = not(or(not(eq("A", 1)), not(eq("B", 2))));
+      DoNormalizeTest(expr, "A", "$.A == 1");
+      DoNormalizeTest(expr, "B", "$.B == 2");
+    }
+
+    [Test]
+    public void test_not_and_not()
+    {
+      //  !( !a and !b) => a or b
+      var expr = not(and(not(eq("A", 1)), not(eq("A", 2))));
+      DoNormalizeTest(expr, "A", "( $.A == 1 ) or ( $.A == 2 )");
     }
 
     [Test]
