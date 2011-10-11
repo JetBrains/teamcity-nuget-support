@@ -19,7 +19,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query.Tree
     /// <returns></returns>
     public virtual FilterTreeNode Normalize(string propertyName)
     {
-      return this;
+      return new FilterUnknownTreeNode();
     }
   }
 }

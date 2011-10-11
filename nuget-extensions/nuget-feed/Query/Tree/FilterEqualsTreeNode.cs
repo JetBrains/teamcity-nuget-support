@@ -43,6 +43,13 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query.Tree
       Value = value.Value;
     }
 
+    public override FilterTreeNode Normalize(string propertyName)
+    {
+      if (propertyName == FieldName)
+        return this;
+      return base.Normalize(propertyName);
+    }
+
     public override string ToString()
     {
       if (!ToLower) 
