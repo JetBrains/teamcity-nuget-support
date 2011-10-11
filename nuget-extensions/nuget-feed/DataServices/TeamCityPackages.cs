@@ -3,7 +3,10 @@ using System.Data.Services;
 using System.Data.Services.Common;
 using System.Data.Services.Providers;
 using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
 using System.ServiceModel;
+using System.ServiceModel.Web;
 using System.Web;
 using JetBrains.Annotations;
 
@@ -27,6 +30,32 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       config.DataServiceBehavior.MaxProtocolVersion = DataServiceProtocolVersion.V2;
       config.UseVerboseErrors = true;
     }
+
+    [WebGet, UsedImplicitly(ImplicitUseTargetFlags.Itself)]
+    public IQueryable<TeamCityPackage> Search(string searchTerm, string targetFramework)
+    {
+      var packages = Repository.GetPackages();
+
+      if (string.IsNullOrWhiteSpace(searchTerm)) return packages;
+      var terms = searchTerm.Split().Where(x=>x.Length > 0).ToArray();
+
+      if (!terms.Any()) 
+        return packages;
+
+      var param = Expression.Parameter(typeof (TeamCityPackage));
+      //TODO: support Description and Tags 
+      var prop = Expression.Call(Expression.Property(param, "Id"), "ToLower", new Type[0]);
+
+      return packages.Where(
+        Expression.Lambda<Func<TeamCityPackage, bool>>(
+          terms
+            .Select(term => Expression.Equal(prop, Expression.Constant(term)))
+            .Aggregate(Expression.OrElse),
+          param
+          )
+        );
+    }
+
 
     protected override TeamCityPackagesContext CreateDataSource()
     {
