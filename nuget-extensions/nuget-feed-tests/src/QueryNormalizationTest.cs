@@ -47,6 +47,16 @@ namespace JetBrains.TeamCity.NuGet.Feed
     }
 
     [Test]
+    public void test_not_and_not_or()
+    {
+      //  d or c or !( !a and !b) or e 
+      // 
+      var expr = or(or(eq("A", 3), eq("A", 2)), not(and(not(eq("A", 1)), not(eq("A", 2)))));
+      DoNormalizeTest(expr, "A", "( ( $.A == 3 ) or ( $.A == 2 ) ) or ( ( $.A == 1 ) or ( $.A == 2 ) )");
+      
+    }
+
+    [Test]
     public void test_normalize_and()
     {
       DoNormalizeTest(and(eq("A", 1), eq("A", 1)), "A", "( $.A == 1 ) and ( $.A == 1 )");
