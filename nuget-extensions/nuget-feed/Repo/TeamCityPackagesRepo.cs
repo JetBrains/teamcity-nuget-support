@@ -1,50 +1,77 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   [Serializable]
-  public class TeamCityPackageSpec
-  {
-    [XmlAttribute("buildType")]
-    public string BuildType { get; set; }
-
-    [XmlAttribute("buildId")]
-    public long BuildId { get; set; }
-    
-    [XmlAttribute("downloadUrl")]
-    public string DownloadUrl { get; set; }
-
-    [XmlAttribute("packageFile")]
-    public string PackageFile { get; set; }
-
-    [XmlAttribute("isLatest")]
-    public bool IsLatest { get; set; }
-  }
-
-  [Serializable]
   [XmlRoot("package-list")]
-  public class TeamCityPackagesRepo
+  public class TeamCityPackagesRepo : ITeamCityPackagesRepo
   {
     [XmlIgnore]
-    private readonly List<TeamCityPackageSpec> mySpecs = new List<TeamCityPackageSpec>();
+    private readonly List<TeamCityPackageEntry> mySpecs = new List<TeamCityPackageEntry>();
 
+    private readonly Dictionary<string, List<TeamCityPackageEntry>> myIdIndex 
+      = new Dictionary<string, List<TeamCityPackageEntry>>(StringComparer.InvariantCultureIgnoreCase);
+
+    private readonly Dictionary<string, TeamCityPackageEntry> myLatestVersionsIndex 
+      = new Dictionary<string, TeamCityPackageEntry>(StringComparer.InvariantCultureIgnoreCase);
+      
     [XmlArray("packages")]
     [XmlArrayItem("package")]
-    public TeamCityPackageSpec[] Specs
+    public TeamCityPackageEntry[] Specs
     {
       get { return mySpecs.ToArray(); } 
       set { 
         mySpecs.Clear();
         if (value != null)
+        {
           mySpecs.AddRange(value);
+          foreach (var entry in value)
+          {
+            AddSpec(entry);
+          }
+        }
       }
     }
 
-    public void AddSpec(TeamCityPackageSpec spec)
+    public void AddSpec(TeamCityPackageEntry entry)
     {
-      mySpecs.Add(spec);      
+      mySpecs.Add(entry);
+
+      var id = entry.Package.Id;
+      List<TeamCityPackageEntry> list;
+      if (!myIdIndex.TryGetValue(id, out list))
+      {
+        list = new List<TeamCityPackageEntry>();
+        myIdIndex[id] = list;
+      }
+      list.Add(entry);
+
+      //Assume latest is the oldest to avoid comparing buildIds
+      myLatestVersionsIndex[id] = entry;
+    }
+
+    public IEnumerable<TeamCityPackage> GetAllPackages()
+    {
+      return Specs.Select(x=>x.Package);
+    }
+
+    public IEnumerable<TeamCityPackage> FilterById(IEnumerable<string> ids)
+    {
+      return ids
+        .Where(myIdIndex.ContainsKey)
+        .SelectMany(x => myIdIndex[x])
+        .Select(x => x.Package);
+    }
+
+    public IEnumerable<TeamCityPackage> FiltetByIdLatest(IEnumerable<string> ids)
+    {
+      return ids
+        .Where(myLatestVersionsIndex.ContainsKey)
+        .Select(x => myLatestVersionsIndex[x])
+        .Select(x => x.Package);
     }
   }
 }

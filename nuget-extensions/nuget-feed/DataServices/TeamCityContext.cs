@@ -5,7 +5,10 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   public static class TeamCityContext
   {
-    private static readonly Lazy<LightPackageRepository> myRepo = new Lazy<LightPackageRepository>(() => new LightPackageRepository(), true);
+    private static readonly Lazy<LightPackageRepository> myRepo 
+      = new Lazy<LightPackageRepository>(
+        () => new LightPackageRepository(new RepositoryPaths()), 
+        true);
 
     public static LightPackageRepository Repository
     {

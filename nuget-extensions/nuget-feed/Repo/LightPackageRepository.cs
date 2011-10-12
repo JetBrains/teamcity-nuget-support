@@ -1,33 +1,44 @@
+using System;
 using System.IO;
 using System.Linq;
-using System.Web.Configuration;
-using System.Web.Hosting;
 using System.Xml.Serialization;
-using JetBrains.Annotations;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   public class LightPackageRepository
   {
-    private readonly XmlSerializerFactory myXmlSerializerFactory = new XmlSerializerFactory();
+    private readonly IRepositoryPaths myPaths;
+    private static readonly XmlSerializerFactory myXmlSerializerFactory = new XmlSerializerFactory();
     private static readonly object CONFIG_ACCESS_LOG = new object();
+
+    private readonly Lazy<ITeamCityPackagesRepo> myLazyRepo;
+
+    public LightPackageRepository(IRepositoryPaths paths)
+    {
+      myPaths = paths;
+      myLazyRepo = new Lazy<ITeamCityPackagesRepo>(LoadDatabase, true);
+    }
+
+    public string PackageFilesBasePath
+    {
+      get { return myPaths.PackageFilesBasePath; }
+    }
 
     public IQueryable<TeamCityPackage> GetPackages()
     {
-      var basePath = PackageFilesBasePath;      
-      var repo = FetchPackageSpec();      
-      return
-        from spec in repo.Specs.AsQueryable()
-        let path = Path.Combine(basePath, spec.PackageFile)
-        where File.Exists(path)
-        select TeamCityZipPackageFactory.LoadPackage(path, spec);
+      return new TeamCityQueryablePackages(FetchPackageSpec()).Query;
     }
 
-    private TeamCityPackagesRepo FetchPackageSpec()
+    private ITeamCityPackagesRepo FetchPackageSpec()
+    {
+      return myLazyRepo.Value;
+    }
+
+    private TeamCityPackagesRepo LoadDatabase()
     {
       lock (CONFIG_ACCESS_LOG)
       {
-        var xmlFile = TeamCityPackagesFile;
+        var xmlFile = myPaths.TeamCityPackagesFile;
         if (xmlFile == null || !File.Exists(xmlFile)) return EMPTY_SPEC;
 
         var ser = myXmlSerializerFactory.CreateSerializer(typeof (TeamCityPackagesRepo));
@@ -48,11 +59,11 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
       }
     }
 
-    private void StorePackagesSpec(TeamCityPackagesRepo spec)
+    private void StorePackagesSpec(ITeamCityPackagesRepo spec)
     {
       lock (CONFIG_ACCESS_LOG)
       {
-        var xmlFile = TeamCityPackagesFile;
+        var xmlFile = myPaths.TeamCityPackagesFile;
         if (xmlFile == null) return;
 
         var parent = Path.GetDirectoryName(xmlFile);
@@ -75,27 +86,21 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
       lock (CONFIG_ACCESS_LOG)
       {
         var repo = FetchPackageSpec();
-        repo.AddSpec(spec);
+        var path = myPaths.PackageFilesBasePath;
+        if (path == null) return;
+
+        var pkg = TeamCityZipPackageFactory.LoadPackage(Path.Combine(path, spec.PackageFile), spec);
+        var entry = new TeamCityPackageEntry
+                      {
+                        Package = pkg,
+                        Spec = spec
+                      };
+
+        repo.AddSpec(entry);
         StorePackagesSpec(repo);
       }
     }
 
-    [CanBeNull]
-    private string TeamCityPackagesFile
-    {
-      get { return WebConfigurationManager.AppSettings["PackagesSpecFile"]; }
-    }
-
-    [CanBeNull]
-    public string PackageFilesBasePath
-    {
-      get { return WebConfigurationManager.AppSettings["PackageFilesBasePath"] ?? HostingEnvironment.MapPath("~"); }
-    }
-
-    private readonly TeamCityPackagesRepo EMPTY_SPEC =
-      new TeamCityPackagesRepo
-        {          
-          Specs = new TeamCityPackageSpec[0]
-        };
+    private readonly TeamCityPackagesRepo EMPTY_SPEC = new TeamCityPackagesRepo();
   }
 }

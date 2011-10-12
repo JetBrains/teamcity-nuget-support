@@ -106,10 +106,16 @@
     <Compile Include="Query\TypeInference.cs" />
     <Compile Include="Query\UpperMostLambdaFinder.cs" />
     <Compile Include="Query\WhereExpressionVisitor.cs" />
+    <Compile Include="Repo\IRepositoryPaths.cs" />
+    <Compile Include="Repo\ITeamCityPackagesRepo.cs" />
     <Compile Include="Repo\LightPackageRepository.cs" />
+    <Compile Include="Repo\RepositoryPaths.cs" />
+    <Compile Include="Repo\TeamCityPackageEntry.cs" />
     <Compile Include="Repo\TeamCityPackage.cs" />
     <Compile Include="Repo\TeamCityPackagesContext.cs" />
+    <Compile Include="Repo\TeamCityPackageSpec.cs" />
     <Compile Include="Repo\TeamCityPackagesRepo.cs" />
+    <Compile Include="Repo\TeamCityQueryablePackages.cs" />
     <Compile Include="Repo\TeamCityZipPackageFactory.cs" />
   </ItemGroup>
   <ItemGroup>

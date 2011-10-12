@@ -25,15 +25,10 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
           var lambda = UpperMostLambdaFinder.UpperMostLambda(whereCall);
           if (lambda != null)
           {
-            var tree = new WhereExpressionVisitor<T>().CheckPropertyEqualExpression(lambda.Body);            
-            if (tree != null)
-            {
-              var result = OptimizeWhereQuery<TElement>(expression, tree);
-              if (result != null)
-              {
-                return result;
-              }
-            }
+            var tree = new WhereExpressionVisitor<T>().CheckPropertyEqualExpression(lambda.Body);
+            var result = OptimizeWhereQuery<TElement>(lambda, tree);
+            if (result != null)
+              return result;
           }
         }
       }
@@ -41,10 +36,19 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
       return base.CreateQuery<TElement>(expression);
     }
 
-    protected virtual IQueryable<TElement> OptimizeWhereQuery<TElement>(Expression expression, FilterTreeNode tree)
+    protected virtual IQueryable<TElement> OptimizeWhereQuery<TElement>(LambdaExpression expression, FilterTreeNode tree)
     {
+      if (typeof(TElement) == typeof(T))
+      {
+        return (IQueryable<TElement>) OptimizeBasicWhereQuery((Expression<Func<T, bool>>) expression, tree);
+      }
       return null;
     }
+
+    protected virtual IQueryable<T> OptimizeBasicWhereQuery(Expression<Func<T, bool>> expression, FilterTreeNode node)
+    {
+      return null;
+    } 
 
     public override object Execute(Expression expression)
     {

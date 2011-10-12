@@ -16,7 +16,7 @@ namespace JetBrains.TeamCity.NuGet.Feed
     {
     }
 
-    protected override IQueryable<TElement> OptimizeWhereQuery<TElement>(Expression expression, FilterTreeNode tree)
+    protected override IQueryable<TElement> OptimizeWhereQuery<TElement>(LambdaExpression expression, FilterTreeNode tree)
     {
       myTrees[expression] = tree;
       Console.Out.WriteLine("Optimize expression: {0}", expression);
