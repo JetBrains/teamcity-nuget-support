@@ -1,17 +1,20 @@
-using System;
 using System.IO;
 using System.Linq;
-using System.Web.Configuration;
-using System.Web.Hosting;
-using System.Xml.Serialization;
 using JetBrains.Annotations;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   public class LightPackageRepository
   {
-    private readonly XmlSerializerFactory myXmlSerializerFactory = new XmlSerializerFactory();
+    private readonly TeamCityPackagesRepo EMPTY_SPEC = new TeamCityPackagesRepo();
+
     private static readonly object CONFIG_ACCESS_LOG = new object();
+    private readonly IRepositorySettings mySettings;
+
+    public LightPackageRepository(IRepositorySettings settings)
+    {
+      mySettings = settings;
+    }
 
     public IQueryable<TeamCityPackage> GetPackages()
     {
@@ -29,16 +32,13 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       lock (CONFIG_ACCESS_LOG)
       {
         var xmlFile = TeamCityPackagesFile;
-        if (xmlFile == null || !File.Exists(xmlFile)) return EMPTY_SPEC;
+        if (!File.Exists(xmlFile)) return EMPTY_SPEC;
 
-        var ser = myXmlSerializerFactory.CreateSerializer(typeof (TeamCityPackagesRepo));
-        if (ser == null) return EMPTY_SPEC;
         try
         {
           using (var tw = File.OpenRead(xmlFile))
           {
-            var info = (TeamCityPackagesRepo) ser.Deserialize(tw);
-            return info;
+            return (TeamCityPackagesRepo) XmlSerializers<TeamCityPackagesRepo>.Create().Deserialize(tw);
           }
         }
         catch
@@ -54,7 +54,6 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       lock (CONFIG_ACCESS_LOG)
       {
         var xmlFile = TeamCityPackagesFile;
-        if (xmlFile == null) return;
 
         var parent = Path.GetDirectoryName(xmlFile);
         if (parent == null) return;
@@ -62,11 +61,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
         if (!Directory.Exists(parent))
           Directory.CreateDirectory(parent);
 
-        var ser = myXmlSerializerFactory.CreateSerializer(typeof (TeamCityPackagesRepo));
-        if (ser == null) return;
         using (var file = File.OpenWrite(xmlFile))
         {
-          ser.Serialize(file, spec);
+          XmlSerializers<TeamCityPackagesRepo>.Create().Serialize(file, spec);
         }
       }
     }
@@ -81,22 +78,16 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       }
     }
 
-    [CanBeNull]
+    [NotNull]
     private string TeamCityPackagesFile
     {
-      get { return WebConfigurationManager.AppSettings["PackagesSpecFile"]; }
+      get { return mySettings.PackagesFile; }
     }
 
-    [CanBeNull]
+    [NotNull]
     public string PackageFilesBasePath
     {
-      get { return WebConfigurationManager.AppSettings["PackageFilesBasePath"] ?? HostingEnvironment.MapPath("~"); }
-    }
-
-    private readonly TeamCityPackagesRepo EMPTY_SPEC =
-      new TeamCityPackagesRepo
-        {          
-          Specs = new TeamCityPackageSpec[0]
-        };
+      get { return mySettings.PackagesBase; }
+    }    
   }
 }

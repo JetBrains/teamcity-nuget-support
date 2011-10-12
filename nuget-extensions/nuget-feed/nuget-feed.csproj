@@ -88,14 +88,18 @@
     <Compile Include="..\nuget-runner\src\AssemblyHelper.cs">
       <Link>AssemblyHelper.cs</Link>
     </Compile>
+    <Compile Include="DataServices\IRepositorySettings.cs" />
     <Compile Include="DataServices\LightPackageRepository.cs" />
-    <Compile Include="DataServices\Routes.cs" />
+    <Compile Include="DataServices\NuGetRoutes.cs" />
+    <Compile Include="DataServices\RepositorySettings.cs" />
     <Compile Include="DataServices\TeamCityContext.cs" />
     <Compile Include="DataServices\TeamCityPackage.cs" />
     <Compile Include="DataServices\TeamCityPackages.cs" />
     <Compile Include="DataServices\TeamCityPackagesContext.cs" />
+    <Compile Include="DataServices\TeamCityPackageSpec.cs" />
     <Compile Include="DataServices\TeamCityPackagesRepo.cs" />
     <Compile Include="DataServices\TeamCityZipPackageFactory.cs" />
+    <Compile Include="DataServices\XmlSerializers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
