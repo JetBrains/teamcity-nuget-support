@@ -17,8 +17,5 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 
     [XmlAttribute("packageFile")]
     public string PackageFile { get; set; }
-
-    [XmlAttribute("isLatest")]
-    public bool IsLatest { get; set; }
   }
 }

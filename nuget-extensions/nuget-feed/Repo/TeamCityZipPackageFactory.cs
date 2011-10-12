@@ -37,7 +37,6 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
                  LastUpdated = File.GetLastWriteTimeUtc(fileName),
                  Published = File.GetCreationTimeUtc(fileName),
 
-                 IsLatestVersion = spec.IsLatest,
                  DownloadUrl = spec.DownloadUrl,
 
                  DownloadCount = -1,
