@@ -1,4 +1,4 @@
-﻿namespace JetBrains.TeamCity.NuGet.Feed.Tests.src
+﻿namespace JetBrains.TeamCity.NuGet.Feed.Tests
 {
   public class TeamCityPackageRepoTest
   {

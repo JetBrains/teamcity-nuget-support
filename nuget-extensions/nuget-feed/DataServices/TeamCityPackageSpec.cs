@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
-  [Serializable]
+  [Serializable, XmlRoot("spec")]
   public class TeamCityPackageSpec
   {
     [XmlAttribute("buildType")]
@@ -17,8 +17,5 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
     [XmlAttribute("packageFile")]
     public string PackageFile { get; set; }
-
-    [XmlAttribute("isLatest")]
-    public bool IsLatest { get; set; }
   }
 }

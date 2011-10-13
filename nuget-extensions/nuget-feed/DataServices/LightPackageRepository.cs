@@ -1,6 +1,6 @@
+using System;
 using System.IO;
 using System.Linq;
-using JetBrains.Annotations;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
@@ -11,27 +11,33 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     private static readonly object CONFIG_ACCESS_LOG = new object();
     private readonly IRepositorySettings mySettings;
 
+    private readonly Lazy<TeamCityPackagesRepo> myRepo;
+
     public LightPackageRepository(IRepositorySettings settings)
     {
       mySettings = settings;
+      myRepo = new Lazy<TeamCityPackagesRepo>(LoadPackageSpec, true);      
     }
 
     public IQueryable<TeamCityPackage> GetPackages()
     {
-      var basePath = PackageFilesBasePath;      
-      var repo = FetchPackageSpec();      
       return
-        from spec in repo.Specs.AsQueryable()
-        let path = Path.Combine(basePath, spec.PackageFile)
-        where File.Exists(path)
-        select TeamCityZipPackageFactory.LoadPackage(path, spec);
+        from spec in Repo.Specs.AsQueryable()
+        let x = spec.Package
+        where x != null
+        select x;
     }
 
-    private TeamCityPackagesRepo FetchPackageSpec()
+    private TeamCityPackagesRepo Repo
+    {
+      get { return myRepo.Value; }
+    }
+
+    private TeamCityPackagesRepo LoadPackageSpec()
     {
       lock (CONFIG_ACCESS_LOG)
       {
-        var xmlFile = TeamCityPackagesFile;
+        var xmlFile = mySettings.PackagesFile;
         if (!File.Exists(xmlFile)) return EMPTY_SPEC;
 
         try
@@ -53,7 +59,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     {
       lock (CONFIG_ACCESS_LOG)
       {
-        var xmlFile = TeamCityPackagesFile;
+        var xmlFile = mySettings.PackagesFile;
 
         var parent = Path.GetDirectoryName(xmlFile);
         if (parent == null) return;
@@ -68,26 +74,14 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       }
     }
 
-    public void RegisterPackage(TeamCityPackageSpec spec)
+    public void RegisterPackage(TeamCityPackageEntry spec)
     {
       lock (CONFIG_ACCESS_LOG)
       {
-        var repo = FetchPackageSpec();
+        var repo = Repo;
         repo.AddSpec(spec);
         StorePackagesSpec(repo);
       }
     }
-
-    [NotNull]
-    private string TeamCityPackagesFile
-    {
-      get { return mySettings.PackagesFile; }
-    }
-
-    [NotNull]
-    public string PackageFilesBasePath
-    {
-      get { return mySettings.PackagesBase; }
-    }    
   }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
@@ -9,11 +10,11 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
   public class TeamCityPackagesRepo
   {
     [XmlIgnore]
-    private readonly List<TeamCityPackageSpec> mySpecs = new List<TeamCityPackageSpec>();
+    private readonly List<TeamCityPackageEntry> mySpecs = new List<TeamCityPackageEntry>();
 
     [XmlArray("packages")]
     [XmlArrayItem("package")]
-    public TeamCityPackageSpec[] Specs
+    public TeamCityPackageEntry[] Specs
     {
       get { return mySpecs.ToArray(); } 
       set { 
@@ -23,9 +24,21 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       }
     }
 
-    public void AddSpec(TeamCityPackageSpec spec)
+    public void AddSpec(TeamCityPackageEntry spec)
     {
-      mySpecs.Add(spec);      
+      if (spec == null) throw new ArgumentNullException("spec");
+      if (spec.Package == null) throw new ArgumentException("Spec must contain package to be added");
+      
+      var packageId = spec.Package.Id;
+      
+      foreach (var pkg in Specs
+        .Where(x => x.Package.Id.ToLower() == packageId)
+        .Select(x => x.Package)
+        .Where(x => x != null))
+        pkg.IsLatestVersion = false;
+
+      mySpecs.Add(spec);
+      spec.Package.IsLatestVersion = true;
     }
   }
 }
