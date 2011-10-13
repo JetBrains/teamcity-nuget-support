@@ -44,7 +44,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\TeamCityPackageRepoTest.cs" />
+    <Compile Include="src\LINQExtensions.cs" />
+    <Compile Include="src\TeamCityPackagesRepoTest.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
