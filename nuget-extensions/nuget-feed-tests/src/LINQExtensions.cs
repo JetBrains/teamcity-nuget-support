@@ -12,7 +12,15 @@ namespace JetBrains.TeamCity.NuGet.Feed.Tests
       {
         yield return factory();
       }
-    } 
+    }
+
+    public static void Iterate(this int count, Action factory)
+    {
+      for (int i = 0; i < count; i++)
+      {
+        factory();
+      }
+    }
 
 
     public static TeamCityPackageEntry ToEntry(this int id)
@@ -24,14 +32,15 @@ namespace JetBrains.TeamCity.NuGet.Feed.Tests
                             BuildId = 555 + id,
                             BuildType = "btX",
                             DownloadUrl = "http://localhost",
-                            PackageFile = "not-existing file, $",
+                            PackageFile = "Package." + id + ".nupkg",
                           },
                  Package = new TeamCityPackage
                              {
                                Id = "pkg." + id + ".zzz",
+                               Description = "description: " + id,
+                               Version =  "1.2." + id,
                              }
                };
     }
-
   }
 }

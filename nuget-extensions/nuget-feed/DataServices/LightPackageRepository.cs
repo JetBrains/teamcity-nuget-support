@@ -6,8 +6,6 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   public class LightPackageRepository
   {
-    private readonly TeamCityPackagesRepo EMPTY_SPEC = new TeamCityPackagesRepo();
-
     private static readonly object CONFIG_ACCESS_LOG = new object();
     private readonly IRepositorySettings mySettings;
 
@@ -38,7 +36,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       lock (CONFIG_ACCESS_LOG)
       {
         var xmlFile = mySettings.PackagesFile;
-        if (!File.Exists(xmlFile)) return EMPTY_SPEC;
+        if (!File.Exists(xmlFile)) return new TeamCityPackagesRepo();
 
         try
         {
@@ -50,7 +48,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
         catch
         {
           //TODO: catch exception
-          return EMPTY_SPEC;
+          return new TeamCityPackagesRepo();
         }
       }
     }
@@ -67,7 +65,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
         if (!Directory.Exists(parent))
           Directory.CreateDirectory(parent);
 
-        using (var file = File.OpenWrite(xmlFile))
+        using (var file = File.Create(xmlFile))
         {
           XmlSerializers<TeamCityPackagesRepo>.Create().Serialize(file, Repo);
         }
@@ -88,7 +86,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     {
       lock (CONFIG_ACCESS_LOG)
       {
-        Repo.RemoveSpecs(Repo.Specs.Where(x => !x.IsPackageFileExists(mySettings)));
+        var remove = Repo.Specs.Where(x => !x.IsPackageFileExists(mySettings)).ToArray();
+        Repo.RemoveSpecs(remove);
         StorePackagesSpec();
       }
     }
