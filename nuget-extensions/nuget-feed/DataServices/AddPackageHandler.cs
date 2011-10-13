@@ -40,27 +40,33 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
         return;
       }
 
-      if (!File.Exists(Path.Combine(mySettings.PackagesBase, packageFile)))
+      try
       {
-        WriteStatus(HttpStatusCode.InternalServerError, "Failed to find file: " + packageFile);
-        return;
-      }
+        if (!File.Exists(Path.Combine(mySettings.PackagesBase, packageFile)))
+        {
+          WriteStatus(HttpStatusCode.InternalServerError, "Failed to find file: " + packageFile);
+          return;
+        }
 
-      var entry = TeamCityZipPackageFactory.LoadPackage(mySettings, new TeamCityPackageSpec
-                                                                    {
-                                                                      BuildType = buildType,
-                                                                      BuildId = buildId,
-                                                                      DownloadUrl = downloadUrl,
-                                                                      PackageFile = packageFile,
-                                                                    });
-      if (entry == null)
+        var entry = TeamCityZipPackageFactory.LoadPackage(mySettings, new TeamCityPackageSpec
+                                                                        {
+                                                                          BuildType = buildType,
+                                                                          BuildId = buildId,
+                                                                          DownloadUrl = downloadUrl,
+                                                                          PackageFile = packageFile,
+                                                                        });
+        if (entry == null)
+        {
+          WriteStatus(HttpStatusCode.InternalServerError, "Failed to read package file: " + packageFile);
+          return;
+        }
+
+        myRepo.RegisterPackage(entry);
+        WriteStatus(HttpStatusCode.OK, "Package added");
+      } catch(Exception e)
       {
-        WriteStatus(HttpStatusCode.InternalServerError, "Failed to read package file: " + packageFile);
-        return;
+        WriteStatus(HttpStatusCode.InternalServerError, string.Format("Unexpected failure. {0}\r\n{1}", e.Message, e));
       }
-
-      myRepo.RegisterPackage(entry);
-      WriteStatus(HttpStatusCode.OK, "Package added");
     }
 
     private void WriteStatus(HttpStatusCode statusCode, string body)
