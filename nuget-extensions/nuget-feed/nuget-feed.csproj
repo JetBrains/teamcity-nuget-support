@@ -90,6 +90,9 @@
     </Compile>
     <Compile Include="DataServices\AddPackageHandler.cs" />
     <Compile Include="DataServices\AddPackageHandlerRegistrar.cs" />
+    <Compile Include="DataServices\CleanOldPackagesHandler.cs" />
+    <Compile Include="DataServices\CleanOldPackagesHandlerRegistrar.cs" />
+    <Compile Include="DataServices\HandlerBase.cs" />
     <Compile Include="DataServices\IRepositorySettings.cs" />
     <Compile Include="DataServices\LightPackageRepository.cs" />
     <Compile Include="DataServices\NuGetRoutes.cs" />

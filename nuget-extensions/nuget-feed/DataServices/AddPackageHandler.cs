@@ -5,15 +5,13 @@ using System.Web.Routing;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
-  public class AddPackageHandler
+  public class AddPackageHandler : HandlerBase
   {
-    private readonly RequestContext myContext;
     private readonly IRepositorySettings mySettings;
     private readonly LightPackageRepository myRepo;
 
-    public AddPackageHandler(RequestContext context, IRepositorySettings settings, LightPackageRepository repo)
+    public AddPackageHandler(RequestContext context, IRepositorySettings settings, LightPackageRepository repo) : base(context)
     {
-      myContext = context;
       mySettings = settings;
       myRepo = repo;
     }
@@ -67,13 +65,6 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       {
         WriteStatus(HttpStatusCode.InternalServerError, string.Format("Unexpected failure. {0}\r\n{1}", e.Message, e));
       }
-    }
-
-    private void WriteStatus(HttpStatusCode statusCode, string body)
-    {
-      myContext.HttpContext.Response.StatusCode = (int)statusCode;
-      if (!String.IsNullOrEmpty(body))
-        myContext.HttpContext.Response.Write(body);
     }
   }
 }
