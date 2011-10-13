@@ -97,6 +97,7 @@
     <Compile Include="DataServices\TeamCityContext.cs" />
     <Compile Include="DataServices\TeamCityPackage.cs" />
     <Compile Include="DataServices\TeamCityPackageEntry.cs" />
+    <Compile Include="DataServices\TeamCityPackageEntryExtensions.cs" />
     <Compile Include="DataServices\TeamCityPackages.cs" />
     <Compile Include="DataServices\TeamCityPackagesContext.cs" />
     <Compile Include="DataServices\TeamCityPackageSpec.cs" />

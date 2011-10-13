@@ -55,7 +55,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       }
     }
 
-    private void StorePackagesSpec(TeamCityPackagesRepo spec)
+    private void StorePackagesSpec()
     {
       lock (CONFIG_ACCESS_LOG)
       {
@@ -69,7 +69,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
         using (var file = File.OpenWrite(xmlFile))
         {
-          XmlSerializers<TeamCityPackagesRepo>.Create().Serialize(file, spec);
+          XmlSerializers<TeamCityPackagesRepo>.Create().Serialize(file, Repo);
         }
       }
     }
@@ -80,7 +80,16 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       {
         var repo = Repo;
         repo.AddSpec(spec);
-        StorePackagesSpec(repo);
+        StorePackagesSpec();
+      }
+    }
+
+    public void CleanupObsoletePackages()
+    {
+      lock (CONFIG_ACCESS_LOG)
+      {
+        Repo.RemoveSpecs(Repo.Specs.Where(x => !x.IsPackageFileExists(mySettings)));
+        StorePackagesSpec();
       }
     }
   }
