@@ -90,6 +90,7 @@
     </Compile>
     <Compile Include="DataServices\LightPackageRepository.cs" />
     <Compile Include="DataServices\Routes.cs" />
+    <Compile Include="DataServices\ServiceMessage.cs" />
     <Compile Include="DataServices\TeamCityContext.cs" />
     <Compile Include="DataServices\TeamCityPackage.cs" />
     <Compile Include="DataServices\TeamCityPackages.cs" />
