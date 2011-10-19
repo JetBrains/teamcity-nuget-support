@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.Dates;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jdom.Element;
@@ -68,41 +69,48 @@ public class LocalNuGetPackageItemsFactory {
 
     final String id = parseProperty(root, "id");
     final String version = parseProperty(root, "version");
-    final String authors = parseProperty(root, "authors");
-    final String requireLicenseAcceptanse = parseProperty(root, "requireLicenseAcceptance");
-    final String description = parseProperty(root, "description");
-    final String summary = parseProperty(root, "summary");
-    final String licenseUrl = parseProperty(root, "licenseUrl");
-    final String projectUrl = parseProperty(root, "projectUrl");
-    final String iconUrl = parseProperty(root, "iconUrl");
-    final String dependencies = parseDependencies(root);
-    final String tags = parseProperty(root,"tags");
 
-    map.put("Id", id);
-    map.put("Version", version);
-    map.put("Title", id); //???
+    if (StringUtil.isEmptyOrSpaces(id)) {
+      throw new PackageLoadException("Invalid package. Failed to parse package Id for package: " + nupkg);
+    }
+
+    if (StringUtil.isEmptyOrSpaces(version)) {
+      throw new PackageLoadException("Invalid package. Failed to parse package Version for package: " + nupkg);
+    }
+
+    addParameter(map, "Id", id);
+    addParameter(map, "Version", version);
+    addParameter(map, "Title", id);
     //Prerelease
-    map.put("Authors", authors);
-    map.put("Summary", summary);
-    map.put("Description", description);
+    addParameter(map, "Authors", parseProperty(root, "authors"));
+    addParameter(map, "Summary", parseProperty(root, "summary"));
+    addParameter(map, "Description", parseProperty(root, "description"));
     //map.put("Copyright", description);
-    map.put("PackageHashAlgorithm", "SHA512");
-    map.put("PackageHash", sha);
-    map.put("PackageSize", String.valueOf(size));
-    map.put("RequireLicenseAcceptance", requireLicenseAcceptanse);
+    addParameter(map, "PackageHashAlgorithm", "SHA512");
+    addParameter(map, "PackageHash", sha);
+    addParameter(map, "PackageSize", String.valueOf(size));
+    addParameter(map, "RequireLicenseAcceptance", parseProperty(root, "requireLicenseAcceptance"));
     //isLatestVersion
     //releaseNotes
-    map.put("ProjectUrl", projectUrl);
-    map.put("LicenseUrl", licenseUrl);
-    map.put("IconUrl", iconUrl);
+    addParameter(map, "ProjectUrl", parseProperty(root, "projectUrl"));
+    addParameter(map, "LicenseUrl", parseProperty(root, "licenseUrl"));
+    addParameter(map, "IconUrl", parseProperty(root, "iconUrl"));
     //categories
-    map.put("Tags", tags);
-    map.put("Dependencies", dependencies);
+    addParameter(map, "Tags", parseProperty(root,"tags"));
+    addParameter(map, "Dependencies", parseDependencies(root));
 //    map.put("DetailsUrl", detailsUrl);
 //    map.put("GalleryDetailsUrl", detailsUrl);
-    map.put("Updated", formatDate(updated));
+    addParameter(map, "Updated", formatDate(updated));
 
     return map;
+  }
+
+  private void addParameter(@NotNull final Map<String, String> map,
+                            @NotNull final String key,
+                            @Nullable final String value) {
+    if (!StringUtil.isEmptyOrSpaces(value)) {
+      map.put(key, value);
+    }
   }
 
   @NotNull

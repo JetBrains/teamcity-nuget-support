@@ -91,6 +91,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   @NotNull
   private String store(@NotNull Map<String, String> map) {
     map = new TreeMap<String, String>(map);
+    map.remove("Updated");
     StringBuilder sb = new StringBuilder();
     for (Map.Entry<String, String> entry : map.entrySet()) {
       sb.append(entry.getKey()).append(" = ").append(entry.getValue()).append("\n");
@@ -120,7 +121,6 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
                     "Summary = Extension for Ninject providing integration with ASP.NET MVC3\n" +
                     "Tags = Ninject ioc di web mvc3\n" +
                     "Title = Ninject.MVC3\n" +
-                    "Updated = 2011-10-19T11:10:17Z\n" +
                     "Version = 2.2.2.0");
   }
 
