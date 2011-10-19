@@ -3,7 +3,7 @@ using JetBrains.TeamCity.NuGet.Tests;
 using NUnit.Framework;
 using System.Linq;
 
-namespace JetBrains.TeamCity.NuGet.Feed
+namespace JetBrains.TeamCity.NuGet.Feed.Tests
 {
   [TestFixture]
   public class TeamCityPackagesRepositoryTest

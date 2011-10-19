@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using System.Linq;
+using NUnit.Framework;
 
-namespace JetBrains.TeamCity.NuGet.Feed
+namespace JetBrains.TeamCity.NuGet.Feed.Tests.LINQ
 {
   [TestFixture]
   public class TCQueryableTest

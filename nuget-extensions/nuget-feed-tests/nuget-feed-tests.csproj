@@ -56,9 +56,9 @@
       <Link>src\TempFilesHolder.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\QueryNormalizationTest.cs" />
-    <Compile Include="src\TCQueryableIntTest.cs" />
-    <Compile Include="src\TCQueryableTest.cs" />
+    <Compile Include="src\LINQ\QueryNormalizationTest.cs" />
+    <Compile Include="src\LINQ\TCQueryableIntTest.cs" />
+    <Compile Include="src\LINQ\TCQueryableTest.cs" />
     <Compile Include="src\TeamCityPackagesRepositoryTest.cs" />
     <Compile Include="src\TestTCQueryProvider.cs" />
   </ItemGroup>

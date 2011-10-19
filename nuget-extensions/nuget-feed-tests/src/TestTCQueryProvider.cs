@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using JetBrains.TeamCity.NuGet.Feed.Query;
 using JetBrains.TeamCity.NuGet.Feed.Query.Tree;
 
-namespace JetBrains.TeamCity.NuGet.Feed
+namespace JetBrains.TeamCity.NuGet.Feed.Tests
 {
   public class TestTCQueryProvider<T> : TCQueryProvider<T>
   {

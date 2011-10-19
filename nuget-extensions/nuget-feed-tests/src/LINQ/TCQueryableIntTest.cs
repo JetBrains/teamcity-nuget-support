@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
-namespace JetBrains.TeamCity.NuGet.Feed
+namespace JetBrains.TeamCity.NuGet.Feed.Tests.LINQ
 {
   [TestFixture]
   public class TCQueryableIntTest

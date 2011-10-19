@@ -1,7 +1,7 @@
 using JetBrains.TeamCity.NuGet.Feed.Query.Tree;
 using NUnit.Framework;
 
-namespace JetBrains.TeamCity.NuGet.Feed
+namespace JetBrains.TeamCity.NuGet.Feed.Tests.LINQ
 {
   [TestFixture]
   public class QueryNormalizationTest
