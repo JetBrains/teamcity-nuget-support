@@ -20,14 +20,26 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
+import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -35,13 +47,45 @@ import java.util.TreeMap;
  * Date: 06.09.11 22:11
  */
 public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
+  private Mockery m;
+  private Set<InputStream> myStreams;
   private LocalNuGetPackageItemsFactory myFactory;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    m = new Mockery();
+    myStreams = new HashSet<InputStream>();
     myFactory = new LocalNuGetPackageItemsFactory();
+  }
+
+  @AfterMethod
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    for (InputStream stream : myStreams) {
+      FileUtil.close(stream);
+    }
+  }
+
+  @NotNull
+  private BuildArtifact artifact(@NotNull final File file) throws IOException {
+    final BuildArtifact a = m.mock(BuildArtifact.class, file.getPath());
+    m.checking(new Expectations(){{
+      allowing(a).getInputStream(); will(new CustomAction("open file") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          final FileInputStream stream = new FileInputStream(file);
+          myStreams.add(stream);
+          return stream;
+        }
+      });
+      allowing(a).getTimestamp(); will(returnValue(file.lastModified()));
+      allowing(a).getSize(); will(returnValue(file.length()));
+      allowing(a).getRelativePath(); will(returnValue(file.getPath()));
+      allowing(a).getName(); will(returnValue(file.getName()));
+    }});
+    return a;
   }
 
   @NotNull
@@ -55,11 +99,11 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   }
 
   @Test
-  public void test_NinjectMVC() throws InvocationTargetException, IllegalAccessException, PackageLoadException {
+  public void test_NinjectMVC() throws InvocationTargetException, IllegalAccessException, PackageLoadException, IOException {
     final File pkg = Paths.getTestDataPath("packages/Ninject.MVC3.2.2.2.0.nupkg");
     Assert.assertTrue(pkg.isFile());
 
-    final Map<String, String> aPackage = myFactory.loadPackage(pkg);
+    final Map<String, String> aPackage = myFactory.loadPackage(artifact(pkg));
     Assert.assertEquals(
             store(aPackage),
             "Authors = Remo Gloor, Ian Davis\n" +
