@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
+import jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.parameters.BuildParametersProvider;
 import jetbrains.buildServer.serverSide.parameters.ParameterDescriptionProvider;
