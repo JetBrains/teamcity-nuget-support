@@ -69,8 +69,6 @@ public class NuGetArtifactsMetadataProvider implements ArtifactsMetadataProvider
     final List<BuildArtifact> packages = new ArrayList<BuildArtifact>();
     visitArtifacts(build.getArtifacts(BuildArtifactsViewMode.VIEW_ALL).getRootArtifact(), packages);
 
-    if (packages.isEmpty()) return;
-
     for (BuildArtifact aPackage : packages) {
       try {
         final Map<String,String> ma = myFactory.loadPackage(aPackage);

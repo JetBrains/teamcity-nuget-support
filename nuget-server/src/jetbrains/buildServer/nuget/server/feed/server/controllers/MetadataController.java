@@ -28,9 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.*;
 /**
@@ -61,8 +59,13 @@ public class MetadataController extends BaseController {
 
     final PrintWriter writer = response.getWriter();
     final Iterator<ArtifactsMetadataEntry> entries = myStorage.getEntries();
+    final Set<String> reportedPackages = new HashSet<String>();
+
     while(entries.hasNext()) {
       final ArtifactsMetadataEntry e = entries.next();
+
+      //remove duplicates
+      if (!reportedPackages.add(e.getKey())) continue;
 
       Map<String, String> parameters = new TreeMap<String, String>(e.getMetadata());
       final String buildTypeId = parameters.get(TEAMCITY_BUILD_TYPE_ID);
