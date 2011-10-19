@@ -85,8 +85,7 @@ public class MetadataController extends BaseController {
   }
 
   private static final Comparator<String> COMPARER = new Comparator<String>() {
-    @NotNull
-    private Integer power(@NotNull String key) {
+    private int power(@NotNull String key) {
       if ("Id".equals(key)) return 5;
       if ("Version".equals(key)) return 4;
       if (key.startsWith("teamcity")) return 3;
@@ -94,8 +93,8 @@ public class MetadataController extends BaseController {
     }
 
     public int compare(@NotNull String o1, @NotNull String o2) {
-      final Integer p1 = power(o1);
-      final Integer p2 = power(o2);
+      final int p1 = power(o1);
+      final int p2 = power(o2);
       if (p1 > p2) return -1;
       if (p1 < p2) return 1;
       return o1.compareTo(o2);
