@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="windows-1251" standalone="yes"?>
+<feed xml:base="http://packages.nuget.org/v1/FeedService.svc/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">Packages</title>
+  <id>http://packages.nuget.org/v1/FeedService.svc/Packages</id>
+  <updated>2011-09-05T21:39:41Z</updated>
+  <link rel="self" title="Packages" href="Packages" />
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='Ninject',Version='2.0.1.0')</id>
+    <title type="text">Ninject</title>
+    <summary type="text">Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</summary>
+    <updated>2011-01-07T07:57:24-08:00</updated>
+    <author>
+      <name>Nate Kohari, Ian Davis</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='Ninject',Version='2.0.1.0')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='Ninject',Version='2.0.1.0')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='Ninject',Version='2.0.1.0')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/Ninject/2.0.1.0" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>Ninject</d:Id>
+      <d:Version>2.0.1.0</d:Version>
+      <d:Title>Ninject</d:Title>
+      <d:Authors>Nate Kohari, Ian Davis</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</d:Summary>
+      <d:Description>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</d:Description>
+      <d:Copyright m:null="true"></d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>vpq0qmA8cxONqEH9s1vGBLnTYDAaSYJcQhWvcViL3YnApcL5mGxLmFut0wr+CF6WlH6I2vwLYiU0KuUkKVJLPg==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">82127</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:Prerelease m:type="Edm.Boolean">false</d:Prerelease>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">535</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-01-07T07:57:24.793</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-01-07T07:57:24.793</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-01-07T07:57:25.307</d:Published>
+      <d:ExternalPackageUrl m:null="true"></d:ExternalPackageUrl>
+      <d:ProjectUrl m:null="true"></d:ProjectUrl>
+      <d:LicenseUrl m:null="true"></d:LicenseUrl>
+      <d:IconUrl m:null="true"></d:IconUrl>
+      <d:Rating m:type="Edm.Double">4.8571428571428568</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">14</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">26235</d:DownloadCount>
+      <d:Categories m:null="true"></d:Categories>
+      <d:Tags m:null="true"></d:Tags>
+      <d:Dependencies></d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/Ninject/2.0.1.0</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/Ninject/2.0.1.0</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='Ninject',Version='2.1.0.76')</id>
+    <title type="text">Ninject</title>
+    <summary type="text">Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</summary>
+    <updated>2011-01-07T07:57:31-08:00</updated>
+    <author>
+      <name>Nate Kohari, Ian Davis, Remo Gloor, Joe Wasson, Daniel Marbach</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='Ninject',Version='2.1.0.76')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='Ninject',Version='2.1.0.76')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='Ninject',Version='2.1.0.76')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/Ninject/2.1.0.76" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>Ninject</d:Id>
+      <d:Version>2.1.0.76</d:Version>
+      <d:Title>Ninject</d:Title>
+      <d:Authors>Nate Kohari, Ian Davis, Remo Gloor, Joe Wasson, Daniel Marbach</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</d:Summary>
+      <d:Description>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</d:Description>
+      <d:Copyright m:null="true"></d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>tTAFlKiyijmzzpc86l7cMSBxIxifuQ51Xaqe7yUlCebt3RwL84VQgLK6S8ooTaiIuBVssx2PCTX20WCrvQggbg==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">1284126</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:Prerelease m:type="Edm.Boolean">false</d:Prerelease>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">2887</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-01-07T07:57:31.4</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-01-07T07:57:31.4</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-01-07T07:57:31.9</d:Published>
+      <d:ExternalPackageUrl m:null="true"></d:ExternalPackageUrl>
+      <d:ProjectUrl m:null="true"></d:ProjectUrl>
+      <d:LicenseUrl m:null="true"></d:LicenseUrl>
+      <d:IconUrl m:null="true"></d:IconUrl>
+      <d:Rating m:type="Edm.Double">4.8571428571428568</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">14</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">26235</d:DownloadCount>
+      <d:Categories m:null="true"></d:Categories>
+      <d:Tags m:null="true"></d:Tags>
+      <d:Dependencies></d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/Ninject/2.1.0.76</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/Ninject/2.1.0.76</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='Ninject',Version='2.2.0.0')</id>
+    <title type="text">Ninject</title>
+    <summary type="text">Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</summary>
+    <updated>2011-02-18T03:06:40-08:00</updated>
+    <author>
+      <name>Nate Kohari, Ian Davis, Remo Gloor, Joe Wasson, Daniel Marbach</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='Ninject',Version='2.2.0.0')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='Ninject',Version='2.2.0.0')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='Ninject',Version='2.2.0.0')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/Ninject/2.2.0.0" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>Ninject</d:Id>
+      <d:Version>2.2.0.0</d:Version>
+      <d:Title>Ninject</d:Title>
+      <d:Authors>Nate Kohari, Ian Davis, Remo Gloor, Joe Wasson, Daniel Marbach</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</d:Summary>
+      <d:Description>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</d:Description>
+      <d:Copyright m:null="true"></d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>8+wvyhBYAfrFwZ3B9GjTvQ7gLqkomH2xm7N2QinC3WypwSDWZp1lqCFsQoOpIK/1AeU4JDHVn99mHFx9JIM8Yw==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">835878</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">true</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:Prerelease m:type="Edm.Boolean">false</d:Prerelease>
+      <d:VersionRating m:type="Edm.Double">0</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">0</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">2118</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-02-18T02:43:55.063</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-02-18T03:06:40.89</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-02-18T03:06:43.063</d:Published>
+      <d:ExternalPackageUrl m:null="true"></d:ExternalPackageUrl>
+      <d:ProjectUrl>http://ninject.org</d:ProjectUrl>
+      <d:LicenseUrl>https://github.com/ninject/ninject/blob/master/LICENSE.txt</d:LicenseUrl>
+      <d:IconUrl m:null="true"></d:IconUrl>
+      <d:Rating m:type="Edm.Double">4.8571428571428568</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">14</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">26235</d:DownloadCount>
+      <d:Categories m:null="true"></d:Categories>
+      <d:Tags m:null="true"></d:Tags>
+      <d:Dependencies></d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/Ninject/2.2.0.0</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/Ninject/2.2.0.0</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='Ninject',Version='2.2.1.0')</id>
+    <title type="text">Ninject</title>
+    <summary type="text">Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</summary>
+    <updated>2011-04-13T15:28:18-07:00</updated>
+    <author>
+      <name>Ninject Project Contributors</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='Ninject',Version='2.2.1.0')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='Ninject',Version='2.2.1.0')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='Ninject',Version='2.2.1.0')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/Ninject/2.2.1.0" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>Ninject</d:Id>
+      <d:Version>2.2.1.0</d:Version>
+      <d:Title>Ninject</d:Title>
+      <d:Authors>Ninject Project Contributors</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</d:Summary>
+      <d:Description>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.
+
+Release Notes:
+Version 2.2.1.0
+---------------
+- Bug Fix: For classes that have several virtual indexers and at least one of them overridden an ambiguous match exception was thrown when they were injected.</d:Description>
+      <d:Copyright>Copyright 2011 by Ninject Project Contributors</d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>xSJQg1gPBUzPKPgamUH4VhuVWGJd42BV0Ifg/gtgdxTXBwREzXMzYq/DimPDV5KzfOyQjFoBzuacud3cjCezgA==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">791908</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">true</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:Prerelease m:type="Edm.Boolean">false</d:Prerelease>
+      <d:VersionRating m:type="Edm.Double">4.7142857142857144</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">7</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">5377</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-03-01T19:33:45.973</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-04-13T15:28:18.163</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-04-13T15:28:40.13</d:Published>
+      <d:ExternalPackageUrl m:null="true"></d:ExternalPackageUrl>
+      <d:ProjectUrl>http://www.ninject.org/</d:ProjectUrl>
+      <d:LicenseUrl>https://github.com/ninject/ninject/raw/master/LICENSE.txt</d:LicenseUrl>
+      <d:IconUrl>/Media/Default/Packages/Ninject/2.2.1.0/Ninject2.png</d:IconUrl>
+      <d:Rating m:type="Edm.Double">4.8571428571428568</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">14</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">26235</d:DownloadCount>
+      <d:Categories m:null="true"></d:Categories>
+      <d:Tags xml:space="preserve"> Ninject IoC DI </d:Tags>
+      <d:Dependencies></d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/Ninject/2.2.1.0</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/Ninject/2.2.1.0</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://packages.nuget.org/v1/FeedService.svc/Packages(Id='Ninject',Version='2.2.1.4')</id>
+    <title type="text">Ninject</title>
+    <summary type="text">Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</summary>
+    <updated>2011-05-07T12:15:12-07:00</updated>
+    <author>
+      <name>Ninject Project Contributors</name>
+    </author>
+    <link rel="edit-media" title="PublishedPackage" href="Packages(Id='Ninject',Version='2.2.1.4')/$value" />
+    <link rel="edit" title="PublishedPackage" href="Packages(Id='Ninject',Version='2.2.1.4')" />
+    <link rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/Screenshots" type="application/atom+xml;type=feed" title="Screenshots" href="Packages(Id='Ninject',Version='2.2.1.4')/Screenshots" />
+    <category term="Gallery.Infrastructure.FeedModels.PublishedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://packages.nuget.org/v1/Package/Download/Ninject/2.2.1.4" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>Ninject</d:Id>
+      <d:Version>2.2.1.4</d:Version>
+      <d:Title>Ninject</d:Title>
+      <d:Authors>Ninject Project Contributors</d:Authors>
+      <d:PackageType>Packages</d:PackageType>
+      <d:Summary>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</d:Summary>
+      <d:Description>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.</d:Description>
+      <d:Copyright>Copyright 2011 by Ninject Project Contributors</d:Copyright>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageHash>rqU4j0u3q0Do7bb5CKxClux4M0hquBe4mbhdRa/pN9HcxJMTOZRL2kd0SQQNGFeb54cZkGdZ+ZfsJTIMd6ibvg==</d:PackageHash>
+      <d:PackageSize m:type="Edm.Int64">1268964</d:PackageSize>
+      <d:Price m:type="Edm.Decimal">0</d:Price>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">true</d:RequireLicenseAcceptance>
+      <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:Prerelease m:type="Edm.Boolean">false</d:Prerelease>
+      <d:VersionRating m:type="Edm.Double">5</d:VersionRating>
+      <d:VersionRatingsCount m:type="Edm.Int32">7</d:VersionRatingsCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">15316</d:VersionDownloadCount>
+      <d:Created m:type="Edm.DateTime">2011-05-05T00:31:13.27</d:Created>
+      <d:LastUpdated m:type="Edm.DateTime">2011-05-07T12:15:12.667</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-05-07T12:15:17.15</d:Published>
+      <d:ExternalPackageUrl m:null="true"></d:ExternalPackageUrl>
+      <d:ProjectUrl>http://www.ninject.org/</d:ProjectUrl>
+      <d:LicenseUrl>https://github.com/ninject/ninject/raw/master/LICENSE.txt</d:LicenseUrl>
+      <d:IconUrl>/Media/Default/Packages/Ninject/2.2.1.4/Ninject-Logo100.png</d:IconUrl>
+      <d:Rating m:type="Edm.Double">4.8571428571428568</d:Rating>
+      <d:RatingsCount m:type="Edm.Int32">14</d:RatingsCount>
+      <d:DownloadCount m:type="Edm.Int32">26235</d:DownloadCount>
+      <d:Categories m:null="true"></d:Categories>
+      <d:Tags xml:space="preserve"> Ninject ioc di </d:Tags>
+      <d:Dependencies></d:Dependencies>
+      <d:ReportAbuseUrl>http://nuget.org/Package/ReportAbuse/Ninject/2.2.1.4</d:ReportAbuseUrl>
+      <d:GalleryDetailsUrl>http://nuget.org/List/Packages/Ninject/2.2.1.4</d:GalleryDetailsUrl>
+    </m:properties>
+  </entry>
+</feed>

@@ -1,4 +1,5 @@
 out
+*.tmp
 .idea/workspace.xml
 nuget-extensions/bin*
 nuget-extensions/**/bin
