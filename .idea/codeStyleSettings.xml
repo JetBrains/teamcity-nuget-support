@@ -40,6 +40,7 @@
         <codeStyleSettings language="JavaScript">
           <indentOptions>
             <option name="INDENT_SIZE" value="2" />
+            <option name="CONTINUATION_INDENT_SIZE" value="8" />
             <option name="TAB_SIZE" value="2" />
           </indentOptions>
         </codeStyleSettings>

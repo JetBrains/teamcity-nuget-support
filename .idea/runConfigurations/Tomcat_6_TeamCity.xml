@@ -47,13 +47,13 @@
       <option name="USE_ENV_VARIABLES" value="true" />
       <STARTUP>
         <option name="USE_DEFAULT" value="true" />
-        <option name="SCRIPT" value="%IDEA_RUN:TOMCAT_HOME%/bin/catalina.bat" />
+        <option name="SCRIPT" value="$PROJECT_DIR$/../buildserver/tools/tomcat/bin/catalina.bat" />
         <option name="VM_PARAMETERS" value="" />
         <option name="PROGRAM_PARAMETERS" value=" run" />
       </STARTUP>
       <SHUTDOWN>
         <option name="USE_DEFAULT" value="true" />
-        <option name="SCRIPT" value="%IDEA_RUN:TOMCAT_HOME%/bin/catalina.bat" />
+        <option name="SCRIPT" value="$PROJECT_DIR$/../buildserver/tools/tomcat/bin/catalina.bat" />
         <option name="VM_PARAMETERS" value="" />
         <option name="PROGRAM_PARAMETERS" value=" stop" />
       </SHUTDOWN>
