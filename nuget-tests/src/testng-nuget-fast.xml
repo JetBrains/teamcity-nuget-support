@@ -59,6 +59,8 @@
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AgentToolsRegistrarTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolsRegistryTest"/>
 
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.UrlResolverTest"/>
+
     </classes>
   </test>
 </suite>
