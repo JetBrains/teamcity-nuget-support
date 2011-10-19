@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Tomcat 6 TeamCity" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local">
+  <configuration default="false" name="Tomcat 6 TeamCity" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 6">
     <option name="OPEN_IN_BROWSER" value="false" />
     <option name="OPEN_IN_BROWSER_URL" value="http://localhost:8111" />
     <option name="COMMON_VM_ARGUMENTS" value="-ea -Xmx384m -XX:MaxPermSize=200m -Ddebug=true -server -XX:+HeapDumpOnOutOfMemoryError -Djava.awt.headless -DTC.res.disableAll=true -Dteamcity.development.mode=true -Dteamcity.development.shadowCopyClasses=true -Dteamcity.data.path=$TeamCityDistribution$/Data -Dteamcity_logs=$TeamCityDistribution$/logs -Dlog4j.configuration=file:$TeamCityDistribution$/conf/teamcity-server-log4j.xml" />
@@ -14,7 +14,7 @@
     <server-settings>
       <option name="DEPLOY_TOMCAT_APPS" value="false" />
       <option name="BASE_DIRECTORY_NAME" value="Unnamed__NETPackagesSupport_2" />
-      <option name="HTTP_PORT" value="0" />
+      <option name="HTTP_PORT" value="8111" />
       <option name="PRESERVE_SESSIONS" value="false" />
     </server-settings>
     <predefined_log_file id="TOMCAT_LOCALHOST_LOG_ID" enabled="true" />
