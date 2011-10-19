@@ -31,6 +31,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.*;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 19.10.11 16:05
@@ -61,13 +62,16 @@ public class MetadataController extends BaseController {
     final Iterator<ArtifactsMetadataEntry> entries = myStorage.getEntries();
     final Set<String> reportedPackages = new HashSet<String>();
 
-    while(entries.hasNext()) {
+    while (entries.hasNext()) {
       final ArtifactsMetadataEntry e = entries.next();
 
       //remove duplicates
       if (!reportedPackages.add(e.getKey())) continue;
 
-      Map<String, String> parameters = new TreeMap<String, String>(e.getMetadata());
+      Map<String, String> parameters = new TreeMap<String, String>(COMPARER);
+
+      parameters.putAll(e.getMetadata());
+
       final String buildTypeId = parameters.get(TEAMCITY_BUILD_TYPE_ID);
       final String relPath = parameters.get(TEAMCITY_ARTIFACT_RELPATH);
       parameters.put(TEAMCITY_BUILD_ID, String.valueOf(e.getBuildId()));
@@ -79,4 +83,22 @@ public class MetadataController extends BaseController {
     writer.flush();
     return null;
   }
+
+  private static final Comparator<String> COMPARER = new Comparator<String>() {
+    @NotNull
+    private Integer power(@NotNull String key) {
+      if ("Id".equals(key)) return 5;
+      if ("Version".equals(key)) return 4;
+      if (key.startsWith("teamcity")) return 3;
+      return 0;
+    }
+
+    public int compare(@NotNull String o1, @NotNull String o2) {
+      final Integer p1 = power(o1);
+      final Integer p2 = power(o2);
+      if (p1 > p2) return -1;
+      if (p1 < p2) return 1;
+      return o1.compareTo(o2);
+    }
+  };
 }
