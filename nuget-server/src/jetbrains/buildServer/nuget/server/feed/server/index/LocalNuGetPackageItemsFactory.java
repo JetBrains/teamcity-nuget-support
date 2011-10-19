@@ -17,9 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.index;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.server.feed.render.NuGetAtomItem;
-import jetbrains.buildServer.nuget.server.feed.render.NuGetItem;
-import jetbrains.buildServer.nuget.server.feed.render.NuGetProperties;
+import jetbrains.buildServer.util.Dates;
 import jetbrains.buildServer.util.FileUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -55,171 +53,63 @@ public class LocalNuGetPackageItemsFactory {
   }
 
   @NotNull
-  public NuGetItem createPackage(@NotNull final String detailsUrl,
-                                 @NotNull final File nupkg,
-                                 final boolean isLatest,
-                                 final boolean isPrerelease) throws PackageLoadException {
-    final Element root = parseNuSpec(nupkg);
+  public Map<String, String> createPackage(@NotNull final File nupkg) throws PackageLoadException {
+    final String sha = sha512(nupkg);
+    final long size = nupkg.length();
+    final Date updated = new Date(nupkg.lastModified());
 
+    final Element root = parseNuSpec(nupkg);
     if (root == null) {
       throw new PackageLoadException("Failed to fetch .nuspec from package");
     }
 
+    Map<String, String> map = new LinkedHashMap<String, String>();
+
     final String id = parseProperty(root, "id");
     final String version = parseProperty(root, "version");
     final String authors = parseProperty(root, "authors");
-    final String owners = parseProperty(root, "owners");
     final String requireLicenseAcceptanse = parseProperty(root, "requireLicenseAcceptance");
     final String description = parseProperty(root, "description");
     final String summary = parseProperty(root, "summary");
-    final Date updated = new Date(nupkg.lastModified());
-    final long size = nupkg.length();
     final String licenseUrl = parseProperty(root, "licenseUrl");
     final String projectUrl = parseProperty(root, "projectUrl");
     final String iconUrl = parseProperty(root, "iconUrl");
     final String dependencies = parseDependencies(root);
     final String tags = parseProperty(root,"tags");
-    final String sha = sha512(nupkg);
 
-    return new NuGetItem() {
-      @NotNull
-      public NuGetAtomItem getAtomItem() {
-        return new NuGetAtomItem() {
-          public String getItemName() {
-            return id;
-          }
+    map.put("Id", id);
+    map.put("Version", version);
+    map.put("Title", id); //???
+    //Prerelease
+    map.put("Authors", authors);
+    map.put("Summary", summary);
+    map.put("Description", description);
+    //map.put("Copyright", description);
+    map.put("PackageHashAlgorithm", "SHA512");
+    map.put("PackageHash", sha);
+    map.put("PackageSize", String.valueOf(size));
+    map.put("RequireLicenseAcceptance", requireLicenseAcceptanse);
+    //isLatestVersion
+    //releaseNotes
+    map.put("ProjectUrl", projectUrl);
+    map.put("LicenseUrl", licenseUrl);
+    map.put("IconUrl", iconUrl);
+    //categories
+    map.put("Tags", tags);
+    map.put("Dependencies", dependencies);
+//    map.put("DetailsUrl", detailsUrl);
+//    map.put("GalleryDetailsUrl", detailsUrl);
+    map.put("Updated", formatDate(updated));
 
-          public String getItemVersion() {
-            return version;
-          }
-
-          public String getItemTitle() {
-            return id;
-          }
-
-          public String getItemSummary() {
-            return summary;
-          }
-
-          public Date getItemUpdated() {
-            return updated;
-          }
-
-          public String getItemAuthors() {
-            return authors;
-          }
-
-          public String getDownloadPath() {
-            //TODO: connect to context to make it easy to resolve
-            return id + "." + version + ".nupkg";
-          }
-        };
-      }
-
-      @NotNull
-      public NuGetProperties getProperties() {
-        return new NuGetProperties() {
-          public String getId() {
-            return id;
-          }
-
-          public String getVersion() {
-            return version;
-          }
-
-          public String getTitle() {
-            return id;
-          }
-
-          public boolean getPrerelease() {
-            return isPrerelease;
-          }
-
-          public String getAuthors() {
-            return authors;
-          }
-
-          public String getSummary() {
-            return summary;
-          }
-
-          public String getDescription() {
-            return description;
-          }
-
-          public String getCopyright() {
-            return null;
-          }
-
-          public String getPackageHashAlgorithm() {
-            return "SHA512";
-          }
-
-          public String getPackageHash() {
-            return sha;
-          }
-
-          public long getPackageSize() {
-            return size;
-          }
-
-          public boolean getRequireLicenseAcceptance() {
-            return "true".equalsIgnoreCase(requireLicenseAcceptanse);
-          }
-
-          public boolean getIsLatestVersion() {
-            return isLatest;
-          }
-
-          public String getReleaseNotes() {
-            //TODO:
-            return null;
-          }
-
-          public Date getCreated() {
-            return updated;
-          }
-
-          public String getExternalPackageUrl() {
-            return null;
-          }
-
-          public String getProjectUrl() {
-            return projectUrl;
-          }
-
-          public String getLicenseUrl() {
-            return licenseUrl;
-          }
-
-          public String getIconUrl() {
-            return iconUrl;
-          }
-
-          public String getCategories() {
-            return null;
-          }
-
-          public String getTags() {
-            return tags;
-          }
-
-          public String getDependencies() {
-            return dependencies;
-          }
-
-          public String getReportAbuseUrl() {
-            return detailsUrl;
-          }
-
-          public String getGalleryDetailsUrl() {
-            return detailsUrl;
-          }
-        };
-      }
-    };
-
+    return map;
   }
+
+  @NotNull
+  private String formatDate(@NotNull Date date) {
+    //TODO:fix timezon printing
+    return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
+  }
+
 
   @Nullable
   private String parseProperty(@NotNull final Element root, final @NotNull String name) {

@@ -24,7 +24,6 @@
     <orderEntry type="library" name="Server-Api" level="project" />
     <orderEntry type="library" name="commons-http" level="project" />
     <orderEntry type="library" name="odata4j" level="project" />
-    <orderEntry type="module" module-name="nuget-feed" />
     <orderEntry type="library" name="Idea-OpenApi" level="project" />
   </component>
 </module>
