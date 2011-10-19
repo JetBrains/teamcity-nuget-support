@@ -24,8 +24,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
                  RequireLicenseAcceptance = zip.RequireLicenseAcceptance,
                  Description = zip.Description,
                  Summary = zip.Summary,
-                 ReleaseNotes = zip.ReleaseNotes,
-                 Language = zip.Language,
+                 ReleaseNotes = zip.ReleaseNotes,                 
                  Tags = zip.Tags,
                  Dependencies = String.Join("|", zip.Dependencies.Select(d => String.Format("{0}:{1}", d.Id, d.VersionSpec))),
                  IconUrl = ConvertUrl(zip.IconUrl),
@@ -37,13 +36,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
                  LastUpdated = File.GetLastWriteTimeUtc(fileName),
                  Published = File.GetCreationTimeUtc(fileName),
 
-                 DownloadUrl = spec.DownloadUrl,
-
-                 DownloadCount = -1,
-                 Rating = -1,
-                 VersionRating = -1,
-                 VersionDownloadCount = -1,
-                 VersionRatingsCount = -1,
+                 DownloadUrl = spec.DownloadUrl,                 
                };
     }
 
