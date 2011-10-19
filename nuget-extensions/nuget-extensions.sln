@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-server", "nuget-serve
 		{D84D9FE8-6424-40DE-8E90-FBA817481961} = {D84D9FE8-6424-40DE-8E90-FBA817481961}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-feed-tests", "nuget-feed-tests\nuget-feed-tests.csproj", "{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,16 @@ Global
 		{3943459C-56AA-4088-ABFE-975E911873CA}.Release|Mixed Platforms.Build.0 = Release|x86
 		{3943459C-56AA-4088-ABFE-975E911873CA}.Release|x86.ActiveCfg = Release|x86
 		{3943459C-56AA-4088-ABFE-975E911873CA}.Release|x86.Build.0 = Release|x86
+		{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}.Debug|x86.ActiveCfg = Debug|x86
+		{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}.Debug|x86.Build.0 = Debug|x86
+		{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}.Release|Any CPU.ActiveCfg = Release|x86
+		{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}.Release|Mixed Platforms.Build.0 = Release|x86
+		{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}.Release|x86.ActiveCfg = Release|x86
+		{025942F9-5A6E-4887-A2F5-DD193D1BCB4D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
