@@ -88,15 +88,30 @@
     <Compile Include="..\nuget-runner\src\AssemblyHelper.cs">
       <Link>AssemblyHelper.cs</Link>
     </Compile>
+    <Compile Include="DataServices\AddPackageHandler.cs" />
+    <Compile Include="DataServices\AddPackageHandlerRegistrar.cs" />
+    <Compile Include="DataServices\CleanOldPackagesHandler.cs" />
+    <Compile Include="DataServices\CleanOldPackagesHandlerRegistrar.cs" />
+    <Compile Include="DataServices\HandlerBase.cs" />
+    <Compile Include="DataServices\IRepositorySettings.cs" />
     <Compile Include="DataServices\LightPackageRepository.cs" />
+
     <Compile Include="DataServices\Routes.cs" />
     <Compile Include="DataServices\ServiceMessage.cs" />
+
+    <Compile Include="DataServices\NuGetRoutes.cs" />
+    <Compile Include="DataServices\RepositorySettings.cs" />
+
     <Compile Include="DataServices\TeamCityContext.cs" />
     <Compile Include="DataServices\TeamCityPackage.cs" />
+    <Compile Include="DataServices\TeamCityPackageEntry.cs" />
+    <Compile Include="DataServices\TeamCityPackageEntryExtensions.cs" />
     <Compile Include="DataServices\TeamCityPackages.cs" />
     <Compile Include="DataServices\TeamCityPackagesContext.cs" />
+    <Compile Include="DataServices\TeamCityPackageSpec.cs" />
     <Compile Include="DataServices\TeamCityPackagesRepo.cs" />
     <Compile Include="DataServices\TeamCityZipPackageFactory.cs" />
+    <Compile Include="DataServices\XmlSerializers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

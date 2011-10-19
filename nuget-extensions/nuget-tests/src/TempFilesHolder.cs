@@ -19,9 +19,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     public static T WithTempDirectory<T>(Func<string, T> action)
     {
-      string tmp = Path.GetTempFileName();
-      File.Delete(tmp);
-      Directory.CreateDirectory(tmp);
+      var tmp = CreateTempDirectory();
       try
       {
         return action(tmp);
@@ -30,6 +28,14 @@ namespace JetBrains.TeamCity.NuGet.Tests
       {
         Directory.Delete(tmp, true);
       }
+    }
+
+    public static string CreateTempDirectory()
+    {
+      string tmp = Path.GetTempFileName();
+      File.Delete(tmp);
+      Directory.CreateDirectory(tmp);
+      return tmp;
     }
 
     public static void WithTempDirectory(Action<string> action)

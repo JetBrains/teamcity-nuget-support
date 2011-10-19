@@ -1,50 +1,69 @@
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
+using System.Linq;
+using JetBrains.Annotations;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   [Serializable]
-  public class TeamCityPackageSpec
-  {
-    [XmlAttribute("buildType")]
-    public string BuildType { get; set; }
-
-    [XmlAttribute("buildId")]
-    public long BuildId { get; set; }
-    
-    [XmlAttribute("downloadUrl")]
-    public string DownloadUrl { get; set; }
-
-    [XmlAttribute("packageFile")]
-    public string PackageFile { get; set; }
-
-    [XmlAttribute("isLatest")]
-    public bool IsLatest { get; set; }
-  }
-
-  [Serializable]
   [XmlRoot("package-list")]
   public class TeamCityPackagesRepo
   {
+    private readonly object myLock = new object();
+
     [XmlIgnore]
-    private readonly List<TeamCityPackageSpec> mySpecs = new List<TeamCityPackageSpec>();
+    private readonly List<TeamCityPackageEntry> mySpecs = new List<TeamCityPackageEntry>();
 
     [XmlArray("packages")]
     [XmlArrayItem("package")]
-    public TeamCityPackageSpec[] Specs
+    public TeamCityPackageEntry[] Specs
     {
-      get { return mySpecs.ToArray(); } 
-      set { 
-        mySpecs.Clear();
-        if (value != null)
-          mySpecs.AddRange(value);
+      get
+      {
+        lock (myLock)
+        {
+          return mySpecs.ToArray();
+        }
+      } 
+      set {
+        lock (myLock)
+        {
+          mySpecs.Clear();
+          if (value != null) mySpecs.AddRange(value);
+        }
       }
     }
 
-    public void AddSpec(TeamCityPackageSpec spec)
+    public void AddSpec([NotNull] TeamCityPackageEntry spec)
     {
-      mySpecs.Add(spec);      
+      if (spec == null) throw new ArgumentNullException("spec");
+      if (spec.Package == null) throw new ArgumentException("Spec must contain package to be added");
+
+      lock (myLock)
+      {        
+        var packageId = spec.Package.Id;
+
+        foreach (var pkg in Specs
+          .Where(x => x.Package.Id.ToLower() == packageId)
+          .Select(x => x.Package)
+          .Where(x => x != null))
+          pkg.IsLatestVersion = false;
+
+        mySpecs.Add(spec);
+        spec.Package.IsLatestVersion = true;
+      }
+    }
+
+    public void RemoveSpecs(IEnumerable<TeamCityPackageEntry> entries)
+    {
+      lock(myLock)
+      {
+        foreach (var e in entries)
+        {
+          mySpecs.Remove(e);
+        }
+      }
     }
   }
 }

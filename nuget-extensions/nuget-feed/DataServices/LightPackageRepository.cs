@@ -1,60 +1,63 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Web.Configuration;
-using System.Web.Hosting;
-using System.Xml.Serialization;
-using JetBrains.Annotations;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   public class LightPackageRepository
   {
-    private readonly XmlSerializerFactory myXmlSerializerFactory = new XmlSerializerFactory();
     private static readonly object CONFIG_ACCESS_LOG = new object();
+    private readonly IRepositorySettings mySettings;
+
+    private readonly Lazy<TeamCityPackagesRepo> myRepo;
+
+    public LightPackageRepository(IRepositorySettings settings)
+    {
+      mySettings = settings;
+      myRepo = new Lazy<TeamCityPackagesRepo>(LoadPackageSpec, true);      
+    }
 
     public IQueryable<TeamCityPackage> GetPackages()
     {
-      var basePath = PackageFilesBasePath;      
-      var repo = FetchPackageSpec();      
       return
-        from spec in repo.Specs.AsQueryable()
-        let path = Path.Combine(basePath, spec.PackageFile)
-        where File.Exists(path)
-        select TeamCityZipPackageFactory.LoadPackage(path, spec);
+        from spec in Repo.Specs.AsQueryable()
+        let x = spec.Package
+        where x != null
+        select x;
     }
 
-    private TeamCityPackagesRepo FetchPackageSpec()
+    private TeamCityPackagesRepo Repo
+    {
+      get { return myRepo.Value; }
+    }
+
+    private TeamCityPackagesRepo LoadPackageSpec()
     {
       lock (CONFIG_ACCESS_LOG)
       {
-        var xmlFile = TeamCityPackagesFile;
-        if (xmlFile == null || !File.Exists(xmlFile)) return EMPTY_SPEC;
+        var xmlFile = mySettings.PackagesFile;
+        if (!File.Exists(xmlFile)) return new TeamCityPackagesRepo();
 
-        var ser = myXmlSerializerFactory.CreateSerializer(typeof (TeamCityPackagesRepo));
-        if (ser == null) return EMPTY_SPEC;
         try
         {
           using (var tw = File.OpenRead(xmlFile))
           {
-            var info = (TeamCityPackagesRepo) ser.Deserialize(tw);
-            return info;
+            return (TeamCityPackagesRepo) XmlSerializers<TeamCityPackagesRepo>.Create().Deserialize(tw);
           }
         }
         catch
         {
           //TODO: catch exception
-          return EMPTY_SPEC;
+          return new TeamCityPackagesRepo();
         }
       }
     }
 
-    private void StorePackagesSpec(TeamCityPackagesRepo spec)
+    private void StorePackagesSpec()
     {
       lock (CONFIG_ACCESS_LOG)
       {
-        var xmlFile = TeamCityPackagesFile;
-        if (xmlFile == null) return;
+        var xmlFile = mySettings.PackagesFile;
 
         var parent = Path.GetDirectoryName(xmlFile);
         if (parent == null) return;
@@ -62,41 +65,31 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
         if (!Directory.Exists(parent))
           Directory.CreateDirectory(parent);
 
-        var ser = myXmlSerializerFactory.CreateSerializer(typeof (TeamCityPackagesRepo));
-        if (ser == null) return;
-        using (var file = File.OpenWrite(xmlFile))
+        using (var file = File.Create(xmlFile))
         {
-          ser.Serialize(file, spec);
+          XmlSerializers<TeamCityPackagesRepo>.Create().Serialize(file, Repo);
         }
       }
     }
 
-    public void RegisterPackage(TeamCityPackageSpec spec)
+    public void RegisterPackage(TeamCityPackageEntry spec)
     {
       lock (CONFIG_ACCESS_LOG)
       {
-        var repo = FetchPackageSpec();
+        var repo = Repo;
         repo.AddSpec(spec);
-        StorePackagesSpec(repo);
+        StorePackagesSpec();
       }
     }
 
-    [CanBeNull]
-    private string TeamCityPackagesFile
+    public void CleanupObsoletePackages()
     {
-      get { return WebConfigurationManager.AppSettings["PackagesSpecFile"]; }
+      lock (CONFIG_ACCESS_LOG)
+      {
+        var remove = Repo.Specs.Where(x => !x.IsPackageFileExists(mySettings)).ToArray();
+        Repo.RemoveSpecs(remove);
+        StorePackagesSpec();
+      }
     }
-
-    [CanBeNull]
-    public string PackageFilesBasePath
-    {
-      get { return WebConfigurationManager.AppSettings["PackageFilesBasePath"] ?? HostingEnvironment.MapPath("~"); }
-    }
-
-    private readonly TeamCityPackagesRepo EMPTY_SPEC =
-      new TeamCityPackagesRepo
-        {          
-          Specs = new TeamCityPackageSpec[0]
-        };
   }
 }
