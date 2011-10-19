@@ -95,13 +95,9 @@
     <Compile Include="DataServices\HandlerBase.cs" />
     <Compile Include="DataServices\IRepositorySettings.cs" />
     <Compile Include="DataServices\LightPackageRepository.cs" />
-
-    <Compile Include="DataServices\Routes.cs" />
     <Compile Include="DataServices\ServiceMessage.cs" />
-
     <Compile Include="DataServices\NuGetRoutes.cs" />
     <Compile Include="DataServices\RepositorySettings.cs" />
-
     <Compile Include="DataServices\TeamCityContext.cs" />
     <Compile Include="DataServices\TeamCityPackage.cs" />
     <Compile Include="DataServices\TeamCityPackageEntry.cs" />
