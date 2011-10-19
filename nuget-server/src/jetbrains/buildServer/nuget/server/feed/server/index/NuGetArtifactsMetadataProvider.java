@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.*;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 19.10.11 12:21
@@ -72,7 +74,11 @@ public class NuGetArtifactsMetadataProvider implements ArtifactsMetadataProvider
     for (BuildArtifact aPackage : packages) {
       try {
         final Map<String,String> ma = myFactory.loadPackage(aPackage);
-        ma.put("teamcity.artifactPath", aPackage.getRelativePath());
+
+        ma.put(TEAMCITY_ARTIFACT_RELPATH, aPackage.getRelativePath());
+        ma.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
+        ma.put(TEAMCITY_BUILD_TYPE_NAME, build.getBuildTypeName());
+        ma.put(TEAMCITY_BUILD_ID, String.valueOf(build.getBuildId()));
 
         store.addParameters(aPackage.getName(), ma);
       } catch (PackageLoadException e) {

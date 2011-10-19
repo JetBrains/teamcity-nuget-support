@@ -6,11 +6,14 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerCruiser"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl"/>
 
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController"/>
+
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.NuGetArtifactsMetadataProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndexImpl"/>
 
 </beans>
