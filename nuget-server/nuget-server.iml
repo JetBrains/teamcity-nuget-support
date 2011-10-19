@@ -48,6 +48,7 @@
     <orderEntry type="library" name="TeamCity server runtime" level="project" />
     <orderEntry type="library" name="commons-http" level="project" />
     <orderEntry type="library" name="odata4j" level="project" />
+    <orderEntry type="library" name="Commons-Codec" level="project" />
   </component>
 </module>
 

@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.render.impl;
-
-import jetbrains.buildServer.nuget.server.feed.render.NuGetAtomItem;
-import jetbrains.buildServer.nuget.server.feed.render.NuGetItem;
-import jetbrains.buildServer.nuget.server.feed.render.NuGetProperties;
-import org.jetbrains.annotations.NotNull;
+package jetbrains.buildServer.nuget.server.feed.server.index;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 06.09.11 22:02
+ * Date: 07.09.11 20:49
  */
-public class LocalNuGetPackageItem implements NuGetItem {
-  @NotNull
-  public NuGetAtomItem getAtomItem() {
-    return null;
+public class PackageLoadException extends Exception {
+  public PackageLoadException(String message) {
+    super(message);
   }
 
-  @NotNull
-  public NuGetProperties getProperties() {
-    return null;
+  public PackageLoadException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.render.impl;
+package jetbrains.buildServer.nuget.server.feed.server.index;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.render.NuGetAtomItem;
