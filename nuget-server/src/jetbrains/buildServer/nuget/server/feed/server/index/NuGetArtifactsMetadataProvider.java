@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -34,8 +35,13 @@ import java.util.List;
  */
 public class NuGetArtifactsMetadataProvider implements ArtifactsMetadataProvider {
   private static final Logger LOG = Logger.getInstance(NuGetArtifactsMetadataProvider.class.getName());
-
   public static final String NUGET_PROVIDER_ID = "nuget";
+
+  private final LocalNuGetPackageItemsFactory myFactory;
+
+  public NuGetArtifactsMetadataProvider(@NotNull final LocalNuGetPackageItemsFactory myFactory) {
+    this.myFactory = myFactory;
+  }
 
   @NotNull
   public String getMetadataProviderId() {
@@ -55,10 +61,8 @@ public class NuGetArtifactsMetadataProvider implements ArtifactsMetadataProvider
     }
   }
 
-
-  public void generateMedatadata(@NotNull SBuild build, @NotNull ArtifactsMetadataStorageWriter artifactsMetadataStorageWriter) {
+  public void generateMedatadata(@NotNull SBuild build, @NotNull ArtifactsMetadataStorageWriter store) {
     LOG.debug("Looking for NuGet packages in " + LogUtil.describe(build));
-
 
     final List<BuildArtifact> packages = new ArrayList<BuildArtifact>();
     visitArtifacts(build.getArtifacts(BuildArtifactsViewMode.VIEW_ALL).getRootArtifact(), packages);
@@ -66,13 +70,14 @@ public class NuGetArtifactsMetadataProvider implements ArtifactsMetadataProvider
     if (packages.isEmpty()) return;
 
     for (BuildArtifact aPackage : packages) {
-      LOG.debug("Found NuGet package to index: " + aPackage.getRelativePath());
-      //TODO: merge branch feed here partially to implement java-based indexing
-      /*try {
+      try {
+        final Map<String,String> ma = myFactory.loadPackage(aPackage);
+        ma.put("teamcity.artifactPath", aPackage.getRelativePath());
 
-      } catch (NuGetFeedException e) {
-        LOG.warn("Failed to index package: " + aPackage.getRelativePath() + " for buildId=" + build.getBuildId());
-      }*/
+        store.addParameters(aPackage.getName(), ma);
+      } catch (PackageLoadException e) {
+        LOG.warn("Failed to read nuget package: " + aPackage);
+      }
     }
   }
 }

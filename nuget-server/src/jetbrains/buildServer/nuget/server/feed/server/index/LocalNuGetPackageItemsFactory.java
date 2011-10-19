@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.index;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.Dates;
 import jetbrains.buildServer.util.FileUtil;
 import org.apache.commons.codec.binary.Base64;
@@ -40,10 +41,10 @@ public class LocalNuGetPackageItemsFactory {
   public static final String NS = "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd";
 
   @NotNull
-  private String sha512(@NotNull final File file) throws PackageLoadException {
+  private String sha512(@NotNull final BuildArtifact file) throws PackageLoadException {
     InputStream is = null;
     try {
-      is = new BufferedInputStream(new FileInputStream(file));
+      is = new BufferedInputStream(file.getInputStream());
       return Base64.encodeBase64String(DigestUtils.sha512(is));
     } catch (IOException e) {
       throw new PackageLoadException("Failed to compute SHA-512 for " + file);
@@ -53,10 +54,10 @@ public class LocalNuGetPackageItemsFactory {
   }
 
   @NotNull
-  public Map<String, String> createPackage(@NotNull final File nupkg) throws PackageLoadException {
+  public Map<String, String> loadPackage(@NotNull final BuildArtifact nupkg) throws PackageLoadException {
     final String sha = sha512(nupkg);
-    final long size = nupkg.length();
-    final Date updated = new Date(nupkg.lastModified());
+    final long size = nupkg.getSize();
+    final Date updated = new Date(nupkg.getTimestamp());
 
     final Element root = parseNuSpec(nupkg);
     if (root == null) {
@@ -110,7 +111,6 @@ public class LocalNuGetPackageItemsFactory {
     return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }
 
-
   @Nullable
   private String parseProperty(@NotNull final Element root, final @NotNull String name) {
     final Element child = getChild(getChild(root, "metadata"), name);
@@ -152,12 +152,10 @@ public class LocalNuGetPackageItemsFactory {
   }
 
   @Nullable
-  private Element parseNuSpec(@NotNull final File nupkg) {
-    //TODO: parse version number avay
-    final String name = nupkg.getName();
+  private Element parseNuSpec(@NotNull final BuildArtifact nupkg) {
     ZipInputStream zos = null;
     try {
-      zos = new ZipInputStream(new BufferedInputStream(new FileInputStream(nupkg)));
+      zos = new ZipInputStream(new BufferedInputStream(nupkg.getInputStream()));
       ZipEntry ze;
       while ((ze = zos.getNextEntry()) != null) {
         if (ze.getName().endsWith(".nuspec")) {

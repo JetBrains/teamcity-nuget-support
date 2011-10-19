@@ -59,7 +59,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
     final File pkg = Paths.getTestDataPath("packages/Ninject.MVC3.2.2.2.0.nupkg");
     Assert.assertTrue(pkg.isFile());
 
-    final Map<String, String> aPackage = myFactory.createPackage(pkg);
+    final Map<String, String> aPackage = myFactory.loadPackage(pkg);
     Assert.assertEquals(
             store(aPackage),
             "Authors = Remo Gloor, Ian Davis\n" +
