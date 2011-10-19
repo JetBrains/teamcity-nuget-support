@@ -4,16 +4,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunner"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerCruiser"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerCruiser"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerUriImpl"/>
-
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory"/>
-
-
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.NuGetArtifactsMetadataProvider"/>
 
 </beans>

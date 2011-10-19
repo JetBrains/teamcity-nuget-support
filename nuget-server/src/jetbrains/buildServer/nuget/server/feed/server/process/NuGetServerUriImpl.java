@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server;
+package jetbrains.buildServer.nuget.server.feed.server.process;
 
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerUri;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,12 +43,5 @@ public class NuGetServerUriImpl implements NuGetServerUri {
     final Integer port = myRunner.getPort();
     if (port == null) return null;
     return "http://localhost:" + port;
-  }
-
-  @Nullable
-  public String getAddPackageUri() {
-    final String uri = getNuGetUri();
-    if (uri == null) return null;
-    return uri + "/addPackage";
   }
 }

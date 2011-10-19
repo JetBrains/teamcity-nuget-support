@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server;
+package jetbrains.buildServer.nuget.server.feed.server.process;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.NetworkUtil;
