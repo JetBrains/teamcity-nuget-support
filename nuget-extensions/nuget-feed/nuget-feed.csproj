@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.TeamCity.ServiceMessages">
+      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.43.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -89,7 +92,6 @@
       <Link>AssemblyHelper.cs</Link>
     </Compile>
     <Compile Include="DataServices\Routes.cs" />
-
     <Compile Include="DataServices\ServiceMessage.cs" />
     <Compile Include="Query\ExpressionTreeModifier.cs" />
     <Compile Include="Query\InnermostWhereFinder.cs" />
