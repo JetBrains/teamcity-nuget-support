@@ -1,12 +1,14 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageWriterImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
-import jetbrains.buildServer.nuget.server.feed.server.index.NuGetArtifactsMetadataProvider;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
-import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.BuildsManager;
+import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataStorageWriter;
+import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -20,6 +22,7 @@ import org.testng.annotations.Test;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -71,27 +74,33 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
     final File temp = createTempFile();
     final Mockery m = new Mockery();
 
-    final SBuild build = m.mock(SBuild.class);
+    final SBuildType buildType = m.mock(SBuildType.class);
+    final BuildsManager buildsManager = m.mock(BuildsManager.class);
+    final SFinishedBuild build = m.mock(SFinishedBuild.class);
 
     m.checking(new Expectations(){{
       allowing(build).getBuildId(); will(returnValue(42L));
+      allowing(build).getBuildId(); will(returnValue("bt"));
+      allowing(build).getBuildType(); will(returnValue(buildType));
+      allowing(buildType).getLastChangesFinished(); will(returnValue(null));
+      allowing(buildsManager).findBuildInstanceById(42); will(returnValue(build));
     }});
 
     final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-    final Map<String, String> map = factory.loadPackage(artifact(Paths.getTestDataPath("packages/CommonServiceLocator.1.0.nupkg")));
+    final String key = "CommonServiceLocator.1.0.nupkg";
+    final Map<String, String> map = factory.loadPackage(artifact(Paths.getTestDataPath("packages/" + key)));
+
+    final ArtifactsMetadataEntry entry = m.mock(ArtifactsMetadataEntry.class);
+    m.checking(new Expectations(){{
+      allowing(entry).getBuildId(); will(returnValue(build.getBuildId()));
+      allowing(entry).getKey(); will(returnValue(key));
+      allowing(entry).getMetadata(); will(returnValue(Collections.unmodifiableMap(map)));
+    }});
+
 
     Writer w = new OutputStreamWriter(new FileOutputStream(temp), "utf-8");
-
-
-
-    NuGetArtifactsMetadataProvider prov = new NuGetArtifactsMetadataProvider(factory);
-    prov.generateMedatadata(build, new ArtifactsMetadataStorageWriter() {
-      public void addParameters(@NotNull String s, @NotNull Map<String, String> stringStringMap) {
-
-      }
-    });
-
-
+    new PackageWriterImpl(buildsManager).serializePackage(entry, w);
+    FileUtil.close(w);
 
 
 

@@ -42,6 +42,11 @@ public class Paths {
   }
 
   @NotNull
+  public static File getNuGetServerRunnerPath() {
+    return FileUtil.getCanonicalFile(new File("./nuget-extensions/bin-server/JetBrains.TeamCity.NuGet.Server.exe"));
+  }
+
+  @NotNull
   public NuGet[] getNuGets() {
     return NuGet.values();
   }

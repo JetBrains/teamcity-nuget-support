@@ -59,7 +59,6 @@ public class LocalNuGetPackageItemsFactory {
   public Map<String, String> loadPackage(@NotNull final BuildArtifact nupkg) throws PackageLoadException {
     final String sha = sha512(nupkg);
     final long size = nupkg.getSize();
-    final Date updated = new Date(nupkg.getTimestamp());
 
     final Element root = parseNuSpec(nupkg);
     if (root == null) {
