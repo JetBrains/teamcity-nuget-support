@@ -67,7 +67,18 @@ public abstract class SimpleHttpServerBase {
     fileHeaders.add("ETag: " + file.hashCode());
 
     try {
-      return getFileResponse(new FileInputStream(file), fileHeaders);
+      final Response fileResponse = getFileResponse(new FileInputStream(file), fileHeaders);
+      return new Response(fileResponse.getStatusLine(), fileResponse.getHeaders()) {
+        @Override
+        public void printContent(PrintStream ps) throws IOException {
+          fileResponse.printContent(ps);
+        }
+
+        @Override
+        public Integer getLength() {
+          return (int)file.length();
+        }
+      };
     } catch (FileNotFoundException e) {
       return createStringResponse(STATUS_LINE_404, fileHeaders, "");
     }
@@ -149,14 +160,14 @@ public abstract class SimpleHttpServerBase {
   private void writeResponse(final PrintStream ps, final Response response) throws IOException {
     ps.println(response.getStatusLine());
     for (String h : response.getHeaders()) {
-      ps.println(h);
+      ps.print(h);
+      ps.print("\r\n");
     }
     if (response.getLength() != null) {
       ps.print("Content-Length: " + response.getLength() + "\r\n");
     }
     //close headers section
-    ps.print("\r\n\r\n");
-    ps.println();
+    ps.print("\r\n");
     ps.flush();
     response.printContent(ps);
 

@@ -112,7 +112,9 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
 
     final File temp = createTempFile();
     Writer w = new OutputStreamWriter(new FileOutputStream(temp), "utf-8");
+    w.append("                 ");
     new PackageWriterImpl(buildsManager).serializePackage(entry, w);
+    w.append("                  ");
     FileUtil.close(w);
 
     System.out.println("Generated response file: " + temp);

@@ -13,7 +13,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 
     public IQueryable<TeamCityPackage> GetPackages()
     {
-      return new TeamCityQueryablePackages(FetchPackageSpec()).Query;
+      TeamCityPackage[] teamCityPackages = myRepo.GetAllPackages().ToArray();
+      return teamCityPackages.AsQueryable();
+//      return new TeamCityQueryablePackages(FetchPackageSpec()).Query;
     }
 
     private ITeamCityPackagesRepo FetchPackageSpec()
