@@ -8,12 +8,12 @@ namespace JetBrains.TeamCity.NuGet.Feed.Tests
   [TestFixture]
   public class TeamCityPackagesRepositoryTest
   {
-    private ITeamCityPackagesRepo myRepo;
+    private MemoryRepo myRepo;
 
     [SetUp]
     public void SetUp()
     {
-      myRepo = new TeamCityPackagesRepo();
+      myRepo = new MemoryRepo();
     }
 
     [Test]

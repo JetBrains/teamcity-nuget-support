@@ -7,7 +7,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   [Serializable]
   [XmlRoot("package-list")]
-  public class TeamCityPackagesRepo : ITeamCityPackagesRepo
+  public class MemoryRepo : ITeamCityPackagesRepo
   {
     [XmlIgnore]
     private readonly List<TeamCityPackageEntry> mySpecs = new List<TeamCityPackageEntry>();

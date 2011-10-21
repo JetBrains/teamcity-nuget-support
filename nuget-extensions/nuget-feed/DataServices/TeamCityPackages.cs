@@ -74,7 +74,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
                       ? context.Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)
                       : header;
 
-      return new Uri(new Uri(rootUrl), package.DownloadUrl);
+      return new Uri(new Uri(rootUrl), package.TeamCityDownloadUrl);
     }
 
     public string GetStreamContentType(object entity, DataServiceOperationContext operationContext)

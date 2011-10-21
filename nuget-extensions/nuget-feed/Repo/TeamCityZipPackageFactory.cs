@@ -19,11 +19,11 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
                {
                  Id = zip.Id,
                  Version = zip.Version.ToString(),
-                 Title = zip.Title,
+//                 Title = zip.Title,
                  Authors = String.Join(", ", zip.Authors),
                  RequireLicenseAcceptance = zip.RequireLicenseAcceptance,
                  Description = zip.Description,
-                 Summary = zip.Summary,
+//                 Summary = zip.Summary,
                  ReleaseNotes = zip.ReleaseNotes,                 
                  Tags = zip.Tags,
                  Dependencies = String.Join("|", zip.Dependencies.Select(d => String.Format("{0}:{1}", d.Id, d.VersionSpec))),
@@ -34,9 +34,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
                  PackageHash = hash,
                  PackageSize = fileBytes.Length,
                  LastUpdated = File.GetLastWriteTimeUtc(fileName),
-                 Published = File.GetCreationTimeUtc(fileName),
+//                 Published = File.GetCreationTimeUtc(fileName),
 
-                 DownloadUrl = spec.DownloadUrl,                 
+                 TeamCityDownloadUrl = spec.DownloadUrl,                 
                };
     }
 
