@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="JetBrains.TeamCity.ServiceMessages">
-      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.43.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
+      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.45.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure">
@@ -123,7 +123,9 @@
     <Compile Include="Repo\TeamCityZipPackageFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
