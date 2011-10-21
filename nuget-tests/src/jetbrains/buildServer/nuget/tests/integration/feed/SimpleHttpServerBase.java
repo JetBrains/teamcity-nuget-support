@@ -17,8 +17,15 @@
 package jetbrains.buildServer.nuget.tests.integration.feed;
 
 
+import jetbrains.buildServer.NetworkUtil;
+import jetbrains.buildServer.log.Loggers;
+import jetbrains.buildServer.util.FileUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.*;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,10 +35,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jetbrains.buildServer.NetworkUtil;
-import jetbrains.buildServer.log.Loggers;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Eugene Petrenko
@@ -56,18 +59,29 @@ public abstract class SimpleHttpServerBase {
   }
 
   protected static Response getFileResponse(@NotNull final File file, @NotNull List<String> headers) {
-    final FileInputStream content;
     List<String> fileHeaders = new ArrayList<String>();
     fileHeaders.addAll(headers);
     Date lastModified = new Date(file.lastModified());
     SimpleDateFormat format = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
     fileHeaders.add("Last-Modfied: " + format.format(lastModified));
     fileHeaders.add("ETag: " + file.hashCode());
+
+    FileInputStream content = null;
     try {
       content = new FileInputStream(file);
-      return createStreamResponse(STATUS_LINE_200, fileHeaders, content);
+      return getFileResponse(content, fileHeaders);
     } catch (FileNotFoundException e) {
       return createStringResponse(STATUS_LINE_404, fileHeaders, "");
+    } finally {
+      FileUtil.close(content);
+    }
+  }
+
+  protected static Response getFileResponse(@NotNull final InputStream content, @NotNull List<String> headers) {
+    try {
+      return createStreamResponse(STATUS_LINE_200, headers, content);
+    } finally {
+      FileUtil.close(content);
     }
   }
 
@@ -146,8 +160,10 @@ public abstract class SimpleHttpServerBase {
       ps.println(h);
     }
     if (response.getLength() != null) {
-      ps.print("Content-Length: " + response.getLength() + "\n");
+      ps.print("Content-Length: " + response.getLength() + "\r\n");
     }
+    //close headers section
+    ps.print("\r\n\r\n");
     ps.println();
     ps.flush();
     response.printContent(ps);
@@ -164,7 +180,7 @@ public abstract class SimpleHttpServerBase {
         myPort++;
       }
     }
-    mySocket.setSoTimeout(4096);
+    mySocket.setSoTimeout(32 * 4096);
   }
 
   public void stop() {
