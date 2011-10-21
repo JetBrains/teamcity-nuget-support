@@ -66,23 +66,15 @@ public abstract class SimpleHttpServerBase {
     fileHeaders.add("Last-Modfied: " + format.format(lastModified));
     fileHeaders.add("ETag: " + file.hashCode());
 
-    FileInputStream content = null;
     try {
-      content = new FileInputStream(file);
-      return getFileResponse(content, fileHeaders);
+      return getFileResponse(new FileInputStream(file), fileHeaders);
     } catch (FileNotFoundException e) {
       return createStringResponse(STATUS_LINE_404, fileHeaders, "");
-    } finally {
-      FileUtil.close(content);
     }
   }
 
   protected static Response getFileResponse(@NotNull final InputStream content, @NotNull List<String> headers) {
-    try {
-      return createStreamResponse(STATUS_LINE_200, headers, content);
-    } finally {
-      FileUtil.close(content);
-    }
+    return createStreamResponse(STATUS_LINE_200, headers, content);
   }
 
   public int getPort() {
@@ -237,6 +229,8 @@ public abstract class SimpleHttpServerBase {
     public abstract void printContent(PrintStream ps) throws IOException;
 
     public abstract Integer getLength();
+
+    public void dispose() {}
   }
 
 
@@ -287,6 +281,11 @@ public abstract class SimpleHttpServerBase {
       @Override
       public Integer getLength() {
         return null;
+      }
+
+      @Override
+      public void dispose() {
+        FileUtil.close(content);
       }
     };
   }

@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server;
+package jetbrains.buildServer.nuget.server.feed.server;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 16.08.11 2:00
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 21.10.11 18:53
  */
-public interface ToolPaths {
-  @NotNull
-  File getNuGetToolsPath();
-
-  @NotNull
-  File getNuGetToolsAgentPluginsPath();
-
-  @NotNull
-  File getNuGetToolsPackages();
+public interface NuGetServerRunnerSettings {
+  @NotNull String getPackagesControllerUrl();
 }

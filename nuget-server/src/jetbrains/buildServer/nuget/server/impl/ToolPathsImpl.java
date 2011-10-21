@@ -29,21 +29,13 @@ import java.io.File;
  */
 public class ToolPathsImpl implements ToolPaths {
   private final ServerPaths myPaths;
-  private final String PLUGIN_DIR = "jetbrains.nuget";
 
   public ToolPathsImpl(@NotNull final ServerPaths paths) {
     myPaths = paths;
   }
 
   private File relativePluginData(@NotNull final String path) {
-    final File pkgs = new File(new File(myPaths.getPluginDataDirectory(), PLUGIN_DIR), path);
-    //noinspection ResultOfMethodCallIgnored
-    pkgs.mkdirs();
-    return FileUtil.getCanonicalFile(pkgs);
-  }
-
-  private File relativeCache(@NotNull final String path) {
-    final File pkgs = new File(new File(myPaths.getCachesDir(), PLUGIN_DIR), path);
+    final File pkgs = new File(new File(myPaths.getPluginDataDirectory(), "jetbrains.nuget"), path);
     //noinspection ResultOfMethodCallIgnored
     pkgs.mkdirs();
     return FileUtil.getCanonicalFile(pkgs);
@@ -52,16 +44,6 @@ public class ToolPathsImpl implements ToolPaths {
   @NotNull
   public File getNuGetToolsPackages() {
     return relativePluginData("nupkg");
-  }
-
-  @NotNull
-  public File getNuGetFeedCache() {
-    return relativeCache("feed");
-  }
-
-  @NotNull
-  public File getArtifactsDirectory() {
-    return myPaths.getArtifactsDirectory();
   }
 
   @NotNull

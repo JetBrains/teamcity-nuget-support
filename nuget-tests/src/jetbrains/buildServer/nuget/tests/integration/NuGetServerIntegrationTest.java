@@ -1,29 +1,41 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
+import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
+import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
+import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
+import jetbrains.buildServer.nuget.server.feed.reader.impl.NuGetFeedReaderImpl;
+import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImpl;
+import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageWriterImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
+import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
+import jetbrains.buildServer.nuget.tests.integration.feed.SimpleHttpServer;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
 import jetbrains.buildServer.util.FileUtil;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.CustomAction;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -37,6 +49,7 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    m = new Mockery();
     myStreams = new ArrayList<InputStream>();
   }
 
@@ -71,23 +84,23 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
 
   @Test
   public void testServerFeed() throws IOException, PackageLoadException {
-    final File temp = createTempFile();
-    final Mockery m = new Mockery();
-
     final SBuildType buildType = m.mock(SBuildType.class);
     final BuildsManager buildsManager = m.mock(BuildsManager.class);
     final SFinishedBuild build = m.mock(SFinishedBuild.class);
 
     m.checking(new Expectations(){{
       allowing(build).getBuildId(); will(returnValue(42L));
-      allowing(build).getBuildId(); will(returnValue("bt"));
+      allowing(build).getBuildTypeId(); will(returnValue("bt"));
       allowing(build).getBuildType(); will(returnValue(buildType));
+      allowing(build).getBuildTypeName(); will(returnValue("buidldzzz"));
+      allowing(build).getFinishDate(); will(returnValue(new Date(1319214849319L)));
       allowing(buildType).getLastChangesFinished(); will(returnValue(null));
       allowing(buildsManager).findBuildInstanceById(42); will(returnValue(build));
     }});
 
     final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-    final String key = "CommonServiceLocator.1.0.nupkg";
+    final String packageId = "CommonServiceLocator";
+    final String key = packageId + ".1.0.nupkg";
     final Map<String, String> map = factory.loadPackage(artifact(Paths.getTestDataPath("packages/" + key)));
 
     final ArtifactsMetadataEntry entry = m.mock(ArtifactsMetadataEntry.class);
@@ -97,15 +110,68 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
       allowing(entry).getMetadata(); will(returnValue(Collections.unmodifiableMap(map)));
     }});
 
-
+    final File temp = createTempFile();
     Writer w = new OutputStreamWriter(new FileOutputStream(temp), "utf-8");
     new PackageWriterImpl(buildsManager).serializePackage(entry, w);
     FileUtil.close(w);
 
+    System.out.println("Generated response file: " + temp);
+
+    String text = new String(FileUtil.loadFileText(temp, "utf-8"));
+    System.out.println("Generated server response:\r\n" + text);
 
 
+    SimpleHttpServer server = new SimpleHttpServer(){
+      @Override
+      protected Response getResponse(String request) {
+        if ("/packages".equals(getRequestPath(request))) {
+          return getFileResponse(temp, Arrays.asList("Content-Type: text/plain", "Content-Encoding: utf-8"));
+        }
+        return super.getResponse(request);
+      }
+    };
+    server.start();
+    NuGetServerRunner runner = null;
+    try {
+      final String url = "http://localhost:" + server.getPort() + "/packages";
+      final NuGetServerRunnerSettings settings = m.mock(NuGetServerRunnerSettings.class);
+      final NuGetTeamCityProvider provider = m.mock(NuGetTeamCityProvider.class);
+      m.checking(new Expectations(){{
+        allowing(provider).getNuGetServerRunnerPath(); will(returnValue(Paths.getNuGetServerRunnerPath()));
+        allowing(settings).getPackagesControllerUrl(); will(returnValue(url));
+      }}
+      );
+
+      runner = new NuGetServerRunner(settings, new NuGetExecutorImpl(provider));
+      runner.startServer();
+
+      final String feedUrl = "http://localhost:" + runner.getPort() + "/nuget";
+      System.out.println("Created http server at: " + url);
+      System.out.println("Created nuget server at: " + feedUrl);
+
+      final FeedHttpClientHolder client = new FeedHttpClientHolder();
+      final FeedGetMethodFactory methods = new FeedGetMethodFactory();
+      NuGetFeedReaderImpl reader = new NuGetFeedReaderImpl(client, new UrlResolverImpl(client, methods), methods, new PackagesFeedParserImpl());
+
+      final HttpGet get = methods.createGet(feedUrl + "/Packages()");
+      try {
+        final HttpResponse execute = client.execute(get);
+        final HttpEntity entity = execute.getEntity();
+        entity.writeTo(System.out);
+      } finally {
+        get.abort();
+      }
+
+      final Collection<FeedPackage> packages = reader.queryPackageVersions(feedUrl, packageId);
+      Assert.assertTrue(packages.size() > 0);
+
+      System.out.println("Packages: " + packages);
+
+    } finally {
+      server.stop();
+      if (runner != null) {
+        runner.stopServer();
+      }
+    }
   }
-
-
-
 }
