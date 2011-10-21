@@ -86,14 +86,9 @@ namespace JetBrains.TeamCity.NuGet.Server
       }
       var port = argz.GetInt("port", 8411);
 
-      //<add key="PackagesSpecFile" value="~/TeamCity.Packages.xml" />
-      //<add key="PackageFilesBasePath" value="E:\Work\TeamCity\trunk\dotNetPackageManagers\nuget-extensions\packages" />
-      //<add key="PackageDownloadBaseUrl" value="http://buildserver.labs.intellij.net" />
-
       var webContextParameters = new Dictionary<string, string>
                                    {
-                                     {"PackagesSpecFile", argz.Get("packageSpecFile", "")},
-                                     {"PackageFilesBasePath", argz.Get("packageFilesBasePath", "")},
+                                     {"PackagesSpecUri", argz.Get("PackagesSpecUri", "")},                                     
                                    };
       if (webContextParameters.Values.Any(String.IsNullOrWhiteSpace))
       {
