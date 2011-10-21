@@ -72,11 +72,7 @@ public class NuGetArtifactsMetadataProvider implements ArtifactsMetadataProvider
     for (BuildArtifact aPackage : packages) {
       try {
         final Map<String,String> ma = myFactory.loadPackage(aPackage);
-
         ma.put(TEAMCITY_ARTIFACT_RELPATH, aPackage.getRelativePath());
-        ma.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
-        ma.put(TEAMCITY_BUILD_TYPE_NAME, build.getBuildTypeName());
-        ma.put(TEAMCITY_BUILD_ID, String.valueOf(build.getBuildId()));
 
         store.addParameters(aPackage.getName(), ma);
       } catch (PackageLoadException e) {

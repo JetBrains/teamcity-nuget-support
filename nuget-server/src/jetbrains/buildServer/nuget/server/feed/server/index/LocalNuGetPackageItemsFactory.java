@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.server.feed.server.index;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
-import jetbrains.buildServer.util.Dates;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.codec.binary.Base64;
@@ -28,7 +27,9 @@ import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -78,29 +79,27 @@ public class LocalNuGetPackageItemsFactory {
       throw new PackageLoadException("Invalid package. Failed to parse package Version for package: " + nupkg);
     }
 
+    //The list is generated from
+    //JetBrains.TeamCity.NuGet.Feed.Tests.DumpRequiredPackageParameters2()
+    //not included here: addParameter(map, "TeamCityDownloadUrl", "");
     addParameter(map, "Id", id);
     addParameter(map, "Version", version);
-    addParameter(map, "Title", id);
-    //Prerelease
+    //addParameter(map, "ReleaseNotes", ""); //TODO:!
     addParameter(map, "Authors", parseProperty(root, "authors"));
-    addParameter(map, "Summary", parseProperty(root, "summary"));
-    addParameter(map, "Description", parseProperty(root, "description"));
-    //map.put("Copyright", description);
-    addParameter(map, "PackageHashAlgorithm", "SHA512");
-    addParameter(map, "PackageHash", sha);
-    addParameter(map, "PackageSize", String.valueOf(size));
-    addParameter(map, "RequireLicenseAcceptance", parseProperty(root, "requireLicenseAcceptance"));
-    //isLatestVersion
-    //releaseNotes
-    addParameter(map, "ProjectUrl", parseProperty(root, "projectUrl"));
-    addParameter(map, "LicenseUrl", parseProperty(root, "licenseUrl"));
-    addParameter(map, "IconUrl", parseProperty(root, "iconUrl"));
-    //categories
-    addParameter(map, "Tags", parseProperty(root,"tags"));
     addParameter(map, "Dependencies", parseDependencies(root));
-//    map.put("DetailsUrl", detailsUrl);
-//    map.put("GalleryDetailsUrl", detailsUrl);
-    addParameter(map, "Updated", formatDate(updated));
+    addParameter(map, "Description", parseProperty(root, "description"));
+    //addParameter(map, "Copyright", ""); //TODO:
+    addParameter(map, "ProjectUrl", parseProperty(root, "projectUrl"));
+    addParameter(map, "Tags", parseProperty(root,"tags"));
+    addParameter(map, "IconUrl", parseProperty(root, "iconUrl"));
+    addParameter(map, "LicenseUrl", parseProperty(root, "licenseUrl"));
+    addParameter(map, "RequireLicenseAcceptance", parseProperty(root, "requireLicenseAcceptance"));
+    addParameter(map, "PackageHash", sha);
+    addParameter(map, "PackageHashAlgorithm", "SHA512");
+    addParameter(map, "PackageSize", String.valueOf(size));
+    //addParameter(map, "IsLatestVersion", "");
+    //addParameter(map, "LastUpdated", "");
+    //addParameter(map, "Updated", formatDate(updated));
 
     return map;
   }
@@ -113,11 +112,7 @@ public class LocalNuGetPackageItemsFactory {
     }
   }
 
-  @NotNull
-  private String formatDate(@NotNull Date date) {
-    //TODO:fix timezon printing
-    return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
-  }
+
 
   @Nullable
   private String parseProperty(@NotNull final Element root, final @NotNull String name) {

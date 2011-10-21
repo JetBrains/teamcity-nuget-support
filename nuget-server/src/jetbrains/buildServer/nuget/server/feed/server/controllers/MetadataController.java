@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -28,22 +27,25 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-import java.util.*;
-
-import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 19.10.11 16:05
  */
 public class MetadataController extends BaseController {
-  private final String myPath;
-  private final PackagesIndex myStorage;
+  @NotNull private final String myPath;
+  @NotNull private final PackagesIndex myStorage;
+  @NotNull private final PackagesWriter myWriter;
 
   public MetadataController(@NotNull final WebControllerManager web,
                             @NotNull final PluginDescriptor descriptor,
-                            @NotNull final PackagesIndex storage) {
+                            @NotNull final PackagesIndex storage,
+                            @NotNull PackagesWriter writer) {
     myStorage = storage;
+    myWriter = writer;
     myPath = descriptor.getPluginResourcesPath("packages-metadata.html");
     web.registerController(myPath, this);
   }
@@ -64,40 +66,14 @@ public class MetadataController extends BaseController {
 
     while (entries.hasNext()) {
       final ArtifactsMetadataEntry e = entries.next();
-
       //remove duplicates
       if (!reportedPackages.add(e.getKey())) continue;
 
-      Map<String, String> parameters = new TreeMap<String, String>(COMPARER);
+      myWriter.serializePackage(e, writer);
 
-      parameters.putAll(e.getMetadata());
-
-      final String buildTypeId = parameters.get(TEAMCITY_BUILD_TYPE_ID);
-      final String relPath = parameters.get(TEAMCITY_ARTIFACT_RELPATH);
-      parameters.put(TEAMCITY_BUILD_ID, String.valueOf(e.getBuildId()));
-      parameters.put(TEAMCITY_DOWNLOAD_URL, "/repository/download/" + buildTypeId + "/" + e.getBuildId() + ":id/" + relPath);
-
-      writer.write(ServiceMessage.asString("package", parameters));
       writer.write("\r\n");
     }
     writer.flush();
     return null;
   }
-
-  private static final Comparator<String> COMPARER = new Comparator<String>() {
-    private int power(@NotNull String key) {
-      if ("Id".equals(key)) return 5;
-      if ("Version".equals(key)) return 4;
-      if (key.startsWith("teamcity")) return 3;
-      return 0;
-    }
-
-    public int compare(@NotNull String o1, @NotNull String o2) {
-      final int p1 = power(o1);
-      final int p2 = power(o2);
-      if (p1 > p2) return -1;
-      if (p1 < p2) return 1;
-      return o1.compareTo(o2);
-    }
-  };
 }
