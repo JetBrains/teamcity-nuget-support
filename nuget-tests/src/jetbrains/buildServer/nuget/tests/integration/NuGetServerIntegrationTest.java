@@ -15,12 +15,14 @@ import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageWriterI
 import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
+import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl;
 import jetbrains.buildServer.nuget.tests.integration.feed.SimpleHttpServer;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
+import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -85,12 +87,21 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
 
 
   @Test
-  public void testServerFeed() throws IOException, PackageLoadException {
+  public void testServerFeed() throws IOException, PackageLoadException, InterruptedException {
+    enableDebug();
+
+    final File logsDir = createTempDir();
+
+    System.out.println("NuGet server LogsDir = " + logsDir);
+
     final SBuildType buildType = m.mock(SBuildType.class);
     final BuildsManager buildsManager = m.mock(BuildsManager.class);
     final SFinishedBuild build = m.mock(SFinishedBuild.class);
+    final NuGetTeamCityProvider provider = m.mock(NuGetTeamCityProvider.class);
 
     m.checking(new Expectations(){{
+      allowing(provider).getNuGetServerRunnerPath(); will(returnValue(Paths.getNuGetServerRunnerPath()));
+
       allowing(build).getBuildId(); will(returnValue(42L));
       allowing(build).getBuildTypeId(); will(returnValue("bt"));
       allowing(build).getBuildType(); will(returnValue(buildType));
@@ -121,7 +132,7 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
 
     System.out.println("Generated response file: " + temp);
 
-    String text = new String(FileUtil.loadFileText(temp, "utf-8"));
+    String text = loadAllText(temp);
     System.out.println("Generated server response:\r\n" + text);
 
 
@@ -139,19 +150,16 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
     try {
       final String url = "http://localhost:" + server.getPort() + "/packages";
       final NuGetServerRunnerSettings settings = m.mock(NuGetServerRunnerSettings.class);
-      final NuGetTeamCityProvider provider = m.mock(NuGetTeamCityProvider.class);
-      final File logsDir = createTempDir();
       m.checking(new Expectations(){{
-        allowing(provider).getNuGetServerRunnerPath(); will(returnValue(Paths.getNuGetServerRunnerPath()));
         allowing(settings).getPackagesControllerUrl(); will(returnValue(url));
         allowing(settings).getLogsPath(); will(returnValue(logsDir));
-      }}
-      );
+      }});
 
       runner = new NuGetServerRunner(settings, new NuGetExecutorImpl(provider));
       runner.startServer();
+      NuGetServerUriImpl uri = new NuGetServerUriImpl(runner);
 
-      final String feedUrl = "http://localhost:" + runner.getPort() + "/nuget";
+      final String feedUrl = uri.getNuGetFeedBaseUri();
       System.out.println("Created http server at: " + url);
       System.out.println("Created nuget server at: " + feedUrl);
 
@@ -159,15 +167,21 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
       final FeedGetMethodFactory methods = new FeedGetMethodFactory();
       NuGetFeedReaderImpl reader = new NuGetFeedReaderImpl(client, new UrlResolverImpl(client, methods), methods, new PackagesFeedParserImpl());
 
-      dumpRequest(feedUrl, client, methods, "/Packages()");
-      dumpRequest(feedUrl, client, methods, "/Packages()",new Param("$filter", "Id eq '" + packageId + "'"));
+      dumpRequest(feedUrl, client, methods, "/Packages()").run();
+      dumpRequest(feedUrl, client, methods, "/////Packages()").run();
+      dumpRequest(feedUrl, client, methods, "/Packages()",new Param("$filter", "Id eq '" + packageId + "'")).run();
+      dumpRequest(feedUrl, client, methods, "////Packages()",new Param("$filter", "Id eq '" + packageId + "'")).run();
 
-      final Collection<FeedPackage> packages = reader.queryPackageVersions(feedUrl, packageId);
+      final Collection<FeedPackage> packages = reader.queryPackageVersions(feedUrl + "/", packageId);
       Assert.assertTrue(packages.size() > 0);
 
       System.out.println("Packages: " + packages);
 
     } finally {
+      for (File file : logsDir.listFiles()) {
+        System.out.println("File " + file + ": \r\n" + loadAllText(file));
+      }
+
       if (runner != null) {
         runner.stopServer();
       }
@@ -176,17 +190,31 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
     }
   }
 
-  private void dumpRequest(String feedUrl, FeedHttpClientHolder client, FeedGetMethodFactory methods, String req, NameValuePair... reqs) throws IOException {
-    final HttpGet get = methods.createGet(feedUrl + req, reqs);
-    try {
-      final HttpResponse execute = client.execute(get);
-      final HttpEntity entity = execute.getEntity();
-      System.out.println("Request: " + get.getRequestLine());
-      entity.writeTo(System.out);
-      System.out.println();
-      System.out.println();
-    } finally {
-      get.abort();
-    }
+  private String loadAllText(File temp) throws IOException {
+    return new String(FileUtil.loadFileText(temp, "utf-8"));
+  }
+
+  private Runnable dumpRequest(final String feedUrl,
+                               final FeedHttpClientHolder client,
+                               final FeedGetMethodFactory methods,
+                               final String req,
+                               final NameValuePair... reqs) throws IOException {
+    return new Runnable() {
+      public void run() {
+        final HttpGet get = methods.createGet(feedUrl + req, reqs);
+        try {
+          final HttpResponse execute = client.execute(get);
+          final HttpEntity entity = execute.getEntity();
+          System.out.println("Request: " + get.getRequestLine());
+          entity.writeTo(System.out);
+          System.out.println();
+          System.out.println();
+        } catch (IOException e) {
+          ExceptionUtil.rethrowAsRuntimeException(e);
+        } finally {
+          get.abort();
+        }
+      }
+    };
   }
 }

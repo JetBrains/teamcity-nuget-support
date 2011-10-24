@@ -65,12 +65,13 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     final Element element = toDocument(pair.second);
     LOG.debug("Recieved xml: " + XmlUtil.to_s(element));
 
-    final HttpGet get = myMethodFactory.createGet(feedUrl + "/Packages()",
+    final HttpGet get = myMethodFactory.createGet(
+            feedUrl + "/Packages()",
             new Param("$filter", "Id eq '" + packageId + "'")
     );
     get.setHeader(HttpHeaders.ACCEPT_ENCODING, "application/atom+xml");
 
-    LOG.debug("Query for packages: " + get.getURI());
+    LOG.debug("Query for packages: " + get.getRequestLine());
 
     final HttpResponse execute = myClient.execute(get);
     try {
