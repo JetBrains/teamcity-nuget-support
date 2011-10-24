@@ -48,6 +48,8 @@ import java.util.*;
 public class NuGetServerIntegrationTest extends BaseTestCase {
   private Mockery m;
   private Collection<InputStream> myStreams;
+  private NuGetTeamCityProvider myProvider;
+
 
   @BeforeMethod
   @Override
@@ -55,6 +57,11 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
     super.setUp();
     m = new Mockery();
     myStreams = new ArrayList<InputStream>();
+    myProvider = m.mock(NuGetTeamCityProvider.class);
+
+    m.checking(new Expectations(){{
+      allowing(myProvider).getNuGetServerRunnerPath(); will(returnValue(Paths.getNuGetServerRunnerPath()));
+    }});
   }
 
   @AfterMethod
@@ -97,11 +104,8 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
     final SBuildType buildType = m.mock(SBuildType.class);
     final BuildsManager buildsManager = m.mock(BuildsManager.class);
     final SFinishedBuild build = m.mock(SFinishedBuild.class);
-    final NuGetTeamCityProvider provider = m.mock(NuGetTeamCityProvider.class);
 
-    m.checking(new Expectations(){{
-      allowing(provider).getNuGetServerRunnerPath(); will(returnValue(Paths.getNuGetServerRunnerPath()));
-
+   m.checking(new Expectations(){{
       allowing(build).getBuildId(); will(returnValue(42L));
       allowing(build).getBuildTypeId(); will(returnValue("bt"));
       allowing(build).getBuildType(); will(returnValue(buildType));
@@ -155,7 +159,7 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
         allowing(settings).getLogsPath(); will(returnValue(logsDir));
       }});
 
-      runner = new NuGetServerRunner(settings, new NuGetExecutorImpl(provider));
+      runner = new NuGetServerRunner(settings, new NuGetExecutorImpl(myProvider));
       runner.startServer();
       NuGetServerUriImpl uri = new NuGetServerUriImpl(runner);
 
