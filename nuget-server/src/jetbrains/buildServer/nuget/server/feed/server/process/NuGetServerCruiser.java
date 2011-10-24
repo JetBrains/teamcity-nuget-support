@@ -44,7 +44,7 @@ public class NuGetServerCruiser {
           public void run() {
             runner.ensureAlive();
           }
-        }), 10, 10, TimeUnit.SECONDS);
+        }), 5, 5, TimeUnit.SECONDS);
       }
 
       @Override

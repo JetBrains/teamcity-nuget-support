@@ -65,7 +65,10 @@ public class NuGetServerRunner {
 
   public void ensureAlive() {
     final NuGetServerHandle handle = myHandle.get();
-    if (handle == null || !handle.isAlive()) startServer();
+    if (handle == null || !handle.isAlive()) {
+      LOG.info("NuGet server is down, will be restarted");
+      startServer();
+    }
   }
 
   public void stopServer() {
