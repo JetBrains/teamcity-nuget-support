@@ -3,6 +3,7 @@ using System.ServiceModel.Activation;
 using System.Web.Routing;
 using JetBrains.Annotations;
 using NuGetRoutes = JetBrains.TeamCity.NuGet.Feed.DataServices.NuGetRoutes;
+using RouteMagic;
 
 [assembly: WebActivator.PreApplicationStartMethod(typeof (NuGetRoutes), "Start")]
 
@@ -26,6 +27,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
                      Defaults = new RouteValueDictionary {{"serviceType", "odata"}},
                      Constraints = new RouteValueDictionary {{"serviceType", "odata"}}
                    });
+
+      routes.MapDelegate("ping", "ping", c => new NuGetPingHandler(c, TeamCityContext.TeamCityAccessor).ProcessRequest());
     }
 
   }

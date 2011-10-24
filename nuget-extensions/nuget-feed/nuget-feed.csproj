@@ -97,6 +97,7 @@
     <Compile Include="..\nuget-runner\src\AssemblyHelper.cs">
       <Link>AssemblyHelper.cs</Link>
     </Compile>
+    <Compile Include="DataServices\NuGetPingHandler.cs" />
     <Compile Include="DataServices\Routes.cs" />
     <Compile Include="DataServices\ServiceMessage.cs" />
     <Compile Include="Log4Net.cs" />
@@ -119,6 +120,7 @@
     <Compile Include="Query\WhereExpressionVisitor.cs" />
     <Compile Include="Repo\IRepositoryPaths.cs" />
     <Compile Include="Repo\ITeamCityPackagesRepo.cs" />
+    <Compile Include="Repo\ITeamCityServerAccessor.cs" />
     <Compile Include="Repo\LightPackageRepository.cs" />
     <Compile Include="Repo\PackageLoader.cs" />
     <Compile Include="Repo\RemoteException.cs" />
@@ -130,6 +132,7 @@
     <Compile Include="Repo\TeamCityPackageSpec.cs" />
     <Compile Include="Repo\MemoryRepo.cs" />
     <Compile Include="Repo\TeamCityQueryablePackages.cs" />
+    <Compile Include="Repo\TeamCityServerAccessor.cs" />
     <Compile Include="Repo\TeamCityZipPackageFactory.cs" />
     <Compile Include="RewriteModule.cs" />
   </ItemGroup>
