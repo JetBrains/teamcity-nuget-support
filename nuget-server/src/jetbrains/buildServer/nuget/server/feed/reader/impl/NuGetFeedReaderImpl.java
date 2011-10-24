@@ -68,7 +68,7 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     final HttpGet get = myMethodFactory.createGet(feedUrl + "/Packages()",
             new Param("$filter", "Id eq '" + packageId + "'")
     );
-//    get.setHeader(HttpHeaders.ACCEPT_ENCODING, "application/atom+xml");
+    get.setHeader(HttpHeaders.ACCEPT_ENCODING, "application/atom+xml");
 
     LOG.debug("Query for packages: " + get.getURI());
 
@@ -107,14 +107,15 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     final ByteArrayOutputStream bos = new ByteArrayOutputStream();
     try {
       final InputStream parent = entity.getContent();
-      return FileUtil.parseDocument(new InputStream() {
+      final InputStream debugStream = new InputStream() {
         @Override
         public int read() throws IOException {
           final int ch = parent.read();
           if (ch >= 0) bos.write(ch);
           return ch;
         }
-      }, false);
+      };
+      return FileUtil.parseDocument(LOG.isDebugEnabled() ? debugStream : parent, false);
     } catch (final JDOMException e) {
       throw new IOException("Failed to parse xml document. " + e.getMessage() + ". " + bos.toString()) {{
         initCause(e);
