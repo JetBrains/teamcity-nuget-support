@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
+import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -37,10 +38,12 @@ public class PingBackController extends BaseController {
   private final String myHash;
 
   public PingBackController(@NotNull final WebControllerManager web,
-                            @NotNull final MetadataControllersPaths descriptor) {
+                            @NotNull final MetadataControllersPaths descriptor,
+                            @NotNull final AuthorizationInterceptor authz) {
     myHash = StringUtil.generateUniqueHash();
 
     myPath = descriptor.getPingControllerPath();
+    authz.addPathNotRequiringAuth(myPath);
     web.registerController(myPath, this);
   }
 

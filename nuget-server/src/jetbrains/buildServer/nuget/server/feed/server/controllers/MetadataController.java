@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
+import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
@@ -42,10 +43,12 @@ public class MetadataController extends BaseController {
   public MetadataController(@NotNull final WebControllerManager web,
                             @NotNull final MetadataControllersPaths descriptor,
                             @NotNull final PackagesIndex storage,
-                            @NotNull final PackagesWriter writer) {
+                            @NotNull final PackagesWriter writer,
+                            @NotNull final AuthorizationInterceptor authz) {
     myStorage = storage;
     myWriter = writer;
     myPath = descriptor.getMetadataControllerPath();
+    authz.addPathNotRequiringAuth(myPath);
     web.registerController(myPath, this);
   }
 

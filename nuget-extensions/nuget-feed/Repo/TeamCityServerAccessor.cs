@@ -20,7 +20,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 
     public T ProcessRequest<T>(string urlSuffix, Func<HttpWebResponse, TextReader, T> result)
     {
-      var requestUriString = myRemoteUrl + urlSuffix;
+      var requestUriString = myRemoteUrl.TrimEnd('/') + "/" + urlSuffix.TrimStart('/');
       try
       {
         var wr = (HttpWebRequest) WebRequest.Create(requestUriString);

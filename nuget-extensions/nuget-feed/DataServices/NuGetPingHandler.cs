@@ -45,7 +45,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
         if (result != null)
         {
-          ctx.Response.Headers[PING_HTTP_HEADER] = result;
+          ctx.Response.AddHeader(PING_HTTP_HEADER, result);
           WriteStatus(HttpStatusCode.OK, "Hashcode matched");
           return;
         }
