@@ -5,11 +5,14 @@ using System.Linq.Expressions;
 using JetBrains.Annotations;
 using JetBrains.TeamCity.NuGet.Feed.Query;
 using JetBrains.TeamCity.NuGet.Feed.Query.Tree;
+using log4net;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   public class TeamCityQueryablePackages : TCQueryProvider<TeamCityPackage>
   {
+    private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
+
     private readonly ITeamCityPackagesRepo myRepo;
 
     public TeamCityQueryablePackages(ITeamCityPackagesRepo repo) : base(repo.GetAllPackages().AsQueryable())

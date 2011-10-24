@@ -2,11 +2,14 @@ using System;
 using System.IO;
 using System.Linq;
 using NuGet;
+using log4net;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   public static class TeamCityZipPackageFactory
   {
+    private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
+
     private static readonly CryptoHashProvider HashProvider = new CryptoHashProvider();
 
     public static TeamCityPackage LoadPackage(string fileName, TeamCityPackageSpec spec)

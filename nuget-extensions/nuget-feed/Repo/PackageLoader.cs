@@ -4,11 +4,14 @@ using System.Linq;
 using System.Reflection;
 using JetBrains.Annotations;
 using JetBrains.TeamCity.ServiceMessages.Read;
+using log4net;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   public class PackageLoader
   {
+    private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
+
     private readonly Dictionary<PropertyInfo, IParser> Properties;
 
     public PackageLoader()

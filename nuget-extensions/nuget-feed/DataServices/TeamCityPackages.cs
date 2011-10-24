@@ -10,12 +10,15 @@ using System.ServiceModel.Web;
 using System.Web;
 using JetBrains.Annotations;
 using JetBrains.TeamCity.NuGet.Feed.Repo;
+using log4net;
 
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
   public class TeamCityPackages : DataService<TeamCityPackagesContext>, IDataServiceStreamProvider, IServiceProvider
-  {    
+  {
+    private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
+
     private LightPackageRepository Repository
     {
       get { return TeamCityContext.Repository; }
@@ -31,6 +34,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
       config.DataServiceBehavior.MaxProtocolVersion = DataServiceProtocolVersion.V2;
       config.UseVerboseErrors = true;
+      LOG.Info("Packages OData service initialized");
     }
 
     [WebGet, UsedImplicitly(ImplicitUseTargetFlags.Itself)]
@@ -117,6 +121,11 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     public Stream GetReadStream(object entity, string etag, bool? checkETagForEquality, DataServiceOperationContext operationContext)
     {
       throw new NotSupportedException();
+    }
+
+    protected override void HandleException(HandleExceptionArgs args)
+    {
+      LOG.Warn("Exception: {0}", args.Exception);
     }
   }
 }

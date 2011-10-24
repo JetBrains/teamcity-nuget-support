@@ -50,6 +50,7 @@
     <Reference Include="RouteMagic">
       <HintPath>..\packages\RouteMagic.1.0\lib\net40\RouteMagic.dll</HintPath>
     </Reference>
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Services" />
     <Reference Include="System.Data.Services.Client" />
     <Reference Include="System.ServiceModel" />
@@ -78,6 +79,7 @@
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="license.txt" />
+    <Content Include="Log4Net.xml" />
     <Content Include="Packages\Readme.txt" />
     <Content Include="TeamCity.Packages.xml" />
     <Content Include="Web.config" />
@@ -129,6 +131,7 @@
     <Compile Include="Repo\MemoryRepo.cs" />
     <Compile Include="Repo\TeamCityQueryablePackages.cs" />
     <Compile Include="Repo\TeamCityZipPackageFactory.cs" />
+    <Compile Include="RewriteModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

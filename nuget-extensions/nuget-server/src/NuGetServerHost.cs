@@ -96,7 +96,7 @@ namespace JetBrains.TeamCity.NuGet.Server
         Usage();
         return 1;
       }
-      Environment.SetEnvironmentVariable("teamcity-dotnet-log-file", argz.Get("Logs", Environment.CurrentDirectory));
+      Environment.SetEnvironmentVariable("teamcity-dotnet-log-path", argz.Get("Logs", Environment.CurrentDirectory));
 
       PatchWebConfig(webApp, webContextParameters);
 

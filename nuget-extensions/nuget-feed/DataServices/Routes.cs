@@ -18,8 +18,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
     private static void MapRoutes(RouteCollection routes)
     {
-      // The default route is http://{root}/nuget/Packages
-
+      
+      // The default route is http://{root}/nuget/Packages      
       routes.Add("nuget",
                  new ServiceRoute("nuget", new DataServiceHostFactory(), typeof (TeamCityPackages))
                    {

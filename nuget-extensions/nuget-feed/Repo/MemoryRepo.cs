@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;
 using System.Linq;
+using log4net;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
@@ -9,6 +10,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
   [XmlRoot("package-list")]
   public class MemoryRepo : ITeamCityPackagesRepo
   {
+    private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
+
     [XmlIgnore]
     private readonly List<TeamCityPackageEntry> mySpecs = new List<TeamCityPackageEntry>();
 

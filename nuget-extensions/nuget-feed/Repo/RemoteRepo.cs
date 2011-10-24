@@ -6,11 +6,14 @@ using System.Net;
 using System.Net.Cache;
 using System.Text;
 using JetBrains.TeamCity.ServiceMessages.Read;
+using log4net;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   public class RemoteRepo : ITeamCityPackagesRepo
   {
+    private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
+
     private readonly string myRemoteUrl;
     private readonly IServiceMessageParser myParser;
     private readonly PackageLoader myLoader;
@@ -24,17 +27,25 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 
     public IEnumerable<TeamCityPackage> GetAllPackages()
     {
-      var wr = (HttpWebRequest)WebRequest.Create(myRemoteUrl);
-      wr.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
-
-      using (var webResponse = (HttpWebResponse)wr.GetResponse())
+      try
       {
-        var stream = webResponse.GetResponseStream();
-        if (stream == null)
-          throw new Exception(string.Format("Failed to read packages from stream. Status code: {0}", webResponse.StatusCode));
- 
-        var streamReader = new StreamReader(stream, Encoding.UTF8);
-        return myParser.ParseServiceMessages(streamReader).ToArray().Select(myLoader.Load);
+        var wr = (HttpWebRequest) WebRequest.Create(myRemoteUrl);
+        wr.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+
+        using (var webResponse = (HttpWebResponse) wr.GetResponse())
+        {
+          var stream = webResponse.GetResponseStream();
+          if (stream == null)
+            throw new Exception(string.Format("Failed to read packages from stream. Status code: {0}",
+                                              webResponse.StatusCode));
+
+          var streamReader = new StreamReader(stream, Encoding.UTF8);
+          return myParser.ParseServiceMessages(streamReader).Select(myLoader.Load).ToArray();
+        }
+      } catch(Exception e)
+      {
+        LOG.Warn("Failed to fetch all packages: " + e.Message, e);
+        return new TeamCityPackage[0];
       }
     }
 
