@@ -20,4 +20,8 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PackageInfoSerializer"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PackageWriterImpl"/>
 
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PingBackController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerPing"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths"/>
+
 </beans>

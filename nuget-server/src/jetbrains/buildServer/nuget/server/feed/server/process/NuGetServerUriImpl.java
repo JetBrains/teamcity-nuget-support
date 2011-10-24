@@ -39,6 +39,13 @@ public class NuGetServerUriImpl implements NuGetServerUri {
   }
 
   @Nullable
+  public String getNuGetPingUri() {
+    final String uri = getNuGetUri();
+    if (uri == null) return null;
+    return uri + "/ping";
+  }
+
+  @Nullable
   private String getNuGetUri() {
     final Integer port = myRunner.getPort();
     if (port == null) return null;

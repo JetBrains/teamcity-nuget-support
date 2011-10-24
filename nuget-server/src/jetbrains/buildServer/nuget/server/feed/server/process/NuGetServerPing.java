@@ -1,0 +1,85 @@
+/*
+ * Copyright 2000-2011 JetBrains s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package jetbrains.buildServer.nuget.server.feed.server.process;
+
+import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.server.feed.FeedClient;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerUri;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.PingBackController;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.methods.HttpGet;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.ByteArrayOutputStream;
+
+/**
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 24.10.11 19:07
+ */
+public class NuGetServerPing {
+  private static final Logger LOG = Logger.getInstance(NuGetServerPing.class.getName());
+
+  @NotNull private final NuGetServerUri myUri;
+  @NotNull private final FeedClient myHttp;
+  @NotNull private final PingBackController myPing;
+
+  public NuGetServerPing(@NotNull final NuGetServerUri uri,
+                         @NotNull final FeedClient http,
+                         @NotNull final PingBackController ping) {
+    myUri = uri;
+    myHttp = http;
+    myPing = ping;
+  }
+
+  public boolean pingNuGetServer() {
+    final HttpGet get = new HttpGet(myUri.getNuGetPingUri());
+    try {
+      final HttpResponse execute = myHttp.execute(get);
+
+      final HttpEntity entity = execute.getEntity();
+      if (entity != null) {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        entity.writeTo(bos);
+        LOG.warn("Ping outpout: " + bos.toString());
+      }
+
+      final StatusLine line = execute.getStatusLine();
+      if (line.getStatusCode() != HttpStatus.SC_OK) {
+        LOG.warn("Status " + line.toString() + " was returned");
+        return false;
+      }
+
+
+      final Header[] hostId = execute.getHeaders(myPing.getPingHeader());
+      if (hostId == null || hostId.length != 1 || !myPing.getHash().equals(hostId[0].getValue())) {
+        LOG.warn("NuGet server failed to ping TeamCity server. Check TeamCity server url that is used for NuGet Server in TeamCity.");
+        return false;
+      }
+
+      return true;
+    } catch(Throwable t) {
+      LOG.warn("Failed to ping NuGet Server process");
+      return false;
+    } finally {
+      get.abort();
+    }
+  }
+}

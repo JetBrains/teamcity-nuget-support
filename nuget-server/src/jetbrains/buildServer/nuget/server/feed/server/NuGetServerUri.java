@@ -9,4 +9,7 @@ import org.jetbrains.annotations.Nullable;
 public interface NuGetServerUri {
   @Nullable
   String getNuGetFeedBaseUri();
+
+  @Nullable
+  String getNuGetPingUri();
 }

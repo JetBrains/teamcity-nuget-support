@@ -17,8 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,26 +25,22 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 19.10.11 16:05
+ *         Date: 24.10.11 19:04
  */
-public class MetadataController extends BaseController {
-  @NotNull private final String myPath;
-  @NotNull private final PackagesIndex myStorage;
-  @NotNull private final PackagesWriter myWriter;
+public class PingBackController extends BaseController {
+  private static final String PING_HEADER = "X-TeamCity-HostId";
+  @NotNull
+  private final String myPath;
+  private final String myHash;
 
-  public MetadataController(@NotNull final WebControllerManager web,
-                            @NotNull final MetadataControllersPaths descriptor,
-                            @NotNull final PackagesIndex storage,
-                            @NotNull final PackagesWriter writer) {
-    myStorage = storage;
-    myWriter = writer;
-    myPath = descriptor.getMetadataControllerPath();
+  public PingBackController(@NotNull final WebControllerManager web,
+                            @NotNull final MetadataControllersPaths descriptor) {
+    myHash = StringUtil.generateUniqueHash();
+
+    myPath = descriptor.getPingControllerPath();
     web.registerController(myPath, this);
   }
 
@@ -54,25 +49,27 @@ public class MetadataController extends BaseController {
     return myPath;
   }
 
+  @NotNull
+  public String getHash() {
+    return myHash;
+  }
+
+  @NotNull
+  public String getPingHeader() {
+    return PING_HEADER;
+  }
+
   @Override
-  protected ModelAndView doHandle(@NotNull final HttpServletRequest request, HttpServletResponse response) throws Exception {
+  protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
+                                  @NotNull final HttpServletResponse response) throws Exception {
     response.setCharacterEncoding("utf-8");
     response.setContentType("text/plain");
 
+    response.setHeader(PING_HEADER, myHash);
     final PrintWriter writer = response.getWriter();
-    final Iterator<ArtifactsMetadataEntry> entries = myStorage.getEntries();
-    final Set<String> reportedPackages = new HashSet<String>();
+    writer.write(myHash);
+    writer.close();
 
-    while (entries.hasNext()) {
-      final ArtifactsMetadataEntry e = entries.next();
-      //remove duplicates
-      if (!reportedPackages.add(e.getKey())) continue;
-
-      myWriter.serializePackage(e, writer);
-
-      writer.write("\r\n");
-    }
-    writer.flush();
     return null;
   }
 }

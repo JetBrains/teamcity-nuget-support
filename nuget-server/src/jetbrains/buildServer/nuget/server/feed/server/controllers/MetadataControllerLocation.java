@@ -30,10 +30,10 @@ import java.io.File;
 public class MetadataControllerLocation implements NuGetServerRunnerSettings {
   private final RootUrlHolder myRootUrl;
   private final ServerPaths myPaths;
-  private final MetadataController myController;
+  private final MetadataControllersPaths myController;
 
   public MetadataControllerLocation(@NotNull final RootUrlHolder rootUrl,
-                                    @NotNull final MetadataController controller,
+                                    @NotNull final MetadataControllersPaths controller,
                                     @NotNull final ServerPaths paths) {
     myRootUrl = rootUrl;
     myController = controller;
@@ -42,7 +42,7 @@ public class MetadataControllerLocation implements NuGetServerRunnerSettings {
 
   @NotNull
   public String getPackagesControllerUrl() {
-    return myRootUrl + myController.getPath();
+    return myRootUrl.getRootUrl() + myController.getBasePath();
   }
 
   @NotNull
