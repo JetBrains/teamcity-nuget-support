@@ -1,22 +1,10 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.nuget.server.feed.reader.impl.Param;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageInfoSerializer;
-import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
-import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
-import jetbrains.buildServer.util.FileUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jmock.Expectations;
-import org.jmock.api.Invocation;
-import org.jmock.lib.action.CustomAction;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.*;
-import java.util.Date;
-import java.util.Map;
+import java.io.File;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -25,14 +13,13 @@ import java.util.Map;
 public class NuGetServerIntegrationTest extends NuGetServerIntegrationTestBase {
 
   @Test
-  public void testServerFeed() throws IOException, PackageLoadException, InterruptedException {
+  public void testOnePackageFeed() throws Exception {
     enableDebug();
 
     final String packageId = "CommonServiceLocator";
-    final String key = packageId + ".1.0.nupkg";
     final File responseFile = createTempFile();
 
-    renderResponseFile(key, responseFile);
+    renderPackagesResponseFile(responseFile, Paths.getTestDataPath("/packages/" + packageId + ".1.0.nupkg"));
     startSimpleHttpServer(responseFile);
     startNuGetServer();
 
@@ -41,49 +28,55 @@ public class NuGetServerIntegrationTest extends NuGetServerIntegrationTestBase {
     assert200("/Packages()", new Param("$filter", "Id eq '" + packageId + "'")).run();
     assert200("////Packages()", new Param("$filter", "Id eq '" + packageId + "'")).run();
 
-    Assert.assertTrue(myFeedReader.queryPackageVersions(myNuGetServerUrl + "/", packageId).size() > 0);
+    Assert.assertTrue(myFeedReader.queryPackageVersions(myNuGetServerUrl, packageId).size() > 0);
   }
 
-  private void renderResponseFile(@NotNull final String key,
-                                  @NotNull final File responseFile) throws PackageLoadException, IOException {
-    final File packageFile = Paths.getTestDataPath("packages/" + key);
+  @Test
+  public void testConcurrency() throws Exception {
+    enableDebug();
 
-    final SFinishedBuild build = m.mock(SFinishedBuild.class);
-    final BuildArtifact artifact = m.mock(BuildArtifact.class, packageFile.getPath());
+    final String packageId = "CommonServiceLocator";
+    final File responseFile = createTempFile();
 
-    m.checking(new Expectations() {{
-      allowing(build).getBuildId(); will(returnValue(42L));
-      allowing(build).getBuildTypeId();  will(returnValue("bt"));
-      allowing(build).getBuildTypeName(); will(returnValue("buidldzzz"));
-      allowing(build).getFinishDate(); will(returnValue(new Date(1319214849319L)));
+    renderPackagesResponseFile(responseFile, Paths.getTestDataPath("/packages/" + packageId + ".1.0.nupkg"));
+    startSimpleHttpServer(responseFile);
+    startNuGetServer();
 
-      allowing(artifact).getInputStream();
-      will(new CustomAction("open file") {
-        public Object invoke(Invocation invocation) throws Throwable {
-          final FileInputStream stream = new FileInputStream(packageFile);
-          myStreams.add(stream);
-          return stream;
-        }
-      });
+    runAsyncAndFailOnException(
+            10,
+            assert200("/Packages()"),
+            assert200("/////Packages()"),
+            assert200("/Packages()", new Param("$filter", "Id eq '" + packageId + "'")),
+            assert200("////Packages()", new Param("$filter", "Id eq '" + packageId + "'"))
+    );
+  }
 
-      allowing(artifact).getTimestamp(); will(returnValue(packageFile.lastModified()));
-      allowing(artifact).getSize(); will(returnValue(packageFile.length()));
-      allowing(artifact).getRelativePath(); will(returnValue(packageFile.getPath()));
-      allowing(artifact).getName(); will(returnValue(packageFile.getName()));
-    }});
+  @Test
+  public void testTwoPackagesFeed() throws Exception {
+    enableDebug();
 
-    final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-    final Map<String, String> map = factory.loadPackage(artifact);
+    final String packageId_1 = "CommonServiceLocator";
+    final String packageId_2 = "NuGet.Core";
 
-    Writer w = new OutputStreamWriter(new FileOutputStream(responseFile), "utf-8");
-    w.append("                 ");
-    new PackageInfoSerializer().serializePackage(map, build, true, w);
-    w.append("                 ");
-    FileUtil.close(w);
-    System.out.println("Generated response file: " + responseFile);
+    final File responseFile = createTempFile();
+    renderPackagesResponseFile(
+            responseFile,
+            Paths.getTestDataPath("/packages/" + packageId_1 + ".1.0.nupkg"),
+            Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg")
+            );
 
-    String text = loadAllText(responseFile);
-    System.out.println("Generated server response:\r\n" + text);
+    startSimpleHttpServer(responseFile);
+    startNuGetServer();
+
+    assert200("/Packages()").run();
+    assert200("/////Packages()").run();
+    assert200("/Packages()", new Param("$filter", "Id eq '" + packageId_1 + "'")).run();
+    assert200("////Packages()", new Param("$filter", "Id eq '" + packageId_1 + "'")).run();
+    assert200("/Packages()", new Param("$filter", "Id eq '" + packageId_2 + "'")).run();
+    assert200("////Packages()", new Param("$filter", "Id eq '" + packageId_2 + "'")).run();
+
+    Assert.assertTrue(myFeedReader.queryPackageVersions(myNuGetServerUrl, packageId_1).size() > 0);
+    Assert.assertTrue(myFeedReader.queryPackageVersions(myNuGetServerUrl, packageId_2).size() > 0);
   }
 
 }
