@@ -44,7 +44,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
         }
       } catch(Exception e)
       {
-        LOG.Warn("Failed to fetch all packages: " + e.Message, e);
+        LOG.Warn(string.Format("Failed to fetch all packages from: {0}. {1}", myRemoteUrl, e.Message), e);
         return new TeamCityPackage[0];
       }
     }
