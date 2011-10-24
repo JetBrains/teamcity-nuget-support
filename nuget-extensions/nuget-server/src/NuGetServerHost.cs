@@ -41,8 +41,8 @@ namespace JetBrains.TeamCity.NuGet.Server
     {
       Console.Out.WriteLine("Usage: ");
       Console.Out.WriteLine(" /port:XXX                         sets port number to bind");
-      Console.Out.WriteLine(" /packageFilesBasePath:XXX         ");
-      Console.Out.WriteLine(" /packageSpecFile:XXX         ");
+      Console.Out.WriteLine(" /PackagesSpecUri:XXX         ");
+      Console.Out.WriteLine(" /Logs:XXX         ");
       Console.Out.WriteLine("");
     }
 
@@ -96,6 +96,7 @@ namespace JetBrains.TeamCity.NuGet.Server
         Usage();
         return 1;
       }
+      Environment.SetEnvironmentVariable("teamcity-dotnet-log-file", argz.Get("Logs", Environment.CurrentDirectory));
 
       PatchWebConfig(webApp, webContextParameters);
 

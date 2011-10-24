@@ -1,13 +1,8 @@
-using System;
 using System.Data.Services;
-using System.IO;
-using System.Net;
 using System.ServiceModel.Activation;
 using System.Web.Routing;
 using JetBrains.Annotations;
-using JetBrains.TeamCity.NuGet.Feed.Repo;
 using NuGetRoutes = JetBrains.TeamCity.NuGet.Feed.DataServices.NuGetRoutes;
-using RouteMagic;
 
 [assembly: WebActivator.PreApplicationStartMethod(typeof (NuGetRoutes), "Start")]
 

@@ -37,6 +37,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\TeamCity.ServiceMessages.1.0.48.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
     </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -94,6 +97,7 @@
     </Compile>
     <Compile Include="DataServices\Routes.cs" />
     <Compile Include="DataServices\ServiceMessage.cs" />
+    <Compile Include="Log4Net.cs" />
     <Compile Include="Query\ExpressionTreeModifier.cs" />
     <Compile Include="Query\InnermostWhereFinder.cs" />
     <Compile Include="Query\TCQueriable.cs" />
