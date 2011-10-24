@@ -11,7 +11,6 @@ import jetbrains.buildServer.nuget.server.feed.reader.impl.Param;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageInfoSerializer;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageWriterImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
@@ -21,7 +20,6 @@ import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
 import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.apache.http.HttpEntity;
@@ -163,7 +161,6 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
     final BuildsManager buildsManager = m.mock(BuildsManager.class);
     final SFinishedBuild build = m.mock(SFinishedBuild.class);
     final BuildArtifact artifact = m.mock(BuildArtifact.class, packageFile.getPath());
-    final ArtifactsMetadataEntry entry = m.mock(ArtifactsMetadataEntry.class);
 
     m.checking(new Expectations() {{
       allowing(build).getBuildId(); will(returnValue(42L));
@@ -191,15 +188,10 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
 
     final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
     final Map<String, String> map = factory.loadPackage(artifact);
-    m.checking(new Expectations(){{
-      allowing(entry).getBuildId(); will(returnValue(build.getBuildId()));
-      allowing(entry).getKey(); will(returnValue(key));
-      allowing(entry).getMetadata(); will(returnValue(Collections.unmodifiableMap(map)));
-    }});
 
     Writer w = new OutputStreamWriter(new FileOutputStream(responseFile), "utf-8");
     w.append("                 ");
-    new PackageWriterImpl(buildsManager, new PackageInfoSerializer()).serializePackage(entry, w);
+    new PackageInfoSerializer().serializePackage(map, build, true, w);
     w.append("                  ");
     FileUtil.close(w);
     System.out.println("Generated response file: " + responseFile);
