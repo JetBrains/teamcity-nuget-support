@@ -10,6 +10,7 @@ import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImp
 import jetbrains.buildServer.nuget.server.feed.reader.impl.Param;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageInfoSerializer;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageWriterImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
@@ -164,9 +165,6 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
     final BuildArtifact artifact = m.mock(BuildArtifact.class, packageFile.getPath());
     final ArtifactsMetadataEntry entry = m.mock(ArtifactsMetadataEntry.class);
 
-    final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-
-
     m.checking(new Expectations() {{
       allowing(build).getBuildId(); will(returnValue(42L));
       allowing(build).getBuildTypeId();  will(returnValue("bt"));
@@ -191,6 +189,7 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
       allowing(artifact).getName(); will(returnValue(packageFile.getName()));
     }});
 
+    final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
     final Map<String, String> map = factory.loadPackage(artifact);
     m.checking(new Expectations(){{
       allowing(entry).getBuildId(); will(returnValue(build.getBuildId()));
@@ -200,7 +199,7 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
 
     Writer w = new OutputStreamWriter(new FileOutputStream(responseFile), "utf-8");
     w.append("                 ");
-    new PackageWriterImpl(buildsManager).serializePackage(entry, w);
+    new PackageWriterImpl(buildsManager, new PackageInfoSerializer()).serializePackage(entry, w);
     w.append("                  ");
     FileUtil.close(w);
     System.out.println("Generated response file: " + responseFile);
