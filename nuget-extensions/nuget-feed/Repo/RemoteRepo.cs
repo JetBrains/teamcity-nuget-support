@@ -32,9 +32,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
         var stream = webResponse.GetResponseStream();
         if (stream == null)
           throw new Exception(string.Format("Failed to read packages from stream. Status code: {0}", webResponse.StatusCode));
-        
+ 
         var streamReader = new StreamReader(stream, Encoding.UTF8);
-        return myParser.ParseServiceMessages(streamReader).Select(myLoader.Load);
+        return myParser.ParseServiceMessages(streamReader).ToArray().Select(myLoader.Load);
       }
     }
 

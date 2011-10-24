@@ -31,9 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.TeamCity.ServiceMessages, Version=1.0.46.5, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="JetBrains.TeamCity.ServiceMessages, Version=1.0.48.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.46.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
+      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.48.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\lib\nunit\nunit.framework.dll</HintPath>
@@ -68,13 +68,13 @@
     <Compile Include="src\TestTCQueryProvider.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\nuget-feed\nuget-feed.csproj">
       <Project>{D84D9FE8-6424-40DE-8E90-FBA817481961}</Project>
       <Name>nuget-feed</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -33,8 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.TeamCity.ServiceMessages">
-      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.45.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
+    <Reference Include="JetBrains.TeamCity.ServiceMessages, Version=1.0.48.5, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.48.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Web.Infrastructure">
