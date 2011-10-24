@@ -140,9 +140,11 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
       final String url = "http://localhost:" + server.getPort() + "/packages";
       final NuGetServerRunnerSettings settings = m.mock(NuGetServerRunnerSettings.class);
       final NuGetTeamCityProvider provider = m.mock(NuGetTeamCityProvider.class);
+      final File logsDir = createTempDir();
       m.checking(new Expectations(){{
         allowing(provider).getNuGetServerRunnerPath(); will(returnValue(Paths.getNuGetServerRunnerPath()));
         allowing(settings).getPackagesControllerUrl(); will(returnValue(url));
+        allowing(settings).getLogsPath(); will(returnValue(logsDir));
       }}
       );
 

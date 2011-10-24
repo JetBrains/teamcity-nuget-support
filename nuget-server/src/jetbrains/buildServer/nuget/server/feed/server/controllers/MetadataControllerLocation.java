@@ -18,7 +18,10 @@ package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.serverSide.ServerPaths;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -26,16 +29,24 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MetadataControllerLocation implements NuGetServerRunnerSettings {
   private final RootUrlHolder myRootUrl;
+  private final ServerPaths myPaths;
   private final MetadataController myController;
 
   public MetadataControllerLocation(@NotNull final RootUrlHolder rootUrl,
-                                    @NotNull final MetadataController controller) {
+                                    @NotNull final MetadataController controller,
+                                    @NotNull final ServerPaths paths) {
     myRootUrl = rootUrl;
     myController = controller;
+    myPaths = paths;
   }
 
   @NotNull
   public String getPackagesControllerUrl() {
     return myRootUrl + myController.getPath();
+  }
+
+  @NotNull
+  public File getLogsPath() {
+    return myPaths.getLogsPath();
   }
 }

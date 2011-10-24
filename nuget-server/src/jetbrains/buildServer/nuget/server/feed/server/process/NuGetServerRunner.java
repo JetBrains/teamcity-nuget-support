@@ -55,7 +55,8 @@ public class NuGetServerRunner {
       myHandle.set(
               myExecutor.startNuGetServer(
                       port,
-                      myPaths.getPackagesControllerUrl()
+                      myPaths.getPackagesControllerUrl(),
+                      myPaths.getLogsPath()
               ));
     } catch (NuGetExecutionException e) {
       LOG.warn("Failed to start NuGet server. " + e.getMessage(), e);

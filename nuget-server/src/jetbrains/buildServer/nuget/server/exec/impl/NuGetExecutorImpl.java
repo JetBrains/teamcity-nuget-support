@@ -81,9 +81,8 @@ public class NuGetExecutorImpl implements NuGetExecutor {
     return listener.getResult();
   }
 
-
   @NotNull
-  public NuGetServerHandle startNuGetServer(final int port, @NotNull final String packagesUrl) throws NuGetExecutionException {
+  public NuGetServerHandle startNuGetServer(final int port, @NotNull final String packagesUrl, @NotNull final File logsDir) throws NuGetExecutionException {
     final GeneralCommandLine cmd = new GeneralCommandLine();
     final File path = myNuGetTeamCityProvider.getNuGetServerRunnerPath();
     cmd.setExePath(path.getPath());
@@ -91,6 +90,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
 
     cmd.addParameter("/port:" + port);
     cmd.addParameter("/PackagesSpecUri:" + packagesUrl);
+    cmd.addParameter("/Logs:" + logsDir.getAbsolutePath());
 
     final Process process;
     try {

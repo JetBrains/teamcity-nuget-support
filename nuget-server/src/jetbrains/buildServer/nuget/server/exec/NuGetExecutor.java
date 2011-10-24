@@ -32,5 +32,7 @@ public interface NuGetExecutor {
                      @NotNull NuGetOutputProcessor<T> listener) throws NuGetExecutionException;
 
   @NotNull
-  NuGetServerHandle startNuGetServer(int port, @NotNull String packagesUrl) throws NuGetExecutionException;
+  NuGetServerHandle startNuGetServer(int port,
+                                     @NotNull String packagesUrl,
+                                     @NotNull File logsDir) throws NuGetExecutionException;
 }

@@ -18,10 +18,13 @@ package jetbrains.buildServer.nuget.server.feed.server;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 18:53
  */
 public interface NuGetServerRunnerSettings {
   @NotNull String getPackagesControllerUrl();
+  @NotNull File getLogsPath();
 }
