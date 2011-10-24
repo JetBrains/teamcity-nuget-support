@@ -8,6 +8,7 @@ import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.NuGetFeedReaderImpl;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImpl;
+import jetbrains.buildServer.nuget.server.feed.reader.impl.Param;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageWriterImpl;
@@ -23,6 +24,7 @@ import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
 import jetbrains.buildServer.util.FileUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -127,7 +129,7 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
       @Override
       protected Response getResponse(String request) {
         if ("/packages".equals(getRequestPath(request))) {
-          return getFileResponse(temp, Arrays.asList("Content-Type: text/plain", "Content-Encoding: utf-8"));
+          return getFileResponse(temp, Arrays.asList("Content-Type: text/plain; encoding=UTF-8", "Content-Encoding: utf-8"));
         }
         return super.getResponse(request);
       }
@@ -155,14 +157,8 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
       final FeedGetMethodFactory methods = new FeedGetMethodFactory();
       NuGetFeedReaderImpl reader = new NuGetFeedReaderImpl(client, new UrlResolverImpl(client, methods), methods, new PackagesFeedParserImpl());
 
-      final HttpGet get = methods.createGet(feedUrl + "/Packages()");
-      try {
-        final HttpResponse execute = client.execute(get);
-        final HttpEntity entity = execute.getEntity();
-        entity.writeTo(System.out);
-      } finally {
-        get.abort();
-      }
+      dumpRequest(feedUrl, client, methods, "/Packages()");
+      dumpRequest(feedUrl, client, methods, "/Packages()",new Param("$filter", "Id eq '" + packageId + "'"));
 
       final Collection<FeedPackage> packages = reader.queryPackageVersions(feedUrl, packageId);
       Assert.assertTrue(packages.size() > 0);
@@ -170,10 +166,25 @@ public class NuGetServerIntegrationTest extends BaseTestCase {
       System.out.println("Packages: " + packages);
 
     } finally {
-      server.stop();
       if (runner != null) {
         runner.stopServer();
       }
+
+      server.stop();
+    }
+  }
+
+  private void dumpRequest(String feedUrl, FeedHttpClientHolder client, FeedGetMethodFactory methods, String req, NameValuePair... reqs) throws IOException {
+    final HttpGet get = methods.createGet(feedUrl + req, reqs);
+    try {
+      final HttpResponse execute = client.execute(get);
+      final HttpEntity entity = execute.getEntity();
+      System.out.println("Request: " + get.getRequestLine());
+      entity.writeTo(System.out);
+      System.out.println();
+      System.out.println();
+    } finally {
+      get.abort();
     }
   }
 }

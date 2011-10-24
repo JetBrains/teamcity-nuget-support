@@ -131,14 +131,18 @@ public abstract class SimpleHttpServerBase {
                 }
               }
 
-              Response response;
+              Response response = null;
               try {
-                response = SimpleHttpServerBase.this.getResponse(sb.toString());
-              } catch(Throwable t) {
-                Loggers.TEST.error("Failed to get response. " + t.getMessage(), t);
-                response = createStringResponse(STATUS_LINE_500, Collections.<String>emptyList(), "");
+                try {
+                  response = SimpleHttpServerBase.this.getResponse(sb.toString());
+                } catch(Throwable t) {
+                  Loggers.TEST.error("Failed to get response. " + t.getMessage(), t);
+                  response = createStringResponse(STATUS_LINE_500, Collections.<String>emptyList(), "");
+                }
+                writeResponse(ps, response);
+              } finally {
+                if (response != null) response.dispose();
               }
-              writeResponse(ps, response);
 
               ps.close();
             } catch (IOException e) {
@@ -287,6 +291,7 @@ public abstract class SimpleHttpServerBase {
         while ((data = content.read()) != -1) {
           ps.write(data);
         }
+        ps.write("                              ".getBytes("utf-8"));
       }
 
       @Override
