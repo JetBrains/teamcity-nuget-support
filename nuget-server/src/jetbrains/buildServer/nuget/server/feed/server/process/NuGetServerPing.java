@@ -53,30 +53,33 @@ public class NuGetServerPing {
     final HttpGet get = new HttpGet(myUri.getNuGetPingUri());
     try {
       final HttpResponse execute = myHttp.execute(get);
+      final StatusLine line = execute.getStatusLine();
 
-      final HttpEntity entity = execute.getEntity();
-      if (entity != null) {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        entity.writeTo(bos);
-        LOG.warn("Ping outpout: " + bos.toString());
+      if (LOG.isDebugEnabled()) {
+        final HttpEntity entity = execute.getEntity();
+        if (entity != null) {
+          final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+          entity.writeTo(bos);
+          LOG.debug("Ping outpout: " + bos.toString());
+        }
+        LOG.debug("NuGet Server HTTP response status " + line.toString() + " was returned from NuGet Server");
       }
 
-      final StatusLine line = execute.getStatusLine();
       if (line.getStatusCode() != HttpStatus.SC_OK) {
-        LOG.warn("Status " + line.toString() + " was returned");
+        LOG.warn("NuGet Server HTTP response error status '" + line.toString() + "' was returned");
         return false;
       }
 
-
       final Header[] hostId = execute.getHeaders(myPing.getPingHeader());
       if (hostId == null || hostId.length != 1 || !myPing.getHash().equals(hostId[0].getValue())) {
-        LOG.warn("NuGet server failed to ping TeamCity server. Check TeamCity server url that is used for NuGet Server in TeamCity.");
+        LOG.warn("NuGet server failed to ping TeamCity server. Check TeamCity server url that is used for NuGet Server in TeamCity");
         return false;
       }
 
       return true;
     } catch(Throwable t) {
-      LOG.warn("Failed to ping NuGet Server process");
+      LOG.warn("Failed to ping NuGet Server process. " + t.getMessage());
+      LOG.debug("Failed to ping NuGet Server process. " + t.getMessage(), t);
       return false;
     } finally {
       get.abort();
