@@ -16,10 +16,10 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
+import jetbrains.buildServer.nuget.server.settings.SettingsSection;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstallingTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
@@ -32,18 +32,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 10.08.11 20:38
  */
-public class InstalledToolsController extends BaseController {
-  private static final Logger LOG = Logger.getInstance(InstalledToolsController.class.getName());
-
+public class InstalledToolsController extends BaseController implements SettingsSection {
   private final String myPath;
   private final NuGetToolManager myToolsManager;
   private final InstallToolController myInstaller;
@@ -70,6 +65,21 @@ public class InstalledToolsController extends BaseController {
   @NotNull
   public String getPath() {
     return myPath;
+  }
+
+  @NotNull
+  public String getIncludePath() {
+    return getPath();
+  }
+
+  @NotNull
+  public Collection<String> getCssFiles() {
+    return Arrays.asList(myDescriptor.getPluginResourcesPath("tool/tools.css"));
+  }
+
+  @NotNull
+  public Collection<String> getJsFiles() {
+    return Arrays.asList(myDescriptor.getPluginResourcesPath("tool/tools.js"));
   }
 
   @Override

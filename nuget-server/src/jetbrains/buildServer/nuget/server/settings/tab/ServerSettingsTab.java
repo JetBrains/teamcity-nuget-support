@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry.tab;
+package jetbrains.buildServer.nuget.server.settings.tab;
 
+import jetbrains.buildServer.nuget.server.settings.SettingsSection;
+import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.web.openapi.*;
 import org.jetbrains.annotations.NotNull;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -28,25 +34,42 @@ import java.util.Arrays;
 public class ServerSettingsTab extends SimpleCustomTab {
   public static final String TAB_ID = "nugetServerSettingsTab";
   private final PermissionChecker myChecker;
+  @NotNull
+  private final Collection<String> myIncludes = new ArrayList<String>();
 
   public ServerSettingsTab(@NotNull final PagePlaces pagePlaces,
                            @NotNull final PluginDescriptor descriptor,
-                           @NotNull final InstalledToolsController controller,
-                           @NotNull final PermissionChecker checker) {
+                           @NotNull final PermissionChecker checker,
+                           @NotNull final Collection<SettingsSection> sections) {
     super(pagePlaces,
             PlaceId.ADMIN_SERVER_CONFIGURATION_TAB,
             TAB_ID,
-            controller.getPath(),
+            descriptor.getPluginResourcesPath("settings.jsp"),
             "NuGet");
     myChecker = checker;
     setPosition(PositionConstraint.between(Arrays.asList("pluginsTab"), Arrays.asList("toolLoadTab", "usage-statistics")));
-    addCssFile(descriptor.getPluginResourcesPath("tool/tools.css"));
-    addJsFile(descriptor.getPluginResourcesPath("tool/tools.js"));
+
+    for (SettingsSection section : sections) {
+      for (String css : section.getCssFiles()) {
+        addCssFile(css);
+      }
+      for (String css : section.getJsFiles()) {
+        addJsFile(css);
+      }
+      myIncludes.add(section.getIncludePath());
+    }
     register();
   }
 
   @Override
   public boolean isVisible() {
     return super.isVisible() && myChecker.hasAccess();
+  }
+
+  @Override
+  public void fillModel(@NotNull Map<String, Object> model, @NotNull HttpServletRequest request) {
+    super.fillModel(model, request);
+    model.put("nuget_teamcity_include_controllers", myIncludes);
+
   }
 }

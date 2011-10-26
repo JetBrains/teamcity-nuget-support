@@ -18,9 +18,9 @@ package jetbrains.buildServer.nuget.server.toolRegistry.ui;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.BasePropertiesBean;
+import jetbrains.buildServer.nuget.server.settings.tab.ServerSettingsTab;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
-import jetbrains.buildServer.nuget.server.toolRegistry.tab.ServerSettingsTab;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
