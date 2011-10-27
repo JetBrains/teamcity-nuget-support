@@ -17,8 +17,11 @@
 <jsp:useBean id="nuget_teamcity_include_controllers" scope="request" type="java.util.Collection<java.lang.String>"/>
 
 <c:forEach items="${nuget_teamcity_include_controllers}" var="nugetSettingsPage">
-  <!-- start of NuGet Settings page: <c:out value="${nugetSettingsPage}"/> -->
-  <jsp:include page="${nugetSettingsPage}"/>
-  <!-- end of NuGet Settings page: <c:out value="${nugetSettingsPage}"/> -->
+  <div style="padding-bottom: 3em;">
+    <!-- start of NuGet Settings page: <c:out value="${nugetSettingsPage}"/> -->
+    <jsp:include page="${nugetSettingsPage}"/>
+    <!-- end of NuGet Settings page: <c:out value="${nugetSettingsPage}"/> -->
+  </div>
 </c:forEach>
+
 

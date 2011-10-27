@@ -21,6 +21,8 @@
 <c:set var="actualUpdateUrl"><c:url value="${updateUrl}"/></c:set>
 <bs:refreshable containerId="nugetPackagesList" pageUrl="${actualUpdateUrl}">
 <c:set var="installedPluginsCount" value="${fn:length(tools)}"/>
+
+<h2 class="noBorder">Installed NuGet Versions</h2>
 <p>
   TeamCity NuGet plugin requires to configure NuGet.Exe Command Line clients.
   There are
@@ -28,7 +30,6 @@
   plugin<bs:s val="${installedPluginsCount}"/> installed.
 </p>
 
-<h2 class="noBorder">Installed NuGet Versions</h2>
 <c:choose>
   <c:when test="${installedPluginsCount eq 0}">
     <div>There are no installed NuGet.exe</div>

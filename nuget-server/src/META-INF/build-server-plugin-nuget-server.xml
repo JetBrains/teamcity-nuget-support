@@ -24,4 +24,9 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerPing"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths"/>
 
+
+  <!-- UI -->
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsSection"/>
+
 </beans>
