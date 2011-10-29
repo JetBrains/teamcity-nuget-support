@@ -118,9 +118,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
                     "PackageSize = 34857\n" +
                     "ProjectUrl = http://www.ninject.org\n" +
                     "RequireLicenseAcceptance = true\n" +
-                    "Summary = Extension for Ninject providing integration with ASP.NET MVC3\n" +
                     "Tags = Ninject ioc di web mvc3\n" +
-                    "Title = Ninject.MVC3\n" +
                     "Version = 2.2.2.0");
   }
 

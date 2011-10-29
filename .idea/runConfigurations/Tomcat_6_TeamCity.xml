@@ -12,10 +12,8 @@
       </file>
     </deployment>
     <server-settings>
-      <option name="DEPLOY_TOMCAT_APPS" value="false" />
       <option name="BASE_DIRECTORY_NAME" value="Unnamed__NETPackagesSupport_2" />
       <option name="HTTP_PORT" value="8111" />
-      <option name="PRESERVE_SESSIONS" value="false" />
     </server-settings>
     <predefined_log_file id="TOMCAT_LOCALHOST_LOG_ID" enabled="true" />
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />

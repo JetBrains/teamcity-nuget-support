@@ -134,7 +134,7 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
       @Override
       protected Response getResponse(String request) {
         if (prefixPath.equals(getRequestPath(request))) {
-          return getFileResponse(responseFile, Arrays.asList("Content-Type: text/plain; encoding=UTF-8", "Content-Encoding: utf-8"));
+          return getFileResponse(responseFile, Arrays.asList("Content-Type: text/plain; encoding=UTF-8"));
         }
         return super.getResponse(request);
       }
@@ -148,8 +148,31 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     return new String(FileUtil.loadFileText(temp, "utf-8"));
   }
 
+
+  protected Runnable assertOwn() {
+    return new Runnable() {
+      public void run() {
+        final HttpGet get = myHttpMethods.createGet(myHttpServerUrl);
+        try {
+          final HttpResponse execute = nyHttpClient.execute(get);
+          final HttpEntity entity = execute.getEntity();
+          System.out.println("Own server Request: " + get.getRequestLine());
+          entity.writeTo(System.out);
+          System.out.println();
+          System.out.println();
+
+          Assert.assertTrue(execute.getStatusLine().getStatusCode() == SC_OK);
+        } catch (IOException e) {
+          throw new RuntimeException("Failed to connect to " + get.getRequestLine() + ". " + e.getClass() + " " + e.getMessage(), e);
+        } finally {
+          get.abort();
+        }
+      }
+    };
+  }
+
   protected Runnable assert200(@NotNull final String req,
-                               @NotNull final NameValuePair... reqs) throws IOException {
+                               @NotNull final NameValuePair... reqs) {
     return new Runnable() {
       public void run() {
         final HttpGet get = myHttpMethods.createGet(myNuGetServerUrl + req, reqs);

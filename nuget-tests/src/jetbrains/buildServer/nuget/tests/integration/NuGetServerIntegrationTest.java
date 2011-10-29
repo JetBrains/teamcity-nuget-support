@@ -26,6 +26,8 @@ public class NuGetServerIntegrationTest extends NuGetServerIntegrationTestBase {
     startSimpleHttpServer(responseFile);
     startNuGetServer();
 
+    assertOwn().run();
+
     assert200("/Packages()").run();
     assert200("/////Packages()").run();
     assert200("/Packages()", new Param("$filter", "Id eq '" + packageId + "'")).run();

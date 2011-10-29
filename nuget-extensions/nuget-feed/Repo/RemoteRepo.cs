@@ -28,7 +28,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 
         return myRemote.ProcessRequest("/packages-metadata.html",
                                        (response, reader) =>
-                                       myParser.ParseServiceMessages(reader).Select(myLoader.Load).ToList()
+                                       myParser.ParseServiceMessages(reader).ToList().Select(myLoader.Load).ToList()
           );        
       } catch(Exception e)
       {
