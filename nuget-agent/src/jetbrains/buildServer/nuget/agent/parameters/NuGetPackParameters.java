@@ -29,7 +29,7 @@ import java.util.Collection;
 public interface NuGetPackParameters extends NuGetParameters {
 
   @NotNull
-  File getSpecFile() throws RunBuildException;
+  Collection<String> getSpecFiles() throws RunBuildException;
 
   @NotNull
   Collection<String> getExclude();

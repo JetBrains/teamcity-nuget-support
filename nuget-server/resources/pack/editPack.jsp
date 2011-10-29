@@ -30,10 +30,10 @@
 
 <l:settingsGroup title="Package parameters">
   <tr>
-    <th><label for="${ib.packSpecFile}">Specification file</label><l:star/>:</th>
+    <th><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
     <td>
-      <props:textProperty name="${ib.packSpecFile}" className="longField"/>
-      <span class="smallNote">Specify path to project of .nuspec file or to a project file (.csproj)</span>
+      <props:multilineProperty name="${ib.packSpecFile}" linkTitle="Specification or project files" cols="60" rows="5" expanded="${true}"/>
+      <span class="smallNote">Specify paths to .nuspec files and/or to Visual Studio project files (i.e. .csproj). Wildcards are supported</span>
       <span id="error_${ib.packSpecFile}" class="error"></span>
     </td>
   </tr>

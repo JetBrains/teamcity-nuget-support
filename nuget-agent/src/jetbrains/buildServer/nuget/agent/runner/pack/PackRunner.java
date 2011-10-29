@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
+import jetbrains.buildServer.nuget.agent.util.MatchFilesBuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import org.apache.log4j.Logger;
@@ -52,23 +53,37 @@ public class PackRunner extends NuGetRunnerBase {
     final NuGetPackParameters params = myParametersFactory.loadPackParameters(context);
 
     process.pushBuildProcess(new BuildProcessBase() {
+      private final String CLEAN_OUTPUT_KEY = "teamcity.nuget.pack.cleanOutputDirectory";
+      private final String CLEAN_OUTPUT_VALUE_CLEANED = "cleaned";
+      private final String CLEAN_OUTPUT_VALUE_NOT_CLEANED = "not-cleaned";
+
       @NotNull
       @Override
       protected BuildFinishedStatus waitForImpl() throws RunBuildException {
         final File output = params.getOutputDirectory();
 
-        if (params.cleanOutputDirectory()) {
+        final String clean = runningBuild.getSharedConfigParameters().get(CLEAN_OUTPUT_KEY);
+        if (clean == null && params.cleanOutputDirectory()) {
+          runningBuild.addSharedConfigParameter(CLEAN_OUTPUT_KEY, CLEAN_OUTPUT_VALUE_CLEANED);
           final CleanerCallback callback = new CleanerCallback(runningBuild.getBuildLogger(), Logger.getLogger(getClass()));
           myCleaner.cleanFolder(output, callback);
           if (callback.isHasErrors()) {
             return BuildFinishedStatus.FINISHED_FAILED;
           }
+        } else if (clean == null && !params.cleanOutputDirectory()) {
+          runningBuild.addSharedConfigParameter(CLEAN_OUTPUT_KEY, CLEAN_OUTPUT_VALUE_NOT_CLEANED);
+        } else if (CLEAN_OUTPUT_VALUE_NOT_CLEANED.equals(clean) && params.cleanOutputDirectory()) {
+          final String message = "Could not clean output directory, there were another NuGet Packages Pack runner with disabled clean";
+          LOG.warn(message);
+          runningBuild.getBuildLogger().warning(message);
+        } else if (CLEAN_OUTPUT_VALUE_CLEANED.equals(clean)) {
+          LOG.warn("Will not clean NuGet Pachages Pack runner output, output was cleaned by previous runners");
         }
 
         //noinspection ResultOfMethodCallIgnored
         output.mkdirs();
         if (!output.isDirectory()) {
-         runningBuild.getBuildLogger().error("Failed to create output directory: " + output);
+          runningBuild.getBuildLogger().error("Failed to create output directory: " + output);
           return BuildFinishedStatus.FINISHED_FAILED;
         }
 
@@ -76,7 +91,14 @@ public class PackRunner extends NuGetRunnerBase {
       }
     });
 
-    process.pushBuildProcess(myActionFactory.createPack(context, params));
+    process.pushBuildProcess(
+            new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcessBase.Callback() {
+              public void fileFound(@NotNull File file) throws RunBuildException {
+                process.pushBuildProcess(myActionFactory.createPack(context, file, params));
+              }
+            })
+    );
+
     return process;
   }
 

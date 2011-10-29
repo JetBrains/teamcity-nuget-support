@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.runner.publish.fsScanner;
+package jetbrains.buildServer.nuget.agent.util.fsScanner;
 
 import org.jetbrains.annotations.NotNull;
 

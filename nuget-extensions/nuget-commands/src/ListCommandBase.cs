@@ -16,19 +16,35 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [Import]
     public IPackageSourceProvider SourceProvider { get; set; }
 
+    private static IEnumerable<T> ZipEx<T>(IEnumerable<T> left, IEnumerable<T> right, Func<T, T, T> zip)
+    {
+      var enuLeft = left.GetEnumerator();
+      var enuRight = right.GetEnumerator();
+
+      while (enuLeft.MoveNext() && enuRight.MoveNext())
+        yield return zip(enuLeft.Current, enuRight.Current);
+
+      while (enuLeft.MoveNext()) yield return enuLeft.Current;
+      while (enuRight.MoveNext()) yield return enuRight.Current;
+    }
+
     protected IEnumerable<IPackage> GetAllPackages(string source, IEnumerable<string> ids)
     {
       IPackageRepository packageRepository = RepositoryFactory.CreateRepository(source);
 
       var param = Expression.Parameter(typeof (IPackageMetadata));
 
-      Expression result = ids
-        .Select(id => Expression.Equal(Expression.Property(param, "Id"), Expression.Constant(id)))
-        .Aggregate<Expression, Expression>(null, (acc, element) => acc != null ? Expression.Or(element, acc) : element);
+      var expressions = ids.Distinct().Select(id => Expression.Equal(Expression.Property(param, "Id"), Expression.Constant(id))).ToList();
+      while (expressions.Count > 1)
+      {
+        var left = expressions.Where((x, i) => i%2 == 0);
+        var right = expressions.Where((x, i) => i%2 == 1);
+        expressions = ZipEx(left, right, Expression.Or).ToList();
+      }
 
       var items = packageRepository.GetPackages();
-      if (result == null) return items;
-      return items.Where(Expression.Lambda<Func<IPackage, bool>>(result, param));
+      if (expressions.Count == 0) return items;
+      return items.Where(Expression.Lambda<Func<IPackage, bool>>(expressions.Single(), param));
     }
 
     /// <summary>

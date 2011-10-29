@@ -124,7 +124,13 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
-  public BuildProcess createPack(@NotNull BuildRunnerContext context, @NotNull NuGetPackParameters params) throws RunBuildException {
-    return myCommandFactory.createPack(params, context.getBuild().getCheckoutDirectory(), getCallback(context));
+  public BuildProcess createPack(@NotNull BuildRunnerContext context,
+                                 @NotNull File specFile,
+                                 @NotNull NuGetPackParameters params) throws RunBuildException {
+    return myCommandFactory.createPack(
+            specFile,
+            params,
+            context.getBuild().getCheckoutDirectory(),
+            getCallback(context));
   }
 }

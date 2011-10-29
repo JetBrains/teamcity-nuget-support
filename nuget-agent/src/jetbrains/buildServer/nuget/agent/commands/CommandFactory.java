@@ -50,7 +50,8 @@ public interface CommandFactory {
                    @NotNull File packagePath,
                    @NotNull Callback<T> factory) throws RunBuildException;
 
-  <T> T createPack(@NotNull NuGetPackParameters params,
+  <T> T createPack(@NotNull File specFile,
+                   @NotNull NuGetPackParameters params,
                    @NotNull File workdir,
                    @NotNull Callback<T> factory) throws RunBuildException;
 
