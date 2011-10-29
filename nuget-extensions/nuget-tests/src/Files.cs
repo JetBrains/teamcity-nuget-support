@@ -39,19 +39,9 @@ namespace JetBrains.TeamCity.NuGet.Tests
       get { return ourCachedNuGetRunnerPath.Value; }
     }
 
-    private static string LocalFeed
-    {
-      get { return ourLocalFeed.Value; }
-    }
-
-    private static string LocalFeed_1_4
-    {
-      get { return ourLocalFeed_1_4.Value; }
-    }
-
     public static string GetLocalFeed(NuGetVersion version)
     {
-      return version.Is_1_4() ? LocalFeed_1_4 : LocalFeed;
+      return version.Is_1_4() ? ourLocalFeed_1_4.Value : ourLocalFeed.Value;
     }
 
     public static string GetNuGetExe(NuGetVersion version)
@@ -102,12 +92,12 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     public static IEnumerable<string> GetNuGetPackageFiles()
     {
-      return Directory.GetFiles(LocalFeed, "*.nupkg");
+      return Directory.GetFiles(ourLocalFeed.Value, "*.nupkg");
     }
 
     public static string WebPackage_1_1_1
     {
-      get { return Path.Combine(LocalFeed, "Web.1.1.1.nupkg"); }
+      get { return Path.Combine(ourLocalFeed.Value, "Web.1.1.1.nupkg"); }
     }
   }
 
