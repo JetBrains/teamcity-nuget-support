@@ -53,6 +53,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\NuGetRunner_ListCommandTest.cs" />
     <Compile Include="src\NuGetRunner_ListPackagesCommandTest.cs" />
+    <Compile Include="src\NuGetVersion.cs" />
     <Compile Include="src\PathSearcher.cs" />
     <Compile Include="src\ProcessExecutor.cs" />
     <Compile Include="src\TempFilesHolder.cs" />

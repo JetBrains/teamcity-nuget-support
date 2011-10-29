@@ -100,21 +100,4 @@ namespace JetBrains.TeamCity.NuGet.Tests
       get { return Path.Combine(ourLocalFeed.Value, "Web.1.1.1.nupkg"); }
     }
   }
-
-  public enum NuGetVersion
-  {
-    NuGet_1_4,
-    NuGet_1_5,
-
-    NuGet_Latest_CI,
-    NuGet_CommandLine_Package_Latest
-  }
-
-  public static class NuGetVersionExtensions
-  {
-    public static bool Is_1_4(this NuGetVersion version)
-    {
-      return version == NuGetVersion.NuGet_1_4;
-    }
-  }
 }
