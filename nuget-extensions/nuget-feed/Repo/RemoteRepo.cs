@@ -27,7 +27,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
     {
       try
       {
-        return myRemote.ProcessRequest("/packages-metadata.html", ProcessPackages);        
+        return myRemote.ProcessRequest("/packages-metadata.html", ProcessPackages);
       } catch(Exception e)
       {
         LOG.Warn(string.Format("Failed to fetch all packages from TeamCity server. {0}", e.Message), e);
@@ -35,8 +35,14 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
       }
     }
 
-    private List<TeamCityPackage> ProcessPackages(HttpWebResponse response, TextReader reader)
+    private IEnumerable<TeamCityPackage> ProcessPackages(HttpWebResponse response, TextReader reader)
     {
+      if (response.StatusCode != HttpStatusCode.OK)
+      {
+        LOG.Warn("Failed to fetch packages. HTTP Status was: " + response.StatusCode);
+        return new TeamCityPackage[0];
+      }
+
       var list = myParser.ParseServiceMessages(reader).ToList();
       LOG.InfoFormat("Fetched {0} packages from TeamCity", list.Count);
       return list.Select(myLoader.Load).ToList();
