@@ -39,7 +39,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_TeamListPublic_Local(NuGetVersion version)
     {
-      ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "TeamCity.List", "-Id", "Web", "-Source", Files.LocalFeed)
+      ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "TeamCity.List", "-Id", "Web", "-Source", Files.GetLocalFeed(version))
         .Dump()
         .AssertExitedSuccessfully()
         .AssertNoErrorOutput()
@@ -54,7 +54,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_TeamListPublicVersion_Local(NuGetVersion version)
     {
-      var r = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "TeamCity.List", "-Id", "Web", "-Version", "(1.2.0, 2.1.8)", "-Source", Files.LocalFeed)
+      var r = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "TeamCity.List", "-Id", "Web", "-Version", "(1.2.0, 2.1.8)", "-Source", Files.GetLocalFeed(version))
         .Dump()
         .AssertExitedSuccessfully()
         .AssertNoErrorOutput()

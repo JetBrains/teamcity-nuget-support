@@ -18,6 +18,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
 
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
+    private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
     private static readonly Lazy<string> ourCachedNuGet_CI_Last = new Lazy<string>(() => FetchLatestNuGetPackage("bt4"));
 
     private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last =
@@ -38,9 +39,19 @@ namespace JetBrains.TeamCity.NuGet.Tests
       get { return ourCachedNuGetRunnerPath.Value; }
     }
 
-    public static string LocalFeed
+    private static string LocalFeed
     {
       get { return ourLocalFeed.Value; }
+    }
+
+    private static string LocalFeed_1_4
+    {
+      get { return ourLocalFeed_1_4.Value; }
+    }
+
+    public static string GetLocalFeed(NuGetVersion version)
+    {
+      return version.Is_1_4() ? LocalFeed_1_4 : LocalFeed;
     }
 
     public static string GetNuGetExe(NuGetVersion version)
@@ -107,5 +118,13 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     NuGet_Latest_CI,
     NuGet_CommandLine_Package_Latest
+  }
+
+  public static class NuGetVersionExtensions
+  {
+    public static bool Is_1_4(this NuGetVersion version)
+    {
+      return version == NuGetVersion.NuGet_1_4;
+    }
   }
 }

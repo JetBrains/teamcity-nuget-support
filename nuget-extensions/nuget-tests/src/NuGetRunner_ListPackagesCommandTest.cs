@@ -165,7 +165,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
            File.WriteAllText(fileIn,
                              @"<nuget-packages>
                                     <packages>
-                                       <package source='" + Files.LocalFeed + @"' id='Web'/>
+                                       <package source='" + Files.GetLocalFeed(version) + @"' id='Web'/>
                                     </packages>
                                    </nuget-packages>");
 
