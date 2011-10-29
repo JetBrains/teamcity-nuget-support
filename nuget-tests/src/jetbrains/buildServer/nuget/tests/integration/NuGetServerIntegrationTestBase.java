@@ -131,9 +131,11 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     final String prefixPath = "/packages";
 
     myHttpServer = new SimpleHttpServer() {
+      private final String packagesHandle = prefixPath + "/packages-metadata.html";
       @Override
       protected Response getResponse(String request) {
-        if (prefixPath.equals(getRequestPath(request))) {
+        System.out.println("Mock HTTP server request: " + request);
+        if (packagesHandle.equals(getRequestPath(request))) {
           return getFileResponse(responseFile, Arrays.asList("Content-Type: text/plain; encoding=UTF-8"));
         }
         return super.getResponse(request);
@@ -147,7 +149,6 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
   protected String loadAllText(File temp) throws IOException {
     return new String(FileUtil.loadFileText(temp, "utf-8"));
   }
-
 
   protected Runnable assertOwn() {
     return new Runnable() {

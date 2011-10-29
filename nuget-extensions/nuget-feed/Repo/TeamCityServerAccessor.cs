@@ -16,11 +16,13 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
     public TeamCityServerAccessor(string remoteUrl)
     {
       myRemoteUrl = remoteUrl;
+      LOG.Info("TeamCityServerAccessor created. TeamCity URL: " + myRemoteUrl);
     }
 
     public T ProcessRequest<T>(string urlSuffix, Func<HttpWebResponse, TextReader, T> result)
     {
       var requestUriString = myRemoteUrl.TrimEnd('/') + "/" + urlSuffix.TrimStart('/');
+      LOG.Info("Requesting " + requestUriString);
       try
       {
         var wr = (HttpWebRequest) WebRequest.Create(requestUriString);
@@ -34,11 +36,15 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 
           var streamReader = new StreamReader(stream, Encoding.UTF8);
           return result(webResponse, streamReader);
-        }
+        }        
       }
       catch (Exception e)
       {        
+        LOG.Warn("Request to " + requestUriString + ". Failed. " + e.Message, e);        
         throw new Exception(string.Format("Failed to fetch all packages from: {0}. {1}", requestUriString, e.Message), e);
+      } finally
+      {
+        LOG.Info("Request " + requestUriString + " finished");
       }
     }
 

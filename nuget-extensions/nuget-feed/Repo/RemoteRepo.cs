@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using JetBrains.TeamCity.ServiceMessages.Read;
 using log4net;
 
@@ -25,16 +27,19 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
     {
       try
       {
-
-        return myRemote.ProcessRequest("/packages-metadata.html",
-                                       (response, reader) =>
-                                       myParser.ParseServiceMessages(reader).ToList().Select(myLoader.Load).ToList()
-          );        
+        return myRemote.ProcessRequest("/packages-metadata.html", ProcessPackages);        
       } catch(Exception e)
       {
         LOG.Warn(string.Format("Failed to fetch all packages from TeamCity server. {0}", e.Message), e);
         return new TeamCityPackage[0];
       }
+    }
+
+    private List<TeamCityPackage> ProcessPackages(HttpWebResponse response, TextReader reader)
+    {
+      var list = myParser.ParseServiceMessages(reader).ToList();
+      LOG.InfoFormat("Fetched {0} packages from TeamCity", list.Count);
+      return list.Select(myLoader.Load).ToList();
     }
 
     public IEnumerable<TeamCityPackage> FilterById(IEnumerable<string> ids)
