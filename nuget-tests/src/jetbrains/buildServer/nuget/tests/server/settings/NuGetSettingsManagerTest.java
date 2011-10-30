@@ -20,8 +20,10 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
+import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerConfiguration;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
 import org.jetbrains.annotations.NotNull;
+import org.jmock.Mockery;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -33,17 +35,21 @@ import static jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent
  *         Date: 30.10.11 14:22
  */
 public class NuGetSettingsManagerTest extends BaseTestCase {
+  private Mockery m;
+  private NuGetSettingsManagerConfiguration myConfig;
   private NuGetSettingsManager mySettings;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    m = new Mockery();
+    myConfig = m.mock(NuGetSettingsManagerConfiguration.class);
     recreateSettings();
   }
 
   private void recreateSettings() {
-    mySettings = new NuGetSettingsManagerImpl();
+    mySettings = new NuGetSettingsManagerImpl(myConfig);
   }
 
   @Test
@@ -56,7 +62,7 @@ public class NuGetSettingsManagerTest extends BaseTestCase {
     mySettings.writeSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
       public Object executeAction(@NotNull NuGetSettingsWriter action) {
         action.setBooleanParameter("bool1", true);
-        action.setIntParameter("int1", 239);
+        action.setIntParameter("int1", 44);
         action.setStringParameter("string1", "zzz");
         return null;
       }
@@ -70,7 +76,11 @@ public class NuGetSettingsManagerTest extends BaseTestCase {
         return null;
       }
     });
+  }
 
+  @Test
+  public void testReadWriteRecreate() {
+    testReadWrite();
     recreateSettings();
 
     mySettings.readSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
@@ -105,7 +115,11 @@ public class NuGetSettingsManagerTest extends BaseTestCase {
         return null;
       }
     });
+  }
 
+  @Test
+  public void testRemoveKeyRecreate() {
+    testRemoveKey();
     recreateSettings();
 
     mySettings.readSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
@@ -139,7 +153,11 @@ public class NuGetSettingsManagerTest extends BaseTestCase {
         return null;
       }
     });
+  }
 
+  @Test
+  public void testUpdateKeyRecreate() {
+    testUpdateKey();
     recreateSettings();
 
     mySettings.readSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
@@ -163,12 +181,35 @@ public class NuGetSettingsManagerTest extends BaseTestCase {
         Assert.assertEquals("true", action.getStringParameter("bool1"));
 
         Assert.assertEquals(false, action.getBooleanParameter("int1", false));
-        Assert.assertEquals(445, action.getIntParameter("int1", 42));
-        Assert.assertEquals("445", action.getStringParameter("int1"));
+        Assert.assertEquals(44, action.getIntParameter("int1", 42));
+        Assert.assertEquals("44", action.getStringParameter("int1"));
 
-        Assert.assertEquals("uuu", action.getStringParameter("string1"));
-        Assert.assertEquals(444, action.getIntParameter("string1",444));
-        Assert.assertEquals(false, action.getBooleanParameter("string1",false));
+        Assert.assertEquals("zzz", action.getStringParameter("string1"));
+        Assert.assertEquals(444, action.getIntParameter("string1", 444));
+        Assert.assertEquals(false, action.getBooleanParameter("string1", false));
+        return null;
+      }
+    });
+  }
+
+  @Test
+  public void testReadWrongTypeRecreate() {
+    testReadWrongType();
+    recreateSettings();
+
+    mySettings.readSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
+      public Object executeAction(@NotNull NuGetSettingsReader action) {
+        Assert.assertEquals(true, action.getBooleanParameter("bool1", false));
+        Assert.assertEquals(44, action.getIntParameter("bool1", 44));
+        Assert.assertEquals("true", action.getStringParameter("bool1"));
+
+        Assert.assertEquals(false, action.getBooleanParameter("int1", false));
+        Assert.assertEquals(44, action.getIntParameter("int1", 42));
+        Assert.assertEquals("44", action.getStringParameter("int1"));
+
+        Assert.assertEquals("zzz", action.getStringParameter("string1"));
+        Assert.assertEquals(444, action.getIntParameter("string1", 444));
+        Assert.assertEquals(false, action.getBooleanParameter("string1", false));
         return null;
       }
     });

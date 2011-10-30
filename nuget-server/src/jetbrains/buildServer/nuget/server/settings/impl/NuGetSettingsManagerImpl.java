@@ -22,16 +22,47 @@ import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 30.10.11 14:15
  */
 public class NuGetSettingsManagerImpl implements NuGetSettingsManager {
+  private final NuGetSettingsManagerConfiguration myConfiguration;
+  private final ReadWriteLock myLock = new ReentrantReadWriteLock();
+
+  private final AtomicReference<SettingsState> myState = new AtomicReference<SettingsState>(new SettingsState());
+
+  public NuGetSettingsManagerImpl(@NotNull final NuGetSettingsManagerConfiguration configuration) {
+    myConfiguration = configuration;
+  }
+
+  @NotNull
+  private SettingsState getState() {
+    return myState.get();
+  }
+
   public <T> T readSettings(@NotNull NuGetSettingsComponent component, @NotNull Func<NuGetSettingsReader, T> action) {
-    throw new RuntimeException("Not implemented");
+    myLock.readLock().lock();
+    try {
+      return action.executeAction(getState().read(component));
+    } finally {
+      myLock.readLock().unlock();
+    }
   }
 
   public <T> T writeSettings(@NotNull NuGetSettingsComponent component, @NotNull Func<NuGetSettingsWriter, T> action) {
-    throw new RuntimeException("Not implemented");
+    myLock.writeLock().lock();
+    try {
+      final ComponentWriter writable = new ComponentWriter(component);
+      final T result = action.executeAction(writable);
+      myState.set(getState().update(writable));
+      return result;
+    } finally {
+      myLock.writeLock().unlock();
+    }
   }
 }
