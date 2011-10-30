@@ -18,27 +18,34 @@ package jetbrains.buildServer.nuget.server.feed.server.tab;
 
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
+import jetbrains.buildServer.controllers.BasePropertiesBean;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 26.10.11 19:21
  */
 public class FeedServerController extends BaseController {
+  @NotNull
+  private final PluginDescriptor myDescriptor;
 
   public FeedServerController(@NotNull final AuthorizationInterceptor auth,
                               @NotNull final PermissionChecker checker,
                               @NotNull final FeedServerSettingsSection section,
-                              @NotNull final WebControllerManager web) {
+                              @NotNull final WebControllerManager web,
+                              @NotNull final PluginDescriptor descriptor) {
+    myDescriptor = descriptor;
     final String myPath = section.getIncludePath();
 
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
@@ -51,6 +58,8 @@ public class FeedServerController extends BaseController {
 
   @Override
   protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    return simpleView("Not implemented");
+    final ModelAndView modelAndView = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettings.jsp"));
+    modelAndView.getModel().put("propertiesBean", new BasePropertiesBean(Collections.<String, String>emptyMap()));
+    return modelAndView;
   }
 }
