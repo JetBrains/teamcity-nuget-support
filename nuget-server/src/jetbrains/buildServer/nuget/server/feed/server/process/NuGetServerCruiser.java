@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.process;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.BuildServerListener;
 import jetbrains.buildServer.serverSide.executors.ExecutorServices;
@@ -38,19 +39,27 @@ public class NuGetServerCruiser {
   public NuGetServerCruiser(@NotNull final NuGetServerRunner runner,
                             @NotNull final ExecutorServices executors,
                             @NotNull final NuGetServerPing ping,
+                            @NotNull final NuGetServerRunnerSettings settings,
                             @NotNull final EventDispatcher<BuildServerListener> events) {
     events.addListener(new BuildServerAdapter(){
       private ScheduledFuture<?> myCheckTask;
 
       @Override
       public void serverStartup() {
-        runner.startServer();
+        if (settings.isNuGetFeedEnabled()) {
+          runner.startServer();
+        }
+
         myCheckTask = executors.getNormalExecutorService().scheduleWithFixedDelay(ExceptionUtil.catchAll("Check NuGet Server is running task", new Runnable() {
           public void run() {
-            runner.ensureAlive();
+            if (settings.isNuGetFeedEnabled()) {
+              runner.ensureAlive();
 
-            if (!ping.pingNuGetServer()) {
-              LOG.warn("Failed to ping NuGet server. Server will be restarted.");
+              if (!ping.pingNuGetServer()) {
+                LOG.warn("Failed to ping NuGet server. Server will be restarted.");
+                runner.stopServer();
+              }
+            } else {
               runner.stopServer();
             }
           }

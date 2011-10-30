@@ -18,6 +18,9 @@ package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,19 +33,36 @@ import java.io.File;
 public class MetadataControllerLocation implements NuGetServerRunnerSettings {
   private final RootUrlHolder myRootUrl;
   private final ServerPaths myPaths;
+  private final NuGetSettingsManager mySettings;
   private final MetadataControllersPaths myController;
 
   public MetadataControllerLocation(@NotNull final RootUrlHolder rootUrl,
                                     @NotNull final MetadataControllersPaths controller,
-                                    @NotNull final ServerPaths paths) {
+                                    @NotNull final ServerPaths paths,
+                                    @NotNull final NuGetSettingsManager settings) {
     myRootUrl = rootUrl;
     myController = controller;
     myPaths = paths;
+    mySettings = settings;
+  }
+
+  public boolean isNuGetFeedEnabled() {
+    return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
+      public Boolean executeAction(@NotNull NuGetSettingsReader action) {
+        return action.getBooleanParameter("feed.enabled", false);
+      }
+    });
   }
 
   @NotNull
   public String getPackagesControllerUrl() {
-    return myRootUrl.getRootUrl() + myController.getBasePath();
+    return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
+      public String executeAction(@NotNull NuGetSettingsReader action) {
+        final String url = action.getStringParameter("url");
+        if (url != null) return url;
+        return myRootUrl.getRootUrl() + myController.getBasePath();
+      }
+    });
   }
 
   @NotNull

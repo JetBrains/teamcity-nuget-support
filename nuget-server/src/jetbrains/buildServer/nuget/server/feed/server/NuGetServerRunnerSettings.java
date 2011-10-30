@@ -25,6 +25,8 @@ import java.io.File;
  *         Date: 21.10.11 18:53
  */
 public interface NuGetServerRunnerSettings {
+  boolean isNuGetFeedEnabled();
+
   @NotNull String getPackagesControllerUrl();
   @NotNull File getLogsPath();
 }
