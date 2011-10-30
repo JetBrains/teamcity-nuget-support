@@ -16,51 +16,79 @@
 
 package jetbrains.buildServer.nuget.tests.server.settings;
 
-import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
+import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerConfiguration;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
+import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsPersistance;
+import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsWatcher;
+import jetbrains.buildServer.serverSide.BuildServerListener;
+import jetbrains.buildServer.util.EventDispatcher;
+import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.WaitForAssert;
 import org.jetbrains.annotations.NotNull;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.IOException;
 
 import static jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent.SERVER;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 30.10.11 14:22
+ *         Date: 30.10.11 15:56
  */
-public class NuGetSettingsManagerTest extends BaseTestCase {
-  protected NuGetSettingsManager mySettings;
+public class NuGetSettingsManagerPersitedTest extends NuGetSettingsManagerTest {
+  private Mockery m;
+  private NuGetSettingsManagerConfiguration myConfig;
+  private File myFile;
+  private NuGetSettingsPersistance myPersistance;
+  private NuGetSettingsWatcher myWatcher;
+  private EventDispatcher<BuildServerListener> myListener;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    m = new Mockery();
+    myConfig = m.mock(NuGetSettingsManagerConfiguration.class);
+    myFile = createTempFile();
+
+    m.checking(new Expectations(){{
+      allowing(myConfig).getNuGetConfigXml();
+      will(returnValue(myFile));
+    }});
+
     recreateSettings();
   }
 
+  @Override
   protected void recreateSettings() {
-    mySettings = new NuGetSettingsManagerImpl();
+    super.recreateSettings();
+
+    if (myConfig == null) return;
+
+    if (myListener != null) {
+      myListener.getMulticaster().serverShutdown();
+    }
+
+    myPersistance = new NuGetSettingsPersistance(myConfig);
+    myListener = EventDispatcher.create(BuildServerListener.class);
+    myWatcher = new NuGetSettingsWatcher(myConfig, myListener, myPersistance, (NuGetSettingsManagerImpl) mySettings);
+    myWatcher.setWatchInterval(10);
+
+    myListener.getMulticaster().serverStartup();
   }
 
   @Test
-  public void testReadEmpty() {
-    mySettings.readSettings(SERVER, checkDefaults());
-  }
-
-  @Test
-  public void testReadWrite() {
-    mySettings.writeSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
-      public Object executeAction(@NotNull NuGetSettingsWriter action) {
-        action.setBooleanParameter("bool1", true);
-        action.setIntParameter("int1", 44);
-        action.setStringParameter("string1", "zzz");
-        return null;
-      }
-    });
+  public void testReadWriteRecreate() {
+    testReadWrite();
+    recreateSettings();
 
     mySettings.readSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
       public Object executeAction(@NotNull NuGetSettingsReader action) {
@@ -73,17 +101,9 @@ public class NuGetSettingsManagerTest extends BaseTestCase {
   }
 
   @Test
-  public void testRemoveKey() {
-    testReadWrite();
-
-    mySettings.writeSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
-      public Object executeAction(@NotNull NuGetSettingsWriter action) {
-        action.removeParameter("bool1");
-        action.removeParameter("int1");
-        action.removeParameter("string1");
-        return null;
-      }
-    });
+  public void testRemoveKeyRecreate() {
+    testRemoveKey();
+    recreateSettings();
 
     mySettings.readSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
       public Object executeAction(@NotNull NuGetSettingsReader action) {
@@ -96,17 +116,9 @@ public class NuGetSettingsManagerTest extends BaseTestCase {
   }
 
   @Test
-  public void testUpdateKey() {
-    testReadWrite();
-
-    mySettings.writeSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
-      public Object executeAction(@NotNull NuGetSettingsWriter action) {
-        action.setBooleanParameter("bool1", false);
-        action.setIntParameter("int1", 445);
-        action.setStringParameter("string1", "uuu");
-        return null;
-      }
-    });
+  public void testUpdateKeyRecreate() {
+    testUpdateKey();
+    recreateSettings();
 
     mySettings.readSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
       public Object executeAction(@NotNull NuGetSettingsReader action) {
@@ -119,8 +131,9 @@ public class NuGetSettingsManagerTest extends BaseTestCase {
   }
 
   @Test
-  public void testReadWrongType() {
-    testReadWrite();
+  public void testReadWrongTypeRecreate() {
+    testReadWrongType();
+    recreateSettings();
 
     mySettings.readSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
       public Object executeAction(@NotNull NuGetSettingsReader action) {
@@ -140,17 +153,36 @@ public class NuGetSettingsManagerTest extends BaseTestCase {
     });
   }
 
-  @NotNull
-  private NuGetSettingsManager.Func<NuGetSettingsReader, Object> checkDefaults() {
-    return new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
+  @Test
+  public void testFileWatcherReload() throws IOException {
+    testReadWrite();
+    File tmp = createTempFile();
+    FileUtil.copy(myFile, tmp);
+
+    FileUtil.delete(myFile);
+
+    recreateSettings();
+    myWatcher.setWatchInterval(10);
+
+    mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
       public Object executeAction(@NotNull NuGetSettingsReader action) {
-        Assert.assertEquals(true, action.getBooleanParameter("bool", true));
-        Assert.assertEquals(42, action.getIntParameter("int", 42));
-        Assert.assertEquals(null, action.getStringParameter("foo"));
+        Assert.assertNull(action.getStringParameter("string1"));
         return null;
+      }
+    });
+
+    FileUtil.copy(tmp, myFile);
+
+    new WaitForAssert(){
+      @Override
+      protected boolean condition() {
+        return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
+          public Boolean executeAction(@NotNull NuGetSettingsReader action) {
+            return "zzz".equals(action.getStringParameter("string1"));
+          }
+        });
       }
     };
   }
-
 
 }

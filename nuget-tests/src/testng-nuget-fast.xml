@@ -16,6 +16,7 @@
     <classes>
       <!-- setting manager -->
       <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerPersitedTest"/>
 
       <!-- misc -->
       <class name="jetbrains.buildServer.nuget.tests.RunTypeNameTest"/>

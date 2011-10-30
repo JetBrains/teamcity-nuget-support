@@ -22,6 +22,8 @@ import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -31,17 +33,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *         Date: 30.10.11 14:15
  */
 public class NuGetSettingsManagerImpl implements NuGetSettingsManager {
-  private final NuGetSettingsManagerConfiguration myConfiguration;
   private final ReadWriteLock myLock = new ReentrantReadWriteLock();
-
   private final AtomicReference<SettingsState> myState = new AtomicReference<SettingsState>(new SettingsState());
-
-  public NuGetSettingsManagerImpl(@NotNull final NuGetSettingsManagerConfiguration configuration) {
-    myConfiguration = configuration;
-  }
+  private final List<Runnable> myOnUpdate = new ArrayList<Runnable>();
 
   @NotNull
-  private SettingsState getState() {
+  public SettingsState getState() {
     return myState.get();
   }
 
@@ -60,9 +57,27 @@ public class NuGetSettingsManagerImpl implements NuGetSettingsManager {
       final ComponentWriter writable = new ComponentWriter(component);
       final T result = action.executeAction(writable);
       myState.set(getState().update(writable));
+
+      for (Runnable runnable : myOnUpdate) {
+        runnable.run();
+      }
+
       return result;
     } finally {
       myLock.writeLock().unlock();
     }
+  }
+
+  public void reload(@NotNull SettingsState settingsState) {
+    myLock.writeLock().lock();
+    try {
+      myState.set(settingsState);
+    } finally {
+      myLock.writeLock().unlock();
+    }
+  }
+
+  public void addOnUpdateHandler(@NotNull final Runnable action) {
+    myOnUpdate.add(action);
   }
 }
