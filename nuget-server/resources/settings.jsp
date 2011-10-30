@@ -13,11 +13,12 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
 <%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="nuget_teamcity_include_controllers" scope="request" type="java.util.Collection<java.lang.String>"/>
 
 <c:forEach items="${nuget_teamcity_include_controllers}" var="nugetSettingsPage">
-  <div style="padding-bottom: 3em;">
+  <div style="padding-top: 1.5em;">
     <!-- start of NuGet Settings page: <c:out value="${nugetSettingsPage}"/> -->
     <jsp:include page="${nugetSettingsPage}"/>
     <!-- end of NuGet Settings page: <c:out value="${nugetSettingsPage}"/> -->
