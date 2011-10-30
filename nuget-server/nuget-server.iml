@@ -17,6 +17,7 @@
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-install-runner.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-publish-runner.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-trigger.xml</file>
+          <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-settings.xml</file>
         </fileset>
       </configuration>
     </facet>
