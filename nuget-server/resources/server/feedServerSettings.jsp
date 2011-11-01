@@ -18,6 +18,8 @@
 
 <jsp:useBean id="serverUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="nugetStatusRefreshUrl" scope="request" type="java.lang.String" />
+<jsp:useBean id="nugetSettingsPostUrl" scope="request" type="java.lang.String" />
+<jsp:useBean id="serverStatus" scope="request" type="jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus" />
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerContants"/>
 
 
@@ -25,16 +27,8 @@
 <div style="width: 50em;">
 <p>In this section you may select if you like to make TeamCity be a NuGet feed.</p>
 
-<form id="nugetSettingsForm" action="<c:url value='${nugetStatusRefreshUrl}'/>" method="post">
+<form id="nugetSettingsForm" action="<c:url value='${nugetSettingsPostUrl}'/>" method="post">
   <table class="runnerFormTable">
-    <tr>
-      <th>Enable NuGet Server:</th>
-      <td>
-        <forms:saving id="serverStatusIcon"/>
-        <props:checkboxProperty name="${fb.nugetServerEnabledCheckbox}" onclick="BS.NuGet.FeedServer.persistCheckbox()"/> Enabled NuGet Server
-        <span class="smallNote">Enabled or disabled nuget feed server running inside TeamCity</span>
-      </td>
-    </tr>
     <tr>
       <td colspan="2">
         <div class="attentionComment">
@@ -45,15 +39,47 @@
         </div>
       </td>
     </tr>
+    <tr>
+      <th>Enable NuGet Server:</th>
+      <td>
+        <forms:saving id="serverStatusIcon"/>
+        <props:checkboxProperty name="${fb.nugetServerEnabledCheckbox}" onclick="BS.NuGet.FeedServer.persistCheckbox()"/> Enabled NuGet Server
+        <span class="smallNote">Enabled or disabled nuget feed server running inside TeamCity</span>
+      </td>
+    </tr>
   </table>
 </form>
 
-  <bs:refreshable containerId="nugetServerStatus" pageUrl="${nugetStatusRefreshUrl}">
+  <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
+  <bs:refreshable containerId="nugetServerStatus" pageUrl="${nugetStatusRefreshFullUrl}">
     <table class="runnerFormTable">
       <tr>
-        <td>NuGet Server status:</td>
-        <td>
-          <span style="color:#008000">RUNNING</span>
+        <th>NuGet Server status:</th>
+        <td style="padding-top: 12px;">
+          <c:choose>
+            <c:when test="${serverStatus.scheduledToStart}">
+              <div style="">Server is starting</div>
+              <span class="smallNote">NuGet Feed server is not runnig now and will be started soon.</span>
+            </c:when>
+
+            <c:when test="${not serverStatus.running}">
+              <div style="">Server is stopped</div>
+            </c:when>
+
+            <%-- server is runnning --%>
+            <c:when test="${empty serverStatus.serverAccessible}">
+              <div style="">Server is starting</div>
+            </c:when>
+
+            <c:when test="${not serverStatus.serverAccessible}">
+              <div style="">Ping Failed</div>
+              <span class="smallNote">Check TeamCity Server Url is accessible from localhost</span>
+            </c:when>
+            <c:when test="${serverStatus.serverAccessible}">
+              <div style="">Running</div>
+              <span class="smallNote">NuGet Feed server is running now.</span>
+            </c:when>
+          </c:choose>
         </td>
       </tr>
     </table>
@@ -79,17 +105,32 @@
           onCompleteSave: function() {
             BS.Util.reenableForm(that.formElement());
             BS.Util.hide($('serverStatusIcon'));
+            BS.NuGet.FeedServer.refreshStatus();
           }
         }));
       }
     }),
+
+    refreshStatus : function() {
+      $('nugetServerStatus').refresh();
+    },
+
+    registerStatusRefresh : function() {
+      var that = this;
+      setTimeout(function() {
+        that.refreshStatus();
+        that.registerStatusRefresh();
+      }, 1000);
+    },
 
     persistCheckbox : function() {
       setTimeout(function() {
         BS.NuGet.FeedServer.Form.saveFormOnCheckbox();
       }, 100);
     }
-  }
+  };
+
+  Event.observe(window, "load", function() { BS.NuGet.FeedServer.registerStatusRefresh(); });
 </script>
 
 

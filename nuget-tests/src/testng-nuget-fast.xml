@@ -18,6 +18,9 @@
       <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerPersitedTest"/>
 
+      <!-- nuget server -->
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.NuGetServerStatusHolderTest"/>
+
       <!-- misc -->
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest" />
       <class name="jetbrains.buildServer.nuget.tests.RunTypeNameTest"/>

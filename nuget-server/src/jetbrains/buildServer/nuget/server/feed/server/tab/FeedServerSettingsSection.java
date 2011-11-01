@@ -29,14 +29,21 @@ import java.util.Collections;
  */
 public class FeedServerSettingsSection implements SettingsSection {
   private final String myPath;
+  private final String mySettingsPath;
 
   public FeedServerSettingsSection(@NotNull PluginDescriptor descriptor) {
     myPath = descriptor.getPluginResourcesPath("feed/status.html");
+    mySettingsPath = descriptor.getPluginResourcesPath("feed/settings.html");
   }
 
   @NotNull
   public String getIncludePath() {
     return myPath;
+  }
+
+  @NotNull
+  public String getSettingsPath() {
+    return mySettingsPath;
   }
 
   @NotNull

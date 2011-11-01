@@ -22,14 +22,13 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.BasePropertiesBean;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatusHolder;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
-import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +44,7 @@ public class FeedServerController extends BaseController {
   @NotNull private final FeedServerSettingsSection mySection;
   @NotNull private final PluginDescriptor myDescriptor;
   @NotNull private final NuGetServerRunnerSettingsEx mySettings;
+  @NotNull private final NuGetServerStatusHolder myStatusHolder;
   @NotNull private final RootUrlHolder myRootUrl;
 
   public FeedServerController(@NotNull final AuthorizationInterceptor auth,
@@ -53,10 +53,12 @@ public class FeedServerController extends BaseController {
                               @NotNull final WebControllerManager web,
                               @NotNull final PluginDescriptor descriptor,
                               @NotNull final NuGetServerRunnerSettingsEx settings,
+                              @NotNull final NuGetServerStatusHolder holder,
                               @NotNull final RootUrlHolder rootUrl) {
     mySection = section;
     myDescriptor = descriptor;
     mySettings = settings;
+    myStatusHolder = holder;
     myRootUrl = rootUrl;
     final String myPath = section.getIncludePath();
 
@@ -71,40 +73,6 @@ public class FeedServerController extends BaseController {
   @Override
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
-    if (isPost(request)) {
-      return doPost(request, response);
-    }
-
-    return doGet(request, response);
-  }
-
-  private ModelAndView doPost(@NotNull final HttpServletRequest request,
-                              @NotNull final HttpServletResponse response) {
-    final Boolean param = getServerStatus(request);
-    if (param == null) {
-      response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-      return null;
-    }
-
-    mySettings.setNuGetFeedEnabled(param);
-    response.setStatus(HttpServletResponse.SC_OK);
-    return null;
-  }
-
-  @Nullable
-  private Boolean getServerStatus(@NotNull final HttpServletRequest request) {
-    final String v = request.getParameter("prop:" + FeedServerContants.NUGET_SERVER_ENABLED_CHECKBOX);
-    if (StringUtil.isEmptyOrSpaces(v)) return false;
-    try {
-      return Boolean.valueOf(v);
-    } catch (Exception e) {
-      return null;
-    }
-  }
-
-  private ModelAndView doGet(@NotNull final HttpServletRequest request,
-                             @NotNull final HttpServletResponse response) {
-
     final ModelAndView modelAndView = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettings.jsp"));
     final Map<String, String> properties = new HashMap<String, String>();
     if (mySettings.isNuGetFeedEnabled()) {
@@ -114,6 +82,9 @@ public class FeedServerController extends BaseController {
     modelAndView.getModel().put("propertiesBean", new BasePropertiesBean(properties));
     modelAndView.getModel().put("serverUrl", myRootUrl.getRootUrl());
     modelAndView.getModel().put("nugetStatusRefreshUrl", mySection.getIncludePath());
+    modelAndView.getModel().put("nugetSettingsPostUrl", mySection.getSettingsPath());
+    modelAndView.getModel().put("serverStatus", myStatusHolder.getStatus());
+
 
     return modelAndView;
   }

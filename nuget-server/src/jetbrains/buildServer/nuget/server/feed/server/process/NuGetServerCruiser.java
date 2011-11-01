@@ -35,18 +35,22 @@ import java.util.concurrent.TimeUnit;
  */
 public class NuGetServerCruiser {
   private static final Logger LOG = Logger.getInstance(NuGetServerCruiser.class.getName());
+  @NotNull private final NuGetServerStatusHolderImpl myStatus;
 
   public NuGetServerCruiser(@NotNull final NuGetServerRunner runner,
                             @NotNull final ExecutorServices executors,
                             @NotNull final NuGetServerPing ping,
                             @NotNull final NuGetServerRunnerSettings settings,
+                            @NotNull final NuGetServerStatusHolderImpl status,
                             @NotNull final EventDispatcher<BuildServerListener> events) {
+    myStatus = status;
     events.addListener(new BuildServerAdapter(){
       private ScheduledFuture<?> myCheckTask;
 
       @Override
       public void serverStartup() {
         if (settings.isNuGetFeedEnabled()) {
+          myStatus.startingServer();
           runner.startServer();
         }
 
@@ -54,12 +58,17 @@ public class NuGetServerCruiser {
           public void run() {
             if (settings.isNuGetFeedEnabled()) {
               runner.ensureAlive();
+              myStatus.setRunning();
 
               if (!ping.pingNuGetServer()) {
+                myStatus.pingFailed();
                 LOG.warn("Failed to ping NuGet server. Server will be restarted.");
                 runner.stopServer();
+              } else {
+                myStatus.pingSucceeded();
               }
             } else {
+              myStatus.stoppingServer();
               runner.stopServer();
             }
           }
@@ -72,6 +81,7 @@ public class NuGetServerCruiser {
         myCheckTask = null;
         task.cancel(false);
 
+        myStatus.stoppingServer();
         runner.stopServer();
       }
     });
