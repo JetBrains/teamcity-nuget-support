@@ -62,30 +62,7 @@ namespace JetBrains.TeamCity.NuGet.Feed
       if (!Directory.Exists(destPath))
         Directory.CreateDirectory(destPath);
 
-
-      string id = "NA";
-      string sLogId = "NA";
-      string sProcessName = "NA";
-
-      try
-      {
-        Process process = Process.GetCurrentProcess();
-        sLogId = process.StartTime.ToString("s").Replace(":", "-").Replace(".", "-");
-        // An ISO8601 time string, fitted for file names
-
-        sProcessName = process.ProcessName.Replace(".", "_");
-        sProcessName = sProcessName.Substring(Math.Max(sProcessName.Length, sProcessName.Length - 5));
-        id = process.Id.ToString();
-      }
-      catch (Exception e)
-      {
-        Console.Out.WriteLine("Failed read process information. 'NA' would be used. {0}", e);
-      }
-
-      string logFile =
-        Path.Combine(destPath,
-                     string.Format("{0}.{1}.{2}_{3}-{4}.log", ".net", sLogId, sProcessName,
-                                   id, (DateTime.Now - new DateTime(2011, 02, 05, 16, 22, 10)).Ticks));
+      string logFile = Path.Combine(destPath, string.Format("teamcity-nuget-server-{0}.log", (DateTime.Now - new DateTime(2011, 02, 05, 16, 22, 10)).Ticks));
 
       string newLogFile = logFile;
       int i = 1;
