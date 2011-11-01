@@ -94,7 +94,7 @@ public class FeedServerController extends BaseController {
   @Nullable
   private Boolean getServerStatus(@NotNull final HttpServletRequest request) {
     final String v = request.getParameter("prop:" + FeedServerContants.NUGET_SERVER_ENABLED_CHECKBOX);
-    if (StringUtil.isEmptyOrSpaces(v)) return null;
+    if (StringUtil.isEmptyOrSpaces(v)) return false;
     try {
       return Boolean.valueOf(v);
     } catch (Exception e) {

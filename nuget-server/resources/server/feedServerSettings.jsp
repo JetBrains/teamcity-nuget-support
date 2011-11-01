@@ -25,30 +25,11 @@
 <div style="width: 50em;">
 <p>In this section you may select if you like to make TeamCity be a NuGet feed.</p>
 
+<form id="nugetSettingsForm" action="<c:url value='${nugetStatusRefreshUrl}'/>" method="post">
   <table class="runnerFormTable">
     <tr>
       <th>Enable NuGet Server:</th>
       <td>
-        <script type="text/javascript">
-          if (!BS) BS = {};
-          if (!BS.NuGet) BS.NuGet = {};
-
-          BS.NuGet.FeedServer = {
-            persistCheckbox : function() {
-
-              BS.Util.show()($('serverStatusIcon'));
-
-              VS
-
-              BS.ajaxRequest('<bs:forJs>${nugetStatusRefreshUrl}</bs:forJs>', {
-                onComplete : function() {
-                  BS.Util.show($('serverStatusIcon'));
-                  $('${fb.nugetServerEnabledCheckbox}').disabled = '';
-                }
-              })
-            }
-          }
-        </script>
         <forms:saving id="serverStatusIcon"/>
         <props:checkboxProperty name="${fb.nugetServerEnabledCheckbox}" onclick="BS.NuGet.FeedServer.persistCheckbox()"/> Enabled NuGet Server
         <span class="smallNote">Enabled or disabled nuget feed server running inside TeamCity</span>
@@ -65,6 +46,7 @@
       </td>
     </tr>
   </table>
+</form>
 
   <bs:refreshable containerId="nugetServerStatus" pageUrl="${nugetStatusRefreshUrl}">
     <table class="runnerFormTable">
@@ -77,6 +59,46 @@
     </table>
   </bs:refreshable>
 </div>
+
+
+<script type="text/javascript">
+  if (!BS) BS = {};
+  if (!BS.NuGet) BS.NuGet = {};
+
+  BS.NuGet.FeedServer = {
+    Form : OO.extend(BS.AbstractWebForm, {
+      formElement : function() {
+        return $('nugetSettingsForm');
+      },
+
+      saveFormOnCheckbox : function() {
+        BS.Util.show($('serverStatusIcon'));
+
+        var that = this;
+        BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
+          onCompleteSave: function() {
+            BS.Util.reenableForm(that.formElement());
+            BS.Util.hide($('serverStatusIcon'));
+          }
+        }));
+      }
+    }),
+
+    persistCheckbox : function() {
+      setTimeout(function() {
+        BS.NuGet.FeedServer.Form.saveFormOnCheckbox();
+      }, 100);
+    }
+  }
+</script>
+
+
+
+
+
+
+
+
 
 
 
