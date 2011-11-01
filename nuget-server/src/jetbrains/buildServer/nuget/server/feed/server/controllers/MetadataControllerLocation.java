@@ -17,10 +17,11 @@
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.RootUrlHolder;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,11 +31,12 @@ import java.io.File;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 18:55
  */
-public class MetadataControllerLocation implements NuGetServerRunnerSettings {
+public class MetadataControllerLocation implements NuGetServerRunnerSettingsEx {
   private final RootUrlHolder myRootUrl;
   private final ServerPaths myPaths;
   private final NuGetSettingsManager mySettings;
   private final MetadataControllersPaths myController;
+  private final String NUGET_SERVER_ENABLED = "feed.enabled";
 
   public MetadataControllerLocation(@NotNull final RootUrlHolder rootUrl,
                                     @NotNull final MetadataControllersPaths controller,
@@ -46,10 +48,19 @@ public class MetadataControllerLocation implements NuGetServerRunnerSettings {
     mySettings = settings;
   }
 
+  public void setNuGetFeedEnabled(final boolean newValue) {
+    mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
+      public Object executeAction(@NotNull NuGetSettingsWriter action) {
+        action.setBooleanParameter(NUGET_SERVER_ENABLED, newValue);
+        return null;
+      }
+    });
+  }
+
   public boolean isNuGetFeedEnabled() {
     return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
       public Boolean executeAction(@NotNull NuGetSettingsReader action) {
-        return action.getBooleanParameter("feed.enabled", false);
+        return action.getBooleanParameter(NUGET_SERVER_ENABLED, false);
       }
     });
   }
