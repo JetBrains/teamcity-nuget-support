@@ -19,6 +19,8 @@ package jetbrains.buildServer.nuget.server.settings.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FileWatcher;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsEventAdapter;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.BuildServerListener;
 import jetbrains.buildServer.util.EventDispatcher;
@@ -60,8 +62,9 @@ public class NuGetSettingsWatcher {
       }
     });
 
-    settings.addOnUpdateHandler(new Runnable() {
-      public void run() {
+    settings.addListener(new NuGetSettingsEventAdapter() {
+      @Override
+      public void settingsChanged(@NotNull NuGetSettingsComponent component) {
         myWatcher.runActionWithDisabledObserver(new Runnable() {
           public void run() {
             try {

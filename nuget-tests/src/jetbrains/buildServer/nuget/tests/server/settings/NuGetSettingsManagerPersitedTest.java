@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.settings;
 
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsEventAdapter;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerConfiguration;
@@ -36,6 +37,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent.SERVER;
 
@@ -183,6 +185,54 @@ public class NuGetSettingsManagerPersitedTest extends NuGetSettingsManagerTest {
         });
       }
     };
+  }
+
+  @Test
+  public void testFileWatcherReload_event() throws IOException {
+    testReadWrite();
+    File tmp = createTempFile();
+    FileUtil.copy(myFile, tmp);
+
+    FileUtil.delete(myFile);
+
+    recreateSettings();
+    final AtomicBoolean componentReloadCalled = new AtomicBoolean();
+    final AtomicBoolean reloadCalled = new AtomicBoolean();
+    mySettings.addListener(new NuGetSettingsEventAdapter(){
+      @Override
+      public void settingsChanged(@NotNull NuGetSettingsComponent component) {
+        componentReloadCalled.set(true);
+      }
+
+      @Override
+      public void settingsReloaded() {
+        reloadCalled.set(true);
+      }
+    });
+    myWatcher.setWatchInterval(10);
+
+    mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
+      public Object executeAction(@NotNull NuGetSettingsReader action) {
+        Assert.assertNull(action.getStringParameter("string1"));
+        return null;
+      }
+    });
+
+    FileUtil.copy(tmp, myFile);
+
+    new WaitForAssert(){
+      @Override
+      protected boolean condition() {
+        return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
+          public Boolean executeAction(@NotNull NuGetSettingsReader action) {
+            return "zzz".equals(action.getStringParameter("string1"));
+          }
+        });
+      }
+    };
+
+    Assert.assertFalse(componentReloadCalled.get());
+    Assert.assertTrue(reloadCalled.get());
   }
 
 }

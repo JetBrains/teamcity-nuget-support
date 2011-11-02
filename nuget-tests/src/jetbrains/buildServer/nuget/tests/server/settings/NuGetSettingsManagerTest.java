@@ -17,14 +17,14 @@
 package jetbrains.buildServer.nuget.tests.server.settings;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
+import jetbrains.buildServer.nuget.server.settings.*;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent.SERVER;
 
@@ -70,6 +70,36 @@ public class NuGetSettingsManagerTest extends BaseTestCase {
         return null;
       }
     });
+  }
+
+  @Test
+  public void testComponentChanged() {
+    final AtomicBoolean called = new AtomicBoolean();
+    mySettings.addListener(new NuGetSettingsEventAdapter(){
+      @Override
+      public void settingsChanged(@NotNull NuGetSettingsComponent component) {
+        called.set(true);
+      }
+    });
+
+    testReadWrite();
+
+    Assert.assertTrue(called.get());
+  }
+
+  @Test
+  public void testComponentChangedNoReload() {
+    final AtomicBoolean called = new AtomicBoolean();
+    mySettings.addListener(new NuGetSettingsEventAdapter(){
+      @Override
+      public void settingsReloaded() {
+        called.set(true);
+      }
+    });
+
+    testReadWrite();
+
+    Assert.assertFalse(called.get());
   }
 
   @Test
