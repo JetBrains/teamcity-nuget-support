@@ -68,14 +68,6 @@ public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder {
     return myState.get();
   }
 
-  public boolean isRunning() {
-    return getState().isRunning();
-  }
-
-  public Boolean isServerAccessible() {
-    return getState().isServerAccessible();
-  }
-
   @NotNull
   public Collection<String> getLogsSlice() {
     //TODO
