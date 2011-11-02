@@ -129,6 +129,7 @@
     <Compile Include="Repo\RemoteException.cs" />
     <Compile Include="Repo\RemoteRepo.cs" />
     <Compile Include="Repo\RepositoryPaths.cs" />
+    <Compile Include="Repo\ServerConfigurationConstants.cs" />
     <Compile Include="Repo\TeamCityPackageEntry.cs" />
     <Compile Include="Repo\TeamCityPackage.cs" />
     <Compile Include="Repo\TeamCityPackagesContext.cs" />

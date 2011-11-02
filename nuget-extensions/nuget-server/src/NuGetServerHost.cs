@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Xml;
+using JetBrains.TeamCity.NuGet.Feed;
 using JetBrains.TeamCity.NuGetRunner;
 
 namespace JetBrains.TeamCity.NuGet.Server
@@ -91,7 +92,8 @@ namespace JetBrains.TeamCity.NuGet.Server
 
       var webContextParameters = new Dictionary<string, string>
                                    {
-                                     {"PackagesSpecUri", argz.Get("PackagesSpecUri", "")},                                     
+                                     {"PackagesSpecUri", argz.Get("TeamCityBaseUri", "")},                                     
+                                     {"Token", argz.Get("Token", "")},                                     
                                    };
       if (webContextParameters.Values.Any(String.IsNullOrWhiteSpace))
       {
@@ -99,13 +101,15 @@ namespace JetBrains.TeamCity.NuGet.Server
         Usage();
         return 1;
       }
-      Environment.SetEnvironmentVariable("teamcity-dotnet-log-path", argz.Get("Logs", Environment.CurrentDirectory));
 
       PatchWebConfig(webApp, webContextParameters);
 
-      //TODO: Add code to check if server is still alive.
-      var server = new CassiniDev.Server(port, "/", webApp, false, true);
+
+      var logFile = argz.Get("LogFile");
+      if (logFile != null)
+        Environment.SetEnvironmentVariable(Log4netInitializer.LOG_ENV_KEY, logFile);
       
+      var server = new CassiniDev.Server(port, "/", webApp, false, true);      
       try
       {
         server.Start();

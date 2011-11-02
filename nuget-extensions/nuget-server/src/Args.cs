@@ -18,7 +18,7 @@ namespace JetBrains.TeamCity.NuGet.Server
       return myArgs.Any(arg => arg.Equals("/" + key, StringComparison.InvariantCultureIgnoreCase));
     }
 
-    public string Get(string key, string def)
+    public string Get(string key, string def = null)
     {
       string lookup = "/" + key + ":";
       foreach (string arg in myArgs)

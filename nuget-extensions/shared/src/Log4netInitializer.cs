@@ -16,18 +16,18 @@ namespace JetBrains.TeamCity.NuGet.Feed
     public const string LOG_ENV_KEY = "teamcity-dotnet-log-file";
     public const string LOG_ENV_PATH = "teamcity-dotnet-log-path";
 
-    public void InitializeLogging(string logConfigFile)
+    public void InitializeLogging(string logConfigFile, string defaultName)
     {
-      LoadConfigFromFile(logConfigFile);
+      LoadConfigFromFile(logConfigFile, defaultName);
       AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
     }
 
-    private static void LoadConfigFromFile(string file)
+    private static void LoadConfigFromFile(string file, string defaultName)
     {
       var doc = new XmlDocument();
 
       string config = File.ReadAllText(file);
-      var logFileName = GetLogFileName();
+      var logFileName = GetLogFileName(defaultName);
       config = config.Replace("${" + LOG_ENV_KEY + "}", logFileName);
       doc.LoadXml(config);
 
@@ -35,7 +35,7 @@ namespace JetBrains.TeamCity.NuGet.Feed
       LOG.InfoFormat("Started log4net from {0}", file);
     }
 
-    private static string GetLogFileName()
+    private static string GetLogFileName(string defaultName)
     {
       var file = Environment.GetEnvironmentVariable(LOG_ENV_KEY);
       if (file != null) return file;
@@ -48,7 +48,7 @@ namespace JetBrains.TeamCity.NuGet.Feed
       if (!Directory.Exists(destPath))
         Directory.CreateDirectory(destPath);
 
-      string logFile = Path.Combine(destPath, string.Format("teamcity-nuget-server-{0}.log", (DateTime.Now - new DateTime(2011, 02, 05, 16, 22, 10)).Ticks));
+      string logFile = Path.Combine(destPath, string.Format("{1}-{0}.log", (DateTime.Now - new DateTime(2011, 02, 05, 16, 22, 10)).Ticks, defaultName));
 
       string newLogFile = logFile;
       int i = 1;

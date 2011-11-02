@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web.Hosting;
+﻿using System.Web.Hosting;
 using JetBrains.Annotations;
 using JetBrains.TeamCity.NuGet.Feed;
 
@@ -12,11 +11,7 @@ namespace JetBrains.TeamCity.NuGet.Feed
     [UsedImplicitly]
     public static void InitApplication()
     {
-      const string key = "teamcity-dotnet-log-file";
-      if (Environment.GetEnvironmentVariable(key) == null)
-        Environment.SetEnvironmentVariable(key, Environment.CurrentDirectory);
-
-      new Log4netInitializer().InitializeLogging(HostingEnvironment.MapPath("~/Log4Net.xml"));
+      new Log4netInitializer().InitializeLogging(HostingEnvironment.MapPath("~/Log4Net.xml"), "teamcity-nuget-server");
     }
   }
 }

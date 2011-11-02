@@ -6,7 +6,12 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
   {
     public string FetchPacakgesUri
     {
-      get { return WebConfigurationManager.AppSettings["PackagesSpecUri"]; }
+      get { return WebConfigurationManager.AppSettings[ServerConfigurationConstants.TEAMCITY_URL]; }
+    }
+
+    public string Token
+    {
+      get { return WebConfigurationManager.AppSettings[ServerConfigurationConstants.TOKEN];  }
     }
   }
 }
