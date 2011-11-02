@@ -56,6 +56,9 @@
     <Compile Include="..\shared\src\AssemblyHelper.cs">
       <Link>src\Shared\AssemblyHelper.cs</Link>
     </Compile>
+    <Compile Include="..\shared\src\FeedConfigurationConstants.cs">
+      <Link>src\Shared\FeedConfigurationConstants.cs</Link>
+    </Compile>
     <Compile Include="..\shared\src\Log4netInitializer.cs">
       <Link>src\Shared\Log4netInitializer.cs</Link>
     </Compile>

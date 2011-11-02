@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Xml;
 using JetBrains.TeamCity.NuGet.Feed;
+using JetBrains.TeamCity.NuGet.Feed.Repo;
 using JetBrains.TeamCity.NuGetRunner;
 
 namespace JetBrains.TeamCity.NuGet.Server
@@ -90,11 +91,7 @@ namespace JetBrains.TeamCity.NuGet.Server
       }
       var port = argz.GetInt("Port", 8411);
 
-      var webContextParameters = new Dictionary<string, string>
-                                   {
-                                     {"PackagesSpecUri", argz.Get("TeamCityBaseUri", "")},                                     
-                                     {"Token", argz.Get("Token", "")},                                     
-                                   };
+      var webContextParameters = FeedConfigurationConstants.AllKeys.ToDictionary(x => x, x => argz.Get(x));        
       if (webContextParameters.Values.Any(String.IsNullOrWhiteSpace))
       {
         Console.Out.WriteLine("Not All parameters are specified. ");
@@ -103,7 +100,6 @@ namespace JetBrains.TeamCity.NuGet.Server
       }
 
       PatchWebConfig(webApp, webContextParameters);
-
 
       var logFile = argz.Get("LogFile");
       if (logFile != null)
