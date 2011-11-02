@@ -10,7 +10,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       = new Lazy<RepositoryPaths>(() => new RepositoryPaths(), true);
 
     private static readonly Lazy<ITeamCityServerAccessor> myAccessor 
-      = new Lazy<ITeamCityServerAccessor>(() => new TeamCityServerAccessor(myRepositoryPaths.Value.FetchPacakgesUri), true);
+      = new Lazy<ITeamCityServerAccessor>(() => new TeamCityServerAccessor(myRepositoryPaths.Value), true);
 
     private static readonly Lazy<LightPackageRepository> myRepo 
       = new Lazy<LightPackageRepository>(

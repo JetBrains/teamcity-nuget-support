@@ -63,7 +63,7 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
   protected Mockery m;
   protected Collection<InputStream> myStreams;
   private NuGetTeamCityProvider myProvider;
-  private File myLogsDir;
+  private File myLogsFile;
 
   private FeedHttpClientHolder nyHttpClient;
   private FeedGetMethodFactory myHttpMethods;
@@ -83,7 +83,7 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     m = new Mockery();
     myStreams = new ArrayList<InputStream>();
     myProvider = m.mock(NuGetTeamCityProvider.class);
-    myLogsDir = createTempDir();
+    myLogsFile = createTempFile();
 
     nyHttpClient = new FeedHttpClientHolder();
     myHttpMethods = new FeedGetMethodFactory();
@@ -96,7 +96,7 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     myNuGetServerAddresses = null;
     myNuGetServerUrl = null;
 
-    System.out.println("NuGet server LogsDir = " + myLogsDir);
+    System.out.println("NuGet server LogsDir = " + myLogsFile);
 
     m.checking(new Expectations() {{
       allowing(myProvider).getNuGetServerRunnerPath();
@@ -107,14 +107,11 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
   @AfterMethod
   @Override
   protected void tearDown() throws Exception {
-    super.tearDown();
     for (InputStream stream : myStreams) {
       FileUtil.close(stream);
     }
 
-    for (File file : myLogsDir.listFiles()) {
-      System.out.println("File " + file + ": \r\n" + loadAllText(file));
-    }
+    System.out.println("NuGet Feed server logs: \r\n" + loadAllText(myLogsFile));
 
     if (myHttpServer != null) {
       myHttpServer.stop();
@@ -123,13 +120,15 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     if (myNuGetServer != null) {
       myNuGetServer.stopServer();
     }
+
+    super.tearDown();
   }
 
   protected void startNuGetServer() {
     final NuGetServerRunnerSettings settings = m.mock(NuGetServerRunnerSettings.class);
     m.checking(new Expectations() {{
       allowing(settings).getPackagesControllerUrl(); will(returnValue(myHttpServerUrl));
-      allowing(settings).getLogFilePath(); will(returnValue(myLogsDir));
+      allowing(settings).getLogFilePath(); will(returnValue(myLogsFile));
     }});
 
     myNuGetServer = new NuGetServerRunner(settings, myTokens, new NuGetExecutorImpl(myProvider));

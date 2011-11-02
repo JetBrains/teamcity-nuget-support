@@ -4,7 +4,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   public class RepositoryPaths : IRepositoryPaths
   {
-    public string FetchPacakgesUri
+    public string TeamCityBaseUri
     {
       get { return WebConfigurationManager.AppSettings[FeedConfigurationConstants.TEAMCITY_URL]; }
     }

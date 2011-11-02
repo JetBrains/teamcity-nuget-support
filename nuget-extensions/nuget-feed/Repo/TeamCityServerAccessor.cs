@@ -9,24 +9,25 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   public class TeamCityServerAccessor : ITeamCityServerAccessor
   {
+    private readonly RepositoryPaths myPaths;
     private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
 
-    private readonly string myRemoteUrl;
 
-    public TeamCityServerAccessor(string remoteUrl)
+    public TeamCityServerAccessor(RepositoryPaths paths)
     {
-      myRemoteUrl = remoteUrl;
-      LOG.Info("TeamCityServerAccessor created. TeamCity URL: " + myRemoteUrl);
+      myPaths = paths;    
+      LOG.Info("TeamCityServerAccessor created. TeamCity URL: " + myPaths.TeamCityBaseUri);
     }
 
     public T ProcessRequest<T>(string urlSuffix, Func<HttpWebResponse, TextReader, T> result)
     {
-      var requestUriString = myRemoteUrl.TrimEnd('/') + "/" + urlSuffix.TrimStart('/');
+      var requestUriString = TeamCityUrl.TrimEnd('/') + "/" + urlSuffix.TrimStart('/');
       LOG.Info("Requesting " + requestUriString);
       try
       {
         var wr = (HttpWebRequest) WebRequest.Create(requestUriString);
         wr.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+        wr.Headers.Add("X-TeamCity-Token", myPaths.Token);
 
         using (var webResponse = (HttpWebResponse) wr.GetResponse())
         {
@@ -50,7 +51,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 
     public string TeamCityUrl
     {
-      get { return myRemoteUrl; }
+      get { return myPaths.TeamCityBaseUri; }
     }
   }
 }
