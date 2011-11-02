@@ -32,6 +32,14 @@ public interface NuGetSettingsManager {
    * @return an object from action
    */
   <T> T readSettings(@NotNull final NuGetSettingsComponent component, @NotNull Func<NuGetSettingsReader, T> action);
+
+  /**
+   * This method is called to write settings. Synchronious.
+   * @param component component to write settings for
+   * @param action action to be called for settings snapshot
+   * @param <T> type parameter of return type from action
+   * @return an object from action
+   */
   <T> T writeSettings(@NotNull final NuGetSettingsComponent component, @NotNull Func<NuGetSettingsWriter, T> action);
 
   /**
