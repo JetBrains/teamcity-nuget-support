@@ -97,6 +97,9 @@
     <Compile Include="..\shared\src\AssemblyHelper.cs">
       <Link>Shared\AssemblyHelper.cs</Link>
     </Compile>
+    <Compile Include="..\shared\src\Log4netInitializer.cs">
+      <Link>Shared\Log4netInitializer.cs</Link>
+    </Compile>
     <Compile Include="DataServices\NuGetPingHandler.cs" />
     <Compile Include="DataServices\Routes.cs" />
     <Compile Include="DataServices\ServiceMessage.cs" />
