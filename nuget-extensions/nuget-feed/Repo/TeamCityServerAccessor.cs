@@ -27,7 +27,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
       {
         var wr = (HttpWebRequest) WebRequest.Create(requestUriString);
         wr.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
-        wr.Headers.Add("X-TeamCity-Token", myPaths.Token);
+        wr.Headers.Add("X-TeamCity-Auth", myPaths.Token);
 
         using (var webResponse = (HttpWebResponse) wr.GetResponse())
         {
