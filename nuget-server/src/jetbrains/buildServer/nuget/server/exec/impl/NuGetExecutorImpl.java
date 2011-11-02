@@ -92,8 +92,8 @@ public class NuGetExecutorImpl implements NuGetExecutor {
     cmd.setWorkingDirectory(path.getParentFile());
 
     cmd.addParameter("/Port:" + port);
-    cmd.addParameter("/PackagesSpecUri:" + packagesUrl);
-    cmd.addParameter("/Logs:" + logsFile.getAbsolutePath());
+    cmd.addParameter("/TeamCityBaseUri:" + packagesUrl);
+    cmd.addParameter("/LogFile:" + logsFile.getAbsolutePath());
     cmd.addParameter("/Token:" + token);
 
     final Process process;
