@@ -1,6 +1,6 @@
 namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
-  public class ServerConfigurationConstants
+  public static class FeedConfigurationConstants
   {
     public const string TEAMCITY_URL = "TeamCityBaseUri";
     public const string TOKEN = "Token";
