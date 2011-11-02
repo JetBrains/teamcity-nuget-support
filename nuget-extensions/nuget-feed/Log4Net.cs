@@ -22,7 +22,7 @@ namespace JetBrains.TeamCity.NuGet.Feed
       if (Environment.GetEnvironmentVariable(key) == null)
         Environment.SetEnvironmentVariable(key, Environment.CurrentDirectory);
 
-      new Log4netDefaultLoggerInitializer().InitializeLogging();
+      new Log4netDefaultLoggerInitializer().InitializeLogging(HostingEnvironment.MapPath("~/Log4Net.xml"));
     }
   }
 
@@ -31,12 +31,12 @@ namespace JetBrains.TeamCity.NuGet.Feed
   {
     private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
 
-    private const string LOG_ENV_KEY = "teamcity-dotnet-log-file";
-    private const string LOG_ENV_PATH = "teamcity-dotnet-log-path";
+    public const string LOG_ENV_KEY = "teamcity-dotnet-log-file";
+    public const string LOG_ENV_PATH = "teamcity-dotnet-log-path";
 
-    public void InitializeLogging()
+    public void InitializeLogging(string logConfigFile)
     {
-      LoadConfigFromFile(HostingEnvironment.MapPath("~/Log4Net.xml"));
+      LoadConfigFromFile(logConfigFile);
       AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
     }
 
