@@ -34,17 +34,4 @@ public interface NuGetServerRunnerSettings {
   File getLogsPath();
 
 
-  /**
-   * @return http header that is used to provide auth token
-   */
-  @NotNull
-  String getAccessTokenHeaderName();
-
-  /**
-   * Access token is used to authorize NuGet Feed server requests to TeamCity
-   * to avoid leaks
-   * @return unique token.
-   */
-  @NotNull
-  String getAccessToken();
 }

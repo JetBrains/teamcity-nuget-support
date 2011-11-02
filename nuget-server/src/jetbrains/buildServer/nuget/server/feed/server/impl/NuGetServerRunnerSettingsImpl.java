@@ -24,7 +24,6 @@ import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import jetbrains.buildServer.serverSide.ServerPaths;
-import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -40,7 +39,6 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   private final ServerPaths myPaths;
   private final NuGetSettingsManager mySettings;
   private final MetadataControllersPaths myController;
-  private final String myAccessToken;
 
 
   public NuGetServerRunnerSettingsImpl(@NotNull final RootUrlHolder rootUrl,
@@ -51,7 +49,6 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
     myController = controller;
     myPaths = paths;
     mySettings = settings;
-    myAccessToken = "jonnyzzz" + StringUtil.generateUniqueHash() + "rulezz";
   }
 
   public void setNuGetFeedEnabled(final boolean newValue) {
@@ -85,15 +82,5 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   @NotNull
   public File getLogsPath() {
     return myPaths.getLogsPath();
-  }
-
-  @NotNull
-  public String getAccessTokenHeaderName() {
-    return "X-TeamCity-HostId";
-  }
-
-  @NotNull
-  public String getAccessToken() {
-    return myAccessToken;
   }
 }

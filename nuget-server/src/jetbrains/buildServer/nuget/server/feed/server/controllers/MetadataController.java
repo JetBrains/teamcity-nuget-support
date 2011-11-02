@@ -16,60 +16,48 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 19.10.11 16:05
  */
 public class MetadataController extends MetadataControllerBase {
-  @NotNull private final String myPath;
-  @NotNull private final PackagesIndex myStorage;
+  @NotNull private final MetadataControllersPaths myDescriptor;
+  @NotNull private final NuGetServerRunnerTokens mySettings;
   @NotNull private final PackagesWriter myWriter;
 
   public MetadataController(@NotNull final MetadataControllersPaths descriptor,
-                            @NotNull final PackagesIndex storage,
+                            @NotNull final NuGetServerRunnerTokens settings,
                             @NotNull final PackagesWriter writer) {
-    myStorage = storage;
+    myDescriptor = descriptor;
+    mySettings = settings;
     myWriter = writer;
-    myPath = descriptor.getMetadataControllerPath();
   }
 
   @NotNull
   @Override
   protected String getControllerPath() {
-    return myPath;
+    return myDescriptor.getMetadataControllerPath();
   }
 
   @Override
-  protected ModelAndView doHandle(@NotNull final HttpServletRequest request, HttpServletResponse response) throws Exception {
-    response.setCharacterEncoding("utf-8");
-    response.setContentType("text/plain");
+  public ModelAndView doHandle(@NotNull final HttpServletRequest request,
+                                  @NotNull final HttpServletResponse response) throws Exception {
 
-    final PrintWriter writer = response.getWriter();
-    final Iterator<ArtifactsMetadataEntry> entries = myStorage.getEntries();
-    final Set<String> reportedPackages = new HashSet<String>();
-
-    while (entries.hasNext()) {
-      final ArtifactsMetadataEntry e = entries.next();
-      //remove duplicates
-      if (!reportedPackages.add(e.getKey())) continue;
-
-      myWriter.serializePackage(e, writer);
-
-      writer.write("\r\n");
+    final String key = request.getHeader(mySettings.getAccessTokenHeaderName());
+    if (!mySettings.getAccessToken().equals(key)) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
     }
-    writer.flush();
+
+    myWriter.serializePackages(request, response);
     return null;
   }
 }

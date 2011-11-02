@@ -19,13 +19,16 @@ package jetbrains.buildServer.nuget.server.feed.server.controllers;
 import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
 import org.jetbrains.annotations.NotNull;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Writer;
+import java.util.Iterator;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 16:47
  */
 public interface PackagesWriter {
-  void serializePackage(@NotNull final ArtifactsMetadataEntry entry, @NotNull final Writer destination) throws IOException;
+  void serializePackages(@NotNull final HttpServletRequest request,
+                         @NotNull final HttpServletResponse response) throws IOException;
 }

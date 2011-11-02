@@ -11,6 +11,8 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController"/>
+
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerRunnerSettingsImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory"/>
@@ -22,7 +24,7 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PingBackController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerPing"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPathsImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerStatusHolderImpl"/>
 

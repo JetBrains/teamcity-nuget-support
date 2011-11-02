@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,11 +30,11 @@ import java.io.PrintWriter;
  */
 public class PingBackController extends MetadataControllerBase {
   private final MetadataControllersPaths myDescriptor;
-  private final NuGetServerRunnerSettings mySettings;
+  private final NuGetServerRunnerTokens mySettings;
 
 
   public PingBackController(@NotNull final MetadataControllersPaths descriptor,
-                            @NotNull final NuGetServerRunnerSettings settings) {
+                            @NotNull final NuGetServerRunnerTokens settings) {
     myDescriptor = descriptor;
     mySettings = settings;
   }

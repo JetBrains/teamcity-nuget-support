@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.process;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerUri;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.Header;
@@ -39,11 +39,11 @@ public class NuGetServerPing {
 
   @NotNull private final NuGetServerUri myUri;
   @NotNull private final FeedClient myHttp;
-  @NotNull private final NuGetServerRunnerSettings mySettings;
+  @NotNull private final NuGetServerRunnerTokens mySettings;
 
   public NuGetServerPing(@NotNull final NuGetServerUri uri,
                          @NotNull final FeedClient http,
-                         @NotNull final NuGetServerRunnerSettings settings) {
+                         @NotNull final NuGetServerRunnerTokens settings) {
     myUri = uri;
     myHttp = http;
     mySettings = settings;

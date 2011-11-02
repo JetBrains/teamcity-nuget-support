@@ -14,21 +14,30 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.controllers;
+package jetbrains.buildServer.nuget.server.feed.server.impl;
 
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 02.11.11 12:26
+ *         Date: 02.11.11 12:46
  */
-public interface MetadataControllersPaths {
-  @NotNull
-  String getBasePath();
+public class NuGetServerTokensImpl implements NuGetServerRunnerTokens {
+  private final String myAccessToken;
+
+  public NuGetServerTokensImpl() {
+    myAccessToken = "jonnyzzz" + StringUtil.generateUniqueHash() + "rulezz";
+  }
 
   @NotNull
-  String getMetadataControllerPath();
+  public String getAccessTokenHeaderName() {
+    return "X-TeamCity-HostId";
+  }
 
   @NotNull
-  String getPingControllerPath();
+  public String getAccessToken() {
+    return myAccessToken;
+  }
 }
