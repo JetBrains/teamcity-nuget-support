@@ -16,8 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.process;
 
-import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.BuildServerListener;
 import jetbrains.buildServer.serverSide.executors.ExecutorServices;
@@ -34,52 +32,22 @@ import java.util.concurrent.TimeUnit;
  *         Date: 07.10.11 15:27
  */
 public class NuGetServerCruiser {
-  private static final Logger LOG = Logger.getInstance(NuGetServerCruiser.class.getName());
-  @NotNull private final NuGetServerStatusHolderImpl myStatus;
-
   public NuGetServerCruiser(@NotNull final NuGetServerRunner runner,
                             @NotNull final ExecutorServices executors,
-                            @NotNull final NuGetServerPing ping,
-                            @NotNull final NuGetServerRunnerSettings settings,
-                            @NotNull final NuGetServerStatusHolderImpl status,
+                            @NotNull final NuGetServerCruiserTask task,
                             @NotNull final EventDispatcher<BuildServerListener> events) {
-    myStatus = status;
     events.addListener(new BuildServerAdapter(){
       private ScheduledFuture<?> myCheckTask;
 
       @Override
       public void serverStartup() {
-        if (settings.isNuGetFeedEnabled()) {
-          myStatus.startingServer();
-          runner.startServer();
-        }
-
-        myCheckTask = executors.getNormalExecutorService().scheduleWithFixedDelay(ExceptionUtil.catchAll("Check NuGet Server is running task", new Runnable() {
-          private String mySettingsHash = settings.getSettingsHash();
-
-          public void run() {
-            if (!mySettingsHash.equals(mySettingsHash = settings.getSettingsHash())) {
-              LOG.info("Settings were changed. NuGet server will be restarted.");
-              runner.stopServer();
-            }
-
-            if (settings.isNuGetFeedEnabled()) {
-              runner.ensureAlive();
-              myStatus.setRunning();
-
-              if (!ping.pingNuGetServer()) {
-                myStatus.pingFailed();
-                LOG.warn("Failed to ping NuGet server. Server will be restarted.");
-                runner.stopServer();
-              } else {
-                myStatus.pingSucceeded();
-              }
-            } else {
-              myStatus.stoppingServer();
-              runner.stopServer();
-            }
-          }
-        }), 5, 5, TimeUnit.SECONDS);
+        myCheckTask = executors.getNormalExecutorService().scheduleWithFixedDelay(
+                ExceptionUtil.catchAll("Check NuGet Server is running task",
+                        new Runnable() {
+                          public void run() {
+                            task.checkNuGetServerState();
+                          }
+                        }), 5, 5, TimeUnit.SECONDS);
       }
 
       @Override
@@ -88,7 +56,6 @@ public class NuGetServerCruiser {
         myCheckTask = null;
         task.cancel(false);
 
-        myStatus.stoppingServer();
         runner.stopServer();
       }
     });

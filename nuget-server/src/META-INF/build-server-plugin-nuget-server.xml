@@ -6,6 +6,7 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerCruiser"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerCruiserTask"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl"/>
 
