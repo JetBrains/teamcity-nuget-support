@@ -83,4 +83,9 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   public File getLogFilePath() {
     return new File(myPaths.getLogsPath(), "teamcity-nuget-server.log");
   }
+
+  @NotNull
+  public String getSettingsHash() {
+    return "@" + getLogFilePath() + "#" + isNuGetFeedEnabled() + "#" + getPackagesControllerUrl();
+  }
 }

@@ -55,7 +55,14 @@ public class NuGetServerCruiser {
         }
 
         myCheckTask = executors.getNormalExecutorService().scheduleWithFixedDelay(ExceptionUtil.catchAll("Check NuGet Server is running task", new Runnable() {
+          private String mySettingsHash = settings.getSettingsHash();
+
           public void run() {
+            if (!mySettingsHash.equals(mySettingsHash = settings.getSettingsHash())) {
+              LOG.info("Settings were changed. NuGet server will be restarted.");
+              runner.stopServer();
+            }
+
             if (settings.isNuGetFeedEnabled()) {
               runner.ensureAlive();
               myStatus.setRunning();
