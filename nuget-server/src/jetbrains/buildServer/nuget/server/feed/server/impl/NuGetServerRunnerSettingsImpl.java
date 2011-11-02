@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import jetbrains.buildServer.serverSide.ServerPaths;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -35,6 +36,7 @@ import java.io.File;
  */
 public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsEx {
   private static final String NUGET_SERVER_ENABLED = "feed.enabled";
+  private static final String NUGET_SERVER_URL = "feed.teamcity.url";
 
   private final RootUrlHolder myRootUrl;
   private final ServerPaths myPaths;
@@ -64,6 +66,24 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
     });
   }
 
+  public void setTeamCityBaseUrl(@NotNull final String url) {
+    mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
+      public Object executeAction(@NotNull NuGetSettingsWriter action) {
+        action.setStringParameter(NUGET_SERVER_URL, url);
+        return null;
+      }
+    });
+  }
+
+  public void setDefaultTeamCityBaseUrl() {
+    mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
+      public Object executeAction(@NotNull NuGetSettingsWriter action) {
+        action.removeParameter(NUGET_SERVER_URL);
+        return null;
+      }
+    });
+  }
+
   public boolean isNuGetFeedEnabled() {
     return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
       public Boolean executeAction(@NotNull NuGetSettingsReader action) {
@@ -76,9 +96,10 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   public String getPackagesControllerUrl() {
     return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
       public String executeAction(@NotNull NuGetSettingsReader action) {
-        final String url = action.getStringParameter("url");
-        if (url != null) return url;
-        return myRootUrl.getRootUrl() + myController.getBasePath();
+        String url = action.getStringParameter(NUGET_SERVER_URL);
+        if (url == null) url = myRootUrl.getRootUrl();
+        url = StringUtil.trimEnd(url, "/");
+        return url + myController.getBasePath();
       }
     });
   }
