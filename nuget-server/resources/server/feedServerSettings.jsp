@@ -19,9 +19,10 @@
 <jsp:useBean id="serverUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="nugetStatusRefreshUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="nugetSettingsPostUrl" scope="request" type="java.lang.String" />
+<jsp:useBean id="imagesBase" scope="request" type="java.lang.String" />
 <jsp:useBean id="serverStatus" scope="request" type="jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus" />
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerContants"/>
-
+<c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
 
 <h2 class="noBorder">TeamCity as NuGet Feed</h2>
 <div style="width: 50em;">
@@ -50,7 +51,6 @@
   </table>
 </form>
 
-  <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
   <bs:refreshable containerId="nugetServerStatus" pageUrl="${nugetStatusRefreshFullUrl}">
     <table class="runnerFormTable">
       <tr>
@@ -58,25 +58,40 @@
         <td style="padding-top: 12px;">
           <c:choose>
             <c:when test="${serverStatus.scheduledToStart}">
-              <div style="">Server is starting</div>
+              <div style="">
+                <img src="<c:url value='${imagesBase}/restarting.gif'/>" alt="starting"/>
+                Server is starting
+              </div>
               <span class="smallNote">NuGet Feed server is not runnig now and will be started soon.</span>
             </c:when>
 
             <c:when test="${not serverStatus.running}">
-              <div style="">Server is stopped</div>
+              <div style="">
+                <img src="<c:url value='${imagesBase}/stopped.gif'/>" alt="stopped"/>
+                Server is stopped
+              </div>
             </c:when>
 
             <%-- server is runnning --%>
             <c:when test="${empty serverStatus.serverAccessible}">
-              <div style="">Server is starting</div>
+              <div style="">
+                <img src="<c:url value='${imagesBase}/starting.gif'/>" alt="starting"/>
+                Server is starting
+              </div>
             </c:when>
 
             <c:when test="${not serverStatus.serverAccessible}">
-              <div style="">Ping Failed</div>
+              <div style="">
+                <img src="<c:url value='${imagesBase}/error.gif'/>" alt="error"/>
+                Ping Failed
+              </div>
               <span class="smallNote">Check TeamCity Server Url is accessible from localhost</span>
             </c:when>
             <c:when test="${serverStatus.serverAccessible}">
-              <div style="">Running</div>
+              <div style="">
+                <img src="<c:url value='${imagesBase}/running.gif'/>" alt="starting"/>
+                Running
+              </div>
               <span class="smallNote">NuGet Feed server is running now.</span>
             </c:when>
           </c:choose>
@@ -85,6 +100,22 @@
     </table>
   </bs:refreshable>
 </div>
+
+<h3>Recent NuGet Server log:</h3>
+<bs:refreshable containerId="nugetServerLogs" pageUrl="${nugetStatusRefreshFullUrl}">
+  <div style="width: 75%">
+    <pre id="nugetServerLogView" style="margin-top: 1em; font-size: 90%;  overflow: auto; height: 20em; background-color: #eee;"><c:out value="${serverStatus.logsSlice}"/></pre>
+    <a href="<c:url value='/admin/serverConfig.html?tab=diagnostic&init=1&subTab=logs'/>">See all server logs </a>
+    |
+    <a href="<c:url value='/get/file/serverLogs/teamcity-nuget-server.log'/>">Download full log</a>
+    |
+    <a href="#" onclick="BS.NuGet.FeedServer.refreshLog(); return false;">Refresh</a>
+  </div>
+  <script type="text/javascript">
+    var el = $('nugetServerLogView');
+    el.scrollTop = el.scrollHeight;
+  </script>
+</bs:refreshable>
 
 
 <script type="text/javascript">
@@ -127,6 +158,10 @@
       setTimeout(function() {
         BS.NuGet.FeedServer.Form.saveFormOnCheckbox();
       }, 100);
+    },
+
+    refreshLog : function() {
+      $('nugetServerLogs').refresh();
     }
   };
 

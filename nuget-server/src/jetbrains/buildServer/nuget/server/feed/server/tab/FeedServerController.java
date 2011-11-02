@@ -84,6 +84,7 @@ public class FeedServerController extends BaseController {
     modelAndView.getModel().put("nugetStatusRefreshUrl", mySection.getIncludePath());
     modelAndView.getModel().put("nugetSettingsPostUrl", mySection.getSettingsPath());
     modelAndView.getModel().put("serverStatus", myStatusHolder.getStatus());
+    modelAndView.getModel().put("imagesBase", myDescriptor.getPluginResourcesPath("server/img"));
 
 
     return modelAndView;
