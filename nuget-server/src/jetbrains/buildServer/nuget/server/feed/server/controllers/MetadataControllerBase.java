@@ -16,32 +16,16 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
-import jetbrains.buildServer.web.openapi.PluginDescriptor;
+import jetbrains.buildServer.controllers.BaseController;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 24.10.11 19:47
+ *         Date: 02.11.11 12:10
  */
-public class MetadataControllersPaths {
-  private final PluginDescriptor myDescriptor;
+public abstract class MetadataControllerBase extends BaseController {
 
-  public MetadataControllersPaths(PluginDescriptor descriptor) {
-    myDescriptor = descriptor;
-  }
 
   @NotNull
-  public String getBasePath() {
-    return myDescriptor.getPluginResourcesPath();
-  }
-
-  @NotNull
-  public String getMetadataControllerPath() {
-    return myDescriptor.getPluginResourcesPath("packages-metadata.html");
-  }
-
-  @NotNull
-  public String getPingControllerPath() {
-    return myDescriptor.getPluginResourcesPath("packages-ping.html");
-  }
+  protected abstract String getControllerPath();
 }

@@ -16,11 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
-import jetbrains.buildServer.controllers.AuthorizationInterceptor;
-import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
-import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -35,25 +32,22 @@ import java.util.Set;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 19.10.11 16:05
  */
-public class MetadataController extends BaseController {
+public class MetadataController extends MetadataControllerBase {
   @NotNull private final String myPath;
   @NotNull private final PackagesIndex myStorage;
   @NotNull private final PackagesWriter myWriter;
 
-  public MetadataController(@NotNull final WebControllerManager web,
-                            @NotNull final MetadataControllersPaths descriptor,
+  public MetadataController(@NotNull final MetadataControllersPaths descriptor,
                             @NotNull final PackagesIndex storage,
-                            @NotNull final PackagesWriter writer,
-                            @NotNull final AuthorizationInterceptor authz) {
+                            @NotNull final PackagesWriter writer) {
     myStorage = storage;
     myWriter = writer;
     myPath = descriptor.getMetadataControllerPath();
-    authz.addPathNotRequiringAuth(myPath);
-    web.registerController(myPath, this);
   }
 
   @NotNull
-  public String getPath() {
+  @Override
+  protected String getControllerPath() {
     return myPath;
   }
 

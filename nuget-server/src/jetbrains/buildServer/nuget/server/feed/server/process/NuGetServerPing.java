@@ -18,8 +18,8 @@ package jetbrains.buildServer.nuget.server.feed.server.process;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerUri;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.PingBackController;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -39,14 +39,14 @@ public class NuGetServerPing {
 
   @NotNull private final NuGetServerUri myUri;
   @NotNull private final FeedClient myHttp;
-  @NotNull private final PingBackController myPing;
+  @NotNull private final NuGetServerRunnerSettings mySettings;
 
   public NuGetServerPing(@NotNull final NuGetServerUri uri,
                          @NotNull final FeedClient http,
-                         @NotNull final PingBackController ping) {
+                         @NotNull final NuGetServerRunnerSettings settings) {
     myUri = uri;
     myHttp = http;
-    myPing = ping;
+    mySettings = settings;
   }
 
   public boolean pingNuGetServer() {
@@ -70,8 +70,8 @@ public class NuGetServerPing {
         return false;
       }
 
-      final Header[] hostId = execute.getHeaders(myPing.getPingHeader());
-      if (hostId == null || hostId.length != 1 || !myPing.getHash().equals(hostId[0].getValue())) {
+      final Header[] hostId = execute.getHeaders(mySettings.getAccessTokenHeaderName());
+      if (hostId == null || hostId.length != 1 || !mySettings.getAccessToken().equals(hostId[0].getValue())) {
         LOG.warn("NuGet server failed to ping TeamCity server. Check TeamCity server url that is used for NuGet Server in TeamCity");
         return false;
       }

@@ -16,10 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
-import jetbrains.buildServer.controllers.AuthorizationInterceptor;
-import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.web.openapi.WebControllerManager;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -31,35 +28,20 @@ import java.io.PrintWriter;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 24.10.11 19:04
  */
-public class PingBackController extends BaseController {
-  private static final String PING_HEADER = "X-TeamCity-HostId";
-  @NotNull
+public class PingBackController extends MetadataControllerBase {
+  private final NuGetServerRunnerSettings mySettings;
   private final String myPath;
-  private final String myHash;
 
-  public PingBackController(@NotNull final WebControllerManager web,
-                            @NotNull final MetadataControllersPaths descriptor,
-                            @NotNull final AuthorizationInterceptor authz) {
-    myHash = StringUtil.generateUniqueHash();
-
+  public PingBackController(@NotNull final MetadataControllersPaths descriptor,
+                            @NotNull final NuGetServerRunnerSettings settings) {
+    mySettings = settings;
     myPath = descriptor.getPingControllerPath();
-    authz.addPathNotRequiringAuth(myPath);
-    web.registerController(myPath, this);
   }
 
   @NotNull
-  public String getPath() {
+  @Override
+  protected String getControllerPath() {
     return myPath;
-  }
-
-  @NotNull
-  public String getHash() {
-    return myHash;
-  }
-
-  @NotNull
-  public String getPingHeader() {
-    return PING_HEADER;
   }
 
   @Override
@@ -68,9 +50,10 @@ public class PingBackController extends BaseController {
     response.setCharacterEncoding("utf-8");
     response.setContentType("text/plain");
 
-    response.setHeader(PING_HEADER, myHash);
+    final String accessToken = mySettings.getAccessToken();
+    response.setHeader(mySettings.getAccessTokenHeaderName(), accessToken);
     final PrintWriter writer = response.getWriter();
-    writer.write(myHash);
+    writer.write(accessToken);
     writer.close();
 
     return null;

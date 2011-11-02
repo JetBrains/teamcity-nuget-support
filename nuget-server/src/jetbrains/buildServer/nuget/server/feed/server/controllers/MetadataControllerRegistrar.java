@@ -16,32 +16,24 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
-import jetbrains.buildServer.web.openapi.PluginDescriptor;
+import jetbrains.buildServer.controllers.AuthorizationInterceptor;
+import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 24.10.11 19:47
+ *         Date: 02.11.11 12:10
  */
-public class MetadataControllersPaths {
-  private final PluginDescriptor myDescriptor;
-
-  public MetadataControllersPaths(PluginDescriptor descriptor) {
-    myDescriptor = descriptor;
-  }
-
-  @NotNull
-  public String getBasePath() {
-    return myDescriptor.getPluginResourcesPath();
-  }
-
-  @NotNull
-  public String getMetadataControllerPath() {
-    return myDescriptor.getPluginResourcesPath("packages-metadata.html");
-  }
-
-  @NotNull
-  public String getPingControllerPath() {
-    return myDescriptor.getPluginResourcesPath("packages-ping.html");
+public class MetadataControllerRegistrar {
+  public MetadataControllerRegistrar(@NotNull final WebControllerManager web,
+                                     @NotNull final Collection<MetadataControllerBase> controllers,
+                                     @NotNull final AuthorizationInterceptor authz) {
+    for (MetadataControllerBase controller : controllers) {
+      String path = controller.getControllerPath();
+      authz.addPathNotRequiringAuth(path);
+      web.registerController(path, controller);
+    }
   }
 }

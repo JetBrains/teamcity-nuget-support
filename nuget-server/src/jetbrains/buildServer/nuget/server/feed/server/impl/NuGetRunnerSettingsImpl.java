@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import jetbrains.buildServer.serverSide.ServerPaths;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -33,11 +34,14 @@ import java.io.File;
  *         Date: 21.10.11 18:55
  */
 public class NuGetRunnerSettingsImpl implements NuGetServerRunnerSettingsEx {
+  private static final String NUGET_SERVER_ENABLED = "feed.enabled";
+
   private final RootUrlHolder myRootUrl;
   private final ServerPaths myPaths;
   private final NuGetSettingsManager mySettings;
   private final MetadataControllersPaths myController;
-  private final String NUGET_SERVER_ENABLED = "feed.enabled";
+  private final String myAccessToken;
+
 
   public NuGetRunnerSettingsImpl(@NotNull final RootUrlHolder rootUrl,
                                  @NotNull final MetadataControllersPaths controller,
@@ -47,6 +51,7 @@ public class NuGetRunnerSettingsImpl implements NuGetServerRunnerSettingsEx {
     myController = controller;
     myPaths = paths;
     mySettings = settings;
+    myAccessToken = "jonnyzzz" + StringUtil.generateUniqueHash() + "rulezz";
   }
 
   public void setNuGetFeedEnabled(final boolean newValue) {
@@ -80,5 +85,15 @@ public class NuGetRunnerSettingsImpl implements NuGetServerRunnerSettingsEx {
   @NotNull
   public File getLogsPath() {
     return myPaths.getLogsPath();
+  }
+
+  @NotNull
+  public String getAccessTokenHeaderName() {
+    return "X-TeamCity-HostId";
+  }
+
+  @NotNull
+  public String getAccessToken() {
+    return myAccessToken;
   }
 }

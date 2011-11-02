@@ -27,6 +27,24 @@ import java.io.File;
 public interface NuGetServerRunnerSettings {
   boolean isNuGetFeedEnabled();
 
-  @NotNull String getPackagesControllerUrl();
-  @NotNull File getLogsPath();
+  @NotNull
+  String getPackagesControllerUrl();
+
+  @NotNull
+  File getLogsPath();
+
+
+  /**
+   * @return http header that is used to provide auth token
+   */
+  @NotNull
+  String getAccessTokenHeaderName();
+
+  /**
+   * Access token is used to authorize NuGet Feed server requests to TeamCity
+   * to avoid leaks
+   * @return unique token.
+   */
+  @NotNull
+  String getAccessToken();
 }
