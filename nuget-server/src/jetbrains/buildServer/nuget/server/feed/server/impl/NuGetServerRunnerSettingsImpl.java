@@ -33,7 +33,7 @@ import java.io.File;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 18:55
  */
-public class NuGetRunnerSettingsImpl implements NuGetServerRunnerSettingsEx {
+public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsEx {
   private static final String NUGET_SERVER_ENABLED = "feed.enabled";
 
   private final RootUrlHolder myRootUrl;
@@ -43,10 +43,10 @@ public class NuGetRunnerSettingsImpl implements NuGetServerRunnerSettingsEx {
   private final String myAccessToken;
 
 
-  public NuGetRunnerSettingsImpl(@NotNull final RootUrlHolder rootUrl,
-                                 @NotNull final MetadataControllersPaths controller,
-                                 @NotNull final ServerPaths paths,
-                                 @NotNull final NuGetSettingsManager settings) {
+  public NuGetServerRunnerSettingsImpl(@NotNull final RootUrlHolder rootUrl,
+                                       @NotNull final MetadataControllersPaths controller,
+                                       @NotNull final ServerPaths paths,
+                                       @NotNull final NuGetSettingsManager settings) {
     myRootUrl = rootUrl;
     myController = controller;
     myPaths = paths;
