@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.impl;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
@@ -37,6 +38,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
 
   private final RootUrlHolder myRootUrl;
   private final ServerPaths myPaths;
+  private final NuGetServerRunnerTokens myTokens;
   private final NuGetSettingsManager mySettings;
   private final MetadataControllersPaths myController;
 
@@ -44,10 +46,12 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   public NuGetServerRunnerSettingsImpl(@NotNull final RootUrlHolder rootUrl,
                                        @NotNull final MetadataControllersPaths controller,
                                        @NotNull final ServerPaths paths,
+                                       @NotNull final NuGetServerRunnerTokens tokens,
                                        @NotNull final NuGetSettingsManager settings) {
     myRootUrl = rootUrl;
     myController = controller;
     myPaths = paths;
+    myTokens = tokens;
     mySettings = settings;
   }
 
@@ -86,6 +90,6 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
 
   @NotNull
   public String getSettingsHash() {
-    return "@" + getLogFilePath() + "#" + isNuGetFeedEnabled() + "#" + getPackagesControllerUrl();
+    return "@" + getLogFilePath() + "#" + isNuGetFeedEnabled() + "#" + getPackagesControllerUrl() + myTokens.getServerToken() + myTokens.getAccessToken();
   }
 }
