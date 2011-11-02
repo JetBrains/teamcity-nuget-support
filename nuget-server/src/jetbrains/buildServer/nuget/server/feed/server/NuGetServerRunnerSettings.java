@@ -31,7 +31,5 @@ public interface NuGetServerRunnerSettings {
   String getPackagesControllerUrl();
 
   @NotNull
-  File getLogsPath();
-
-
+  File getLogFilePath();
 }

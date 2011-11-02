@@ -80,7 +80,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   }
 
   @NotNull
-  public File getLogsPath() {
-    return myPaths.getLogsPath();
+  public File getLogFilePath() {
+    return new File(myPaths.getLogsPath(), "teamcity-nuget-server.log");
   }
 }

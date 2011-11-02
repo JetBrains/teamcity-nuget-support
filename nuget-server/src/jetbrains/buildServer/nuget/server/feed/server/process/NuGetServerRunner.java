@@ -60,7 +60,7 @@ public class NuGetServerRunner {
               myExecutor.startNuGetServer(
                       port,
                       myPaths.getPackagesControllerUrl(),
-                      myPaths.getLogsPath(),
+                      myPaths.getLogFilePath(),
                       myTokens.getAccessToken()
               ));
     } catch (NuGetExecutionException e) {

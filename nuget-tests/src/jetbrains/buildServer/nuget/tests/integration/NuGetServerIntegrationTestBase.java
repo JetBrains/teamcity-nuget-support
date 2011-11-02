@@ -129,7 +129,7 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     final NuGetServerRunnerSettings settings = m.mock(NuGetServerRunnerSettings.class);
     m.checking(new Expectations() {{
       allowing(settings).getPackagesControllerUrl(); will(returnValue(myHttpServerUrl));
-      allowing(settings).getLogsPath(); will(returnValue(myLogsDir));
+      allowing(settings).getLogFilePath(); will(returnValue(myLogsDir));
     }});
 
     myNuGetServer = new NuGetServerRunner(settings, myTokens, new NuGetExecutorImpl(myProvider));

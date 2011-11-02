@@ -33,7 +33,7 @@ public interface NuGetExecutor {
 
   @NotNull
   NuGetServerHandle startNuGetServer(int port,
-                                     @NotNull String packagesUrl,
-                                     @NotNull File logsDir,
-                                     @NotNull String token) throws NuGetExecutionException;
+                                     @NotNull String teamcityUrl,
+                                     @NotNull File logFile,
+                                     @NotNull String accessToken) throws NuGetExecutionException;
 }
