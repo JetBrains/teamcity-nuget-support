@@ -29,19 +29,20 @@ import java.io.PrintWriter;
  *         Date: 24.10.11 19:04
  */
 public class PingBackController extends MetadataControllerBase {
+  private final MetadataControllersPaths myDescriptor;
   private final NuGetServerRunnerSettings mySettings;
-  private final String myPath;
+
 
   public PingBackController(@NotNull final MetadataControllersPaths descriptor,
                             @NotNull final NuGetServerRunnerSettings settings) {
+    myDescriptor = descriptor;
     mySettings = settings;
-    myPath = descriptor.getPingControllerPath();
   }
 
   @NotNull
   @Override
   protected String getControllerPath() {
-    return myPath;
+    return myDescriptor.getPingControllerPath();
   }
 
   @Override
