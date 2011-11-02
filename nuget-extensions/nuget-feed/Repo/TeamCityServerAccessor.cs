@@ -16,13 +16,13 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
     public TeamCityServerAccessor(RepositoryPaths paths)
     {
       myPaths = paths;    
-      LOG.Info("TeamCityServerAccessor created. TeamCity URL: " + myPaths.TeamCityBaseUri);
+      LOG.InfoFormat("TeamCityServerAccessor created. TeamCity URL: {0}, token: {1}", myPaths.TeamCityBaseUri, paths.Token);
     }
 
     public T ProcessRequest<T>(string urlSuffix, Func<HttpWebResponse, TextReader, T> result)
     {
       var requestUriString = TeamCityUrl.TrimEnd('/') + "/" + urlSuffix.TrimStart('/');
-      LOG.Info("Requesting " + requestUriString);
+      LOG.Debug("Requesting " + requestUriString);
       try
       {
         var wr = (HttpWebRequest) WebRequest.Create(requestUriString);
@@ -45,7 +45,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
         throw new Exception(string.Format("Failed to fetch all packages from: {0}. {1}", requestUriString, e.Message), e);
       } finally
       {
-        LOG.Info("Request " + requestUriString + " finished");
+        LOG.Debug("Request " + requestUriString + " finished");
       }
     }
 

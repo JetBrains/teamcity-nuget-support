@@ -6,11 +6,11 @@
     </layout>
   </appender>
   <appender name="RollingFileAppender" type="log4net.Appender.RollingFileAppender">
-    <file value="${teamcity-dotnet-log-file}.log" />
+    <file value="${teamcity-dotnet-log-file}" />
     <appendToFile value="true" />
     <rollingStyle value="Size" />
     <maxSizeRollBackups value="10" />
-    <maximumFileSize value="100KB" />
+    <maximumFileSize value="1000KB" />
     <staticLogFileName value="true" />
     <datePattern value="yyyyMMdd-HHmm" />
     <layout type="log4net.Layout.PatternLayout">
@@ -19,7 +19,7 @@
   </appender>
   <!-- Setup the root category, add the appenders and set the default priority -->
   <root>
-    <level value="DEBUG" />
+    <level value="INFO" />
     <appender-ref ref="ConsoleAppender" />
     <appender-ref ref="RollingFileAppender" />
   </root>

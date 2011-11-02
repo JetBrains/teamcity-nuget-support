@@ -13,9 +13,10 @@ namespace JetBrains.TeamCity.NuGet.Feed
   {
     private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
 
-    public const string LOG_ENV_KEY = "teamcity-dotnet-log-file";
-    public const string LOG_ENV_PATH = "teamcity-dotnet-log-path";
-
+    public const string LOG_FILE_ENV_KEY = "teamcity-dotnet-log-file";
+    public const string LOG_FOLDER_ENV_KEY = "teamcity-dotnet-log-folder";
+    private const string LOG_CONFIG_REPLACE_CONSTANT = "teamcity-dotnet-log-file";
+    
     public void InitializeLogging(string logConfigFile, string defaultName)
     {
       LoadConfigFromFile(logConfigFile, defaultName);
@@ -27,23 +28,25 @@ namespace JetBrains.TeamCity.NuGet.Feed
       var doc = new XmlDocument();
 
       string config = File.ReadAllText(file);
+
       var logFileName = GetLogFileName(defaultName);
-      config = config.Replace("${" + LOG_ENV_KEY + "}", logFileName);
+      config = config.Replace("${" + LOG_CONFIG_REPLACE_CONSTANT + "}", logFileName);
       doc.LoadXml(config);
 
       XmlConfigurator.Configure(doc.DocumentElement);
+      LOG.Info(Environment.NewLine + Environment.NewLine + Environment.NewLine + "===============================");
       LOG.InfoFormat("Started log4net from {0}", file);
     }
 
     private static string GetLogFileName(string defaultName)
     {
-      var file = Environment.GetEnvironmentVariable(LOG_ENV_KEY);
+      var file = Environment.GetEnvironmentVariable(LOG_FILE_ENV_KEY);
       if (file != null) return file;
 
 
-      string destPath = Environment.GetEnvironmentVariable(LOG_ENV_PATH);
-      if (destPath == null)
-        destPath = Path.Combine(Path.GetTempPath(), "TeamCity.NET");
+      string destPath = Environment.GetEnvironmentVariable(LOG_FOLDER_ENV_KEY)
+                        ??
+                        Path.Combine(Path.GetTempPath(), "TeamCity.NET");
 
       if (!Directory.Exists(destPath))
         Directory.CreateDirectory(destPath);

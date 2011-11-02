@@ -103,7 +103,8 @@ namespace JetBrains.TeamCity.NuGet.Server
 
       var logFile = argz.Get("LogFile");
       if (logFile != null)
-        Environment.SetEnvironmentVariable(Log4netInitializer.LOG_ENV_KEY, logFile);
+        Environment.SetEnvironmentVariable(Log4netInitializer.LOG_FILE_ENV_KEY, logFile);
+
       
       var server = new CassiniDev.Server(port, "/", webApp, false, true);      
       try
