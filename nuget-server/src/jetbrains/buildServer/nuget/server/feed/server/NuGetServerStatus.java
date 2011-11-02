@@ -49,5 +49,5 @@ public interface NuGetServerStatus {
    * @return number of latest log lines to be shown on the web
    */
   @NotNull
-  Collection<String> getLogsSlice();
+  String getLogsSlice();
 }

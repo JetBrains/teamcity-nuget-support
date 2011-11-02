@@ -16,14 +16,15 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.process;
 
+import jetbrains.buildServer.controllers.admin.logs.LogViewUtil;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatusHolder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -42,7 +43,7 @@ public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder {
   public NuGetServerStatus getStatus() {
     final State state = getState();
     final boolean isEnabled = mySettings.isNuGetFeedEnabled();
-    final Collection<String> logsSlice = NuGetServerStatusHolderImpl.this.getLogsSlice();
+    final String logsSlice = NuGetServerStatusHolderImpl.this.getLogsSlice();
 
     return new NuGetServerStatus() {
       public boolean isRunning() {
@@ -58,7 +59,7 @@ public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder {
       }
 
       @NotNull
-      public Collection<String> getLogsSlice() {
+      public String getLogsSlice() {
         return logsSlice;
       }
     };
@@ -70,10 +71,15 @@ public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder {
   }
 
   @NotNull
-  public Collection<String> getLogsSlice() {
-    //TODO
-    return Collections.emptyList();
+  public String getLogsSlice() {
+    final File logFilePath = mySettings.getLogFilePath();
+    try {
+      return LogViewUtil.getLogTail(logFilePath);
+    } catch (IOException e) {
+      return "Failed to open log file: " + logFilePath;
+    }
   }
+
 
   public void startingServer() {
     myState.set(getState().setRunning());
