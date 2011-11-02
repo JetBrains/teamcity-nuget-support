@@ -16,10 +16,12 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.process;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.admin.logs.LogViewUtil;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatusHolder;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +34,8 @@ import java.util.concurrent.atomic.AtomicReference;
  *         Date: 01.11.11 17:09
  */
 public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder {
+  private static final Logger LOG = Logger.getInstance(NuGetServerStatusHolderImpl.class.getName());
+
   private final AtomicReference<State> myState = new AtomicReference<State>(INITIAL_STATE);
   private final NuGetServerRunnerSettings mySettings;
 
@@ -74,10 +78,14 @@ public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder {
   public String getLogsSlice() {
     final File logFilePath = mySettings.getLogFilePath();
     try {
-      return LogViewUtil.getLogTail(logFilePath);
+      final String logTail = LogViewUtil.getLogTail(logFilePath);
+      if (!StringUtil.isEmptyOrSpaces(logTail)) {
+        return logTail;
+      }
     } catch (IOException e) {
-      return "Failed to open log file: " + logFilePath;
+      LOG.warn("Failed to open logs file: " + logFilePath);
     }
+    return "Failed to open log file: " + logFilePath;
   }
 
 
