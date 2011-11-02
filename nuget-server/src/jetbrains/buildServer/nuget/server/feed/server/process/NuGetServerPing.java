@@ -70,9 +70,9 @@ public class NuGetServerPing {
         return false;
       }
 
-      final Header[] hostId = execute.getHeaders(mySettings.getAccessTokenHeaderName());
-      if (hostId == null || hostId.length != 1 || !mySettings.getAccessToken().equals(hostId[0].getValue())) {
-        LOG.warn("NuGet server failed to ping TeamCity server. Check TeamCity server url that is used for NuGet Server in TeamCity");
+      final Header[] hostId = execute.getHeaders(mySettings.getServerTokenHeaderName());
+      if (hostId == null || hostId.length != 1 || !mySettings.getServerToken().equals(hostId[0].getValue())) {
+        LOG.warn("NuGet server failed to ping TeamCity server. Response token does not match. Check TeamCity server url that is used for NuGet Server in TeamCity");
         return false;
       }
 

@@ -52,7 +52,11 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.apache.http.HttpStatus.SC_OK;
 
@@ -77,6 +81,10 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
   protected  NuGetServerUriImpl myNuGetServerAddresses;
   protected String myNuGetServerUrl;
 
+  private Collection<HttpServerHandler> myHandlers;
+
+  protected String myHttpContextUrl;
+
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
@@ -97,12 +105,17 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     myNuGetServerAddresses = null;
     myNuGetServerUrl = null;
 
-    System.out.println("NuGet server LogsDir = " + myLogsFile);
-
     m.checking(new Expectations() {{
       allowing(myProvider).getNuGetServerRunnerPath();
       will(returnValue(Paths.getNuGetServerRunnerPath()));
     }});
+
+    myHandlers = new CopyOnWriteArrayList<HttpServerHandler>();
+
+    myHttpContextUrl = "/" + jetbrains.buildServer.util.StringUtil.generateUniqueHash();
+
+    startSimpleHttpServer();
+    startNuGetServer();
   }
 
   @AfterMethod
@@ -125,7 +138,7 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     super.tearDown();
   }
 
-  protected void startNuGetServer() {
+  private void startNuGetServer() {
     final NuGetServerRunnerSettings settings = m.mock(NuGetServerRunnerSettings.class);
     m.checking(new Expectations() {{
       allowing(settings).getPackagesControllerUrl(); will(returnValue(myHttpServerUrl));
@@ -140,29 +153,34 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     System.out.println("Created nuget server at: " + myNuGetServerUrl);
   }
 
-  protected void startSimpleHttpServer(@NotNull final File responseFile) throws IOException {
-    final String prefixPath = "/packages";
-
+  private void startSimpleHttpServer() throws IOException {
     myHttpServer = new SimpleHttpServer() {
-      private final String packagesHandle = prefixPath + "/packages-metadata.html";
       @Override
       protected Response getResponse(String request) {
         System.out.println("Mock HTTP server request: " + request);
-        if (packagesHandle.equals(getRequestPath(request))) {
-          if (request.contains(myTokens.getAccessToken())) {
-            return getFileResponse(responseFile, Arrays.asList("Content-Type: text/plain; encoding=UTF-8"));
-          } else {
-            System.out.println("Failed to find authorization token in request!");
-            return createStreamResponse(STATUS_LINE_500, Collections.<String>emptyList(), "invalid token".getBytes());
-          }
+
+        for (HttpServerHandler handler : myHandlers) {
+          Response r = handler.processRequest(request, getRequestPath(request));
+          if (r != null) return r;
         }
+
         return super.getResponse(request);
       }
     };
     myHttpServer.start();
-    myHttpServerUrl = "http://localhost:" + myHttpServer.getPort() + prefixPath;
+    myHttpServerUrl = "http://localhost:" + myHttpServer.getPort() + myHttpContextUrl;
     System.out.println("Created http server at: " + myHttpServerUrl);
   }
+
+
+  protected void registerHttpHandler(@NotNull final HttpServerHandler handler) {
+    myHandlers.add(handler);
+  }
+
+  protected boolean checkContainsToken(@NotNull final String request) {
+    return request.contains(myTokens.getAccessToken()) && request.contains(myTokens.getAccessTokenHeaderName());
+  }
+
 
   protected String loadAllText(File temp) throws IOException {
     return new String(FileUtil.loadFileText(temp, "utf-8"));

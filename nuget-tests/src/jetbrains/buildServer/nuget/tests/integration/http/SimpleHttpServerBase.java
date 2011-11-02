@@ -58,7 +58,7 @@ public abstract class SimpleHttpServerBase {
     myPort = NetworkUtil.getFreePort(1025);
   }
 
-  protected static Response getFileResponse(@NotNull final File file, @NotNull List<String> headers) {
+  public static Response getFileResponse(@NotNull final File file, @NotNull List<String> headers) {
     List<String> fileHeaders = new ArrayList<String>();
     fileHeaders.addAll(headers);
     Date lastModified = new Date(file.lastModified());

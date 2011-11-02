@@ -6,10 +6,17 @@ import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.Param;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
+import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -25,8 +32,7 @@ public class NuGetServerIntegrationTest extends NuGetServerIntegrationTestBase {
     final File responseFile = createTempFile();
 
     renderPackagesResponseFile(responseFile, Paths.getTestDataPath("/packages/" + packageId + ".1.0.nupkg"));
-    startSimpleHttpServer(responseFile);
-    startNuGetServer();
+    registerHttpHandler(packagesFileHandler(responseFile));
 
     assertOwn().run();
 
@@ -46,8 +52,7 @@ public class NuGetServerIntegrationTest extends NuGetServerIntegrationTestBase {
     final File responseFile = createTempFile();
 
     renderPackagesResponseFile(responseFile, Paths.getTestDataPath("/packages/" + packageId + ".1.0.nupkg"));
-    startSimpleHttpServer(responseFile);
-    startNuGetServer();
+    registerHttpHandler(packagesFileHandler(responseFile));
 
     runAsyncAndFailOnException(
             10,
@@ -72,8 +77,8 @@ public class NuGetServerIntegrationTest extends NuGetServerIntegrationTestBase {
             Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg")
             );
 
-    startSimpleHttpServer(responseFile);
-    startNuGetServer();
+    registerHttpHandler(packagesFileHandler(responseFile));
+
 
     assert200("/Packages()").run();
     assert200("/////Packages()").run();
@@ -100,8 +105,8 @@ public class NuGetServerIntegrationTest extends NuGetServerIntegrationTestBase {
             Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg")
             );
 
-    startSimpleHttpServer(responseFile);
-    startNuGetServer();
+    registerHttpHandler(packagesFileHandler(responseFile));
+
 
 
     GeneralCommandLine cmd = new GeneralCommandLine();
@@ -132,8 +137,7 @@ public class NuGetServerIntegrationTest extends NuGetServerIntegrationTestBase {
             Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg")
             );
 
-    startSimpleHttpServer(responseFile);
-    startNuGetServer();
+    registerHttpHandler(packagesFileHandler(responseFile));
 
     final File home = createTempDir();
 
@@ -154,6 +158,22 @@ public class NuGetServerIntegrationTest extends NuGetServerIntegrationTestBase {
 
     Assert.assertTrue(new File(home, packageId_1 + ".1.0").isDirectory());
     Assert.assertTrue(new File(home, packageId_1 + ".1.0/" + packageId_1 + ".1.0.nupkg").isFile());
+  }
+
+  @NotNull
+  protected HttpServerHandler packagesFileHandler(@NotNull final File responseFile) throws IOException {
+    return new HttpServerHandler() {
+      public SimpleHttpServerBase.Response processRequest(@NotNull String requestLine, @Nullable String path) {
+        if (!(myHttpContextUrl + "/packages-metadata.html").equals(path)) return null;
+
+        if (checkContainsToken(requestLine)) {
+          return SimpleHttpServer.getFileResponse(responseFile, Arrays.asList("Content-Type: text/plain; encoding=UTF-8"));
+        } else {
+          System.out.println("Failed to find authorization token in request!");
+          return SimpleHttpServer.createStreamResponse(SimpleHttpServer.STATUS_LINE_500, Collections.<String>emptyList(), "invalid token".getBytes());
+        }
+      }
+    };
   }
 
 }
