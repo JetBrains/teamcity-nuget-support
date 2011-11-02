@@ -13,6 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
 <%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="available"
              type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool>"

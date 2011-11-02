@@ -13,6 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
 <%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="errorText" scope="request" type="java.lang.String"/>
 <div id="nugetInstallFormResreshInner">
