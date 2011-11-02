@@ -22,8 +22,13 @@ package jetbrains.buildServer.nuget.server.feed.server.tab;
  */
 public class FeedServerContants {
   public static final String NUGET_SERVER_ENABLED_CHECKBOX = "nugetServer.enabled";
+  public static final String NUGET_SERVER_URL = "nugetServer.url";
 
   public String getNugetServerEnabledCheckbox() {
     return NUGET_SERVER_ENABLED_CHECKBOX;
+  }
+
+  public String getNugetServerUrl() {
+    return NUGET_SERVER_URL;
   }
 }

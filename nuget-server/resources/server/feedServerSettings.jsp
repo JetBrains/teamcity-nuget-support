@@ -26,11 +26,26 @@
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
 
 <h2 class="noBorder">TeamCity as NuGet Feed</h2>
-<div style="width: 50em;">
+<div style="width: 50em; margin-bottom: 3em;">
 <p>In this section you may select if you like to make TeamCity be a NuGet feed.</p>
 
-<form id="nugetSettingsForm" action="<c:url value='${nugetSettingsPostUrl}'/>" method="post">
+<form id="nugetSettingsForm" action="<c:url value='${nugetSettingsPostUrl}'/>" method="post" onsubmit="return BS.NuGet.FeedServer.Form.saveForm();">
   <table class="runnerFormTable">
+    <tr>
+      <th>Enable NuGet Server:</th>
+      <td>
+        <props:checkboxProperty name="${fb.nugetServerEnabledCheckbox}"/> Enabled NuGet Server
+        <span class="smallNote">Enables or disables NuGet feed server running inside TeamCity</span>
+      </td>
+    </tr>
+    <tr>
+      <th rowspan="2">TeamCity Url:</th>
+      <td>
+        <props:textProperty name="${fb.nugetServerUrl}" className="longField"/>
+        <span class="smallNote">Specify URL or TeamCity server for internally
+          running NuGet server process. Leave blank to use TeamCity server URL(${serverUrl})</span>
+      </td>
+    </tr>
     <tr>
       <td colspan="2">
         <div class="attentionComment">
@@ -41,71 +56,70 @@
         </div>
       </td>
     </tr>
-    <tr>
-      <th>Enable NuGet Server:</th>
-      <td>
-        <forms:saving id="serverStatusIcon"/>
-        <props:checkboxProperty name="${fb.nugetServerEnabledCheckbox}" onclick="BS.NuGet.FeedServer.persistCheckbox()"/> Enabled NuGet Server
-        <span class="smallNote">Enabled or disabled nuget feed server running inside TeamCity</span>
-      </td>
-    </tr>
   </table>
+
+  <div id="nugetSettingsSuccessMessage" class="successMessage">NuGet server settings saved.</div>
+
+  <div class="saveButtonsBlock" style="border: none;">
+     <input class="submitButton" type="submit" value="Save">
+     <input type="hidden" id="submitSettings" name="submitSettings" value="store"/>
+     <forms:saving id="nugetSettingsSaving"/>
+   </div>
+
+  <div class="clr"></div>
 </form>
-
-  <bs:refreshable containerId="nugetServerStatus" pageUrl="${nugetStatusRefreshFullUrl}">
-    <table class="runnerFormTable">
-      <tr>
-        <th>NuGet Server status:</th>
-        <td style="padding-top: 12px;">
-          <c:choose>
-            <c:when test="${serverStatus.scheduledToStart}">
-              <div style="">
-                <img src="<c:url value='${imagesBase}/restarting.gif'/>" alt="starting"/>
-                Server is starting
-              </div>
-              <span class="smallNote">NuGet Feed server is not runnig now and will be started soon.</span>
-            </c:when>
-
-            <c:when test="${not serverStatus.running}">
-              <div style="">
-                <img src="<c:url value='${imagesBase}/stopped.gif'/>" alt="stopped"/>
-                Server is stopped
-              </div>
-            </c:when>
-
-            <%-- server is runnning --%>
-            <c:when test="${empty serverStatus.serverAccessible}">
-              <div style="">
-                <img src="<c:url value='${imagesBase}/starting.gif'/>" alt="starting"/>
-                Server is starting
-              </div>
-            </c:when>
-
-            <c:when test="${not serverStatus.serverAccessible}">
-              <div style="">
-                <img src="<c:url value='${imagesBase}/error.gif'/>" alt="error"/>
-                Ping Failed
-              </div>
-              <span class="smallNote">Check TeamCity Server Url is accessible from localhost</span>
-            </c:when>
-            <c:when test="${serverStatus.serverAccessible}">
-              <div style="">
-                <img src="<c:url value='${imagesBase}/running.gif'/>" alt="starting"/>
-                Running
-              </div>
-              <span class="smallNote">NuGet Feed server is running now.</span>
-            </c:when>
-          </c:choose>
-        </td>
-      </tr>
-    </table>
-  </bs:refreshable>
 </div>
+
+
+<h2 class="noBorder">NuGet Server status:</h2>
+<p></p>
+
+<bs:refreshable containerId="nugetServerStatus" pageUrl="${nugetStatusRefreshFullUrl}">
+  <c:choose>
+    <c:when test="${serverStatus.scheduledToStart}">
+      <div style="">
+        <img src="<c:url value='${imagesBase}/restarting.gif'/>" alt="starting"/>
+        Server is starting
+      </div>
+      <span class="smallNote">NuGet Feed server is not runnig now and will be started soon.</span>
+    </c:when>
+
+    <c:when test="${not serverStatus.running}">
+      <div style="">
+        <img src="<c:url value='${imagesBase}/stopped.gif'/>" alt="stopped"/>
+        Server is stopped
+      </div>
+    </c:when>
+
+    <%-- server is runnning --%>
+    <c:when test="${empty serverStatus.serverAccessible}">
+      <div style="">
+        <img src="<c:url value='${imagesBase}/starting.gif'/>" alt="starting"/>
+        Server is starting
+      </div>
+    </c:when>
+
+    <c:when test="${not serverStatus.serverAccessible}">
+      <div style="">
+        <img src="<c:url value='${imagesBase}/error.gif'/>" alt="error"/>
+        Ping Failed
+      </div>
+      <span class="smallNote">Check TeamCity Server Url is accessible from localhost</span>
+    </c:when>
+    <c:when test="${serverStatus.serverAccessible}">
+      <div style="">
+        <img src="<c:url value='${imagesBase}/running.gif'/>" alt="starting"/>
+        Running
+      </div>
+      <span class="smallNote">NuGet Feed server is running now.</span>
+    </c:when>
+  </c:choose>
+</bs:refreshable>
 
 <h3>Recent NuGet Server log:</h3>
 <bs:refreshable containerId="nugetServerLogs" pageUrl="${nugetStatusRefreshFullUrl}">
   <div style="width: 75%">
-    <pre id="nugetServerLogView" style="margin-top: 1em; font-size: 90%;  overflow: auto; height: 20em; background-color: #eee;"><c:out value="${serverStatus.logsSlice}"/></pre>
+    <pre id="nugetServerLogView" style="padding: 1em; font-size: 90%; overflow: auto; height: 20em; background-color: #eee;"><c:out value="${serverStatus.logsSlice}"/></pre>
     <a href="<c:url value='/admin/serverConfig.html?tab=diagnostic&init=1&subTab=logs'/>">See all server logs </a>
     |
     <a href="<c:url value='/get/file/serverLogs/teamcity-nuget-server.log'/>">Download full log</a>
@@ -129,17 +143,19 @@
         return $('nugetSettingsForm');
       },
 
-      saveFormOnCheckbox : function() {
-        BS.Util.show($('serverStatusIcon'));
-
+      saveForm : function() {
         var that = this;
+        BS.Util.show($('nugetSettingsSaving'));
+        BS.Util.hide($('nugetSettingsSuccessMessage'));
         BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
           onCompleteSave: function() {
+            BS.Util.hide($('nugetSettingsSaving'));
             BS.Util.reenableForm(that.formElement());
-            BS.Util.hide($('serverStatusIcon'));
             BS.NuGet.FeedServer.refreshStatus();
+            BS.Util.show($('nugetSettingsSuccessMessage'));
           }
         }));
+        return false;
       }
     }),
 
@@ -166,7 +182,10 @@
     }
   };
 
-  Event.observe(window, "load", function() { BS.NuGet.FeedServer.registerStatusRefresh(); });
+  Event.observe(window, "load", function() {
+    BS.NuGet.FeedServer.registerStatusRefresh();
+    BS.Util.hide($('nugetSettingsSuccessMessage'));
+  });
 </script>
 
 

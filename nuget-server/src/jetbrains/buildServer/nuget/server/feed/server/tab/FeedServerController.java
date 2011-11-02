@@ -78,6 +78,9 @@ public class FeedServerController extends BaseController {
     if (mySettings.isNuGetFeedEnabled()) {
       properties.put(FeedServerContants.NUGET_SERVER_ENABLED_CHECKBOX, "checked");
     }
+    String url = mySettings.getCustomTeamCityBaseUrl();
+    if (jetbrains.buildServer.util.StringUtil.isEmptyOrSpaces(url)) url = "";
+    properties.put(FeedServerContants.NUGET_SERVER_URL, url);
 
     modelAndView.getModel().put("propertiesBean", new BasePropertiesBean(properties));
     modelAndView.getModel().put("serverUrl", myRootUrl.getRootUrl());

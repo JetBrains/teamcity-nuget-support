@@ -84,6 +84,15 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
     });
   }
 
+  public String getCustomTeamCityBaseUrl() {
+    return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
+      public String executeAction(@NotNull NuGetSettingsReader action) {
+        return action.getStringParameter(NUGET_SERVER_URL);
+      }
+    });
+
+  }
+
   public boolean isNuGetFeedEnabled() {
     return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
       public Boolean executeAction(@NotNull NuGetSettingsReader action) {
@@ -94,14 +103,10 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
 
   @NotNull
   public String getPackagesControllerUrl() {
-    return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
-      public String executeAction(@NotNull NuGetSettingsReader action) {
-        String url = action.getStringParameter(NUGET_SERVER_URL);
-        if (url == null) url = myRootUrl.getRootUrl();
-        url = StringUtil.trimEnd(url, "/");
-        return url + myController.getBasePath();
-      }
-    });
+    String url = getCustomTeamCityBaseUrl();
+    if (url == null) url = myRootUrl.getRootUrl();
+    url = StringUtil.trimEnd(url, "/");
+    return url + myController.getBasePath();
   }
 
   @NotNull

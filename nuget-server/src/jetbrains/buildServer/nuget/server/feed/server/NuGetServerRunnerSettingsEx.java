@@ -28,4 +28,10 @@ public interface NuGetServerRunnerSettingsEx extends NuGetServerRunnerSettings {
 
   void setTeamCityBaseUrl(@NotNull String url);
   void setDefaultTeamCityBaseUrl();
+
+  /**
+   * @return custom-set TeamCity url or null
+   */
+  @Nullable
+  String getCustomTeamCityBaseUrl();
 }
