@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.integration;
+package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerPing;

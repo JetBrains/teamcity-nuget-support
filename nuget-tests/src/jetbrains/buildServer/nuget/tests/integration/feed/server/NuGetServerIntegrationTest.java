@@ -1,9 +1,11 @@
-package jetbrains.buildServer.nuget.tests.integration;
+package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.Param;
+import jetbrains.buildServer.nuget.tests.integration.NuGet;
+import jetbrains.buildServer.nuget.tests.integration.Paths;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

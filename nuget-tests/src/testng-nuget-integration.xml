@@ -13,8 +13,8 @@
 
   <test name="NuGet Feed Server integration">
     <classes>
-      <class name="jetbrains.buildServer.nuget.tests.integration.NuGetServerIntegrationTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.integration.NuGetServerPingIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetServerIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetServerPingIntegrationTest"/>
     </classes>
   </test>
 </suite>

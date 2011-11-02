@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.integration.feed;
+package jetbrains.buildServer.nuget.tests.integration.http;
 
 
 import jetbrains.buildServer.NetworkUtil;

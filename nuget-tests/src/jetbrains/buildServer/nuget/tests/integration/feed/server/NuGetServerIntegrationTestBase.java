@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.integration;
+package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
@@ -32,7 +32,8 @@ import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageIte
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl;
-import jetbrains.buildServer.nuget.tests.integration.feed.SimpleHttpServer;
+import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.ExceptionUtil;
