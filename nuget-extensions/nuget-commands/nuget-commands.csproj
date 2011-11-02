@@ -46,11 +46,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\nuget-runner\src\Annotations.cs">
-      <Link>src\Annotations.cs</Link>
+    <Compile Include="..\shared\src\Annotations.cs">
+      <Link>src\Shared\Annotations.cs</Link>
     </Compile>
-    <Compile Include="..\nuget-runner\src\AssemblyHelper.cs">
-      <Link>src\AssemblyHelper.cs</Link>
+    <Compile Include="..\shared\src\AssemblyHelper.cs">
+      <Link>src\Shared\AssemblyHelper.cs</Link>
     </Compile>
     <Compile Include="src\AssemblyResolver.cs" />
     <Compile Include="src\CommandBase.cs" />

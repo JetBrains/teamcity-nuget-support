@@ -91,11 +91,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\nuget-runner\src\Annotations.cs">
-      <Link>Annotations.cs</Link>
+    <Compile Include="..\shared\src\Annotations.cs">
+      <Link>Shared\Annotations.cs</Link>
     </Compile>
-    <Compile Include="..\nuget-runner\src\AssemblyHelper.cs">
-      <Link>AssemblyHelper.cs</Link>
+    <Compile Include="..\shared\src\AssemblyHelper.cs">
+      <Link>Shared\AssemblyHelper.cs</Link>
     </Compile>
     <Compile Include="DataServices\NuGetPingHandler.cs" />
     <Compile Include="DataServices\Routes.cs" />

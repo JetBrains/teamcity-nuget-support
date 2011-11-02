@@ -43,8 +43,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\Annotations.cs" />
-    <Compile Include="src\AssemblyHelper.cs" />
+    <Compile Include="..\shared\src\Annotations.cs">
+      <Link>src\Shared\Annotations.cs</Link>
+    </Compile>
+    <Compile Include="..\shared\src\AssemblyHelper.cs">
+      <Link>src\Shared\AssemblyHelper.cs</Link>
+    </Compile>
     <Compile Include="src\CommandLineHelper.cs" />
     <Compile Include="src\NuGetInstallExtensions4.cs" />
     <Compile Include="src\NuGetInstallExtensions5.cs" />

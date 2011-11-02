@@ -39,10 +39,13 @@ namespace JetBrains.TeamCity.NuGet.Server
 
     private static void Usage()
     {
+      Console.Out.WriteLine();
       Console.Out.WriteLine("Usage: ");
-      Console.Out.WriteLine(" /port:XXX                         sets port number to bind");
-      Console.Out.WriteLine(" /PackagesSpecUri:XXX         ");
-      Console.Out.WriteLine(" /Logs:XXX         ");
+      Console.Out.WriteLine(" /Port:XXX                  sets port number to bind");
+      Console.Out.WriteLine(" /TeamCityBaseUri:XXX       URI to TeamCity host that would provide necessary metadata for the server  ");
+      Console.Out.WriteLine(" /LogFile:XXX               Logs will be written to that file ");
+      Console.Out.WriteLine(" /Token:XXX                 TeamCity access token ");
+      Console.Out.WriteLine("");
       Console.Out.WriteLine("");
     }
 
@@ -84,7 +87,7 @@ namespace JetBrains.TeamCity.NuGet.Server
         Console.Error.WriteLine("Directory does not exist: {0}", webApp);
         return 1;
       }
-      var port = argz.GetInt("port", 8411);
+      var port = argz.GetInt("Port", 8411);
 
       var webContextParameters = new Dictionary<string, string>
                                    {

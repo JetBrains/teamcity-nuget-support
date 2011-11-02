@@ -55,6 +55,10 @@ namespace JetBrains.TeamCity.NuGet.Feed
 
     private static string GetLogFileName()
     {
+      var file = Environment.GetEnvironmentVariable(LOG_ENV_KEY);
+      if (file != null) return file;
+
+
       string destPath = Environment.GetEnvironmentVariable(LOG_ENV_PATH);
       if (destPath == null)
         destPath = Path.Combine(Path.GetTempPath(), "TeamCity.NET");

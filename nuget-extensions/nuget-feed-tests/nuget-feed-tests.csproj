@@ -47,17 +47,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\nuget-tests\src\Files.cs">
-      <Link>src\Files.cs</Link>
-    </Compile>
-    <Compile Include="..\nuget-tests\src\PathSearcher.cs">
-      <Link>src\PathSearcher.cs</Link>
-    </Compile>
-    <Compile Include="..\nuget-tests\src\ProcessExecutor.cs">
-      <Link>src\ProcessExecutor.cs</Link>
-    </Compile>
     <Compile Include="..\nuget-tests\src\TempFilesHolder.cs">
       <Link>src\TempFilesHolder.cs</Link>
+    </Compile>
+    <Compile Include="..\shared\testSrc\Files.cs">
+      <Link>src\Shared\Files.cs</Link>
+    </Compile>
+    <Compile Include="..\shared\testSrc\PathSearcher.cs">
+      <Link>src\Shared\PathSearcher.cs</Link>
+    </Compile>
+    <Compile Include="..\shared\testSrc\ProcessExecutor.cs">
+      <Link>src\Shared\ProcessExecutor.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\LINQ\QueryNormalizationTest.cs" />

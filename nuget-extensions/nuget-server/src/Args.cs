@@ -13,21 +13,6 @@ namespace JetBrains.TeamCity.NuGet.Server
       myArgs = new List<string>(args);
     }
 
-    public string this[int i]
-    {
-      get
-      {
-        try
-        {
-          return myArgs[i];
-        }
-        catch
-        {
-          return null;
-        }
-      }
-    }
-
     public bool Contains(string key)
     {
       return myArgs.Any(arg => arg.Equals("/" + key, StringComparison.InvariantCultureIgnoreCase));
