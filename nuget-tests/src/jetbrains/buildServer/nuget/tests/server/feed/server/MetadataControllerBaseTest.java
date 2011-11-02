@@ -78,7 +78,7 @@ public class MetadataControllerBaseTest extends BaseTestCase {
     m.checking(new Expectations(){{
 
       allowing(myRequest).getHeader(with(any(String.class))); will(returnValue(null));
-      allowing(myRequest).getHeader("X-TeamCity-HostId"); will(returnValue("unknown"));
+      allowing(myRequest).getHeader("X-TeamCity-Auth"); will(returnValue("unknown"));
       oneOf(myResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }});
 
@@ -91,11 +91,13 @@ public class MetadataControllerBaseTest extends BaseTestCase {
   public void test_accept_token() throws Exception {
 
     m.checking(new Expectations(){{
-
-      allowing(myRequest).getHeader("X-TeamCity-HostId"); will(returnValue(myTokens.getAccessToken()));
+      allowing(myRequest).getHeader("X-TeamCity-Auth"); will(returnValue(myTokens.getAccessToken()));
       allowing(myRequest).getHeader(with(any(String.class))); will(returnValue(null));
 
       oneOf(myHandler).processRequest(myRequest, myResponse);
+
+      allowing(myResponse).setCharacterEncoding(with(any(String.class)));
+      allowing(myResponse).setContentType(with(any(String.class)));
     }});
 
     myController.doHandle(myRequest, myResponse);
