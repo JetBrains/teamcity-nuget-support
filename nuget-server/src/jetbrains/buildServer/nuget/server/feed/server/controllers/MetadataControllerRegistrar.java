@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,12 +29,13 @@ import java.util.Collection;
  */
 public class MetadataControllerRegistrar {
   public MetadataControllerRegistrar(@NotNull final WebControllerManager web,
-                                     @NotNull final Collection<MetadataControllerBase> controllers,
+                                     @NotNull final NuGetServerRunnerTokens tokens,
+                                     @NotNull final Collection<MetadataControllerHandler> controllers,
                                      @NotNull final AuthorizationInterceptor authz) {
-    for (MetadataControllerBase controller : controllers) {
-      String path = controller.getControllerPath();
+    for (MetadataControllerHandler handler : controllers) {
+      final String path = handler.getControllerPath();
       authz.addPathNotRequiringAuth(path);
-      web.registerController(path, controller);
+      web.registerController(path, new MetadataControllerBase(tokens, handler));
     }
   }
 }

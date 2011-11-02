@@ -26,18 +26,30 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NuGetServerTokensImpl implements NuGetServerRunnerTokens {
   private final String myAccessToken;
+  private final String myServerToken;
 
   public NuGetServerTokensImpl() {
     myAccessToken = "jonnyzzz" + StringUtil.generateUniqueHash() + "rulezz";
+    myServerToken = "@jonnyzzz" + StringUtil.generateUniqueHash() + "rulezz";
   }
 
   @NotNull
   public String getAccessTokenHeaderName() {
-    return "X-TeamCity-HostId";
+    return "X-TeamCity-Auth";
   }
 
   @NotNull
   public String getAccessToken() {
     return myAccessToken;
+  }
+
+  @NotNull
+  public String getServerTokenHeaderName() {
+    return "X-TeamCity-HostId";
+  }
+
+  @NotNull
+  public String getServerToken() {
+    return myServerToken;
   }
 }

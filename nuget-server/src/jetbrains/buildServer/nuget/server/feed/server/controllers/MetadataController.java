@@ -16,10 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
-import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,36 +25,22 @@ import javax.servlet.http.HttpServletResponse;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 19.10.11 16:05
  */
-public class MetadataController extends MetadataControllerBase {
+public class MetadataController implements MetadataControllerHandler {
   @NotNull private final MetadataControllersPaths myDescriptor;
-  @NotNull private final NuGetServerRunnerTokens mySettings;
   @NotNull private final PackagesWriter myWriter;
 
   public MetadataController(@NotNull final MetadataControllersPaths descriptor,
-                            @NotNull final NuGetServerRunnerTokens settings,
                             @NotNull final PackagesWriter writer) {
     myDescriptor = descriptor;
-    mySettings = settings;
     myWriter = writer;
   }
 
   @NotNull
-  @Override
-  protected String getControllerPath() {
+  public String getControllerPath() {
     return myDescriptor.getMetadataControllerPath();
   }
 
-  @Override
-  public ModelAndView doHandle(@NotNull final HttpServletRequest request,
-                                  @NotNull final HttpServletResponse response) throws Exception {
-
-    final String key = request.getHeader(mySettings.getAccessTokenHeaderName());
-    if (!mySettings.getAccessToken().equals(key)) {
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      return null;
-    }
-
+  public void processRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
     myWriter.serializePackages(request, response);
-    return null;
   }
 }

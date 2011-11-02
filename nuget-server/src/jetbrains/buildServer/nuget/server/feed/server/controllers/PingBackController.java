@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +27,7 @@ import java.io.PrintWriter;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 24.10.11 19:04
  */
-public class PingBackController extends MetadataControllerBase {
+public class PingBackController implements MetadataControllerHandler {
   private final MetadataControllersPaths myDescriptor;
   private final NuGetServerRunnerTokens mySettings;
 
@@ -40,23 +39,16 @@ public class PingBackController extends MetadataControllerBase {
   }
 
   @NotNull
-  @Override
-  protected String getControllerPath() {
+  public String getControllerPath() {
     return myDescriptor.getPingControllerPath();
   }
 
-  @Override
-  protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
-                                  @NotNull final HttpServletResponse response) throws Exception {
-    response.setCharacterEncoding("utf-8");
-    response.setContentType("text/plain");
+  public void processRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+    final String accessToken = mySettings.getServerToken();
+    response.setHeader(mySettings.getServerTokenHeaderName(), accessToken);
 
-    final String accessToken = mySettings.getAccessToken();
-    response.setHeader(mySettings.getAccessTokenHeaderName(), accessToken);
     final PrintWriter writer = response.getWriter();
     writer.write(accessToken);
     writer.close();
-
-    return null;
   }
 }

@@ -20,7 +20,8 @@
 
       <!-- nuget server -->
       <class name="jetbrains.buildServer.nuget.tests.server.feed.server.NuGetServerStatusHolderTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.MetadataControllerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.MetadataControllerBaseTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.PingControllerTest"/>
 
       <!-- misc -->
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest" />

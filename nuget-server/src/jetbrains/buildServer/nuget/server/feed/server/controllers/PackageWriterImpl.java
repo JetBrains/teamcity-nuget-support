@@ -71,9 +71,6 @@ public class PackageWriterImpl implements PackagesWriter {
 
   public void serializePackages(@NotNull final HttpServletRequest request,
                                 @NotNull final HttpServletResponse response) throws IOException {
-    response.setCharacterEncoding("utf-8");
-    response.setContentType("text/plain");
-
     final PrintWriter writer = response.getWriter();
 
     final Set<String> reportedPackages = new HashSet<String>();

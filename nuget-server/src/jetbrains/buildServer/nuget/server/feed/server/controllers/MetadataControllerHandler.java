@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server;
+package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import org.jetbrains.annotations.NotNull;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
- * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 02.11.11 12:41
- */
-public interface NuGetServerRunnerTokens {
-  /**
-   * @return http header that is used to provide auth token
-   */
+* @author Eugene Petrenko (eugene.petrenko@gmail.com)
+*         Date: 02.11.11 13:36
+*/
+public interface MetadataControllerHandler {
   @NotNull
-  String getAccessTokenHeaderName();
+  String getControllerPath();
 
-  /**
-   * Access token is used to authorize NuGet Feed server requests to TeamCity
-   * to avoid leaks
-   * @return unique token.
-   */
-  @NotNull
-  String getAccessToken();
+  void processRequest(@NotNull final HttpServletRequest request,
+                      @NotNull final HttpServletResponse response) throws Exception;
 
-
-  @NotNull
-  String getServerTokenHeaderName();
-
-  @NotNull
-  String getServerToken();
 }

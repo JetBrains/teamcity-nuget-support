@@ -17,15 +17,43 @@
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.controllers.BaseController;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 02.11.11 12:10
  */
-public abstract class MetadataControllerBase extends BaseController {
-
-
+public class MetadataControllerBase extends BaseController {
   @NotNull
-  protected abstract String getControllerPath();
+  private final NuGetServerRunnerTokens myTokens;
+  @NotNull
+  private final MetadataControllerHandler myHandler;
+
+  public MetadataControllerBase(@NotNull final NuGetServerRunnerTokens tokens,
+                                @NotNull final MetadataControllerHandler handler) {
+    myTokens = tokens;
+    myHandler = handler;
+  }
+
+  @Override
+  public ModelAndView doHandle(@NotNull final HttpServletRequest request,
+                               @NotNull final HttpServletResponse response) throws Exception {
+
+    final String key = request.getHeader(myTokens.getAccessTokenHeaderName());
+    if (!myTokens.getAccessToken().equals(key)) {
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return null;
+    }
+
+    response.setCharacterEncoding("utf-8");
+    response.setContentType("text/plain");
+
+    myHandler.processRequest(request, response);
+    return null;
+  }
 }

@@ -18,27 +18,28 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataController;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.PackagesWriter;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.PingBackController;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 02.11.11 12:20
+ *         Date: 02.11.11 13:28
  */
-public class MetadataControllerTest extends BaseTestCase {
+public class PingControllerTest extends BaseTestCase {
   private Mockery m;
   private NuGetServerRunnerTokens mySettings;
-  private PackagesWriter myWriter;
-  private MetadataController myController;
+  private PingBackController myController;
 
   private HttpServletRequest myRequest;
   private HttpServletResponse myResponse;
@@ -52,56 +53,27 @@ public class MetadataControllerTest extends BaseTestCase {
 
     MetadataControllersPaths paths = m.mock(MetadataControllersPaths.class);
     mySettings = new NuGetServerTokensImpl();
-    myWriter = m.mock(PackagesWriter.class);
 
     myRequest = m.mock(HttpServletRequest.class);
     myResponse = m.mock(HttpServletResponse.class);
 
-    myController = new MetadataController(paths, mySettings, myWriter);
+    myController = new PingBackController(paths, mySettings);
   }
 
   @Test
-  public void test_reject_token() throws Exception {
+  public void test_ping() throws Exception {
 
+    final StringWriter w = new StringWriter();
     m.checking(new Expectations(){{
-      allowing(myRequest).getHeader(with(any(String.class))); will(returnValue(null));
-
-      oneOf(myResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      oneOf(myResponse).setHeader("X-TeamCity-HostId", mySettings.getServerToken());
+      oneOf(myResponse).getWriter(); will(returnValue(new PrintWriter(w)));
     }});
 
-    myController.doHandle(myRequest, myResponse);
+    myController.processRequest(myRequest, myResponse);
 
+    Assert.assertEquals(w.toString(), mySettings.getServerToken());
     m.assertIsSatisfied();
   }
 
-  @Test
-  public void test_reject_token2() throws Exception {
 
-    m.checking(new Expectations(){{
-
-      allowing(myRequest).getHeader(with(any(String.class))); will(returnValue(null));
-      allowing(myRequest).getHeader("X-TeamCity-HostId"); will(returnValue("unknown"));
-      oneOf(myResponse).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    }});
-
-    myController.doHandle(myRequest, myResponse);
-
-    m.assertIsSatisfied();
-  }
-
-  @Test
-  public void test_accept_token() throws Exception {
-
-    m.checking(new Expectations(){{
-
-      allowing(myRequest).getHeader("X-TeamCity-HostId"); will(returnValue(mySettings.getAccessToken()));
-      allowing(myRequest).getHeader(with(any(String.class))); will(returnValue(null));
-
-      oneOf(myWriter).serializePackages(myRequest, myResponse);
-    }});
-
-    myController.doHandle(myRequest, myResponse);
-
-    m.assertIsSatisfied();
-  }
 }
