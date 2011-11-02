@@ -42,6 +42,7 @@ public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder {
   public NuGetServerStatus getStatus() {
     final State state = getState();
     final boolean isEnabled = mySettings.isNuGetFeedEnabled();
+    final Collection<String> logsSlice = NuGetServerStatusHolderImpl.this.getLogsSlice();
 
     return new NuGetServerStatus() {
       public boolean isRunning() {
@@ -58,7 +59,7 @@ public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder {
 
       @NotNull
       public Collection<String> getLogsSlice() {
-        return NuGetServerStatusHolderImpl.this.getLogsSlice();
+        return logsSlice;
       }
     };
   }
