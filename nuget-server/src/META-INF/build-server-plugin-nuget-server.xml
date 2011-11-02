@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunnerImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerCruiser"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerCruiserTask"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
@@ -24,7 +24,7 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PackageWriterImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PingBackController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerPing"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerPingCommandImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPathsImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerStatusHolderImpl"/>

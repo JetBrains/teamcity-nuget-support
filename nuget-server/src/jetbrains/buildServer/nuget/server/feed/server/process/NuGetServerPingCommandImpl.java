@@ -34,16 +34,16 @@ import java.io.ByteArrayOutputStream;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 24.10.11 19:07
  */
-public class NuGetServerPing {
-  private static final Logger LOG = Logger.getInstance(NuGetServerPing.class.getName());
+public class NuGetServerPingCommandImpl implements NuGetServerPingCommand {
+  private static final Logger LOG = Logger.getInstance(NuGetServerPingCommandImpl.class.getName());
 
   @NotNull private final NuGetServerUri myUri;
   @NotNull private final FeedClient myHttp;
   @NotNull private final NuGetServerRunnerTokens mySettings;
 
-  public NuGetServerPing(@NotNull final NuGetServerUri uri,
-                         @NotNull final FeedClient http,
-                         @NotNull final NuGetServerRunnerTokens settings) {
+  public NuGetServerPingCommandImpl(@NotNull final NuGetServerUri uri,
+                                    @NotNull final FeedClient http,
+                                    @NotNull final NuGetServerRunnerTokens settings) {
     myUri = uri;
     myHttp = http;
     mySettings = settings;

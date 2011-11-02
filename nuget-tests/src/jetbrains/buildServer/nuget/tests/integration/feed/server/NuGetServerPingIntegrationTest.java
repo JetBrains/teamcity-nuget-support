@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
-import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerPing;
+import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerPingCommandImpl;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,6 +52,6 @@ public class NuGetServerPingIntegrationTest extends NuGetServerIntegrationTestBa
       }
     });
 
-    Assert.assertTrue(new NuGetServerPing(myNuGetServerAddresses, new FeedHttpClientHolder(), myTokens).pingNuGetServer());
+    Assert.assertTrue(new NuGetServerPingCommandImpl(myNuGetServerAddresses, new FeedHttpClientHolder(), myTokens).pingNuGetServer());
   }
 }

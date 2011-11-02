@@ -27,16 +27,16 @@ import org.jetbrains.annotations.NotNull;
 public class NuGetServerCruiserTask {
   private static final Logger LOG = Logger.getInstance(NuGetServerCruiserTask.class.getName());
   private final NuGetServerRunnerSettings mySettings;
-  private final NuGetServerStatusHolderImpl myStatus;
-  private final NuGetServerPing myPing;
+  private final NuGetServerStatusReporting myStatus;
+  private final NuGetServerPingCommand myPing;
   private final NuGetServerRunner myRunner;
 
   private volatile String mySettingsHash;
 
 
   public NuGetServerCruiserTask(@NotNull final NuGetServerRunnerSettings settings,
-                                @NotNull final NuGetServerStatusHolderImpl status,
-                                @NotNull final NuGetServerPing ping,
+                                @NotNull final NuGetServerStatusReporting status,
+                                @NotNull final NuGetServerPingCommand ping,
                                 @NotNull final NuGetServerRunner runner) {
     mySettings = settings;
     myStatus = status;

@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 01.11.11 17:09
  */
-public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder {
+public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder, NuGetServerStatusReporting {
   private static final Logger LOG = Logger.getInstance(NuGetServerStatusHolderImpl.class.getName());
 
   private final AtomicReference<State> myState = new AtomicReference<State>(INITIAL_STATE);

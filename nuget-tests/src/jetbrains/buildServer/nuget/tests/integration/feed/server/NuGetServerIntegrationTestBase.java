@@ -31,6 +31,7 @@ import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl
 import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
+import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunnerImpl;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
@@ -145,7 +146,7 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
       allowing(settings).getLogFilePath(); will(returnValue(myLogsFile));
     }});
 
-    myNuGetServer = new NuGetServerRunner(settings, myTokens, new NuGetExecutorImpl(myProvider));
+    myNuGetServer = new NuGetServerRunnerImpl(settings, myTokens, new NuGetExecutorImpl(myProvider));
     myNuGetServer.startServer();
 
     myNuGetServerAddresses = new NuGetServerUriImpl(myNuGetServer);
