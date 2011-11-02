@@ -82,15 +82,19 @@ public class NuGetExecutorImpl implements NuGetExecutor {
   }
 
   @NotNull
-  public NuGetServerHandle startNuGetServer(final int port, @NotNull final String packagesUrl, @NotNull final File logsDir) throws NuGetExecutionException {
+  public NuGetServerHandle startNuGetServer(final int port,
+                                            @NotNull final String packagesUrl,
+                                            @NotNull final File logsDir,
+                                            @NotNull final String token) throws NuGetExecutionException {
     final GeneralCommandLine cmd = new GeneralCommandLine();
     final File path = myNuGetTeamCityProvider.getNuGetServerRunnerPath();
     cmd.setExePath(path.getPath());
     cmd.setWorkingDirectory(path.getParentFile());
 
-    cmd.addParameter("/port:" + port);
+    cmd.addParameter("/Port:" + port);
     cmd.addParameter("/PackagesSpecUri:" + packagesUrl);
     cmd.addParameter("/Logs:" + logsDir.getAbsolutePath());
+    cmd.addParameter("/Token:" + token);
 
     final Process process;
     try {

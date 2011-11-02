@@ -25,7 +25,9 @@ import jetbrains.buildServer.nuget.server.feed.reader.impl.NuGetFeedReaderImpl;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImpl;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageInfoSerializer;
+import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
@@ -62,12 +64,16 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
   protected Collection<InputStream> myStreams;
   private NuGetTeamCityProvider myProvider;
   private File myLogsDir;
+
   private FeedHttpClientHolder nyHttpClient;
   private FeedGetMethodFactory myHttpMethods;
   protected NuGetFeedReaderImpl myFeedReader;
+  protected NuGetServerRunnerTokens myTokens;
+
   private SimpleHttpServer myHttpServer;
   private NuGetServerRunner myNuGetServer;
   private String myHttpServerUrl;
+  protected  NuGetServerUriImpl myNuGetServerAddresses;
   protected String myNuGetServerUrl;
 
   @BeforeMethod
@@ -82,6 +88,13 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     nyHttpClient = new FeedHttpClientHolder();
     myHttpMethods = new FeedGetMethodFactory();
     myFeedReader = new NuGetFeedReaderImpl(nyHttpClient, new UrlResolverImpl(nyHttpClient, myHttpMethods), myHttpMethods, new PackagesFeedParserImpl());
+    myTokens = new NuGetServerTokensImpl();
+
+    myHttpServer = null;
+    myNuGetServer = null;
+    myHttpServerUrl = null;
+    myNuGetServerAddresses = null;
+    myNuGetServerUrl = null;
 
     System.out.println("NuGet server LogsDir = " + myLogsDir);
 
@@ -119,11 +132,11 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
       allowing(settings).getLogsPath(); will(returnValue(myLogsDir));
     }});
 
-    myNuGetServer = new NuGetServerRunner(settings, new NuGetExecutorImpl(myProvider));
+    myNuGetServer = new NuGetServerRunner(settings, myTokens, new NuGetExecutorImpl(myProvider));
     myNuGetServer.startServer();
-    NuGetServerUriImpl uri = new NuGetServerUriImpl(myNuGetServer);
 
-    myNuGetServerUrl = uri.getNuGetFeedBaseUri();
+    myNuGetServerAddresses = new NuGetServerUriImpl(myNuGetServer);
+    myNuGetServerUrl = myNuGetServerAddresses.getNuGetFeedBaseUri();
     System.out.println("Created nuget server at: " + myNuGetServerUrl);
   }
 
@@ -136,7 +149,12 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
       protected Response getResponse(String request) {
         System.out.println("Mock HTTP server request: " + request);
         if (packagesHandle.equals(getRequestPath(request))) {
-          return getFileResponse(responseFile, Arrays.asList("Content-Type: text/plain; encoding=UTF-8"));
+          if (request.contains(myTokens.getAccessToken())) {
+            return getFileResponse(responseFile, Arrays.asList("Content-Type: text/plain; encoding=UTF-8"));
+          } else {
+            System.out.println("Failed to find authorization token in request!");
+            return createStreamResponse(STATUS_LINE_500, Collections.<String>emptyList(), "invalid token".getBytes());
+          }
         }
         return super.getResponse(request);
       }

@@ -34,5 +34,6 @@ public interface NuGetExecutor {
   @NotNull
   NuGetServerHandle startNuGetServer(int port,
                                      @NotNull String packagesUrl,
-                                     @NotNull File logsDir) throws NuGetExecutionException;
+                                     @NotNull File logsDir,
+                                     @NotNull String token) throws NuGetExecutionException;
 }

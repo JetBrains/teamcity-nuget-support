@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.NuGetServerHandle;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,13 +35,16 @@ import java.util.concurrent.atomic.AtomicReference;
 public class NuGetServerRunner {
   private static final Logger LOG = Logger.getInstance(NuGetServerRunner.class.getName());
   private final NuGetServerRunnerSettings myPaths;
+  private final NuGetServerRunnerTokens myTokens;
   private final NuGetExecutor myExecutor;
 
   private final AtomicReference<NuGetServerHandle> myHandle = new AtomicReference<NuGetServerHandle>();
 
   public NuGetServerRunner(@NotNull final NuGetServerRunnerSettings paths,
+                           @NotNull final NuGetServerRunnerTokens tokens,
                            @NotNull final NuGetExecutor executor) {
     myPaths = paths;
+    myTokens = tokens;
     myExecutor = executor;
   }
 
@@ -56,7 +60,8 @@ public class NuGetServerRunner {
               myExecutor.startNuGetServer(
                       port,
                       myPaths.getPackagesControllerUrl(),
-                      myPaths.getLogsPath()
+                      myPaths.getLogsPath(),
+                      myTokens.getAccessToken()
               ));
     } catch (NuGetExecutionException e) {
       LOG.warn("Failed to start NuGet server. " + e.getMessage(), e);
