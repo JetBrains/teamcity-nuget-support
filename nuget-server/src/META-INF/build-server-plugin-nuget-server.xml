@@ -11,7 +11,7 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllerLocation"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetRunnerSettingsImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.NuGetArtifactsMetadataProvider"/>

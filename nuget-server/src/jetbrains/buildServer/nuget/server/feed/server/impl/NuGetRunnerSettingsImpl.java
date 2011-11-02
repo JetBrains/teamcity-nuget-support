@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.controllers;
+package jetbrains.buildServer.nuget.server.feed.server.impl;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
@@ -31,17 +32,17 @@ import java.io.File;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 18:55
  */
-public class MetadataControllerLocation implements NuGetServerRunnerSettingsEx {
+public class NuGetRunnerSettingsImpl implements NuGetServerRunnerSettingsEx {
   private final RootUrlHolder myRootUrl;
   private final ServerPaths myPaths;
   private final NuGetSettingsManager mySettings;
   private final MetadataControllersPaths myController;
   private final String NUGET_SERVER_ENABLED = "feed.enabled";
 
-  public MetadataControllerLocation(@NotNull final RootUrlHolder rootUrl,
-                                    @NotNull final MetadataControllersPaths controller,
-                                    @NotNull final ServerPaths paths,
-                                    @NotNull final NuGetSettingsManager settings) {
+  public NuGetRunnerSettingsImpl(@NotNull final RootUrlHolder rootUrl,
+                                 @NotNull final MetadataControllersPaths controller,
+                                 @NotNull final ServerPaths paths,
+                                 @NotNull final NuGetSettingsManager settings) {
     myRootUrl = rootUrl;
     myController = controller;
     myPaths = paths;
