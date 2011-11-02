@@ -43,6 +43,18 @@ public interface NuGetSettingsManager {
   <T> T writeSettings(@NotNull final NuGetSettingsComponent component, @NotNull Func<NuGetSettingsWriter, T> action);
 
   /**
+   * Registers listener for settings change
+   * @param eventListener lister to add
+   */
+  void addListener(@NotNull final NuGetSettingsEventHandler eventListener);
+
+  /**
+   * Removes listener for settings change
+   * @param eventListener listener to remove
+   */
+  void removeListener(@NotNull final NuGetSettingsEventHandler eventListener);
+
+  /**
    * Action interface
    * @param <T> argument type
    * @param <R> return type

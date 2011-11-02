@@ -22,9 +22,7 @@ import org.jdom.Content;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -128,5 +126,8 @@ public class SettingsState {
     return state;
   }
 
-
+  @NotNull
+  public Collection<NuGetSettingsComponent> getComponents() {
+    return new HashSet<NuGetSettingsComponent>(myState.keySet());
+  }
 }

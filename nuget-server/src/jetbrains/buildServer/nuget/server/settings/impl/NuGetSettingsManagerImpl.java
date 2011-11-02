@@ -16,14 +16,10 @@
 
 package jetbrains.buildServer.nuget.server.settings.impl;
 
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
+import jetbrains.buildServer.nuget.server.settings.*;
+import jetbrains.buildServer.util.EventDispatcher;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -35,11 +31,19 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class NuGetSettingsManagerImpl implements NuGetSettingsManager {
   private final ReadWriteLock myLock = new ReentrantReadWriteLock();
   private final AtomicReference<SettingsState> myState = new AtomicReference<SettingsState>(new SettingsState());
-  private final List<Runnable> myOnUpdate = new ArrayList<Runnable>();
+  private final EventDispatcher<NuGetSettingsEventHandler> myDispatcher = EventDispatcher.create(NuGetSettingsEventHandler.class);
 
   @NotNull
   public SettingsState getState() {
     return myState.get();
+  }
+
+  public void addListener(@NotNull NuGetSettingsEventHandler eventListener) {
+    myDispatcher.addListener(eventListener);
+  }
+
+  public void removeListener(@NotNull NuGetSettingsEventHandler eventListener) {
+    myDispatcher.removeListener(eventListener);
   }
 
   public <T> T readSettings(@NotNull NuGetSettingsComponent component, @NotNull Func<NuGetSettingsReader, T> action) {
@@ -53,19 +57,16 @@ public class NuGetSettingsManagerImpl implements NuGetSettingsManager {
 
   public <T> T writeSettings(@NotNull NuGetSettingsComponent component, @NotNull Func<NuGetSettingsWriter, T> action) {
     myLock.writeLock().lock();
+    final T result;
     try {
       final ComponentWriter writable = new ComponentWriter(component);
-      final T result = action.executeAction(writable);
+      result = action.executeAction(writable);
       myState.set(getState().update(writable));
-
-      for (Runnable runnable : myOnUpdate) {
-        runnable.run();
-      }
-
-      return result;
     } finally {
       myLock.writeLock().unlock();
     }
+    myDispatcher.getMulticaster().settingsChanged(component);
+    return result;
   }
 
   public void reload(@NotNull SettingsState settingsState) {
@@ -75,9 +76,7 @@ public class NuGetSettingsManagerImpl implements NuGetSettingsManager {
     } finally {
       myLock.writeLock().unlock();
     }
-  }
 
-  public void addOnUpdateHandler(@NotNull final Runnable action) {
-    myOnUpdate.add(action);
+    myDispatcher.getMulticaster().settingsReloaded();
   }
 }
