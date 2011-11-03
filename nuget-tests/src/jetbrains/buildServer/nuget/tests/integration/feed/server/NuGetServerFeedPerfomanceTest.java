@@ -63,19 +63,27 @@ public class NuGetServerFeedPerfomanceTest extends NuGetServerFeedIntegrationTes
 
     registerHttpHandler(packagesFileHandler(responseFile));
 
-    GeneralCommandLine cmd = new GeneralCommandLine();
-    cmd.setExePath(NuGet.NuGet_1_5.getPath().getPath());
-    cmd.addParameter("list");
-    cmd.addParameter("-Source");
-    cmd.addParameter(myNuGetServerUrl);
-    cmd.addParameter("-AllVersions");
 
-    final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
-    System.out.println(exec.getStdout());
-    System.out.println(exec.getStderr());
+    final Runnable listCommand = new Runnable() {
+      public void run() {
+        final GeneralCommandLine cmd = new GeneralCommandLine();
+        cmd.setExePath(NuGet.NuGet_1_5.getPath().getPath());
+        cmd.addParameter("list");
+        cmd.addParameter("-Source");
+        cmd.addParameter(myNuGetServerUrl);
+        cmd.addParameter("-AllVersions");
 
-    Assert.assertEquals(exec.getExitCode(), 0);
-//    Assert.assertTrue(stdout.contains(packageId_1), stdout);
-//    Assert.assertTrue(stdout.contains(packageId_2), stdout);
+        final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
+        System.out.println(exec.getStdout());
+        System.out.println(exec.getStderr());
+        Assert.assertEquals(exec.getExitCode(), 0);
+      }
+    };
+    //fake run to initialize all
+    listCommand.run();
+
+    //measure
+    double time = averageExecutionTime(listCommand, 5);
+    System.out.println("Execution time: " + time);
   }
 }
