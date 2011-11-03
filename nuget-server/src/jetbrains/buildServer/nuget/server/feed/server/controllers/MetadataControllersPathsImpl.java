@@ -52,7 +52,7 @@ public class MetadataControllersPathsImpl implements MetadataControllersPaths {
 
   @NotNull
   public String getArtifactsDownloadUrlBase() {
-    return myDescriptor.getPluginResourcesPath("packages-download") + "/";
+    return "/app/nuget-packages/";
   }
 
   @NotNull
