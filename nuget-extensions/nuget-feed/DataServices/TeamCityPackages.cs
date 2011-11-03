@@ -62,7 +62,6 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
         );
     }
 
-
     protected override TeamCityPackagesContext CreateDataSource()
     {
       return new TeamCityPackagesContext(Repository.GetPackages);
@@ -70,6 +69,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
     public Uri GetReadStreamUri(object entity, DataServiceOperationContext operationContext)
     {
+      //Move this code to CreateDataSource to run in only once pre request, and not once per package
       var package = (TeamCityPackage)entity;
       var context = HttpContext.Current;
 
@@ -78,7 +78,14 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
                       ? context.Request.Url.GetComponents(UriComponents.SchemeAndServer, UriFormat.Unescaped)
                       : header;
 
-      return new Uri(new Uri(rootUrl), package.TeamCityDownloadUrl);
+      return UrlCombine(rootUrl, package.TeamCityDownloadUrl);
+    }
+
+    private static Uri UrlCombine(string uri1, string uri2)
+    {
+      uri1 = uri1.TrimEnd('/');
+      uri2 = uri2.TrimStart('/');
+      return new Uri(string.Format("{0}/{1}", uri1, uri2));
     }
 
     public string GetStreamContentType(object entity, DataServiceOperationContext operationContext)
