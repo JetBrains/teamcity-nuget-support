@@ -147,15 +147,27 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerIntegrationTestBa
     final String packageId_2 = "NuGet.Core";
 
     final File responseFile = createTempFile();
+    final File file1 = Paths.getTestDataPath("/packages/" + packageId_1 + ".1.0.nupkg");
+    final File file2 = Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg");
+
     renderPackagesResponseFile(
             responseFile,
-            Paths.getTestDataPath("/packages/" + packageId_1 + ".1.0.nupkg"),
-            Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg")
+            file1,
+            file2
             );
 
     registerHttpHandler(packagesFileHandler(responseFile));
 
     final File home = createTempDir();
+
+    registerHttpHandler(new HttpServerHandler() {
+      public SimpleHttpServerBase.Response processRequest(@NotNull String requestLine, @Nullable String path) {
+        if ((myPaths.getArtifactsDownloadUrlWithTokenBase() + "/42/" + file1.getName()).equals(path)) {
+          return SimpleHttpServer.getFileResponse(file1, Arrays.asList("Content-Type: "));
+        }
+        return null;
+      }
+    });
 
 
     GeneralCommandLine cmd = new GeneralCommandLine();
