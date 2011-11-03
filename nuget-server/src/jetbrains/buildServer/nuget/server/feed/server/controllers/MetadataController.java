@@ -44,7 +44,6 @@ public class MetadataController implements MetadataControllerHandler {
     response.setCharacterEncoding("utf-8");
     response.setContentType("text/plain");
 
-
     myWriter.serializePackages(request, response);
   }
 }

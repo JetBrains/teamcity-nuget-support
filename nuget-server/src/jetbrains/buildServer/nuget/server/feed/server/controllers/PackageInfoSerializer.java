@@ -32,6 +32,12 @@ import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMC
  *         Date: 24.10.11 17:53
  */
 public class PackageInfoSerializer {
+  private final MetadataControllersPaths myPaths;
+
+  public PackageInfoSerializer(@NotNull final MetadataControllersPaths paths) {
+    myPaths = paths;
+  }
+
   public void serializePackage(@NotNull final Map<String, String> pacakgeParameters,
                                @NotNull final SFinishedBuild build,
                                final boolean isLatestVersion,
@@ -43,7 +49,7 @@ public class PackageInfoSerializer {
     parameters.putAll(pacakgeParameters);
 
     final String relPath = parameters.get(TEAMCITY_ARTIFACT_RELPATH);
-    parameters.put("TeamCityDownloadUrl", "/repository/download/" + build.getBuildTypeId() + "/" + build.getBuildId() + ":id/" + relPath);
+    parameters.put("TeamCityDownloadUrl", myPaths.getArtifactDownloadUrl(build, relPath));
     //TBD: parameters.put("ReleaseNotes", "");
     //TBD: parameters.put("Copyright", "");
     parameters.put("IsLatestVersion", String.valueOf(isLatestVersion));
@@ -57,7 +63,7 @@ public class PackageInfoSerializer {
   }
 
   @NotNull
-  private String formatDate(@NotNull Date date) {
+  private String formatDate(@NotNull final Date date) {
     //TODO:fix timezon printing
     return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }

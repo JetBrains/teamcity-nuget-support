@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
+import jetbrains.buildServer.serverSide.SBuild;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -31,4 +32,24 @@ public interface MetadataControllersPaths {
 
   @NotNull
   String getPingControllerPath();
+
+  /**
+   * @param build build
+   * @param path artifact path
+   * @return [plugin]/packages-download/[token]/[buildId]/[artifact path]
+   */
+  @NotNull
+  String getArtifactDownloadUrl(@NotNull final SBuild build, @NotNull final String path);
+
+  /**
+   * @return [plugin]/packages-download/
+   */
+  @NotNull
+  String getArtifactsDownloadUrlBase();
+
+  /**
+   * @return [plugin]/packages-download/[token]/
+   */
+  @NotNull
+  String getArtifactsDownloadUrlWithTokenBase();
 }

@@ -26,6 +26,8 @@ import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImp
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPathsImpl;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageInfoSerializer;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
@@ -39,6 +41,7 @@ import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -53,12 +56,10 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
 import static org.apache.http.HttpStatus.SC_OK;
 
 /**
@@ -75,12 +76,14 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
   private FeedGetMethodFactory myHttpMethods;
   protected NuGetFeedReaderImpl myFeedReader;
   protected NuGetServerRunnerTokens myTokens;
+  protected MetadataControllersPaths myPaths;
 
   private SimpleHttpServer myHttpServer;
   private NuGetServerRunner myNuGetServer;
   private String myHttpServerUrl;
   protected  NuGetServerUriImpl myNuGetServerAddresses;
   protected String myNuGetServerUrl;
+
 
   private Collection<HttpServerHandler> myHandlers;
 
@@ -106,9 +109,19 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     myNuGetServerAddresses = null;
     myNuGetServerUrl = null;
 
+    final PluginDescriptor descriptor = m.mock(PluginDescriptor.class);
+    myPaths = new MetadataControllersPathsImpl(descriptor, myTokens);
+
     m.checking(new Expectations() {{
       allowing(myProvider).getNuGetServerRunnerPath();
       will(returnValue(Paths.getNuGetServerRunnerPath()));
+
+      allowing(descriptor).getPluginResourcesPath(with(any(String.class)));
+      will(new CustomAction("map path") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return "/nuget/" + invocation.getParameter(0);
+        }
+      });
     }});
 
     myHandlers = new CopyOnWriteArrayList<HttpServerHandler>();
@@ -263,9 +276,10 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
       }});
 
       final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-      final Map<String, String> map = factory.loadPackage(artifact);
+      final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(artifact));
+      map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
 
-      new PackageInfoSerializer().serializePackage(map, build, true, w);
+      new PackageInfoSerializer(myPaths).serializePackage(map, build, true, w);
       w.append("                 ");
     }
 
