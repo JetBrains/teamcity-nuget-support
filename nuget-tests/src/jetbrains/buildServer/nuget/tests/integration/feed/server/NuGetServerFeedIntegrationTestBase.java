@@ -62,36 +62,7 @@ public class NuGetServerFeedIntegrationTestBase extends NuGetServerIntegrationTe
     w.append("                 ");
 
     for (final File packageFile : packagesFile) {
-      final SFinishedBuild build = m.mock(SFinishedBuild.class, "build-" + packageFile.getPath());
-      final BuildArtifact artifact = m.mock(BuildArtifact.class, "artifact-" + packageFile.getPath());
-
-      m.checking(new Expectations() {{
-        allowing(build).getBuildId(); will(returnValue(42L));
-        allowing(build).getBuildTypeId();  will(returnValue("bt"));
-        allowing(build).getBuildTypeName(); will(returnValue("buidldzzz"));
-        allowing(build).getFinishDate(); will(returnValue(new Date(1319214849319L)));
-
-        allowing(artifact).getInputStream();
-        will(new CustomAction("open file") {
-          public Object invoke(Invocation invocation) throws Throwable {
-            final FileInputStream stream = new FileInputStream(packageFile);
-            myStreams.add(stream);
-            return stream;
-          }
-        });
-
-        allowing(artifact).getTimestamp(); will(returnValue(packageFile.lastModified()));
-        allowing(artifact).getSize(); will(returnValue(packageFile.length()));
-        allowing(artifact).getRelativePath(); will(returnValue(packageFile.getPath()));
-        allowing(artifact).getName(); will(returnValue(packageFile.getName()));
-      }});
-
-      final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-      final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(artifact));
-      map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
-
-      new PackageInfoSerializer(myPaths).serializePackage(map, build, true, w);
-      w.append("                 ");
+      renderPackage(w, packageFile, true, 42L);
     }
 
     FileUtil.close(w);
@@ -99,6 +70,50 @@ public class NuGetServerFeedIntegrationTestBase extends NuGetServerIntegrationTe
 
     String text = loadAllText(responseFile);
     System.out.println("Generated server response:\r\n" + text);
+  }
+
+  private void renderPackage(@NotNull final Writer w,
+                             @NotNull final File packageFile,
+                             final boolean isLatest,
+                             final long buildId) throws PackageLoadException, IOException {
+    final SFinishedBuild build = m.mock(SFinishedBuild.class, "build-" + packageFile.getPath());
+    final BuildArtifact artifact = m.mock(BuildArtifact.class, "artifact-" + packageFile.getPath());
+
+    m.checking(new Expectations() {{
+      allowing(build).getBuildId(); will(returnValue(buildId));
+      allowing(build).getBuildTypeId();  will(returnValue("bt"));
+      allowing(build).getBuildTypeName(); will(returnValue("buidldzzz"));
+      allowing(build).getFinishDate(); will(returnValue(new Date(1319214849319L)));
+
+      allowing(artifact).getInputStream();
+      will(new CustomAction("open file") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          final FileInputStream stream = new FileInputStream(packageFile);
+          myStreams.add(stream);
+          return stream;
+        }
+      });
+
+      allowing(artifact).getTimestamp(); will(returnValue(packageFile.lastModified()));
+      allowing(artifact).getSize(); will(returnValue(packageFile.length()));
+      allowing(artifact).getRelativePath(); will(returnValue(packageFile.getPath()));
+      allowing(artifact).getName(); will(returnValue(packageFile.getName()));
+    }});
+
+    final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
+    final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(artifact));
+    map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
+
+    presentPackageEntry(w, isLatest, build, map);
+  }
+
+  private void presentPackageEntry(@NotNull Writer w,
+                                   boolean isLatest,
+                                   @NotNull final SFinishedBuild build,
+                                   @NotNull final Map<String, String> map) throws IOException {
+    new PackageInfoSerializer(myPaths).serializePackage(map, build, isLatest, w);
+
+    w.append("                 ");
   }
 
 }
