@@ -13,17 +13,17 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
     private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
 
     [XmlIgnore]
-    private readonly List<TeamCityPackageEntry> mySpecs = new List<TeamCityPackageEntry>();
+    private readonly List<TeamCityPackage> mySpecs = new List<TeamCityPackage>();
 
-    private readonly Dictionary<string, List<TeamCityPackageEntry>> myIdIndex 
-      = new Dictionary<string, List<TeamCityPackageEntry>>(StringComparer.InvariantCultureIgnoreCase);
+    private readonly Dictionary<string, List<TeamCityPackage>> myIdIndex
+      = new Dictionary<string, List<TeamCityPackage>>(StringComparer.InvariantCultureIgnoreCase);
 
-    private readonly Dictionary<string, TeamCityPackageEntry> myLatestVersionsIndex 
-      = new Dictionary<string, TeamCityPackageEntry>(StringComparer.InvariantCultureIgnoreCase);
+    private readonly Dictionary<string, TeamCityPackage> myLatestVersionsIndex
+      = new Dictionary<string, TeamCityPackage>(StringComparer.InvariantCultureIgnoreCase);
       
     [XmlArray("packages")]
     [XmlArrayItem("package")]
-    public TeamCityPackageEntry[] Specs
+    public TeamCityPackage[] Specs
     {
       get { return mySpecs.ToArray(); } 
       set { 
@@ -39,15 +39,24 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
       }
     }
 
-    public void AddSpec(TeamCityPackageEntry entry)
+    public void AddSpecs(IEnumerable<TeamCityPackage> packages)
+    {
+      foreach (var package in packages)
+      {
+        AddSpec(package);
+      }
+      
+    }
+
+    public void AddSpec(TeamCityPackage entry)
     {
       mySpecs.Add(entry);
 
-      var id = entry.Package.Id;
-      List<TeamCityPackageEntry> list;
+      var id = entry.Id;
+      List<TeamCityPackage> list;
       if (!myIdIndex.TryGetValue(id, out list))
       {
-        list = new List<TeamCityPackageEntry>();
+        list = new List<TeamCityPackage>();
         myIdIndex[id] = list;
       }
       list.Add(entry);
@@ -58,23 +67,21 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 
     public IEnumerable<TeamCityPackage> GetAllPackages()
     {
-      return Specs.Select(x=>x.Package);
+      return Specs;
     }
 
     public IEnumerable<TeamCityPackage> FilterById(IEnumerable<string> ids)
     {
       return ids
         .Where(myIdIndex.ContainsKey)
-        .SelectMany(x => myIdIndex[x])
-        .Select(x => x.Package);
+        .SelectMany(x => myIdIndex[x]);
     }
 
     public IEnumerable<TeamCityPackage> FiltetByIdLatest(IEnumerable<string> ids)
     {
       return ids
         .Where(myLatestVersionsIndex.ContainsKey)
-        .Select(x => myLatestVersionsIndex[x])
-        .Select(x => x.Package);
+        .Select(x => myLatestVersionsIndex[x]);
     }
   }
 }

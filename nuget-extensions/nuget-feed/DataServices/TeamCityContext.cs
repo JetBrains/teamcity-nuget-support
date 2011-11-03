@@ -12,10 +12,13 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     private static readonly Lazy<ITeamCityServerAccessor> myAccessor 
       = new Lazy<ITeamCityServerAccessor>(() => new TeamCityServerAccessor(myRepositoryPaths.Value), true);
 
-    private static readonly Lazy<LightPackageRepository> myRepo 
+    private static readonly Lazy<LightPackageRepository> myRepo
       = new Lazy<LightPackageRepository>(
-        () => new LightPackageRepository(new RemoteRepo(myAccessor.Value, new ServiceMessageParser(), new PackageLoader())), 
-        true);
+        () =>
+          {
+            var remoteRepo = new RemoteRepo(myAccessor.Value, new ServiceMessageParser(), new PackageLoader());
+            return new LightPackageRepository(new CachedRepo(remoteRepo));
+          });
 
     public static LightPackageRepository Repository
     {

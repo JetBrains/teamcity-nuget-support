@@ -37,7 +37,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Tests
       Assert.AreEqual(0, myRepo.FilterById(new[] {"zEb"}).Count());
     }
 
-    private static TeamCityPackageEntry LoadPackage(string package)
+    private static TeamCityPackage LoadPackage(string package)
     {
       var spec = new TeamCityPackageSpec
                    {
@@ -46,12 +46,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.Tests
                      DownloadUrl = "tbd",
                      PackageFile = package
                    };
-      var pkg = new TeamCityPackageEntry
-                  {
-                    Spec = spec,
-                    Package = TeamCityZipPackageFactory.LoadPackage(package, spec)
-                  };
-      return pkg;
+      return TeamCityZipPackageFactory.LoadPackage(package, spec);
+      
     }
   }
 }

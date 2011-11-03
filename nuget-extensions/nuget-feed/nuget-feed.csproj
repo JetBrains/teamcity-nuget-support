@@ -124,6 +124,7 @@
     <Compile Include="Query\TypeInference.cs" />
     <Compile Include="Query\UpperMostLambdaFinder.cs" />
     <Compile Include="Query\WhereExpressionVisitor.cs" />
+    <Compile Include="Repo\CachedRepo.cs" />
     <Compile Include="Repo\IRepositoryPaths.cs" />
     <Compile Include="Repo\ITeamCityPackagesRepo.cs" />
     <Compile Include="Repo\ITeamCityServerAccessor.cs" />
