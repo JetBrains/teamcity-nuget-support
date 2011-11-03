@@ -50,9 +50,6 @@ public class MetadataControllerBase extends BaseController {
       return null;
     }
 
-    response.setCharacterEncoding("utf-8");
-    response.setContentType("text/plain");
-
     myHandler.processRequest(request, response);
     return null;
   }

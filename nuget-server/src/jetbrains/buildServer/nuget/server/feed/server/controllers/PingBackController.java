@@ -44,6 +44,9 @@ public class PingBackController implements MetadataControllerHandler {
   }
 
   public void processRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+    response.setCharacterEncoding("utf-8");
+    response.setContentType("text/plain");
+
     final String accessToken = mySettings.getServerToken();
     response.setHeader(mySettings.getServerTokenHeaderName(), accessToken);
 

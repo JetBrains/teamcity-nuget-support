@@ -41,6 +41,10 @@ public class MetadataController implements MetadataControllerHandler {
   }
 
   public void processRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+    response.setCharacterEncoding("utf-8");
+    response.setContentType("text/plain");
+
+
     myWriter.serializePackages(request, response);
   }
 }
