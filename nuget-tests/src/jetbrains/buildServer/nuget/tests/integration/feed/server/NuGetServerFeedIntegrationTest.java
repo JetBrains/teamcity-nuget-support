@@ -38,7 +38,7 @@ import java.util.Collections;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 17:38
  */
-public class NuGetServerIntegrationTest extends NuGetServerIntegrationTestBase {
+public class NuGetServerFeedIntegrationTest extends NuGetServerIntegrationTestBase {
 
   @Test
   public void testOnePackageFeed() throws Exception {
