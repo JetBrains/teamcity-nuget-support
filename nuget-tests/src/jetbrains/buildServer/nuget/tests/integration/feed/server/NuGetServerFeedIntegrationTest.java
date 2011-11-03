@@ -64,7 +64,9 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerIntegrationTestBa
     Assert.assertTrue(packages.size() == 1);
     final FeedPackage pkg = packages.iterator().next();
 
-    Assert.assertTrue(pkg.getDownloadUrl().endsWith(myPaths.getArtifactsDownloadUrlWithTokenBase() + "42/" + name));
+    final String downloadUrl = pkg.getDownloadUrl();
+    final String ending = myPaths.getArtifactsDownloadUrlWithTokenBase() + "42/some/package/download/" + name;
+    Assert.assertTrue(downloadUrl.endsWith(ending), "actual url: " + downloadUrl + ", must end with " + ending);
   }
 
   @Test
