@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
+import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.Param;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
@@ -32,6 +33,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -47,7 +49,8 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerIntegrationTestBa
     final String packageId = "CommonServiceLocator";
     final File responseFile = createTempFile();
 
-    renderPackagesResponseFile(responseFile, Paths.getTestDataPath("/packages/" + packageId + ".1.0.nupkg"));
+    final String name = packageId + ".1.0.nupkg";
+    renderPackagesResponseFile(responseFile, Paths.getTestDataPath("/packages/" + name));
     registerHttpHandler(packagesFileHandler(responseFile));
 
     assertOwn().run();
@@ -57,7 +60,11 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerIntegrationTestBa
     assert200("/Packages()", new Param("$filter", "Id eq '" + packageId + "'")).run();
     assert200("////Packages()", new Param("$filter", "Id eq '" + packageId + "'")).run();
 
-    Assert.assertTrue(myFeedReader.queryPackageVersions(myNuGetServerUrl, packageId).size() > 0);
+    final Collection<FeedPackage> packages = myFeedReader.queryPackageVersions(myNuGetServerUrl, packageId);
+    Assert.assertTrue(packages.size() == 1);
+    final FeedPackage pkg = packages.iterator().next();
+
+    Assert.assertTrue(pkg.getDownloadUrl().endsWith(myPaths.getArtifactsDownloadUrlWithTokenBase() + "42/" + name));
   }
 
   @Test
