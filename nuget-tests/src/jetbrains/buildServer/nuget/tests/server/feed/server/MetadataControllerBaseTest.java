@@ -47,8 +47,6 @@ public class MetadataControllerBaseTest extends BaseTestCase {
     super.setUp();
 
     m = new Mockery();
-
-    MetadataControllersPaths paths = m.mock(MetadataControllersPaths.class);
     myTokens = new NuGetServerTokensImpl();
     myHandler = m.mock(MetadataControllerHandler.class);
 
