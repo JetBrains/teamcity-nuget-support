@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/idea-resolve-helper.iml" filepath="$PROJECT_DIR$/idea-resolve-helper.iml" />
       <module fileurl="file://$PROJECT_DIR$/nuget-agent/nuget-agent.iml" filepath="$PROJECT_DIR$/nuget-agent/nuget-agent.iml" />
       <module fileurl="file://$PROJECT_DIR$/nuget-common/nuget-common.iml" filepath="$PROJECT_DIR$/nuget-common/nuget-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nuget-integration-tests/nuget-integration-tests.iml" filepath="$PROJECT_DIR$/nuget-integration-tests/nuget-integration-tests.iml" />
       <module fileurl="file://$PROJECT_DIR$/nuget-server/nuget-server.iml" filepath="$PROJECT_DIR$/nuget-server/nuget-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/nuget-tests/nuget-tests.iml" filepath="$PROJECT_DIR$/nuget-tests/nuget-tests.iml" />
     </modules>
