@@ -51,6 +51,7 @@ public class NuGetServerStatusHolderTest extends BaseTestCase {
           return myIsEnabled;
         }
       });
+      allowing(mySettings).getLogFilePath(); will(returnValue(createTempFile("aaa")));
     }});
     myHolder = new NuGetServerStatusHolderImpl(mySettings);
   }
