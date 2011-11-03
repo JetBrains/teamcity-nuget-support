@@ -28,17 +28,12 @@ import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPathsImpl;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageInfoSerializer;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl;
-import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
-import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunnerImpl;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -55,11 +50,13 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
 import static org.apache.http.HttpStatus.SC_OK;
 
 /**
@@ -245,48 +242,4 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     };
   }
 
-  protected void renderPackagesResponseFile(@NotNull final File responseFile,
-                                            @NotNull final File... packagesFile) throws PackageLoadException, IOException {
-    final Writer w = new OutputStreamWriter(new FileOutputStream(responseFile), "utf-8");
-    w.append("                 ");
-
-    for (final File packageFile : packagesFile) {
-      final SFinishedBuild build = m.mock(SFinishedBuild.class, "build-" + packageFile.getPath());
-      final BuildArtifact artifact = m.mock(BuildArtifact.class, "artifact-" + packageFile.getPath());
-
-      m.checking(new Expectations() {{
-        allowing(build).getBuildId(); will(returnValue(42L));
-        allowing(build).getBuildTypeId();  will(returnValue("bt"));
-        allowing(build).getBuildTypeName(); will(returnValue("buidldzzz"));
-        allowing(build).getFinishDate(); will(returnValue(new Date(1319214849319L)));
-
-        allowing(artifact).getInputStream();
-        will(new CustomAction("open file") {
-          public Object invoke(Invocation invocation) throws Throwable {
-            final FileInputStream stream = new FileInputStream(packageFile);
-            myStreams.add(stream);
-            return stream;
-          }
-        });
-
-        allowing(artifact).getTimestamp(); will(returnValue(packageFile.lastModified()));
-        allowing(artifact).getSize(); will(returnValue(packageFile.length()));
-        allowing(artifact).getRelativePath(); will(returnValue(packageFile.getPath()));
-        allowing(artifact).getName(); will(returnValue(packageFile.getName()));
-      }});
-
-      final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-      final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(artifact));
-      map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
-
-      new PackageInfoSerializer(myPaths).serializePackage(map, build, true, w);
-      w.append("                 ");
-    }
-
-    FileUtil.close(w);
-    System.out.println("Generated response file: " + responseFile);
-
-    String text = loadAllText(responseFile);
-    System.out.println("Generated server response:\r\n" + text);
-  }
 }

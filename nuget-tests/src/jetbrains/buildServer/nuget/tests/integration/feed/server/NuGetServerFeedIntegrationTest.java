@@ -31,16 +31,14 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 17:38
  */
-public class NuGetServerFeedIntegrationTest extends NuGetServerIntegrationTestBase {
+public class NuGetServerFeedIntegrationTest extends NuGetServerFeedIntegrationTestBase {
 
   @Test
   public void testOnePackageFeed() throws Exception {
@@ -195,22 +193,6 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerIntegrationTestBa
 
     Assert.assertTrue(new File(home, packageId_1 + ".1.0").isDirectory());
     Assert.assertTrue(new File(home, packageId_1 + ".1.0/" + packageId_1 + ".1.0.nupkg").isFile());
-  }
-
-  @NotNull
-  protected HttpServerHandler packagesFileHandler(@NotNull final File responseFile) throws IOException {
-    return new HttpServerHandler() {
-      public SimpleHttpServerBase.Response processRequest(@NotNull String requestLine, @Nullable String path) {
-        if (!(myHttpContextUrl + "/packages-metadata.html").equals(path)) return null;
-
-        if (checkContainsToken(requestLine)) {
-          return SimpleHttpServer.getFileResponse(responseFile, Arrays.asList("Content-Type: text/plain; encoding=UTF-8"));
-        } else {
-          System.out.println("Failed to find authorization token in request!");
-          return SimpleHttpServer.createStreamResponse(SimpleHttpServer.STATUS_LINE_500, Collections.<String>emptyList(), "invalid token".getBytes());
-        }
-      }
-    };
   }
 
 }
