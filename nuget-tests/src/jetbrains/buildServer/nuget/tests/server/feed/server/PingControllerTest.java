@@ -58,6 +58,11 @@ public class PingControllerTest extends BaseTestCase {
     myResponse = m.mock(HttpServletResponse.class);
 
     myController = new PingBackController(paths, mySettings);
+
+    m.checking(new Expectations(){{
+      allowing(myResponse).setCharacterEncoding(with(any(String.class)));
+      allowing(myResponse).setContentType(with(any(String.class)));
+    }});
   }
 
   @Test

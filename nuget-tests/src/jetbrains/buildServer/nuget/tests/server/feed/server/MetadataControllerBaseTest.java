@@ -95,9 +95,6 @@ public class MetadataControllerBaseTest extends BaseTestCase {
       allowing(myRequest).getHeader(with(any(String.class))); will(returnValue(null));
 
       oneOf(myHandler).processRequest(myRequest, myResponse);
-
-      allowing(myResponse).setCharacterEncoding(with(any(String.class)));
-      allowing(myResponse).setContentType(with(any(String.class)));
     }});
 
     myController.doHandle(myRequest, myResponse);
