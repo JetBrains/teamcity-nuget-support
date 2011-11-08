@@ -216,6 +216,36 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   }
 
   @Test
+  public void test_check_should_not_trigger_after_error() {
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+
+      oneOf(chk).checkPackage(with(req(nugetFakePath)));
+      will(throwException(new RuntimeException("Failed to execute command")));
+
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+
+      oneOf(store).getValue("hash"); will(returnValue("aaa"));
+      oneOf(store).putValue("hash", "|s:src|p:pkg|v:5.6.87");
+      oneOf(store).getValue("hash"); will(returnValue("|s:src|p:pkg|v:5.6.87"));
+      oneOf(store).flush();
+    }});
+
+    Assert.assertNotNull(checker.checkChanges(desr, store));
+    try {
+      checker.checkChanges(desr, store);
+      Assert.fail("should throw an exception");
+    } catch (BuildTriggerException e) {
+      //NOP
+    }
+    Assert.assertNull(checker.checkChanges(desr, store));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
   public void test_check_should_fail_on_error() {
     m.checking(new Expectations() {{
       oneOf(chk).checkPackage(with(req(nugetFakePath)));
