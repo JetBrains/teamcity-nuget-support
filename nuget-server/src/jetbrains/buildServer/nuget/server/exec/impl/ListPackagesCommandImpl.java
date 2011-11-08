@@ -62,7 +62,8 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
   }
 
 
-  public Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath, @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException {
+  public Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath,
+                                                                                    @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException {
     final File spec = createTempFile("trigger.spec");
     final File result = createTempFile("trigget.result");
 
@@ -87,7 +88,7 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
         @NotNull
         public Map<SourcePackageReference, Collection<SourcePackageInfo>> getResult() throws NuGetExecutionException {
           try {
-          return argz.decodeParameters(result);
+            return argz.decodeParameters(result);
           } catch (IOException e) {
             throw new NuGetExecutionException("Failed to decode parameters. " + e.getMessage(), e);
           }

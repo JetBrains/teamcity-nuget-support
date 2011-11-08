@@ -48,7 +48,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m.checking(new org.jmock.Expectations(){{
+    m.checking(new Expectations(){{
       allowing(mySettings).getMaxPackagesToQueryInBulk(); will(returnValue(11));
     }});
   }
@@ -189,6 +189,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
       final List<SourcePackageReference> args = new ArrayList<SourcePackageReference>(_args);
       return new BaseMatcher<Collection<SourcePackageReference>>() {
         public boolean matches(Object o) {
+          @SuppressWarnings("unchecked")
           final List<SourcePackageReference> c = new ArrayList<SourcePackageReference>((Collection<SourcePackageReference>) o);
           if (c.size() != args.size()) return false;
 
