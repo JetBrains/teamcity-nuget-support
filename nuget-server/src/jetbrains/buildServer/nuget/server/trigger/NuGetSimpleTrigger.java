@@ -4,7 +4,6 @@ import jetbrains.buildServer.buildTriggers.*;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -16,12 +15,13 @@ import java.util.Map;
  *         Date: 03.05.11 15:25
  */
 public class NuGetSimpleTrigger extends BuildTriggerService {
-  private final PluginDescriptor myDescriptor;
+  @NotNull
+  private final NuGetTriggerController myController;
   private final NamedPackagesUpdateChecker myChecker;
 
-  public NuGetSimpleTrigger(@NotNull final PluginDescriptor descriptor,
+  public NuGetSimpleTrigger(@NotNull final NuGetTriggerController controller,
                             @NotNull final NamedPackagesUpdateChecker checker) {
-    myDescriptor = descriptor;
+    myController = controller;
     myChecker = checker;
   }
 
@@ -93,6 +93,6 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
 
   @Override
   public String getEditParametersUrl() {
-    return myDescriptor.getPluginResourcesPath("trigger/editSimpleTrigger.jsp");
+    return myController.getPath();
   }
 }

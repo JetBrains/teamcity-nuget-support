@@ -18,6 +18,7 @@
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.trigger.TriggerBean" scope="request"/>
+<jsp:useBean id="isWindows" type="java.lang.Boolean" scope="request"/>
 
 <tr>
   <th>NuGet.exe<l:star/>:</th>
@@ -25,6 +26,16 @@
     <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetExeKey}&style=width:20em"/>
   </td>
 </tr>
+
+<c:if test="${not isWindows}">
+  <tr>
+     <td colspan="2">
+       <div class="attentionComment">
+         TeamCity server is not running under Windows. TeamCity will emulate NuGet feeds check to avoid starting .NET processes
+       </div>
+     </td>
+   </tr>
+</c:if>
 
 <tr>
   <th>NuGet package source:</th>
