@@ -2,11 +2,14 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.TeamCity.NuGet.Feed.Query.Tree;
+using log4net;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Query
 {
   public class TCQueryProvider<T> : TCQueryProvider
   {
+    private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
+
     private readonly IQueryable<T> myProvider;
 
     public TCQueryProvider(IQueryable<T> provider)
@@ -16,6 +19,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
 
     public override IQueryable<TElement> CreateQuery<TElement>(Expression expression)
     {
+      LOG.InfoFormat("Create query: {0} of {1}", expression, expression.Type);
+
       var callExpression = expression as MethodCallExpression;
       if (callExpression != null && callExpression.Method.DeclaringType == typeof(Queryable))
       {
@@ -52,11 +57,13 @@ namespace JetBrains.TeamCity.NuGet.Feed.Query
 
     public override object Execute(Expression expression)
     {
+      LOG.InfoFormat("Execute expression: {0}", expression);
       return myProvider.Provider.Execute(expression);
     }
 
     public override TResult Execute<TResult>(Expression expression)
     {
+      LOG.InfoFormat("Execute expression: {0}", expression);
       return myProvider.Provider.Execute<TResult>(expression);
     }
 
