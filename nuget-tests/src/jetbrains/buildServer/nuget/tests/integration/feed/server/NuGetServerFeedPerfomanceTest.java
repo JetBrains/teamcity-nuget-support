@@ -57,7 +57,7 @@ public class NuGetServerFeedPerfomanceTest extends NuGetServerFeedIntegrationTes
 
   @Test
   public void test_install_1000_packages() throws IOException, PackageLoadException {
-    doPackagesListNamedTest(1000, 6.0);
+    doPackagesInstallTest(1000, 6.0);
   }
 
   private void doPackagesListTest(int packages, double time) throws IOException, PackageLoadException {
