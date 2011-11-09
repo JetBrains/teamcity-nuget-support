@@ -113,7 +113,7 @@ public abstract class SimpleHttpServerBase {
     myProcessingThread.start();
   }
 
-  private void processRequest(Socket connection) throws IOException {
+  protected void processRequest(@NotNull final Socket connection) {
     waitBeforeResponse();
     try {
       final InputStream is = new BufferedInputStream(connection.getInputStream());
@@ -125,7 +125,7 @@ public abstract class SimpleHttpServerBase {
         final int c = is.read();
         if (c == -1) break;
         //System.out.print((char)c);
-        sb.append((char)c);
+        sb.append((char) c);
 
         if (sb.length() > 4) {
           final String last4 = sb.substring(sb.length() - 4);
@@ -139,7 +139,7 @@ public abstract class SimpleHttpServerBase {
       try {
         try {
           response = this.getResponse(sb.toString());
-        } catch(Throwable t) {
+        } catch (Throwable t) {
           Loggers.TEST.error("Failed to get response. " + t.getMessage(), t);
           response = createStringResponse(STATUS_LINE_500, Collections.<String>emptyList(), "");
         }
@@ -150,9 +150,13 @@ public abstract class SimpleHttpServerBase {
 
       ps.close();
     } catch (IOException e) {
-      //
+      // NOP
     } finally {
-      connection.close();
+      try {
+        connection.close();
+      } catch(IOException e) {
+        // NOP
+      }
     }
   }
 

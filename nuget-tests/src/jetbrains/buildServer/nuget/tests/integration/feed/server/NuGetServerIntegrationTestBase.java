@@ -34,6 +34,7 @@ import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunnerI
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
+import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
 import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -165,7 +166,7 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
   }
 
   private void startSimpleHttpServer() throws IOException {
-    myHttpServer = new SimpleHttpServer() {
+    myHttpServer = new SimpleThreadedHttpServer() {
       @Override
       protected Response getResponse(String request) {
         System.out.println("Mock HTTP server request: " + request);

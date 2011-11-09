@@ -17,8 +17,6 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
-import jetbrains.buildServer.ExecResult;
-import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
@@ -73,17 +71,17 @@ public class NuGetServerFeedPerfomanceTest extends NuGetServerFeedIntegrationTes
         cmd.addParameter(myNuGetServerUrl);
         cmd.addParameter("-AllVersions");
 
-        final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
-        System.out.println(exec.getStdout());
-        System.out.println(exec.getStderr());
-        Assert.assertEquals(exec.getExitCode(), 0);
+        try {
+          final Process process = cmd.createProcess();
+          FileUtil.closeAll(process.getInputStream(), process.getOutputStream(), process.getErrorStream());
+          Assert.assertEquals(process.waitFor(), 0);
+        } catch (Exception e) {
+          Assert.fail();
+        }
       }
     };
-    //fake run to initialize all
-    listCommand.run();
 
-    //measure
-    double time = averageExecutionTime(listCommand, 5);
-    System.out.println("Execution time: " + time);
+
+    assertTime(6, "Check nuget list command", 5, listCommand);
   }
 }
