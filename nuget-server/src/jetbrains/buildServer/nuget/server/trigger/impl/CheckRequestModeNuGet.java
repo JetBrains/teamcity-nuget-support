@@ -27,7 +27,7 @@ import java.io.File;
 public class CheckRequestModeNuGet implements CheckRequestMode {
   private final File myNuGetPath;
 
-  public CheckRequestModeNuGet(File nuGetPath) {
+  public CheckRequestModeNuGet(@NotNull File nuGetPath) {
     myNuGetPath = nuGetPath;
   }
 
