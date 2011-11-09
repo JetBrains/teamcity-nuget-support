@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker;
 import jetbrains.buildServer.nuget.server.trigger.TriggerConstants;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import junit.framework.Assert;
@@ -34,6 +35,8 @@ import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Mockery;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -56,11 +59,14 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   private Map<String, String> params;
   private File nugetFakePath;
 
+  private boolean myIsWindows;
+
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
 
+    myIsWindows = true;
     m = new Mockery();
     desr = m.mock(BuildTriggerDescriptor.class);
     store = m.mock(CustomDataStorage.class);
@@ -68,13 +74,21 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     manager = m.mock(NuGetToolManager.class);
     chk = m.mock(PackageChangesManager.class);
 
-    checker = new NamedPackagesUpdateChecker(manager, chk, new CheckRequestModeFactory(), new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()));
+    final SystemInfo si = m.mock(SystemInfo.class);
+
+    checker = new NamedPackagesUpdateChecker(manager, chk, new CheckRequestModeFactory(si), new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()));
     nugetFakePath = Paths.getNuGetRunnerPath();
     final String path = nugetFakePath.getPath();
 
     m.checking(new Expectations(){{
       allowing(desr).getProperties(); will(returnValue(params));
       allowing(manager).getNuGetPath(path); will(returnValue(path));
+
+      allowing(si).isWindows(); will(new CustomAction("Return myIsWindows") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return myIsWindows;
+        }
+      });
     }});
 
     params.put(TriggerConstants.NUGET_EXE, path);
@@ -85,6 +99,22 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   public void test_check_first_time_should_not_trigger() {
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+
+      oneOf(store).getValue("hash"); will(returnValue(null));
+      oneOf(store).putValue(with(equal("hash")), with(any(String.class)));
+      oneOf(store).flush();
+    }});
+    Assert.assertNull(checker.checkChanges(desr, store));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_check_first_time_should_not_trigger_linux() {
+    myIsWindows = false;
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(reqTC(null, "NUnit")));
       will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(store).getValue("hash"); will(returnValue(null));
@@ -216,6 +246,28 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   }
 
   @Test
+  public void test_check_should_not_trigger_twice_linux() {
+    myIsWindows = false;
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(reqTC(null, "NUnit")));
+      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+
+      oneOf(chk).checkPackage(with(reqTC(null, "NUnit")));
+      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+
+      oneOf(store).getValue("hash"); will(returnValue("aaa"));
+      oneOf(store).putValue("hash", "|s:src|p:pkg|v:5.6.87");
+      oneOf(store).getValue("hash"); will(returnValue("|s:src|p:pkg|v:5.6.87"));
+      oneOf(store).flush();
+    }});
+
+    Assert.assertNotNull(checker.checkChanges(desr, store));
+    Assert.assertNull(checker.checkChanges(desr, store));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
   public void test_check_should_not_trigger_after_error() {
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
@@ -299,6 +351,31 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
           if (!(mode instanceof CheckRequestModeNuGet)) return false;
           if (!((CheckRequestModeNuGet) mode).getNuGetPath().equals(nugetPath)) return false;
           return true;
+        }
+
+        public void describeTo(Description description) {
+          description.appendText("Package: ").appendValue(id).appendText("Source: ").appendValue(source);
+        }
+      };
+    }
+
+    public Matcher<PackageCheckRequest> reqTC(@Nullable final String source, @NotNull final String id) {
+      return new BaseMatcher<PackageCheckRequest>() {
+        private boolean equals(Object a, Object b) {
+          if (a == null && b == null) return true;
+          return a != null && a.equals(b);
+        }
+
+        public boolean matches(Object o) {
+          if (!(o instanceof PackageCheckRequest)) return false;
+          PackageCheckRequest r = (PackageCheckRequest) o;
+
+          final SourcePackageReference pkg = r.getPackage();
+          if (!pkg.getPackageId().equals(id)) return false;
+          if (!equals(pkg.getSource(), source)) return false;
+
+          final CheckRequestMode mode = r.getMode();
+          return mode instanceof CheckRequestModeTeamCity;
         }
 
         public void describeTo(Description description) {

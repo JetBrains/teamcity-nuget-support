@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -26,10 +27,16 @@ import java.io.File;
  */
 public class CheckRequestModeFactory {
   private final CheckRequestModeTeamCity myTeamCityMode = new CheckRequestModeTeamCity();
+  private final SystemInfo mySystemInfo;
+
+  public CheckRequestModeFactory(@NotNull final SystemInfo systemInfo) {
+    mySystemInfo = systemInfo;
+  }
 
   @NotNull
   public CheckRequestMode createNuGetChecker(@NotNull final File nugetPath) {
-    return new CheckRequestModeNuGet(nugetPath);
+    if (mySystemInfo.isWindows()) return new CheckRequestModeNuGet(nugetPath);
+    return createTeamCityChecker();
   }
 
   @NotNull

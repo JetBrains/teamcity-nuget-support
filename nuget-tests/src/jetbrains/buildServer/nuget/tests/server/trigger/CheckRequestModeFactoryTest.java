@@ -19,6 +19,10 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestMode;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeFactory;
+import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeTeamCity;
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -34,12 +38,16 @@ import java.util.Set;
  */
 public class CheckRequestModeFactoryTest extends BaseTestCase {
   private CheckRequestModeFactory myFactory;
+  private Mockery m;
+  private SystemInfo myInfo;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    myFactory = new CheckRequestModeFactory();
+    m = new Mockery();
+    myInfo = m.mock(SystemInfo.class);
+    myFactory = new CheckRequestModeFactory(myInfo);
   }
 
   @Test
@@ -54,7 +62,21 @@ public class CheckRequestModeFactoryTest extends BaseTestCase {
   }
 
   @Test
+  public void test_ShouldNotCreateNuGetTriggerOnLinux() throws IOException {
+    m.checking(new Expectations(){{
+      allowing(myInfo).isWindows(); will(returnValue(false));
+    }});
+
+    Assert.assertTrue(myFactory.createNuGetChecker(createTempFile()) instanceof CheckRequestModeTeamCity);
+  }
+
+
+  @Test
   public void testNuGetMode_eq() throws IOException {
+    m.checking(new Expectations(){{
+      allowing(myInfo).isWindows(); will(returnValue(true));
+    }});
+
     final File path = createTempFile();
 
     Assert.assertTrue(myFactory.createNuGetChecker(path).equals(myFactory.createNuGetChecker(path)));
@@ -62,11 +84,28 @@ public class CheckRequestModeFactoryTest extends BaseTestCase {
 
   @Test
   public void testNuGetMode_diff() throws IOException {
+    m.checking(new Expectations(){{
+      allowing(myInfo).isWindows(); will(returnValue(true));
+    }});
+
     Assert.assertFalse(myFactory.createNuGetChecker(createTempFile()).equals(myFactory.createNuGetChecker(createTempFile())));
   }
 
   @Test
   public void testModesEqual() throws IOException {
+    m.checking(new Expectations(){{
+      allowing(myInfo).isWindows(); will(returnValue(true));
+    }});
+
     Assert.assertFalse(myFactory.createNuGetChecker(createTempFile()).equals(myFactory.createTeamCityChecker()));
+  }
+
+  @Test
+  public void testModesEqual2() throws IOException {
+    m.checking(new Expectations(){{
+      allowing(myInfo).isWindows(); will(returnValue(false));
+    }});
+
+    Assert.assertTrue(myFactory.createNuGetChecker(createTempFile()).equals(myFactory.createTeamCityChecker()));
   }
 }

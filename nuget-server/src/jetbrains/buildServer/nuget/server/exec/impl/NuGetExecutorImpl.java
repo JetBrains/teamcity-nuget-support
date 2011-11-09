@@ -26,6 +26,11 @@ import com.intellij.openapi.util.Key;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.nuget.server.exec.*;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
+import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
+import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,16 +48,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class NuGetExecutorImpl implements NuGetExecutor {
   private static final Logger LOG = Logger.getInstance(NuGetExecutorImpl.class.getName());
 
+  private final SystemInfo mySystemInfo;
   private final NuGetTeamCityProvider myNuGetTeamCityProvider;
 
-  public NuGetExecutorImpl(@NotNull final NuGetTeamCityProvider nuGetTeamCityProvider) {
+  public NuGetExecutorImpl(@NotNull final NuGetTeamCityProvider nuGetTeamCityProvider,
+                           @NotNull final SystemInfo systemInfo) {
     myNuGetTeamCityProvider = nuGetTeamCityProvider;
+    mySystemInfo = systemInfo;
   }
 
   @NotNull
   public <T> T executeNuGet(@NotNull final File nugetExePath,
                             @NotNull final List<String> arguments,
                             @NotNull final NuGetOutputProcessor<T> listener) throws NuGetExecutionException {
+    assertOs();
 
     GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(myNuGetTeamCityProvider.getNuGetRunnerPath().getPath());
@@ -87,6 +96,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
                                             @NotNull final String packagesUrl,
                                             @NotNull final File logsFile,
                                             @NotNull final String token) throws NuGetExecutionException {
+    assertOs();
     final GeneralCommandLine cmd = new GeneralCommandLine();
     final File path = myNuGetTeamCityProvider.getNuGetServerRunnerPath();
     cmd.setExePath(path.getPath());
@@ -162,6 +172,13 @@ public class NuGetExecutorImpl implements NuGetExecutor {
         }
       }
     };
+  }
+
+
+  private void assertOs() throws NuGetExecutionException {
+    if (!mySystemInfo.isWindows()) {
+      throw new NuGetExecutionException("Processes start is supported only under Windows");
+    }
   }
 
 }

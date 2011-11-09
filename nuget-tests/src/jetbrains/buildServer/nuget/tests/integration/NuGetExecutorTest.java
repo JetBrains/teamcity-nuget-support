@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
 import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -39,6 +40,7 @@ public class NuGetExecutorTest extends BaseTestCase {
   private Mockery m;
   private NuGetTeamCityProvider info;
   private NuGetExecutor exec;
+  private SystemInfo mySystemInfo;
 
   @BeforeMethod
   @Override
@@ -46,25 +48,44 @@ public class NuGetExecutorTest extends BaseTestCase {
     super.setUp();
     m = new Mockery();
     info = m.mock(NuGetTeamCityProvider.class);
-    exec = new NuGetExecutorImpl(info);
+    mySystemInfo = m.mock(SystemInfo.class);
+    exec = new NuGetExecutorImpl(info, mySystemInfo);
 
     m.checking(new Expectations(){{
       allowing(info).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
     }});
   }
 
+  private void setIsWindows(final boolean isWindows) {
+    m.checking(new Expectations(){{
+      allowing(mySystemInfo).isWindows(); will(returnValue(isWindows));
+    }});
+  }
+
   @Test
   public void test_ping_1_4() throws NuGetExecutionException {
+    setIsWindows(true);
     doPingTest(NuGet.NuGet_1_4);
   }
 
   @Test
   public void test_ping_1_5() throws NuGetExecutionException {
+    setIsWindows(true);
     doPingTest(NuGet.NuGet_1_5);
   }
 
-  private void doPingTest(NuGet nuget) throws NuGetExecutionException {
+  @Test
+  public void test_does_not_run_on_linux() throws NuGetExecutionException {
+    setIsWindows(false);
+    try {
+      doPingTest(NuGet.NuGet_1_5);
+    } catch (NuGetExecutionException e) {
+      return;
+    }
+    Assert.fail("Exception expected");
+  }
 
+  private void doPingTest(NuGet nuget) throws NuGetExecutionException {
     int code = exec.executeNuGet(
             nuget.getPath(),
             Arrays.asList("TeamCity.Ping"),
