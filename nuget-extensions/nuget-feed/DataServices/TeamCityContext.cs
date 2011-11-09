@@ -16,7 +16,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       = new Lazy<LightPackageRepository>(
         () =>
           {
-            var remoteRepo = new RemoteRepo(myAccessor.Value, new ServiceMessageParser(), new PackageLoader());
+            var remoteRepo = new RemoteRepo(myAccessor.Value, new PackagesDeserializer(new ServiceMessageParser(), new PackageLoader()));
             return new LightPackageRepository(new CachedRepo(remoteRepo));
           });
 

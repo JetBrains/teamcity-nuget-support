@@ -29,7 +29,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     public static void InitializeService(DataServiceConfiguration config)
     {
       config.SetEntitySetAccessRule("Packages", EntitySetRights.AllRead);
-      config.SetEntitySetPageSize("Packages", 100);
+      config.SetEntitySetPageSize("Packages", 1000);
       config.SetServiceOperationAccessRule("Search", ServiceOperationRights.AllRead);
 
       config.DataServiceBehavior.MaxProtocolVersion = DataServiceProtocolVersion.V2;

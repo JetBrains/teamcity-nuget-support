@@ -33,9 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.TeamCity.ServiceMessages, Version=1.0.48.5, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="JetBrains.TeamCity.ServiceMessages, Version=1.0.50.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.48.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
+      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.50.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
@@ -130,6 +130,7 @@
     <Compile Include="Repo\ITeamCityServerAccessor.cs" />
     <Compile Include="Repo\LightPackageRepository.cs" />
     <Compile Include="Repo\PackageLoader.cs" />
+    <Compile Include="Repo\PackagesDeserializer.cs" />
     <Compile Include="Repo\RemoteException.cs" />
     <Compile Include="Repo\RemoteRepo.cs" />
     <Compile Include="Repo\RepositoryPaths.cs" />

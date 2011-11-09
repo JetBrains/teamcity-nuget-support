@@ -10,6 +10,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.Tests
   [TestFixture]
   public class PackageLoaderTest
   {
+    public const string SMAPLE_PACKAGE =
+      @"##teamcity[package Id='CommonServiceLocator' Version='1.0' Authors='Microsoft' Description='The Common Service Locator library contains a shared interface for service location which application and framework developers can reference. The library provides an abstraction over IoC containers and service locators. Using the library allows an application to indirectly access the capabilities without relying on hard references. The hope is that using this library, third-party applications and frameworks can begin to leverage IoC/Service Location without tying themselves down to a specific implementation.' IsLatestVersion='true' LastUpdated='2011-10-21T16:34:09Z' LicenseUrl='http://commonservicelocator.codeplex.com/license' PackageHash='RJjv0yxm+Fk/ak/CVMTGr0ng7g/nudkVYos4eQrIDpth3BdE1j7J2ddRm8FXtOoIZbgDqTU6hKq5zoackwL3HQ==' PackageHashAlgorithm='SHA512' PackageSize='37216' ProjectUrl='http://commonservicelocator.codeplex.com/' RequireLicenseAcceptance='false' TeamCityBuildId='42' TeamCityDownloadUrl='/repository/download/bt/42:id/null']";
+
     [Test]
     public void SimpleFill()
     {
@@ -37,10 +40,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Tests
     public void DeserializePackage()
     {
       var x = new PackageLoader().Load(
-        new ServiceMessageParser()
-          .ParseServiceMessages(
-            @"##teamcity[package Id='CommonServiceLocator' Version='1.0' Authors='Microsoft' Description='The Common Service Locator library contains a shared interface for service location which application and framework developers can reference. The library provides an abstraction over IoC containers and service locators. Using the library allows an application to indirectly access the capabilities without relying on hard references. The hope is that using this library, third-party applications and frameworks can begin to leverage IoC/Service Location without tying themselves down to a specific implementation.' IsLatestVersion='true' LastUpdated='2011-10-21T16:34:09Z' LicenseUrl='http://commonservicelocator.codeplex.com/license' PackageHash='RJjv0yxm+Fk/ak/CVMTGr0ng7g/nudkVYos4eQrIDpth3BdE1j7J2ddRm8FXtOoIZbgDqTU6hKq5zoackwL3HQ==' PackageHashAlgorithm='SHA512' PackageSize='37216' ProjectUrl='http://commonservicelocator.codeplex.com/' RequireLicenseAcceptance='false' TeamCityBuildId='42' TeamCityDownloadUrl='/repository/download/bt/42:id/null']"
-          ).Single()
+        new ServiceMessageParser().ParseServiceMessages(SMAPLE_PACKAGE).Single()
         );
     }
 

@@ -31,9 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.TeamCity.ServiceMessages, Version=1.0.48.5, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="JetBrains.TeamCity.ServiceMessages, Version=1.0.50.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.48.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
+      <HintPath>..\packages\TeamCity.ServiceMessages.1.0.50.5\lib\net35\JetBrains.TeamCity.ServiceMessages.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\lib\nunit\nunit.framework.dll</HintPath>
@@ -64,6 +64,7 @@
     <Compile Include="src\LINQ\TCQueryableIntTest.cs" />
     <Compile Include="src\LINQ\TCQueryableTest.cs" />
     <Compile Include="src\PackageLoaderTest.cs" />
+    <Compile Include="src\PackagesDeserializerTest.cs" />
     <Compile Include="src\TeamCityPackagesRepositoryTest.cs" />
     <Compile Include="src\TestTCQueryProvider.cs" />
   </ItemGroup>

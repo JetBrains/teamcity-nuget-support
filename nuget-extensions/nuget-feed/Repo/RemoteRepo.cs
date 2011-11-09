@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
-using JetBrains.TeamCity.ServiceMessages.Read;
 using log4net;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Repo
@@ -13,39 +10,24 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
     private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
 
     private readonly ITeamCityServerAccessor myRemote;
-    private readonly IServiceMessageParser myParser;
-    private readonly PackageLoader myLoader;
+    private readonly PackagesDeserializer myDeserializer;
 
-    public RemoteRepo(ITeamCityServerAccessor remote, IServiceMessageParser parser, PackageLoader loader)
+    public RemoteRepo(ITeamCityServerAccessor remote, PackagesDeserializer deserializer)
     {
       myRemote = remote;
-      myParser = parser;
-      myLoader = loader;
+      myDeserializer = deserializer;
     }
 
     public IEnumerable<TeamCityPackage> GetAllPackages()
     {
       try
       {
-        return myRemote.ProcessRequest("/packages-metadata.html", ProcessPackages);
+        return myRemote.ProcessRequest("/packages-metadata.html", myDeserializer.ProcessPackages);
       } catch(Exception e)
       {
         LOG.Warn(string.Format("Failed to fetch all packages from TeamCity server. {0}", e.Message), e);
         return new TeamCityPackage[0];
       }
-    }
-
-    private IEnumerable<TeamCityPackage> ProcessPackages(HttpWebResponse response, TextReader reader)
-    {
-      if (response.StatusCode != HttpStatusCode.OK)
-      {
-        LOG.Warn("Failed to fetch packages. HTTP Status was: " + response.StatusCode);
-        return new TeamCityPackage[0];
-      }
-
-      var list = myParser.ParseServiceMessages(reader).ToList();
-      LOG.InfoFormat("Fetched {0} packages from TeamCity", list.Count);
-      return list.Select(myLoader.Load).ToList();
     }
 
     public IEnumerable<TeamCityPackage> FilterById(IEnumerable<string> ids)
