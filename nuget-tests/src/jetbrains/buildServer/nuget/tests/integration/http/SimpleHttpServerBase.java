@@ -101,55 +101,7 @@ public abstract class SimpleHttpServerBase {
       public void run() {
         try {
           while (!myStopped) {
-            Socket connection = mySocket.accept();
-            if (myWaitAfterAccept > 0) {
-              try {
-                if (myWaitAfterAcceptHandle.tryAcquire(myWaitAfterAccept, TimeUnit.SECONDS)) {
-                  myWaitAfterAcceptHandle.release();
-                }
-              } catch (InterruptedException e) {
-                //
-              }
-            }
-            try {
-              final InputStream is = connection.getInputStream();
-              final OutputStream os = connection.getOutputStream();
-
-              PrintStream ps = new PrintStream(os);
-              StringBuilder sb = new StringBuilder();
-              while (true) {
-                final int c = is.read();
-                if (c == -1) break;
-                //System.out.print((char)c);
-                sb.append((char)c);
-
-                if (sb.length() > 4) {
-                  final String last4 = sb.substring(sb.length() - 4);
-                  if ("\r\n\r\n".equals(last4)) {
-                    break;
-                  }
-                }
-              }
-
-              Response response = null;
-              try {
-                try {
-                  response = SimpleHttpServerBase.this.getResponse(sb.toString());
-                } catch(Throwable t) {
-                  Loggers.TEST.error("Failed to get response. " + t.getMessage(), t);
-                  response = createStringResponse(STATUS_LINE_500, Collections.<String>emptyList(), "");
-                }
-                writeResponse(ps, response);
-              } finally {
-                if (response != null) response.dispose();
-              }
-
-              ps.close();
-            } catch (IOException e) {
-              //
-            } finally {
-              connection.close();
-            }
+            processRequest(mySocket.accept());
           }
         } catch (IOException e) {
           if (!myStopped) {
@@ -159,6 +111,61 @@ public abstract class SimpleHttpServerBase {
       }
     }, "simple server");
     myProcessingThread.start();
+  }
+
+  private void processRequest(Socket connection) throws IOException {
+    waitBeforeResponse();
+    try {
+      final InputStream is = new BufferedInputStream(connection.getInputStream());
+      final OutputStream os = new BufferedOutputStream(connection.getOutputStream());
+
+      final PrintStream ps = new PrintStream(os);
+      final StringBuilder sb = new StringBuilder();
+      while (true) {
+        final int c = is.read();
+        if (c == -1) break;
+        //System.out.print((char)c);
+        sb.append((char)c);
+
+        if (sb.length() > 4) {
+          final String last4 = sb.substring(sb.length() - 4);
+          if ("\r\n\r\n".equals(last4)) {
+            break;
+          }
+        }
+      }
+
+      Response response = null;
+      try {
+        try {
+          response = this.getResponse(sb.toString());
+        } catch(Throwable t) {
+          Loggers.TEST.error("Failed to get response. " + t.getMessage(), t);
+          response = createStringResponse(STATUS_LINE_500, Collections.<String>emptyList(), "");
+        }
+        writeResponse(ps, response);
+      } finally {
+        if (response != null) response.dispose();
+      }
+
+      ps.close();
+    } catch (IOException e) {
+      //
+    } finally {
+      connection.close();
+    }
+  }
+
+  private void waitBeforeResponse() {
+    if (myWaitAfterAccept > 0) {
+      try {
+        if (myWaitAfterAcceptHandle.tryAcquire(myWaitAfterAccept, TimeUnit.SECONDS)) {
+          myWaitAfterAcceptHandle.release();
+        }
+      } catch (InterruptedException e) {
+        //NOP
+      }
+    }
   }
 
   private void writeResponse(final PrintStream ps, final Response response) throws IOException {
@@ -173,8 +180,8 @@ public abstract class SimpleHttpServerBase {
     //close headers section
     ps.print("\r\n");
     ps.flush();
-    response.printContent(ps);
 
+    response.printContent(ps);
     ps.flush();
   }
 
@@ -287,8 +294,9 @@ public abstract class SimpleHttpServerBase {
     return new Response(statusLine, headers) {
       @Override
       public void printContent(PrintStream ps) throws IOException {
+        final BufferedInputStream bis = new BufferedInputStream(content);
         int data;
-        while ((data = content.read()) != -1) {
+        while ((data = bis.read()) != -1) {
           ps.write(data);
         }
         ps.write("                              ".getBytes("utf-8"));
