@@ -20,12 +20,13 @@ import jetbrains.buildServer.TempFolderProvider;
 import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
-import org.jetbrains.annotations.NotNull;
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -42,18 +43,18 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
   protected void setUp() throws Exception {
     super.setUp();
 
-    final File tmp = createTempDir();
-    myCommand = new ListPackagesCommandImpl(new NuGetExecutorImpl(new NuGetTeamCityProvider() {
-      @NotNull
-      public File getNuGetRunnerPath() {
-        return Paths.getNuGetRunnerPath();
-      }
-    }), new TempFolderProvider() {
-      @NotNull
-      public File getTempDirectory() {
-        return tmp;
-      }
-    });
+    Mockery m = new Mockery();
+    final SystemInfo info = m.mock(SystemInfo.class);
+    final NuGetTeamCityProvider prov = m.mock(NuGetTeamCityProvider.class);
+    final TempFolderProvider temp = m.mock(TempFolderProvider.class);
+
+    m.checking(new Expectations(){{
+      allowing(info).isWindows(); will(returnValue(true));
+      allowing(prov).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
+      allowing(temp).getTempDirectory(); will(returnValue(createTempDir()));
+    }});
+
+    myCommand = new ListPackagesCommandImpl(new NuGetExecutorImpl(prov, info), temp);
   }
 
   @Test
