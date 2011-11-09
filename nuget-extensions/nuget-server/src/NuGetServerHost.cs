@@ -106,7 +106,7 @@ namespace JetBrains.TeamCity.NuGet.Server
         Environment.SetEnvironmentVariable(Log4netInitializer.LOG_FILE_ENV_KEY, logFile);
 
       
-      var server = new CassiniDev.Server(port, "/", webApp, false, true);      
+      var server = new CassiniDev.Server(port, "/", webApp, false, true);
       try
       {
         server.Start();
@@ -117,23 +117,37 @@ namespace JetBrains.TeamCity.NuGet.Server
       }
 
       Console.Out.WriteLine("Server is running on http://localhost:{0}", port);
-      return Hung();      
+      WaitForExitCommand();      
+      
+      server.ShutDown();
+      return 0;
     }
 
-    private static int Hung()
+    private static void WaitForExitCommand()
     {
       while (true)
       {
-        //TODO: check exit signal
-        try
+        var line = Console.In.ReadLine();
+        if (line != null)
         {
-          Thread.Sleep(TimeSpan.FromMinutes(10));
+          Console.Out.WriteLine("Exit command recieved.");
+          return;
         }
-        catch
-        {
-          return 0;
-        }
+
+        Wait();
       }
+    }
+
+    private static void Wait()
+    {
+      try
+      {
+        Thread.Sleep(TimeSpan.FromSeconds(5));
+      }
+      catch
+      {
+        return;
+      }      
     }
   }
  

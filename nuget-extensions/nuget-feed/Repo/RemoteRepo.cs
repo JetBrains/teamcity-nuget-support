@@ -43,7 +43,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
         return new TeamCityPackage[0];
       }
 
-      var list = myParser.ParseServiceMessages(reader).ToList();
+      var list = myParser.ParseServiceMessages(reader.ReadToEnd()).ToList();
       LOG.InfoFormat("Fetched {0} packages from TeamCity", list.Count);
       return list.Select(myLoader.Load).ToList();
     }

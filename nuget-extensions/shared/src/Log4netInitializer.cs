@@ -16,11 +16,37 @@ namespace JetBrains.TeamCity.NuGet.Feed
     public const string LOG_FILE_ENV_KEY = "teamcity-dotnet-log-file";
     public const string LOG_FOLDER_ENV_KEY = "teamcity-dotnet-log-folder";
     private const string LOG_CONFIG_REPLACE_CONSTANT = "teamcity-dotnet-log-file";
-    
+
+    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+      var exception = e.ExceptionObject as Exception;
+      if (exception == null)
+      {
+        LOG.Warn("Unhandled (null) exception in current domain");
+        return;
+      }
+
+      LOG.WarnFormat("Unhandled exception in current domain: {0}, {1}, {2}", exception, exception.StackTrace,
+        exception.InnerException == null ? "(null)" : (object)exception.InnerException);
+    }
+
     public void InitializeLogging(string logConfigFile, string defaultName)
     {
       LoadConfigFromFile(logConfigFile, defaultName);
       AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
+      LOG.Info(Environment.NewLine + Environment.NewLine + Environment.NewLine + "===============================");
+      LOG.InfoFormat("Started log4net from {0}", logConfigFile);
+    }
+
+    public void ShutdownLogging()
+    {
+      LOG.Info("Shutting down logging");
+      LOG.Info(Environment.NewLine + Environment.NewLine + Environment.NewLine + "===============================");
+
+      LogManager.Shutdown();
+      LogManager.ResetConfiguration();
+      AppDomain.CurrentDomain.UnhandledException -= CurrentDomain_UnhandledException;
     }
 
     private static void LoadConfigFromFile(string file, string defaultName)
@@ -34,8 +60,6 @@ namespace JetBrains.TeamCity.NuGet.Feed
       doc.LoadXml(config);
 
       XmlConfigurator.Configure(doc.DocumentElement);
-      LOG.Info(Environment.NewLine + Environment.NewLine + Environment.NewLine + "===============================");
-      LOG.InfoFormat("Started log4net from {0}", file);
     }
 
     private static string GetLogFileName(string defaultName)
@@ -61,19 +85,6 @@ namespace JetBrains.TeamCity.NuGet.Feed
       }
 
       return newLogFile;
-    }
-
-    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-    {
-      var exception = e.ExceptionObject as Exception;
-      if (exception == null)
-      {
-        LOG.Warn("Unhandled (null) exception in current domain");
-        return;
-      }
-
-      LOG.WarnFormat("Unhandled exception in current domain: {0}, {1}, {2}", exception, exception.StackTrace,
-        exception.InnerException == null ? "(null)" : (object)exception.InnerException);
     }
   }
 
