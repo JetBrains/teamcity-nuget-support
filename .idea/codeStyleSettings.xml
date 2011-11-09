@@ -27,6 +27,11 @@
             <option name="TAB_SIZE" value="2" />
           </indentOptions>
         </codeStyleSettings>
+        <codeStyleSettings language="CoffeeScript">
+          <indentOptions>
+            <option name="CONTINUATION_INDENT_SIZE" value="8" />
+          </indentOptions>
+        </codeStyleSettings>
         <codeStyleSettings language="Groovy">
           <indentOptions>
             <option name="INDENT_SIZE" value="2" />
