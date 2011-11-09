@@ -32,6 +32,7 @@ import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunnerImpl;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl;
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
@@ -152,12 +153,15 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
 
   private void startNuGetServer() {
     final NuGetServerRunnerSettings settings = m.mock(NuGetServerRunnerSettings.class);
+    final SystemInfo systemInfo = m.mock(SystemInfo.class);
     m.checking(new Expectations() {{
       allowing(settings).getPackagesControllerUrl(); will(returnValue(myHttpServerUrl));
       allowing(settings).getLogFilePath(); will(returnValue(myLogsFile));
+
+      allowing(systemInfo).isWindows(); will(returnValue(true));
     }});
 
-    myNuGetServer = new NuGetServerRunnerImpl(settings, myTokens, new NuGetExecutorImpl(myProvider));
+    myNuGetServer = new NuGetServerRunnerImpl(settings, myTokens, new NuGetExecutorImpl(myProvider, systemInfo));
     myNuGetServer.startServer();
 
     myNuGetServerAddresses = new NuGetServerUriImpl(myNuGetServer);

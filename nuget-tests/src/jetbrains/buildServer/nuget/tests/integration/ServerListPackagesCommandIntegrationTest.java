@@ -44,7 +44,6 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
     super.setUp();
 
     Mockery m = new Mockery();
-    final File tmp = createTempDir();
     final SystemInfo info = m.mock(SystemInfo.class);
     final NuGetTeamCityProvider prov = m.mock(NuGetTeamCityProvider.class);
     final TempFolderProvider temp = m.mock(TempFolderProvider.class);
