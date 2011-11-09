@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -103,12 +104,6 @@ public class NuGetExecutorImpl implements NuGetExecutor {
       throw new NuGetExecutionException("Failed to start NuGet server process from: " + cmd.getCommandLineString());
     }
 
-    try {
-      process.getInputStream().close();
-    } catch (IOException e) {
-      LOG.warn("Failed to close input stream of process. " + e.getMessage(), e);
-    }
-
     final OSProcessHandler hander = new OSProcessHandler(process, cmd.getCommandLineString()) {
       @Override
       public Charset getCharset() {
@@ -121,7 +116,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
     hander.addProcessListener(new ProcessAdapter() {
       @Override
       public void onTextAvailable(ProcessEvent event, Key outputType) {
-        outputLog.info(outputType + " - " + event.getText());
+        outputLog.info(outputType + " - " + event.getText().trim());
       }
 
       @Override
@@ -147,7 +142,24 @@ public class NuGetExecutorImpl implements NuGetExecutor {
       }
 
       public void stop() {
-        hander.destroyProcess();
+        if (hander.isProcessTerminated()) return;
+
+        try {
+          final OutputStream os = hander.getProcessInput();
+          if (os != null) {
+            os.write("Exit\r\n\r\n\r\n".getBytes(hander.getCharset()));
+            os.flush();
+
+            hander.waitFor(1 * 60 * 1000); //1 minute to wait for process to exit
+          }
+        } catch (IOException e) {
+          LOG.warn("Failed to shutdown process silently");
+        }
+
+        if (!hander.isProcessTerminated()) {
+          LOG.warn("NuGet server process was forcibly terminated.");
+          hander.destroyProcess();
+        }
       }
     };
   }
