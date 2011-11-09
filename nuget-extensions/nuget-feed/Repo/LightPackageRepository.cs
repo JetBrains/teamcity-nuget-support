@@ -13,8 +13,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 
     public IQueryable<TeamCityPackage> GetPackages()
     {
-      return new TeamCityQueryablePackages(myRepo).Query;
-      //return myRepo.GetAllPackages().AsQueryable();
+//      return new TeamCityQueryablePackages(myRepo).Query;
+      return myRepo.GetAllPackages().AsQueryable();
     }
   }
 }
