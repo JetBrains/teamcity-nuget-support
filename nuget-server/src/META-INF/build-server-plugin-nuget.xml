@@ -19,4 +19,7 @@
 
 
   <bean class="jetbrains.buildServer.nuget.server.runner.NuGetRunTypesRegistrar"/>
+
+
+  <bean class="jetbrains.buildServer.nuget.server.util.SystemInfoImpl"/>
 </beans>
