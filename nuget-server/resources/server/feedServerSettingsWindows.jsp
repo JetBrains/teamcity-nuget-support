@@ -81,8 +81,9 @@
       <div style="">
         <img src="<c:url value='${imagesBase}/restarting.gif'/>" alt="starting"/>
         Server is starting
+
+        <span class="smallNote" style="margin-left:1em">NuGet Feed server is not runnig now and will be started soon.</span>
       </div>
-      <span class="smallNote">NuGet Feed server is not runnig now and will be started soon.</span>
     </c:when>
 
     <c:when test="${not serverStatus.running}">
@@ -99,20 +100,19 @@
         Server is starting
       </div>
     </c:when>
-
     <c:when test="${not serverStatus.serverAccessible}">
       <div style="">
         <img src="<c:url value='${imagesBase}/error.gif'/>" alt="error"/>
         Ping Failed
+        <span class="smallNote" style="margin-left:1em">Check TeamCity Server Url is accessible from localhost</span>
       </div>
-      <span class="smallNote">Check TeamCity Server Url is accessible from localhost</span>
     </c:when>
     <c:when test="${serverStatus.serverAccessible}">
       <div style="">
         <img src="<c:url value='${imagesBase}/running.gif'/>" alt="starting"/>
         Running
+        <span class="smallNote" style="margin-left:1em">NuGet Feed server is running now.</span>
       </div>
-      <span class="smallNote">NuGet Feed server is running now.</span>
     </c:when>
   </c:choose>
 </bs:refreshable>
