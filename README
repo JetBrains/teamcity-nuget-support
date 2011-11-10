@@ -1,11 +1,15 @@
-This is dotNetPackageManagers TeamCity plugin.
+This is dotNetPackageManagers TeamCity plugin, mainly NuGet support for TeamCity.
 
 The goal of this plugin is to research and support
 .NET package managers in TeamCity. 
 
 We plan to cover mostly nuget and openwrap.
 
-This plugin will be compatible with TeamCity 6.5 and newer
+This plugin will be compatible with TeamCity 7.0 and newer.
+
+==== NOTE ======
+This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 6.5. Use v0.5-bugfix branch instead.
+================
 
 Supported features:
 
@@ -32,6 +36,12 @@ Supported features:
 - TeamCity is able to download and distribute NuGet.Commandline within all build agents
 
 - Build runner to create nuget package
+
+- NuGet feed server available at <teamcity-url>/app/nuget, 
+  to use from scripts use <teamcity-url>/guestAuth/app/nuget 
+  or <teamcity-url>/httpAuth/app/nuget
+
+  There will be a configuration parameter 'teamcity.nuget.feed.server' added on agent containing NuGet feed URL
 
 
 API gaps TeamCity:
