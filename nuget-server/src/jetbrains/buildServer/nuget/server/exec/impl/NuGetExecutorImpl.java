@@ -97,6 +97,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
                                             @NotNull final File logsFile,
                                             @NotNull final String token) throws NuGetExecutionException {
     assertOs();
+
     final GeneralCommandLine cmd = new GeneralCommandLine();
     final File path = myNuGetTeamCityProvider.getNuGetServerRunnerPath();
     cmd.setExePath(path.getPath());
