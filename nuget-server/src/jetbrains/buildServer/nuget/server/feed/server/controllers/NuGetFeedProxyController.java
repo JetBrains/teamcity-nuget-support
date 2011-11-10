@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.server.controllers;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerUri;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.WebUtil;
@@ -44,14 +45,17 @@ public class NuGetFeedProxyController extends BaseController {
   private static final Logger LOG = Logger.getInstance(NuGetFeedProxyController.class.getName());
   public static final String NUGET_PATH = "/app/nuget";
 
-  private final FeedClient myClient;
-  private final NuGetServerUri myUri;
+  @NotNull private final FeedClient myClient;
+  @NotNull private final NuGetServerRunnerSettings mySettings;
+  @NotNull private final NuGetServerUri myUri;
 
   public NuGetFeedProxyController(@NotNull final WebControllerManager web,
                                   @NotNull final FeedClient client,
-                                  @NotNull final NuGetServerUri uri) {
+                                  @NotNull final NuGetServerUri uri,
+                                  @NotNull final NuGetServerRunnerSettings settings) {
     myUri = uri;
     myClient = client;
+    mySettings = settings;
 
     web.registerController(NUGET_PATH + "/**", this);
   }
@@ -59,6 +63,10 @@ public class NuGetFeedProxyController extends BaseController {
   @Override
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
+    if (!mySettings.isNuGetFeedEnabled()) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed server is not switched on in server configuration");
+    }
+
     String requestPath = WebUtil.getPathWithoutAuthenticationType(request);
 
     if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
@@ -106,7 +114,7 @@ public class NuGetFeedProxyController extends BaseController {
   }
 
   @NotNull
-  private HttpRequestBase createRequest(HttpServletRequest request) {
+  private HttpRequestBase createRequest(@NotNull final HttpServletRequest request) {
     final String method = request.getMethod();
     if (method.equalsIgnoreCase("get")) {
       return new HttpGet();
