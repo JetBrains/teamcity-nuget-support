@@ -33,11 +33,18 @@ import java.util.Map;
  */
 public class NuGetServerPropertiesProvider implements BuildParametersProvider, ParameterDescriptionProvider {
   private final String KEY = "teamcity.nuget.feed.server";
+  @NotNull private final NuGetServerRunnerSettings mySettings;
+
+  public NuGetServerPropertiesProvider(@NotNull final NuGetServerRunnerSettings settings) {
+    mySettings = settings;
+  }
 
   @NotNull
   public Map<String, String> getParameters(@NotNull SBuild build, boolean emulationMode) {
     Map<String, String> map = new HashMap<String, String>();
-    map.put(KEY, "%teamcity.serverUrl%/" + NuGetFeedProxyController.NUGET_PATH);
+    if (mySettings.isNuGetFeedEnabled()) {
+      map.put(KEY, "%teamcity.serverUrl%/" + NuGetFeedProxyController.NUGET_PATH);
+    }
     return map;
   }
 
