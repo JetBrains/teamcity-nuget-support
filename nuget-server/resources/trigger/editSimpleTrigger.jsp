@@ -31,7 +31,8 @@
   <tr>
      <td colspan="2">
        <div class="attentionComment">
-         TeamCity server is not running under Windows. TeamCity will emulate NuGet feeds check to avoid starting .NET processes
+         TeamCity server is not running under Windows. TeamCity will emulate NuGet feeds check to avoid starting .NET processes.
+         It does not support <string>Package Version Spec</string> and non-http package sources.
        </div>
      </td>
    </tr>
