@@ -24,6 +24,7 @@ import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatusHolder;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -46,6 +47,7 @@ public class FeedServerController extends BaseController {
   @NotNull private final NuGetServerRunnerSettingsEx mySettings;
   @NotNull private final NuGetServerStatusHolder myStatusHolder;
   @NotNull private final RootUrlHolder myRootUrl;
+  @NotNull private final SystemInfo mySystemInfo;
 
   public FeedServerController(@NotNull final AuthorizationInterceptor auth,
                               @NotNull final PermissionChecker checker,
@@ -54,12 +56,14 @@ public class FeedServerController extends BaseController {
                               @NotNull final PluginDescriptor descriptor,
                               @NotNull final NuGetServerRunnerSettingsEx settings,
                               @NotNull final NuGetServerStatusHolder holder,
-                              @NotNull final RootUrlHolder rootUrl) {
+                              @NotNull final RootUrlHolder rootUrl,
+                              @NotNull final SystemInfo systemInfo) {
     mySection = section;
     myDescriptor = descriptor;
     mySettings = settings;
     myStatusHolder = holder;
     myRootUrl = rootUrl;
+    mySystemInfo = systemInfo;
     final String myPath = section.getIncludePath();
 
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
@@ -73,7 +77,11 @@ public class FeedServerController extends BaseController {
   @Override
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
-    final ModelAndView modelAndView = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettings.jsp"));
+    if (!mySystemInfo.isWindows()) {
+      return new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsOther.jsp"));
+    }
+
+    final ModelAndView modelAndView = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsWindows.jsp"));
     final Map<String, String> properties = new HashMap<String, String>();
     if (mySettings.isNuGetFeedEnabled()) {
       properties.put(FeedServerContants.NUGET_SERVER_ENABLED_CHECKBOX, "checked");
@@ -88,7 +96,6 @@ public class FeedServerController extends BaseController {
     modelAndView.getModel().put("nugetSettingsPostUrl", mySection.getSettingsPath());
     modelAndView.getModel().put("serverStatus", myStatusHolder.getStatus());
     modelAndView.getModel().put("imagesBase", myDescriptor.getPluginResourcesPath("server/img"));
-
 
     return modelAndView;
   }

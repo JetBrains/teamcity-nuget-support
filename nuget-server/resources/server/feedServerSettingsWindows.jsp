@@ -23,6 +23,7 @@
 <jsp:useBean id="imagesBase" scope="request" type="java.lang.String" />
 <jsp:useBean id="serverStatus" scope="request" type="jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus" />
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerContants"/>
+
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
 
 <h2 class="noBorder">TeamCity as NuGet Feed</h2>
@@ -187,14 +188,4 @@
     BS.Util.hide($('nugetSettingsSuccessMessage'));
   });
 </script>
-
-
-
-
-
-
-
-
-
-
 
