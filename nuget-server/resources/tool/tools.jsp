@@ -31,49 +31,49 @@
   plugin<bs:s val="${installedPluginsCount}"/> installed.
 </p>
 
-<c:choose>
-  <c:when test="${installedPluginsCount eq 0}">
-    <div>There are no installed NuGet.exe</div>
-  </c:when>
-  <c:otherwise>
-      <table class="dark borderBottom" cellpadding="0" cellspacing="0" style="width: 30em;">
-        <thead>
-        <tr>
-          <th class="header" style="width: 66%">Version</th>
-          <th class="header"></th>
-        </tr>
-        </thead>
-        <tbody>
-          <c:forEach var="tool" items="${tools}">
-            <tr>
-              <td><c:out value="${tool.version}"/></td>
-              <td>
-                <c:choose>
-                  <c:when test="${tool.state.installed}">
-                    <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
-                  </c:when>
-                  <c:when test="${tool.state.installing}">
-                    <bs:commentIcon text="Messages"/>
-                    Installing...
-                  </c:when>
-                </c:choose>
-              </td>
-            </tr>
-          </c:forEach>
-        </tbody>
-    </table>
-  </c:otherwise>
-</c:choose>
+<h2 class="noBorder">Installed NuGet Versions</h2>
+  <c:choose>
+    <c:when test="${installedPluginsCount eq 0}">
+      <div>There are no installed NuGet.exe</div>
+    </c:when>
+    <c:otherwise>
+        <table class="dark borderBottom" cellpadding="0" cellspacing="0" style="width: 30em;">
+          <thead>
+          <tr>
+            <th class="header" style="width: 66%">Version</th>
+            <th class="header"></th>
+          </tr>
+          </thead>
+          <tbody>
+            <c:forEach var="tool" items="${tools}">
+              <tr>
+                <td><c:out value="${tool.version}"/></td>
+                <td>
+                  <c:choose>
+                    <c:when test="${tool.state.installed}">
+                      <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
+                    </c:when>
+                    <c:when test="${tool.state.installing}">
+                      <bs:commentIcon text="Messages"/>
+                      Installing...
+                    </c:when>
+                  </c:choose>
+                </td>
+              </tr>
+            </c:forEach>
+          </tbody>
+      </table>
+    </c:otherwise>
+  </c:choose>
+  <div class="addNew">
+    <a href="#" onclick="return BS.NuGet.Tools.InstallPopup.show();">
+      Install
+      <c:if test="${installedPluginsCount gt 0}">addintional versions of</c:if>
+      NuGet.exe Command Line
+    </a>
+  </div>
 </bs:refreshable>
 
-<div class="addNew">
-  <a href="#" onclick="return BS.NuGet.Tools.InstallPopup.show();">
-    Install
-    <c:if test="${installedPluginsCount gt 0}">addintional versions of</c:if>
-    NuGet.exe Command Line
-    <forms:saving id="nugetInstallLinkSaving"/>
-  </a>
-</div>
 
 <c:set var="actualInstallerUrl"><c:url value="${installerUrl}"/></c:set>
 <bs:modalDialog
@@ -92,11 +92,11 @@
   </bs:refreshable>
 
   <div class="popupSaveButtonsBlock">
-    <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.close();" class="cancel">Cancel</a>
+    <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.closeToolsDialog();" class="cancel">Cancel</a>
     <input class="submitButton" type="submit" value="Install" id="installNuGetApplyButton" />
     <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" class="cancel">Refresh</a>
     <forms:saving id="installNuGetApplyProgress"/>
-    <br clear="all"/>
+    <div class="clr"></div>
   </div>
 </bs:modalDialog>
 

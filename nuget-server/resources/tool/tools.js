@@ -56,22 +56,29 @@ BS.NuGet.Tools = {
     },
 
     refreshForm : function(fresh) {
+      var that = this;
       this.disableSubmit();
       BS.Util.hide($('nugetInstallFormResresh'));
       BS.Util.show($('nugetInstallFormLoading'));
-      $('nugetInstallFormResresh').refresh("nugetInstallLinkSaving", fresh ? "fresh=1": "", function() {
+      $('nugetInstallFormResresh').refresh(null, fresh ? "fresh=1": "", function() {
         BS.Util.hide($('nugetInstallFormLoading'));
         BS.Util.show($('nugetInstallFormResresh'));
-        BS.NuGet.Tools.InstallPopup.showCentered();
+        that.showCentered();
       });
       return false;
     },
 
     show : function() {
-      var that = this;
-      that.showCentered();
-      that.refreshForm();
+      this.showCentered();
+      this.refreshForm(false);
       return false;
+    },
+
+    closeToolsDialog : function() {
+      this.close();
+      $('nugetInstallFormResreshInner').update("");
+      BS.Util.hide($('nugetInstallFormLoading'));
+      BS.Util.hide($('nugetInstallFormResresh'));
     },
 
     save : function() {
