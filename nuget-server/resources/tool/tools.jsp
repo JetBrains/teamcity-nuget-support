@@ -69,7 +69,6 @@
     Install
     <c:if test="${installedPluginsCount gt 0}">addintional versions of</c:if>
     NuGet.exe Command Line
-    <forms:saving id="nugetInstallLinkSaving"/>
   </a>
 </div>
 
@@ -90,11 +89,11 @@
   </bs:refreshable>
 
   <div class="popupSaveButtonsBlock">
-    <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.close();" class="cancel">Cancel</a>
+    <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.closeToolsDialog();" class="cancel">Cancel</a>
     <input class="submitButton" type="submit" value="Install" id="installNuGetApplyButton" />
     <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" class="cancel">Refresh</a>
     <forms:saving id="installNuGetApplyProgress"/>
-    <br clear="all"/>
+    <div class="clr"></div>
   </div>
 </bs:modalDialog>
 
