@@ -18,12 +18,12 @@ package jetbrains.buildServer.nuget.server.feed.server.impl;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -40,21 +40,21 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
 
   private final RootUrlHolder myRootUrl;
   private final ServerPaths myPaths;
-  private final NuGetServerRunnerTokens myTokens;
   private final NuGetSettingsManager mySettings;
+  private final SystemInfo mySystemInfo;
   private final MetadataControllersPaths myController;
 
 
   public NuGetServerRunnerSettingsImpl(@NotNull final RootUrlHolder rootUrl,
                                        @NotNull final MetadataControllersPaths controller,
                                        @NotNull final ServerPaths paths,
-                                       @NotNull final NuGetServerRunnerTokens tokens,
-                                       @NotNull final NuGetSettingsManager settings) {
+                                       @NotNull final NuGetSettingsManager settings,
+                                       @NotNull final SystemInfo systemInfo) {
     myRootUrl = rootUrl;
     myController = controller;
     myPaths = paths;
-    myTokens = tokens;
     mySettings = settings;
+    mySystemInfo = systemInfo;
   }
 
   public void setNuGetFeedEnabled(final boolean newValue) {
@@ -94,6 +94,8 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   }
 
   public boolean isNuGetFeedEnabled() {
+    if (!mySystemInfo.isWindows()) return false;
+
     return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
       public Boolean executeAction(@NotNull NuGetSettingsReader action) {
         return action.getBooleanParameter(NUGET_SERVER_ENABLED, false);
@@ -106,16 +108,11 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
     String url = getCustomTeamCityBaseUrl();
     if (url == null) url = myRootUrl.getRootUrl();
     url = StringUtil.trimEnd(url, "/");
-    return url + myController.getBasePath();
+    return url + "/" + StringUtil.trimStart(myController.getBasePath(), "/");
   }
 
   @NotNull
   public File getLogFilePath() {
     return new File(myPaths.getLogsPath(), "teamcity-nuget-server.log");
-  }
-
-  @NotNull
-  public String getSettingsHash() {
-    return "@" + getLogFilePath() + "#" + isNuGetFeedEnabled() + "#" + getPackagesControllerUrl() + myTokens.getServerToken() + myTokens.getAccessToken();
   }
 }

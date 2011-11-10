@@ -37,4 +37,6 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsSection"/>
 
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.process.SettingsHashProvider"/>
+
 </beans>

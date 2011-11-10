@@ -32,11 +32,4 @@ public interface NuGetServerRunnerSettings {
 
   @NotNull
   File getLogFilePath();
-
-  /**
-   * returns setting values hash to be used to check if settings were changed
-   * @return settings hash
-   */
-  @NotNull
-  String getSettingsHash();
 }

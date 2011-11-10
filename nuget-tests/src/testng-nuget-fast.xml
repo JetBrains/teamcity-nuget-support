@@ -22,6 +22,8 @@
       <class name="jetbrains.buildServer.nuget.tests.server.feed.server.NuGetServerStatusHolderTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.feed.server.MetadataControllerBaseTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.feed.server.PingControllerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.SettingsHashTest" />
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.NuGetServerRunnerSettingsTest"/>
 
       <!-- misc -->
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest" />

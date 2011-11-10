@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.process;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,24 +31,33 @@ public class NuGetServerCruiserTask {
   private final NuGetServerStatusReporting myStatus;
   private final NuGetServerPingCommand myPing;
   private final NuGetServerRunner myRunner;
+  private final SystemInfo mySystemInfo;
+  private final SettingsHashProvider myHash;
 
   private volatile String mySettingsHash;
-
 
   public NuGetServerCruiserTask(@NotNull final NuGetServerRunnerSettings settings,
                                 @NotNull final NuGetServerStatusReporting status,
                                 @NotNull final NuGetServerPingCommand ping,
-                                @NotNull final NuGetServerRunner runner) {
+                                @NotNull final NuGetServerRunner runner,
+                                @NotNull final SystemInfo systemInfo,
+                                @NotNull final SettingsHashProvider hash) {
     mySettings = settings;
     myStatus = status;
     myPing = ping;
     myRunner = runner;
+    mySystemInfo = systemInfo;
+    myHash = hash;
 
-    mySettingsHash = mySettings.getSettingsHash();
+    mySettingsHash = myHash.getSettingsHash();
   }
 
   public void checkNuGetServerState() {
-    if (!mySettingsHash.equals(mySettingsHash = mySettings.getSettingsHash())) {
+    if (!mySystemInfo.isWindows()) {
+      return;
+    }
+
+    if (!mySettingsHash.equals(mySettingsHash = myHash.getSettingsHash())) {
       LOG.info("Settings were changed. NuGet server will be restarted.");
       myRunner.stopServer();
     }
