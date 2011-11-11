@@ -32,4 +32,10 @@ public interface NuGetServerRunnerSettings {
 
   @NotNull
   File getLogFilePath();
+
+  /**
+   * @return context based path of nuget feed OData service
+   */
+  @NotNull
+  String getNuGetFeedControllerPath();
 }

@@ -43,11 +43,11 @@ import java.net.URI;
  */
 public class NuGetFeedProxyController extends BaseController {
   private static final Logger LOG = Logger.getInstance(NuGetFeedProxyController.class.getName());
-  public static final String NUGET_PATH = "/app/nuget";
 
   @NotNull private final FeedClient myClient;
   @NotNull private final NuGetServerRunnerSettings mySettings;
   @NotNull private final NuGetServerUri myUri;
+  @NotNull private final String myNuGetPath;
 
   public NuGetFeedProxyController(@NotNull final WebControllerManager web,
                                   @NotNull final FeedClient client,
@@ -56,8 +56,9 @@ public class NuGetFeedProxyController extends BaseController {
     myUri = uri;
     myClient = client;
     mySettings = settings;
+    myNuGetPath = settings.getNuGetFeedControllerPath();
 
-    web.registerController(NUGET_PATH + "/**", this);
+    web.registerController(myNuGetPath + "/**", this);
   }
 
   @Override
@@ -71,7 +72,7 @@ public class NuGetFeedProxyController extends BaseController {
 
     if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
 
-    if (!requestPath.startsWith(NUGET_PATH) && !requestPath.equals(NUGET_PATH)) {
+    if (!requestPath.startsWith(myNuGetPath) && !requestPath.equals(myNuGetPath)) {
       response.sendError(HttpStatus.SC_NOT_FOUND, "Path not found");
       return null;
     }
@@ -82,7 +83,7 @@ public class NuGetFeedProxyController extends BaseController {
       return null;
     }
 
-    final String path = requestPath.substring(NUGET_PATH.length());
+    final String path = requestPath.substring(myNuGetPath.length());
     final String query = request.getQueryString();
 
     final HttpRequestBase method = createRequest(request);

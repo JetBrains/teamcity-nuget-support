@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
-import jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.parameters.BuildParametersProvider;
 import jetbrains.buildServer.serverSide.parameters.ParameterDescriptionProvider;
@@ -43,7 +42,7 @@ public class NuGetServerPropertiesProvider implements BuildParametersProvider, P
   public Map<String, String> getParameters(@NotNull SBuild build, boolean emulationMode) {
     Map<String, String> map = new HashMap<String, String>();
     if (mySettings.isNuGetFeedEnabled()) {
-      map.put(KEY, "%teamcity.serverUrl%/" + NuGetFeedProxyController.NUGET_PATH);
+      map.put(KEY, "%teamcity.serverUrl%" + mySettings.getNuGetFeedControllerPath());
     }
     return map;
   }
