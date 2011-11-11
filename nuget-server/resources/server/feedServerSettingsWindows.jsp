@@ -22,6 +22,7 @@
 <jsp:useBean id="nugetSettingsPostUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="imagesBase" scope="request" type="java.lang.String" />
 <jsp:useBean id="serverStatus" scope="request" type="jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus" />
+<jsp:useBean id="feedUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerContants"/>
 
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
@@ -112,6 +113,12 @@
         <img src="<c:url value='${imagesBase}/running.gif'/>" alt="starting"/>
         Running
         <span class="smallNote" style="margin-left:1em">NuGet Feed server is running now.</span>
+      </div>
+      <div>
+        NuGet Server private url: <strong><c:url value="${serverUrl}/httpAuth${feedUrl}"/></strong> (with Http Authorization)
+      </div>
+      <div>
+        NuGet Server public url: <strong><c:url value="${serverUrl}/guestAuth${feedUrl}"/></strong>
       </div>
     </c:when>
   </c:choose>
