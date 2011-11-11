@@ -21,21 +21,21 @@ import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode;
 import jetbrains.buildServer.serverSide.impl.LogUtil;
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataProvider;
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataStorageWriter;
+import jetbrains.buildServer.serverSide.metadata.BuildMetadataProvider;
+import jetbrains.buildServer.serverSide.metadata.MetadataStorageWriter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.*;
+import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 19.10.11 12:21
  */
-public class NuGetArtifactsMetadataProvider implements ArtifactsMetadataProvider {
+public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
   private static final Logger LOG = Logger.getInstance(NuGetArtifactsMetadataProvider.class.getName());
   public static final String NUGET_PROVIDER_ID = "nuget";
 
@@ -46,7 +46,7 @@ public class NuGetArtifactsMetadataProvider implements ArtifactsMetadataProvider
   }
 
   @NotNull
-  public String getMetadataProviderId() {
+  public String getProviderId() {
     return NUGET_PROVIDER_ID;
   }
 
@@ -63,7 +63,7 @@ public class NuGetArtifactsMetadataProvider implements ArtifactsMetadataProvider
     }
   }
 
-  public void generateMedatadata(@NotNull SBuild build, @NotNull ArtifactsMetadataStorageWriter store) {
+  public void generateMedatadata(@NotNull SBuild build, @NotNull MetadataStorageWriter store) {
     LOG.debug("Looking for NuGet packages in " + LogUtil.describe(build));
 
     final List<BuildArtifact> packages = new ArrayList<BuildArtifact>();

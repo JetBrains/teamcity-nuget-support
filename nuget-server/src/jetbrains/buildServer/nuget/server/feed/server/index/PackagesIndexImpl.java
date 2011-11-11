@@ -17,8 +17,8 @@
 package jetbrains.buildServer.nuget.server.feed.server.index;
 
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataStorage;
+import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
+import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -28,14 +28,14 @@ import java.util.Iterator;
  *         Date: 19.10.11 16:18
  */
 public class PackagesIndexImpl implements PackagesIndex {
-  private final ArtifactsMetadataStorage myStorage;
+  private final MetadataStorage myStorage;
 
-  public PackagesIndexImpl(ArtifactsMetadataStorage storage) {
+  public PackagesIndexImpl(@NotNull final MetadataStorage storage) {
     myStorage = storage;
   }
 
   @NotNull
-  public Iterator<ArtifactsMetadataEntry> getEntries() {
+  public Iterator<BuildMetadataEntry> getEntries() {
     return myStorage.getAllEntries(NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
   }
 }

@@ -21,7 +21,7 @@ import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
+import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +50,7 @@ public class PackageWriterImpl implements PackagesWriter {
     mySerializer = serializer;
   }
 
-  private  void serializePackage(@NotNull final ArtifactsMetadataEntry entry,
+  private  void serializePackage(@NotNull final BuildMetadataEntry entry,
                                  @NotNull final Writer writer) throws IOException {
 
     final SBuild aBuild = myBuilds.findBuildInstanceById(entry.getBuildId());
@@ -75,10 +75,10 @@ public class PackageWriterImpl implements PackagesWriter {
 
     final Set<String> reportedPackages = new HashSet<String>();
 
-    final Iterator<ArtifactsMetadataEntry> entries = myIndex.getEntries();
+    final Iterator<BuildMetadataEntry> entries = myIndex.getEntries();
 
     while (entries.hasNext()) {
-      final ArtifactsMetadataEntry e = entries.next();
+      final BuildMetadataEntry e = entries.next();
       //remove duplicates
       if (!reportedPackages.add(e.getKey())) continue;
 

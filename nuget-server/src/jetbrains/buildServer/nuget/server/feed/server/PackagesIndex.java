@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
+import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -29,5 +29,5 @@ public interface PackagesIndex {
   public static final String TEAMCITY_ARTIFACT_RELPATH = "teamcity.artifactPath";
 
   @NotNull
-  Iterator<ArtifactsMetadataEntry> getEntries();
+  Iterator<BuildMetadataEntry> getEntries();
 }

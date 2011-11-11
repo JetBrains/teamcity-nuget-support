@@ -16,13 +16,11 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
-import jetbrains.buildServer.serverSide.metadata.ArtifactsMetadataEntry;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
