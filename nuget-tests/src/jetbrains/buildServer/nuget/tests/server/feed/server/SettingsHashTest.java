@@ -64,7 +64,7 @@ public class SettingsHashTest extends BaseTestCase {
   @Test
   public void test_all_parameters_included() throws InvocationTargetException, IllegalAccessException {
     assertAllGettersCalled(NuGetServerRunnerTokens.class, myTokens, "getAccessTokenHeaderName", "getServerTokenHeaderName");
-    assertAllGettersCalled(NuGetServerRunnerSettings.class, mySettings);
+    assertAllGettersCalled(NuGetServerRunnerSettings.class, mySettings, "getNuGetFeedControllerPath");
 
     myHash.getSettingsHash();
     m.assertIsSatisfied();
