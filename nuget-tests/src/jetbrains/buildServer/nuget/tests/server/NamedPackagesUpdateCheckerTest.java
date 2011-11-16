@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker;
+import jetbrains.buildServer.nuget.server.trigger.PackagesHashCalculator;
 import jetbrains.buildServer.nuget.server.trigger.TriggerConstants;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
@@ -76,7 +77,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     final SystemInfo si = m.mock(SystemInfo.class);
 
-    checker = new NamedPackagesUpdateChecker(manager, chk, new CheckRequestModeFactory(si), new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()));
+    checker = new NamedPackagesUpdateChecker(manager, chk, new CheckRequestModeFactory(si), new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()), new PackagesHashCalculator());
     nugetFakePath = Paths.getNuGetRunnerPath();
     final String path = nugetFakePath.getPath();
 
