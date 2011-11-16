@@ -26,6 +26,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -86,7 +87,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
   @Test
   public void test_bulk_success() throws NuGetExecutionException {
     @SuppressWarnings({"unchecked"})
-    final Collection<SourcePackageInfo> result = m.mock(Collection.class);
+    final Collection<SourcePackageInfo> result = new ArrayList<SourcePackageInfo>();
     final SourcePackageReference ref = ref();
     final CheckablePackage task = m.mock(CheckablePackage.class);
     m.checking(new Expectations(){{
