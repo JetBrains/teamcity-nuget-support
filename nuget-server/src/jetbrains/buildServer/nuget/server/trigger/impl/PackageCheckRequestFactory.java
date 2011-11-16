@@ -36,10 +36,9 @@ public class PackageCheckRequestFactory {
                                            @Nullable final String packageSource,
                                            @NotNull final String pacakgeId,
                                            @Nullable final String versionSpec) {
-    return new PackageCheckRequest(mode, new SourcePackageReference(packageSource, pacakgeId, versionSpec)) {
-      {
-        setCheckInterval(mySettings.getPackageCheckInterval());
-      }
-    };
+    final SourcePackageReference ref = new SourcePackageReference(packageSource, pacakgeId, versionSpec);
+    final PackageCheckRequest request = new PackageCheckRequest(mode, ref);
+    request.setCheckInterval(mySettings.getPackageCheckInterval());
+    return request;
   }
 }
