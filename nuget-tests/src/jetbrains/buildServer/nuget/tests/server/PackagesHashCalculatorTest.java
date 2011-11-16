@@ -25,6 +25,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.security.SecureRandom;
 import java.util.*;
 
 /**
@@ -53,7 +54,7 @@ public class PackagesHashCalculatorTest extends BaseTestCase {
 
   @Test
   public void testMultipleHash_defaultSOource() {
-    doCalculatorTest("|p:p1|v:v1|p:p2|v:v1|p:p1|v:v2", p(null, "p1", "v1"), p(null, "p2", "v1"), p(null, "p1", "v2"));
+    doCalculatorTest("|p:p1|v:v1|p:p1|v:v2|p:p2|v:v1", p(null, "p1", "v1"), p(null, "p2", "v1"), p(null, "p1", "v2"));
   }
 
   @Test
@@ -63,13 +64,36 @@ public class PackagesHashCalculatorTest extends BaseTestCase {
 
   @Test
   public void testMultipleHash_mix() {
-    doCalculatorTest("|s:c|p:p1|v:v1|s:c|p:p1|v:v2|s:c|p:p2|v:v1|p:p1|v:v1|p:p2|v:v1|p:p1|v:v2", p("c", "p1", "v1"), p("c", "p2", "v1"), p("c", "p1", "v2"), p(null, "p1", "v1"), p(null, "p2", "v1"), p(null, "p1", "v2"));
+    doCalculatorTest("|s:c|p:p1|v:v1|s:c|p:p1|v:v2|s:c|p:p2|v:v1|p:p1|v:v1|p:p1|v:v2|p:p2|v:v1", p("c", "p1", "v1"), p("c", "p2", "v1"), p("c", "p1", "v2"), p(null, "p1", "v1"), p(null, "p2", "v1"), p(null, "p1", "v2"));
+  }
+
+  @Test
+  public void testMultipleHash_big() {
+    final String[] sources = {null, "s1", "s2"};
+    final String[] packages = {"p1", "q", };
+    final String[] versions = {"2.3.5", "0.5.4"};
+
+    List<SourcePackageInfo> infos = new ArrayList<SourcePackageInfo>();
+    for (String source : sources) {
+      for (String aPackage : packages) {
+        for (String version : versions) {
+          infos.add(p(source, aPackage, version));
+        }
+      }
+    }
+
+    //12! is too much to check
+    final Random r = new SecureRandom();
+    final String hash = "|s:s1|p:p1|v:0.5.4|s:s1|p:p1|v:2.3.5|s:s1|p:q|v:0.5.4|s:s1|p:q|v:2.3.5|s:s2|p:p1|v:0.5.4|s:s2|p:p1|v:2.3.5|s:s2|p:q|v:0.5.4|s:s2|p:q|v:2.3.5|p:p1|v:0.5.4|p:p1|v:2.3.5|p:q|v:0.5.4|p:q|v:2.3.5";
+    for (int i = 0; i < 1000; i++) {
+      Collections.shuffle(infos, r);
+      assertHash(hash, infos);
+    }
   }
 
   private SourcePackageInfo p(@Nullable String source, @NotNull String pkgId, @NotNull String version) {
     return new SourcePackageInfo(source, pkgId, version);
   }
-
 
   private void doCalculatorTest(@NotNull String hash, SourcePackageInfo... infos) {
     assertHash(hash, Arrays.asList(infos));
@@ -105,9 +129,5 @@ public class PackagesHashCalculatorTest extends BaseTestCase {
     }
     return result;
   }
-
-
-
-
 
 }

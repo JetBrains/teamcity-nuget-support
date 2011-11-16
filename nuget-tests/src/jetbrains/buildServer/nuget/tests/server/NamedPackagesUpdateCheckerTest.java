@@ -214,7 +214,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
               new SourcePackageInfo(null, "C3omm5on", "2.0.0.22")
       ))));
 
-      final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:s2|p:C3ommon|v:2.0.0.22|s:s4|p:C3o3mmon|v:2.0.0.22|p:Common|v:2.0.0.22|p:C3ommon|v:2.0.0.22|p:C3o4mmon|v:2.0.0.22|p:C3omm5on|v:2.0.0.22";
+      final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:s2|p:C3ommon|v:2.0.0.22|s:s4|p:C3o3mmon|v:2.0.0.22|p:C3o4mmon|v:2.0.0.22|p:C3omm5on|v:2.0.0.22|p:C3ommon|v:2.0.0.22|p:Common|v:2.0.0.22";
       oneOf(store).getValue("hash"); will(returnValue("foo"));
       oneOf(store).putValue("hash", hash1);
       oneOf(store).flush();
