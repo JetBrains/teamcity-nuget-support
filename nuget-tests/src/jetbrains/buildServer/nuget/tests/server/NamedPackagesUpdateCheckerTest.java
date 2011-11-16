@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker;
+import jetbrains.buildServer.nuget.server.trigger.PackagesHashCalculator;
 import jetbrains.buildServer.nuget.server.trigger.TriggerConstants;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
@@ -76,7 +77,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     final SystemInfo si = m.mock(SystemInfo.class);
 
-    checker = new NamedPackagesUpdateChecker(manager, chk, new CheckRequestModeFactory(si), new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()));
+    checker = new NamedPackagesUpdateChecker(manager, chk, new CheckRequestModeFactory(si), new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()), new PackagesHashCalculator());
     nugetFakePath = Paths.getNuGetRunnerPath();
     final String path = nugetFakePath.getPath();
 
@@ -213,7 +214,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
               new SourcePackageInfo(null, "C3omm5on", "2.0.0.22")
       ))));
 
-      final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:s2|p:C3ommon|v:2.0.0.22|s:s4|p:C3o3mmon|v:2.0.0.22|p:Common|v:2.0.0.22|p:C3ommon|v:2.0.0.22|p:C3o4mmon|v:2.0.0.22|p:C3omm5on|v:2.0.0.22";
+      final String hash1 = "|s:\\\\ServerNameRemoved\\NugetTest\\Repository|p:Common|v:1.0.0.21|s:s2|p:C3ommon|v:2.0.0.22|s:s4|p:C3o3mmon|v:2.0.0.22|p:C3o4mmon|v:2.0.0.22|p:C3omm5on|v:2.0.0.22|p:C3ommon|v:2.0.0.22|p:Common|v:2.0.0.22";
       oneOf(store).getValue("hash"); will(returnValue("foo"));
       oneOf(store).putValue("hash", hash1);
       oneOf(store).flush();

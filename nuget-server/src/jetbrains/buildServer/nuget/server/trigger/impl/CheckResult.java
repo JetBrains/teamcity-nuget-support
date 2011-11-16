@@ -20,6 +20,7 @@ import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -40,7 +41,7 @@ public class CheckResult {
   }
 
   public static CheckResult succeeded(@NotNull final Collection<SourcePackageInfo> infos) {
-    return new CheckResult(infos, null);
+    return new CheckResult(new ArrayList<SourcePackageInfo>(infos), null);
   }
 
   @NotNull

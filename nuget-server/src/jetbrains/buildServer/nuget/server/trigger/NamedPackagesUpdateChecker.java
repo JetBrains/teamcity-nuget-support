@@ -19,7 +19,6 @@ package jetbrains.buildServer.nuget.server.trigger;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
-import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
@@ -28,7 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -42,16 +40,19 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
   private final PackageChangesManager myPackageChangesManager;
   private final CheckRequestModeFactory myModeFactory;
   private final PackageCheckRequestFactory myRequestFactory;
+  private final PackagesHashCalculator myCalculator;
 
 
   public NamedPackagesUpdateChecker(@NotNull final NuGetToolManager manager,
                                     @NotNull final PackageChangesManager packageChangesManager,
                                     @NotNull final CheckRequestModeFactory modeFactory,
-                                    @NotNull final PackageCheckRequestFactory requestFactory) {
+                                    @NotNull final PackageCheckRequestFactory requestFactory,
+                                    @NotNull final PackagesHashCalculator calculator) {
     myManager = manager;
     myPackageChangesManager = packageChangesManager;
     myModeFactory = modeFactory;
     myRequestFactory = requestFactory;
+    myCalculator = calculator;
   }
 
   @Nullable
@@ -99,7 +100,7 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       throw new BuildTriggerException("Failed to check for package versions. " + error);
     }
 
-    final String hash = serializeHashcode(result.getInfos());
+    final String hash = myCalculator.serializeHashcode(result.getInfos());
     final String oldHash = storage.getValue(KEY);
 
     LOG.debug("Recieved packages hash: " + hash);
@@ -114,34 +115,5 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     }
 
     return null;
-  }
-
-  private String serializeHashcode(@NotNull final Collection<SourcePackageInfo> _packages) {
-    List<SourcePackageInfo> sorted = new ArrayList<SourcePackageInfo>(_packages);
-    Collections.sort(sorted, new Comparator<SourcePackageInfo>() {
-      public int compare(SourcePackageInfo o1, SourcePackageInfo o2) {
-        int i;
-        String s1 = o1.getSource();
-        String s2 = o2.getSource();
-        if (s1 == null && s2 == null) return 0;
-        if (s1 == null && s2 != null) return 1;
-        if (s1 != null && s2 == null) return -1;
-        if (0 != (i = s1.compareTo(s2))) return i;
-        if (0 != (i = o1.getPackageId().compareTo(o2.getPackageId()))) return i;
-        if (0 != (i = o1.getVersion().compareTo(o2.getVersion()))) return i;
-        return 0;
-      }
-    });
-
-    StringBuilder sb = new StringBuilder();
-    for (SourcePackageInfo info : sorted) {
-      String source = info.getSource();
-      if (source != null) {
-        sb.append("|s:").append(source);
-      }
-      sb.append("|p:").append(info.getPackageId());
-      sb.append("|v:").append(info.getVersion());
-    }
-    return sb.toString();
   }
 }
