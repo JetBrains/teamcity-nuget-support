@@ -14,6 +14,7 @@
 
   <test name="fast tests">
     <classes>
+
       <!-- setting manager -->
       <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerPersitedTest"/>
@@ -27,6 +28,8 @@
 
       <!-- misc -->
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest" />
+      <class name="jetbrains.buildServer.nuget.tests.server.SystemInfoTest" />
+
       <class name="jetbrains.buildServer.nuget.tests.RunTypeNameTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackagesConfigParserTest"/>

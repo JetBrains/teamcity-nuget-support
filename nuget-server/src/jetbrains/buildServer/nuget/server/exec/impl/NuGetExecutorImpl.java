@@ -177,7 +177,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
 
 
   private void assertOs() throws NuGetExecutionException {
-    if (!mySystemInfo.isWindows()) {
+    if (!mySystemInfo.canStartNuGetProcesses()) {
       throw new NuGetExecutionException("Processes start is supported only under Windows");
     }
   }

@@ -56,7 +56,7 @@ public class NuGetExecutorTest extends BaseTestCase {
 
   private void setIsWindows(final boolean isWindows) {
     m.checking(new Expectations(){{
-      allowing(mySystemInfo).isWindows(); will(returnValue(isWindows));
+      allowing(mySystemInfo).canStartNuGetProcesses(); will(returnValue(isWindows));
     }});
   }
 
