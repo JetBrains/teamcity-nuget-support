@@ -8,4 +8,5 @@
   <bean class="jetbrains.buildServer.web.openapi.PluginDescriptor"/>
   <bean class="jetbrains.buildServer.plugins.bean.PluginInfo"/>
   <bean class="jetbrains.buildServer.serverSide.ServerPaths"/>
+  <bean class="jetbrains.buildServer.TempFolderProvider"/>
 </beans>
