@@ -85,7 +85,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       allowing(desr).getProperties(); will(returnValue(params));
       allowing(manager).getNuGetPath(path); will(returnValue(path));
 
-      allowing(si).isWindows(); will(new CustomAction("Return myIsWindows") {
+      allowing(si).canStartNuGetProcesses(); will(new CustomAction("Return myIsWindows") {
         public Object invoke(Invocation invocation) throws Throwable {
           return myIsWindows;
         }

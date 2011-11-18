@@ -35,7 +35,7 @@ public class CheckRequestModeFactory {
 
   @NotNull
   public CheckRequestMode createNuGetChecker(@NotNull final File nugetPath) {
-    if (mySystemInfo.isWindows()) return new CheckRequestModeNuGet(nugetPath);
+    if (mySystemInfo.canStartNuGetProcesses()) return new CheckRequestModeNuGet(nugetPath);
     return createTeamCityChecker();
   }
 

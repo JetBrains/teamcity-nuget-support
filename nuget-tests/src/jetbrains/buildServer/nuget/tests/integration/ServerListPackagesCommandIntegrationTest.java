@@ -49,7 +49,7 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
     final TempFolderProvider temp = m.mock(TempFolderProvider.class);
 
     m.checking(new Expectations(){{
-      allowing(info).isWindows(); will(returnValue(true));
+      allowing(info).canStartNuGetProcesses(); will(returnValue(true));
       allowing(prov).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
       allowing(temp).getTempDirectory(); will(returnValue(createTempDir()));
     }});

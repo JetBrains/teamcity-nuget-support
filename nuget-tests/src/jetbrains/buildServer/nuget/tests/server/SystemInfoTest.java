@@ -70,6 +70,6 @@ public class SystemInfoTest extends BaseTestCase {
 
   @Test
   public void testWindowsDetected() {
-    Assert.assertTrue(myInfo.isWindows());
+    Assert.assertTrue(myInfo.canStartNuGetProcesses());
   }
 }

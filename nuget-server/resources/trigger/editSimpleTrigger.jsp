@@ -18,7 +18,8 @@
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.trigger.TriggerBean" scope="request"/>
-<jsp:useBean id="isWindows" type="java.lang.Boolean" scope="request"/>
+<jsp:useBean id="canStartNuGetProcesses" type="java.lang.Boolean" scope="request"/>
+<jsp:useBean id="canStartNuGetProcessesMessage" type="java.lang.String" scope="request"/>
 
 <tr>
   <th>NuGet.exe<l:star/>:</th>
@@ -27,12 +28,16 @@
   </td>
 </tr>
 
-<c:if test="${not isWindows}">
+<c:if test="${not canStartNuGetProcesses}">
   <tr>
      <td colspan="2">
        <div class="attentionComment">
-         TeamCity server is not running under Windows. TeamCity will emulate NuGet feeds check to avoid starting .NET processes.
-         It does not support <string>Package Version Spec</string> and non-http package sources.
+         <c:out value="${canStartNuGetProcessesMessage}"/><br />
+         NuGet build trigger has limited functionality in this environment:
+         <ul style="margin-top: 0;">
+           <li>Filtering by Package Version Spec is not supported.</li>
+           <li>Only HTTP package sources are supported.</li>
+         </ul>
        </div>
      </td>
    </tr>
@@ -56,11 +61,25 @@
   </td>
 </tr>
 
-<tr>
-  <th>Package Version Spec:</th>
-  <td>
-    <props:textProperty name="${ib.versionKey}" style="width:20em;"/>
-    <span class="smallNote">Specify package version to check. Leave empty to check for latest version</span>
-    <span class="error" id="error_${ib.versionKey}"></span>
-  </td>
-</tr>
+<c:choose>
+  <c:when test="${canStartNuGetProcesses}">
+    <tr>
+      <th>Package Version Spec:</th>
+      <td>
+        <props:textProperty name="${ib.versionKey}" style="width:20em;"/>
+        <span class="smallNote">Specify package version to check. Leave empty to check for latest version</span>
+        <span class="error" id="error_${ib.versionKey}"></span>
+      </td>
+    </tr>
+  </c:when>
+  <c:otherwise>
+    <tr>
+      <th>Package Version Spec:</th>
+      <td>
+        <props:hiddenProperty name="${ib.versionKey}" value=""/>
+        <span class="smallNote">Supported only for TeamCity server is running under Windows with Microsoft .NET Framework 4.0 installed.</span>
+      </td>
+    </tr>
+  </c:otherwise>
+</c:choose>
+

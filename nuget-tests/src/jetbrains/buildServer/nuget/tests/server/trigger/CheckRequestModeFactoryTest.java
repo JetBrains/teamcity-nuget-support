@@ -64,7 +64,7 @@ public class CheckRequestModeFactoryTest extends BaseTestCase {
   @Test
   public void test_ShouldNotCreateNuGetTriggerOnLinux() throws IOException {
     m.checking(new Expectations(){{
-      allowing(myInfo).isWindows(); will(returnValue(false));
+      allowing(myInfo).canStartNuGetProcesses(); will(returnValue(false));
     }});
 
     Assert.assertTrue(myFactory.createNuGetChecker(createTempFile()) instanceof CheckRequestModeTeamCity);
@@ -74,7 +74,7 @@ public class CheckRequestModeFactoryTest extends BaseTestCase {
   @Test
   public void testNuGetMode_eq() throws IOException {
     m.checking(new Expectations(){{
-      allowing(myInfo).isWindows(); will(returnValue(true));
+      allowing(myInfo).canStartNuGetProcesses(); will(returnValue(true));
     }});
 
     final File path = createTempFile();
@@ -85,7 +85,7 @@ public class CheckRequestModeFactoryTest extends BaseTestCase {
   @Test
   public void testNuGetMode_diff() throws IOException {
     m.checking(new Expectations(){{
-      allowing(myInfo).isWindows(); will(returnValue(true));
+      allowing(myInfo).canStartNuGetProcesses(); will(returnValue(true));
     }});
 
     Assert.assertFalse(myFactory.createNuGetChecker(createTempFile()).equals(myFactory.createNuGetChecker(createTempFile())));
@@ -94,7 +94,7 @@ public class CheckRequestModeFactoryTest extends BaseTestCase {
   @Test
   public void testModesEqual() throws IOException {
     m.checking(new Expectations(){{
-      allowing(myInfo).isWindows(); will(returnValue(true));
+      allowing(myInfo).canStartNuGetProcesses(); will(returnValue(true));
     }});
 
     Assert.assertFalse(myFactory.createNuGetChecker(createTempFile()).equals(myFactory.createTeamCityChecker()));
@@ -103,7 +103,7 @@ public class CheckRequestModeFactoryTest extends BaseTestCase {
   @Test
   public void testModesEqual2() throws IOException {
     m.checking(new Expectations(){{
-      allowing(myInfo).isWindows(); will(returnValue(false));
+      allowing(myInfo).canStartNuGetProcesses(); will(returnValue(false));
     }});
 
     Assert.assertTrue(myFactory.createNuGetChecker(createTempFile()).equals(myFactory.createTeamCityChecker()));

@@ -55,7 +55,7 @@ public class PackageCheckEntryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       allowing(myTime).now(); will(returnValue(42L));
       allowing(mySettings).getPackageCheckRequestIdleRemoveInterval(with(any(long.class))); will(returnValue(45L));
-      allowing(mySystemInfo).isWindows(); will(returnValue(true));
+      allowing(mySystemInfo).canStartNuGetProcesses(); will(returnValue(true));
     }});
   }
 

@@ -42,6 +42,10 @@ public class SystemInfoImpl implements SystemInfo {
     myRegistry = registry;
   }
 
+  public boolean canStartNuGetProcesses() {
+    return isWindows() && isDotNetFrameworkAvailable();
+  }
+
   public boolean isWindows() {
     return com.intellij.openapi.util.SystemInfo.isWindows;
   }
@@ -51,6 +55,14 @@ public class SystemInfoImpl implements SystemInfo {
       myHasDotNetFramework = checkDotNetFramework4Installed();
     }
     return myHasDotNetFramework;
+  }
+
+  @NotNull
+  public String getNotAvailableMessage() {
+    if (!isWindows()) return "TeamCity server is running under non-Windows OS.";
+    if (!isDotNetFrameworkAvailable()) return "TeamCity server has no Microsoft .NET Framework 4.0 installed.";
+
+    return "System environment is compatible to start NuGet processes.";
   }
 
   private boolean checkDotNetFramework4Installed() {
