@@ -62,9 +62,8 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
   }
 
   @Override
-  public boolean isAvailable(@NotNull final HttpServletRequest request) {
-    final SBuild build = getBuild(request);
-    return super.isAvailable(request) && getPackagesFile(build) != null;
+  protected boolean isAvailable(@NotNull HttpServletRequest request, @NotNull SBuild build) {
+    return super.isAvailable(request, build) && getPackagesFile(build) != null;
   }
 
   @Nullable
@@ -78,7 +77,9 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
 
 
   @Override
-  protected void fillModel(final Map model, final HttpServletRequest request, @Nullable final SBuild build) {
+  protected void fillModel(@NotNull final Map<String, Object> model,
+                           @NotNull final HttpServletRequest request,
+                           @Nullable final SBuild build) {
     final Map<String, String> packages = new TreeMap<String, String>();
     //noinspection unchecked
     model.put("nugetPackages", packages);
