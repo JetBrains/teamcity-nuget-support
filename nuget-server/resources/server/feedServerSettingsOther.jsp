@@ -15,7 +15,11 @@
   --%>
 
 <%@ include file="/include-internal.jsp" %>
+<jsp:useBean id="canStartNuGetProcessesMessage" type="java.lang.String" scope="request"/>
 
 <h2 class="noBorder">TeamCity as NuGet Feed</h2>
-<p>TeamCity support NuGet Feed server only when it started under Windows with .Net Framework 4.0 installed.</p>
+<p>
+  <c:out value="${canStartNuGetProcessesMessage}"/>
+  NuGet Feed server is not supported under current environment
+</p>
 

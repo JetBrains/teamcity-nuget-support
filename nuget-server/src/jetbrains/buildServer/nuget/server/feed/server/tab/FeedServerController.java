@@ -78,7 +78,9 @@ public class FeedServerController extends BaseController {
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
     if (!mySystemInfo.canStartNuGetProcesses()) {
-      return new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsOther.jsp"));
+      final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsOther.jsp"));
+      mv.getModel().put("canStartNuGetProcessesMessage", mySystemInfo.getNotAvailableMessage());
+      return mv;
     }
 
     final ModelAndView modelAndView = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsWindows.jsp"));
