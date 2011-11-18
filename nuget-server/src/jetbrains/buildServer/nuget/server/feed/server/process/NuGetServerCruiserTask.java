@@ -53,7 +53,7 @@ public class NuGetServerCruiserTask {
   }
 
   public void checkNuGetServerState() {
-    if (!mySystemInfo.isWindows()) {
+    if (!mySystemInfo.canStartNuGetProcesses()) {
       return;
     }
 

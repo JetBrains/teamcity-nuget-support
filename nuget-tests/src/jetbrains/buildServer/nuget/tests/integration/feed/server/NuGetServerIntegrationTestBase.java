@@ -158,7 +158,7 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
       allowing(settings).getPackagesControllerUrl(); will(returnValue(myHttpServerUrl));
       allowing(settings).getLogFilePath(); will(returnValue(myLogsFile));
 
-      allowing(systemInfo).isWindows(); will(returnValue(true));
+      allowing(systemInfo).canStartNuGetProcesses(); will(returnValue(true));
     }});
 
     myNuGetServer = new NuGetServerRunnerImpl(settings, myTokens, new NuGetExecutorImpl(myProvider, systemInfo));

@@ -67,7 +67,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
   @Test
   public void test_feed_disabled_by_default() {
     m.checking(new Expectations(){{
-      allowing(mySystemInfo).isWindows(); will(returnValue(true));
+      allowing(mySystemInfo).canStartNuGetProcesses(); will(returnValue(true));
     }});
 
     Assert.assertFalse(mySettings.isNuGetFeedEnabled());
@@ -76,7 +76,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
   @Test
   public void test_feed_enable() {
     m.checking(new Expectations(){{
-      allowing(mySystemInfo).isWindows(); will(returnValue(true));
+      allowing(mySystemInfo).canStartNuGetProcesses(); will(returnValue(true));
     }});
 
     mySettings.setNuGetFeedEnabled(true);
@@ -86,7 +86,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
   @Test
   public void test_feed_enable_linux() {
     m.checking(new Expectations(){{
-      allowing(mySystemInfo).isWindows(); will(returnValue(false));
+      allowing(mySystemInfo).canStartNuGetProcesses(); will(returnValue(false));
     }});
 
     mySettings.setNuGetFeedEnabled(true);

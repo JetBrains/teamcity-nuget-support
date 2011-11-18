@@ -94,7 +94,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   }
 
   public boolean isNuGetFeedEnabled() {
-    if (!mySystemInfo.isWindows()) return false;
+    if (!mySystemInfo.canStartNuGetProcesses()) return false;
 
     return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
       public Boolean executeAction(@NotNull NuGetSettingsReader action) {

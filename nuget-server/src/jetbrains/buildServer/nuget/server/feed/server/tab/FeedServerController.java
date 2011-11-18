@@ -77,7 +77,7 @@ public class FeedServerController extends BaseController {
   @Override
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
-    if (!mySystemInfo.isWindows()) {
+    if (!mySystemInfo.canStartNuGetProcesses()) {
       return new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsOther.jsp"));
     }
 
