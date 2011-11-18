@@ -22,4 +22,10 @@ package jetbrains.buildServer.nuget.server.util;
  */
 public interface SystemInfo {
   boolean isWindows();
+
+
+  /**
+   * @return true if .NET Framework 4.0 is detected on the machine
+   */
+  boolean isDotNetFrameworkAvailable();
 }
