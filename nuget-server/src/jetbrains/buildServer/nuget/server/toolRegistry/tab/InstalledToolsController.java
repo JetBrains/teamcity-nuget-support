@@ -39,6 +39,7 @@ import java.util.*;
  * Date: 10.08.11 20:38
  */
 public class InstalledToolsController extends BaseController implements SettingsSection {
+  public static final String SETTINGS_PAGE_ID = "nuget-exe";
   private final String myPath;
   private final NuGetToolManager myToolsManager;
   private final InstallToolController myInstaller;
@@ -69,7 +70,7 @@ public class InstalledToolsController extends BaseController implements Settings
 
   @NotNull
   public String getSectionId() {
-    return "nuget-exe";
+    return SETTINGS_PAGE_ID;
   }
 
   @NotNull

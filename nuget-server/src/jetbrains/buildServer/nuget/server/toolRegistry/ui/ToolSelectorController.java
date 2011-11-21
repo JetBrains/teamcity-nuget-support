@@ -18,9 +18,11 @@ package jetbrains.buildServer.nuget.server.toolRegistry.ui;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.BasePropertiesBean;
+import jetbrains.buildServer.nuget.server.settings.SettingsSection;
 import jetbrains.buildServer.nuget.server.settings.tab.ServerSettingsTab;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
+import jetbrains.buildServer.nuget.server.toolRegistry.tab.InstalledToolsController;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -81,7 +83,7 @@ public class ToolSelectorController extends BaseController {
       mv.getModel().put("clazz", safe(request.getParameter("class")));
       mv.getModel().put("style", safe(request.getParameter("style")));
       mv.getModel().put("items", tools);
-      mv.getModel().put("settingsUrl", "/admin/serverConfig.html?init=1&tab=" + ServerSettingsTab.TAB_ID);
+      mv.getModel().put("settingsUrl", "/admin/serverConfig.html?init=1&tab=" + ServerSettingsTab.TAB_ID + "&" + SettingsSection.SELECTED_SECTION_KEY + "=" + InstalledToolsController.SETTINGS_PAGE_ID) ;
       return mv;
     }
   }

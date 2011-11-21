@@ -26,6 +26,8 @@ import java.util.Collection;
  *         Date: 26.10.11 18:28
  */
 public interface SettingsSection {
+  final String SELECTED_SECTION_KEY = "nuget-section";
+
   @NotNull
   String getSectionId();
 

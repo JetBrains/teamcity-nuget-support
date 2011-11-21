@@ -36,7 +36,6 @@ public class ServerSettingsTab extends SimpleCustomTab {
   public static final String TAB_ID = "nugetServerSettingsTab";
   private final PermissionChecker myChecker;
   private final Collection<SettingsSection> mySections = new ArrayList<SettingsSection>();
-  private final String SELECTED_SECTION_KEY = "nuget-section";
 
   public ServerSettingsTab(@NotNull final PagePlaces pagePlaces,
                            @NotNull final PluginDescriptor descriptor,
@@ -73,12 +72,12 @@ public class ServerSettingsTab extends SimpleCustomTab {
 
     model.put("nuget_teamcity_include_controllers", mySections);
     model.put("nuget_teamcity_include_selected", getSelectedSection(request));
-    model.put("nuget_teamcity_include_key", SELECTED_SECTION_KEY);
+    model.put("nuget_teamcity_include_key", SettingsSection.SELECTED_SECTION_KEY);
   }
 
   @NotNull
   private SettingsSection getSelectedSection(@NotNull final HttpServletRequest request) {
-    final String parameter = request.getParameter(SELECTED_SECTION_KEY);
+    final String parameter = request.getParameter(SettingsSection.SELECTED_SECTION_KEY);
 
     if (!StringUtil.isEmptyOrSpaces(parameter)) {
       for (SettingsSection section : mySections) {
