@@ -42,6 +42,11 @@ public class FeedServerSettingsSection implements SettingsSection {
   }
 
   @NotNull
+  public String getSectionName() {
+    return "NuGet Server";
+  }
+
+  @NotNull
   public String getIncludePath() {
     return myPath;
   }

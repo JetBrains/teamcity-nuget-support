@@ -30,6 +30,9 @@ public interface SettingsSection {
   String getSectionId();
 
   @NotNull
+  String getSectionName();
+
+  @NotNull
   String getIncludePath();
 
   @NotNull

@@ -15,14 +15,25 @@
   --%>
 
 <%@ include file="/include-internal.jsp" %>
-<jsp:useBean id="nuget_teamcity_include_controllers" scope="request" type="java.util.Collection<java.lang.String>"/>
+<jsp:useBean id="nuget_teamcity_include_controllers" scope="request" type="java.util.Collection<jetbrains.buildServer.nuget.server.settings.SettingsSection >"/>
+<jsp:useBean id="nuget_teamcity_include_selected" scope="request" type="jetbrains.buildServer.nuget.server.settings.SettingsSection"/>
+<jsp:useBean id="nuget_teamcity_include_key" scope="request" type="java.lang.String"/>
 
-<c:forEach items="${nuget_teamcity_include_controllers}" var="nugetSettingsPage">
-  <div style="padding-top: 1.5em;">
-    <!-- start of NuGet Settings page: <c:out value="${nugetSettingsPage}"/> -->
-    <jsp:include page="${nugetSettingsPage}"/>
-    <!-- end of NuGet Settings page: <c:out value="${nugetSettingsPage}"/> -->
-  </div>
-</c:forEach>
+<div style="padding: 1em 0 0.5em 0;">
+  <c:forEach items="${nuget_teamcity_include_controllers}" var="nugetSettingsPage" varStatus="step">
+    <c:choose>
+      <c:when test="${nuget_teamcity_include_selected.sectionId eq nugetSettingsPage.sectionId}">
+        <strong><c:out value="${nugetSettingsPage.sectionName}"/></strong>
+      </c:when>
+      <c:otherwise>
+        <a href="<c:url value='/admin/serverConfig.html?tab=nugetServerSettingsTab&${nuget_teamcity_include_key}=${nugetSettingsPage.sectionId}'/>"><c:out value="${nugetSettingsPage.sectionName}"/></a>
+      </c:otherwise>
+    </c:choose>
+    <c:if test="${not step.last}"> | </c:if>
+  </c:forEach>
+</div>
 
+<!-- start of NuGet Settings page: <c:out value="${nuget_teamcity_include_selected}"/> -->
+<jsp:include page="${nuget_teamcity_include_selected.includePath}"/>
+<!-- end of NuGet Settings page: <c:out value="${nuget_teamcity_include_selected}"/> -->
 

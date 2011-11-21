@@ -73,6 +73,11 @@ public class InstalledToolsController extends BaseController implements Settings
   }
 
   @NotNull
+  public String getSectionName() {
+    return "NuGet Commandline";
+  }
+
+  @NotNull
   public String getIncludePath() {
     return getPath();
   }

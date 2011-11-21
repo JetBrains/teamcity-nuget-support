@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.settings.tab;
 
 import jetbrains.buildServer.nuget.server.settings.SettingsSection;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,8 +35,8 @@ import java.util.Map;
 public class ServerSettingsTab extends SimpleCustomTab {
   public static final String TAB_ID = "nugetServerSettingsTab";
   private final PermissionChecker myChecker;
-  @NotNull
-  private final Collection<String> myIncludes = new ArrayList<String>();
+  private final Collection<SettingsSection> mySections = new ArrayList<SettingsSection>();
+  private final String SELECTED_SECTION_KEY = "nuget-section";
 
   public ServerSettingsTab(@NotNull final PagePlaces pagePlaces,
                            @NotNull final PluginDescriptor descriptor,
@@ -56,7 +57,7 @@ public class ServerSettingsTab extends SimpleCustomTab {
       for (String css : section.getJsFiles()) {
         addJsFile(css);
       }
-      myIncludes.add(section.getIncludePath());
+      mySections.add(section);
     }
     register();
   }
@@ -69,7 +70,21 @@ public class ServerSettingsTab extends SimpleCustomTab {
   @Override
   public void fillModel(@NotNull Map<String, Object> model, @NotNull HttpServletRequest request) {
     super.fillModel(model, request);
-    model.put("nuget_teamcity_include_controllers", myIncludes);
 
+    model.put("nuget_teamcity_include_controllers", mySections);
+    model.put("nuget_teamcity_include_selected", getSelectedSection(request));
+    model.put("nuget_teamcity_include_key", SELECTED_SECTION_KEY);
+  }
+
+  @NotNull
+  private SettingsSection getSelectedSection(@NotNull final HttpServletRequest request) {
+    final String parameter = request.getParameter(SELECTED_SECTION_KEY);
+
+    if (!StringUtil.isEmptyOrSpaces(parameter)) {
+      for (SettingsSection section : mySections) {
+        if (section.getSectionId().equals(parameter)) return section;
+      }
+    }
+    return mySections.iterator().next();
   }
 }
