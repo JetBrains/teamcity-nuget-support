@@ -79,20 +79,7 @@
   </c:choose>
 </bs:refreshable>
 
-<h3>Recent NuGet Server log:</h3>
-<bs:refreshable containerId="nugetServerLogs" pageUrl="${nugetStatusRefreshFullUrl}">
-  <div style="width: 75%">
-    <pre id="nugetServerLogView" style="padding: 1em; font-size: 90%; overflow: auto; height: 20em; background-color: #eee;"><c:out value="${serverStatus.logsSlice}"/></pre>
-    <a href="<c:url value='/admin/serverConfig.html?tab=diagnostic&init=1&subTab=logs'/>">See all server logs </a>
-    |
-    <a href="<c:url value='/get/file/serverLogs/teamcity-nuget-server.log'/>">Download full log</a>
-    |
-    <a href="#" onclick="BS.NuGet.FeedServer.refreshLog(); return false;">Refresh</a>
-  </div>
-  <script type="text/javascript">
-    var el = $('nugetServerLogView');
-    el.scrollTop = el.scrollHeight;
-  </script>
-</bs:refreshable>
+<br />
+<a href="<c:url value='/admin/serverConfig.html?init=1&tab=diagnostic&subTab=logs&file=teamcity-nuget-server.log'/>">See NuGet Server logs</a>
 
 </div>
