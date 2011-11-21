@@ -31,7 +31,6 @@
   plugin<bs:s val="${installedPluginsCount}"/> installed.
 </p>
 
-<h2 class="noBorder">Installed NuGet Versions</h2>
   <c:choose>
     <c:when test="${installedPluginsCount eq 0}">
       <div>There are no installed NuGet.exe</div>
