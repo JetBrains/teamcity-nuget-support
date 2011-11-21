@@ -99,6 +99,7 @@ public class FeedServerController extends BaseController {
     modelAndView.getModel().put("serverStatus", myStatusHolder.getStatus());
     modelAndView.getModel().put("imagesBase", myDescriptor.getPluginResourcesPath("server/img"));
     modelAndView.getModel().put("feedUrl", mySettings.getNuGetFeedControllerPath());
+    modelAndView.getModel().put("serverEnabled", mySettings.isNuGetFeedEnabled());
 
     return modelAndView;
   }

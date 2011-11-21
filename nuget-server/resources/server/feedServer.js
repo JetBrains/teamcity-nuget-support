@@ -15,55 +15,71 @@
  */
 
 if (!BS) BS = {};
- if (!BS.NuGet) BS.NuGet = {};
+if (!BS.NuGet) BS.NuGet = {};
 
- BS.NuGet.FeedServer = {
-   Form : OO.extend(BS.AbstractWebForm, {
-     formElement : function() {
-       return $('nugetSettingsForm');
-     },
+BS.NuGet.FeedServer = {
+  refreshStatus : function () {
+    $('nugetServerStatus').refresh();
+  },
 
-     saveForm : function() {
-       var that = this;
-       BS.Util.show($('nugetSettingsSaving'));
-       BS.Util.hide($('nugetSettingsSuccessMessage'));
-       BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
-         onCompleteSave: function() {
-           BS.Util.hide($('nugetSettingsSaving'));
-           BS.Util.reenableForm(that.formElement());
-           BS.NuGet.FeedServer.refreshStatus();
-           BS.Util.show($('nugetSettingsSuccessMessage'));
-         }
-       }));
-       return false;
-     }
-   }),
+  registerStatusRefresh : function () {
+    var that = this;
+    setTimeout(function () {
+      that.refreshStatus();
+      that.registerStatusRefresh();
+    }, 1000);
+  },
 
-   refreshStatus : function() {
-     $('nugetServerStatus').refresh();
-   },
+  refreshLog : function () {
+    $('nugetServerLogs').refresh();
+  },
 
-   registerStatusRefresh : function() {
-     var that = this;
-     setTimeout(function() {
-       that.refreshStatus();
-       that.registerStatusRefresh();
-     }, 1000);
-   },
+  disableFeedServer : function() {
+    BS.NuGet.FeedServer.DisableForm.show();
+  },
 
-   persistCheckbox : function() {
-     setTimeout(function() {
-       BS.NuGet.FeedServer.Form.saveFormOnCheckbox();
-     }, 100);
-   },
+  enableFeedServer : function() {
+    BS.NuGet.FeedServer.EnableForm.show();
+  }
+};
 
-   refreshLog : function() {
-     $('nugetServerLogs').refresh();
-   }
- };
+BS.NuGet.FeedServer.EnableDisableForm = OO.extend(BS.PluginPropertiesForm, OO.extend(BS.AbstractModalDialog, {
+  getContainer : function () {
+    return $(this.formElement().id + 'Dialog');
+  },
 
- Event.observe(window, "load", function() {
-   BS.NuGet.FeedServer.registerStatusRefresh();
-   BS.Util.hide($('nugetSettingsSuccessMessage'));
- });
+  saveForm : function () {
+    var that = this;
+    BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
+      onCompleteSave : function () {
+        BS.Util.reenableForm(that.formElement());
+        BS.NuGet.FeedServer.refreshStatus();
+        $('nugetEnableDisable').refresh();
+        $('nugetServerStatus').refresh();
+        that.close();
+      }
+    }));
+    return false;
+  },
+
+  show : function() {
+    this.showCentered();
+  }
+}));
+
+BS.NuGet.FeedServer.EnableForm = OO.extend(BS.NuGet.FeedServer.EnableDisableForm, {
+  formElement : function () {
+    return $('nugetEnableFeed');
+  }
+});
+
+BS.NuGet.FeedServer.DisableForm = OO.extend(BS.NuGet.FeedServer.EnableDisableForm, {
+  formElement : function () {
+    return $('nugetDisableFeed');
+  }
+});
+
+Event.observe(window, "load", function () {
+  BS.NuGet.FeedServer.registerStatusRefresh();
+});
 

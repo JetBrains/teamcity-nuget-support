@@ -26,7 +26,7 @@
 
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
 
-
+<div style="padding-top: 2em;">
 
 <h2 class="noBorder">NuGet Server status:</h2>
 <p></p>
@@ -94,3 +94,5 @@
     el.scrollTop = el.scrollHeight;
   </script>
 </bs:refreshable>
+
+</div>

@@ -31,11 +31,13 @@ public class FeedServerSettingsSection implements SettingsSection {
   private final String myPath;
   private final String mySettingsPath;
   private final String myJSPath;
+  private final String myCssPath;
 
   public FeedServerSettingsSection(@NotNull PluginDescriptor descriptor) {
     myPath = descriptor.getPluginResourcesPath("feed/status.html");
     mySettingsPath = descriptor.getPluginResourcesPath("feed/settings.html");
     myJSPath = descriptor.getPluginResourcesPath("server/feedServer.js");
+    myCssPath = descriptor.getPluginResourcesPath("server/feedServer.css");
   }
 
   @NotNull
@@ -60,7 +62,7 @@ public class FeedServerSettingsSection implements SettingsSection {
 
   @NotNull
   public Collection<String> getCssFiles() {
-    return Collections.emptyList();
+    return Collections.singleton(myCssPath);
   }
 
   @NotNull
