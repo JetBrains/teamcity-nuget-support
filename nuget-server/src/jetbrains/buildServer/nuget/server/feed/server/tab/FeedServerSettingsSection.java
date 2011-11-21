@@ -30,10 +30,12 @@ import java.util.Collections;
 public class FeedServerSettingsSection implements SettingsSection {
   private final String myPath;
   private final String mySettingsPath;
+  private final String myJSPath;
 
   public FeedServerSettingsSection(@NotNull PluginDescriptor descriptor) {
     myPath = descriptor.getPluginResourcesPath("feed/status.html");
     mySettingsPath = descriptor.getPluginResourcesPath("feed/settings.html");
+    myJSPath = descriptor.getPluginResourcesPath("server/feedServer.js");
   }
 
   @NotNull
@@ -63,6 +65,6 @@ public class FeedServerSettingsSection implements SettingsSection {
 
   @NotNull
   public Collection<String> getJsFiles() {
-    return Collections.emptyList();
+    return Collections.singleton(myJSPath);
   }
 }
