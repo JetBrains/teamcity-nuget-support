@@ -27,6 +27,9 @@ import java.util.Collection;
  */
 public interface SettingsSection {
   @NotNull
+  String getSectionId();
+
+  @NotNull
   String getIncludePath();
 
   @NotNull

@@ -68,6 +68,11 @@ public class InstalledToolsController extends BaseController implements Settings
   }
 
   @NotNull
+  public String getSectionId() {
+    return "nuget-exe";
+  }
+
+  @NotNull
   public String getIncludePath() {
     return getPath();
   }
