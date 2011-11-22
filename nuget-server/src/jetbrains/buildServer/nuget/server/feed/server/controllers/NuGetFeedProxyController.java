@@ -92,6 +92,7 @@ public class NuGetFeedProxyController extends BaseController {
     final HttpRequestBase method = createRequest(request);
     method.setURI(new URI(baseFeed + path + (query != null ? ("?" + query) : "")));
     method.setHeader("X-TeamCityUrl", WebUtil.getRootUrl(request));
+    method.setHeader("X-TeamCityFeedBase", getFeedBaseUrl(request));
 
     final HttpResponse resp = myClient.execute(method);
     try {
@@ -122,6 +123,22 @@ public class NuGetFeedProxyController extends BaseController {
     } finally {
       method.abort();
     }
+  }
+
+  private String getFeedBaseUrl(@NotNull final HttpServletRequest request) {
+    String baseUrl = WebUtil.getPathWithoutContext(request);
+    if (!baseUrl.startsWith("/")) baseUrl = "/" + baseUrl;
+
+    int idx = baseUrl.indexOf(mySettings.getNuGetFeedControllerPath());
+    String infix = "";
+    if (idx > 0) {
+      infix = baseUrl.substring(0, idx);
+    }
+
+    String rootUrl = WebUtil.getRootUrl(request);
+    while(rootUrl.endsWith("/")) rootUrl = rootUrl.substring(0, rootUrl.length()-1);
+
+    return rootUrl + infix + mySettings.getNuGetFeedControllerPath();
   }
 
   @NotNull

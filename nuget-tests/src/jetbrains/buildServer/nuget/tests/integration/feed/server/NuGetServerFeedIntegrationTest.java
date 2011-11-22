@@ -25,12 +25,17 @@ import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -39,6 +44,34 @@ import java.util.Collection;
  *         Date: 21.10.11 17:38
  */
 public class NuGetServerFeedIntegrationTest extends NuGetServerFeedIntegrationTestBase {
+
+  @Test
+  public void test_feed_baseUri() throws Exception {
+    enableDebug();
+
+    final String packageId = "CommonServiceLocator";
+    final File responseFile = createTempFile();
+
+    final String name = packageId + ".1.0.nupkg";
+    renderPackagesResponseFile(responseFile, Paths.getTestDataPath("/packages/" + name));
+    registerHttpHandler(packagesFileHandler(responseFile));
+
+
+    final HttpGet getQuery = createGetQuery("/Packages()");
+    final String baseUrl = "http://teamcity-feed.base.url.local:5555/guestAuth/app/nuget/v1/FeedService.svc";
+    getQuery.addHeader("X-TeamCityFeedBase", baseUrl);
+    final String text = execute(getQuery, new ExecuteAction<String>() {
+      public String processResult(@NotNull HttpResponse response) throws IOException {
+        final HttpEntity entity = response.getEntity();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        entity.writeTo(bos);
+        return bos.toString("utf-8");
+      }
+    });
+
+    System.out.println("response: " + text);
+    Assert.assertTrue(text.contains("xml:base=\"" + baseUrl + "/\""));
+  }
 
   @Test
   public void testOnePackageFeed() throws Exception {

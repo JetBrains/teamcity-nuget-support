@@ -36,7 +36,6 @@ import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
-import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.apache.http.HttpEntity;
@@ -205,44 +204,60 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
   protected Runnable assertOwn() {
     return new Runnable() {
       public void run() {
-        final HttpGet get = myHttpMethods.createGet(myHttpServerUrl);
-        try {
-          final HttpResponse execute = nyHttpClient.execute(get);
-          final HttpEntity entity = execute.getEntity();
-          System.out.println("Own server Request: " + get.getRequestLine());
-          entity.writeTo(System.out);
-          System.out.println();
-          System.out.println();
+        final HttpGet get = createGetQuery("");
+        execute(get, new ExecuteAction<Object>() {
+          public Object processResult(@NotNull HttpResponse response) throws IOException {
+            final HttpEntity entity = response.getEntity();
+            System.out.println("Own server Request: " + get.getRequestLine());
+            entity.writeTo(System.out);
+            System.out.println();
+            System.out.println();
 
-          Assert.assertTrue(execute.getStatusLine().getStatusCode() == SC_OK);
-        } catch (IOException e) {
-          throw new RuntimeException("Failed to connect to " + get.getRequestLine() + ". " + e.getClass() + " " + e.getMessage(), e);
-        } finally {
-          get.abort();
-        }
+            Assert.assertTrue(response.getStatusLine().getStatusCode() == SC_OK);
+            return null;
+          }
+        });
       }
     };
+  }
+
+  @NotNull
+  protected HttpGet createGetQuery(@NotNull String req, @NotNull final NameValuePair... reqs) {
+    return myHttpMethods.createGet(myNuGetServerUrl + req, reqs);
+  }
+
+  protected interface ExecuteAction<T> {
+    T processResult(@NotNull HttpResponse response) throws IOException;
+  }
+
+  protected <T> T execute(@NotNull final HttpGet get, @NotNull final ExecuteAction<T> action) {
+    try {
+      final HttpResponse execute = nyHttpClient.execute(get);
+      return action.processResult(execute);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to connect to " + get.getRequestLine() + ". " + e.getClass() + " " + e.getMessage(), e);
+    } finally {
+      get.abort();
+    }
   }
 
   protected Runnable assert200(@NotNull final String req,
                                @NotNull final NameValuePair... reqs) {
     return new Runnable() {
       public void run() {
-        final HttpGet get = myHttpMethods.createGet(myNuGetServerUrl + req, reqs);
-        try {
-          final HttpResponse execute = nyHttpClient.execute(get);
-          final HttpEntity entity = execute.getEntity();
-          System.out.println("Request: " + get.getRequestLine());
-          entity.writeTo(System.out);
-          System.out.println();
-          System.out.println();
+        final HttpGet get = createGetQuery(req, reqs);
+        execute(get, new ExecuteAction<Object>() {
+          public Object processResult(@NotNull HttpResponse response) throws IOException {
+            final HttpEntity entity = response.getEntity();
+            System.out.println("Request: " + get.getRequestLine());
+            entity.writeTo(System.out);
+            System.out.println();
+            System.out.println();
 
-          Assert.assertTrue(execute.getStatusLine().getStatusCode() == SC_OK);
-        } catch (IOException e) {
-          ExceptionUtil.rethrowAsRuntimeException(e);
-        } finally {
-          get.abort();
-        }
+            Assert.assertTrue(response.getStatusLine().getStatusCode() == SC_OK);
+            return null;
+          }
+        });
       }
     };
   }
