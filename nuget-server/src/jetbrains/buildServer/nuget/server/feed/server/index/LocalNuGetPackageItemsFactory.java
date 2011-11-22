@@ -47,7 +47,9 @@ public class LocalNuGetPackageItemsFactory {
     InputStream is = null;
     try {
       is = new BufferedInputStream(file.getInputStream());
-      return Base64.encodeBase64String(DigestUtils.sha512(is));
+      final byte[] hash = DigestUtils.sha512(is);
+      //Buggy commons.codes added unnecessary newlines
+      return Base64.encodeBase64String(hash).replaceAll("[\r\n]+", "");
     } catch (IOException e) {
       throw new PackageLoadException("Failed to compute SHA-512 for " + file);
     } finally {
