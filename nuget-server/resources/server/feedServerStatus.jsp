@@ -26,10 +26,9 @@
 
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
 
-<div style="padding-top: 2em;">
+<h2 class="noBorder" style="padding-top:2em; padding-bottom: 1em;">NuGet Server status:</h2>
 
-<h2 class="noBorder">NuGet Server status:</h2>
-<p></p>
+<c:set var="isRunning" value="${false}"/>
 
 <bs:refreshable containerId="nugetServerStatus" pageUrl="${nugetStatusRefreshFullUrl}">
   <c:choose>
@@ -69,17 +68,30 @@
         Running
         <span class="smallNote" style="margin-left:1em">NuGet Feed server is running now.</span>
       </div>
-      <div>
-        NuGet Server private url: <strong><c:url value="${serverUrl}/httpAuth${feedUrl}"/></strong> (with Http Authorization)
-      </div>
-      <div>
-        NuGet Server public url: <strong><c:url value="${serverUrl}/guestAuth${feedUrl}"/></strong>
-      </div>
+      <c:set var="isRunning" value="${true}"/>
     </c:when>
   </c:choose>
+
+  <c:choose>
+    <c:when test="${isRunning}">
+      <h2 class="noBorder" style="padding-top: 2em;">NuGet Server Url:</h2>
+      <table class="runnerFormTable nugetUrls">
+        <tr>
+          <th>Private Url:</th>
+          <td>
+            <div><c:url value="${serverUrl}/httpAuth${feedUrl}"/></div>
+            <span class="smallNote">(with Http Authorization)</span>
+          </td>
+        </tr>
+        <tr>
+          <th>Public Url:</th>
+          <td><div><c:url value="${serverUrl}/guestAuth${feedUrl}"/></div></td>
+        </tr>
+      </table>
+    </c:when>
+    <c:otherwise>
+      See <a href="<c:url value='/admin/serverConfig.html?init=1&tab=diagnostic&subTab=logs&file=teamcity-nuget-server.log'/>">NuGet Server logs</a> for more details
+    </c:otherwise>
+  </c:choose>
+
 </bs:refreshable>
-
-<br />
-<a href="<c:url value='/admin/serverConfig.html?init=1&tab=diagnostic&subTab=logs&file=teamcity-nuget-server.log'/>">See NuGet Server logs</a>
-
-</div>

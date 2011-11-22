@@ -17,3 +17,16 @@
 .nugetEnableFeedDialog {
   width: 40em;
 }
+
+table.nugetUrls {
+  width: 50em;
+}
+
+table.nugetUrls td,
+table.nugetUrls th {
+  border: none;
+}
+
+table.nugetUrls td div {
+  font-weight: bold;
+}

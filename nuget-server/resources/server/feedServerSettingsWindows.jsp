@@ -27,18 +27,18 @@
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
 <c:set var="nugetSettingsPostFullUrl"><c:url value="${nugetSettingsPostUrl}"/></c:set>
 
-<h2 class="noBorder">TeamCity as NuGet Feed</h2>
-
 <bs:refreshable containerId="nugetEnableDisable" pageUrl="${nugetStatusRefreshFullUrl}">
-  NuGet Server is
-  <c:choose>
-    <c:when test="${serverEnabled}">
-      <strong>enabled</strong> <input type="button" value="Disable" onclick="return BS.NuGet.FeedServer.disableFeedServer();" />
-    </c:when>
-    <c:otherwise>
-      <strong>disabled</strong> <input type="button" value="Enable" onclick="return BS.NuGet.FeedServer.enableFeedServer();" />
-    </c:otherwise>
-  </c:choose>
+  <div style="padding-top:1em;">
+    NuGet Server is
+    <c:choose>
+      <c:when test="${serverEnabled}">
+        <strong>enabled</strong> <input type="button" value="Disable" onclick="return BS.NuGet.FeedServer.disableFeedServer();" />
+      </c:when>
+      <c:otherwise>
+        <strong>disabled</strong> <input type="button" value="Enable" onclick="return BS.NuGet.FeedServer.enableFeedServer();" />
+      </c:otherwise>
+    </c:choose>
+  </div>
 </bs:refreshable>
 
 <jsp:include page="feedServerStatus.jsp"/>
