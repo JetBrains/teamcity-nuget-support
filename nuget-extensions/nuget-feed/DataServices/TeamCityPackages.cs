@@ -15,6 +15,7 @@ using log4net;
 namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
+  [RewriteBaseUrlBehavior]
   public class TeamCityPackages : DataService<TeamCityPackagesContext>, IDataServiceStreamProvider, IServiceProvider
   {
     private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();

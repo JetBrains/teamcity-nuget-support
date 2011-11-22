@@ -104,6 +104,7 @@
       <Link>Shared\Log4netInitializer.cs</Link>
     </Compile>
     <Compile Include="DataServices\NuGetPingHandler.cs" />
+    <Compile Include="DataServices\RewriteBaseUrlBehavior.cs" />
     <Compile Include="DataServices\Routes.cs" />
     <Compile Include="DataServices\ServiceMessage.cs" />
     <Compile Include="Log4Net.cs" />

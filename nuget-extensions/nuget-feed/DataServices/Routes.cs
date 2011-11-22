@@ -11,6 +11,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 {
   public static class NuGetRoutes
   {
+    public const string NUGET_FEED_ROUTE = "nuget";
+
     [UsedImplicitly(ImplicitUseTargetFlags.Itself)]
     public static void Start()
     {
@@ -21,8 +23,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     {
       
       // The default route is http://{root}/nuget/Packages      
-      routes.Add("nuget",
-                 new ServiceRoute("nuget", new DataServiceHostFactory(), typeof (TeamCityPackages))
+      routes.Add(NUGET_FEED_ROUTE,
+                 new ServiceRoute(NUGET_FEED_ROUTE, new DataServiceHostFactory(), typeof (TeamCityPackages))
                    {
                      Defaults = new RouteValueDictionary {{"serviceType", "odata"}},
                      Constraints = new RouteValueDictionary {{"serviceType", "odata"}}
