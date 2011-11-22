@@ -79,13 +79,15 @@
         <tr>
           <th>Private Url:</th>
           <td>
-            <div><c:url value="${serverUrl}/httpAuth${feedUrl}"/></div>
+            <c:set var="url"><c:url value="${serverUrl}/httpAuth${feedUrl}"/></c:set>
+            <div><a href="${url}">${url}</a></div>
             <span class="smallNote">(with Http Authorization)</span>
           </td>
         </tr>
         <tr>
           <th>Public Url:</th>
-          <td><div><c:url value="${serverUrl}/guestAuth${feedUrl}"/></div></td>
+          <c:set var="url"><c:url value="${serverUrl}/guestAuth${feedUrl}"/></c:set>
+          <td><div><a href="${url}">${url}</a></div></td>
         </tr>
       </table>
     </c:when>
