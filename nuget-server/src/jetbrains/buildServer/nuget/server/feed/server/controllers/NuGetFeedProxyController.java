@@ -35,6 +35,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.net.URI;
 
 /**
@@ -64,6 +65,8 @@ public class NuGetFeedProxyController extends BaseController {
   @Override
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
+    LOG.debug("Feed request: " + WebUtil.createPathWithParameters(request));
+
     if (!mySettings.isNuGetFeedEnabled()) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed server is not switched on in server configuration");
     }
@@ -106,7 +109,14 @@ public class NuGetFeedProxyController extends BaseController {
         response.setContentType(contentTypeHeader.getValue());
       }
 
-      entity.writeTo(response.getOutputStream());
+      if (LOG.isDebugEnabled()) {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        entity.writeTo(bos);
+        LOG.debug("Returned from server: " + bos.toString("utf-8"));
+        response.getOutputStream().write(bos.toByteArray());
+      } else {
+        entity.writeTo(response.getOutputStream());
+      }
 
       return null;
     } finally {
