@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
@@ -27,12 +26,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MetadataControllersPathsImpl implements MetadataControllersPaths {
   private final PluginDescriptor myDescriptor;
-  private final NuGetServerRunnerTokens myTokens;
 
-  public MetadataControllersPathsImpl(@NotNull final PluginDescriptor descriptor,
-                                      @NotNull final NuGetServerRunnerTokens tokens) {
+  public MetadataControllersPathsImpl(@NotNull final PluginDescriptor descriptor) {
     myDescriptor = descriptor;
-    myTokens = tokens;
   }
 
   @NotNull
@@ -51,17 +47,8 @@ public class MetadataControllersPathsImpl implements MetadataControllersPaths {
   }
 
   @NotNull
-  public String getArtifactsDownloadUrlBase() {
-    return "/app/nuget-packages/";
-  }
-
-  @NotNull
-  public String getArtifactsDownloadUrlWithTokenBase() {
-    return getArtifactsDownloadUrlBase() + myTokens.getAccessToken() + "/";
-  }
-
-  @NotNull
   public String getArtifactDownloadUrl(@NotNull SBuild build, @NotNull String path) {
-    return getArtifactsDownloadUrlWithTokenBase() + build.getBuildId() + "/" + path;
+    while(path.startsWith("/")) path = path.substring(1);
+    return "/repository/download/" + build.getBuildTypeId() + "/" + build.getBuildId() + ":id/" + path;
   }
 }

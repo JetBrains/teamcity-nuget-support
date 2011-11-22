@@ -108,7 +108,7 @@ public class NuGetServerIntegrationTestBase extends BaseTestCase {
     myNuGetServerUrl = null;
 
     final PluginDescriptor descriptor = m.mock(PluginDescriptor.class);
-    myPaths = new MetadataControllersPathsImpl(descriptor, myTokens);
+    myPaths = new MetadataControllersPathsImpl(descriptor);
 
     m.checking(new Expectations() {{
       allowing(myProvider).getNuGetServerRunnerPath();

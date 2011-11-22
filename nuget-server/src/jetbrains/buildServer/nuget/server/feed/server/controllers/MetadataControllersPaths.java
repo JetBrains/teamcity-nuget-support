@@ -36,20 +36,8 @@ public interface MetadataControllersPaths {
   /**
    * @param build build
    * @param path artifact path
-   * @return [plugin]/packages-download/[token]/[buildId]/[artifact path]
+   * @return url to download
    */
   @NotNull
   String getArtifactDownloadUrl(@NotNull final SBuild build, @NotNull final String path);
-
-  /**
-   * @return [plugin]/packages-download/
-   */
-  @NotNull
-  String getArtifactsDownloadUrlBase();
-
-  /**
-   * @return [plugin]/packages-download/[token]/
-   */
-  @NotNull
-  String getArtifactsDownloadUrlWithTokenBase();
 }

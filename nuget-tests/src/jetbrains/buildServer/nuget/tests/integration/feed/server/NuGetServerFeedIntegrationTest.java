@@ -96,7 +96,7 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerFeedIntegrationTe
     final FeedPackage pkg = packages.iterator().next();
 
     final String downloadUrl = pkg.getDownloadUrl();
-    final String ending = myPaths.getArtifactsDownloadUrlWithTokenBase() + "42/some/package/download/" + name;
+    final String ending = "/repository/download/bt/42:id/some/package/download/" + name;
     Assert.assertTrue(downloadUrl.endsWith(ending), "actual url: " + downloadUrl + ", must end with " + ending);
   }
 
@@ -202,13 +202,12 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerFeedIntegrationTe
 
     registerHttpHandler(new HttpServerHandler() {
       public SimpleHttpServerBase.Response processRequest(@NotNull String requestLine, @Nullable String path) {
-        if ((myPaths.getArtifactsDownloadUrlWithTokenBase() + "/42/" + file1.getName()).equals(path)) {
+        if (("noppp" + "/42/" + file1.getName()).equals(path)) {
           return SimpleHttpServer.getFileResponse(file1, Arrays.asList("Content-Type: "));
         }
         return null;
       }
     });
-
 
     GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(NuGet.NuGet_1_5.getPath().getPath());

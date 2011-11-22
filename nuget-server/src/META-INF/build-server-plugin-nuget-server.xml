@@ -13,7 +13,6 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataController"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetPackageDownloadController"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerRunnerSettingsImpl"/>
