@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.tab;
 
-import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.BasePropertiesBean;
@@ -27,6 +26,7 @@ import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
+import jetbrains.buildServer.serverSide.impl.ServerSettings;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +46,7 @@ public class FeedServerController extends BaseController {
   @NotNull private final PluginDescriptor myDescriptor;
   @NotNull private final NuGetServerRunnerSettingsEx mySettings;
   @NotNull private final NuGetServerStatusHolder myStatusHolder;
-  @NotNull private final RootUrlHolder myRootUrl;
+  @NotNull private final ServerSettings myServerSettings;
   @NotNull private final SystemInfo mySystemInfo;
 
   public FeedServerController(@NotNull final AuthorizationInterceptor auth,
@@ -56,13 +56,13 @@ public class FeedServerController extends BaseController {
                               @NotNull final PluginDescriptor descriptor,
                               @NotNull final NuGetServerRunnerSettingsEx settings,
                               @NotNull final NuGetServerStatusHolder holder,
-                              @NotNull final RootUrlHolder rootUrl,
+                              @NotNull final ServerSettings serverSettings,
                               @NotNull final SystemInfo systemInfo) {
     mySection = section;
     myDescriptor = descriptor;
     mySettings = settings;
     myStatusHolder = holder;
-    myRootUrl = rootUrl;
+    myServerSettings = serverSettings;
     mySystemInfo = systemInfo;
     final String myPath = section.getIncludePath();
 
@@ -93,13 +93,14 @@ public class FeedServerController extends BaseController {
     properties.put(FeedServerContants.NUGET_SERVER_URL, url);
 
     modelAndView.getModel().put("propertiesBean", new BasePropertiesBean(properties));
-    modelAndView.getModel().put("serverUrl", myRootUrl.getRootUrl());
+    modelAndView.getModel().put("serverUrl", myServerSettings.getRootUrl());
     modelAndView.getModel().put("nugetStatusRefreshUrl", mySection.getIncludePath());
     modelAndView.getModel().put("nugetSettingsPostUrl", mySection.getSettingsPath());
     modelAndView.getModel().put("serverStatus", myStatusHolder.getStatus());
     modelAndView.getModel().put("imagesBase", myDescriptor.getPluginResourcesPath("server/img"));
     modelAndView.getModel().put("feedUrl", mySettings.getNuGetFeedControllerPath());
     modelAndView.getModel().put("serverEnabled", mySettings.isNuGetFeedEnabled());
+    modelAndView.getModel().put("isGuestEnabled", myServerSettings.isGuestLoginAllowed());
 
     return modelAndView;
   }

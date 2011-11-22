@@ -22,6 +22,7 @@
 <jsp:useBean id="imagesBase" scope="request" type="java.lang.String" />
 <jsp:useBean id="serverStatus" scope="request" type="jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus" />
 <jsp:useBean id="feedUrl" scope="request" type="java.lang.String" />
+<jsp:useBean id="isGuestEnabled" type="java.lang.Boolean" scope="request"/>
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerContants"/>
 
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
@@ -86,8 +87,17 @@
         </tr>
         <tr>
           <th>Public Url:</th>
-          <c:set var="url"><c:url value="${serverUrl}/guestAuth${feedUrl}"/></c:set>
-          <td><div><a href="${url}">${url}</a></div></td>
+          <td>
+          <c:choose>
+            <c:when test="${not isGuestEnabled}">
+              <div>You need to allow to login as a guest user in TeamCity server settings</div>
+            </c:when>
+            <c:otherwise>
+              <c:set var="url"><c:url value="${serverUrl}/guestAuth${feedUrl}"/></c:set>
+              <div><a href="${url}">${url}</a></div>
+            </c:otherwise>
+          </c:choose>
+          </td>
         </tr>
       </table>
     </c:when>
