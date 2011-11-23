@@ -31,6 +31,11 @@
   plugin<bs:s val="${installedPluginsCount}"/> installed.
 </p>
 
+<p>
+  Installed NuGet.exe commandline tools will be automatically
+  distributed among build agents.
+</p>
+
   <c:choose>
     <c:when test="${installedPluginsCount eq 0}">
       <div>There is no installed NuGet.exe</div>
