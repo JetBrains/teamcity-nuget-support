@@ -98,7 +98,8 @@ public class FeedServerController extends BaseController {
     modelAndView.getModel().put("nugetSettingsPostUrl", mySection.getSettingsPath());
     modelAndView.getModel().put("serverStatus", myStatusHolder.getStatus());
     modelAndView.getModel().put("imagesBase", myDescriptor.getPluginResourcesPath("server/img"));
-    modelAndView.getModel().put("feedUrl", mySettings.getNuGetFeedControllerPath());
+    modelAndView.getModel().put("privateFeedUrl", mySettings.getNuGetHttpAuthFeedControllerPath());
+    modelAndView.getModel().put("publicFeedUrl", mySettings.getNuGetGuestAuthFeedControllerPath());
     modelAndView.getModel().put("serverEnabled", mySettings.isNuGetFeedEnabled());
     modelAndView.getModel().put("isGuestEnabled", myServerSettings.isGuestLoginAllowed());
 

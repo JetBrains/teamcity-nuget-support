@@ -20,7 +20,6 @@
 <jsp:useBean id="serverUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="nugetStatusRefreshUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="nugetSettingsPostUrl" scope="request" type="java.lang.String"/>
-<jsp:useBean id="feedUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="serverEnabled" type="java.lang.Boolean" scope="request"/>
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerContants"/>
 

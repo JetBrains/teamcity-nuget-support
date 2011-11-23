@@ -66,11 +66,13 @@ public class FeedServerSettingsController extends BaseController {
       return null;
     }
 
-    final String url = request.getParameter("prop:" + FeedServerContants.NUGET_SERVER_URL);
-    if (StringUtil.isEmptyOrSpaces(url)) {
-      mySettings.setDefaultTeamCityBaseUrl();
-    } else {
-      mySettings.setTeamCityBaseUrl(url);
+    if (Boolean.TRUE.equals(param)) {
+      final String url = request.getParameter("prop:" + FeedServerContants.NUGET_SERVER_URL);
+      if (StringUtil.isEmptyOrSpaces(url)) {
+        mySettings.setDefaultTeamCityBaseUrl();
+      } else {
+        mySettings.setTeamCityBaseUrl(url);
+      }
     }
 
     mySettings.setNuGetFeedEnabled(param);
