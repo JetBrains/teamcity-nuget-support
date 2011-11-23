@@ -41,4 +41,8 @@ public class RecentNuGetRequests {
   public Collection<String> getRecentRequests() {
     return new TreeSet<String>(myRequests.keySet());
   }
+
+  public int getTotalRequests() {
+    return myRequests.keySet().size();
+  }
 }

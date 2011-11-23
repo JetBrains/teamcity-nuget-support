@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
+import jetbrains.buildServer.nuget.server.feed.server.controllers.RecentNuGetRequests;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsProvider;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsPublisher;
 import jetbrains.buildServer.usageStatistics.presentation.UsageStatisticsFormatter;
@@ -29,21 +30,27 @@ import org.jetbrains.annotations.Nullable;
  * Date: 23.11.11 20:42
  */
 public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvider, UsageStatisticsPresentationProvider {
-  public static final String KEY = "jetbrains.nuget.server";
+  public static final String SERVER_ENABLED_KEY = "jetbrains.nuget.server";
+  public static final String TOTAL_REQUESTS = "jetbrains.nuget.differentRequests";
   private final NuGetServerRunnerSettings mySettings;
+  @NotNull
+  private final RecentNuGetRequests myRequests;
 
-  public NuGetServerUsageStatisticsProvider(@NotNull final NuGetServerRunnerSettings settings) {
+  public NuGetServerUsageStatisticsProvider(@NotNull final NuGetServerRunnerSettings settings,
+                                            @NotNull final RecentNuGetRequests requests) {
     mySettings = settings;
+    myRequests = requests;
   }
 
   public void accept(@NotNull UsageStatisticsPublisher publisher) {
     if (mySettings.isNuGetFeedEnabled()) {
-      publisher.publishStatistic(KEY, "enabled");
+      publisher.publishStatistic(SERVER_ENABLED_KEY, "enabled");
+      publisher.publishStatistic(TOTAL_REQUESTS, myRequests.getTotalRequests());
     }
   }
 
   public void accept(@NotNull UsageStatisticsPresentationManager presentationManager) {
-    presentationManager.applyPresentation(KEY, "NuGet Feed Server", "NuGet", new UsageStatisticsFormatter() {
+    presentationManager.applyPresentation(SERVER_ENABLED_KEY, "NuGet Feed Server", "NuGet", new UsageStatisticsFormatter() {
       @NotNull
       public String format(@Nullable Object statisticValue) {
         return statisticValue == null ? "disabled" : statisticValue.toString();
