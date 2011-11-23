@@ -35,7 +35,7 @@ import java.util.Map;
 public abstract class NuGetRunType extends RunType {
   private final PluginDescriptor myDescriptor;
 
-  protected NuGetRunType(PluginDescriptor descriptor) {
+  protected NuGetRunType(@NotNull final PluginDescriptor descriptor) {
     myDescriptor = descriptor;
   }
 
