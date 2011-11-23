@@ -47,16 +47,19 @@ public class NuGetFeedProxyController extends BaseController {
 
   @NotNull private final FeedClient myClient;
   @NotNull private final NuGetServerRunnerSettings mySettings;
+  @NotNull private final RecentNuGetRequests myRequestsList;
   @NotNull private final NuGetServerUri myUri;
   @NotNull private final String myNuGetPath;
 
   public NuGetFeedProxyController(@NotNull final WebControllerManager web,
                                   @NotNull final FeedClient client,
                                   @NotNull final NuGetServerUri uri,
-                                  @NotNull final NuGetServerRunnerSettings settings) {
+                                  @NotNull final NuGetServerRunnerSettings settings,
+                                  @NotNull final RecentNuGetRequests requestsList) {
     myUri = uri;
     myClient = client;
     mySettings = settings;
+    myRequestsList = requestsList;
     myNuGetPath = settings.getNuGetFeedControllerPath();
 
     web.registerController(myNuGetPath + "/**", this);
@@ -90,7 +93,9 @@ public class NuGetFeedProxyController extends BaseController {
     final String query = request.getQueryString();
 
     final HttpRequestBase method = createRequest(request);
-    method.setURI(new URI(baseFeed + path + (query != null ? ("?" + query) : "")));
+    final String pathAndQuery = path + (query != null ? ("?" + query) : "");
+    myRequestsList.reportFeedRequest(pathAndQuery);
+    method.setURI(new URI(baseFeed + pathAndQuery));
     final String baseUrl = getFeedUrlBase(request);
 
     method.setHeader("X-TeamCityUrl", baseUrl);

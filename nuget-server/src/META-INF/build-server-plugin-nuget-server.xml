@@ -12,6 +12,8 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataController"/>
 
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.RecentNuGetRequests"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedRequestsController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl"/>
@@ -35,9 +37,7 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsSection"/>
-
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.SettingsHashProvider"/>
-  
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerMyTools"/>
 
   <!--stats -->
