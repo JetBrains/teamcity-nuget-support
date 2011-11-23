@@ -63,7 +63,8 @@ public class PackageWriterImpl implements PackagesWriter {
 
     mySerializer.serializePackage(
             entry.getMetadata(),
-            build,
+            entry.getMetadata().get(PackagesIndex.TEAMCITY_BUILD_TYPE_ID),
+            entry.getBuildId(),
             isLatestVersion,
             writer
     );

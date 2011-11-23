@@ -17,13 +17,13 @@
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
-import jetbrains.buildServer.util.Dates;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
 
@@ -39,7 +39,8 @@ public class PackageInfoSerializer {
   }
 
   public void serializePackage(@NotNull final Map<String, String> pacakgeParameters,
-                               @NotNull final SFinishedBuild build,
+                               @NotNull final String buildTypeId,
+                               final long buildId,
                                final boolean isLatestVersion,
                                @NotNull final Writer writer) throws IOException {
 
@@ -49,24 +50,18 @@ public class PackageInfoSerializer {
     parameters.putAll(pacakgeParameters);
 
     final String relPath = parameters.get(TEAMCITY_ARTIFACT_RELPATH);
-    parameters.put("TeamCityDownloadUrl", myPaths.getArtifactDownloadUrl(build.getBuildTypeId(), build.getBuildId(), relPath));
+    parameters.put("TeamCityDownloadUrl", myPaths.getArtifactDownloadUrl(buildTypeId, buildId, relPath));
     //TBD: parameters.put("ReleaseNotes", "");
     //TBD: parameters.put("Copyright", "");
     parameters.put("IsLatestVersion", String.valueOf(isLatestVersion));
-    parameters.put("LastUpdated", formatDate(build.getFinishDate()));
 
     //extra:
-    parameters.put("TeamCityBuildId", String.valueOf(build.getBuildId()));
+    parameters.put("TeamCityBuildId", String.valueOf(buildId));
 
     ///it should return same set of parameters as in JetBrains.TeamCity.NuGet.Feed.Repo.TeamCityPackage .NET side class
     writer.write(ServiceMessage.asString("package", parameters));
   }
 
-  @NotNull
-  private String formatDate(@NotNull final Date date) {
-    //TODO:fix timezone printing
-    return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
-  }
 
   private static final Comparator<String> COMPARER = new Comparator<String>() {
     private int power(@NotNull String key) {
