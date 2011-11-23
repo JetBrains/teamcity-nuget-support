@@ -64,7 +64,7 @@
       </table>
     </c:otherwise>
   </c:choose>
-  <div class="addNew" style="padding-top: 1em;">
+  <div class="addNew" style="margin-top: 1em;">
     <a href="#" onclick="return BS.NuGet.Tools.InstallPopup.show();">
       Install
       <c:if test="${installedPluginsCount gt 0}">additional versions of</c:if>
