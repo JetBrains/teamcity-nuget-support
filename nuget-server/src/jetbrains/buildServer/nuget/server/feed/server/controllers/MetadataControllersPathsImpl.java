@@ -47,8 +47,8 @@ public class MetadataControllersPathsImpl implements MetadataControllersPaths {
   }
 
   @NotNull
-  public String getArtifactDownloadUrl(@NotNull SBuild build, @NotNull String path) {
+  public String getArtifactDownloadUrl(@NotNull String buildTypeId, long buildId, @NotNull String path) {
     while(path.startsWith("/")) path = path.substring(1);
-    return "/repository/download/" + build.getBuildTypeId() + "/" + build.getBuildId() + ":id/" + path;
+    return "/repository/download/" + buildTypeId + "/" + buildId + ":id/" + path;
   }
 }

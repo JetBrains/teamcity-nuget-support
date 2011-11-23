@@ -49,7 +49,7 @@ public class PackageInfoSerializer {
     parameters.putAll(pacakgeParameters);
 
     final String relPath = parameters.get(TEAMCITY_ARTIFACT_RELPATH);
-    parameters.put("TeamCityDownloadUrl", myPaths.getArtifactDownloadUrl(build, relPath));
+    parameters.put("TeamCityDownloadUrl", myPaths.getArtifactDownloadUrl(build.getBuildTypeId(), build.getBuildId(), relPath));
     //TBD: parameters.put("ReleaseNotes", "");
     //TBD: parameters.put("Copyright", "");
     parameters.put("IsLatestVersion", String.valueOf(isLatestVersion));
@@ -64,7 +64,7 @@ public class PackageInfoSerializer {
 
   @NotNull
   private String formatDate(@NotNull final Date date) {
-    //TODO:fix timezon printing
+    //TODO:fix timezone printing
     return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }
 
