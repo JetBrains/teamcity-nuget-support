@@ -110,10 +110,17 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
 
   @NotNull
   public String getPackagesControllerUrl() {
-    String url = getCustomTeamCityBaseUrl();
     final String basePath = myController.getBasePath();
-    if (url == null) url = myRootUrl.getRootUrl();
-    return join(url, basePath);
+    return join(getActualRootUrl(), basePath);
+  }
+
+  @NotNull
+  public String getActualRootUrl() {
+    String url = getCustomTeamCityBaseUrl();
+    if (url == null) {
+      return myRootUrl.getRootUrl();
+    }
+    return url;
   }
 
   private String join(@NotNull String url, @NotNull String basePath) {

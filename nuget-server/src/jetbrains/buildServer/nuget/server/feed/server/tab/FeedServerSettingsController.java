@@ -71,7 +71,7 @@ public class FeedServerSettingsController extends BaseController {
       if (StringUtil.isEmptyOrSpaces(url)) {
         mySettings.setDefaultTeamCityBaseUrl();
       } else {
-        mySettings.setTeamCityBaseUrl(url);
+        mySettings.setTeamCityBaseUrl(url.trim());
       }
     }
 
