@@ -44,7 +44,7 @@ public class PackagesInstallerRunType extends NuGetRunType {
 
   @Override
   public String getDisplayName() {
-    return "NuGet Packages Installer";
+    return "NuGet Installer";
   }
 
   @Override

@@ -49,7 +49,7 @@ public class PackRunType extends NuGetRunType {
 
   @Override
   public String getDisplayName() {
-    return "NuGet Packages Pack";
+    return "NuGet Pack";
   }
 
   @Override
