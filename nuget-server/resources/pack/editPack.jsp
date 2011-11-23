@@ -64,7 +64,7 @@
     <th rowspan="2"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
     <td>
       <props:textProperty name="${ib.packOutputDirectory}" className="longField"/>
-      <span class="smallNote">Specify path to put generated NuGet package</span>
+      <span class="smallNote">Specify path to put generated NuGet package. Use <em>NuGet Publish</em> build runner to publish package to NuGet Feed</span>
       <span id="error_${ib.packOutputDirectory}" class="error"></span>
     </td>
   </tr>
