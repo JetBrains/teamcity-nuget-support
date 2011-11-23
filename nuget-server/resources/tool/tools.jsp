@@ -26,14 +26,14 @@
 <h2 class="noBorder">Installed NuGet Versions</h2>
 <p>
   TeamCity NuGet plugin requires to configure NuGet.Exe Command Line clients.
-  There are
+  There <bs:are_is val="${installedPluginsCount}"/>
   <strong><c:out value="${installedPluginsCount}"/></strong>
   plugin<bs:s val="${installedPluginsCount}"/> installed.
 </p>
 
   <c:choose>
     <c:when test="${installedPluginsCount eq 0}">
-      <div>There are no installed NuGet.exe</div>
+      <div>There is no installed NuGet.exe</div>
     </c:when>
     <c:otherwise>
         <table class="dark borderBottom" cellpadding="0" cellspacing="0" style="width: 30em;">
@@ -64,10 +64,10 @@
       </table>
     </c:otherwise>
   </c:choose>
-  <div class="addNew">
+  <div class="addNew" style="padding-top: 1em;">
     <a href="#" onclick="return BS.NuGet.Tools.InstallPopup.show();">
       Install
-      <c:if test="${installedPluginsCount gt 0}">addintional versions of</c:if>
+      <c:if test="${installedPluginsCount gt 0}">additional versions of</c:if>
       NuGet.exe Command Line
     </a>
   </div>
