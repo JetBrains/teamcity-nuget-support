@@ -96,8 +96,8 @@ public class NuGetFeedProxyController extends BaseController {
     method.setHeader("X-TeamCityUrl", baseUrl);
     method.setHeader("X-TeamCityFeedBase", baseUrl + mySettings.getNuGetFeedControllerPath());
 
-    final HttpResponse resp = myClient.execute(method);
     try {
+      final HttpResponse resp = myClient.execute(method);
       response.setStatus(resp.getStatusLine().getStatusCode());
 
       final HttpEntity entity = resp.getEntity();
@@ -121,6 +121,10 @@ public class NuGetFeedProxyController extends BaseController {
         entity.writeTo(response.getOutputStream());
       }
 
+      return null;
+    } catch (Throwable t) {
+      LOG.warn("Failed to process request to NuGet server to " + method.getURI());
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "" + t.getMessage());
       return null;
     } finally {
       method.abort();
