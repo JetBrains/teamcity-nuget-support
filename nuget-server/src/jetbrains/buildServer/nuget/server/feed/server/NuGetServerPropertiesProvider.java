@@ -32,7 +32,6 @@ import java.util.Map;
  *         Date: 07.10.11 17:52
  */
 public class NuGetServerPropertiesProvider implements BuildParametersProvider, ParameterDescriptionProvider {
-  private final String KEY = "teamcity.nuget.feed.server";
   @NotNull private final NuGetServerRunnerSettings mySettings;
 
   public NuGetServerPropertiesProvider(@NotNull final NuGetServerRunnerSettings settings) {
@@ -43,7 +42,7 @@ public class NuGetServerPropertiesProvider implements BuildParametersProvider, P
   public Map<String, String> getParameters(@NotNull SBuild build, boolean emulationMode) {
     Map<String, String> map = new HashMap<String, String>();
     if (mySettings.isNuGetFeedEnabled()) {
-      map.put(KEY, "%teamcity.serverUrl%" + WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
+      map.put(NuGetServerConstants.FEED_REFERENCE, "%teamcity.serverUrl%" + WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
     }
     return map;
   }
@@ -54,7 +53,7 @@ public class NuGetServerPropertiesProvider implements BuildParametersProvider, P
   }
 
   public String describe(@NotNull String paramName) {
-    if (KEY.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed";
+    if (NuGetServerConstants.FEED_REFERENCE.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed";
     return null;
   }
 }
