@@ -16,17 +16,10 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 23.11.11 19:05
  */
 public class NuGetServerConstants {
   public static final String FEED_REFERENCE = "teamcity.nuget.feed.server";
-
-  @NotNull
-  public String getFeedReference() {
-    return FEED_REFERENCE;
-  }
 }
