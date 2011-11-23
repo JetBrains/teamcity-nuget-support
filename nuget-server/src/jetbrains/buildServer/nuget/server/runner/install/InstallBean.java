@@ -18,6 +18,8 @@ package jetbrains.buildServer.nuget.server.runner.install;
 
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerConstants;
+import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -33,4 +35,5 @@ public class InstallBean {
   public String getUpdateModeKey() { return PackagesConstants.NUGET_UPDATE_MODE;}
   public String getUpdatePerSolutionValue() { return PackagesUpdateMode.FOR_SLN.getName();}
   public String getUpdatePerConfigValue() { return PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG.getName();}
+  public String getNuGetFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_REFERENCE); }
 }

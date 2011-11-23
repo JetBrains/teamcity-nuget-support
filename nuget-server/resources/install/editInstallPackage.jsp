@@ -28,7 +28,7 @@
     </td>
   </tr>
   <tr>
-    <th>Package Sources:</th>
+    <th>Packages Sources:</th>
     <td>
       <props:multilineProperty name="${ib.nuGetSourcesKey}"
                                linkTitle="Sources"
@@ -36,7 +36,11 @@
                                expanded="${true}"/>
       <span class="smallNote">
         Specify NuGet package sources.
-        Leave blank to let NuGet decide what package repository to use.
+        Leave blank to use NuGet.org as packages source.
+        <br />
+        If you use TeamCity as NuGet server, specify
+        <em><c:out value="${ib.nuGetFeedReference}"/></em>
+        to refer to TeamCity provided packages source.
       </span>
       <span class="error" id="error_${ib.nuGetSourcesKey}"></span>
     </td>
