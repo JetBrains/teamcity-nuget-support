@@ -70,7 +70,11 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   public void setTeamCityBaseUrl(@NotNull final String url) {
     mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
       public Object executeAction(@NotNull NuGetSettingsWriter action) {
-        action.setStringParameter(NUGET_SERVER_URL, url);
+        if (myRootUrl.getRootUrl().equals(url.trim())) {
+          action.removeParameter(NUGET_SERVER_URL);
+        } else {
+          action.setStringParameter(NUGET_SERVER_URL, url);
+        }
         return null;
       }
     });

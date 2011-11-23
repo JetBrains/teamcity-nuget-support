@@ -108,6 +108,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
   public void test_use_custom_server_url() {
     m.checking(new Expectations(){{
       allowing(myPaths).getBasePath(); will(returnValue("nuget5"));
+      oneOf(myRoot).getRootUrl(); will(returnValue("aaa"));
     }});
 
     mySettings.setTeamCityBaseUrl("http://jonnyzzz.com/n");
@@ -116,9 +117,21 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
   }
 
   @Test
+  public void test_use_custom_server_url3() {
+    m.checking(new Expectations(){{
+      allowing(myPaths).getBasePath(); will(returnValue("nuget5"));
+      oneOf(myRoot).getRootUrl(); will(returnValue("aaa"));
+    }});
+
+    mySettings.setTeamCityBaseUrl("aaa");
+    Assert.assertEquals(mySettings.getCustomTeamCityBaseUrl(), null);
+  }
+
+  @Test
   public void test_use_custom_server_url2() {
     m.checking(new Expectations(){{
       allowing(myPaths).getBasePath(); will(returnValue("/nuget5"));
+      allowing(myRoot).getRootUrl(); will(returnValue("ooo"));
     }});
 
     mySettings.setTeamCityBaseUrl("http://jonnyzzz.com/n/");
