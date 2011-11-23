@@ -73,7 +73,7 @@
   </table>
 
   <div class="saveButtonsBlock" style="border: none; margin-top: 1em;">
-    <a href="#" style="float:right;" onclick="">Cancel</a>
+    <a href="#" class="cancel" onclick="return BS.NuGet.FeedServer.EnableForm.close();">Cancel</a>
     <input class="submitButton" type="submit" value="Enable">
     <forms:saving id="nugetSettingsSaving"/>
   </div>
@@ -91,7 +91,7 @@
   You are going to stop NuGet Feed Server that was running inside TeamCity. Continue?
 
   <div class="saveButtonsBlock" style="border: none; margin-top: 1em;">
-    <a href="#" style="float:right;" onclick="">Cancel</a>
+    <a href="#" class="cancel" onclick="return BS.NuGet.FeedServer.DisableForm.close();">Cancel</a>
     <input class="submitButton" type="submit" value="Disable">
     <forms:saving id="nugetSettingsSaving"/>
   </div>
