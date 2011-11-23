@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.util.StringUtil;
+import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -106,9 +107,13 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   @NotNull
   public String getPackagesControllerUrl() {
     String url = getCustomTeamCityBaseUrl();
+    final String basePath = myController.getBasePath();
     if (url == null) url = myRootUrl.getRootUrl();
-    url = StringUtil.trimEnd(url, "/");
-    return url + "/" + StringUtil.trimStart(myController.getBasePath(), "/");
+    return join(url, basePath);
+  }
+
+  private String join(@NotNull String url, @NotNull String basePath) {
+    return StringUtil.trimEnd(url, "/") + "/" + StringUtil.trimStart(basePath, "/");
   }
 
   @NotNull
@@ -119,5 +124,15 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   @NotNull
   public String getNuGetFeedControllerPath() {
     return "/app/nuget/v1/FeedService.svc";
+  }
+
+  @NotNull
+  public String getNuGetHttpAuthFeedControllerPath() {
+    return join(WebUtil.HTTP_AUTH_PREFIX, getNuGetFeedControllerPath());
+  }
+
+  @NotNull
+  public String getNuGetGuestAuthFeedControllerPath() {
+    return join(WebUtil.GUEST_AUTH_PREFIX, getNuGetFeedControllerPath());
   }
 }

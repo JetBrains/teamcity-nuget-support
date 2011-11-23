@@ -38,4 +38,10 @@ public interface NuGetServerRunnerSettings {
    */
   @NotNull
   String getNuGetFeedControllerPath();
+  
+  @NotNull
+  String getNuGetHttpAuthFeedControllerPath();
+
+  @NotNull
+  String getNuGetGuestAuthFeedControllerPath();
 }
