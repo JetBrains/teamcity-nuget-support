@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server;
 
 import jetbrains.buildServer.nuget.server.feed.server.controllers.RecentNuGetRequests;
+import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsProvider;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsPublisher;
 import jetbrains.buildServer.usageStatistics.presentation.UsageStatisticsFormatter;
@@ -25,6 +26,8 @@ import jetbrains.buildServer.usageStatistics.presentation.UsageStatisticsPresent
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 23.11.11 20:42
@@ -32,25 +35,40 @@ import org.jetbrains.annotations.Nullable;
 public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvider, UsageStatisticsPresentationProvider {
   public static final String SERVER_ENABLED_KEY = "jetbrains.nuget.server";
   public static final String TOTAL_REQUESTS = "jetbrains.nuget.differentRequests";
+  public static final String TOTAL_PACKAGES = "jetbrains.nuget.totalPackages";
   private final NuGetServerRunnerSettings mySettings;
-  @NotNull
   private final RecentNuGetRequests myRequests;
+  private final PackagesIndex myIndex;
 
   public NuGetServerUsageStatisticsProvider(@NotNull final NuGetServerRunnerSettings settings,
-                                            @NotNull final RecentNuGetRequests requests) {
+                                            @NotNull final RecentNuGetRequests requests,
+                                            @NotNull final PackagesIndex index) {
     mySettings = settings;
     myRequests = requests;
+    myIndex = index;
   }
 
   public void accept(@NotNull UsageStatisticsPublisher publisher) {
     if (mySettings.isNuGetFeedEnabled()) {
       publisher.publishStatistic(SERVER_ENABLED_KEY, "enabled");
       publisher.publishStatistic(TOTAL_REQUESTS, myRequests.getTotalRequests());
+      publisher.publishStatistic(TOTAL_PACKAGES, countEntries());
     }
+  }
+  
+  private int countEntries() {
+    int count = 0;
+    final Iterator<BuildMetadataEntry> it = myIndex.getEntries();
+    while(it.hasNext()) {
+      it.next();
+      count++;
+    }
+    return count;
   }
 
   public void accept(@NotNull UsageStatisticsPresentationManager presentationManager) {
-    presentationManager.applyPresentation(TOTAL_REQUESTS, "NuGet Feed Request Kinds", "NuGet", null, null);
+    presentationManager.applyPresentation(TOTAL_REQUESTS, "Feed Request Kinds", "NuGet", null, null);
+    presentationManager.applyPresentation(TOTAL_PACKAGES, "Packages Count", "NuGet", null, null);
     presentationManager.applyPresentation(SERVER_ENABLED_KEY, "NuGet Feed Server", "NuGet", new UsageStatisticsFormatter() {
       @NotNull
       public String format(@Nullable Object statisticValue) {
