@@ -50,6 +50,7 @@ public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvid
   }
 
   public void accept(@NotNull UsageStatisticsPresentationManager presentationManager) {
+    presentationManager.applyPresentation(TOTAL_REQUESTS, "NuGet Feed Request Kinds", "NuGet", null, null);
     presentationManager.applyPresentation(SERVER_ENABLED_KEY, "NuGet Feed Server", "NuGet", new UsageStatisticsFormatter() {
       @NotNull
       public String format(@Nullable Object statisticValue) {
