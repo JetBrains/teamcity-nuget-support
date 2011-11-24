@@ -101,15 +101,10 @@ public class LocalNuGetPackageItemsFactory {
     addParameter(map, "PackageHashAlgorithm", "SHA512");
     addParameter(map, "PackageSize", String.valueOf(size));
     //addParameter(map, "IsLatestVersion", "");
-    addParameter(map, "LastUpdated", formatDate(finishDate));
+    addParameter(map, "LastUpdated", ODataDataFormat.formatDate(finishDate));
     //addParameter(map, "Updated", formatDate(updated));
 
     return map;
-  }
-  @NotNull
-  private String formatDate(@NotNull final Date date) {
-    //TODO:fix timezone printing
-    return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }
 
   private void addParameter(@NotNull final Map<String, String> map,
