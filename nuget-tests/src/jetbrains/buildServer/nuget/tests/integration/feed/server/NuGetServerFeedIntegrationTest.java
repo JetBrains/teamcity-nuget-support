@@ -74,6 +74,36 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerFeedIntegrationTe
   }
 
   @Test
+  public void test_xTeamCityAuth() throws Exception {
+    enableDebug();
+
+    final String packageId = "CommonServiceLocator";
+    final File responseFile = createTempFile();
+
+    final String name = packageId + ".1.0.nupkg";
+    renderPackagesResponseFile(responseFile, Paths.getTestDataPath("/packages/" + name));
+    final HttpServerHandler handler = packagesFileHandler(responseFile);
+    registerHttpHandler(new HttpServerHandler() {
+      public SimpleHttpServerBase.Response processRequest(@NotNull String requestLine, @Nullable String path) {
+        final SimpleHttpServerBase.Response response = handler.processRequest(requestLine, path);
+        if (response != null) {
+          Assert.assertTrue(requestLine.contains("X-TeamCity-UserId: jonnyzzz"));
+          return response;
+        }
+        return null;
+      }
+    });
+
+    final HttpGet getQuery = createGetQuery("/Packages()");
+    getQuery.addHeader("X-TeamCity-UserId", "jonnyzzz");
+    execute(getQuery, new ExecuteAction<String>() {
+      public String processResult(@NotNull HttpResponse response) throws IOException {
+        return null;
+      }
+    });
+  }
+
+  @Test
   public void testOnePackageFeed() throws Exception {
     enableDebug();
 
