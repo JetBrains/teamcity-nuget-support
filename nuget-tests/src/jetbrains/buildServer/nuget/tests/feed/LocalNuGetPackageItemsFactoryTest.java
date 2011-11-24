@@ -89,6 +89,9 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   private String store(@NotNull Map<String, String> map) {
     map = new TreeMap<String, String>(map);
     map.remove("Updated");
+    if (map.containsKey("LastUpdated")) {
+      map.put("LastUpdated", "ddd");
+    }
     StringBuilder sb = new StringBuilder();
     for (Map.Entry<String, String> entry : map.entrySet()) {
       sb.append(entry.getKey()).append(" = ").append(entry.getValue()).append("\n");
@@ -109,6 +112,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
                     "Description = Extension for Ninject providing integration with ASP.NET MVC3\n" +
                     "IconUrl = https://github.com/ninject/ninject/raw/master/logos/Ninject-Logo32.png\n" +
                     "Id = Ninject.MVC3\n" +
+                    "LastUpdated = ddd\n" +
                     "LicenseUrl = https://github.com/ninject/ninject.web.mvc/raw/master/mvc3/LICENSE.txt\n" +
                     "PackageHash = vAG563nUohsNV8gsOOARPS3RJubWWSzUQ+JRLTne4yzE7/TR/rDjD1eS9klB682FvInUP2x48OuQoIgpwKqaIA==\n" +
                     "PackageHashAlgorithm = SHA512\n" +
