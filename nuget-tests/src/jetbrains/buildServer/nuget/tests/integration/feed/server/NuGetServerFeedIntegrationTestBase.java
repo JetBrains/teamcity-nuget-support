@@ -34,6 +34,7 @@ import java.io.*;
 import java.util.*;
 
 import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
+import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -101,8 +102,9 @@ public class NuGetServerFeedIntegrationTestBase extends NuGetServerIntegrationTe
     }});
 
     final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-    final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(artifact));
+    final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(artifact, new Date()));
     map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
+    map.put(TEAMCITY_BUILD_TYPE_ID, "bt_" + packageFile.getName());
 
     presentPackageEntry(w, isLatest, build, map);
   }

@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.index;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
+import jetbrains.buildServer.util.Dates;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.codec.binary.Base64;
@@ -58,7 +59,8 @@ public class LocalNuGetPackageItemsFactory {
   }
 
   @NotNull
-  public Map<String, String> loadPackage(@NotNull final BuildArtifact nupkg) throws PackageLoadException {
+  public Map<String, String> loadPackage(@NotNull final BuildArtifact nupkg,
+                                         @NotNull final Date finishDate) throws PackageLoadException {
     final String sha = sha512(nupkg);
     final long size = nupkg.getSize();
 
@@ -99,10 +101,15 @@ public class LocalNuGetPackageItemsFactory {
     addParameter(map, "PackageHashAlgorithm", "SHA512");
     addParameter(map, "PackageSize", String.valueOf(size));
     //addParameter(map, "IsLatestVersion", "");
-    //addParameter(map, "LastUpdated", "");
+    addParameter(map, "LastUpdated", formatDate(finishDate));
     //addParameter(map, "Updated", formatDate(updated));
 
     return map;
+  }
+  @NotNull
+  private String formatDate(@NotNull final Date date) {
+    //TODO:fix timezone printing
+    return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }
 
   private void addParameter(@NotNull final Map<String, String> map,

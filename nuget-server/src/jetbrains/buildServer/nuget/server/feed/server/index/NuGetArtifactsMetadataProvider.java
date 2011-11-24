@@ -23,10 +23,12 @@ import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode;
 import jetbrains.buildServer.serverSide.impl.LogUtil;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataProvider;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorageWriter;
-import jetbrains.buildServer.util.Dates;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
 import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
@@ -62,13 +64,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
       visitArtifacts(children, packages);
     }
   }
-  
-  @NotNull
-  private String formatDate(@NotNull final Date date) {
-    //TODO:fix timezone printing
-    return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
-  }
-  
+
   public void generateMedatadata(@NotNull SBuild build, @NotNull MetadataStorageWriter store) {
     LOG.debug("Looking for NuGet packages in " + LogUtil.describe(build));
 
@@ -77,13 +73,14 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
 
     for (BuildArtifact aPackage : packages) {
       try {
-        final Map<String,String> ma = myFactory.loadPackage(aPackage);
+        Date finishDate = build.getFinishDate();
+        if (finishDate == null) finishDate = new Date();
+
+        final Map<String,String> ma = myFactory.loadPackage(aPackage, finishDate);
         ma.put(TEAMCITY_ARTIFACT_RELPATH, aPackage.getRelativePath());
         ma.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
 
-        Date finishDate = build.getFinishDate();
-        if (finishDate == null) finishDate = new Date();
-        ma.put("LastUpdated", formatDate(finishDate));
+
         
         store.addParameters(aPackage.getName(), ma);
       } catch (PackageLoadException e) {
