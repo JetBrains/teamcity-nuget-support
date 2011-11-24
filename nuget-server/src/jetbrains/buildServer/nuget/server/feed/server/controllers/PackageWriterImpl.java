@@ -17,9 +17,11 @@
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
+import jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,11 +40,15 @@ public class PackageWriterImpl implements PackagesWriter {
   @NotNull
   private final PackageInfoSerializer mySerializer;
   @NotNull
+  private final BuildsManager myBuilds;
+  @NotNull
   private final ProjectManager myProjectManager;
 
   public PackageWriterImpl(@NotNull final PackagesIndex index,
+                           @NotNull final BuildsManager builds,
                            @NotNull final PackageInfoSerializer serializer,
                            @NotNull final ProjectManager projectManager) {
+    myBuilds = builds;
     myProjectManager = projectManager;
     myIndex = index;
     mySerializer = serializer;
@@ -51,6 +57,7 @@ public class PackageWriterImpl implements PackagesWriter {
   private class LatestBuildsCache {
     private final Map<String, Long> myBuildTypeToLatest = new HashMap<String, Long>();
 
+    @Nullable
     public Boolean isLatest(@NotNull final String buildTypeId, final long buildId) {
       Long build = myBuildTypeToLatest.get(buildTypeId);
       if (build == null) {
@@ -72,18 +79,48 @@ public class PackageWriterImpl implements PackagesWriter {
                                 @NotNull final BuildMetadataEntry entry,
                                 @NotNull final Writer writer) throws IOException {
 
-    final String buildTypeId = entry.getMetadata().get(PackagesIndex.TEAMCITY_BUILD_TYPE_ID);
+    final Map<String, String> metadata = entry.getMetadata();
+    final String buildTypeId = metadata.get(PackagesIndex.TEAMCITY_BUILD_TYPE_ID);
+
     //skip older entries.
-    if (buildTypeId == null) return;
-    final boolean isLatestVersion = cache.isLatest(buildTypeId, entry.getBuildId());
+    if (buildTypeId == null) {
+      processOldEntry(cache, entry, writer);
+    } else {
+
+      final Boolean isLatestVersion = cache.isLatest(buildTypeId, entry.getBuildId());
+      if (isLatestVersion == null) return;
+
+      mySerializer.serializePackage(
+              metadata,
+              buildTypeId,
+              entry.getBuildId(),
+              isLatestVersion,
+              writer
+      );
+    }
+  }
+
+  private void processOldEntry(@NotNull final LatestBuildsCache cache,
+                               @NotNull final BuildMetadataEntry entry,
+                               @NotNull final Writer writer) throws IOException {
+
+    final SBuild aBuild = myBuilds.findBuildInstanceById(entry.getBuildId());
+    if (aBuild == null || !(aBuild instanceof SFinishedBuild)) return;
+    final SFinishedBuild build = (SFinishedBuild) aBuild;
+
+    final Boolean isLatestVersion = cache.isLatest(build.getBuildTypeId(), build.getBuildId());
+    if (isLatestVersion == null) return;
+
+    final Map<String, String> metadata = new HashMap<String, String>(entry.getMetadata());
+    metadata.put("LastUpdated", ODataDataFormat.formatDate(build.getFinishDate()));
 
     mySerializer.serializePackage(
-            entry.getMetadata(),
-            buildTypeId,
-            entry.getBuildId(),
-            isLatestVersion,
-            writer
-    );
+                metadata,
+                build.getBuildTypeId(),
+                build.getBuildId(),
+                isLatestVersion,
+                writer
+        );
   }
 
   public void serializePackages(@NotNull final HttpServletRequest request,
