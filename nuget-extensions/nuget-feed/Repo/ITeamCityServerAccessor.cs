@@ -11,5 +11,8 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
 
     [NotNull]
     string TeamCityUrl { get; }
+
+    [NotNull]
+    ITeamCityServerAccessor ForUser([CanBeNull] string userId);
   }
 }

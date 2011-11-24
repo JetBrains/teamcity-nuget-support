@@ -22,7 +22,11 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
     private LightPackageRepository Repository
     {
-      get { return TeamCityContext.Repository; }
+      get
+      {
+        var userId = HttpContext.Current.Request.Headers["X-TeamCity-UserId"];
+        return TeamCityContext.GetRepository(userId);
+      }
     }
 
     // This method is called only once to initialize service-wide policies.

@@ -3,20 +3,24 @@ using System.IO;
 using System.Net;
 using System.Net.Cache;
 using System.Text;
+using JetBrains.Annotations;
 using log4net;
 
 namespace JetBrains.TeamCity.NuGet.Feed.Repo
 {
   public class TeamCityServerAccessor : ITeamCityServerAccessor
   {
-    private readonly RepositoryPaths myPaths;
     private static readonly ILog LOG = LogManagerHelper.GetCurrentClassLogger();
 
+    private readonly RepositoryPaths myPaths;
+    [CanBeNull]
+    private readonly string myUserId;
 
-    public TeamCityServerAccessor(RepositoryPaths paths)
+    public TeamCityServerAccessor(RepositoryPaths paths, [CanBeNull] string userId = null)
     {
-      myPaths = paths;    
-      LOG.InfoFormat("TeamCityServerAccessor created. TeamCity URL: {0}, token: {1}", myPaths.TeamCityBaseUri, paths.Token);
+      myPaths = paths;
+      myUserId = userId;
+      LOG.InfoFormat("TeamCityServerAccessor created. TeamCity URL: {0}, token: {1}, user: {2}", myPaths.TeamCityBaseUri, paths.Token, userId ?? "<null>");
     }
 
     public T ProcessRequest<T>(string urlSuffix, Func<HttpWebResponse, TextReader, T> result)
@@ -28,6 +32,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
         var wr = (HttpWebRequest) WebRequest.Create(requestUriString);
         wr.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
         wr.Headers.Add("X-TeamCity-Auth", myPaths.Token);
+        
+        if (myUserId != null)
+          wr.Headers.Add("X-TeamCity-UserId", myUserId);
 
         using (var webResponse = (HttpWebResponse) wr.GetResponse())
         {
@@ -52,6 +59,11 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
     public string TeamCityUrl
     {
       get { return myPaths.TeamCityBaseUri; }
+    }
+
+    public ITeamCityServerAccessor ForUser(string userId)
+    {
+      return new TeamCityServerAccessor(myPaths, userId);
     }
   }
 }
