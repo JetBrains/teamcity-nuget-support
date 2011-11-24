@@ -13,6 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
 <%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="nugetPrivateUrl" type="java.lang.String"  scope="request"/>
 <jsp:useBean id="nugetPublicUrl" type="java.lang.String"  scope="request"/>
@@ -26,4 +27,4 @@
 
 <a showdiscardchangesmessage="false"
    title="NuGet Feed Url"
-   href="${nugetPublicUrl}">NuGet feed url</a>
+   href="${nugetPrivatePath}">NuGet feed url</a>
