@@ -21,6 +21,8 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerUri;
+import jetbrains.buildServer.serverSide.auth.SecurityContext;
+import jetbrains.buildServer.users.User;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.apache.commons.httpclient.HttpStatus;
@@ -48,14 +50,17 @@ public class NuGetFeedProxyController extends BaseController {
   @NotNull private final FeedClient myClient;
   @NotNull private final NuGetServerRunnerSettings mySettings;
   @NotNull private final RecentNuGetRequests myRequestsList;
+  @NotNull private final SecurityContext myContext;
   @NotNull private final NuGetServerUri myUri;
   @NotNull private final String myNuGetPath;
 
   public NuGetFeedProxyController(@NotNull final WebControllerManager web,
+                                  @NotNull final SecurityContext context,
                                   @NotNull final FeedClient client,
                                   @NotNull final NuGetServerUri uri,
                                   @NotNull final NuGetServerRunnerSettings settings,
                                   @NotNull final RecentNuGetRequests requestsList) {
+    myContext = context;
     myUri = uri;
     myClient = client;
     mySettings = settings;
@@ -100,6 +105,12 @@ public class NuGetFeedProxyController extends BaseController {
 
     method.setHeader("X-TeamCityUrl", baseUrl);
     method.setHeader("X-TeamCityFeedBase", baseUrl + mySettings.getNuGetFeedControllerPath());
+    final User associatedUser = myContext.getAuthorityHolder().getAssociatedUser();
+    if (associatedUser != null) {
+      method.setHeader("X-TeamCity-UserId", String.valueOf(associatedUser.getId()));
+    } else {
+      LOG.warn("Failed to find associated user. Guest user will be used.");
+    }
 
     try {
       final HttpResponse resp = myClient.execute(method);

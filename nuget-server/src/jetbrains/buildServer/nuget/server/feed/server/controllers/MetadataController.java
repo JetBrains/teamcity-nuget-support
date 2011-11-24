@@ -16,7 +16,11 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
+import jetbrains.buildServer.serverSide.SecurityContextEx;
+import jetbrains.buildServer.users.SUser;
+import jetbrains.buildServer.users.UserModel;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,11 +32,17 @@ import javax.servlet.http.HttpServletResponse;
 public class MetadataController implements MetadataControllerHandler {
   @NotNull private final MetadataControllersPaths myDescriptor;
   @NotNull private final PackagesWriter myWriter;
+  @NotNull private final SecurityContextEx myContext;
+  @NotNull private final UserModel myUsers;
 
   public MetadataController(@NotNull final MetadataControllersPaths descriptor,
-                            @NotNull final PackagesWriter writer) {
+                            @NotNull final PackagesWriter writer,
+                            @NotNull final SecurityContextEx context,
+                            @NotNull final UserModel users) {
     myDescriptor = descriptor;
     myWriter = writer;
+    myContext = context;
+    myUsers = users;
   }
 
   @NotNull
@@ -40,10 +50,46 @@ public class MetadataController implements MetadataControllerHandler {
     return myDescriptor.getMetadataControllerPath();
   }
 
-  public void processRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+  public void processRequest(@NotNull final HttpServletRequest request,
+                             @NotNull final HttpServletResponse response) throws Exception {
     response.setCharacterEncoding("utf-8");
     response.setContentType("text/plain");
 
-    myWriter.serializePackages(request, response);
+    final SecurityContextEx.RunAsAction processRequestAction = new SecurityContextEx.RunAsAction() {
+      public void run() throws Throwable {
+        myWriter.serializePackages(request, response);
+      }
+    };
+
+    final SUser user = getAssociatedUser(request);
+    try {
+      myContext.runAs(user, processRequestAction);
+    } catch (Exception e) {
+      throw e;
+    } catch (Throwable th) {
+      throw new Exception(th);
+    }
+  }
+
+  @NotNull
+  private SUser getAssociatedUser(@NotNull final HttpServletRequest request) {
+    final Long id = parseUserId(request);
+    if (id != null) {
+      final SUser user = myUsers.findUserById(id);
+      if (user != null) return user;
+    }
+    return myUsers.getGuestUser();
+  }
+
+  @Nullable
+  private Long parseUserId(@NotNull final HttpServletRequest request) {
+    String userId = request.getHeader("X-TeamCity-UserId");
+    if (userId == null) return null;
+    userId = userId.trim();
+    try {
+      return Long.parseLong(userId);
+    } catch(Exception e) {
+      return null;
+    }
   }
 }
