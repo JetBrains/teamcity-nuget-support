@@ -16,37 +16,62 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
     private static readonly Lazy<ITeamCityServerAccessor> myAccessor 
       = new Lazy<ITeamCityServerAccessor>(() => new TeamCityServerAccessor(myRepositoryPaths.Value), true);
 
+    private static readonly Lazy<PackageLoader> myLoader
+      = new Lazy<PackageLoader>(() => new PackageLoader(), true);
+
+    private static readonly Lazy<IServiceMessageParser> myParser
+      = new Lazy<IServiceMessageParser>(() => new ServiceMessageParser(), true);
+
     private static LightPackageRepository CreateRepository([CanBeNull] string userId)
     {
       var remoteRepo = new RemoteRepo(
         myAccessor.Value.ForUser(userId),
-        new PackagesDeserializer(new ServiceMessageParser(), new PackageLoader())
+        new PackagesDeserializer(myParser.Value, myLoader.Value)
         );
 
       return new LightPackageRepository(new CachedRepo(remoteRepo));
     }
 
-    private static readonly Dictionary<string, LightPackageRepository> myCache = new Dictionary<string, LightPackageRepository>(); 
+    private static readonly Dictionary<string, TypedReference<LightPackageRepository>> myCache = new Dictionary<string, TypedReference<LightPackageRepository>>(); 
 
     public static LightPackageRepository GetRepository([CanBeNull] string userId)
     {
       string key = "Packages-" + (userId ?? "");
-
+      
       lock(myCache)
       {
-        LightPackageRepository cached;
+        TypedReference<LightPackageRepository> cached;
         if (myCache.TryGetValue(key, out cached))
-          return cached;
+        {
+          var target = cached.Value;
+          if (target != null)
+            return  target;
+        }
 
-        cached = CreateRepository(userId);
-        myCache[key] = cached;
-        return cached;
+        var repo = CreateRepository(userId);
+        myCache[key] = new TypedReference<LightPackageRepository>(repo);
+        return repo;
       }
     }
 
     public static ITeamCityServerAccessor TeamCityAccessor
     {
       get { return myAccessor.Value; }
+    }
+
+    private struct TypedReference<T> where T : class
+    {
+      private readonly WeakReference myRefernce;
+
+      public TypedReference(T refernce)
+      {
+        myRefernce = new WeakReference(refernce, true);
+      }
+
+      public T Value
+      {
+        get { return myRefernce.Target as T; }
+      }
     }
   }
 }

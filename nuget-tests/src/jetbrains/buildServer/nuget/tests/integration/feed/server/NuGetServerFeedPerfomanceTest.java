@@ -37,7 +37,7 @@ public class NuGetServerFeedPerfomanceTest extends NuGetServerFeedIntegrationTes
 
   @Test
   public void test_list_5000_packages() throws IOException, PackageLoadException {
-    doPackagesListTest(5000, 13.0);
+    doPackagesListTest(5000, 18.0);
   }
 
   @Test
