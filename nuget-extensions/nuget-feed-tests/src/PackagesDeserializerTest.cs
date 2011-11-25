@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,7 +25,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Tests
     {
       var data = GenerateTestData(5000);
       var trash = new ArrayList();
-      MeasureTime(TimeSpan.FromMilliseconds(500), 10, () => trash.Add(myDes.ProcessPackages(new StringReader(data)).ToArray()));
+      TimeMearureHeler.MeasureTime(TimeSpan.FromMilliseconds(500), 10, () => trash.Add(myDes.ProcessPackages(new StringReader(data)).ToArray()));
       Console.Out.WriteLine(trash.Count);
     }
 
@@ -39,25 +38,6 @@ namespace JetBrains.TeamCity.NuGet.Feed.Tests
         sb.AppendLine();
       }
       return sb.ToString();
-    }
-
-
-    private static void MeasureTime(TimeSpan time, int repeat, Action action)
-    {
-      var result = new List<TimeSpan>();
-      while (repeat-- > 0)
-      {
-        var start = DateTime.Now;
-        action();
-        var span = DateTime.Now - start;
-
-        Console.Out.WriteLine("Action finished in: {0}", span.TotalMilliseconds);
-
-        if (span < time) return;
-        result.Add(span);
-      }
-
-      Assert.Fail("Action is expected to complete in {0}, but was [{1}]", time.TotalMilliseconds, String.Join(", ", result.Select(x => x.TotalMilliseconds.ToString()).ToArray()));
     }
   }
 }

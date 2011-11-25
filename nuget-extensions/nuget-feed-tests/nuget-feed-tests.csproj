@@ -67,6 +67,7 @@
     <Compile Include="src\PackagesDeserializerTest.cs" />
     <Compile Include="src\TeamCityPackagesRepositoryTest.cs" />
     <Compile Include="src\TestTCQueryProvider.cs" />
+    <Compile Include="src\TimeMearureHeler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\nuget-feed\nuget-feed.csproj">
