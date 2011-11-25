@@ -16,11 +16,9 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index;
 
-import jetbrains.buildServer.util.Dates;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -29,7 +27,6 @@ import java.util.TimeZone;
 public class ODataDataFormat {
   @NotNull
   public static String formatDate(@NotNull final Date date) {
-    //TODO:fix timezone printing
-    return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
+    return "j" + date.getTime();
   }
 }
