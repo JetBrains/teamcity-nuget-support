@@ -140,6 +140,7 @@
     <Compile Include="Repo\TeamCityPackagesContext.cs" />
     <Compile Include="Repo\TeamCityPackageSpec.cs" />
     <Compile Include="Repo\MemoryRepo.cs" />
+    <Compile Include="Repo\TeamCityPackagesPool.cs" />
     <Compile Include="Repo\TeamCityQueryablePackages.cs" />
     <Compile Include="Repo\TeamCityServerAccessor.cs" />
     <Compile Include="Repo\TeamCityZipPackageFactory.cs" />
