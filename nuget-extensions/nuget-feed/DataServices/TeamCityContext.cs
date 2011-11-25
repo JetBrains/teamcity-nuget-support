@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Caching;
 using JetBrains.Annotations;
@@ -25,19 +26,22 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
       return new LightPackageRepository(new CachedRepo(remoteRepo));
     }
 
+    private static readonly Dictionary<string, LightPackageRepository> myCache = new Dictionary<string, LightPackageRepository>(); 
+
     public static LightPackageRepository GetRepository([CanBeNull] string userId)
     {
-      Cache cache = HttpContext.Current.Cache;
-
       string key = "Packages-" + (userId ?? "");
 
-      var cached = cache.Get(key) as LightPackageRepository;
-      if (cached != null)
-        return cached;
+      lock(myCache)
+      {
+        LightPackageRepository cached;
+        if (myCache.TryGetValue(key, out cached))
+          return cached;
 
-      cached = CreateRepository(userId);
-      cache.Insert(key, cache);
-      return cached;
+        cached = CreateRepository(userId);
+        myCache[key] = cached;
+        return cached;
+      }
     }
 
     public static ITeamCityServerAccessor TeamCityAccessor
