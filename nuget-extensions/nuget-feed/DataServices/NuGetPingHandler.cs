@@ -35,6 +35,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
             {
               if (res.StatusCode != HttpStatusCode.OK)
               {
+                LOG.WarnFormat("Responce code: " + res.StatusCode);
                 message.Append("Responce code: " + res.StatusCode + ". " + text.ReadToEnd());
                 return null;
               }
@@ -52,7 +53,9 @@ namespace JetBrains.TeamCity.NuGet.Feed.DataServices
 
       } catch(Exception e)
       {
-        message.Append("Failed to connect to TeamCity server. " + e);
+        string msg = "Failed to connect to TeamCity server. " + e;
+        LOG.Warn(msg);
+        message.Append(msg);
         WriteStatus(HttpStatusCode.InternalServerError, message.ToString());
       }
             
