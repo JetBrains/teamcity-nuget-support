@@ -16,46 +16,53 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.process;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.BuildServerListener;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.executors.ExecutorServices;
 import jetbrains.buildServer.util.EventDispatcher;
-import jetbrains.buildServer.util.ExceptionUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 07.10.11 15:27
  */
 public class NuGetServerCruiser {
+  private static final Logger LOG = Logger.getInstance(NuGetServerCruiser.class.getName());
+
   public NuGetServerCruiser(@NotNull final NuGetServerRunner runner,
                             @NotNull final ExecutorServices executors,
                             @NotNull final NuGetServerCruiserTask task,
                             @NotNull final EventDispatcher<BuildServerListener> events) {
     events.addListener(new BuildServerAdapter(){
-      private ScheduledFuture<?> myCheckTask;
+      private final AtomicBoolean myShutDown = new AtomicBoolean();
 
       @Override
       public void serverStartup() {
-        myCheckTask = executors.getNormalExecutorService().scheduleWithFixedDelay(
-                ExceptionUtil.catchAll("Check NuGet Server is running task",
-                        new Runnable() {
-                          public void run() {
-                            task.checkNuGetServerState();
-                          }
-                        }), 5, 5, TimeUnit.SECONDS);
+        final Runnable action = new Runnable() {
+          public void run() {
+            if (myShutDown.get()) return;
+
+            try {
+              task.checkNuGetServerState();
+            } catch (Throwable t) {
+              LOG.warn("Failed to check NuGet Feed Server state. " + t.getMessage(), t);
+            }
+
+            if (myShutDown.get()) return;
+            executors.getNormalExecutorService().schedule(this, TeamCityProperties.getInteger("teamcity.nuget.server.ping.time", 5), TimeUnit.SECONDS);
+          }
+        };
+        action.run();
       }
 
       @Override
       public void serverShutdown() {
-        Future<?> task = myCheckTask;
-        myCheckTask = null;
-        task.cancel(false);
-
+        myShutDown.set(true);
         runner.stopServer();
       }
     });
