@@ -20,7 +20,7 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
     {
       myPaths = paths;
       myUserId = userId;
-      LOG.InfoFormat("TeamCityServerAccessor created. TeamCity URL: {0}, token: {1}, user: {2}", myPaths.TeamCityBaseUri, paths.Token, userId ?? "<null>");
+      LOG.InfoFormat("TeamCityServerAccessor created. TeamCity URL: {0}, token: ****, user: {1}", myPaths.TeamCityBaseUri, userId ?? "<null>");
     }
 
     public T ProcessRequest<T>(string urlSuffix, Func<HttpWebResponse, TextReader, T> result)
