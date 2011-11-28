@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.NuGetServerHandle;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +53,10 @@ public class NuGetServerRunnerImpl implements NuGetServerRunner {
     stopServer();
     myHandle.set(null);
 
-    final int port = NetworkUtil.getFreePort(32768);
+    int port = TeamCityProperties.getInteger("teamcity.nuget.server.port", 23567);
+    if (TeamCityProperties.getBooleanOrTrue("teamcity.nuget.server.port.check")) {
+      port = NetworkUtil.getFreePort(port);
+    }
     LOG.info("Allocated NuGet server port: " + port);
 
     try {
