@@ -31,6 +31,12 @@ namespace JetBrains.TeamCity.NuGet.Feed.Repo
       {
         var wr = (HttpWebRequest) WebRequest.Create(requestUriString);
         wr.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.NoCacheNoStore);
+        wr.UserAgent = "JetBrains TeamCity NuGet Feed Server";
+        wr.Timeout = 10*1000;
+        wr.ReadWriteTimeout = 10*1000;
+        //sets empty proxy
+        wr.Proxy = new WebProxy();
+
         wr.Headers.Add("X-TeamCity-Auth", myPaths.Token);
         
         if (myUserId != null)
