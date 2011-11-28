@@ -112,7 +112,7 @@ public class NuGetExecutorImpl implements NuGetExecutor {
     try {
       process = cmd.createProcess();
     } catch (ExecutionException e1) {
-      throw new NuGetExecutionException("Failed to start NuGet server process from: " + cmd.getCommandLineString());
+      throw new NuGetExecutionException("Failed to start NuGet server process from: " + cmd.getCommandLineString().replace(token, "SECRET-TOKEN"));
     }
 
     final OSProcessHandler hander = new OSProcessHandler(process, cmd.getCommandLineString()) {
