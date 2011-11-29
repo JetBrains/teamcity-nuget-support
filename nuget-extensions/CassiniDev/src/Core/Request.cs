@@ -24,6 +24,7 @@ using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Hosting;
 using Microsoft.Win32.SafeHandles;

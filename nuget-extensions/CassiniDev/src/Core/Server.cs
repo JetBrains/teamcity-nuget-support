@@ -309,19 +309,20 @@ namespace CassiniDev
 
 
 
-      private void ExecuteInThread(string name, Action action)
-      {
-        ThreadPool.QueueUserWorkItem(delegate()
-                              {
-                                try
+        private void ExecuteInThread(string name, Action action)
+        {
+          ThreadPool.QueueUserWorkItem(delegate
                                 {
-                                  action();
-                                } catch(Exception e)
-                                {
-                                  Console.Out.WriteLine("Exception in worker thread {1}: {0}", e, name);
-                                }
-                              });
-      }
+                                  try
+                                  {
+                                    action();
+                                  } catch(Exception e)
+                                  {
+                                    if (!_shutdownInProgress)
+                                      Console.Out.WriteLine("Exception in worker thread {1}: {0}", e, name);
+                                  }
+                                });
+        }
 
         public void Start()
         {
@@ -338,41 +339,46 @@ namespace CassiniDev
                         {
                             Socket acceptedSocket = _socket.Accept();
 
-                            ExecuteInThread("process request", delegate
+                          ExecuteInThread(
+                            "process request",
+                            delegate
+                              {
+                                try
                                 {
-                                  try
-                                {
-                                    if (!_shutdownInProgress)
-                                    {
-                                        Connection conn = new Connection(this, acceptedSocket);
-
-                                        if (conn.WaitForRequestBytes() == 0)
-                                        {
-                                            conn.WriteErrorAndClose(400);
-                                            return;
-                                        }
-
-                                        Host host = GetHost();
-
-                                        if (host == null)
-                                        {
-                                            conn.WriteErrorAndClose(500);
-                                            return;
-                                        }
-
-                                        IncrementRequestCount();
-                                        host.ProcessRequest(conn);
-                                    }
-                                  } catch(Exception e)
+                                  if (!_shutdownInProgress)
                                   {
-                                    Console.Out.WriteLine("Exception in worker thread: {0}", e);
+                                    Connection conn = new Connection(this, acceptedSocket);
+
+                                    if (conn.WaitForRequestBytes() == 0)
+                                    {
+                                      conn.WriteErrorAndClose(400);
+                                      return;
+                                    }
+
+                                    Host host = GetHost();
+
+                                    if (host == null)
+                                    {
+                                      conn.WriteErrorAndClose(500);
+                                      return;
+                                    }
+
+                                    IncrementRequestCount();
+                                    host.ProcessRequest(conn);
                                   }
-                                });
+                                }
+                                catch (Exception e)
+                                {
+                                  if (!_shutdownInProgress)
+                                    Console.Out.WriteLine("Exception in worker thread: {0}", e);
+                                }
+                              });
                         }
                         catch(Exception e)
                         {
-                          Console.Out.WriteLine("Exception in pooled thread: {0}", e);
-                            Thread.Sleep(100);
+                          if (!_shutdownInProgress)
+                            Console.Out.WriteLine("Exception in pooled thread: {0}", e);
+                          Thread.Sleep(100);
                         }
                     }
                 });
