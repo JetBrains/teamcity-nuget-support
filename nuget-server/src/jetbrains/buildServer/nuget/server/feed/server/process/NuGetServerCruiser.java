@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.BuildServerListener;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
+import jetbrains.buildServer.serverSide.cleanup.ServerCleanupManager;
 import jetbrains.buildServer.serverSide.executors.ExecutorServices;
 import jetbrains.buildServer.util.EventDispatcher;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +38,7 @@ public class NuGetServerCruiser {
   public NuGetServerCruiser(@NotNull final NuGetServerRunner runner,
                             @NotNull final ExecutorServices executors,
                             @NotNull final NuGetServerCruiserTask task,
+                            @NotNull final ServerCleanupManager cleanup,
                             @NotNull final EventDispatcher<BuildServerListener> events) {
     events.addListener(new BuildServerAdapter(){
       private final AtomicBoolean myShutDown = new AtomicBoolean();
@@ -47,11 +49,16 @@ public class NuGetServerCruiser {
           public void run() {
             if (myShutDown.get()) return;
 
-            try {
-              task.checkNuGetServerState();
-            } catch (Throwable t) {
-              LOG.warn("Failed to check NuGet Feed Server state. " + t.getMessage(), t);
-            }
+            cleanup.executeWithInactiveCleanup(
+                    new Runnable() {
+                      public void run() {
+                        try {
+                          task.checkNuGetServerState();
+                        } catch (Throwable t) {
+                          LOG.warn("Failed to check NuGet Feed Server state. " + t.getMessage(), t);
+                        }
+                      }
+                    }, false);
 
             if (myShutDown.get()) return;
             executors.getNormalExecutorService().schedule(this, TeamCityProperties.getInteger("teamcity.nuget.server.ping.time", 5), TimeUnit.SECONDS);
