@@ -5,15 +5,14 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("nuget-tests")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("JetBrains TeamCity NuGet tests")]
+[assembly: AssemblyDescription("tests for NuGet commands for TeamCity NuGet integration")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("nuget-tests")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly: AssemblyCompany("JetBrains, s.r.o.")]
+[assembly: AssemblyProduct("TeamCity NuGet integration")]
+[assembly: AssemblyCopyright("Copyright © JetBrains 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
