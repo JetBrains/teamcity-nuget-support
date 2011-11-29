@@ -795,6 +795,8 @@ namespace CassiniDev
                 }
             }
 
+            //replace multiple slashes
+            _url = Regex.Replace(_path, "[\\\\/][\\\\/]+", "/");
             // path info
 
             int lastDot = _path.LastIndexOf('.');
@@ -1102,8 +1104,8 @@ namespace CassiniDev
                 }
                 return false;
             }
-*/
             return true;
+            */
         }
 
         /// <summary>

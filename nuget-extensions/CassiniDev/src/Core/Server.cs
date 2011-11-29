@@ -307,6 +307,22 @@ namespace CassiniDev
             DecrementRequestCount();
         }
 
+
+
+      private void ExecuteInThread(string name, Action action)
+      {
+        ThreadPool.QueueUserWorkItem(delegate()
+                              {
+                                try
+                                {
+                                  action();
+                                } catch(Exception e)
+                                {
+                                  Console.Out.WriteLine("Exception in worker thread {1}: {0}", e, name);
+                                }
+                              });
+      }
+
         public void Start()
         {
             _socket = CreateSocketBindAndListen(AddressFamily.InterNetwork, _ipAddress, _port);
@@ -314,7 +330,7 @@ namespace CassiniDev
             //start the timer
             DecrementRequestCount();
 
-            ThreadPool.QueueUserWorkItem(delegate
+            ExecuteInThread("Server Socket", delegate
                 {
                     while (!_shutdownInProgress)
                     {
@@ -322,7 +338,9 @@ namespace CassiniDev
                         {
                             Socket acceptedSocket = _socket.Accept();
 
-                            ThreadPool.QueueUserWorkItem(delegate
+                            ExecuteInThread("process request", delegate
+                                {
+                                  try
                                 {
                                     if (!_shutdownInProgress)
                                     {
@@ -345,10 +363,15 @@ namespace CassiniDev
                                         IncrementRequestCount();
                                         host.ProcessRequest(conn);
                                     }
+                                  } catch(Exception e)
+                                  {
+                                    Console.Out.WriteLine("Exception in worker thread: {0}", e);
+                                  }
                                 });
                         }
-                        catch
+                        catch(Exception e)
                         {
+                          Console.Out.WriteLine("Exception in pooled thread: {0}", e);
                             Thread.Sleep(100);
                         }
                     }
@@ -364,10 +387,17 @@ namespace CassiniDev
 
         private static Socket CreateSocketBindAndListen(AddressFamily family, IPAddress address, int port)
         {
+            Console.Out.WriteLine("Create server socket: family={0}, address={1}, port={2}", family, address, port);
             Socket socket = new Socket(family, SocketType.Stream, ProtocolType.Tcp);
-            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, false);
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReceiveTimeout, 500);
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.SendTimeout, 500);
+            socket.ExclusiveAddressUse = true;            
+
             socket.Bind(new IPEndPoint(address, port));
             socket.Listen((int)SocketOptionName.MaxConnections);
+
             return socket;
         }
 
