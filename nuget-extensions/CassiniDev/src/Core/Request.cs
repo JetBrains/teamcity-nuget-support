@@ -781,6 +781,10 @@ namespace CassiniDev
 
             // url-decode path
 
+            //replace multiple slashes
+            _path = Regex.Replace(_path, "[\\\\/][\\\\/]+", "/");
+
+
             if (_path.IndexOf('%') >= 0)
             {
                 _path = HttpUtility.UrlDecode(_path, Encoding.UTF8);
@@ -796,8 +800,6 @@ namespace CassiniDev
                 }
             }
 
-            //replace multiple slashes
-            _url = Regex.Replace(_path, "[\\\\/][\\\\/]+", "/");
             // path info
 
             int lastDot = _path.LastIndexOf('.');
