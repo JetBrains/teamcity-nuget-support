@@ -117,37 +117,44 @@ namespace JetBrains.TeamCity.NuGet.Server
       }
 
       Console.Out.WriteLine("Server is running on http://localhost:{0}", port);
-      WaitForExitCommand();      
-      
+
+      var exitMonitor = new ManualResetEvent(false);
+      WaitForExitCommand(exitMonitor);
+
+      exitMonitor.WaitOne();      
       server.ShutDown();
       return 0;
     }
 
-    private static void WaitForExitCommand()
+    private static void WaitForExitCommand(ManualResetEvent handle)
     {
-      while (true)
-      {
-        var line = Console.In.ReadLine();
-        if (line != null)
-        {
-          Console.Out.WriteLine("Exit command recieved.");
-          return;
-        }
+      new ParentProcessWatcher(() => handle.Set());
 
-        Wait();
-      }
-    }
+      var th = new Thread(() =>
+                               {
+                                 while (true)
+                                 {
+                                   var line = Console.In.ReadLine();
+                                   if (line != null)
+                                   {
+                                     Console.Out.WriteLine("Exit command recieved.");
+                                     handle.Set();
+                                     return;
+                                   }
 
-    private static void Wait()
-    {
-      try
-      {
-        Thread.Sleep(TimeSpan.FromSeconds(5));
-      }
-      catch
-      {
-        return;
-      }      
+                                   try
+                                   {
+                                     Thread.Sleep(TimeSpan.FromSeconds(5));
+                                   }
+                                   catch
+                                   {
+                                     //NOP
+                                   }
+                                 }
+                               });
+      th.IsBackground = true;
+      th.Name = "Exit signal thread";
+      th.Start();
     }
   }
  
