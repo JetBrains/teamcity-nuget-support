@@ -100,3 +100,9 @@
 </bs:modalDialog>
 
 
+<script type="text/javascript">
+  Event.observe(window, "load", function () {
+    BS.NuGet.FeedServer.registerStatusRefresh();
+  });
+</script>
+

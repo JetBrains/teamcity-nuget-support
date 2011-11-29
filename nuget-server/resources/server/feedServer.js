@@ -78,8 +78,3 @@ BS.NuGet.FeedServer.DisableForm = OO.extend(BS.NuGet.FeedServer.EnableDisableFor
     return $('nugetDisableFeed');
   }
 });
-
-Event.observe(window, "load", function () {
-  BS.NuGet.FeedServer.registerStatusRefresh();
-});
-
