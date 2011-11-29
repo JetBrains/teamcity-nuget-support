@@ -88,7 +88,7 @@
                 saveCommand="BS.NuGet.FeedServer.DisableForm.saveForm();">
   <props:hiddenProperty name="${fb.nugetServerEnabledCheckbox}" value="false"/>
 
-  You are going to stop NuGet Feed Server that was running inside TeamCity. Continue?
+  TeamCity NuGet Feed server will be stopped. Continue?
 
   <div class="saveButtonsBlock" style="border: none; margin-top: 1em;">
     <a href="#" class="cancel" onclick="return BS.NuGet.FeedServer.DisableForm.close();">Cancel</a>

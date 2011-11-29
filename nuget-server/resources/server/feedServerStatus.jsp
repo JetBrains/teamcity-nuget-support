@@ -87,7 +87,7 @@
         <td>
           <c:set var="url"><c:url value="${serverUrl}${privateFeedUrl}"/></c:set>
           <div><a href="${url}">${url}</a></div>
-          <span class="smallNote">Access to the url requires Http authentication</span>
+          <span class="smallNote">Access to the url requires HTTP authentication</span>
         </td>
       </tr>
       <tr>
@@ -95,7 +95,7 @@
         <td>
         <c:choose>
           <c:when test="${not isGuestEnabled}">
-            <div>You need to allow to login as a guest user in TeamCity server settings</div>
+            <div>Not available. You need to allow guest user in TeamCity general server settings</div>
           </c:when>
           <c:otherwise>
             <c:set var="url"><c:url value="${serverUrl}${publicFeedUrl}"/></c:set>
