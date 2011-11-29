@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-feed-tests", "nuget-f
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-package-loader", "nuget-package-loader\nuget-package-loader.csproj", "{18C704B3-1F0A-4889-82EE-D8393C289176}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CassiniDev", "CassiniDev\CassiniDev.csproj", "{05BFA289-25DA-4BE1-A85C-80D764EC5090}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,16 @@ Global
 		{18C704B3-1F0A-4889-82EE-D8393C289176}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{18C704B3-1F0A-4889-82EE-D8393C289176}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{18C704B3-1F0A-4889-82EE-D8393C289176}.Release|x86.ActiveCfg = Release|Any CPU
+		{05BFA289-25DA-4BE1-A85C-80D764EC5090}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05BFA289-25DA-4BE1-A85C-80D764EC5090}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05BFA289-25DA-4BE1-A85C-80D764EC5090}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{05BFA289-25DA-4BE1-A85C-80D764EC5090}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{05BFA289-25DA-4BE1-A85C-80D764EC5090}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{05BFA289-25DA-4BE1-A85C-80D764EC5090}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05BFA289-25DA-4BE1-A85C-80D764EC5090}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05BFA289-25DA-4BE1-A85C-80D764EC5090}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{05BFA289-25DA-4BE1-A85C-80D764EC5090}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{05BFA289-25DA-4BE1-A85C-80D764EC5090}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
