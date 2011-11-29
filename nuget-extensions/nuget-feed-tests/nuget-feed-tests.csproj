@@ -74,6 +74,10 @@
       <Project>{D84D9FE8-6424-40DE-8E90-FBA817481961}</Project>
       <Name>nuget-feed</Name>
     </ProjectReference>
+    <ProjectReference Include="..\nuget-package-loader\nuget-package-loader.csproj">
+      <Project>{18C704B3-1F0A-4889-82EE-D8393C289176}</Project>
+      <Name>nuget-package-loader</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

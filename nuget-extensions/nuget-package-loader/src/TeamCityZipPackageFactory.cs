@@ -1,10 +1,12 @@
 using System;
 using System.IO;
 using System.Linq;
+using JetBrains.TeamCity.NuGet.Feed;
+using JetBrains.TeamCity.NuGet.Feed.Repo;
 using NuGet;
 using log4net;
 
-namespace JetBrains.TeamCity.NuGet.Feed.Repo
+namespace JetBrains.TeamCity.NuGet.PackageMetadataLoader
 {
   public static class TeamCityZipPackageFactory
   {

@@ -1,4 +1,5 @@
 using JetBrains.TeamCity.NuGet.Feed.Repo;
+using JetBrains.TeamCity.NuGet.PackageMetadataLoader;
 using JetBrains.TeamCity.NuGet.Tests;
 using NUnit.Framework;
 using System.Linq;
