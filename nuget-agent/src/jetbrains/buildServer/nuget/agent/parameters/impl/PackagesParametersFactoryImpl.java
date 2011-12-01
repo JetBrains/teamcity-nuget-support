@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.agent.parameters.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.agent.BundledTool;
@@ -40,6 +41,8 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  * Date: 07.07.11 18:09
  */
 public class PackagesParametersFactoryImpl implements PackagesParametersFactory {
+  private static final Logger LOG = Logger.getInstance(PackagesParametersFactoryImpl.class.getName());
+
   private final BundledToolsRegistry myBundledTools;
 
   public PackagesParametersFactoryImpl(@NotNull final BundledToolsRegistry bundledTools) {
@@ -81,6 +84,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       final BundledTool tool = myBundledTools.findTool(version);
       if (tool != null) {
         final File bundledPath = new File(tool.getRootPath(), NUGET_TOOL_REL_PATH);
+        LOG.info("Checking bundled NuGet at path: " + bundledPath);
         if (bundledPath.isFile()) {
           return bundledPath;
         }
