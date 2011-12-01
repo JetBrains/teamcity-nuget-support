@@ -77,8 +77,8 @@ public class PackRunType extends NuGetRunType {
         notEmpty(NUGET_PACK_SPEC_FILE, "Package definition files must be specified", map, result);
         notEmpty(NUGET_PACK_OUTPUT_DIR, "Package creation output directory must be specified", map, result);
         final String version = notEmpty(NUGET_PACK_VERSION, "Version must be specified", map, result);
-        if (version != null && !ReferencesResolverUtil.containsReference(version) && !version.matches("\\d+(\\.\\d+){0,3}")) {
-          result.add(new InvalidProperty(NUGET_PACK_VERSION, "Version must be in assmebly version format: D[.D[.D[.D]]], i.e. 1.2.3 or 5.4.3.2"));
+        if (version != null && !ReferencesResolverUtil.containsReference(version)) {
+          result.add(new InvalidProperty(NUGET_PACK_VERSION, "Version must be NuGet version format, i.e. 1.2.3 or 5.4.3.2"));
         }
 
         //TODO: check properties are well-formed
@@ -101,7 +101,7 @@ public class PackRunType extends NuGetRunType {
   @Override
   public Map<String, String> getDefaultRunnerProperties() {
     return new HashMap<String, String>(){{
-      put(PackagesConstants.NUGET_PACK_VERSION, "%" + ServerProvidedProperties.BUILD_NUMBER_PROP + "%");
+      put(PackagesConstants.NUGET_PACK_VERSION, "0." + ReferencesResolverUtil.makeReference(ServerProvidedProperties.BUILD_NUMBER_PROP));
       put(PackagesConstants.NUGET_PACK_OUTPUT_CLEAR, "checked");
       put(PackagesConstants.NUGET_PACK_PROPERTIES, "Configuration=Release");
     }};
