@@ -77,15 +77,21 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
     }
 
     if (path.startsWith("?")) {
-      final BundledTool tool = myBundledTools.findTool(path.substring(1));
+      final String version = path.substring(1);
+      final BundledTool tool = myBundledTools.findTool(version);
       if (tool != null) {
-        path = new File(tool.getRootPath(), NUGET_TOOL_REL_PATH).getPath();
+        final File bundledPath = new File(tool.getRootPath(), NUGET_TOOL_REL_PATH);
+        if (bundledPath.isFile()) {
+          return bundledPath;
+        }
       }
+
+      throw new RunBuildException("Failed to find NuGet executable " + version + ". Check the version is listed in NuGet server settings tab.");
     }
 
-    File file = FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
-    if (!file.exists()) {
-      throw new RunBuildException("Failed to find " + "nuget.exe" + " at " + file);
+    final File file = FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
+    if (!file.isFile()) {
+      throw new RunBuildException("Failed to find NuGet executable at " + file);
     }
 
     return file;
