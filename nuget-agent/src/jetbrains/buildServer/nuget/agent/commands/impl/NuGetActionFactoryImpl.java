@@ -68,6 +68,10 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
           cmd = "cmd.exe";
         }
 
+        if (!program.isFile()) {
+          throw new RunBuildException("Failed to find NuGet executable at: " + program);
+        }
+
         List<String> argz = new ArrayList<String>();
         argz.add("/c");
         argz.add(program.getPath());
