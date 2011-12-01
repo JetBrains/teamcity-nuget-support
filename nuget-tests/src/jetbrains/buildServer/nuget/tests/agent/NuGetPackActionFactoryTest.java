@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -121,6 +122,12 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
 
     i.createPack(ctx, myFile, myPackParameters);
     m.assertIsSatisfied();
+  }
+
+  @Test(expectedExceptions = RunBuildException.class)
+  public void test_package_noNuGet() throws RunBuildException {
+    FileUtil.delete(myNuGet);
+    test_package();
   }
 
   @Test
