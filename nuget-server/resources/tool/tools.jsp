@@ -13,6 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
 <%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="tools" type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.tab.LocalTool>" scope="request"/>
 <jsp:useBean id="installerUrl" type="java.lang.String" scope="request"/>
@@ -21,17 +22,23 @@
 <c:set var="actualUpdateUrl"><c:url value="${updateUrl}"/></c:set>
 <bs:refreshable containerId="nugetPackagesList" pageUrl="${actualUpdateUrl}">
 <c:set var="installedPluginsCount" value="${fn:length(tools)}"/>
+
+<h2 class="noBorder">Installed NuGet Versions</h2>
 <p>
   TeamCity NuGet plugin requires to configure NuGet.Exe Command Line clients.
-  There are
+  There <bs:are_is val="${installedPluginsCount}"/>
   <strong><c:out value="${installedPluginsCount}"/></strong>
   plugin<bs:s val="${installedPluginsCount}"/> installed.
 </p>
 
-<h2 class="noBorder">Installed NuGet Versions</h2>
+<p>
+  Installed NuGet.exe commandline tools will be automatically
+  distributed among build agents.
+</p>
+
   <c:choose>
     <c:when test="${installedPluginsCount eq 0}">
-      <div>There are no installed NuGet.exe</div>
+      <div>There is no installed NuGet.exe</div>
     </c:when>
     <c:otherwise>
         <table class="dark borderBottom" cellpadding="0" cellspacing="0" style="width: 30em;">
@@ -62,10 +69,10 @@
       </table>
     </c:otherwise>
   </c:choose>
-  <div class="addNew">
+  <div class="addNew" style="margin-top: 1em;">
     <a href="#" onclick="return BS.NuGet.Tools.InstallPopup.show();">
       Install
-      <c:if test="${installedPluginsCount gt 0}">addintional versions of</c:if>
+      <c:if test="${installedPluginsCount gt 0}">additional versions of</c:if>
       NuGet.exe Command Line
     </a>
   </div>
