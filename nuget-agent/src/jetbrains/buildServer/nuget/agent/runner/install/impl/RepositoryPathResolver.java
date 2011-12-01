@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.agent.runner.install.impl;
 
+import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildProgressLogger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -26,5 +28,8 @@ import java.io.File;
  */
 public interface RepositoryPathResolver {
   @NotNull
-  File resolvePath(@NotNull final File solutionFile);
+  File resolvePath(@NotNull BuildProgressLogger logger,
+                   @NotNull File solutionFile) throws RunBuildException;
+
+
 }

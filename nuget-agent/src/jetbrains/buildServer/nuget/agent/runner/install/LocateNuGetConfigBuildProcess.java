@@ -79,7 +79,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   @Override
   protected BuildFinishedStatus waitForImpl() throws RunBuildException {
     final File sln = myContext.getSolutionFile();
-    final File packages = myResolver.resolvePath(sln);
+    final File packages = myResolver.resolvePath(myLogger, sln);
     final File repositoriesConfig = new File(packages, "repositories.config");
 
     if (sln.isFile()) {

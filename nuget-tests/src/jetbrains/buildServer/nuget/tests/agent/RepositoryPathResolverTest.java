@@ -17,10 +17,14 @@
 package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolver;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -33,6 +37,8 @@ import java.io.IOException;
  *         Date: 01.12.11 18:32
  */
 public class RepositoryPathResolverTest extends BaseTestCase {
+  private Mockery m;
+  private BuildProgressLogger myLogger;
   private RepositoryPathResolver myResolver;
   private File myHome;
   private File mySln;
@@ -41,6 +47,8 @@ public class RepositoryPathResolverTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    m = new Mockery();
+    myLogger = m.mock(BuildProgressLogger.class);
     myHome = createTempDir();
     mySln = new File(myHome, "project.sln");
 
@@ -49,31 +57,41 @@ public class RepositoryPathResolverTest extends BaseTestCase {
   }
 
   @Test
-  public void testDefaultPath() {
+  public void testDefaultPath() throws RunBuildException {
     doResolveTest("packages");
   }
 
   @Test
-  public void testResolveWithConfig_01() throws IOException {
+  public void testResolveWithConfig_01() throws IOException, RunBuildException {
     FileUtil.copy(Paths.getTestDataPath("config/NuGet-01.config"), new File(myHome, "NuGet.config"));
     doResolveTest("../lib");
   }
 
   @Test
-  public void testResolveWithConfig_02() throws IOException {
+  public void testResolveWithConfig_02() throws IOException, RunBuildException {
     FileUtil.copy(Paths.getTestDataPath("config/NuGet-02.Config"), new File(myHome, "nuget.config"));
     doResolveTest("packages");
   }
 
   @Test
-  public void testResolveWithConfig_03() throws IOException {
+  public void testResolveWithConfig_03() throws IOException, RunBuildException {
     FileUtil.copy(Paths.getTestDataPath("config/NuGet-03.Config"), new File(myHome, "nuget.config"));
     doResolveTest("../lib");
   }
 
-  private void doResolveTest(String packages) {
-    final File actual = myResolver.resolvePath(mySln);
+  @Test
+  public void testResolveWithBroken() throws IOException, RunBuildException {
+    m.checking(new Expectations(){{
+      oneOf(myLogger).warning(with(any(String.class)));
+    }});
+    FileUtil.writeFile(new File(myHome, "nuget.config"), "this is a broken xml");
+    doResolveTest("packages");
+  }
+
+  private void doResolveTest(String packages) throws RunBuildException {
+
+    final File actual = myResolver.resolvePath(myLogger, mySln);
     Assert.assertEquals(actual, FileUtil.getCanonicalFile(actual), "should return absolute canonical path");
-    Assert.assertEquals(actual, new File(myHome, packages));
+    Assert.assertEquals(actual, FileUtil.getCanonicalFile(new File(myHome, packages)));
   }
 }

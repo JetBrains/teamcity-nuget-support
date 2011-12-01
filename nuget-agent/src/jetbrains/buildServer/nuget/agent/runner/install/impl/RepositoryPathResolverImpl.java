@@ -16,6 +16,10 @@
 
 package jetbrains.buildServer.nuget.agent.runner.install.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.agent.BuildProgressLogger;
+import jetbrains.buildServer.util.FileUtil;
+import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -25,8 +29,38 @@ import java.io.File;
  *         Date: 01.12.11 18:16
  */
 public class RepositoryPathResolverImpl implements RepositoryPathResolver {
+  private static final Logger LOG = Logger.getInstance(RepositoryPathResolverImpl.class.getName());
+
   @NotNull
-  public File resolvePath(@NotNull File solutionFile) {
-    return new File(solutionFile.getParentFile(), "packages");
+  public File resolvePath(@NotNull final BuildProgressLogger logger,
+                          @NotNull final File solutionFile) {
+    final File home = solutionFile.getParentFile();
+    final File config = new File(home, "nuget.config");
+
+    final File defaultPath = new File(home, "packages");
+    if (!config.isFile()) {
+      return defaultPath;
+    }
+
+    LOG.debug("Found NuGet.config file: " + config);
+    try {
+      final Element element = FileUtil.parseDocument(config);
+      final Element child = element.getChild("repositoryPath");
+      if (child != null) {
+        String text = child.getText();
+        if (text != null) {
+          text = text.trim();
+          LOG.info("Found packages path: " + text);
+          return FileUtil.resolvePath(home, text);
+        }
+      }
+    } catch (final Exception e) {
+      final String message = "Failed to parse NuGet.config file at " + config + ". Packages will be downloaded into default path: " + defaultPath + ". " + e.getMessage();
+      logger.warning(message);
+      LOG.warn(message, e);
+      return defaultPath;
+    }
+
+    return defaultPath;
   }
 }
