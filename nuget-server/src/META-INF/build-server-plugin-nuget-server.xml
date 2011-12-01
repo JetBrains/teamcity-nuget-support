@@ -14,6 +14,7 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.RecentNuGetRequests"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedRequestsController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.RecentNuGetRequestsDumper"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl"/>
