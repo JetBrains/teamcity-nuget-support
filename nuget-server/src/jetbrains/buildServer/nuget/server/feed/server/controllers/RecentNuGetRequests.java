@@ -33,7 +33,7 @@ public class RecentNuGetRequests {
   private final RecentEntriesCache<String, String> myRequests = new RecentEntriesCache<String, String>(1000, false);
   
   public void reportFeedRequest(@NotNull final String url) {
-    LOG.debug("Request: " + url);
+    LOG.debug("NuGet Feed Request: " + url);
     myRequests.put(url, url);
   }
   
