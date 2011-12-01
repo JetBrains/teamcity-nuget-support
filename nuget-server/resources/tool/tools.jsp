@@ -23,57 +23,49 @@
 <bs:refreshable containerId="nugetPackagesList" pageUrl="${actualUpdateUrl}">
 <c:set var="installedPluginsCount" value="${fn:length(tools)}"/>
 
-<h2 class="noBorder">Installed NuGet Versions</h2>
+<h2 class="noBorder" style="padding-top:1em;">Installed NuGet Versions</h2>
+<p style="width: 40em;">
+  Listed NuGet.exe tools will automatically be
+  distributed among all build agents and could be used from
+  TeamCity NuGet runners even if there is no NuGet.exe available on an agent.
+</p>
 <p>
-  TeamCity NuGet plugin requires to configure NuGet.Exe Command Line clients.
   There <bs:are_is val="${installedPluginsCount}"/>
   <strong><c:out value="${installedPluginsCount}"/></strong>
-  plugin<bs:s val="${installedPluginsCount}"/> installed.
+  NuGet<bs:s val="${installedPluginsCount}"/> installed.
 </p>
 
-<p>
-  Installed NuGet.exe commandline tools will be automatically
-  distributed among build agents.
-</p>
-
-  <c:choose>
-    <c:when test="${installedPluginsCount eq 0}">
-      <div>There is no installed NuGet.exe</div>
-    </c:when>
-    <c:otherwise>
-        <table class="dark borderBottom" cellpadding="0" cellspacing="0" style="width: 30em;">
-          <thead>
-          <tr>
-            <th class="header" style="width: 66%">Version</th>
-            <th class="header"></th>
-          </tr>
-          </thead>
-          <tbody>
-            <c:forEach var="tool" items="${tools}">
-              <tr>
-                <td><c:out value="${tool.version}"/></td>
-                <td>
-                  <c:choose>
-                    <c:when test="${tool.state.installed}">
-                      <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
-                    </c:when>
-                    <c:when test="${tool.state.installing}">
-                      <bs:commentIcon text="Messages"/>
-                      Installing...
-                    </c:when>
-                  </c:choose>
-                </td>
-              </tr>
-            </c:forEach>
-          </tbody>
-      </table>
-    </c:otherwise>
-  </c:choose>
+  <c:if test="${not (installedPluginsCount eq 0)}">
+      <table class="dark borderBottom" cellpadding="0" cellspacing="0" style="width: 30em;">
+        <thead>
+        <tr>
+          <th class="header" style="width: 66%">Version</th>
+          <th class="header"></th>
+        </tr>
+        </thead>
+        <tbody>
+          <c:forEach var="tool" items="${tools}">
+            <tr>
+              <td><c:out value="${tool.version}"/></td>
+              <td>
+                <c:choose>
+                  <c:when test="${tool.state.installed}">
+                    <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
+                  </c:when>
+                  <c:when test="${tool.state.installing}">
+                    <bs:commentIcon text="Messages"/>
+                    Installing...
+                  </c:when>
+                </c:choose>
+              </td>
+            </tr>
+          </c:forEach>
+        </tbody>
+    </table>
+  </c:if>
   <div class="addNew" style="margin-top: 1em;">
     <a href="#" onclick="return BS.NuGet.Tools.InstallPopup.show();">
-      Install
-      <c:if test="${installedPluginsCount gt 0}">additional versions of</c:if>
-      NuGet.exe Command Line
+      Fetch NuGet.exe Tool
     </a>
   </div>
 </bs:refreshable>
