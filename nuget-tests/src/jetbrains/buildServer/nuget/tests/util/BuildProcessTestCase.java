@@ -52,7 +52,7 @@ public class BuildProcessTestCase extends LoggingTestCase {
       Assert.fail("Failed with exception " + e);
     }
 
-    Assert.assertEquals(result, status);
+    Assert.assertEquals(status, result);
   }
 
   protected void assertRunException(@NotNull BuildProcess proc, @NotNull String message) {

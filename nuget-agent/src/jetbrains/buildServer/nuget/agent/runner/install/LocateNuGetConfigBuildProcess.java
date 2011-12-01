@@ -21,6 +21,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolver;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -43,13 +44,16 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
 
   private final NuGetFetchParameters myContext;
   private final BuildProgressLogger myLogger;
+  private final RepositoryPathResolver myResolver;
   private final Callback myCallback;
 
   public LocateNuGetConfigBuildProcess(@NotNull final NuGetFetchParameters context,
                                        @NotNull final BuildProgressLogger logger,
+                                       @NotNull final RepositoryPathResolver resolver,
                                        @NotNull final Callback callback) {
     myContext = context;
     myLogger = logger;
+    myResolver = resolver;
     myCallback = callback;
   }
 
@@ -75,7 +79,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   @Override
   protected BuildFinishedStatus waitForImpl() throws RunBuildException {
     final File sln = myContext.getSolutionFile();
-    final File packages = new File(sln.getParentFile(), "packages");
+    final File packages = myResolver.resolvePath(myLogger, sln);
     final File repositoriesConfig = new File(packages, "repositories.config");
 
     if (sln.isFile()) {

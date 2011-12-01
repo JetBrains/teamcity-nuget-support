@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollecto
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.ArchiveUtil;
@@ -203,6 +204,30 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertEquals(4, packageses.size());
   }
 
+  @Test(dataProvider = NUGET_VERSIONS_15p)
+  public void test_02_NuGetConfig_anoterPackagesPath(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-02.zip"), "", myRoot);
+
+    fetchPackages(new File(myRoot, "ConsoleApplication1/ConsoleApplication1.sln"), Collections.<String>emptyList(), true, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Castle.Core", "3.0.0.3001"),
+                    new PackageInfo("NUnit", "2.5.10.11092"),
+                    new PackageInfo("jQuery", "1.7.1"),
+                    new PackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
+                    new PackageInfo("WebActivator", "1.5")));
+
+    List<File> packageses = Arrays.asList(new File(myRoot, "lib").listFiles());
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "lib/NUnit").isDirectory());
+    Assert.assertTrue(new File(myRoot, "lib/Castle.Core").isDirectory());
+    Assert.assertTrue(new File(myRoot, "lib/jQuery").isDirectory());
+    Assert.assertTrue(new File(myRoot, "lib/Microsoft.Web.Infrastructure").isDirectory());
+    Assert.assertTrue(new File(myRoot, "lib/WebActivator").isDirectory());
+    Assert.assertEquals(6, packageses.size());
+  }
+
+
   private void fetchPackages(final File sln,
                              final List<String> sources,
                              final boolean excludeVersion,
@@ -230,7 +255,8 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
 
     BuildProcess proc = new PackagesInstallerRunner(
             myActionFactory,
-            myParametersFactory
+            myParametersFactory,
+            new RepositoryPathResolverImpl()
     ).createBuildProcess(myBuild, myContext);
     ((NuGetPackagesCollectorImpl)myCollector).removeAllPackages();
 
