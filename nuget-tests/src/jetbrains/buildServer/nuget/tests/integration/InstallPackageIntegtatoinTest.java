@@ -204,19 +204,19 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertEquals(4, packageses.size());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS)
+  @Test(dataProvider = NUGET_VERSIONS_15p)
   public void test_02_NuGetConfig_anoterPackagesPath(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-02.zip"), "", myRoot);
 
     fetchPackages(new File(myRoot, "ConsoleApplication1/ConsoleApplication1.sln"), Collections.<String>emptyList(), true, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Castle.Core", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213"),
-                    new PackageInfo("jQuery", "2.2.1.4"),
-                    new PackageInfo("Microsoft.Web.Infrastructure", "2.2.1.4"),
-                    new PackageInfo("WebActivator", "2.2.1.4")));
+                    new PackageInfo("Castle.Core", "3.0.0.3001"),
+                    new PackageInfo("NUnit", "2.5.10.11092"),
+                    new PackageInfo("jQuery", "1.7.1"),
+                    new PackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
+                    new PackageInfo("WebActivator", "1.5")));
 
-    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    List<File> packageses = Arrays.asList(new File(myRoot, "lib").listFiles());
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "lib/NUnit").isDirectory());
@@ -224,7 +224,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertTrue(new File(myRoot, "lib/jQuery").isDirectory());
     Assert.assertTrue(new File(myRoot, "lib/Microsoft.Web.Infrastructure").isDirectory());
     Assert.assertTrue(new File(myRoot, "lib/WebActivator").isDirectory());
-    Assert.assertEquals(4, packageses.size());
+    Assert.assertEquals(6, packageses.size());
   }
 
 

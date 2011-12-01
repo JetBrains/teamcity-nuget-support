@@ -72,11 +72,19 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
 
   public static final String NUGET_VERSIONS = "nuget_versions";
+  public static final String NUGET_VERSIONS_15p = "nuget_versions_15p";
 
   @DataProvider(name = NUGET_VERSIONS)
   public Object[][] dataProviderNuGetVersions() {
     return new Object[][]{
             new Object[] { NuGet.NuGet_1_4},
+            new Object[] { NuGet.NuGet_1_5},
+    };
+  }
+
+  @DataProvider(name = NUGET_VERSIONS_15p)
+  public Object[][] dataProviderNuGetVersions15p() {
+    return new Object[][]{
             new Object[] { NuGet.NuGet_1_5},
     };
   }
