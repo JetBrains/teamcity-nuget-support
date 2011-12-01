@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollecto
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.ArchiveUtil;
@@ -230,7 +231,8 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
 
     BuildProcess proc = new PackagesInstallerRunner(
             myActionFactory,
-            myParametersFactory
+            myParametersFactory,
+            new RepositoryPathResolverImpl()
     ).createBuildProcess(myBuild, myContext);
     ((NuGetPackagesCollectorImpl)myCollector).removeAllPackages();
 

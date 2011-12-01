@@ -29,6 +29,7 @@ import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStages;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.PackagesInstallerBuilder;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolver;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import org.jetbrains.annotations.NotNull;
@@ -38,9 +39,14 @@ import org.jetbrains.annotations.NotNull;
  * Date: 07.07.11 13:55
  */
 public class PackagesInstallerRunner extends NuGetRunnerBase {
+  @NotNull
+  private final RepositoryPathResolver myResolver;
+
   public PackagesInstallerRunner(@NotNull final NuGetActionFactory actionFactory,
-                                 @NotNull final PackagesParametersFactory parametersFactory) {
+                                 @NotNull final PackagesParametersFactory parametersFactory,
+                                 @NotNull final RepositoryPathResolver resolver) {
     super(actionFactory, parametersFactory);
+    myResolver = resolver;
   }
 
   @NotNull
@@ -65,6 +71,7 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
     final LocateNuGetConfigBuildProcess locate = new LocateNuGetConfigBuildProcess(
             parameters,
             context.getBuild().getBuildLogger(),
+            myResolver,
             new PackagesInstallerBuilder(
                     myActionFactory,
                     stages,
