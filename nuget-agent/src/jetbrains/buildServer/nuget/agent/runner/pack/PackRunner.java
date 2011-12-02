@@ -18,17 +18,22 @@ package jetbrains.buildServer.nuget.agent.runner.pack;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
+import jetbrains.buildServer.configuration.FilesWatcher;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
+import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.MatchFilesBuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.util.CollectionsUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -36,14 +41,17 @@ import java.io.File;
  */
 public class PackRunner extends NuGetRunnerBase {
   private final PackRunnerOutputDirectoryTracker myTracker;
+  private final ArtifactsWatcher myPublisher;
   private final SmartDirectoryCleaner myCleaner;
 
   public PackRunner(@NotNull final NuGetActionFactory actionFactory,
                     @NotNull final PackagesParametersFactory parametersFactory,
                     @NotNull final PackRunnerOutputDirectoryTracker tracker,
+                    @NotNull final ArtifactsWatcher publisher,
                     @NotNull final SmartDirectoryCleaner cleaner) {
     super(actionFactory, parametersFactory);
     myTracker = tracker;
+    myPublisher = publisher;
     myCleaner = cleaner;
   }
 
@@ -53,7 +61,13 @@ public class PackRunner extends NuGetRunnerBase {
     final CompositeBuildProcess process = new CompositeBuildProcessImpl();
     final NuGetPackParameters params = myParametersFactory.loadPackParameters(context);
 
+    final FilesWatcher watcher = createFileWatcher(params.getOutputDirectory());
+
     process.pushBuildProcess(new OutputDirectoryCleanerProcess(params, runningBuild, myCleaner, myTracker.getState(runningBuild)));
+    if (params.publishAsArtifacts()) {
+      process.pushBuildProcess(resetFileWatcherProcess(watcher));
+    }
+
     process.pushBuildProcess(
             new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcessBase.Callback() {
               public void fileFound(@NotNull File file) throws RunBuildException {
@@ -62,7 +76,55 @@ public class PackRunner extends NuGetRunnerBase {
             })
     );
 
+    if (params.publishAsArtifacts()) {
+      process.pushBuildProcess(publishArtifactsProcess(runningBuild, watcher));
+    }
+
     return process;
+  }
+
+  private BuildProcessBase resetFileWatcherProcess(@NotNull final FilesWatcher watcher) {
+    return new BuildProcessBase() {
+      @NotNull
+      @Override
+      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+        watcher.resetChanged();
+        return BuildFinishedStatus.FINISHED_SUCCESS;
+      }
+    };
+  }
+
+  private BuildProcessBase publishArtifactsProcess(@NotNull final AgentRunningBuild runningBuild,
+                                                   @NotNull final FilesWatcher watcher) {
+    return new BuildProcessBase() {
+      @NotNull
+      @Override
+      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+        watcher.checkForModifications();
+
+        final Set<File> allFiles = new TreeSet<File>(CollectionsUtil.join(watcher.getModifiedFiles(), watcher.getNewFiles()));
+        LOG.warn("Created packages to publish as artifacts: " + allFiles);
+        if (allFiles.isEmpty()) {
+          runningBuild.getBuildLogger().warning("No new package files were created. Nothing to publish as artifacs.");
+        } else {
+          final StringBuilder sb = new StringBuilder();
+          for (File file : allFiles) {
+            sb.append(file.getPath()).append(" => .").append("\r\n");
+          }
+          myPublisher.addNewArtifactsPath(sb.toString());
+        }
+        return BuildFinishedStatus.FINISHED_SUCCESS;
+      }
+    };
+  }
+
+  private FilesWatcher createFileWatcher(final File outputDir) {
+    return new FilesWatcher(new FilesWatcher.WatchedFilesProvider() {
+      public File[] getWatchedFiles() {
+        final File[] files = outputDir.listFiles();
+        return files != null ? files : new File[0];
+      }
+    });
   }
 
   @NotNull

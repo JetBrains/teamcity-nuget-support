@@ -310,6 +310,10 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
         return getBoolean(context, NUGET_PACK_AS_TOOL);
       }
 
+      public boolean publishAsArtifacts() {
+        return getBoolean(context, NUGET_PACK_PUBLISH_ARTIFACT);
+      }
+
       @NotNull
       public File getNuGetExeFile() throws RunBuildException {
         return getPathToNuGet(context);

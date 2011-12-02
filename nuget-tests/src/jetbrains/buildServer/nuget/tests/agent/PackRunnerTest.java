@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
@@ -60,6 +61,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   private File myCheckoutDir;
   private Map<String, String> myConfigParameters;
   private PackRunnerOutputDirectoryTracker myTracker;
+  private ArtifactsWatcher myPublisher;
 
 
   @BeforeMethod
@@ -77,6 +79,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
     myLogger = m.mock(BuildProgressLogger.class);
     myConfigParameters = new TreeMap<String, String>();
     myTracker = new PackRunnerOutputDirectoryTrackerImpl();
+    myPublisher = m.mock(ArtifactsWatcher.class);
 
     myCheckoutDir = createTempDir();
     m.checking(new Expectations(){{
@@ -104,7 +107,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   }
 
   private PackRunner createRunner() {
-    return new PackRunner(myActionFactory, myParametersFactory, myTracker, myCleaner);
+    return new PackRunner(myActionFactory, myParametersFactory, myTracker, myPublisher, myCleaner);
   }
 
   @Test

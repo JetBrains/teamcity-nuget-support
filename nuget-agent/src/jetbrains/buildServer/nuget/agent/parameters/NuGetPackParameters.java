@@ -53,4 +53,6 @@ public interface NuGetPackParameters extends NuGetParameters {
 
   boolean packSymbols();
   boolean packTool();
+
+  boolean publishAsArtifacts();
 }
