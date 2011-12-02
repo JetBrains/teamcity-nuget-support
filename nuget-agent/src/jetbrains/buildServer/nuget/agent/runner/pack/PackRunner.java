@@ -22,12 +22,10 @@ import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
-import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.MatchFilesBuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -52,45 +50,7 @@ public class PackRunner extends NuGetRunnerBase {
     final CompositeBuildProcess process = new CompositeBuildProcessImpl();
     final NuGetPackParameters params = myParametersFactory.loadPackParameters(context);
 
-    process.pushBuildProcess(new BuildProcessBase() {
-      private final String CLEAN_OUTPUT_KEY = "teamcity.nuget.pack.cleanOutputDirectory";
-      private final String CLEAN_OUTPUT_VALUE_CLEANED = "cleaned";
-      private final String CLEAN_OUTPUT_VALUE_NOT_CLEANED = "not-cleaned";
-
-      @NotNull
-      @Override
-      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
-        final File output = params.getOutputDirectory();
-
-        final String clean = runningBuild.getSharedConfigParameters().get(CLEAN_OUTPUT_KEY);
-        if (clean == null && params.cleanOutputDirectory()) {
-          runningBuild.addSharedConfigParameter(CLEAN_OUTPUT_KEY, CLEAN_OUTPUT_VALUE_CLEANED);
-          final CleanerCallback callback = new CleanerCallback(runningBuild.getBuildLogger(), Logger.getLogger(getClass()));
-          myCleaner.cleanFolder(output, callback);
-          if (callback.isHasErrors()) {
-            return BuildFinishedStatus.FINISHED_FAILED;
-          }
-        } else if (clean == null && !params.cleanOutputDirectory()) {
-          runningBuild.addSharedConfigParameter(CLEAN_OUTPUT_KEY, CLEAN_OUTPUT_VALUE_NOT_CLEANED);
-        } else if (CLEAN_OUTPUT_VALUE_NOT_CLEANED.equals(clean) && params.cleanOutputDirectory()) {
-          final String message = "Could not clean output directory, there were another NuGet Packages Pack runner with disabled clean";
-          LOG.warn(message);
-          runningBuild.getBuildLogger().warning(message);
-        } else if (CLEAN_OUTPUT_VALUE_CLEANED.equals(clean)) {
-          LOG.warn("Will not clean NuGet Pachages Pack runner output, output was cleaned by previous runners");
-        }
-
-        //noinspection ResultOfMethodCallIgnored
-        output.mkdirs();
-        if (!output.isDirectory()) {
-          runningBuild.getBuildLogger().error("Failed to create output directory: " + output);
-          return BuildFinishedStatus.FINISHED_FAILED;
-        }
-
-        return BuildFinishedStatus.FINISHED_SUCCESS;
-      }
-    });
-
+    process.pushBuildProcess(new OutputDirectoryCleanerProcess(params, runningBuild, myCleaner));
     process.pushBuildProcess(
             new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcessBase.Callback() {
               public void fileFound(@NotNull File file) throws RunBuildException {
@@ -105,53 +65,5 @@ public class PackRunner extends NuGetRunnerBase {
   @NotNull
   public String getType() {
     return PackagesConstants.PACK_RUN_TYPE;
-  }
-
-  private class CleanerCallback implements SmartDirectoryCleanerCallback {
-    private final BuildProgressLogger myLogger;
-    private final Logger LOG;
-    private boolean myHasErrors = false;
-    private File myRoot;
-
-    public CleanerCallback(@NotNull final BuildProgressLogger logger, @NotNull final Logger LOG) {
-      myLogger = logger;
-      this.LOG = LOG;
-    }
-
-    public void logCleanStarted(final File f) {
-      myRoot = f;
-      myLogger.message("Cleaning " + f.getAbsolutePath());
-      LOG.info("Cleaning " + f.getAbsolutePath());
-    }
-
-    public void logFailedToDeleteEmptyDirectory(final File f) {
-      final String message = "Failed to delete empty directory: " + f.getAbsolutePath();
-      if (f != myRoot) {
-        myLogger.error(message);
-      } else {
-        myLogger.warning(message);
-      }
-      LOG.warn(message);
-    }
-
-    public void logFailedToCleanFilesUnderDirectory(final File problem) {
-      myLogger.error("Failed to clean all files under directory: " + problem.getAbsolutePath());
-      LOG.warn("Failed to clean all files under directory: " + problem.getAbsolutePath());
-      myHasErrors = true;
-    }
-
-    public void logFailedToCleanFile(final File problem) {
-      myLogger.error("Failed to delete file: " + problem.getAbsolutePath());
-      LOG.warn("Failed to delete file: " + problem.getAbsolutePath());
-      myHasErrors = true;
-    }
-
-    public void logFailedToCleanEntireFolder(final File file) {
-      myHasErrors = true;
-    }
-
-    public boolean isHasErrors() {
-      return myHasErrors;
-    }
   }
 }
