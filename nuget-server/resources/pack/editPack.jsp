@@ -13,6 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
 <%@ taglib prefix="forms" tagdir="/WEB-INF/tags/forms" %>
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
@@ -60,10 +61,10 @@
 
 <l:settingsGroup title="Output">
   <tr>
-    <th rowspan="3"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
+    <th rowspan="2"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
     <td>
       <props:textProperty name="${ib.packOutputDirectory}" className="longField"/>
-      <span class="smallNote">Specify path to put generated NuGet package</span>
+      <span class="smallNote">Specify path to put generated NuGet package. Use <em>NuGet Publish</em> build runner to publish package to NuGet Feed</span>
       <span id="error_${ib.packOutputDirectory}" class="error"></span>
     </td>
   </tr>
