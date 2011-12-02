@@ -40,8 +40,12 @@
 
 <div class="parameter">
   Output Directory: <strong><props:displayValue name="${ib.packOutputDirectory}"/></strong>
-  <c:if test="${not empty propertiesBean.properties[ib.packOutputClear]}">, cleaned on start</c:if>
-  <c:if test="${not empty propertiesBean.properties[ib.packAsArtifact]}">, published as artifact</c:if>
+</div>
+<div class="parameter">
+  Clean Output Directory: <strong><props:displayCheckboxValue name="${ib.packOutputClear}"/></strong>
+</div>
+<div class="parameter">
+  Publish Packages to Artifacts: <strong><props:displayCheckboxValue name="${ib.packAsArtifact}"/></strong>
 </div>
 
 <div class="parameter">
