@@ -73,10 +73,6 @@ public class OutputDirectoryCleanerProcess extends BuildProcessBase {
         throw new IllegalStateException("Unsupported clean action: " + outcome);
     }
 
-    if (outcome.cleanFolder()) {
-      cleanFiles(output);
-    }
-
     createOutputDirectory(output);
 
     return BuildFinishedStatus.FINISHED_SUCCESS;

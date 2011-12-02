@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
+import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTracker;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerImpl;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.FileUtil;
@@ -58,6 +59,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   private BuildProgressLogger myLogger;
   private File myCheckoutDir;
   private Map<String, String> myConfigParameters;
+  private PackRunnerOutputDirectoryTracker myTracker;
 
 
   @BeforeMethod
@@ -74,6 +76,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
     myProc = m.mock(BuildProcess.class);
     myLogger = m.mock(BuildProgressLogger.class);
     myConfigParameters = new TreeMap<String, String>();
+    myTracker = new PackRunnerOutputDirectoryTrackerImpl();
 
     myCheckoutDir = createTempDir();
     m.checking(new Expectations(){{
@@ -101,7 +104,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   }
 
   private PackRunner createRunner() {
-    return new PackRunner(myActionFactory, myParametersFactory, new PackRunnerOutputDirectoryTrackerImpl(), myCleaner);
+    return new PackRunner(myActionFactory, myParametersFactory, myTracker, myCleaner);
   }
 
   @Test

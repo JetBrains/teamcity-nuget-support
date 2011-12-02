@@ -34,9 +34,5 @@ public interface TrackState {
     NOT_CLEANED_BEFORE,
     NO_CLEAN_REQUIRED,
     ;
-
-    public boolean cleanFolder() {
-      return this == CLEAN;
-    }
   }
 }
