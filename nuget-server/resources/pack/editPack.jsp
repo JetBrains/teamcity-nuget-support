@@ -61,7 +61,7 @@
 
 <l:settingsGroup title="Output">
   <tr>
-    <th rowspan="2"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
+    <th rowspan="3"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
     <td>
       <props:textProperty name="${ib.packOutputDirectory}" className="longField"/>
       <span class="smallNote">Specify path to put generated NuGet package. Specify directory to put generated NuGet packages into. See also <em>NuGet Publish</em> build runner.</span>
