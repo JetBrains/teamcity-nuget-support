@@ -125,6 +125,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
       allowing(myLogger).message(with(any(String.class)));
 
+      allowing(myBuild).getBuildId(); will(returnValue(42L));
       allowing(myBuild).getSharedConfigParameters(); will(returnValue(Collections.unmodifiableMap(configParameters)));
       allowing(myBuild).addSharedConfigParameter(with(any(String.class)), with(any(String.class)));
       will(new CustomAction("Add config parameter") {

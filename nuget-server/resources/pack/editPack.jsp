@@ -34,7 +34,7 @@
     <th><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
     <td>
       <props:multilineProperty name="${ib.packSpecFile}" linkTitle="Specification or project files" cols="60" rows="5" expanded="${true}"/>
-      <span class="smallNote">Specify paths to .nuspec files and/or to Visual Studio project files (i.e. .csproj). Wildcards are supported</span>
+      <span class="smallNote">Specify paths to .nuspec files and/or to Visual Studio project files (i.e. .csproj or .vbproj). MSBuild-style wildcards are supported</span>
       <span id="error_${ib.packSpecFile}" class="error"></span>
     </td>
   </tr>
@@ -61,16 +61,22 @@
 
 <l:settingsGroup title="Output">
   <tr>
-    <th rowspan="2"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
+    <th rowspan="3"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
     <td>
       <props:textProperty name="${ib.packOutputDirectory}" className="longField"/>
-      <span class="smallNote">Specify path to put generated NuGet package. Use <em>NuGet Publish</em> build runner to publish package to NuGet Feed</span>
+      <span class="smallNote">Specify path to put generated NuGet package. Specify directory to put generated NuGet packages into. See also <em>NuGet Publish</em> build runner.</span>
       <span id="error_${ib.packOutputDirectory}" class="error"></span>
     </td>
   </tr>
   <tr>
     <td>
-      <props:checkboxProperty name="${ib.packOutputClear}"/> Clean output directory before pack
+      <props:checkboxProperty name="${ib.packOutputClear}"/> Clean output directory
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <props:checkboxProperty name="${ib.packAsArtifact}"/> Publish created packages to build artifacts
+      <span class="smallNote">Created packages will be published to the root of artifacts</span>
     </td>
   </tr>
 </l:settingsGroup>

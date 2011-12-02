@@ -7,4 +7,7 @@
 
   <bean class="jetbrains.buildServer.nuget.agent.runner.pack.PackRunner"/>
 
+  <bean class="jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerCleaner"/>
+
 </beans>

@@ -34,4 +34,5 @@ public class PackBean {
   public String getPackCustomCommandline() { return PackagesConstants.NUGET_PACK_CUSOM_COMMANDLINE; }
   public String getPackAsTool() { return PackagesConstants.NUGET_PACK_AS_TOOL; }
   public String getPackSources() { return PackagesConstants.NUGET_PACK_INCLUDE_SOURCES; }
+  public String getPackAsArtifact() { return PackagesConstants.NUGET_PACK_PUBLISH_ARTIFACT; }
 }

@@ -24,8 +24,10 @@ import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.SmartDirectoryCleaner;
+import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
+import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerImpl;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -47,6 +49,7 @@ import java.util.zip.ZipInputStream;
 public class PackIntegrationTest extends IntegrationTestBase {
   protected NuGetPackParameters myPackParameters;
   private SmartDirectoryCleaner myCleaner;
+  private ArtifactsWatcher myPublisher;
   private File myOutputDir;
 
   @BeforeMethod
@@ -55,9 +58,11 @@ public class PackIntegrationTest extends IntegrationTestBase {
     super.setUp();
     myPackParameters = m.mock(NuGetPackParameters.class);
     myCleaner = m.mock(SmartDirectoryCleaner.class);
+    myPublisher = m.mock(ArtifactsWatcher.class);
 
     m.checking(new Expectations(){{
       oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(myPackParameters));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
 
       allowing(myLogger).activityStarted(with(equal("pack")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("pack")), with(any(String.class)));
@@ -217,7 +222,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
       allowing(myPackParameters).packSymbols(); will(returnValue(symbols));
     }});
 
-    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, new PackRunnerOutputDirectoryTrackerImpl(),myPublisher, myCleaner);
     final BuildProcess proc = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
   }
