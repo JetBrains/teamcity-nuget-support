@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.agent.runner.pack;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
+import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FilesWatcher;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
@@ -29,11 +30,11 @@ import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.MatchFilesBuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.util.CollectionsUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.*;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -64,17 +65,21 @@ public class PackRunner extends NuGetRunnerBase {
     final FilesWatcher watcher = createFileWatcher(params.getOutputDirectory());
 
     process.pushBuildProcess(new OutputDirectoryCleanerProcess(params, runningBuild, myCleaner, myTracker.getState(runningBuild)));
+
     if (params.publishAsArtifacts()) {
       process.pushBuildProcess(resetFileWatcherProcess(watcher));
     }
 
+    final CompositeBuildProcess packRunners = new CompositeBuildProcessImpl();
+
     process.pushBuildProcess(
             new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcessBase.Callback() {
               public void fileFound(@NotNull File file) throws RunBuildException {
-                process.pushBuildProcess(myActionFactory.createPack(context, file, params));
+                packRunners.pushBuildProcess(myActionFactory.createPack(context, file, params));
               }
             })
     );
+    process.pushBuildProcess(packRunners);
 
     if (params.publishAsArtifacts()) {
       process.pushBuildProcess(publishArtifactsProcess(runningBuild, watcher));
@@ -100,9 +105,15 @@ public class PackRunner extends NuGetRunnerBase {
       @NotNull
       @Override
       protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+        final Set<File> allFiles = new TreeSet<File>();
+        watcher.registerListener(new ChangeListener() {
+          public void changeOccured(String requestor) {
+            allFiles.addAll(watcher.getModifiedFiles());
+            allFiles.addAll(watcher.getNewFiles());
+          }
+        });
         watcher.checkForModifications();
 
-        final Set<File> allFiles = new TreeSet<File>(CollectionsUtil.join(watcher.getModifiedFiles(), watcher.getNewFiles()));
         LOG.warn("Created packages to publish as artifacts: " + allFiles);
         if (allFiles.isEmpty()) {
           runningBuild.getBuildLogger().warning("No new package files were created. Nothing to publish as artifacs.");

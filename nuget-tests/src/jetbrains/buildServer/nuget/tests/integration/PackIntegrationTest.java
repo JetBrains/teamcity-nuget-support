@@ -62,6 +62,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
     m.checking(new Expectations(){{
       oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(myPackParameters));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
 
       allowing(myLogger).activityStarted(with(equal("pack")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("pack")), with(any(String.class)));

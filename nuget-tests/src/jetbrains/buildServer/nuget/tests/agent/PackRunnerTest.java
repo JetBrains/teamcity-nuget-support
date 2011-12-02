@@ -62,6 +62,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   private Map<String, String> myConfigParameters;
   private PackRunnerOutputDirectoryTracker myTracker;
   private ArtifactsWatcher myPublisher;
+  private boolean myPublishAsArtifacts;
 
 
   @BeforeMethod
@@ -117,11 +118,74 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(createTempDir()));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
 
       oneOf(myProc).start();
       oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
 
+    }});
+
+    final PackRunner runner = createRunner();
+    final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
+    assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_packRunner_outputDirectory_notCleaned_artifacts_no_change() throws RunBuildException, IOException {
+    final File spec = createTempFile();
+    final File outputDir = createTempDir();
+    FileUtil.writeFile(new File(outputDir, "foo.nupkg"), "zzz");
+
+    m.checking(new Expectations(){{
+      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
+      allowing(myPackParameters).getOutputDirectory();
+      will(returnValue(outputDir));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(true));
+      oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
+
+      oneOf(myProc).start();
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+
+      oneOf(myLogger).warning(with(any(String.class)));
+    }});
+
+    final PackRunner runner = createRunner();
+    final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
+    assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_packRunner_outputDirectory_notCleaned_artifacts_change() throws RunBuildException, IOException {
+    final File spec = createTempFile();
+    final File outputDir = createTempDir();
+
+    final File bar = new File(outputDir, "bar.nupkg");
+    final File foo = new File(outputDir, "foo.nupkg");
+
+    FileUtil.writeFile(foo, "zzz");
+    m.checking(new Expectations(){{
+      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
+      allowing(myPackParameters).getOutputDirectory();
+      will(returnValue(outputDir));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(true));
+      oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
+
+      oneOf(myProc).start(); will(new CustomAction("create/update fake package") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          FileUtil.writeFile(bar, "zUUz");
+          FileUtil.writeFile(foo, "zsssUUz");
+          return null;
+        }
+      });
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+      oneOf(myPublisher).addNewArtifactsPath(bar + " => .\r\n" + foo + " => .\r\n");
     }});
 
     final PackRunner runner = createRunner();
@@ -141,6 +205,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
 
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
@@ -175,10 +240,12 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
 
       allowing(params2).cleanOutputDirectory(); will(returnValue(true));
       allowing(params2).getOutputDirectory(); will(returnValue(temp));
       allowing(params2).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(params2).publishAsArtifacts(); will(returnValue(false));
 
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec, params2); will(returnValue(myProc));
@@ -212,13 +279,16 @@ public class PackRunnerTest extends BuildProcessTestCase {
     m.checking(new Expectations(){{
       oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(params2));
 
+
       allowing(params1).cleanOutputDirectory(); will(returnValue(true));
       allowing(params1).getOutputDirectory(); will(returnValue(temp1));
       allowing(params1).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(params1).publishAsArtifacts(); will(returnValue(false));
 
       allowing(params2).cleanOutputDirectory(); will(returnValue(true));
       allowing(params2).getOutputDirectory(); will(returnValue(temp2));
       allowing(params2).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(params2).publishAsArtifacts(); will(returnValue(false));
 
       oneOf(myActionFactory).createPack(myContext, spec, params1); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec, params2); will(returnValue(myProc));
@@ -249,6 +319,24 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Collections.emptyList()));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
+    }});
+
+    final PackRunner runner = createRunner();
+    final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
+    assertRunException(process, "Failed to find files to create packages matching");
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_packRunner_no_files_artifacts() throws RunBuildException, IOException {
+    final File temp = createTempDir();
+    m.checking(new Expectations(){{
+      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
+      allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(Collections.emptyList()));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(true));
     }});
 
     final PackRunner runner = createRunner();
@@ -268,6 +356,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec1.getPath(),spec2.getPath(),spec3.getPath())));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
 
       oneOf(myActionFactory).createPack(myContext, spec1, myPackParameters); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec2, myPackParameters); will(returnValue(myProc));
@@ -303,6 +392,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(home.getPath() + "/*.nuspec")));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
 
       oneOf(myActionFactory).createPack(myContext, spec1, myPackParameters); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec2, myPackParameters); will(returnValue(myProc));
@@ -335,6 +425,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
       allowing(myPackParameters).getOutputDirectory();will(returnValue(temp));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
 
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
       oneOf(myCleaner).cleanFolder(with(equal(temp)), with(any(SmartDirectoryCleanerCallback.class)));
@@ -359,6 +450,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
     m.checking(new Expectations(){{
       allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
       allowing(myPackParameters).getOutputDirectory();will(returnValue(temp));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
 
       allowing(myLogger).error(with(any(String.class)));
 
