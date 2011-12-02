@@ -98,6 +98,10 @@ public class PackRunnerTest extends BuildProcessTestCase {
     }});
   }
 
+  private PackRunner createRunner() {
+    return new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+  }
+
   @Test
   public void test_packRunner_outputDirectory_notCleaned() throws RunBuildException, IOException {
     final File spec = createTempFile();
@@ -112,7 +116,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
 
     }});
 
-    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+    final PackRunner runner = createRunner();
     final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
 
@@ -143,7 +147,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
     }});
 
     for(int i = 0; i < 2; i++) {
-      final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+      final PackRunner runner = createRunner();
       final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
       assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
     }
@@ -181,7 +185,48 @@ public class PackRunnerTest extends BuildProcessTestCase {
     }});
 
     for(int i = 0; i < 2; i++) {
-      final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+      final PackRunner runner = createRunner();
+      final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
+      assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
+    }
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_packRunners_different_outputDirectory_cleaned() throws RunBuildException, IOException {
+    final File temp1 = createTempDir();
+    final File temp2 = createTempDir();
+    final File spec = createTempFile();
+    final NuGetPackParameters params1 = myPackParameters;
+    final NuGetPackParameters params2 = m.mock(NuGetPackParameters.class, "params2");
+
+    m.checking(new Expectations(){{
+      oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(params2));
+
+      allowing(params1).cleanOutputDirectory(); will(returnValue(true));
+      allowing(params1).getOutputDirectory(); will(returnValue(temp1));
+      allowing(params1).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+
+      allowing(params2).cleanOutputDirectory(); will(returnValue(true));
+      allowing(params2).getOutputDirectory(); will(returnValue(temp2));
+      allowing(params2).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+
+      oneOf(myActionFactory).createPack(myContext, spec, params1); will(returnValue(myProc));
+      oneOf(myActionFactory).createPack(myContext, spec, params2); will(returnValue(myProc));
+
+      oneOf(myProc).start();
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+
+      oneOf(myProc).start();
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+
+      oneOf(myCleaner).cleanFolder(with(equal(temp1)), with(any(SmartDirectoryCleanerCallback.class)));
+      oneOf(myCleaner).cleanFolder(with(equal(temp2)), with(any(SmartDirectoryCleanerCallback.class)));
+    }});
+
+    for(int i = 0; i < 2; i++) {
+      final PackRunner runner = createRunner();
       final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
       assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
     }
@@ -198,7 +243,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Collections.emptyList()));
     }});
 
-    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+    final PackRunner runner = createRunner();
     final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
     assertRunException(process, "Failed to find files to create packages matching");
 
@@ -230,7 +275,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
       oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
     }});
 
-    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+    final PackRunner runner = createRunner();
     final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
 
@@ -267,7 +312,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
       oneOf(myCleaner).cleanFolder(with(equal(temp)), with(any(SmartDirectoryCleanerCallback.class)));
     }});
 
-    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+    final PackRunner runner = createRunner();
     final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
 
@@ -291,7 +336,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
     }});
 
     FileUtil.delete(temp);
-    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+    final PackRunner runner = createRunner();
     final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
 
@@ -323,9 +368,9 @@ public class PackRunnerTest extends BuildProcessTestCase {
       }));
     }});
 
-    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+    final PackRunner runner = createRunner();
     final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
-    assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_FAILED);
+    assertRunException(process, "Failed to clean output directory");
 
     m.assertIsSatisfied();
   }
