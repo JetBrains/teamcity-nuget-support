@@ -26,6 +26,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.SmartDirectoryCleaner;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
+import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerImpl;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -217,7 +218,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
       allowing(myPackParameters).packSymbols(); will(returnValue(symbols));
     }});
 
-    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+    final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, new PackRunnerOutputDirectoryTrackerImpl(), myCleaner);
     final BuildProcess proc = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
   }

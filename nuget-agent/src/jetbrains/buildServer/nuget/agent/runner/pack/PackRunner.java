@@ -35,12 +35,15 @@ import java.io.File;
  *         Date: 23.08.11 12:11
  */
 public class PackRunner extends NuGetRunnerBase {
+  private final PackRunnerOutputDirectoryTracker myTracker;
   private final SmartDirectoryCleaner myCleaner;
 
   public PackRunner(@NotNull final NuGetActionFactory actionFactory,
                     @NotNull final PackagesParametersFactory parametersFactory,
+                    @NotNull final PackRunnerOutputDirectoryTracker tracker,
                     @NotNull final SmartDirectoryCleaner cleaner) {
     super(actionFactory, parametersFactory);
+    myTracker = tracker;
     myCleaner = cleaner;
   }
 
@@ -50,7 +53,7 @@ public class PackRunner extends NuGetRunnerBase {
     final CompositeBuildProcess process = new CompositeBuildProcessImpl();
     final NuGetPackParameters params = myParametersFactory.loadPackParameters(context);
 
-    process.pushBuildProcess(new OutputDirectoryCleanerProcess(params, runningBuild, myCleaner));
+    process.pushBuildProcess(new OutputDirectoryCleanerProcess(params, runningBuild, myCleaner, myTracker.getState(runningBuild)));
     process.pushBuildProcess(
             new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcessBase.Callback() {
               public void fileFound(@NotNull File file) throws RunBuildException {

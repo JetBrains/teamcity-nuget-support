@@ -31,52 +31,63 @@ import java.io.File;
  */
 public class OutputDirectoryCleanerProcess extends BuildProcessBase {
   private static final Logger LOG = Logger.getInstance(OutputDirectoryCleanerProcess.class.getName());
-  private static final String CLEAN_OUTPUT_KEY = "teamcity.nuget.pack.cleanOutputDirectory";
-  private static final String CLEAN_OUTPUT_VALUE_CLEANED = "cleaned";
-  private static final String CLEAN_OUTPUT_VALUE_NOT_CLEANED = "not-cleaned";
 
   private final NuGetPackParameters myParams;
   private final AgentRunningBuild myRunningBuild;
   private final SmartDirectoryCleaner myCleaner;
+  private final TrackState myState;
 
   public OutputDirectoryCleanerProcess(@NotNull final NuGetPackParameters params,
                                        @NotNull final AgentRunningBuild runningBuild,
-                                       @NotNull final SmartDirectoryCleaner cleaner) {
+                                       @NotNull final SmartDirectoryCleaner cleaner,
+                                       @NotNull final TrackState state) {
     myParams = params;
     myRunningBuild = runningBuild;
     myCleaner = cleaner;
+    myState = state;
   }
 
   @NotNull
   @Override
   protected BuildFinishedStatus waitForImpl() throws RunBuildException {
     final File output = myParams.getOutputDirectory();
+    final boolean clean = myParams.cleanOutputDirectory();
 
-    final String clean = myRunningBuild.getSharedConfigParameters().get(CLEAN_OUTPUT_KEY);
-    if (clean == null && myParams.cleanOutputDirectory()) {
-
-      myRunningBuild.addSharedConfigParameter(CLEAN_OUTPUT_KEY, CLEAN_OUTPUT_VALUE_CLEANED);
-      cleanFiles(output);
-    } else if (clean == null && !myParams.cleanOutputDirectory()) {
-
-      myRunningBuild.addSharedConfigParameter(CLEAN_OUTPUT_KEY, CLEAN_OUTPUT_VALUE_NOT_CLEANED);
-    } else if (CLEAN_OUTPUT_VALUE_NOT_CLEANED.equals(clean) && myParams.cleanOutputDirectory()) {
-
-      final String message = "Could not clean output directory, there were another NuGet Packages Pack runner with disabled clean";
-      LOG.warn(message);
-      myRunningBuild.getBuildLogger().warning(message);
-    } else if (CLEAN_OUTPUT_VALUE_CLEANED.equals(clean)) {
-
-      LOG.warn("Will not clean NuGet Pachages Pack runner output, output was cleaned by previous runners");
+    final TrackState.CleanOutcome outcome = myState.registerDirectoryClean(output, clean);
+    switch (outcome) {
+      case CLEAN:
+        cleanFiles(output);
+        break;
+      case CLEANED_BEFORE:
+        LOG.warn("Will not clean NuGet Pachages Pack runner output, output was cleaned by previous runners");
+        break;
+      case NO_CLEAN_REQUIRED:
+        //NOP
+        break;
+      case NOT_CLEANED_BEFORE:
+        final String message = "Could not clean output directory, there were another NuGet Packages Pack runner with disabled clean";
+        LOG.warn(message);
+        myRunningBuild.getBuildLogger().warning(message);
+        break;
+      default:
+        throw new IllegalStateException("Unsupported clean action: " + outcome);
     }
 
+    if (outcome.cleanFolder()) {
+      cleanFiles(output);
+    }
+
+    createOutputDirectory(output);
+
+    return BuildFinishedStatus.FINISHED_SUCCESS;
+  }
+
+  private void createOutputDirectory(@NotNull final File output) throws RunBuildException {
     //noinspection ResultOfMethodCallIgnored
     output.mkdirs();
     if (!output.isDirectory()) {
       throw new RunBuildException("Failed to create output directory: " + output);
     }
-
-    return BuildFinishedStatus.FINISHED_SUCCESS;
   }
 
   private void cleanFiles(@NotNull final File output) throws RunBuildException {

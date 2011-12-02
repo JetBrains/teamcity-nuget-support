@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
+import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerImpl;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.FileUtil;
 import junit.framework.Assert;
@@ -87,6 +88,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myLogger).activityStarted(with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(any(String.class)), with(any(String.class)));
 
+      allowing(myBuild).getBuildId(); will(returnValue(42L));
       allowing(myBuild).getSharedConfigParameters(); will(returnValue(Collections.unmodifiableMap(myConfigParameters)));
       allowing(myBuild).addSharedConfigParameter(with(any(String.class)), with(any(String.class)));
       will(new CustomAction("Add config parameter") {
@@ -99,7 +101,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   }
 
   private PackRunner createRunner() {
-    return new PackRunner(myActionFactory, myParametersFactory, myCleaner);
+    return new PackRunner(myActionFactory, myParametersFactory, new PackRunnerOutputDirectoryTrackerImpl(), myCleaner);
   }
 
   @Test

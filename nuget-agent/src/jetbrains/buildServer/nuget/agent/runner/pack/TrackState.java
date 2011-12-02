@@ -16,16 +16,27 @@
 
 package jetbrains.buildServer.nuget.agent.runner.pack;
 
-import jetbrains.buildServer.agent.AgentRunningBuild;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 02.12.11 15:07
+ *         Date: 02.12.11 15:09
  */
-public interface PackRunnerOutputDirectoryTracker {
+public interface TrackState {
   @NotNull
-  TrackState getState(@NotNull AgentRunningBuild build);
+  CleanOutcome registerDirectoryClean(@NotNull File dir, boolean cleanEnabled);
 
-  void removeTrackState(@NotNull AgentRunningBuild build);
+  enum CleanOutcome {
+    CLEAN,
+    CLEANED_BEFORE,
+    NOT_CLEANED_BEFORE,
+    NO_CLEAN_REQUIRED,
+    ;
+
+    public boolean cleanFolder() {
+      return this == CLEAN;
+    }
+  }
 }

@@ -20,9 +20,8 @@ import jetbrains.buildServer.agent.AgentRunningBuild;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -38,7 +37,7 @@ public class PackRunnerOutputDirectoryTrackerImpl implements PackRunnerOutputDir
     TrackState trackState = myCache.get(id);
     if (trackState != null) return trackState;
 
-    trackState = new TrackState();
+    trackState = new TrackStateImpl();
     myCache.put(id, trackState);
     return trackState;
   }
@@ -51,16 +50,23 @@ public class PackRunnerOutputDirectoryTrackerImpl implements PackRunnerOutputDir
     return build.getBuildId();
   }
 
-  private static class TrackState {
-    private final Set<File> myCleanedOutputDirectories = new HashSet<File>();
+  private static class TrackStateImpl implements TrackState {
+    private final Map<File, Boolean> myCleanedOutputDirectories = new HashMap<File, Boolean>();
 
-    /**
-     * Registers directory clean
-     * @param dir directory to clean
-     * @return true if this was first directory clean attempt
-     */
-    public boolean addDirectoryToClean(@NotNull final File dir) {
-      return myCleanedOutputDirectories.add(dir);
+    @NotNull
+    public CleanOutcome registerDirectoryClean(@NotNull File dir, boolean cleanEnabled) {
+      final Boolean aBoolean = myCleanedOutputDirectories.get(dir);
+      if (aBoolean == null) {
+        myCleanedOutputDirectories.put(dir, cleanEnabled);
+        return cleanEnabled ? CleanOutcome.CLEAN : CleanOutcome.NO_CLEAN_REQUIRED;
+      }
+
+      if (Boolean.TRUE.equals(aBoolean)) {
+        return CleanOutcome.CLEANED_BEFORE;
+      }
+
+      //if (Boolean.FALSE.equals(aBoolean))
+      return CleanOutcome.NOT_CLEANED_BEFORE;
     }
   }
 }
