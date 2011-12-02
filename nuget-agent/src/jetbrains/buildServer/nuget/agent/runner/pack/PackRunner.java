@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.agent.runner.pack;
 
+import com.intellij.util.Function;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
@@ -30,6 +31,7 @@ import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.MatchFilesBuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -114,10 +116,11 @@ public class PackRunner extends NuGetRunnerBase {
         });
         watcher.checkForModifications();
 
-        LOG.warn("Created packages to publish as artifacts: " + allFiles);
+        LOG.debug("Created packages to publish as artifacts: " + allFiles);
         if (allFiles.isEmpty()) {
           runningBuild.getBuildLogger().warning("No new package files were created. Nothing to publish as artifacs.");
         } else {
+          runningBuild.getBuildLogger().message("Uploading created packages to build artifacts: " + filesList(allFiles));
           final StringBuilder sb = new StringBuilder();
           for (File file : allFiles) {
             sb.append(file.getPath()).append(" => .").append("\r\n");
@@ -125,6 +128,15 @@ public class PackRunner extends NuGetRunnerBase {
           myPublisher.addNewArtifactsPath(sb.toString());
         }
         return BuildFinishedStatus.FINISHED_SUCCESS;
+      }
+
+      @NotNull
+      private String filesList(@NotNull final Set<File> allFiles) {
+        return StringUtil.join(allFiles, new Function<File, String>() {
+          public String fun(File file) {
+            return file.getName();
+          }
+        }, ", ");
       }
     };
   }
