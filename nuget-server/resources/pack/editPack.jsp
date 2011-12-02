@@ -60,7 +60,7 @@
 
 <l:settingsGroup title="Output">
   <tr>
-    <th rowspan="2"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
+    <th rowspan="3"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
     <td>
       <props:textProperty name="${ib.packOutputDirectory}" className="longField"/>
       <span class="smallNote">Specify path to put generated NuGet package</span>
@@ -70,6 +70,11 @@
   <tr>
     <td>
       <props:checkboxProperty name="${ib.packOutputClear}"/> Clean output directory before pack
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <props:checkboxProperty name="${ib.packAsArtifact}"/> Publish created packages to build artifacts
     </td>
   </tr>
 </l:settingsGroup>

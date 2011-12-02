@@ -39,7 +39,8 @@
 
 <div class="parameter">
   Output Directory: <strong><props:displayValue name="${ib.packOutputDirectory}"/></strong>
-  <c:if test="${not empty propertiesBean.properties[ib.packOutputClear]}">(cleaned on start)</c:if>
+  <c:if test="${not empty propertiesBean.properties[ib.packOutputClear]}">, cleaned on start</c:if>
+  <c:if test="${not empty propertiesBean.properties[ib.packAsArtifact]}">, published as artifact</c:if>
 </div>
 
 <div class="parameter">
