@@ -40,6 +40,7 @@ public class PackagesFeedParserImpl implements PackagesFeedParser {
   private static final Namespace metadata = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
   private static final Namespace services = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices");
 
+  @NotNull
   public Collection<FeedPackage> readPackages(@NotNull Element root) {
     final List<FeedPackage> result = new ArrayList<FeedPackage>();
 
@@ -65,24 +66,26 @@ public class PackagesFeedParserImpl implements PackagesFeedParser {
     final String content = getChildAttribute(entry, "content", atom, "src");
     final Element props = getChild(entry, "properties", metadata);
 
-    final String packageId = getChildText(props, "Id", services);
+    String packageId = getChildTextSafe(props, "Id", services);
+    if (StringUtil.isEmptyOrSpaces(packageId)) {
+      packageId = getChildText(entry, "title", atom);
+    }
     final String version = getChildText(props, "Version", services);
     final String desription = getChildText(props, "Description", services);
-    final String summary = getChildText(props, "Summary", services);
     final boolean isLatestVersion = "true".equalsIgnoreCase(getChildTextSafe(props, "IsLatestVersion", services));
 
     return new FeedPackage(
             atomId,
             new PackageInfo(packageId, version),
             isLatestVersion,
-            StringUtil.isEmptyOrSpaces(desription) ? summary : desription,
+            desription,
             content);
   }
 
   @NotNull
-  private String getChildTextSafe(@NotNull Element element,
-                                  @NotNull String name,
-                                  @NotNull Namespace ns) {
+  private String getChildTextSafe(@NotNull final Element element,
+                                  @NotNull final String name,
+                                  @NotNull final Namespace ns) {
     try {
       return getChildText(element, name, ns);
     } catch (InvalidXmlException e) {
@@ -91,9 +94,9 @@ public class PackagesFeedParserImpl implements PackagesFeedParser {
   }
 
   @NotNull
-  private String getChildText(@NotNull Element element,
-                              @NotNull String name,
-                              @NotNull Namespace ns) throws InvalidXmlException {
+  private String getChildText(@NotNull final Element element,
+                              @NotNull final String name,
+                              @NotNull final Namespace ns) throws InvalidXmlException {
     final Element data = getChild(element, name, ns);
     final String text = data.getText();
     if (StringUtil.isEmptyOrSpaces(text)) {
@@ -103,10 +106,10 @@ public class PackagesFeedParserImpl implements PackagesFeedParser {
   }
 
   @NotNull
-  private String getChildAttribute(@NotNull Element element,
-                                   @NotNull String name,
-                                   @NotNull Namespace ns,
-                                   @NotNull String attribute) throws InvalidXmlException {
+  private String getChildAttribute(@NotNull final Element element,
+                                   @NotNull final String name,
+                                   @NotNull final Namespace ns,
+                                   @NotNull final String attribute) throws InvalidXmlException {
     final Element data = getChild(element, name, ns);
     final String text = data.getAttributeValue(attribute);
     if (StringUtil.isEmptyOrSpaces(text)) {
@@ -116,7 +119,9 @@ public class PackagesFeedParserImpl implements PackagesFeedParser {
   }
 
   @NotNull
-  private Element getChild(Element element, String name, Namespace ns) throws InvalidXmlException {
+  private Element getChild(@NotNull final Element element,
+                           @NotNull final String name,
+                           @NotNull final Namespace ns) throws InvalidXmlException {
     final Element data = element.getChild(name, ns);
     if (data == null) {
       throw new InvalidXmlException("Element " + name + " was not found. ");
