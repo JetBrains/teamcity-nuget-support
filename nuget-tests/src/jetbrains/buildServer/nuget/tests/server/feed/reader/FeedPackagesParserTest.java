@@ -66,6 +66,21 @@ public class FeedPackagesParserTest extends BaseTestCase {
   }
 
   @Test
+  public void test_ParsePackagesNewFormat_2011_12_06() throws JDOMException, IOException {
+    final Element doc = FileUtil.parseDocument(Paths.getTestDataPath("feed/reader/feed-new.xml"));
+    final Collection<FeedPackage> packages = myParser.readPackages(doc);
+
+    Assert.assertEquals(packages.size(), 21);
+    for (FeedPackage pkg : packages) {
+      Assert.assertFalse(pkg.getAtomId().isEmpty());
+      Assert.assertFalse(pkg.getDownloadUrl().isEmpty());
+      Assert.assertEquals(pkg.getInfo().getId(), "NuGet.CommandLine");
+      Assert.assertTrue(pkg.getInfo().getVersion().startsWith("1."));
+      Assert.assertTrue(pkg.getDescription().length() > 0, "package should have deseciription");
+    }
+  }
+
+  @Test
   public void test_broken() {
     Element el = new Element("broken");
     final Collection<FeedPackage> feedPackages = myParser.readPackages(el);

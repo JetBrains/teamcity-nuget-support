@@ -60,6 +60,7 @@ public class FeedReaderTest extends BaseTestCase {
 
   @Test
   public void testRead_MS() throws IOException {
+    enableDebug();
     readFeed(FeedConstants.MS_REF_FEED);
   }
 

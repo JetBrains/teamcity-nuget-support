@@ -27,5 +27,6 @@ import java.util.Collection;
  * Date: 12.08.11 15:14
  */
 public interface PackagesFeedParser {
+  @NotNull
   Collection<FeedPackage> readPackages(@NotNull Element root);
 }
