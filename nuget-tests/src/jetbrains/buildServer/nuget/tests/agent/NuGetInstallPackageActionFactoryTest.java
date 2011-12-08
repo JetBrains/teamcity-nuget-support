@@ -49,7 +49,6 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   private NuGetFetchParameters nugetParams;
   private File myTarget;
   private File myConfig;
-  private String cmd;
   private BuildParametersMap myBuildParametersMap;
 
 
@@ -69,12 +68,9 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
     myConfig = createTempFile();
 
     myBuildParametersMap = m.mock(BuildParametersMap.class);
-    cmd = System.getenv("ComSpec");
 
     m.checking(new Expectations(){{
       allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
-      allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
-
       allowing(ps).getNuGetParameters(); will(returnValue(nugetParams));
     }});
   }
@@ -89,8 +85,8 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              cmd,
-              Arrays.asList("/s", "/c", "\"", nuget.getPath(), "install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath(), "\""),
+              nuget.getPath(),
+              Arrays.asList("install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath()),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -110,8 +106,8 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              cmd,
-              Arrays.asList("/s", "/c", "\"", nuget.getPath(), "install", myConfig.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath(), "\""),
+              nuget.getPath(),
+              Arrays.asList("install", myConfig.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath()),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -131,8 +127,8 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              cmd,
-              Arrays.asList("/s", "/c", "\"", nuget.getPath(), "install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb", "\""),
+              nuget.getPath(),
+              Arrays.asList("install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );

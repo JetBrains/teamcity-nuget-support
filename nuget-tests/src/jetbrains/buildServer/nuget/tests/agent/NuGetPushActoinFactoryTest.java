@@ -34,7 +34,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,6 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
   private NuGetPublishParameters ps;
   private File myFile;
   private File myNuGet;
-  private String cmd;
   private BuildParametersMap myBuildParametersMap;
 
 
@@ -66,11 +64,9 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
     ps = m.mock(NuGetPublishParameters.class);
 
     myBuildParametersMap = m.mock(BuildParametersMap.class);
-    cmd = System.getenv("ComSpec");
 
     m.checking(new Expectations(){{
       allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
-      allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
     }});
 
     myFile = createTempFile();
@@ -132,8 +128,8 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(cmd)),
-              with(arguments("/s", "/c", "\"", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-Source", "push-feed", "\"")),
+      oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
+              with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-Source", "push-feed")),
               with(equal(myFile.getParentFile())),
               with(envApi("api-key-guid"))
       );
@@ -152,8 +148,8 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue(null));
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
-      oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(cmd)),
-              with(arguments("/s", "/c", "\"", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "\"")),
+      oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
+              with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%")),
               with(equal(myFile.getParentFile())),
               with(envApi("api-key-guid"))
       );
@@ -172,8 +168,8 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
       allowing(ps).getCreateOnly(); will(returnValue(true));
 
-      oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(cmd)),
-              with(arguments("/s", "/c", "\"", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-CreateOnly", "-Source", "push-feed", "\"")),
+      oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
+              with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-CreateOnly", "-Source", "push-feed")),
               with(equal(myFile.getParentFile())),
               with(envApi("api-key-guid"))
       );
