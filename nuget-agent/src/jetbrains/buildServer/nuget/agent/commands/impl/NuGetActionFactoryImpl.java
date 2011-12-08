@@ -27,13 +27,10 @@ import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
-import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,28 +59,14 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                                         @NotNull File workingDir,
                                         @NotNull Collection<String> _argz,
                                         @NotNull Map<String, String> additionalEnvironment) throws RunBuildException {
-        String cmd = context.getBuildParameters().getEnvironmentVariables().get("ComSpec");
-        if (StringUtil.isEmptyOrSpaces(cmd)) {
-          LOG.warn("Failed to find path to cmd.exe in %ComSpec% environment variable");
-          cmd = "cmd.exe";
-        }
-
         if (!program.isFile()) {
           throw new RunBuildException("Failed to find NuGet executable at: " + program);
         }
 
-        List<String> argz = new ArrayList<String>();
-        argz.add("/s");
-        argz.add("/c");
-        argz.add("\"");
-        argz.add(program.getPath());
-        argz.addAll(_argz);
-        argz.add("\"");
-
         return myFactory.executeCommandLine(
                 context,
-                cmd,
-                argz,
+                program.getPath(),
+                _argz,
                 workingDir,
                 additionalEnvironment
         );
