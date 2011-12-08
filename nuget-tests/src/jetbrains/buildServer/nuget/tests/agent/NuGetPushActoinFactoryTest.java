@@ -133,7 +133,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(cmd)),
-              with(arguments("/c", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-Source", "push-feed")),
+              with(arguments("/s", "/c", "\"", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-Source", "push-feed", "\"")),
               with(equal(myFile.getParentFile())),
               with(envApi("api-key-guid"))
       );
@@ -153,7 +153,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(cmd)),
-              with(arguments("/c", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%")),
+              with(arguments("/s", "/c", "\"", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "\"")),
               with(equal(myFile.getParentFile())),
               with(envApi("api-key-guid"))
       );
@@ -173,7 +173,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getCreateOnly(); will(returnValue(true));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(cmd)),
-              with(arguments("/c", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-CreateOnly", "-Source", "push-feed")),
+              with(arguments("/s", "/c", "\"", myNuGet.getPath(), "push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-CreateOnly", "-Source", "push-feed", "\"")),
               with(equal(myFile.getParentFile())),
               with(envApi("api-key-guid"))
       );

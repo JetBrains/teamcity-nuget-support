@@ -90,7 +90,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               cmd,
-              Arrays.asList("/c", nuget.getPath(), "install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath()),
+              Arrays.asList("/s", "/c", "\"", nuget.getPath(), "install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath(), "\""),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -111,7 +111,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               cmd,
-              Arrays.asList("/c", nuget.getPath(), "install", myConfig.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath()),
+              Arrays.asList("/s", "/c", "\"", nuget.getPath(), "install", myConfig.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath(), "\""),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -132,7 +132,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               cmd,
-              Arrays.asList("/c", nuget.getPath(), "install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
+              Arrays.asList("/s", "/c", "\"", nuget.getPath(), "install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb", "\""),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );

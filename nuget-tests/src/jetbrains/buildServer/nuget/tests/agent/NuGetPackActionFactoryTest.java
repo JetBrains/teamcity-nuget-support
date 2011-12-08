@@ -115,7 +115,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12")
+                      "/s", "/c", "\"", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "\"")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -142,7 +142,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Properties", "p1=p2", "-Properties", "p3=p24")
+                      "/s", "/c", "\"", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Properties", "p1=p2", "-Properties", "p3=p24", "\"")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -163,7 +163,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "arg1", "arg2")
+                      "/s", "/c", "\"", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "arg1", "arg2", "\"")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -184,7 +184,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Exclude", "aaa", "-Exclude", "d/v/de")
+                      "/s", "/c", "\"", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Exclude", "aaa", "-Exclude", "d/v/de", "\"")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -203,7 +203,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Tool")
+                      "/s", "/c", "\"", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Tool", "\"")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -222,7 +222,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(ctx, cmd,
               Arrays.asList(
-                      "/c", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Symbols")
+                      "/s", "/c", "\"", myNuGet.getPath(), "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Symbols", "\"")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});

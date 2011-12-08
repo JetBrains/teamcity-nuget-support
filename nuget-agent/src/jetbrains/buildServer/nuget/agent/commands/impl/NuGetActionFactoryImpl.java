@@ -73,9 +73,12 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
         }
 
         List<String> argz = new ArrayList<String>();
+        argz.add("/s");
         argz.add("/c");
+        argz.add("\"");
         argz.add(program.getPath());
         argz.addAll(_argz);
+        argz.add("\"");
 
         return myFactory.executeCommandLine(
                 context,
