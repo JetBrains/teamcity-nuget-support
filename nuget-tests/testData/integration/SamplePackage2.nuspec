@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>SamplePackage2</id>
+    <id>jonnyzzz.nuget.teamcity.testPackageX</id>
     <version>1.0</version>
     <authors>jonnyzzz-4-test</authors>
     <owners>jonnyzzz-4-test</owners>

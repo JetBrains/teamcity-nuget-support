@@ -94,7 +94,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
     Assert.assertEquals(0, result.getExitCode());
 
-    File pkg = new File(root, "SamplePackage." + build + ".nupkg");
+    File pkg = new File(root, "jonnyzzz.nuget.teamcity.testPackage." + build + ".nupkg");
     Assert.assertTrue(pkg.isFile());
     return pkg;
   }
