@@ -91,7 +91,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               cmd,
-              Arrays.asList("/c", nuget.getPath(), "update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath()),
+              Arrays.asList("/s", "/c", "\"", nuget.getPath(), "update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "\""),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -113,7 +113,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               cmd,
-              Arrays.asList("/c", nuget.getPath(), "update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Id", "aaa", "-Id", "bbb"),
+              Arrays.asList("/s", "/c", "\"", nuget.getPath(), "update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Id", "aaa", "-Id", "bbb", "\""),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -135,7 +135,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               cmd,
-              Arrays.asList("/c", nuget.getPath(), "update", myConfig.getPath(), "-Safe", "-Verbose", "-RepositoryPath", myTarget.getPath()),
+              Arrays.asList("/s", "/c", "\"", nuget.getPath(), "update", myConfig.getPath(), "-Safe", "-Verbose", "-RepositoryPath", myTarget.getPath(), "\""),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -157,7 +157,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               cmd,
-              Arrays.asList("/c", nuget.getPath(), "update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
+              Arrays.asList("/s", "/c", "\"", nuget.getPath(), "update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb", "\""),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
