@@ -165,7 +165,9 @@ public class IntegrationTestBase extends BuildProcessTestCase {
           @Override
           protected BuildFinishedStatus waitForImpl() throws RunBuildException {
             GeneralCommandLine cmd = new GeneralCommandLine();
-            cmd.setExePath(program);
+            cmd.setExePath("cmd");
+            cmd.addParameter("/c");
+            cmd.addParameter(program);
             for (String arg : argz) {
               cmd.addParameter(arg.replaceAll("%+", "%"));
             }

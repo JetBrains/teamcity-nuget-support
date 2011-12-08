@@ -25,7 +25,9 @@ import jetbrains.buildServer.runner.SimpleRunnerConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,8 +58,16 @@ public class CommandlineBuildProcessFactoryImpl implements CommandlineBuildProce
       context.addEnvironmentVariable(entry.getKey(), entry.getValue());
     }
 
-    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, program);
-    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, joinCommandLineArguments(argz));
+    final List<String> newArgz = new ArrayList<String>();
+    newArgz.add(program);
+    newArgz.addAll(argz);
+
+    final String commandLine = joinCommandLineArguments(newArgz);
+
+    hostContext.getBuild().getBuildLogger().message("NuGet command: " + commandLine);
+
+    context.addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+    context.addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, commandLine);
 
     return myFacade.createExecutable(hostContext.getBuild(), context);
   }

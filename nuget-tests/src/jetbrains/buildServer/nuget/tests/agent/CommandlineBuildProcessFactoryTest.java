@@ -18,10 +18,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.AgentRunningBuild;
-import jetbrains.buildServer.agent.BuildProcess;
-import jetbrains.buildServer.agent.BuildProcessFacade;
-import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.agent.util.impl.CommandlineBuildProcessFactoryImpl;
 import jetbrains.buildServer.runner.SimpleRunnerConstants;
@@ -46,6 +43,7 @@ public class CommandlineBuildProcessFactoryTest extends BaseTestCase {
   private BuildRunnerContext mySubContext;
   private CommandlineBuildProcessFactory myFactory;
   private BuildProcess myProcess;
+  private BuildProgressLogger myLogger;
   private File myWorkDir;
 
   @BeforeMethod
@@ -59,6 +57,7 @@ public class CommandlineBuildProcessFactoryTest extends BaseTestCase {
     mySubContext = m.mock(BuildRunnerContext.class, "sub-context");
     myBuild =  m.mock(AgentRunningBuild.class);
     myProcess = m.mock(BuildProcess.class);
+    myLogger = m.mock(BuildProgressLogger.class);
     myFactory = new CommandlineBuildProcessFactoryImpl(myFacade);
 
     m.checking(new Expectations(){{
@@ -68,6 +67,9 @@ public class CommandlineBuildProcessFactoryTest extends BaseTestCase {
       allowing(myRootContext).getBuild(); will(returnValue(myBuild));
       allowing(mySubContext).getBuild(); will(returnValue(myBuild));
 
+      allowing(myBuild).getBuildLogger(); will(returnValue(myLogger));
+      allowing(myLogger).message(with(any(String.class)));
+
       oneOf(myFacade).createExecutable(myBuild, mySubContext);
       will(returnValue(myProcess));
     }});
@@ -76,8 +78,8 @@ public class CommandlineBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testSupportQuotes() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "\" foo \"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "program \" foo \"");
     }});
 
     myFactory.executeCommandLine(myRootContext, "program", Arrays.asList("\"", "foo", "\""), myWorkDir, Collections.<String, String>emptyMap());
@@ -88,8 +90,8 @@ public class CommandlineBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testSupportQuotes2() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "\" \" foo\" \"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "program \" \" foo\" \"");
     }});
 
     myFactory.executeCommandLine(myRootContext, "program", Arrays.asList("\"", "\" foo\"", "\""), myWorkDir, Collections.<String, String>emptyMap());
@@ -100,8 +102,8 @@ public class CommandlineBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testQuoteArguments() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "\" \"f o o\" \"z e\" \"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "program \" \"f o o\" \"z e\" \"");
     }});
 
     myFactory.executeCommandLine(myRootContext, "program", Arrays.asList("\"", "f o o", "z e", "\""), myWorkDir, Collections.<String, String>emptyMap());
@@ -112,12 +114,38 @@ public class CommandlineBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testSupportEnv() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "program");
       oneOf(mySubContext).addEnvironmentVariable("a", "b");
     }});
 
     myFactory.executeCommandLine(myRootContext, "program", Collections.<String>emptyList(), myWorkDir, Collections.singletonMap("a", "b"));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void testQuoteCommand() throws RunBuildException {
+    m.checking(new Expectations(){{
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "\"p r o g r a m\"");
+      oneOf(mySubContext).addEnvironmentVariable("a", "b");
+    }});
+
+    myFactory.executeCommandLine(myRootContext, "p r o g r a m", Collections.<String>emptyList(), myWorkDir, Collections.singletonMap("a", "b"));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void testQuoteCommandArgs() throws RunBuildException {
+    m.checking(new Expectations(){{
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "\"p r o g r a m\" a \"b c d e\" f");
+      oneOf(mySubContext).addEnvironmentVariable("a", "b");
+    }});
+
+    myFactory.executeCommandLine(myRootContext, "p r o g r a m", Arrays.asList("a", "b c d e", "f"), myWorkDir, Collections.singletonMap("a", "b"));
 
     m.assertIsSatisfied();
   }
