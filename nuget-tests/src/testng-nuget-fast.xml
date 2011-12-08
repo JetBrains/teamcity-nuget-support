@@ -18,6 +18,7 @@
 
       <class name="jetbrains.buildServer.nuget.tests.RunTypeNameTest"/>
 
+      <class name="jetbrains.buildServer.nuget.tests.agent.CommandlineBuildProcessFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackagesConfigParserTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackagesWatcherTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.LocateNuGetConfigBuildProcessTest"/>
