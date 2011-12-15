@@ -98,7 +98,7 @@ public class UrlResolverTest extends BaseTestCase {
     m.checking(new Expectations() {{
       oneOf(myFeedClient).execute(with(httpGet("http://www.jetbrains.com/redirect?fwLink=555")));
       will(returnValue(responseLocationStatus(HttpStatus.SC_MOVED_PERMANENTLY, "http://www.google.com///")));
-      oneOf(myFeedClient).execute(with(httpGet("http://www.google.com")));
+      oneOf(myFeedClient).execute(with(httpGet("http://www.google.com///")));
       will(returnValue(responseStatus(200)));
     }});
 
