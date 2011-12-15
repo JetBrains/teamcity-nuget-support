@@ -177,8 +177,8 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerFeedIntegrationTe
     Assert.assertTrue(myFeedReader.queryPackageVersions(myNuGetServerUrl, packageId_2).size() > 0);
   }
 
-  @Test
-  public void testNuGetClientReadsFeed_15() throws Exception{
+  @Test(dataProvider = NUGET_VERSIONS_15p)
+  public void testNuGetClientReadsFeed(@NotNull final NuGet nuget) throws Exception{
     enableDebug();
 
     final String packageId_1 = "CommonServiceLocator";
@@ -196,7 +196,7 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerFeedIntegrationTe
 
 
     GeneralCommandLine cmd = new GeneralCommandLine();
-    cmd.setExePath(NuGet.NuGet_1_5.getPath().getPath());
+    cmd.setExePath(nuget.getPath().getPath());
     cmd.addParameter("list");
     cmd.addParameter("-Source");
     cmd.addParameter(myNuGetServerUrl);
@@ -210,7 +210,7 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerFeedIntegrationTe
   }
 
   @Test(dependsOnGroups = "should create http server for artifacts downlaod")
-  public void testNuGetClientInstall_15() throws Exception{
+  public void testNuGetClientInstall(@NotNull final NuGet nuget) throws Exception{
     enableDebug();
 
     final String packageId_1 = "CommonServiceLocator";
@@ -240,7 +240,7 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerFeedIntegrationTe
     });
 
     GeneralCommandLine cmd = new GeneralCommandLine();
-    cmd.setExePath(NuGet.NuGet_1_5.getPath().getPath());
+    cmd.setExePath(nuget.getPath().getPath());
     cmd.setWorkingDirectory(home);
     cmd.addParameter("install");
     cmd.addParameter(packageId_1);

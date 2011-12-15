@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
+import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -35,32 +36,32 @@ import java.io.Writer;
  */
 public class NuGetServerFeedPerfomanceTest extends NuGetServerFeedIntegrationTestBase {
 
-  @Test
-  public void test_list_5000_packages() throws IOException, PackageLoadException {
-    doPackagesListTest(5000, 14.0);
+  @Test(dataProvider = NUGET_VERSIONS_15p)
+  public void test_list_5000_packages(@NotNull NuGet nuget) throws IOException, PackageLoadException {
+    doPackagesListTest(nuget, 5000, 14.0);
   }
 
-  @Test
-  public void test_list_1000_packages() throws IOException, PackageLoadException {
-    doPackagesListTest(1000, 6.0);
+  @Test(dataProvider =  NUGET_VERSIONS_15p)
+  public void test_list_1000_packages(@NotNull NuGet nuget) throws IOException, PackageLoadException {
+    doPackagesListTest(nuget, 1000, 6.0);
   }
 
-  @Test
-  public void test_list_100_packages() throws IOException, PackageLoadException {
-    doPackagesListTest(100, 4.0);
+  @Test(dataProvider =  NUGET_VERSIONS_15p)
+  public void test_list_100_packages(@NotNull NuGet nuget) throws IOException, PackageLoadException {
+    doPackagesListTest(nuget, 100, 4.0);
   }
 
-  @Test
-  public void test_list_named_1000_packages() throws IOException, PackageLoadException {
-    doPackagesListNamedTest(1000, 5.0);
+  @Test(dataProvider = NUGET_VERSIONS_15p)
+  public void test_list_named_1000_packages(@NotNull NuGet nuget) throws IOException, PackageLoadException {
+    doPackagesListNamedTest(nuget, 1000, 5.0);
   }
 
-  @Test
-  public void test_install_1000_packages() throws IOException, PackageLoadException {
-    doPackagesInstallTest(1000, 5.0);
+  @Test(dataProvider = NUGET_VERSIONS_15p)
+  public void test_install_1000_packages(@NotNull NuGet nuget) throws IOException, PackageLoadException {
+    doPackagesInstallTest(nuget, 1000, 5.0);
   }
 
-  private void doPackagesListTest(int packages, double time) throws IOException, PackageLoadException {
+  private void doPackagesListTest(@NotNull final NuGet nuget, int packages, double time) throws IOException, PackageLoadException {
     enableDebug();
 
     setLongResponse(packages);
@@ -68,7 +69,7 @@ public class NuGetServerFeedPerfomanceTest extends NuGetServerFeedIntegrationTes
     final Runnable listCommand = new Runnable() {
       public void run() {
         final GeneralCommandLine cmd = new GeneralCommandLine();
-        cmd.setExePath(NuGet.NuGet_1_5.getPath().getPath());
+        cmd.setExePath(nuget.getPath().getPath());
         cmd.addParameter("list");
         cmd.addParameter("-Source");
         cmd.addParameter(myNuGetServerUrl);
@@ -87,7 +88,7 @@ public class NuGetServerFeedPerfomanceTest extends NuGetServerFeedIntegrationTes
     assertTime(time, "Check nuget list command", 5, listCommand);
   }
 
-  private void doPackagesListNamedTest(int packages, double time) throws IOException, PackageLoadException {
+  private void doPackagesListNamedTest(@NotNull final NuGet nuget, int packages, double time) throws IOException, PackageLoadException {
     enableDebug();
 
     setLongResponse(packages);
@@ -95,7 +96,7 @@ public class NuGetServerFeedPerfomanceTest extends NuGetServerFeedIntegrationTes
     final Runnable listCommand = new Runnable() {
       public void run() {
         final GeneralCommandLine cmd = new GeneralCommandLine();
-        cmd.setExePath(NuGet.NuGet_1_5.getPath().getPath());
+        cmd.setExePath(nuget.getPath().getPath());
         cmd.addParameter("list");
         cmd.addParameter("CommonService5.Locator32");
         cmd.addParameter("-Source");
@@ -116,7 +117,7 @@ public class NuGetServerFeedPerfomanceTest extends NuGetServerFeedIntegrationTes
   }
 
 
-  private void doPackagesInstallTest(int packages, double time) throws IOException, PackageLoadException {
+  private void doPackagesInstallTest(@NotNull final NuGet nuget, int packages, double time) throws IOException, PackageLoadException {
     enableDebug();
 
     setLongResponse(packages);
@@ -124,7 +125,7 @@ public class NuGetServerFeedPerfomanceTest extends NuGetServerFeedIntegrationTes
     final Runnable listCommand = new Runnable() {
       public void run() {
         final GeneralCommandLine cmd = new GeneralCommandLine();
-        cmd.setExePath(NuGet.NuGet_1_5.getPath().getPath());
+        cmd.setExePath(nuget.getPath().getPath());
         cmd.addParameter("install");
         cmd.addParameter("CommonService5.Locator32");
         cmd.addParameter("-Source");

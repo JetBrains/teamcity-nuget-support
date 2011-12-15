@@ -80,6 +80,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     return new Object[][]{
             new Object[] { NuGet.NuGet_1_4},
             new Object[] { NuGet.NuGet_1_5},
+            new Object[] { NuGet.NuGet_1_6},
     };
   }
 

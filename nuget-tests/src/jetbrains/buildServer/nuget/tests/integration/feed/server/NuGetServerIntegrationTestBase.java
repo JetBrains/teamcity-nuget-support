@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
@@ -33,6 +32,7 @@ import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunnerImpl;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
+import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
@@ -64,7 +64,7 @@ import static org.apache.http.HttpStatus.SC_OK;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 24.10.11 18:09
  */
-public class NuGetServerIntegrationTestBase extends BaseTestCase {
+public class NuGetServerIntegrationTestBase extends IntegrationTestBase {
   protected Mockery m;
   protected Collection<InputStream> myStreams;
   private NuGetTeamCityProvider myProvider;
