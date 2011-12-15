@@ -94,6 +94,19 @@ public class UrlResolverTest extends BaseTestCase {
   }
 
   @Test
+  public void test_should_support_3xx_trimSlash() throws IOException {
+    m.checking(new Expectations() {{
+      oneOf(myFeedClient).execute(with(httpGet("http://www.jetbrains.com/redirect?fwLink=555")));
+      will(returnValue(responseLocationStatus(HttpStatus.SC_MOVED_PERMANENTLY, "http://www.google.com///")));
+      oneOf(myFeedClient).execute(with(httpGet("http://www.google.com")));
+      will(returnValue(responseStatus(200)));
+    }});
+
+    final Pair<String, HttpResponse> pair = myResolver.resolvePath("http://www.jetbrains.com/redirect?fwLink=555");
+    Assert.assertEquals(pair.first, "http://www.google.com");
+  }
+
+  @Test
   public void test_should_support_3xx_multi() throws IOException {
     m.checking(new Expectations() {{
       oneOf(myFeedClient).execute(with(httpGet("http://www.jetbrains.com")));

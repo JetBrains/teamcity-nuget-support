@@ -71,6 +71,9 @@ public class UrlResolverImpl implements UrlResolver {
       if (redirected != null) {
         LOG.debug("Redirected to " + redirected);
         feedUrl = redirected;
+        while (feedUrl.endsWith("/")) {
+          feedUrl = feedUrl.substring(0, feedUrl.length() - 1);
+        }
         EntityUtils.consume(execute.getEntity());
         continue;
       }
@@ -79,6 +82,7 @@ public class UrlResolverImpl implements UrlResolver {
       if (statusCode != HttpStatus.SC_OK) {
         throw new IOException("Failed to connect to " + feedUrl);
       }
+
       return Pair.create(feedUrl, execute);
     }
     throw new IOException("Failed to resolve redirects");
