@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;
@@ -57,31 +58,19 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
     myCommand = new ListPackagesCommandImpl(new NuGetExecutorImpl(prov, info), temp);
   }
 
-  @Test
-  public void test_reportsNUnit_from_default_feed_1_5() throws NuGetExecutionException {
-    doReportNUnit_from_default_feed(NuGet.NuGet_1_5);
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_reportsNUnit_from_default_feed(@NotNull final NuGet nuget) throws NuGetExecutionException {
+    final Collection<SourcePackageInfo> nUnit = myCommand.checkForChanges(nuget.getPath(), new SourcePackageReference(null, "NUnit", null));
+    System.out.println("nUnit = " + nUnit);
+    Assert.assertTrue(nUnit.size() > 0);
   }
 
-  @Test
-  public void test_reportsNUnit_from_default_feed_1_4() throws NuGetExecutionException {
-    doReportNUnit_from_default_feed(NuGet.NuGet_1_4);
-  }
-
-  @Test
-  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_1_4() throws NuGetExecutionException {
-    doReportNUnitAndYouTrackSharp_from_default_feed(NuGet.NuGet_1_4);
-  }
-
-  @Test
-  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_1_5() throws NuGetExecutionException {
-    doReportNUnitAndYouTrackSharp_from_default_feed(NuGet.NuGet_1_5);
-  }
-
-  private void doReportNUnitAndYouTrackSharp_from_default_feed(NuGet nuget) throws NuGetExecutionException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed(@NotNull final NuGet nuget) throws NuGetExecutionException {
     final SourcePackageReference nunit_all = new SourcePackageReference(null, "NUnit", null);
     final SourcePackageReference nunit_filter = new SourcePackageReference(null, "NUnit", "(1.1.1.1, 2.5.9.1)");
     final SourcePackageReference youTrackSharp = new SourcePackageReference(null, "YouTrackSharp", null);
-    final Map<SourcePackageReference,Collection<SourcePackageInfo>> m = myCommand.checkForChanges(
+    final Map<SourcePackageReference,Collection<SourcePackageInfo>> m1 = myCommand.checkForChanges(
             nuget.getPath(),
             Arrays.asList(
                     nunit_all,
@@ -89,23 +78,16 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
                     youTrackSharp
             ));
 
-    Assert.assertTrue(m.size() == 3);
-    System.out.println("m = " + m);
+    Assert.assertTrue(m1.size() == 3);
+    System.out.println("m = " + m1);
 
-    for (Collection<SourcePackageInfo> infos : m.values()) {
+    for (Collection<SourcePackageInfo> infos : m1.values()) {
       Assert.assertTrue(infos.size() > 0);
     }
 
-    final Collection<SourcePackageInfo> nAll = m.get(nunit_all);
-    final Collection<SourcePackageInfo> nFilter = m.get(nunit_filter);
+    final Collection<SourcePackageInfo> nAll = m1.get(nunit_all);
+    final Collection<SourcePackageInfo> nFilter = m1.get(nunit_filter);
 
     Assert.assertTrue(nAll.size() > nFilter.size());
   }
-
-  private void doReportNUnit_from_default_feed(NuGet nuGet_1_5) throws NuGetExecutionException {
-    final Collection<SourcePackageInfo> nUnit = myCommand.checkForChanges(nuGet_1_5.getPath(), new SourcePackageReference(null, "NUnit", null));
-    System.out.println("nUnit = " + nUnit);
-    Assert.assertTrue(nUnit.size() > 0);
-  }
-
 }

@@ -40,10 +40,4 @@ public class Paths {
   public static File getNuGetRunnerPath() {
     return FileUtil.getCanonicalFile(new File("./nuget-extensions/bin/JetBrains.TeamCity.NuGetRunner.exe"));
   }
-
-  @NotNull
-  public NuGet[] getNuGets() {
-    return NuGet.values();
-  }
-
 }
