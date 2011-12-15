@@ -21,8 +21,10 @@ package jetbrains.buildServer.nuget.common;
  * Date: 11.08.11 16:04
  */
 public class FeedConstants {
-  public static final String MS_REF_FEED = "https://go.microsoft.com/fwlink/?LinkID=206669";
-  public static final String NUGET_FEED = "http://packages.nuget.org/v1/FeedService.svc";
+  public static final String MS_REF_FEED_V1 = "https://go.microsoft.com/fwlink/?LinkID=206669";
+  public static final String MS_REF_FEED_V2 = "https://go.microsoft.com/fwlink/?LinkID=230477";
+  public static final String NUGET_FEED_V1 = "http://packages.nuget.org/api/v1/FeedService.svc";
+  public static final String NUGET_FEED_V2 = "http://packages.nuget.org/api/v2";
 
   public static final String NUGET_COMMANDLINE = "NuGet.CommandLine";
 }
