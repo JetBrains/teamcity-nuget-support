@@ -84,7 +84,7 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
 
   private Collection<InstallableTool> fetchAvailable() throws FetchException {
     FetchException exception = null;
-    for (String feedUrl : Arrays.asList(MS_REF_FEED_V2, MS_REF_FEED_V1, NUGET_FEED_V2, NUGET_FEED_V1)) {
+    for (String feedUrl : Arrays.asList(MS_REF_FEED_V2, NUGET_FEED_V2, MS_REF_FEED_V1, NUGET_FEED_V1)) {
       try {
         final Collection<FeedPackage> packages = myReader.queryPackageVersions(feedUrl, FeedConstants.NUGET_COMMANDLINE);
         return CollectionsUtil.filterAndConvertCollection(

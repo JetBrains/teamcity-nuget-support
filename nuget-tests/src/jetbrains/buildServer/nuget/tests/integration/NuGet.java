@@ -28,6 +28,7 @@ import java.io.File;
 public enum NuGet {
   NuGet_1_4,
   NuGet_1_5,
+  NuGet_1_6,
   ;
 
   @NotNull
@@ -37,6 +38,8 @@ public enum NuGet {
         return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.4/NuGet.exe"));
       case NuGet_1_5:
         return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.5/NuGet.exe"));
+      case NuGet_1_6:
+        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.6/NuGet.exe"));
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }

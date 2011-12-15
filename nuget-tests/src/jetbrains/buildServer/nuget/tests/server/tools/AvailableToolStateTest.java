@@ -59,8 +59,10 @@ public class AvailableToolStateTest extends BaseTestCase {
   public void test_should_try_both_feeds_on_error() throws IOException {
 
     m.checking(new Expectations(){{
-      oneOf(myReader).queryPackageVersions("http://packages.nuget.org/v1/FeedService.svc", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions("http://packages.nuget.org/api/v1/FeedService.svc", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions("http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
       oneOf(myReader).queryPackageVersions("https://go.microsoft.com/fwlink/?LinkID=206669", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions("https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
       allowing(myTime).now(); will(returnValue(1000234L));
     }});
 
@@ -77,8 +79,8 @@ public class AvailableToolStateTest extends BaseTestCase {
   public void test_should_work_on_one_feed_error_1() throws IOException, FetchException {
 
     m.checking(new Expectations(){{
-      allowing(myReader).queryPackageVersions("http://packages.nuget.org/v1/FeedService.svc", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
-      oneOf(myReader).queryPackageVersions("https://go.microsoft.com/fwlink/?LinkID=206669", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
+      allowing(myReader).queryPackageVersions("http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions("https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
       allowing(myTime).now(); will(returnValue(1000234L));
     }});
 
@@ -90,8 +92,8 @@ public class AvailableToolStateTest extends BaseTestCase {
   public void test_should_work_on_one_feed_error_2() throws IOException, FetchException {
 
     m.checking(new Expectations(){{
-      oneOf(myReader).queryPackageVersions("http://packages.nuget.org/v1/FeedService.svc", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
-      allowing(myReader).queryPackageVersions("https://go.microsoft.com/fwlink/?LinkID=206669", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions("http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
+      allowing(myReader).queryPackageVersions("https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
       allowing(myTime).now(); will(returnValue(1000234L));
     }});
 
