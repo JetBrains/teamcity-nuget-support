@@ -7,7 +7,7 @@
     <owners>jonnyzzz-4-test</owners>
     <licenseUrl>http://nuget.org/packages/jonnyzzz.nuget.teamcity.testPackage</licenseUrl>
     <projectUrl>http://nuget.org/packages/jonnyzzz.nuget.teamcity.testPackage</projectUrl>
-    <iconUrl>http://www.gravatar.com/avatar/928231a8aca5fbbffd7ea8bc9d6dbfa2?s=32&r=g&d=retro</iconUrl>
+    <iconUrl>http://www.gravatar.com/avatar/928231a8aca5fbbffd7ea8bc9d6dbfa2?s=32&amp;r=g&amp;d=retro</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Package description</description>
     <tags>Tag1 Tag2</tags>
