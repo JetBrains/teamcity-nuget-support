@@ -55,5 +55,6 @@ API gaps NuGet:
  - Allow to provide authorization for NuGet sources from commandline
      http://nuget.codeplex.com/workitem/1303
 
-
+License:
+ Apache 2.0
 
