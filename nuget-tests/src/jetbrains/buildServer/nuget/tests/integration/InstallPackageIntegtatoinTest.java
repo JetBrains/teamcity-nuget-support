@@ -227,6 +227,31 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertEquals(6, packageses.size());
   }
 
+  @Test(dataProvider = NUGET_VERSIONS_15p, dependsOnGroups = "support no packages scenriod/parse sln/scan projects")
+  public void test_no_packages_scenario(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("nuget-nopackages.zip"), "", myRoot);
+
+    fetchPackages(
+            new File(myRoot, "nuget-nopackages/ConsoleApplication1.sln"),
+            Collections.<String>emptyList(), true, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Castle.Core", "3.0.0.3001"),
+                    new PackageInfo("NUnit", "2.5.10.11092"),
+                    new PackageInfo("jQuery", "1.7.1"),
+                    new PackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
+                    new PackageInfo("WebActivator", "1.5")));
+
+    List<File> packageses = Arrays.asList(new File(myRoot, "lib").listFiles());
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "lib/NUnit").isDirectory());
+    Assert.assertTrue(new File(myRoot, "lib/Castle.Core").isDirectory());
+    Assert.assertTrue(new File(myRoot, "lib/jQuery").isDirectory());
+    Assert.assertTrue(new File(myRoot, "lib/Microsoft.Web.Infrastructure").isDirectory());
+    Assert.assertTrue(new File(myRoot, "lib/WebActivator").isDirectory());
+    Assert.assertEquals(6, packageses.size());
+  }
+
 
   private void fetchPackages(final File sln,
                              final List<String> sources,

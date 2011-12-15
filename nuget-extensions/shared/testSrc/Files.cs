@@ -8,6 +8,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
 {
   public static class Files
   {
+
     private static readonly Lazy<string> ourCachedNuGetExe_1_4 = PathSearcher.SearchFile("nuget.exe",
                                                                                          "lib/nuget/1.4/nuget.exe");
 
@@ -44,6 +45,23 @@ namespace JetBrains.TeamCity.NuGet.Tests
       return version.Is_1_4() ? ourLocalFeed_1_4.Value : ourLocalFeed.Value;
     }
 
+
+    private static readonly Lazy<string> ourCachedNuGetExe_1_4 = PathSearcher.SearchFile("lib/nuget/1.4/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_1_5 = PathSearcher.SearchFile("lib/nuget/1.5/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_1_6 = PathSearcher.SearchFile("lib/nuget/1.6/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetRunnerPath = PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
+    private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
+    private static readonly Lazy<string> ourCachedNuGet_CI_Last = new Lazy<string>(() => FetchLatestNuGetPackage("bt4")); 
+    private static readonly Lazy<string> ourCachedNuGet_CI_16 = new Lazy<string>(() => FetchLatestNuGetPackage("bt28")); 
+    private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline); 
+    
+    public static string NuGetExe_1_4 { get { return ourCachedNuGetExe_1_4.Value; } }
+    public static string NuGetExe_1_5 { get { return ourCachedNuGetExe_1_5.Value; } }
+    public static string NuGetExe_1_6 { get { return ourCachedNuGetExe_1_6.Value; } }
+    public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
+    public static string LocalFeed { get { return ourLocalFeed.Value; } }
+
+
     public static string GetNuGetExe(NuGetVersion version)
     {
       switch (version)
@@ -52,8 +70,12 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return NuGetExe_1_4;
         case NuGetVersion.NuGet_1_5:
           return NuGetExe_1_5;
+        case NuGetVersion.NuGet_1_6:
+          return NuGetExe_1_6;
         case NuGetVersion.NuGet_Latest_CI:
           return ourCachedNuGet_CI_Last.Value;
+        case NuGetVersion.NuGet_16_CI:
+          return ourCachedNuGet_CI_16.Value;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
           return ourCachedNuGet_CommandLinePackage_Last.Value;
         default:
@@ -105,8 +127,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
   {
     NuGet_1_4,
     NuGet_1_5,
+    NuGet_1_6,
 
     NuGet_Latest_CI,
+    NuGet_16_CI,
     NuGet_CommandLine_Package_Latest
   }
 

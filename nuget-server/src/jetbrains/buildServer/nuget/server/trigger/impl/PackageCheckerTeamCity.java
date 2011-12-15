@@ -58,7 +58,7 @@ public class PackageCheckerTeamCity implements PackageChecker {
   @NotNull
   private String getUri(@NotNull SourcePackageReference request) {
     String uri = request.getSource();
-    if (uri == null) uri = FeedConstants.MS_REF_FEED;
+    if (uri == null) uri = FeedConstants.MS_REF_FEED_V2;
     return uri;
   }
 

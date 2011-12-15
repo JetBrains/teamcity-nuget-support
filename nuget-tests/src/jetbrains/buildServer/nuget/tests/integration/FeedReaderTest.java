@@ -25,9 +25,11 @@ import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.*;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.SimpleHttpServerBase;
+import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.*;
@@ -60,15 +62,20 @@ public class FeedReaderTest extends BaseTestCase {
     myClient.dispose();
   }
 
-  @Test
-  public void testRead_MS() throws IOException {
-    enableDebug();
-    readFeed(FeedConstants.MS_REF_FEED);
+  @DataProvider(name = "nuget-feeds")
+  public Object[][] nugetFeedsProvider() {
+    return new Object[][] {
+            {FeedConstants.MS_REF_FEED_V1},
+            {FeedConstants.MS_REF_FEED_V2},
+            {FeedConstants.NUGET_FEED_V1},
+            {FeedConstants.NUGET_FEED_V2},
+    };
   }
 
-  @Test
-  public void testRead_NUGET() throws IOException {
-    readFeed(FeedConstants.NUGET_FEED);
+  @Test(dataProvider = "nuget-feeds")
+  public void testReadFeed(@NotNull final String feed) throws IOException {
+    enableDebug();
+    readFeed(feed);
   }
 
   private void readFeed(String msRefFeed) throws IOException {
@@ -83,14 +90,9 @@ public class FeedReaderTest extends BaseTestCase {
     }
   }
 
-  @Test
-  public void testDownloadLatest_MS() throws IOException {
-    downloadLatest(FeedConstants.MS_REF_FEED);
-  }
-
-  @Test
-  public void testDownloadLatest_NUGET() throws IOException {
-    downloadLatest(FeedConstants.NUGET_FEED);
+  @Test(dataProvider = "nuget-feeds")
+  public void testDownloadLatest(@NotNull final String feed) throws IOException {
+    downloadLatest(feed);
   }
 
   private void downloadLatest(String feed) throws IOException {

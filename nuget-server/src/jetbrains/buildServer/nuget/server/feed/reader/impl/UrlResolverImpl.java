@@ -81,6 +81,10 @@ public class UrlResolverImpl implements UrlResolver {
       if (statusCode != HttpStatus.SC_OK) {
         throw new IOException("Failed to connect to " + feedUrl);
       }
+
+      while (feedUrl.endsWith("/")) {
+        feedUrl = feedUrl.substring(0, feedUrl.length() - 1);
+      }
       return Pair.create(feedUrl, execute);
     }
     throw new IOException("Failed to resolve redirects");

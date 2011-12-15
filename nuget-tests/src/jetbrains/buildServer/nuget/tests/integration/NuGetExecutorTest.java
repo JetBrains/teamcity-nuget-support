@@ -16,8 +16,13 @@
 
 package jetbrains.buildServer.nuget.tests.integration;
 
+
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.*;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
+import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
+import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +39,7 @@ import java.util.Arrays;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 14.07.11 18:40
  */
-public class NuGetExecutorTest extends BaseTestCase {
+public class NuGetExecutorTest extends IntegrationTestBase {
   private Mockery m;
   private NuGetTeamCityProvider info;
   private NuGetExecutor exec;
@@ -60,16 +65,10 @@ public class NuGetExecutorTest extends BaseTestCase {
     }});
   }
 
-  @Test
-  public void test_ping_1_4() throws NuGetExecutionException {
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_ping_windows(@NotNull final NuGet nuget) throws NuGetExecutionException {
     setIsWindows(true);
-    doPingTest(NuGet.NuGet_1_4);
-  }
-
-  @Test
-  public void test_ping_1_5() throws NuGetExecutionException {
-    setIsWindows(true);
-    doPingTest(NuGet.NuGet_1_5);
+    doPingTest(nuget);
   }
 
   @Test
