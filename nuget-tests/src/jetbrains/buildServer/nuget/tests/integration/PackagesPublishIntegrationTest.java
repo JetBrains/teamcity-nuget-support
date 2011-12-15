@@ -58,7 +58,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     final File pkg = preparePackage(nuget);
     callPublishRunner(nuget, pkg);
 
-    Assert.assertTrue(getCommandsOutput().contains("Your package was uploaded"));
+    Assert.assertTrue(getCommandsOutput().contains("Your package was uploaded") || getCommandsOutput().contains("Your package was pushed."));
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
