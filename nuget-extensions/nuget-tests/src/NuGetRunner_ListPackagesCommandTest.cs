@@ -11,8 +11,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
   {
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
     public void TestCommand_ListPublic(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -23,7 +25,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
               File.WriteAllText(fileIn,
                                 @"<nuget-packages>
                                     <packages>
-                                       <package source='" + NuGetConstants.DefaultFeedUrl + @"' id='NUnit' />
+                                       <package source='" + NuGetConstants.DefaultFeedUrl_v1 + @"' id='NUnit' />
                                     </packages>
                                    </nuget-packages>");
 
@@ -44,8 +46,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
     public void TestCommand_ListPublic_Multiple(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -56,7 +60,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
               File.WriteAllText(fileIn,
                                 @"<nuget-packages>
                                     <packages> "  +
-                                                  string.Join("\n ", new[]{"NUnit", "YouTrackSharp", "Machine.Specifications", "jquery", "ninject"}.Select(x=>"<package source='" + NuGetConstants.DefaultFeedUrl + @"' id='" + x + "' />")) 
+                                                  string.Join("\n ", new[]{"NUnit", "YouTrackSharp", "Machine.Specifications", "jquery", "ninject"}.Select(x=>"<package source='" + NuGetConstants.DefaultFeedUrl_v1 + @"' id='" + x + "' />")) 
                                                   + @"
                                     </packages>
                                    </nuget-packages>");
@@ -79,8 +83,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
     public void TestCommand_ListPublic_Multiple_sameIds(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -92,10 +98,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
                                 @"<nuget-packages>
                                     <packages>
                                        <package source='" +
-                                NuGetConstants.DefaultFeedUrl +
+                                NuGetConstants.DefaultFeedUrl_v1 +
                                 @"' id='NUnit' />
                                        <package source='" +
-                                NuGetConstants.DefaultFeedUrl +
+                                NuGetConstants.DefaultFeedUrl_v1 +
                                 @"' id='NUnit' versions='(1.1.1,2.5.8]' />
                                     </packages>
                                    </nuget-packages>");
@@ -119,9 +125,11 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
-    public void TestCommand_ListPublicVersions(NuGetVersion version)
+    [TestCase(NuGetVersion.NuGet_16_CI)]
+    public void TestCommand_ListPublicVersions_v1(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
         fileOut =>
@@ -132,7 +140,40 @@ namespace JetBrains.TeamCity.NuGet.Tests
                                 @"<nuget-packages>
                                     <packages>
                                        <package source='" +
-                                NuGetConstants.DefaultFeedUrl +
+                                NuGetConstants.DefaultFeedUrl_v1 +
+                                @"' id='NUnit' versions='(1.1.1,2.5.8]'/>
+                                    </packages>
+                                   </nuget-packages>");
+
+              ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version),
+                                             "TeamCity.ListPackages", "-Request", fileIn, "-Response", fileOut)
+                .Dump()
+                .AssertExitedSuccessfully()
+                ;
+
+              var text = File.ReadAllText(fileOut);
+              Assert.False(text.Contains("version=\"2.5.10"));
+
+              Console.Out.WriteLine("Result: " + text);
+            }));
+    }
+
+    [TestCase(NuGetVersion.NuGet_1_6)]
+    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
+    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
+    public void TestCommand_ListPublicVersions_v2(NuGetVersion version)
+    {
+      TempFilesHolder.WithTempFile(
+        fileOut =>
+        TempFilesHolder.WithTempFile(
+          fileIn =>
+            {
+              File.WriteAllText(fileIn,
+                                @"<nuget-packages>
+                                    <packages>
+                                       <package source='" +
+                                NuGetConstants.DefaultFeedUrl_v2 +
                                 @"' id='NUnit' versions='(1.1.1,2.5.8]'/>
                                     </packages>
                                    </nuget-packages>");
@@ -153,8 +194,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
     public void TestCommand_TeamListPublic_Local(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(

@@ -11,8 +11,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
   {
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
     public void TestExcuteNuGet(NuGetVersion version)
     {
       var r = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "help");
@@ -23,8 +25,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
     public void TestExcuteNuGet_NuGetFromTemp(NuGetVersion version)
     {
       TempFilesHolder.WithTempDirectory(
@@ -41,8 +45,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
     public void TestExcuteNuGet_BothInTemp(NuGetVersion version)
     {
       TempFilesHolder.WithTempDirectory(
@@ -65,8 +71,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
     public void TestDumpExtensionsPath(NuGetVersion version)
     {
       var r = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "---TeamCity.DumpExtensionsPath");
@@ -77,8 +85,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
     public void TestCommand_TeamCityPing(NuGetVersion version)
     {
       ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "TeamCity.Ping")
@@ -90,8 +100,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     [TestCase(NuGetVersion.NuGet_1_4)]
     [TestCase(NuGetVersion.NuGet_1_5)]
+    [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [TestCase(NuGetVersion.NuGet_16_CI)]
     public void TestCommands_RunConcurrently(NuGetVersion version)
     {
       bool failed = false;
