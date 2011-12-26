@@ -27,6 +27,10 @@ table.nugetUrls th {
   border: none;
 }
 
+table.nugetUrls th {
+  width: 20em;
+}
+
 table.nugetUrls td div {
   font-weight: bold;
 }

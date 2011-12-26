@@ -83,7 +83,7 @@
     <h2 class="noBorder" style="padding-top: 2em;">NuGet Server Url:</h2>
     <table class="runnerFormTable nugetUrls">
       <tr>
-        <th>Authenticated Url:</th>
+        <th>Authenticated Feed Url:</th>
         <td>
           <c:set var="url"><c:url value="${serverUrl}${privateFeedUrl}"/></c:set>
           <div><a href="${url}">${url}</a></div>
@@ -95,12 +95,13 @@
         <td>
         <c:choose>
           <c:when test="${not isGuestEnabled}">
-            <div>Not available. You need to allow guest user in TeamCity general server settings</div>
+            <div>Not available.</div>
+            <span class="smallNote">Guest user is disabled. You need to enable guest user login in TeamCity general server settings for public feed to work.</span>
           </c:when>
           <c:otherwise>
             <c:set var="url"><c:url value="${serverUrl}${publicFeedUrl}"/></c:set>
             <div><a href="${url}">${url}</a></div>
-            <span class="smallNote">Public feed. No authentication checks are performed</span>
+            <span class="smallNote">No authentication is required.</span>
           </c:otherwise>
         </c:choose>
         </td>
