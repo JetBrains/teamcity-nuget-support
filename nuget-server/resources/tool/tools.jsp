@@ -24,9 +24,7 @@
 <c:set var="installedPluginsCount" value="${fn:length(tools)}"/>
 
 <p style="width: 40em;">
-  Listed NuGet.exe tools will automatically be
-  distributed among all build agents and could be used from
-  TeamCity NuGet runners even if there is no NuGet.exe available on an agent.
+  Listed NuGet versions are automatically distributed to all build agents and can be used in NuGet-related runners.
 </p>
 <p>
   There <bs:are_is val="${installedPluginsCount}"/>
@@ -64,7 +62,7 @@
   </c:if>
   <div class="addNew" style="margin-top: 1em;">
     <a href="#" onclick="return BS.NuGet.Tools.InstallPopup.show();">
-      Fetch NuGet.exe Tool
+      Download NuGet
     </a>
   </div>
 </bs:refreshable>
@@ -73,13 +71,13 @@
 <c:set var="actualInstallerUrl"><c:url value="${installerUrl}"/></c:set>
 <bs:modalDialog
         formId="nugetInstallForm"
-        title="Install NuGet.exe Command Line"
+        title="Download NuGet"
         action="${actualInstallerUrl}"
         closeCommand="BS.NuGet.Tools.InstallPopup.close();"
         saveCommand="BS.NuGet.Tools.InstallPopup.save();">
   <div id="nugetInstallFormLoading">
     <forms:saving style="float: left; display:block;"/>
-    Discovering available NuGet.exe Command Line versions
+    Fetching available NuGet versions from NuGet.org
   </div>
 
   <bs:refreshable containerId="nugetInstallFormResresh" pageUrl="${actualInstallerUrl}">

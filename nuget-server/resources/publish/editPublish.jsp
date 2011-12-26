@@ -28,11 +28,11 @@
     </td>
   </tr>
   <tr>
-    <th>Package Sources:</th>
+    <th>Package Source:</th>
     <td>
       <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
       <span class="smallNote">
-        Specify NuGet package sources to push package.
+        Specify NuGet packages feed URL to push packages to.
         Leave blank to let NuGet decide what package repository to use.
       </span>
       <span class="error" id="error_${ib.nuGetSourceKey}"></span>
