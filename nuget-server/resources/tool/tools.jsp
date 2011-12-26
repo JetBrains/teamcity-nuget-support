@@ -78,7 +78,7 @@
         saveCommand="BS.NuGet.Tools.InstallPopup.save();">
   <div id="nugetInstallFormLoading">
     <forms:saving style="float: left; display:block;"/>
-    Discovering available NuGet.exe Command Line versions
+    Fetching available NuGet versions from NuGet.org
   </div>
 
   <bs:refreshable containerId="nugetInstallFormResresh" pageUrl="${actualInstallerUrl}">
