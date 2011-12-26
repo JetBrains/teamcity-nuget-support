@@ -96,7 +96,9 @@
     <th><label for="${ib.packProperties}">Properties:</label></th>
     <td>
       <props:multilineProperty name="${ib.packProperties}" linkTitle="Properties" cols="60" rows="5" />
-      <span class="smallNote">Semicolon or new line separated list of properties of package creation.</span>
+      <span class="smallNote">
+        Semicolon or newline separated list of package creation properties (i.e. key=value) to pass to NuGet.exe
+      </span>
       <span id="error_${ib.packProperties}" class="error"></span>
     </td>
   </tr>
