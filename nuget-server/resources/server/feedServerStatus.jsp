@@ -74,7 +74,7 @@
 
   <c:if test="${isError}">
     <p>
-    See <a href="<c:url value='/admin/serverConfig.html?init=1&tab=diagnostic&subTab=logs&file=teamcity-nuget-server.log'/>">NuGet Server logs</a> for more details
+    See <a href="<c:url value='/admin/admin.html?item=diagnostic&tab=log4j&file=teamcity-nuget-server.log'/>">NuGet Server logs</a> for more details
     </p>
   </c:if>
 
@@ -91,7 +91,7 @@
         </td>
       </tr>
       <tr>
-        <th>Public Url:</th>
+        <th>Public Feed Url:</th>
         <td>
         <c:choose>
           <c:when test="${not isGuestEnabled}">
