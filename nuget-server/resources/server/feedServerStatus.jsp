@@ -16,7 +16,7 @@
 <%@ include file="/include-internal.jsp" %>
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 
-<jsp:useBean id="serverUrl" scope="request" type="java.lang.String" />
+<jsp:useBean id="actualServerUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="nugetStatusRefreshUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="imagesBase" scope="request" type="java.lang.String" />
 <jsp:useBean id="serverStatus" scope="request" type="jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus" />
@@ -85,7 +85,7 @@
       <tr>
         <th>Authenticated Feed Url:</th>
         <td>
-          <c:set var="url"><c:url value="${serverUrl}${privateFeedUrl}"/></c:set>
+          <c:set var="url"><c:url value="${actualServerUrl}${privateFeedUrl}"/></c:set>
           <div><a href="${url}">${url}</a></div>
           <span class="smallNote">Access to the url requires HTTP authentication</span>
         </td>
@@ -99,7 +99,7 @@
             <span class="smallNote">Guest user is disabled. You need to enable guest user login in TeamCity general server settings for public feed to work.</span>
           </c:when>
           <c:otherwise>
-            <c:set var="url"><c:url value="${serverUrl}${publicFeedUrl}"/></c:set>
+            <c:set var="url"><c:url value="${actualServerUrl}${publicFeedUrl}"/></c:set>
             <div><a href="${url}">${url}</a></div>
             <span class="smallNote">No authentication is required.</span>
           </c:otherwise>

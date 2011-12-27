@@ -29,6 +29,7 @@ import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.serverSide.impl.ServerSettings;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -93,6 +94,7 @@ public class FeedServerController extends BaseController {
 
     modelAndView.getModel().put("propertiesBean", new BasePropertiesBean(properties));
     modelAndView.getModel().put("serverUrl", myServerSettings.getRootUrl());
+    modelAndView.getModel().put("actualServerUrl", WebUtil.getRootUrl(request));
     modelAndView.getModel().put("nugetStatusRefreshUrl", mySection.getIncludePath());
     modelAndView.getModel().put("nugetSettingsPostUrl", mySection.getSettingsPath());
     modelAndView.getModel().put("serverStatus", myStatusHolder.getStatus());
