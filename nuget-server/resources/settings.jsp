@@ -26,7 +26,7 @@
         <strong><c:out value="${nugetSettingsPage.sectionName}"/></strong>
       </c:when>
       <c:otherwise>
-        <a href="<c:url value='/admin/serverConfig.html?tab=nugetServerSettingsTab&${nuget_teamcity_include_key}=${nugetSettingsPage.sectionId}'/>"><c:out value="${nugetSettingsPage.sectionName}"/></a>
+        <a href="<c:url value='/admin/admin.html?item=nugetServerSettingsTab&${nuget_teamcity_include_key}=${nugetSettingsPage.sectionId}'/>"><c:out value="${nugetSettingsPage.sectionName}"/></a>
       </c:otherwise>
     </c:choose>
     <c:if test="${not step.last}"> | </c:if>
