@@ -83,11 +83,10 @@
   <bs:refreshable containerId="nugetInstallFormResresh" pageUrl="${actualInstallerUrl}">
 
   </bs:refreshable>
-
+  <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" class="cancel">Refresh</a>
   <div class="popupSaveButtonsBlock">
-    <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.closeToolsDialog();" class="cancel">Cancel</a>
-    <input class="submitButton" type="submit" value="Install" id="installNuGetApplyButton" />
-    <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" class="cancel">Refresh</a>
+    <forms:cancel onclick="BS.NuGet.Tools.InstallPopup.closeToolsDialog();"/>
+    <forms:submit label="Install"/>
     <forms:saving id="installNuGetApplyProgress"/>
     <div class="clr"></div>
   </div>
