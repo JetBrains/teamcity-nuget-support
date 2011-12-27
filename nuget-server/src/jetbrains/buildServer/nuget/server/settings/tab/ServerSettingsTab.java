@@ -45,9 +45,9 @@ public class ServerSettingsTab extends SimpleCustomTab {
             PlaceId.ADMIN_SERVER_CONFIGURATION_TAB,
             TAB_ID,
             descriptor.getPluginResourcesPath("settings.jsp"),
-            "NuGet");
+            "NuGet Settings");
     myChecker = checker;
-    setPosition(PositionConstraint.between(Arrays.asList("pluginsTab"), Arrays.asList("toolLoadTab", "usage-statistics")));
+    setPosition(PositionConstraint.between(Arrays.asList("pluginsTab"), Arrays.asList("mavenSettings", "toolLoadTab", "usage-statistics")));
 
     for (SettingsSection section : sections) {
       for (String css : section.getCssFiles()) {
@@ -64,6 +64,11 @@ public class ServerSettingsTab extends SimpleCustomTab {
   @Override
   public boolean isVisible() {
     return super.isVisible() && myChecker.hasAccess();
+  }
+
+  @Override
+  public boolean isAvailable(@NotNull HttpServletRequest request) {
+    return super.isAvailable(request) && myChecker.hasAccess();
   }
 
   @Override
