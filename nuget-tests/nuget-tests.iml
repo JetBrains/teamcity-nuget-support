@@ -25,6 +25,7 @@
     <orderEntry type="library" name="commons-http" level="project" />
     <orderEntry type="library" name="Idea-OpenApi" level="project" />
     <orderEntry type="library" name="Servlet Api" level="project" />
+    <orderEntry type="library" name="odata4j-core-0.6.0-SNAPSHOT" level="project" />
   </component>
 </module>
 
