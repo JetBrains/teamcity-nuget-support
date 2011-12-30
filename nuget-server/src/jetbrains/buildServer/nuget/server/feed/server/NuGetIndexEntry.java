@@ -29,18 +29,15 @@ public class NuGetIndexEntry {
   @NotNull private final Map<String, String> myAttributes;
   @NotNull private final String myBuildTypeId;
   private final long myBuildId;
-  private final boolean myIsLatestVersion;
 
   public NuGetIndexEntry(@NotNull String key,
                          @NotNull Map<String, String> attributes,
                          @NotNull String buildTypeId,
-                         long buildId,
-                         boolean isLatestVersion) {
+                         long buildId) {
     myKey = key;
     myAttributes = attributes;
     myBuildTypeId = buildTypeId;
     myBuildId = buildId;
-    myIsLatestVersion = isLatestVersion;
   }
 
   @NotNull
@@ -60,9 +57,5 @@ public class NuGetIndexEntry {
 
   public long getBuildId() {
     return myBuildId;
-  }
-
-  public boolean isIsLatestVersion() {
-    return myIsLatestVersion;
   }
 }

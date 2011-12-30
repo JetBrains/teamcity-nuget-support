@@ -21,6 +21,7 @@ import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.LatestBuildsCache;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -39,13 +40,16 @@ public class PackagesIndexImpl implements PackagesIndex {
   private final MetadataStorage myStorage;
   private final BuildsManager myBuilds;
   private final ProjectManager myProjects;
+  private final MetadataControllersPaths myPaths;
 
   public PackagesIndexImpl(@NotNull final MetadataStorage storage,
                            @NotNull final BuildsManager builds,
-                           @NotNull final ProjectManager projects) {
+                           @NotNull final ProjectManager projects,
+                           @NotNull final MetadataControllersPaths paths) {
     myStorage = storage;
     myBuilds = builds;
     myProjects = projects;
+    myPaths = paths;
   }
 
   @NotNull
@@ -65,7 +69,7 @@ public class PackagesIndexImpl implements PackagesIndex {
                 if (!reportedPackages.add(e.getKey())) return null;
 
                 final Map<String, String> metadata = new HashMap<String, String>(e.getMetadata());
-                final String buildTypeId = metadata.get(PackagesIndex.TEAMCITY_BUILD_TYPE_ID);
+                String buildTypeId = metadata.get(PackagesIndex.TEAMCITY_BUILD_TYPE_ID);
 
                 //skip older entries.
                 if (buildTypeId == null) {
@@ -73,31 +77,32 @@ public class PackagesIndexImpl implements PackagesIndex {
                   if (aBuild == null || !(aBuild instanceof SFinishedBuild)) return null;
                   final SFinishedBuild build = (SFinishedBuild) aBuild;
 
-                  final Boolean isLatestVersion = latestCache.isLatest(build.getBuildTypeId(), build.getBuildId());
-                  if (isLatestVersion == null) return null;
-
                   metadata.put("LastUpdated", ODataDataFormat.formatDate(build.getFinishDate()));
-
-                  return new NuGetIndexEntry(
-                          e.getKey(),
-                          metadata,
-                          build.getBuildTypeId(),
-                          build.getBuildId(),
-                          isLatestVersion
-                  );
+                  buildTypeId = build.getBuildTypeId();
                 }
-
 
                 final Boolean isLatestVersion = latestCache.isLatest(buildTypeId, e.getBuildId());
                 if (isLatestVersion == null) return null;
 
+                metadata.put("TeamCityBuildId", String.valueOf(e.getBuildId()));
+                metadata.put("IsLatestVersion", String.valueOf(isLatestVersion));
+
+                final String relPath = metadata.get(TEAMCITY_ARTIFACT_RELPATH);
+                if (relPath == null) return null;
+                metadata.put("TeamCityDownloadUrl", myPaths.getArtifactDownloadUrl(buildTypeId, e.getBuildId(), relPath));
+
+                return createEntry(e, metadata, buildTypeId);
+              }
+
+              @NotNull
+              private NuGetIndexEntry createEntry(@NotNull final BuildMetadataEntry e,
+                                                  @NotNull final Map<String, String> metadata,
+                                                  @NotNull final String buildTypeId) {
                 return new NuGetIndexEntry(
                         e.getKey(),
                         metadata,
                         buildTypeId,
-                        e.getBuildId(),
-                        isLatestVersion
-                );
+                        e.getBuildId());
               }
             });
   }

@@ -21,64 +21,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Comparator;
 import java.util.Map;
-import java.util.TreeMap;
-
-import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 24.10.11 17:53
  */
 public class PackageInfoSerializer {
-  private final MetadataControllersPaths myPaths;
-
-  public PackageInfoSerializer(@NotNull final MetadataControllersPaths paths) {
-    myPaths = paths;
-  }
-
   public void serializePackage(@NotNull final Map<String, String> pacakgeParameters,
-                               @NotNull final String buildTypeId,
-                               final long buildId,
-                               final boolean isLatestVersion,
                                @NotNull final Writer writer) throws IOException {
 
     //The list is generated from
     //JetBrains.TeamCity.NuGet.Feed.Tests.DumpRequiredPackageParameters()
-    Map<String, String> parameters = new TreeMap<String, String>(COMPARER);
-    parameters.putAll(pacakgeParameters);
-
-    final String relPath = parameters.get(TEAMCITY_ARTIFACT_RELPATH);
-    //TODO: Use requist url to generate download url to avoid inaccessible feeds
-    parameters.put("TeamCityDownloadUrl", myPaths.getArtifactDownloadUrl(buildTypeId, buildId, relPath));
-    //TBD: parameters.put("ReleaseNotes", "");
-    //TBD: parameters.put("Copyright", "");
-    parameters.put("IsLatestVersion", String.valueOf(isLatestVersion));
-
-    //extra:
-    parameters.put("TeamCityBuildId", String.valueOf(buildId));
-
     ///it should return same set of parameters as in JetBrains.TeamCity.NuGet.Feed.Repo.TeamCityPackage .NET side class
-    writer.write(ServiceMessage.asString("package", parameters));
+    writer.write(ServiceMessage.asString("package", pacakgeParameters));
   }
-
-
-  private static final Comparator<String> COMPARER = new Comparator<String>() {
-    private int power(@NotNull String key) {
-      if ("Id".equals(key)) return 5;
-      if ("Version".equals(key)) return 4;
-      if (key.startsWith("teamcity")) return 3;
-      return 0;
-    }
-
-    public int compare(@NotNull String o1, @NotNull String o2) {
-      final int p1 = power(o1);
-      final int p2 = power(o2);
-      if (p1 > p2) return -1;
-      if (p1 < p2) return 1;
-      return o1.compareTo(o2);
-    }
-  };
-
 }

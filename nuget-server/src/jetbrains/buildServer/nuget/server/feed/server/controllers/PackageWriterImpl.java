@@ -48,14 +48,8 @@ public class PackageWriterImpl implements PackagesWriter {
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
     while (it.hasNext()) {
       final NuGetIndexEntry e = it.next();
-      mySerializer.serializePackage(
-                        e.getAttributes(),
-                        e.getBuildTypeId(),
-                        e.getBuildId(),
-                        e.isIsLatestVersion(),
-                        writer
-                );
-                writer.write("\r\n");
+      mySerializer.serializePackage(e.getAttributes(), writer);
+      writer.write("\r\n");
     }
 
     writer.flush();

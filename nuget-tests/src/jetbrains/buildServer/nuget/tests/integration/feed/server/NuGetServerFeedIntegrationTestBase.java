@@ -113,7 +113,7 @@ public class NuGetServerFeedIntegrationTestBase extends NuGetServerIntegrationTe
                                    boolean isLatest,
                                    @NotNull final SFinishedBuild build,
                                    @NotNull final Map<String, String> map) throws IOException {
-    new PackageInfoSerializer(myPaths).serializePackage(map, build.getBuildTypeId(), build.getBuildId(), isLatest, w);
+    new PackageInfoSerializer().serializePackage(map, w);
     w.append("                 ");
   }
 
