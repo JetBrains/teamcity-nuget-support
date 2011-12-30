@@ -50,6 +50,7 @@ public class PackageInfoSerializer {
     parameters.putAll(pacakgeParameters);
 
     final String relPath = parameters.get(TEAMCITY_ARTIFACT_RELPATH);
+    //TODO: Use requist url to generate download url to avoid inaccessible feeds
     parameters.put("TeamCityDownloadUrl", myPaths.getArtifactDownloadUrl(buildTypeId, buildId, relPath));
     //TBD: parameters.put("ReleaseNotes", "");
     //TBD: parameters.put("Copyright", "");
