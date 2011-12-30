@@ -12,7 +12,6 @@
       </file>
     </deployment>
     <server-settings>
-      <option name="DEPLOY_TOMCAT_APPS" value="false" />
       <option name="BASE_DIRECTORY_NAME" value="Unnamed__NETPackagesSupport_2" />
     </server-settings>
     <predefined_log_file id="TOMCAT_LOCALHOST_LOG_ID" enabled="true" />
