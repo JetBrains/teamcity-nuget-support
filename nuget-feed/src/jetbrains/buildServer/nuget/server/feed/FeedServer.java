@@ -21,7 +21,6 @@ import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.expression.BoolCommonExpression;
 import org.odata4j.expression.OrderByExpression;
-import org.odata4j.producer.ExpressionEvaluator;
 import org.odata4j.producer.resources.OptionsQueryParser;
 
 import javax.xml.stream.XMLStreamException;
