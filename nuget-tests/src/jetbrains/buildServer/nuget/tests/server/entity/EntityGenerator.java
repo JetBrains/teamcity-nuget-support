@@ -30,6 +30,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.xpath.XPath;
+import org.jetbrains.annotations.NotNull;
 import org.odata4j.edm.EdmSimpleType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -44,7 +45,6 @@ import java.util.List;
  * Date: 30.12.11 17:57
  */
 
-@Test(enabled = false)
 public class EntityGenerator extends BaseTestCase {
 
   @Test
@@ -63,7 +63,7 @@ public class EntityGenerator extends BaseTestCase {
       get.abort();
     }
   }
-  
+
   @Test
   public void test_parses_properties() throws JDOMException, IOException {
     Assert.assertFalse(generateBeans().myData.isEmpty());
@@ -72,13 +72,48 @@ public class EntityGenerator extends BaseTestCase {
 
   @Test
   public void generateEntityClasses() throws IOException, JDOMException {
-    new BeanGenerator("PackageEntity", generateBeans().myData).generateSimpleBean();
-    new BeanGenerator("PackageKey", generateBeans().myKey).generateSimpleBean();
+    final String entity = "PackageEntity";
+    new EntityBeanGenerator(entity, generateBeans().myData).generateSimpleBean();
+    new KeyBeanGenerator("PackageKey", entity, generateBeans().myKey).generateSimpleBean();
+  }
+
+  private static class EntityBeanGenerator extends BeanGenerator {
+    private EntityBeanGenerator(String name, Collection<Property> properties) {
+      super(name, properties);
+    }
+
+    @Override
+    protected void fieldsGenerated(@NotNull PrintWriter wr) {
+      super.fieldsGenerated(wr);
+    }
+  }
+
+  private static class KeyBeanGenerator extends BeanGenerator {
+    private final String myEntityName;
+
+    private KeyBeanGenerator(String name, String entityName, Collection<Property> properties) {
+      super(name, properties);
+      myEntityName = entityName;
+    }
+
+    @Override
+    protected void fieldsGenerated(@NotNull PrintWriter wr) {
+      super.fieldsGenerated(wr);
+      wr.println();
+      wr.println("  public static " + myName + " fromEntity(@NotNull final " + myEntityName + " e) {");
+      wr.println("    final " + myName + " k = new " + myName + "();");
+      for (Property p : myProperties) {
+        wr.println("    k.set" + p.myName + "(e.get" + p.myName + "());");
+      }
+      wr.println("    return k;");
+      wr.println("  }");
+      wr.println();
+    }
   }
   
   private static class BeanGenerator {
-    private final String myName;
-    private final Collection<Property> myProperties;
+    protected final String myName;
+    protected final Collection<Property> myProperties;
 
     private BeanGenerator(String name, Collection<Property> properties) {
       myName = name;
@@ -86,51 +121,55 @@ public class EntityGenerator extends BaseTestCase {
     }
 
     public void generateSimpleBean() throws IOException {
-     
-        final File file = new File("nuget-server/src/jetbrains/buildServer/nuget/server/feed/server/entity/" + myName + ".java");
-        final String pkg = "jetbrains.buildServer.nuget.server.feed.server.entity";
-        FileUtil.createParentDirs(file);
-    
-        PrintWriter wr = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8")));
-    
-        wr.println("package " + pkg + ";");
-        wr.println();
-        wr.println("import java.util.*;");
-        wr.println("import java.lang.*;");
-        wr.println();
-        wr.println("public class " + myName + " { ");
-        wr.println("  private final Map<String, Object> myFields = new HashMap<String, Object>();");
-        wr.println();
-        for (Property p : myProperties) {
-          wr.println();
-          final String type = p.myType.getCanonicalJavaType().getName();
-          final String name = p.myName;
-          wr.println("  public " + type + " get" + name + "() { ");
-          wr.println("    return " + type + ".class.cast(myFields.get(\"" + name + "\"));");
-          wr.println("  }");
-          wr.println();
-          wr.println("  public void set" + name + "(final " + type + " v) { ");
-          wr.println("    myFields.put(\"" + name + "\", v);");
-          wr.println("  }");
-          wr.println();
-        }
-    
-        wr.println();
-        wr.println(" public boolean isValid() { ");
-        for (Property p : myProperties) {
-          wr.println("    if (!myFields.containsKey(\"" + p.myName + "\")) return false;");
-        }
-        wr.println("    return true;");
-        wr.println("  }");
-        wr.println("}");
-        wr.println();
-    
-        wr.flush();
-        wr.close();
-      }
-      
-  }
 
+      final File file = new File("nuget-server/src/jetbrains/buildServer/nuget/server/feed/server/entity/" + myName + ".java");
+      final String pkg = "jetbrains.buildServer.nuget.server.feed.server.entity";
+      FileUtil.createParentDirs(file);
+
+      PrintWriter wr = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "utf-8")));
+      wr.println("/* THIS CODE IS GENERATED BY " + getClass().getName() + " DO NOT CHANGE!*/");
+      wr.println("package " + pkg + ";");
+      wr.println();
+      wr.println("import java.util.*;");
+      wr.println("import java.lang.*;");
+      wr.println("import org.jetbrains.annotations.NotNull;");
+      wr.println();
+      wr.println("public class " + myName + " { ");
+      wr.println("  private final Map<String, Object> myFields = new HashMap<String, Object>();");
+      wr.println();
+      for (Property p : myProperties) {
+        wr.println();
+        final String type = p.myType.getCanonicalJavaType().getName();
+        final String name = p.myName;
+        wr.println("  public " + type + " get" + name + "() { ");
+        wr.println("    return " + type + ".class.cast(myFields.get(\"" + name + "\"));");
+        wr.println("  }");
+        wr.println();
+        wr.println("  public void set" + name + "(final " + type + " v) { ");
+        wr.println("    myFields.put(\"" + name + "\", v);");
+        wr.println("  }");
+        wr.println();
+      }
+
+      wr.println();
+      wr.println(" public boolean isValid() { ");
+      for (Property p : myProperties) {
+        wr.println("    if (!myFields.containsKey(\"" + p.myName + "\")) return false;");
+      }
+      wr.println("    return true;");
+      wr.println("  }");
+      fieldsGenerated(wr);
+      wr.println("}");
+      wr.println();
+
+      wr.flush();
+      wr.close();
+    }
+
+    protected void fieldsGenerated(@NotNull final PrintWriter wr) {
+
+    }
+  }
 
 
   public ParseResult generateBeans() throws JDOMException, IOException {
@@ -144,7 +183,7 @@ public class EntityGenerator extends BaseTestCase {
     final XPath xKeys = XPath.newInstance("/x:Edmx/x:DataServices/m:Schema/m:EntityType[@Name='V2FeedPackage']/m:Key/m:PropertyRef/@Name");
     xKeys.addNamespace("m", edm.getURI());
     xKeys.addNamespace("x", edmx.getURI());
-    
+
     final List<String> keyNames = new ArrayList<String>();
     for (Object o : xKeys.selectNodes(root)) {
       keyNames.add(((Attribute) o).getValue());
@@ -168,7 +207,7 @@ public class EntityGenerator extends BaseTestCase {
     }
     return new ParseResult(keys, props);
   }
-  
+
   private static final class ParseResult {
     private final Collection<Property> myKey;
     private final Collection<Property> myData;
@@ -188,5 +227,5 @@ public class EntityGenerator extends BaseTestCase {
       myType = type;
     }
   }
-  
+
 }
