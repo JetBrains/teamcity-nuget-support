@@ -31,17 +31,11 @@ public interface PackagesIndex {
   public static final String TEAMCITY_BUILD_TYPE_ID = "teamcity.buildTypeId";
 
   @NotNull
+          //todo: rename
   Iterator<BuildMetadataEntry> getEntries();
 
-  public void processAllPackages(@NotNull  final Callback callback);
+  @NotNull
+  Iterator<NuGetIndexEntry> getNuGetEntries();
 
-  public static interface Callback {
-    public void processPackage(
-            @NotNull final String key,
-            @NotNull final Map<String, String> attrs,
-            @NotNull final String buildTypeId,
-            final long buildId,
-            final boolean isLatestVersion);
-  }
 
 }

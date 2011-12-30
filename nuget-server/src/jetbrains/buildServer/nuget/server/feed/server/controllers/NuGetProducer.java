@@ -51,6 +51,7 @@ public class NuGetProducer {
                   public Iterator<PackageEntity> iterator() {
                     return new DecoratingIterator<PackageEntity, BuildMetadataEntry>(myIndex.getEntries(), new Mapper<BuildMetadataEntry, PackageEntity>() {
                       public PackageEntity mapKey(@NotNull BuildMetadataEntry internal) {
+
                         return new PackageEntity();
                       }
                     });

@@ -16,6 +16,9 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index;
 
+import jetbrains.buildServer.dataStructures.DecoratingIterator;
+import jetbrains.buildServer.dataStructures.Mapper;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.LatestBuildsCache;
 import jetbrains.buildServer.serverSide.BuildsManager;
@@ -50,71 +53,52 @@ public class PackagesIndexImpl implements PackagesIndex {
     return myStorage.getAllEntries(NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
   }
 
-  public void processAllPackages(@NotNull Callback callback) {
-    new LatestBuildsIterator(callback).serializePackages(getEntries());
-  }
+  @NotNull
+  public Iterator<NuGetIndexEntry> getNuGetEntries() {
+    final Set<String> reportedPackages = new HashSet<String>();
+    final LatestBuildsCache latestCache = new LatestBuildsCache(myProjects);
 
-  private class LatestBuildsIterator {
-    private final Callback myCallback;
-    private final LatestBuildsCache myCache;
+    return new DecoratingIterator<NuGetIndexEntry, BuildMetadataEntry>(
+            getEntries(),
+            new Mapper<BuildMetadataEntry, NuGetIndexEntry>() {
+              public NuGetIndexEntry mapKey(@NotNull BuildMetadataEntry e) {
+                if (!reportedPackages.add(e.getKey())) return null;
 
-    private LatestBuildsIterator(@NotNull final Callback callback) {
-      myCallback = callback;
-      myCache = new LatestBuildsCache(myProjects);
-    }
+                final Map<String, String> metadata = new HashMap<String, String>(e.getMetadata());
+                final String buildTypeId = metadata.get(PackagesIndex.TEAMCITY_BUILD_TYPE_ID);
 
-    private void serializePackage(@NotNull final BuildMetadataEntry entry) {
+                //skip older entries.
+                if (buildTypeId == null) {
+                  final SBuild aBuild = myBuilds.findBuildInstanceById(e.getBuildId());
+                  if (aBuild == null || !(aBuild instanceof SFinishedBuild)) return null;
+                  final SFinishedBuild build = (SFinishedBuild) aBuild;
 
-      final Map<String, String> metadata = entry.getMetadata();
-      final String buildTypeId = metadata.get(PackagesIndex.TEAMCITY_BUILD_TYPE_ID);
+                  final Boolean isLatestVersion = latestCache.isLatest(build.getBuildTypeId(), build.getBuildId());
+                  if (isLatestVersion == null) return null;
 
-      //skip older entries.
-      if (buildTypeId == null) {
-        processOldEntry(entry);
-      } else {
+                  metadata.put("LastUpdated", ODataDataFormat.formatDate(build.getFinishDate()));
 
-        final Boolean isLatestVersion = myCache.isLatest(buildTypeId, entry.getBuildId());
-        if (isLatestVersion == null) return;
+                  return new NuGetIndexEntry(
+                          e.getKey(),
+                          metadata,
+                          build.getBuildTypeId(),
+                          build.getBuildId(),
+                          isLatestVersion
+                  );
+                }
 
-        myCallback.processPackage(
-                entry.getKey(),
-                metadata,
-                buildTypeId,
-                entry.getBuildId(),
-                isLatestVersion
-        );
-      }
-    }
 
-    private void processOldEntry(@NotNull final BuildMetadataEntry entry) {
+                final Boolean isLatestVersion = latestCache.isLatest(buildTypeId, e.getBuildId());
+                if (isLatestVersion == null) return null;
 
-      final SBuild aBuild = myBuilds.findBuildInstanceById(entry.getBuildId());
-      if (aBuild == null || !(aBuild instanceof SFinishedBuild)) return;
-      final SFinishedBuild build = (SFinishedBuild) aBuild;
-
-      final Boolean isLatestVersion = myCache.isLatest(build.getBuildTypeId(), build.getBuildId());
-      if (isLatestVersion == null) return;
-
-      final Map<String, String> metadata = new HashMap<String, String>(entry.getMetadata());
-      metadata.put("LastUpdated", ODataDataFormat.formatDate(build.getFinishDate()));
-
-      myCallback.processPackage(
-              entry.getKey(),
-              metadata,
-              build.getBuildTypeId(),
-              build.getBuildId(),
-              isLatestVersion
-      );
-    }
-
-    public void serializePackages(@NotNull final Iterator<BuildMetadataEntry> entries) {
-      final Set<String> reportedPackages = new HashSet<String>();
-      while (entries.hasNext()) {
-        final BuildMetadataEntry e = entries.next();
-        //remove duplicates
-        if (!reportedPackages.add(e.getKey())) continue;
-        serializePackage(e);
-      }
-    }
+                return new NuGetIndexEntry(
+                        e.getKey(),
+                        metadata,
+                        buildTypeId,
+                        e.getBuildId(),
+                        isLatestVersion
+                );
+              }
+            });
   }
 }

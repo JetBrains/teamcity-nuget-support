@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
+import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,9 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
-
-import static jetbrains.buildServer.util.ExceptionUtil.rethrowAsRuntimeException;
+import java.util.Iterator;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -46,27 +45,19 @@ public class PackageWriterImpl implements PackagesWriter {
   public void serializePackages(@NotNull final HttpServletRequest request,
                                 @NotNull final HttpServletResponse response) throws IOException {
     final PrintWriter writer = response.getWriter();
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+    while (it.hasNext()) {
+      final NuGetIndexEntry e = it.next();
+      mySerializer.serializePackage(
+                        e.getAttributes(),
+                        e.getBuildTypeId(),
+                        e.getBuildId(),
+                        e.isIsLatestVersion(),
+                        writer
+                );
+                writer.write("\r\n");
+    }
 
-    myIndex.processAllPackages(new PackagesIndex.Callback() {
-      public void processPackage(@NotNull String key,
-                                 @NotNull Map<String, String> attrs,
-                                 @NotNull String buildTypeId,
-                                 long buildId,
-                                 boolean isLatestVersion) {
-        try {
-          mySerializer.serializePackage(
-                  attrs,
-                  buildTypeId,
-                  buildId,
-                  isLatestVersion,
-                  writer
-          );
-          writer.write("\r\n");
-        } catch (IOException e) {
-          rethrowAsRuntimeException(e);
-        }
-      }
-    });
     writer.flush();
   }
 }
