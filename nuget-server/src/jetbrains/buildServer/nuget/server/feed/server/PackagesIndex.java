@@ -31,11 +31,5 @@ public interface PackagesIndex {
   public static final String TEAMCITY_BUILD_TYPE_ID = "teamcity.buildTypeId";
 
   @NotNull
-          //todo: rename
-  Iterator<BuildMetadataEntry> getEntries();
-
-  @NotNull
   Iterator<NuGetIndexEntry> getNuGetEntries();
-
-
 }

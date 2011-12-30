@@ -58,7 +58,7 @@ public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvid
   
   private int countEntries() {
     int count = 0;
-    final Iterator<BuildMetadataEntry> it = myIndex.getEntries();
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
     while(it.hasNext()) {
       it.next();
       count++;

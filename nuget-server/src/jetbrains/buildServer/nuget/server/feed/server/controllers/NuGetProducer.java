@@ -18,10 +18,10 @@ package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntity;
 import jetbrains.buildServer.nuget.server.feed.server.entity.PackageKey;
-import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.jetbrains.annotations.NotNull;
@@ -49,10 +49,9 @@ public class NuGetProducer {
               public Iterable<PackageEntity> apply() {
                 return new Iterable<PackageEntity>() {
                   public Iterator<PackageEntity> iterator() {
-                    return new DecoratingIterator<PackageEntity, BuildMetadataEntry>(myIndex.getEntries(), new Mapper<BuildMetadataEntry, PackageEntity>() {
-                      public PackageEntity mapKey(@NotNull BuildMetadataEntry internal) {
-
-                        return new PackageEntity();
+                    return new DecoratingIterator<PackageEntity, NuGetIndexEntry>(myIndex.getNuGetEntries(), new Mapper<NuGetIndexEntry, PackageEntity>() {
+                      public PackageEntity mapKey(@NotNull NuGetIndexEntry internal) {
+                        return null;
                       }
                     });
                   }
