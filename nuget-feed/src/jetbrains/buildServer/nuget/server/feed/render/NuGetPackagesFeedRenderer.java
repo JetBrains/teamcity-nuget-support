@@ -20,7 +20,7 @@ import jetbrains.buildServer.util.Dates;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.odata4j.edm.EdmType;
+import org.odata4j.edm.EdmSimpleType;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -210,13 +210,13 @@ public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
   private String getType(Class<?> clazz) {
     if (clazz.equals(String.class)) return null;
 
-    final EdmType edmType = EdmType.forJavaType(clazz);
+    final EdmSimpleType edmType = EdmSimpleType.forJavaType(clazz);
     if (edmType != null) {
-      return edmType.toTypeString();
+      return edmType.getFullyQualifiedTypeName();
     }
 
     if (Date.class.isAssignableFrom(clazz)) {
-      return EdmType.DATETIME.toTypeString();
+      return EdmSimpleType.DATETIME.getFullyQualifiedTypeName();
     }
 
     return null;

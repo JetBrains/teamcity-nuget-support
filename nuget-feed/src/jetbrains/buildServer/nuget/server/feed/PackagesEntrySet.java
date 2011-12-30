@@ -16,25 +16,25 @@
 
 package jetbrains.buildServer.nuget.server.feed;
 
-import org.odata4j.edm.*;
+import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.edm.EdmEntityType;
+import org.odata4j.edm.EdmProperty;
+import org.odata4j.edm.EdmSimpleType;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 18.07.11 3:08
  */
 public class PackagesEntrySet {
-  public static EdmEntitySet ENTRY_SET = new EdmEntitySet("Packages", new EdmEntityType(
-          "banespace",
-          "alias",
-          "name",
-          true,
-          Arrays.asList("Id", "Version"),
-          Arrays.asList(
-                  new EdmProperty("Title", EdmType.STRING, true)
-          ),
-          Collections.<EdmNavigationProperty>emptyList()
-  ));
+    public static EdmEntitySet ENTRY_SET = EdmEntitySet.newBuilder().setName("Packages").setEntityType(
+            EdmEntityType.newBuilder()
+                    .setNamespace("banespace")
+                    .setAlias("alias")
+                    .setName("name")
+                    .setHasStream(true)
+                    .addKeys(Arrays.asList("Id", "Version"))
+                    .addProperties(Arrays.asList(EdmProperty.newBuilder("Title").setType(EdmSimpleType.STRING)))
+    ).build();
 }
