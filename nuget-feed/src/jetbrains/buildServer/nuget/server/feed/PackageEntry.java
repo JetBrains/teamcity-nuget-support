@@ -25,24 +25,24 @@ import java.util.List;
 import java.util.TreeMap;
 
 /**
-* Created by Eugene Petrenko (eugene.petrenko@gmail.com)
-* Date: 18.07.11 1:58
-*/
+ * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 18.07.11 1:58
+ */
 public class PackageEntry implements OEntity, AtomInfo {
 
   private OProperty<Object> myTitleProperty = new OProperty<Object>() {
-      public EdmType getType() {
-        return EdmType.STRING;
-      }
+    public EdmType getType() {
+      return EdmSimpleType.STRING;
+    }
 
-      public String getName() {
-        return "Title";
-      }
+    public String getName() {
+      return "Title";
+    }
 
-      public Object getValue() {
-        return "This is title";
-      }
-    };
+    public Object getValue() {
+      return "This is title";
+    }
+  };
 
   public String getTitle() {
     return "Atom title";
@@ -58,7 +58,7 @@ public class PackageEntry implements OEntity, AtomInfo {
 
   public OEntityKey getEntityKey() {
     return OEntityKey.create(
-            new TreeMap<String, Object>(){{
+            new TreeMap<String, Object>() {{
               put("Id", "package.id");
               put("Version", "4.5.3.2");
             }}
@@ -66,7 +66,7 @@ public class PackageEntry implements OEntity, AtomInfo {
   }
 
   public List<OProperty<?>> getProperties() {
-        return Arrays.<OProperty<?>>asList(myTitleProperty);
+    return Arrays.<OProperty<?>>asList(myTitleProperty);
   }
 
   public OProperty<?> getProperty(String propName) {
@@ -86,6 +86,14 @@ public class PackageEntry implements OEntity, AtomInfo {
   }
 
   public <T extends OLink> T getLink(String title, Class<T> linkClass) {
+    return null;
+  }
+
+  public String getEntitySetName() {
+    return null;
+  }
+
+  public EdmType getType() {
     return null;
   }
 }
