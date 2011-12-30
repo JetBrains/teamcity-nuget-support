@@ -20,6 +20,7 @@ import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -31,4 +32,16 @@ public interface PackagesIndex {
 
   @NotNull
   Iterator<BuildMetadataEntry> getEntries();
+
+  public void processAllPackages(@NotNull  final Callback callback);
+
+  public static interface Callback {
+    public void processPackage(
+            @NotNull final String key,
+            @NotNull final Map<String, String> attrs,
+            @NotNull final String buildTypeId,
+            final long buildId,
+            final boolean isLatestVersion);
+  }
+
 }
