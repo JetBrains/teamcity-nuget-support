@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="odata4j">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-nojpabundle-0.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-0.5-nojpabundle.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-0.4-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-0.5-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-0.4-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-0.5-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
