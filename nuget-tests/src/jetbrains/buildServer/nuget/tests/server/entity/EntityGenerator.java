@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.entity;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
+import jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -155,7 +156,20 @@ public class EntityGenerator extends BaseTestCase {
         final String type = p.myType.getCanonicalJavaType().getName();
         final String name = p.myName;
         wr.println("  public " + type + " get" + name + "() { ");
-        wr.println("    return " + type + ".class.cast(myFields.get(\"" + name + "\"));");
+        wr.println("    final String v = myFields.get(\"" + name + "\");");
+        if (p.myType == EdmSimpleType.STRING) {
+          wr.println("    return v;");
+        } else if (p.myType == EdmSimpleType.BOOLEAN){
+          wr.println("    return Boolean.valueOf(v);");
+        } else if (p.myType == EdmSimpleType.INT32){
+          wr.println("    return Integer.parseInt(v);");
+        } else if (p.myType == EdmSimpleType.INT64){
+          wr.println("    return Long.parseLong(v);");
+        } else if (p.myType == EdmSimpleType.DATETIME){
+          wr.println("    return " + ODataDataFormat.class.getName() + ".parseDate(v);");
+        } else {
+          wr.println("    UnsupportedTypeError");
+        }
         wr.println("  }");
         wr.println();
       }

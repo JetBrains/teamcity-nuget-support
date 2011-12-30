@@ -17,137 +17,164 @@ public class PackageEntity extends PackageKey {
 
 
   public java.lang.String getId() { 
-    return java.lang.String.class.cast(myFields.get("Id"));
+    final String v = myFields.get("Id");
+    return v;
   }
 
 
   public java.lang.String getVersion() { 
-    return java.lang.String.class.cast(myFields.get("Version"));
+    final String v = myFields.get("Version");
+    return v;
   }
 
 
   public java.lang.String getAuthors() { 
-    return java.lang.String.class.cast(myFields.get("Authors"));
+    final String v = myFields.get("Authors");
+    return v;
   }
 
 
   public java.lang.String getCopyright() { 
-    return java.lang.String.class.cast(myFields.get("Copyright"));
+    final String v = myFields.get("Copyright");
+    return v;
   }
 
 
   public org.joda.time.LocalDateTime getCreated() { 
-    return org.joda.time.LocalDateTime.class.cast(myFields.get("Created"));
+    final String v = myFields.get("Created");
+    return jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.parseDate(v);
   }
 
 
   public java.lang.String getDependencies() { 
-    return java.lang.String.class.cast(myFields.get("Dependencies"));
+    final String v = myFields.get("Dependencies");
+    return v;
   }
 
 
   public java.lang.String getDescription() { 
-    return java.lang.String.class.cast(myFields.get("Description"));
+    final String v = myFields.get("Description");
+    return v;
   }
 
 
   public java.lang.Integer getDownloadCount() { 
-    return java.lang.Integer.class.cast(myFields.get("DownloadCount"));
+    final String v = myFields.get("DownloadCount");
+    return Integer.parseInt(v);
   }
 
 
   public java.lang.String getGalleryDetailsUrl() { 
-    return java.lang.String.class.cast(myFields.get("GalleryDetailsUrl"));
+    final String v = myFields.get("GalleryDetailsUrl");
+    return v;
   }
 
 
   public java.lang.String getIconUrl() { 
-    return java.lang.String.class.cast(myFields.get("IconUrl"));
+    final String v = myFields.get("IconUrl");
+    return v;
   }
 
 
   public java.lang.Boolean getIsLatestVersion() { 
-    return java.lang.Boolean.class.cast(myFields.get("IsLatestVersion"));
+    final String v = myFields.get("IsLatestVersion");
+    return Boolean.valueOf(v);
   }
 
 
   public java.lang.Boolean getIsAbsoluteLatestVersion() { 
-    return java.lang.Boolean.class.cast(myFields.get("IsAbsoluteLatestVersion"));
+    final String v = myFields.get("IsAbsoluteLatestVersion");
+    return Boolean.valueOf(v);
   }
 
 
   public org.joda.time.LocalDateTime getLastUpdated() { 
-    return org.joda.time.LocalDateTime.class.cast(myFields.get("LastUpdated"));
+    final String v = myFields.get("LastUpdated");
+    return jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.parseDate(v);
   }
 
 
   public org.joda.time.LocalDateTime getPublished() { 
-    return org.joda.time.LocalDateTime.class.cast(myFields.get("Published"));
+    final String v = myFields.get("Published");
+    return jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.parseDate(v);
   }
 
 
   public java.lang.String getLanguage() { 
-    return java.lang.String.class.cast(myFields.get("Language"));
+    final String v = myFields.get("Language");
+    return v;
   }
 
 
   public java.lang.String getLicenseUrl() { 
-    return java.lang.String.class.cast(myFields.get("LicenseUrl"));
+    final String v = myFields.get("LicenseUrl");
+    return v;
   }
 
 
   public java.lang.String getPackageHash() { 
-    return java.lang.String.class.cast(myFields.get("PackageHash"));
+    final String v = myFields.get("PackageHash");
+    return v;
   }
 
 
   public java.lang.String getPackageHashAlgorithm() { 
-    return java.lang.String.class.cast(myFields.get("PackageHashAlgorithm"));
+    final String v = myFields.get("PackageHashAlgorithm");
+    return v;
   }
 
 
   public java.lang.Long getPackageSize() { 
-    return java.lang.Long.class.cast(myFields.get("PackageSize"));
+    final String v = myFields.get("PackageSize");
+    return Long.parseLong(v);
   }
 
 
   public java.lang.String getProjectUrl() { 
-    return java.lang.String.class.cast(myFields.get("ProjectUrl"));
+    final String v = myFields.get("ProjectUrl");
+    return v;
   }
 
 
   public java.lang.String getReportAbuseUrl() { 
-    return java.lang.String.class.cast(myFields.get("ReportAbuseUrl"));
+    final String v = myFields.get("ReportAbuseUrl");
+    return v;
   }
 
 
   public java.lang.String getReleaseNotes() { 
-    return java.lang.String.class.cast(myFields.get("ReleaseNotes"));
+    final String v = myFields.get("ReleaseNotes");
+    return v;
   }
 
 
   public java.lang.Boolean getRequireLicenseAcceptance() { 
-    return java.lang.Boolean.class.cast(myFields.get("RequireLicenseAcceptance"));
+    final String v = myFields.get("RequireLicenseAcceptance");
+    return Boolean.valueOf(v);
   }
 
 
   public java.lang.String getSummary() { 
-    return java.lang.String.class.cast(myFields.get("Summary"));
+    final String v = myFields.get("Summary");
+    return v;
   }
 
 
   public java.lang.String getTags() { 
-    return java.lang.String.class.cast(myFields.get("Tags"));
+    final String v = myFields.get("Tags");
+    return v;
   }
 
 
   public java.lang.String getTitle() { 
-    return java.lang.String.class.cast(myFields.get("Title"));
+    final String v = myFields.get("Title");
+    return v;
   }
 
 
   public java.lang.Integer getVersionDownloadCount() { 
-    return java.lang.Integer.class.cast(myFields.get("VersionDownloadCount"));
+    final String v = myFields.get("VersionDownloadCount");
+    return Integer.parseInt(v);
   }
 
 

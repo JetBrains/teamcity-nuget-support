@@ -51,7 +51,7 @@ public class NuGetProducer {
                   public Iterator<PackageEntity> iterator() {
                     return new DecoratingIterator<PackageEntity, NuGetIndexEntry>(myIndex.getNuGetEntries(), new Mapper<NuGetIndexEntry, PackageEntity>() {
                       public PackageEntity mapKey(@NotNull NuGetIndexEntry internal) {
-                        return null;
+                        return new PackageEntity(internal.getAttributes());
                       }
                     });
                   }
@@ -60,7 +60,7 @@ public class NuGetProducer {
             },
             new Func1<PackageEntity, PackageKey>() {
               public PackageKey apply(PackageEntity packageEntity) {
-                return PackageKey.fromEntity(packageEntity);
+                return (packageEntity);
               }
             }
     );

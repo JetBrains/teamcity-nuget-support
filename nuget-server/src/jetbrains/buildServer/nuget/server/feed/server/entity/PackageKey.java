@@ -18,12 +18,14 @@ public class PackageKey {
 
 
   public java.lang.String getId() { 
-    return java.lang.String.class.cast(myFields.get("Id"));
+    final String v = myFields.get("Id");
+    return v;
   }
 
 
   public java.lang.String getVersion() { 
-    return java.lang.String.class.cast(myFields.get("Version"));
+    final String v = myFields.get("Version");
+    return v;
   }
 
 
