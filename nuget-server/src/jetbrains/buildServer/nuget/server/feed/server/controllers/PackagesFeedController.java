@@ -17,17 +17,59 @@
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import jetbrains.buildServer.controllers.BaseController;
+import jetbrains.buildServer.dataStructures.DecoratingIterator;
+import jetbrains.buildServer.dataStructures.Mapper;
+import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
+import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntity;
+import jetbrains.buildServer.nuget.server.feed.server.entity.PackageKey;
+import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
+import org.core4j.Func;
+import org.core4j.Func1;
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Iterator;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 30.12.11 17:49
  */
-public class PackagesFeedController extends BaseController{
+public class PackagesFeedController extends BaseController {
+  private final InMemoryProducer myProducer;
+  private final PackagesIndex myIndex;
+
+  public PackagesFeedController(@NotNull final PackagesIndex index) {
+    myIndex = index;
+
+    myProducer = new InMemoryProducer("aaa");
+    myProducer.register(
+            PackageEntity.class,
+            PackageKey.class,
+            "Packages",
+            new Func<Iterable<PackageEntity>>() {
+              public Iterable<PackageEntity> apply() {
+                return new Iterable<PackageEntity>() {
+                  public Iterator<PackageEntity> iterator() {
+                    return new DecoratingIterator<PackageEntity, BuildMetadataEntry>(myIndex.getEntries(), new Mapper<BuildMetadataEntry, PackageEntity>() {
+                      public PackageEntity mapKey(@NotNull BuildMetadataEntry internal) {
+                        return new PackageEntity();
+                      }
+                    });
+                  }
+                };
+              }
+            },
+            new Func1<PackageEntity, PackageKey>() {
+              public PackageKey apply(PackageEntity packageEntity) {
+                return PackageKey.fromEntity(packageEntity);
+              }
+            }
+    );
+  }
+
   @Override
   protected ModelAndView doHandle(@NotNull HttpServletRequest request,
                                   @NotNull HttpServletResponse response) throws Exception {
@@ -35,6 +77,7 @@ public class PackagesFeedController extends BaseController{
       //error response according to OData spec for unsupported oprtaions (modification operations)
       response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
     }
+
 
     return null;
   }
