@@ -125,9 +125,12 @@ public class NuGetServerFeedIntegrationTest extends NuGetServerFeedIntegrationTe
     Assert.assertTrue(packages.size() == 1);
     final FeedPackage pkg = packages.iterator().next();
 
+/*
+    TODO: add test for download url generation in PackageIndex
     final String downloadUrl = pkg.getDownloadUrl();
     final String ending = "/repository/download/bt/42:id/some/package/download/" + name;
     Assert.assertTrue(downloadUrl.endsWith(ending), "actual url: " + downloadUrl + ", must end with " + ending);
+*/
   }
 
   @Test

@@ -105,6 +105,8 @@ public class NuGetServerFeedIntegrationTestBase extends NuGetServerIntegrationTe
     final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(artifact, new Date()));
     map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
     map.put(TEAMCITY_BUILD_TYPE_ID, "bt_" + packageFile.getName());
+    map.put("TeamCityDownloadUrl", "some-download-url/" + packageFile.getName());
+    map.put("IsLatestVersion", String.valueOf(isLatest));
 
     presentPackageEntry(w, isLatest, build, map);
   }
@@ -113,7 +115,8 @@ public class NuGetServerFeedIntegrationTestBase extends NuGetServerIntegrationTe
                                    boolean isLatest,
                                    @NotNull final SFinishedBuild build,
                                    @NotNull final Map<String, String> map) throws IOException {
-    new PackageInfoSerializer().serializePackage(map, w);
+    final Map<String, String> actual = new HashMap<String, String>(map);
+    new PackageInfoSerializer().serializePackage(actual, w);
     w.append("                 ");
   }
 
