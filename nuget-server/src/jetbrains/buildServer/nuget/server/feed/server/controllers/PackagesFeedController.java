@@ -20,7 +20,9 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
-import org.odata.jersey.resources.ODataApplication;
+import org.odata4j.producer.ODataProducer;
+import org.odata4j.producer.resources.AbstractODataApplication;
+import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletConfig;
@@ -28,6 +30,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.*;
 
 /**
@@ -37,19 +42,26 @@ import java.util.*;
 public class PackagesFeedController extends BaseController {
   private final NuGetProducer myProducer;
   private final ServletContainer myContainer;
+  private final String PATH = "/app/nuget2";
+  private final RequestPathTransformInfo myPathTransformInfo;
 
   public PackagesFeedController(@NotNull final NuGetProducer producer,
                                 @NotNull final ServletConfig config,
                                 @NotNull final WebControllerManager web) {
     myProducer = producer;
 
-    web.registerController("/app/nuget2/**", this);
+    web.registerController(PATH + "/**", this);
 
-    myContainer = new ServletContainer(new ODataApplication(){
+    myContainer = new ServletContainer(new AbstractODataApplication(){
       @Override
       public Set<Object> getSingletons() {
-        final Set<Object> set = super.getSingletons();
-        set.add(myProducer.getProducer());
+        final Set<Object> set = new HashSet<Object>(super.getSingletons());
+        set.add(new DefaultODataProducerProvider(){
+          @Override
+          protected ODataProducer createInstanceFromFactoryInContainerSpecificSetting() {
+            return myProducer.getProducer();
+          }
+        });
         return set;
       }
     });
@@ -59,8 +71,26 @@ public class PackagesFeedController extends BaseController {
     } catch (ServletException e) {
       e.printStackTrace();
     }
+    myPathTransformInfo = new RequestPathTransformInfo();
+    myPathTransformInfo.setPathMapping(Collections.singletonMap(PATH, ""));
   }
 
+  @NotNull
+  private ServletContext createServletContext(@NotNull final ServletContext baseContext) {
+    return (ServletContext) Proxy.newProxyInstance(
+            getClass().getClassLoader(),
+            new Class<?>[]{ServletContext.class},
+            new InvocationHandler() {
+              public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                if (method.getName().equals("getContextPath")) {
+                  return baseContext.getContextPath() + PATH;
+                }
+                return method.invoke(baseContext, args);
+              }
+            }
+    );
+  }
+  
   private ServletConfig createServletConfig(@NotNull final ServletConfig config) {
     final Map<String, String> myInit = new HashMap<String, String>();
     final Enumeration<String> it = config.getInitParameterNames();
@@ -69,13 +99,14 @@ public class PackagesFeedController extends BaseController {
       myInit.put(key, config.getInitParameter(key));
     }
     myInit.put("com.sun.jersey.config.property.packages", "jetbrains.buildServer.nuget");
+    final ServletContext context = createServletContext(config.getServletContext());
     return new ServletConfig() {
       public String getServletName() {
         return config.getServletName();
       }
 
       public ServletContext getServletContext() {
-        return config.getServletContext();
+        return context;
       }
 
       public String getInitParameter(String s) {
@@ -96,7 +127,7 @@ public class PackagesFeedController extends BaseController {
       response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
     }
 
-    myContainer.service(request, response);
+    myContainer.service(new RequestWrapper(request, myPathTransformInfo), response);
 
     return null;
   }
