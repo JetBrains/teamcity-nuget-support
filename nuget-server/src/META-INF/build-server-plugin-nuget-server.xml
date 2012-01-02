@@ -44,4 +44,7 @@
   <!--stats -->
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerUsageStatisticsProvider"/>
 
+
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PackagesFeedController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetProducer"/>
 </beans>

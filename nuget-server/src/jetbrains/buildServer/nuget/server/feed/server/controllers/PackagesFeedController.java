@@ -16,12 +16,19 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
+import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
+import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
+import org.odata.jersey.resources.ODataApplication;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -29,9 +36,56 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class PackagesFeedController extends BaseController {
   private final NuGetProducer myProducer;
+  private final ServletContainer myContainer;
 
-  public PackagesFeedController(@NotNull final NuGetProducer producer) {
+  public PackagesFeedController(@NotNull final NuGetProducer producer,
+                                @NotNull final ServletConfig config,
+                                @NotNull final WebControllerManager web) {
     myProducer = producer;
+
+    web.registerController("/app/nuget2/**", this);
+
+    myContainer = new ServletContainer(new ODataApplication(){
+      @Override
+      public Set<Object> getSingletons() {
+        final Set<Object> set = super.getSingletons();
+        set.add(myProducer.getProducer());
+        return set;
+      }
+    });
+
+    try {
+      myContainer.init(createServletConfig(config));
+    } catch (ServletException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private ServletConfig createServletConfig(@NotNull final ServletConfig config) {
+    final Map<String, String> myInit = new HashMap<String, String>();
+    final Enumeration<String> it = config.getInitParameterNames();
+    while (it.hasMoreElements()) {
+      final String key = it.nextElement();
+      myInit.put(key, config.getInitParameter(key));
+    }
+    myInit.put("com.sun.jersey.config.property.packages", "jetbrains.buildServer.nuget");
+    return new ServletConfig() {
+      public String getServletName() {
+        return config.getServletName();
+      }
+
+      public ServletContext getServletContext() {
+        return config.getServletContext();
+      }
+
+      public String getInitParameter(String s) {
+        return myInit.get(s);
+      }
+
+      public Enumeration<String> getInitParameterNames() {
+        return new Vector<String>(myInit.keySet()).elements();
+      }
+    };
   }
 
   @Override
@@ -41,6 +95,8 @@ public class PackagesFeedController extends BaseController {
       //error response according to OData spec for unsupported oprtaions (modification operations)
       response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
     }
+
+    myContainer.service(request, response);
 
     return null;
   }

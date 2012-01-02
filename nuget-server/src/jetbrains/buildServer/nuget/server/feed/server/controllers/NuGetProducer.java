@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.server.feed.server.entity.PackageKey;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 
 import java.util.Iterator;
@@ -64,5 +65,10 @@ public class NuGetProducer {
               }
             }
     );
+  }
+
+  @NotNull
+  public ODataProducer getProducer() {
+    return myProducer;
   }
 }
