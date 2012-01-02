@@ -28,6 +28,11 @@ import javax.servlet.http.HttpServletResponse;
  * Date: 30.12.11 17:49
  */
 public class PackagesFeedController extends BaseController {
+  private final NuGetProducer myProducer;
+
+  public PackagesFeedController(@NotNull final NuGetProducer producer) {
+    myProducer = producer;
+  }
 
   @Override
   protected ModelAndView doHandle(@NotNull HttpServletRequest request,
