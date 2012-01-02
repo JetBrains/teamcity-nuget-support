@@ -51,6 +51,7 @@
     <orderEntry type="library" name="Common-Impl" level="project" />
     <orderEntry type="library" name="TeamCity server runtime" level="project" />
     <orderEntry type="library" name="odata4j-core-0.6.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="jersey" level="project" />
   </component>
 </module>
 

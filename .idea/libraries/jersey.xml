@@ -1,0 +1,21 @@
+<component name="libraryTable">
+  <library name="jersey">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jersey/activation-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/asm-3.3.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/jackson-core-asl-1.9.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/jackson-jaxrs-1.9.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/jackson-mapper-asl-1.9.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/jaxb-api-2.2.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/jaxb-impl-2.2.4-1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/jersey-bundle-1.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/jersey-json-1.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/jersey-multipart-1.11.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/jettison-1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/mimepull-1.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jersey/stax-api-1.0-2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
