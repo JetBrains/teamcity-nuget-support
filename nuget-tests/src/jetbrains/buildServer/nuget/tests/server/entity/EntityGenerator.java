@@ -40,6 +40,7 @@ import org.testng.annotations.Test;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -109,6 +110,22 @@ public class EntityGenerator extends BaseTestCase {
       super(name, properties);
       myEntityName = entityName;
     }
+
+    @Override
+    protected Collection<String> getImplements() {
+      return Collections.singleton("OEntityId");
+    }
+
+    @Override
+    protected void fieldsGenerated(@NotNull PrintWriter wr) {
+      super.fieldsGenerated(wr);
+      
+      wr.println();
+      wr.println("  public OEntityKey getEntityKey() {");
+      wr.println("    return OEntityKey.create(\"Id\", getId(), \"Version\", getVersion());");
+      wr.println("  }");
+      wr.println();
+    }
   }
   
   private static class BeanGenerator {
@@ -136,6 +153,8 @@ public class EntityGenerator extends BaseTestCase {
       wr.println();
       wr.println("import java.util.*;");
       wr.println("import java.lang.*;");
+      wr.println("import org.odata4j.core.*;");
+      wr.println();
       wr.println("import org.jetbrains.annotations.NotNull;");
       wr.println();
       
@@ -143,7 +162,12 @@ public class EntityGenerator extends BaseTestCase {
       if (!StringUtil.isEmptyOrSpaces(ext)) {
         ext = " extends " + ext;
       }
-      
+
+      final Collection<String> impl = getImplements();
+      if (!impl.isEmpty()) {
+        ext += " implements " + StringUtil.join(", ", impl);
+      }
+
       wr.println("public class " + myName + ext + " { ");
       generateFields(wr);
       wr.println();
@@ -203,6 +227,10 @@ public class EntityGenerator extends BaseTestCase {
     
     protected String getExtends() {
       return "";
+    }
+
+    protected Collection<String> getImplements() {
+      return Collections.emptyList();
     }
   }
 

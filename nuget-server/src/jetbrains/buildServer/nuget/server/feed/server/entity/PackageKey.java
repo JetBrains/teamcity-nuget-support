@@ -6,16 +6,25 @@
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.core.OEntityId;
+import org.odata4j.core.OEntityKey;
 
 import java.util.Map;
 
-public class PackageKey { 
+public class PackageKey implements OEntityId { 
   protected final Map<String, String> myFields;
 
   public PackageKey(@NotNull final Map<String, String> data) {
     myFields = data;
   }
 
+  public String getEntitySetName() {
+    return "Pacakges";
+  }
+
+  public OEntityKey getEntityKey() {
+    return OEntityKey.create("Id", getId(), "Version", getVersion());
+  }
 
   public java.lang.String getId() { 
     final String v = myFields.get("Id");
