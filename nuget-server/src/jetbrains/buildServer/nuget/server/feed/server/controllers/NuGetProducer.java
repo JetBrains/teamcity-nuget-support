@@ -28,7 +28,9 @@ import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -52,7 +54,18 @@ public class NuGetProducer {
                   public Iterator<PackageEntity> iterator() {
                     return new DecoratingIterator<PackageEntity, NuGetIndexEntry>(myIndex.getNuGetEntries(), new Mapper<NuGetIndexEntry, PackageEntity>() {
                       public PackageEntity mapKey(@NotNull NuGetIndexEntry internal) {
-                        return new PackageEntity(internal.getAttributes());
+                        final Map<String,String> map = new HashMap<String, String>(internal.getAttributes());
+                        //Adapt computed values
+                        map.put("Created", map.get("LastUpdated"));
+                        map.put("Published", map.get("LastUpdated"));
+                        map.put("ExternalPackageUri", map.get("ProjectUrl"));
+                        map.put("GalleryDetailsUrl", map.get("ProjectUrl"));
+                        map.put("Summary", map.get("Description"));
+                        map.put("Title", map.get("Id"));
+                        map.put("VersionDownloadCount", "42");
+                        map.put("DownloadCount", "42");
+                        //create package object
+                        return new PackageEntity(map);
                       }
                     });
                   }
