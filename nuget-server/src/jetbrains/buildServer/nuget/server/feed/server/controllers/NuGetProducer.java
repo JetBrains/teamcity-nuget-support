@@ -43,7 +43,7 @@ public class NuGetProducer {
   public NuGetProducer(@NotNull final PackagesIndex index) {
     myIndex = index;
 
-    myProducer = new InMemoryProducer("aaa");
+    myProducer = new InMemoryProducer("NuGetGallery");
     myProducer.register(
             PackageEntity.class,
             PackageKey.class,

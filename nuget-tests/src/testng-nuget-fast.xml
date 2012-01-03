@@ -12,6 +12,12 @@
     </classes>
   </test>
 
+  <test name="java feed">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.NuGetProducerTest"/>
+    </classes>
+  </test>
+
   <test name="fast tests">
     <classes>
 
