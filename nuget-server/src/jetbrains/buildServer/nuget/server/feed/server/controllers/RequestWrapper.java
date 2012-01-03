@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import com.intellij.openapi.diagnostic.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
@@ -30,28 +31,43 @@ import java.util.List;
  */
 public class RequestWrapper extends HttpServletRequestWrapper {
   final Logger LOG = Logger.getInstance(RequestWrapper.class.getName());
-  public static final String ORIGINAL_REQUEST_URI_HEADER_NAME = "X-Original-Request-Url";
-  private RequestPathTransformInfo myRequestPathTransformInfo;
+  public static final String ORIGINAL_REQUEST_URI_HEADER_NAME = "X-TeamCity-Original-Request-Url";
+  private final String myPath;
 
-  public RequestWrapper(HttpServletRequest request, RequestPathTransformInfo requestPathTransformInfo) {
+  public RequestWrapper(@NotNull final HttpServletRequest request,
+                        @NotNull final String path) {
     super(request);
-    myRequestPathTransformInfo = requestPathTransformInfo;
+    myPath = path;
     LOG.debug("Establishing request mapping: '" + request.getRequestURI() + "' -> '" + getRequestURI() + "'");
   }
 
   @Override
   public String getPathInfo() {
-    return myRequestPathTransformInfo.getTransformedPath(super.getPathInfo());
+    final String info = super.getPathInfo();
+    if (info.startsWith("/nuget2")) {
+      return info.substring("/nuget2".length());
+    }
+    return info;
   }
 
   @Override
   public String getRequestURI() {
-    return myRequestPathTransformInfo.getTransformedPath(super.getRequestURI());
+    return (super.getRequestURI());
   }
 
   @Override
   public StringBuffer getRequestURL() {
-    return new StringBuffer(myRequestPathTransformInfo.getTransformedPath(super.getRequestURL().toString()));
+    return new StringBuffer((super.getRequestURL().toString()));
+  }
+
+  @Override
+  public String getContextPath() {
+    return super.getContextPath();
+  }
+
+  @Override
+  public String getServletPath() {
+    return super.getServletPath() + "/nuget2";
   }
 
   @Override

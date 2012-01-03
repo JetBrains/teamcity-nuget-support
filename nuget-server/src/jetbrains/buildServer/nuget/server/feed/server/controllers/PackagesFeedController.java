@@ -43,7 +43,6 @@ public class PackagesFeedController extends BaseController {
   private final NuGetProducer myProducer;
   private final ServletContainer myContainer;
   private final String PATH = "/app/nuget2";
-  private final RequestPathTransformInfo myPathTransformInfo;
 
   public PackagesFeedController(@NotNull final NuGetProducer producer,
                                 @NotNull final ServletConfig config,
@@ -71,8 +70,6 @@ public class PackagesFeedController extends BaseController {
     } catch (ServletException e) {
       e.printStackTrace();
     }
-    myPathTransformInfo = new RequestPathTransformInfo();
-    myPathTransformInfo.setPathMapping(Collections.singletonMap(PATH, ""));
   }
 
   @NotNull
@@ -127,8 +124,7 @@ public class PackagesFeedController extends BaseController {
       response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
     }
 
-    myContainer.service(new RequestWrapper(request, myPathTransformInfo), response);
-
+    myContainer.service(new RequestWrapper(request, PATH), response);
     return null;
   }
 }
