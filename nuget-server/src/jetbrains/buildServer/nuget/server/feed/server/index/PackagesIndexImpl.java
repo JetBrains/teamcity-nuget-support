@@ -91,13 +91,6 @@ public class PackagesIndexImpl implements PackagesIndex {
                 if (relPath == null) return null;
                 metadata.put("TeamCityDownloadUrl", myPaths.getArtifactDownloadUrl(buildTypeId, e.getBuildId(), relPath));
 
-                return createEntry(e, metadata, buildTypeId);
-              }
-
-              @NotNull
-              private NuGetIndexEntry createEntry(@NotNull final BuildMetadataEntry e,
-                                                  @NotNull final Map<String, String> metadata,
-                                                  @NotNull final String buildTypeId) {
                 return new NuGetIndexEntry(
                         e.getKey(),
                         metadata,
