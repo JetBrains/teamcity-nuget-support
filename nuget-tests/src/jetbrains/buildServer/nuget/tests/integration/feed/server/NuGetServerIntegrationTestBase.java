@@ -32,7 +32,6 @@ import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunnerImpl;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
-import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
@@ -44,7 +43,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.CustomAction;
 import org.testng.Assert;
@@ -64,9 +62,7 @@ import static org.apache.http.HttpStatus.SC_OK;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 24.10.11 18:09
  */
-public class NuGetServerIntegrationTestBase extends IntegrationTestBase {
-  protected Mockery m;
-  protected Collection<InputStream> myStreams;
+public class NuGetServerIntegrationTestBase extends NuGetFeedIntegrationTestBase {
   private NuGetTeamCityProvider myProvider;
   private File myLogsFile;
 
@@ -91,7 +87,6 @@ public class NuGetServerIntegrationTestBase extends IntegrationTestBase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
     myStreams = new ArrayList<InputStream>();
     myProvider = m.mock(NuGetTeamCityProvider.class);
     myLogsFile = createTempFile();

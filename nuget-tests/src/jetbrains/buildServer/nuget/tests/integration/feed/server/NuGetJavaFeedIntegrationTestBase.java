@@ -20,35 +20,37 @@ import jetbrains.buildServer.NetworkUtil;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetProducer;
-import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 04.01.12 23:55
  */
-public class NuGetJavaFeedIntegrationTestBase extends IntegrationTestBase {
-  protected Mockery m;
+public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBase {
   protected NuGetProducer myProducer;
   private int myPort;
   private List<NuGetIndexEntry> myFeed;
   private PackagesIndex myIndex;
   private ODataServer myServer;
+  private int myCount;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    myCount = 0;
     myPort = NetworkUtil.getFreePort(14444);
     myFeed = new ArrayList<NuGetIndexEntry>();
     myIndex = m.mock(PackagesIndex.class);
@@ -77,6 +79,12 @@ public class NuGetJavaFeedIntegrationTestBase extends IntegrationTestBase {
     final ODataProducer producer = myProducer.getProducer();
     DefaultODataProducerProvider.setInstance(producer);
     myServer = ODataProducerUtil.hostODataServer(getEndpointUrl());
+  }
+
+  protected void addPackage(@NotNull final File file) throws IOException {
+    final int buildId = myCount++;
+    final Map<String,String> map = indexPackage(file, false, buildId);
+    myFeed.add(new NuGetIndexEntry(file.getName(), map, "bt-xx" + buildId, buildId));
   }
 
 }
