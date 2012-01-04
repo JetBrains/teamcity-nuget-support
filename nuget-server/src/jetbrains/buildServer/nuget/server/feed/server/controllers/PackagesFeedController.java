@@ -20,9 +20,6 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
-import org.odata4j.producer.ODataProducer;
-import org.odata4j.producer.resources.AbstractODataApplication;
-import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletConfig;
@@ -51,19 +48,7 @@ public class PackagesFeedController extends BaseController {
 
     web.registerController(PATH + "/**", this);
 
-    myContainer = new ServletContainer(new AbstractODataApplication(){
-      @Override
-      public Set<Object> getSingletons() {
-        final Set<Object> set = new HashSet<Object>(super.getSingletons());
-        set.add(new DefaultODataProducerProvider(){
-          @Override
-          protected ODataProducer createInstanceFromFactoryInContainerSpecificSetting() {
-            return myProducer.getProducer();
-          }
-        });
-        return set;
-      }
-    });
+    myContainer = new ServletContainer(new NuGetODataApplication(myProducer));
 
     try {
       myContainer.init(createServletConfig(config));
@@ -127,4 +112,5 @@ public class PackagesFeedController extends BaseController {
     myContainer.service(new RequestWrapper(request, PATH), response);
     return null;
   }
+
 }
