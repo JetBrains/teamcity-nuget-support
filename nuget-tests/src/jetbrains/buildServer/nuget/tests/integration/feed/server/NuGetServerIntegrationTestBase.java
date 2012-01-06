@@ -18,8 +18,6 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
-import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
-import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.NuGetFeedReaderImpl;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImpl;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
@@ -66,8 +64,6 @@ public class NuGetServerIntegrationTestBase extends NuGetFeedIntegrationTestBase
   private NuGetTeamCityProvider myProvider;
   private File myLogsFile;
 
-  private FeedHttpClientHolder nyHttpClient;
-  private FeedGetMethodFactory myHttpMethods;
   protected NuGetFeedReaderImpl myFeedReader;
   protected NuGetServerRunnerTokens myTokens;
   protected MetadataControllersPaths myPaths;
@@ -83,6 +79,11 @@ public class NuGetServerIntegrationTestBase extends NuGetFeedIntegrationTestBase
 
   protected String myHttpContextUrl;
 
+  @Override
+  protected String getNuGetServerUrl() {
+    return myNuGetServerUrl;
+  }
+
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
@@ -91,9 +92,7 @@ public class NuGetServerIntegrationTestBase extends NuGetFeedIntegrationTestBase
     myProvider = m.mock(NuGetTeamCityProvider.class);
     myLogsFile = createTempFile();
 
-    nyHttpClient = new FeedHttpClientHolder();
-    myHttpMethods = new FeedGetMethodFactory();
-    myFeedReader = new NuGetFeedReaderImpl(nyHttpClient, new UrlResolverImpl(nyHttpClient, myHttpMethods), myHttpMethods, new PackagesFeedParserImpl());
+    myFeedReader = new NuGetFeedReaderImpl(myHttpClient, new UrlResolverImpl(myHttpClient, myHttpMethods), myHttpMethods, new PackagesFeedParserImpl());
     myTokens = new NuGetServerTokensImpl();
 
     myHttpServer = null;
@@ -216,45 +215,6 @@ public class NuGetServerIntegrationTestBase extends NuGetFeedIntegrationTestBase
     };
   }
 
-  @NotNull
-  protected HttpGet createGetQuery(@NotNull String req, @NotNull final NameValuePair... reqs) {
-    return myHttpMethods.createGet(myNuGetServerUrl + req, reqs);
-  }
 
-  protected interface ExecuteAction<T> {
-    T processResult(@NotNull HttpResponse response) throws IOException;
-  }
-
-  protected <T> T execute(@NotNull final HttpGet get, @NotNull final ExecuteAction<T> action) {
-    try {
-      final HttpResponse execute = nyHttpClient.execute(get);
-      return action.processResult(execute);
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to connect to " + get.getRequestLine() + ". " + e.getClass() + " " + e.getMessage(), e);
-    } finally {
-      get.abort();
-    }
-  }
-
-  protected Runnable assert200(@NotNull final String req,
-                               @NotNull final NameValuePair... reqs) {
-    return new Runnable() {
-      public void run() {
-        final HttpGet get = createGetQuery(req, reqs);
-        execute(get, new ExecuteAction<Object>() {
-          public Object processResult(@NotNull HttpResponse response) throws IOException {
-            final HttpEntity entity = response.getEntity();
-            System.out.println("Request: " + get.getRequestLine());
-            entity.writeTo(System.out);
-            System.out.println();
-            System.out.println();
-
-            Assert.assertTrue(response.getStatusLine().getStatusCode() == SC_OK);
-            return null;
-          }
-        });
-      }
-    };
-  }
 
 }

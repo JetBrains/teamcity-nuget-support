@@ -14,6 +14,7 @@
   <test name="nuget java feed integration">
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedContentTest"/>
     </classes>
   </test>
 

@@ -19,7 +19,7 @@ public class PackageKey implements OEntityId {
   }
 
   public String getEntitySetName() {
-    return "Pacakges";
+    return "Packages";
   }
 
   public OEntityKey getEntityKey() {

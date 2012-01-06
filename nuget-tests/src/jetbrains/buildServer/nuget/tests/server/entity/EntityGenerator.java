@@ -125,6 +125,10 @@ public class EntityGenerator extends BaseTestCase {
       wr.println("    return OEntityKey.create(\"Id\", getId(), \"Version\", getVersion());");
       wr.println("  }");
       wr.println();
+      wr.println("  public String getEntitySetName() {");
+      wr.println("    return \"Packages\";");
+      wr.println("  }");
+      wr.println();
     }
   }
   

@@ -45,7 +45,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     cmd.setExePath(nuget.getPath().getPath());
     cmd.addParameter("list");
     cmd.addParameter("-Source");
-    cmd.addParameter(getEndpointUrl());
+    cmd.addParameter(getNuGetServerUrl());
 
     final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
     Assert.assertEquals(exec.getExitCode(), 0);
@@ -70,7 +70,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     cmd.addParameter("list");
     cmd.addParameter("Common");
     cmd.addParameter("-Source");
-    cmd.addParameter(getEndpointUrl());
+    cmd.addParameter(getNuGetServerUrl());
 
     final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
     Assert.assertEquals(exec.getExitCode(), 0);

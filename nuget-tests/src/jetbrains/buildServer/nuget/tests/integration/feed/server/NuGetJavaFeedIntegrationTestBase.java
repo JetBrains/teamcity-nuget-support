@@ -70,7 +70,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myServer.stop();
   }
 
-  protected String getEndpointUrl() {
+  @Override
+  protected String getNuGetServerUrl() {
     return "http://localhost:" + myPort + "/feed.svc/";
   }
 
@@ -78,7 +79,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     // register the producer as the static instance, then launch the http server
     final ODataProducer producer = myProducer.getProducer();
     DefaultODataProducerProvider.setInstance(producer);
-    myServer = ODataProducerUtil.hostODataServer(getEndpointUrl());
+    myServer = ODataProducerUtil.hostODataServer(getNuGetServerUrl());
   }
 
   protected void addPackage(@NotNull final File file) throws IOException {
