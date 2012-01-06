@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
  */
 public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBase {
 
-  @Test(dataProvider = NUGET_VERSIONS_15p)
+  @Test(dataProvider = NUGET_VERSIONS)
   public void testNuGetClientReadsFeed(@NotNull final NuGet nuget) throws Exception{
     enableDebug();
 
@@ -48,14 +48,15 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     cmd.addParameter(getNuGetServerUrl());
 
     final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
-    Assert.assertEquals(exec.getExitCode(), 0);
     final String stdout = exec.getStdout();
     System.out.println(stdout);
+    System.out.println(exec.getStderr());
+    Assert.assertEquals(exec.getExitCode(), 0);
     Assert.assertTrue(stdout.contains(packageId_1), stdout);
     Assert.assertTrue(stdout.contains(packageId_2), stdout);
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_15p)
+  @Test(dataProvider = NUGET_VERSIONS)
   public void testNuGetClientReadsFeedQuery(@NotNull final NuGet nuget) throws Exception{
     enableDebug();
 
