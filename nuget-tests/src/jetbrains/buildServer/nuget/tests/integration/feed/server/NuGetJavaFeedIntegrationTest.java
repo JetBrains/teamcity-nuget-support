@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 /**
@@ -30,16 +31,21 @@ import org.testng.annotations.Test;
  * Date: 05.01.12 0:40
  */
 public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBase {
+  private final String packageId_1 = "CommonServiceLocator";
+  private final String packageId_2 = "NuGet.Core";
+
+  @BeforeMethod
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+
+    addPackage(Paths.getTestDataPath("/packages/" + packageId_1 + ".1.0.nupkg"));
+    addPackage(Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg"));
+  }
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void testNuGetClientReadsFeed(@NotNull final NuGet nuget) throws Exception{
     enableDebug();
-
-    final String packageId_1 = "CommonServiceLocator";
-    final String packageId_2 = "NuGet.Core";
-
-    addPackage(Paths.getTestDataPath("/packages/" + packageId_1 + ".1.0.nupkg"));
-    addPackage(Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg"));
 
     GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(nuget.getPath().getPath());
@@ -59,12 +65,6 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   @Test(dataProvider = NUGET_VERSIONS)
   public void testNuGetClientReadsFeedQuery(@NotNull final NuGet nuget) throws Exception{
     enableDebug();
-
-    final String packageId_1 = "CommonServiceLocator";
-    final String packageId_2 = "NuGet.Core";
-
-    addPackage(Paths.getTestDataPath("/packages/" + packageId_1 + ".1.0.nupkg"));
-    addPackage(Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg"));
 
     GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(nuget.getPath().getPath());
