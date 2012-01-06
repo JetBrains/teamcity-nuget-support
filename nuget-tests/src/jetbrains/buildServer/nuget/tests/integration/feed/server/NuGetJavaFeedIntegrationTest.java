@@ -55,4 +55,29 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     Assert.assertTrue(stdout.contains(packageId_2), stdout);
   }
 
+  @Test(dataProvider = NUGET_VERSIONS_15p)
+  public void testNuGetClientReadsFeedQuery(@NotNull final NuGet nuget) throws Exception{
+    enableDebug();
+
+    final String packageId_1 = "CommonServiceLocator";
+    final String packageId_2 = "NuGet.Core";
+
+    addPackage(Paths.getTestDataPath("/packages/" + packageId_1 + ".1.0.nupkg"));
+    addPackage(Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg"));
+
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("list");
+    cmd.addParameter("Common");
+    cmd.addParameter("-Source");
+    cmd.addParameter(getEndpointUrl());
+
+    final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
+    Assert.assertEquals(exec.getExitCode(), 0);
+    final String stdout = exec.getStdout();
+    System.out.println(stdout);
+    Assert.assertTrue(stdout.contains(packageId_1), stdout);
+    Assert.assertTrue(stdout.contains(packageId_2), stdout);
+  }
+
 }
