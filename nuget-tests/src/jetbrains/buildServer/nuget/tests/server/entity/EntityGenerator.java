@@ -69,16 +69,16 @@ public class EntityGenerator extends BaseTestCase {
 
   @Test
   public void test_parses_properties() throws JDOMException, IOException {
-    Assert.assertFalse(generateBeans().myData.isEmpty());
-    Assert.assertFalse(generateBeans().myKey.isEmpty());
+    Assert.assertFalse(loadBeans().myData.isEmpty());
+    Assert.assertFalse(loadBeans().myKey.isEmpty());
   }
 
   @Test
   public void generateEntityClasses() throws IOException, JDOMException {
     final String key = "PackageKey";
     final String entity = "PackageEntity";
-    new EntityBeanGenerator(key, entity, generateBeans().myData).generateSimpleBean();
-    new KeyBeanGenerator(key, entity, generateBeans().myKey).generateSimpleBean();
+    new EntityBeanGenerator(key, entity, loadBeans().myData).generateSimpleBean();
+    new KeyBeanGenerator(key, entity, loadBeans().myKey).generateSimpleBean();
   }
 
   private static class EntityBeanGenerator extends BeanGenerator {
@@ -235,7 +235,7 @@ public class EntityGenerator extends BaseTestCase {
   }
 
 
-  public ParseResult generateBeans() throws JDOMException, IOException {
+  public static ParseResult loadBeans() throws JDOMException, IOException {
     final File data = Paths.getTestDataPath("feed/odata/metadata.v2.xml");
     Assert.assertTrue(data.isFile());
 
@@ -271,7 +271,7 @@ public class EntityGenerator extends BaseTestCase {
     return new ParseResult(keys, props);
   }
 
-  private static final class ParseResult {
+  public static final class ParseResult {
     private final Collection<Property> myKey;
     private final Collection<Property> myData;
 
@@ -281,7 +281,7 @@ public class EntityGenerator extends BaseTestCase {
     }
   }
 
-  private static final class Property {
+  public static final class Property {
     private final String myName;
     private final EdmSimpleType myType;
 
