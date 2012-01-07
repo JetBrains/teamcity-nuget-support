@@ -17,8 +17,10 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.JDOMException;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -45,7 +47,12 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   public void testPackages() throws JDOMException, IOException {
     addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"));
     final String s = openRequest("Packages()");
-    System.out.println("s = " + s);
-    System.out.println(XmlUtil.to_s(XmlUtil.from_s(s)));
+
+    final String actualText = XmlUtil.to_s(XmlUtil.from_s(s));
+    System.out.println(actualText);
+
+    final String goldText = XmlUtil.to_s(FileUtil.parseDocument(Paths.getTestDataPath("/feed/odata/packages.v2.CommonServiceLocator.xml")));
+
+    Assert.assertEquals(actualText, goldText);
   }
 }
