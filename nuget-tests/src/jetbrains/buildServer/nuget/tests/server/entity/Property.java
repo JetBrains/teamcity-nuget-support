@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.tests.server.entity;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.odata4j.edm.EdmSimpleType;
 
 /**
@@ -25,17 +27,35 @@ import org.odata4j.edm.EdmSimpleType;
 public final class Property {
   private final String myName;
   private final EdmSimpleType myType;
+  private final String myAtomPath;
 
-  Property(String name, EdmSimpleType type) {
+  public Property(@NotNull final String name, @NotNull final EdmSimpleType type, @Nullable final String atomPath) {
     myName = name;
     myType = type;
+    myAtomPath = atomPath;
   }
 
+  @NotNull
   public String getName() {
     return myName;
   }
 
+  @NotNull
   public EdmSimpleType getType() {
     return myType;
+  }
+
+  @Nullable
+  public String getAtomPath() {
+    return myAtomPath;
+  }
+
+  @Override
+  public String toString() {
+    return "Property{" +
+            "myName='" + myName + '\'' +
+            ", myType=" + myType +
+            ", myAtomPath='" + myAtomPath + '\'' +
+            '}';
   }
 }

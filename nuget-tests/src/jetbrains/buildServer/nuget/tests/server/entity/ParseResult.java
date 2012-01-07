@@ -28,7 +28,8 @@ public final class ParseResult {
   private final Collection<Property> myKey;
   private final Collection<Property> myData;
 
-  ParseResult(Collection<Property> key, Collection<Property> data) {
+  public ParseResult(@NotNull final Collection<Property> key,
+                     @NotNull final Collection<Property> data) {
     myKey = key;
     myData = data;
   }
