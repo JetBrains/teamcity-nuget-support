@@ -5,14 +5,17 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
+import java.util.*;
+import java.lang.*;
+import org.odata4j.core.*;
+
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-
-public class PackageEntity extends PackageKey { 
+public class PackageEntity { 
+  protected final Map<String, String> myFields;
 
   public PackageEntity(@NotNull final Map<String, String> data) {
-    super(data); 
+    myFields = data;
   }
 
 

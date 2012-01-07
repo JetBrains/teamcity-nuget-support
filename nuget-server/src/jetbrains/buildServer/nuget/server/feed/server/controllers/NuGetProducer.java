@@ -74,7 +74,7 @@ public class NuGetProducer {
             },
             new Func1<PackageEntity, PackageKey>() {
               public PackageKey apply(PackageEntity packageEntity) {
-                return (packageEntity);
+                return new PackageKey(packageEntity);
               }
             }
     );

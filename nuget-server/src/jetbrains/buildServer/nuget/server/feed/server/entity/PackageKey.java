@@ -5,11 +5,11 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
-import org.jetbrains.annotations.NotNull;
-import org.odata4j.core.OEntityId;
-import org.odata4j.core.OEntityKey;
+import java.util.*;
+import java.lang.*;
+import org.odata4j.core.*;
 
-import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public class PackageKey implements OEntityId { 
   protected final Map<String, String> myFields;
@@ -18,13 +18,6 @@ public class PackageKey implements OEntityId {
     myFields = data;
   }
 
-  public String getEntitySetName() {
-    return "Packages";
-  }
-
-  public OEntityKey getEntityKey() {
-    return OEntityKey.create("Id", getId(), "Version", getVersion());
-  }
 
   public java.lang.String getId() { 
     final String v = myFields.get("Id");
@@ -42,6 +35,26 @@ public class PackageKey implements OEntityId {
     if (!myFields.containsKey("Id")) return false;
     if (!myFields.containsKey("Version")) return false;
     return true;
+  }
+
+  public OEntityKey getEntityKey() {
+    return OEntityKey.create("Id", getId(), "Version", getVersion());
+  }
+
+  public String getEntitySetName() {
+    return "Packages";
+  }
+
+  public PackageKey(@NotNull final PackageEntity entity) {
+    this(toMap(entity));
+  }
+
+  @NotNull
+  private static Map<String, String> toMap(@NotNull final PackageEntity e) {
+    final Map<String, String> map = new HashMap<String, String>();
+    map.put("Id", e.getId());
+    map.put("Version", e.getVersion());
+    return map;
   }
 }
 

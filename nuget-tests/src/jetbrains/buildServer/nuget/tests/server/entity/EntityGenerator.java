@@ -47,20 +47,6 @@ public class EntityGenerator extends BaseTestCase {
       super(entityName, properties);
       myKeyName = keyName;
     }
-
-    @Override
-    protected String getExtends() {
-      return myKeyName;
-    }
-
-    @Override
-    protected void generateConstructor(PrintWriter wr) {
-      wr.println("    super(data); ");
-    }
-
-    @Override
-    protected void generateFields(PrintWriter wr) {
-    }
   }
 
   private static class KeyBeanGenerator extends BeanGenerator {
@@ -79,7 +65,7 @@ public class EntityGenerator extends BaseTestCase {
     @Override
     protected void fieldsGenerated(@NotNull PrintWriter wr) {
       super.fieldsGenerated(wr);
-      
+
       wr.println();
       wr.println("  public OEntityKey getEntityKey() {");
       wr.println("    return OEntityKey.create(\"Id\", getId(), \"Version\", getVersion());");
@@ -89,6 +75,18 @@ public class EntityGenerator extends BaseTestCase {
       wr.println("    return \"Packages\";");
       wr.println("  }");
       wr.println();
+
+      wr.println("  public " + myName + "(@NotNull final " + myEntityName + " entity) {");
+      wr.println("    this(toMap(entity));");
+      wr.println("  }");
+      wr.println();
+      wr.println("  @NotNull");
+      wr.println("  private static Map<String, String> toMap(@NotNull final PackageEntity e) {");
+      wr.println("    final Map<String, String> map = new HashMap<String, String>();");
+      wr.println("    map.put(\"Id\", e.getId());");
+      wr.println("    map.put(\"Version\", e.getVersion());");
+      wr.println("    return map;");
+      wr.println("  }");
     }
   }
 
