@@ -41,6 +41,11 @@ public class MetadataLoaderTest {
     final ParseResult result = loadBeans();
     Assert.assertFalse(result.getData().isEmpty());
     Assert.assertFalse(result.getKey().isEmpty());
+
+    for (Property property : result.getData()) {
+      if (property.getAtomPath() != null) return;
+    }
+    Assert.fail("Property must have FC_AtomPath");
   }
 
   @Test

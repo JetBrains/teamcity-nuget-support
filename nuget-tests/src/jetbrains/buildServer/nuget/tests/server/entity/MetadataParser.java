@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.entity;
 
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.Attribute;
 import org.jdom.Element;
@@ -50,6 +51,7 @@ public class MetadataParser {
   public static ParseResult loadBeans(@NotNull final Element root) throws JDOMException {
     final Namespace edmx = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/06/edmx");
     final Namespace edm = Namespace.getNamespace("http://schemas.microsoft.com/ado/2006/04/edm");
+    final Namespace m = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
 
     final XPath xKeys = XPath.newInstance("/x:Edmx/x:DataServices/m:Schema/m:EntityType[@Name='V2FeedPackage']/m:Key/m:PropertyRef/@Name");
     xKeys.addNamespace("m", edm.getURI());
@@ -70,7 +72,10 @@ public class MetadataParser {
     for (Object o : xProps.selectNodes(root)) {
       Element el = (Element) o;
       System.out.println(XmlUtil.to_s(el));
-      final Property prop = new Property(el.getAttributeValue("Name"), EdmSimpleType.getSimple(el.getAttributeValue("Type")));
+      final String name = el.getAttributeValue("Name");
+      final EdmSimpleType<?> type = EdmSimpleType.getSimple(el.getAttributeValue("Type"));
+      final String atomPath = StringUtil.nullIfEmpty(el.getAttributeValue("FC_TargetPath", m));
+      final Property prop = new Property(name, type, atomPath);
       if (keyNames.contains(prop.getName())) {
         keys.add(prop);
       }
