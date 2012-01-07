@@ -39,7 +39,7 @@ import java.util.Map;
  * Date: 04.01.12 23:55
  */
 public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBase {
-  protected NuGetProducer myProducer;
+  private NuGetProducer myProducer;
   private int myPort;
   private List<NuGetIndexEntry> myFeed;
   private PackagesIndex myIndex;
