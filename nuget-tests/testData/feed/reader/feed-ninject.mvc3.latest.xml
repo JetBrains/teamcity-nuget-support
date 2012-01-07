@@ -10,7 +10,7 @@
     <summary type="text">Extension for Ninject providing integration with ASP.NET MVC3</summary>
     <updated>2011-05-07T12:18:42-07:00</updated>
     <author>
-      <name>Remo Gloor,  Ian Davis</name>
+      <name>Remo Gloor, Ian Davis</name>
     </author>
     <link rel="edit-media" title="PublishedPackage" href="Packages(Id='Ninject.MVC3',Version='2.2.2.0')/$value" />
     <link rel="edit" title="PublishedPackage" href="Packages(Id='Ninject.MVC3',Version='2.2.2.0')" />
@@ -21,7 +21,7 @@
       <d:Id>Ninject.MVC3</d:Id>
       <d:Version>2.2.2.0</d:Version>
       <d:Title>Ninject.MVC3</d:Title>
-      <d:Authors>Remo Gloor,  Ian Davis</d:Authors>
+      <d:Authors>Remo Gloor, Ian Davis</d:Authors>
       <d:PackageType>Packages</d:PackageType>
       <d:Summary>Extension for Ninject providing integration with ASP.NET MVC3</d:Summary>
       <d:Description>Extension for Ninject providing integration with ASP.NET MVC3</d:Description>
@@ -41,7 +41,7 @@
       <d:LastUpdated m:type="Edm.DateTime">2011-05-07T12:18:42.133</d:LastUpdated>
       <d:Published m:type="Edm.DateTime">2011-05-07T12:18:51.587</d:Published>
       <d:ExternalPackageUrl m:null="true"></d:ExternalPackageUrl>
-      <d:ProjectUrl>http://www.ninject.org/</d:ProjectUrl>
+      <d:ProjectUrl>http://www.ninject.org</d:ProjectUrl>
       <d:LicenseUrl>https://github.com/ninject/ninject.web.mvc/raw/master/mvc3/LICENSE.txt</d:LicenseUrl>
       <d:IconUrl>/Media/Default/Packages/Ninject.MVC3/2.2.2.0/Ninject-Logo100.png</d:IconUrl>
       <d:Rating m:type="Edm.Double">4.333333333333333</d:Rating>

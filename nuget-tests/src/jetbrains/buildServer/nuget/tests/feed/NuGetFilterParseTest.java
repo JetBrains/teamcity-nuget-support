@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.integration.feed.server;
-
-
-import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+package jetbrains.buildServer.nuget.tests.feed;
 
 /**
-* @author Eugene Petrenko (eugene.petrenko@gmail.com)
-*         Date: 02.11.11 15:51
-*/
-public interface HttpServerHandler {
-  @Nullable
-  SimpleHttpServerBase.Response processRequest(@NotNull String requestLine, @Nullable String path);
+ * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 13.09.11 23:47
+ */
+public class NuGetFilterParseTest {
+
+
 }

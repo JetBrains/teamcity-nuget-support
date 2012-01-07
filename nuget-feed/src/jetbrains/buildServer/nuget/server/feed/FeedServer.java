@@ -19,11 +19,21 @@ package jetbrains.buildServer.nuget.server.feed;
 import jetbrains.buildServer.nuget.server.feed.render.*;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+<<<<<<< HEAD
+=======
+import org.odata4j.expression.BoolCommonExpression;
+import org.odata4j.expression.OrderByExpression;
+import org.odata4j.producer.resources.OptionsQueryParser;
+>>>>>>> feed
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collections;
+<<<<<<< HEAD
+=======
+import java.util.List;
+>>>>>>> feed
 import java.util.Map;
 
 /**
@@ -74,4 +84,20 @@ public class FeedServer {
 
     throw new IOException("Unknown handler");
   }
+<<<<<<< HEAD
+=======
+
+  private void parseParameters(@NotNull Map<String, String> paramz) {
+    //http://www.odata.org/developers/protocols/uri-conventions
+
+    final List<OrderByExpression> $orderBy = OptionsQueryParser.parseOrderBy(paramz.get("$orderBy"));
+    final Integer $top = OptionsQueryParser.parseTop(paramz.get("$top"));
+    final Integer $skip = OptionsQueryParser.parseTop(paramz.get("$skip"));
+    final BoolCommonExpression $filter = OptionsQueryParser.parseFilter(paramz.get("$filter"));
+    //$expand
+    //$format
+    //$select
+    //$inlinecount
+  }
+>>>>>>> feed
 }
