@@ -18,8 +18,12 @@ package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
+import jetbrains.buildServer.nuget.server.feed.server.render.NuGetContext;
+import jetbrains.buildServer.serverSide.db.queries.QueryOptions;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.producer.QueryInfo;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletConfig;
@@ -30,7 +34,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -108,6 +115,29 @@ public class PackagesFeedController extends BaseController {
       //error response according to OData spec for unsupported oprtaions (modification operations)
       response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
     }
+
+    String requestPath = WebUtil.getPathWithoutAuthenticationType(request);
+    if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
+
+    final NuGetContext ctx = new NuGetContext();
+    
+    
+    if (requestPath.equals("/$metadata")) {
+      myProducer.getMetadataRenederer().renderFeed(ctx, response.getWriter());
+      return null;
+    }
+
+    if (requestPath.equals("/")) {
+      myProducer.getRootRenderer().renderFeed(ctx, response.getWriter());
+      return null;
+    }
+
+    if (requestPath.equals("/Packages()") || requestPath.equals("/Packages")) {
+      final QueryInfo qi = new QueryInfo();
+      //TODO: implement OData parameters handling
+      myProducer.getPackagesRenderer().renderFeed(ctx, myProducer, response.getWriter());
+    }
+
 
     myContainer.service(new RequestWrapper(request, PATH), response);
     return null;

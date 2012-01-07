@@ -22,12 +22,16 @@ import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntity;
 import jetbrains.buildServer.nuget.server.feed.server.entity.PackageKey;
+import jetbrains.buildServer.nuget.server.feed.server.render.FeedMetadataRenderer;
+import jetbrains.buildServer.nuget.server.feed.server.render.NuGetFeedRenderer;
+import jetbrains.buildServer.nuget.server.feed.server.render.NuGetPackagesFeedRenderer;
 import org.core4j.Func;
 import org.core4j.Func1;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -84,4 +88,19 @@ public class NuGetProducer {
   public ODataProducer getProducer() {
     return myProducer;
   }
+
+  @NotNull
+  public FeedMetadataRenderer getMetadataRenederer() {
+    return new FeedMetadataRenderer();
+  }
+
+  @NotNull
+  public NuGetFeedRenderer getRootRenderer() {
+    return new NuGetFeedRenderer();
+  }
+
+  public NuGetPackagesFeedRenderer getPackagesRenderer() {
+    return new NuGetPackagesFeedRenderer();
+  }
+
 }
