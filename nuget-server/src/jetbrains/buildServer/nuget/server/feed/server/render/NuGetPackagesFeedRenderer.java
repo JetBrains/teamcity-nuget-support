@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.render;
+package jetbrains.buildServer.nuget.server.feed.server.render;
 
+import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.util.Dates;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +27,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.TimeZone;
@@ -38,7 +38,7 @@ import java.util.TimeZone;
 public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
 
   public void renderFeed(@NotNull final NuGetContext context,
-                         @NotNull final Collection<NuGetItem> items,
+                         @NotNull final Collection<NuGetIndexEntry> items,
                          @NotNull final Writer output) throws IOException, XMLStreamException {
     final XMLStreamWriter w = createWriter(output);
 
@@ -56,7 +56,7 @@ public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
     w.writeEndElement();
 
     w.writeStartElement("id");
-    w.writeCharacters(context.getFeedId());
+    w.writeCharacters(context.getBaseUri() + "/Packages");
     w.writeEndElement();
 
     w.writeStartElement("updated");
@@ -65,11 +65,11 @@ public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
 
     w.writeStartElement("link");
     w.writeAttribute("rel", "self");
-    w.writeAttribute("title", context.getTitle());
-    w.writeAttribute("href", context.getTitle());
+    w.writeAttribute("title", "Packages");
+    w.writeAttribute("href", "Packages");
     w.writeEndElement();
 
-    for (NuGetItem item : items) {
+    for (NuGetIndexEntry item : items) {
       w.writeStartElement("entry");
       renderItem(context, item, w);
       w.writeEndElement();
@@ -82,13 +82,14 @@ public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
 
 
   private String formatDate(@NotNull Date date) {
-    //TODO:fix timezon printing
+    //TODO:fix timezone printing
     return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }
 
   private void renderItem(@NotNull NuGetContext context,
-                          @NotNull NuGetItem pitem,
+                          @NotNull NuGetIndexEntry pitem,
                           @NotNull XMLStreamWriter w) throws XMLStreamException {
+/*
     final NuGetAtomItem item = pitem.getAtomItem();
 
     w.writeStartElement("id");
@@ -172,6 +173,7 @@ public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
     writeTypedProperty(w, "GalleryDetailsUrl", p.getGalleryDetailsUrl());
 
     w.writeEndElement();
+*/
   }
 
   private void writeTypedProperty(@NotNull final XMLStreamWriter w,

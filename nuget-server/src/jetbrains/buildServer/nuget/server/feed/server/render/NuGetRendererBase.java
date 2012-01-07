@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.render;
+package jetbrains.buildServer.nuget.server.feed.server.render;
 
 import org.jetbrains.annotations.NotNull;
 

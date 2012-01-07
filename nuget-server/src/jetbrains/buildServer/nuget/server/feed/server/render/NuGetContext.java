@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,23 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.render;
 
-import jetbrains.buildServer.util.FileUtil;
-import org.jetbrains.annotations.NotNull;
-
-import java.io.*;
+import java.util.Date;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 10.09.11 21:32
+ * Date: 07.01.12 9:23
  */
-public class FeedMetadataRenderer extends NuGetRendererBase {
-  public void renderFeed(@NotNull final NuGetContext context, @NotNull final Writer out) throws IOException {
-    final InputStream stream = getClass().getResourceAsStream("feed.metadata.xml");
-    try {
-      final Reader rdr = new BufferedReader(new InputStreamReader(stream, "utf-8"));
+public class NuGetContext {
+  public String getEncoding() {
+    return "utf-8";
+  }
+  
+  public String getBaseUri() {
+    return "//";
+  }
 
-      char[] buff = new char[65536];
-      int v;
-      while ((v = rdr.read(buff)) > 0) {
-        out.write(buff, 0, v);
-      }
-    } finally {
-      FileUtil.close(stream);
-    }
+  //returns last feed update date.
+  public Date getUpdated() {
+    return new Date();
   }
 }
