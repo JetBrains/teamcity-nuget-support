@@ -23,7 +23,6 @@ import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntity;
 import jetbrains.buildServer.nuget.server.feed.server.entity.PackageKey;
 import org.core4j.Func;
-import org.core4j.Func1;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
@@ -46,7 +45,6 @@ public class NuGetProducer {
     myProducer = new InMemoryProducer("NuGetGallery");
     myProducer.register(
             PackageEntity.class,
-            PackageKey.class,
             "Packages",
             new Func<Iterable<PackageEntity>>() {
               public Iterable<PackageEntity> apply() {
@@ -72,11 +70,7 @@ public class NuGetProducer {
                 };
               }
             },
-            new Func1<PackageEntity, PackageKey>() {
-              public PackageKey apply(PackageEntity packageEntity) {
-                return (packageEntity);
-              }
-            }
+            PackageKey.getKeyPropertyNames()
     );
   }
 

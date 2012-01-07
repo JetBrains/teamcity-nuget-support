@@ -5,11 +5,13 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
-import org.jetbrains.annotations.NotNull;
-import org.odata4j.core.OEntityId;
-import org.odata4j.core.OEntityKey;
+import java.util.*;
+import java.lang.*;
+import org.odata4j.core.*;
+import org.odata4j.internal.*;
+import org.joda.time.*;
 
-import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public class PackageKey implements OEntityId { 
   protected final Map<String, String> myFields;
@@ -43,6 +45,13 @@ public class PackageKey implements OEntityId {
 
   public String getEntitySetName() {
     return "Packages";
+  }
+
+  public static String[] getKeyPropertyNames() {
+    return new String[]{
+      "Id", 
+      "Version", 
+    };
   }
 
 }

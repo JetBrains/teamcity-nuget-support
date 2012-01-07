@@ -119,6 +119,14 @@ public class EntityGenerator extends BaseTestCase {
       wr.println("    return \"Packages\";");
       wr.println("  }");
       wr.println();
+      wr.println("  public static String[] getKeyPropertyNames() {");
+      wr.println("    return new String[]{");
+      for (Property property : myProperties) {
+        wr.println("      \"" + property.getName() + "\", ");
+      }
+      wr.println("    };");
+      wr.println("  }");
+      wr.println();
     }
   }
 

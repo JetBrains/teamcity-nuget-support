@@ -34,7 +34,11 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   @Test
   public void testMetadata() throws JDOMException, IOException {
     final String s = openRequest("$metadata");
-    System.out.println(XmlUtil.to_s(XmlUtil.from_s(s)));
+    final String actualText = XmlUtil.to_s(XmlUtil.from_s(s));
+    System.out.println(actualText);
+
+    final String goldText = XmlUtil.to_s(FileUtil.parseDocument(Paths.getTestDataPath("/feed/odata/metadata.v2.xml")));
+    Assert.assertEquals(actualText, goldText);
   }
 
   @Test
