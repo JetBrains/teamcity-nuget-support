@@ -20,28 +20,22 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat;
-import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.util.XmlUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.jdom.Attribute;
-import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Namespace;
-import org.jdom.xpath.XPath;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.edm.EdmSimpleType;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+
+import static jetbrains.buildServer.nuget.tests.server.entity.MetadataParser.loadBeans;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -69,16 +63,16 @@ public class EntityGenerator extends BaseTestCase {
 
   @Test
   public void test_parses_properties() throws JDOMException, IOException {
-    Assert.assertFalse(loadBeans().myData.isEmpty());
-    Assert.assertFalse(loadBeans().myKey.isEmpty());
+    Assert.assertFalse(loadBeans().getData().isEmpty());
+    Assert.assertFalse(loadBeans().getKey().isEmpty());
   }
 
   @Test
   public void generateEntityClasses() throws IOException, JDOMException {
     final String key = "PackageKey";
     final String entity = "PackageEntity";
-    new EntityBeanGenerator(key, entity, loadBeans().myData).generateSimpleBean();
-    new KeyBeanGenerator(key, entity, loadBeans().myKey).generateSimpleBean();
+    new EntityBeanGenerator(key, entity, loadBeans().getData()).generateSimpleBean();
+    new KeyBeanGenerator(key, entity, loadBeans().getKey()).generateSimpleBean();
   }
 
   private static class EntityBeanGenerator extends BeanGenerator {
@@ -131,7 +125,7 @@ public class EntityGenerator extends BaseTestCase {
       wr.println();
     }
   }
-  
+
   private static class BeanGenerator {
     protected final String myName;
     protected final Collection<Property> myProperties;
@@ -161,7 +155,7 @@ public class EntityGenerator extends BaseTestCase {
       wr.println();
       wr.println("import org.jetbrains.annotations.NotNull;");
       wr.println();
-      
+
       String ext = getExtends();
       if (!StringUtil.isEmptyOrSpaces(ext)) {
         ext = " extends " + ext;
@@ -181,19 +175,19 @@ public class EntityGenerator extends BaseTestCase {
       wr.println();
       for (Property p : myProperties) {
         wr.println();
-        final String type = p.myType.getCanonicalJavaType().getName();
-        final String name = p.myName;
+        final String type = p.getType().getCanonicalJavaType().getName();
+        final String name = p.getName();
         wr.println("  public " + type + " get" + name + "() { ");
         wr.println("    final String v = myFields.get(\"" + name + "\");");
-        if (p.myType == EdmSimpleType.STRING) {
+        if (p.getType() == EdmSimpleType.STRING) {
           wr.println("    return v;");
-        } else if (p.myType == EdmSimpleType.BOOLEAN){
+        } else if (p.getType() == EdmSimpleType.BOOLEAN){
           wr.println("    return Boolean.valueOf(v);");
-        } else if (p.myType == EdmSimpleType.INT32){
+        } else if (p.getType() == EdmSimpleType.INT32){
           wr.println("    return Integer.parseInt(v);");
-        } else if (p.myType == EdmSimpleType.INT64){
+        } else if (p.getType() == EdmSimpleType.INT64){
           wr.println("    return Long.parseLong(v);");
-        } else if (p.myType == EdmSimpleType.DATETIME){
+        } else if (p.getType() == EdmSimpleType.DATETIME){
           wr.println("    return " + ODataDataFormat.class.getName() + ".parseDate(v);");
         } else {
           wr.println("    UnsupportedTypeError");
@@ -205,7 +199,7 @@ public class EntityGenerator extends BaseTestCase {
       wr.println();
       wr.println(" public boolean isValid() { ");
       for (Property p : myProperties) {
-        wr.println("    if (!myFields.containsKey(\"" + p.myName + "\")) return false;");
+        wr.println("    if (!myFields.containsKey(\"" + p.getName() + "\")) return false;");
       }
       wr.println("    return true;");
       wr.println("  }");
@@ -228,7 +222,7 @@ public class EntityGenerator extends BaseTestCase {
     protected void fieldsGenerated(@NotNull final PrintWriter wr) {
 
     }
-    
+
     protected String getExtends() {
       return "";
     }
@@ -238,61 +232,5 @@ public class EntityGenerator extends BaseTestCase {
     }
   }
 
-
-  public static ParseResult loadBeans() throws JDOMException, IOException {
-    final File data = Paths.getTestDataPath("feed/odata/metadata.v2.xml");
-    Assert.assertTrue(data.isFile());
-
-    final Element root = FileUtil.parseDocument(data);
-    final Namespace edmx = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/06/edmx");
-    final Namespace edm = Namespace.getNamespace("http://schemas.microsoft.com/ado/2006/04/edm");
-
-    final XPath xKeys = XPath.newInstance("/x:Edmx/x:DataServices/m:Schema/m:EntityType[@Name='V2FeedPackage']/m:Key/m:PropertyRef/@Name");
-    xKeys.addNamespace("m", edm.getURI());
-    xKeys.addNamespace("x", edmx.getURI());
-
-    final List<String> keyNames = new ArrayList<String>();
-    for (Object o : xKeys.selectNodes(root)) {
-      keyNames.add(((Attribute) o).getValue());
-    }
-
-    System.out.println("Selected keys: " + keyNames);
-    final XPath xProps = XPath.newInstance("/x:Edmx/x:DataServices/m:Schema/m:EntityType[@Name='V2FeedPackage']/m:Property");
-    xProps.addNamespace("m", edm.getURI());
-    xProps.addNamespace("x", edmx.getURI());
-
-    final List<Property> keys = new ArrayList<Property>();
-    final List<Property> props = new ArrayList<Property>();
-    for (Object o : xProps.selectNodes(root)) {
-      Element el = (Element) o;
-      System.out.println(XmlUtil.to_s(el));
-      final Property prop = new Property(el.getAttributeValue("Name"), EdmSimpleType.getSimple(el.getAttributeValue("Type")));
-      if (keyNames.contains(prop.myName)) {
-        keys.add(prop);
-      }
-      props.add(prop);
-    }
-    return new ParseResult(keys, props);
-  }
-
-  public static final class ParseResult {
-    private final Collection<Property> myKey;
-    private final Collection<Property> myData;
-
-    private ParseResult(Collection<Property> key, Collection<Property> data) {
-      myKey = key;
-      myData = data;
-    }
-  }
-
-  public static final class Property {
-    private final String myName;
-    private final EdmSimpleType myType;
-
-    private Property(String name, EdmSimpleType type) {
-      myName = name;
-      myType = type;
-    }
-  }
 
 }
