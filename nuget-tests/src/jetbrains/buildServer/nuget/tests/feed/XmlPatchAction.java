@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.integration.feed.server;
+package jetbrains.buildServer.nuget.tests.feed;
 
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -32,7 +32,7 @@ import java.util.Arrays;
 public abstract class XmlPatchAction {
   private final String myXPath;
 
-  public XmlPatchAction(String XPath) {
+  public XmlPatchAction(@NotNull final String XPath) {
     myXPath = XPath;
   }
 

@@ -21,10 +21,14 @@ import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.integration.ProcessRunner;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -81,4 +85,56 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     Assert.assertTrue(stdout.contains(packageId_2), stdout);
   }
 
+  @Test(enabled = false)
+  public void test_list_versions() throws IOException {
+    final NuGet nuget = NuGet.NuGet_1_5;
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("list");
+    cmd.addParameter("jpkg");
+    cmd.addParameter("-AllVersions");
+    cmd.addParameter("-Source");
+    cmd.addParameter(getNuGetServerUrl());
+
+    final ExecResult execResult = ProcessRunner.runProces(cmd);
+    Assert.assertEquals(execResult.getExitCode(), 0, "Exit code must be 0");
+  }
+
+  @Test(enabled = false)
+  public void test_install_any() throws IOException {
+    final NuGet nuget = NuGet.NuGet_1_5;
+    final File temp = createTempDir();
+
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("install");
+    cmd.addParameter("jpkg");
+    cmd.addParameter("-Source");
+    cmd.addParameter(getNuGetServerUrl());
+    cmd.addParameter("-OutputDirectory");
+    cmd.addParameter(temp.getPath());
+
+    final ExecResult execResult = ProcessRunner.runProces(cmd);
+    Assert.assertEquals(execResult.getExitCode(), 0, "Exit code must be 0");
+  }
+
+  @Test(enabled = false)
+  public void test_install_version() throws IOException {
+    final NuGet nuget = NuGet.NuGet_1_5;
+    final File temp = createTempDir();
+
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("install");
+    cmd.addParameter("jpkg");
+    cmd.addParameter("-Version");
+    cmd.addParameter("5.4.32");
+    cmd.addParameter("-Source");
+    cmd.addParameter(getNuGetServerUrl());
+    cmd.addParameter("-OutputDirectory");
+    cmd.addParameter(temp.getPath());
+
+    final ExecResult execResult = ProcessRunner.runProces(cmd);
+    Assert.assertEquals(execResult.getExitCode(), 0, "Exit code must be 0");
+  }
 }

@@ -16,7 +16,6 @@
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.server.NuGetProducerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.feed.NuGetFeedRendererTest"/>
     </classes>
   </test>
 

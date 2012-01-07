@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import java.util.List;
  * Date: 06.09.11 1:02
  */
 public abstract class XmlTestBase extends BaseTestCase {
-
-  protected static enum Schemas {
+  public static enum Schemas {
     X("x", "http://www.w3.org/2005/Atom"),
     M("m", "http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"),
     D("d", "http://schemas.microsoft.com/ado/2007/08/dataservices"),
