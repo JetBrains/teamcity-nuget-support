@@ -78,7 +78,6 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     final String stdout = exec.getStdout();
     System.out.println(stdout);
     Assert.assertTrue(stdout.contains(packageId_1), stdout);
-    Assert.assertTrue(stdout.contains(packageId_2), stdout);
   }
 
 }

@@ -19,9 +19,13 @@ package jetbrains.buildServer.nuget.tests.server.entity;
 import jetbrains.buildServer.BaseTestCase;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.core.OAtomEntity;
+import org.odata4j.edm.EdmSimpleType;
 import org.testng.annotations.Test;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -54,12 +58,38 @@ public class EntityGenerator extends BaseTestCase {
     }
 
     @Override
+    protected Collection<String> getImplements() {
+      return Arrays.asList(OAtomEntity.class.getSimpleName());
+    }
+
+    @Override
     protected void generateConstructor(PrintWriter wr) {
       wr.println("    super(data); ");
     }
 
     @Override
     protected void generateFields(PrintWriter wr) {
+    }
+
+    @Override
+    protected void fieldsGenerated(@NotNull PrintWriter wr) {
+      super.fieldsGenerated(wr);
+      for (Property property : myProperties) {
+        String path = property.getAtomPath();
+        if (path == null) continue;
+        path = path.substring("Syndication".length()).replace("AuthorName", "Author");
+
+        wr.println(); 
+        wr.println("  public String getAtomEntity" + path + "() {");
+        if (property.getType() == EdmSimpleType.DATETIME) {
+          wr.println("    return InternalUtil.toString(get" + property.getName() + "().toDateTime(DateTimeZone.UTC));");
+        } else {
+          wr.println("    return get" + property.getName() + "();");
+        }
+        wr.println("  }");
+        wr.println();
+      }
+
     }
   }
 

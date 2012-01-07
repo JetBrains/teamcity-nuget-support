@@ -18,13 +18,6 @@ public class PackageKey implements OEntityId {
     myFields = data;
   }
 
-  public String getEntitySetName() {
-    return "Packages";
-  }
-
-  public OEntityKey getEntityKey() {
-    return OEntityKey.create("Id", getId(), "Version", getVersion());
-  }
 
   public java.lang.String getId() { 
     final String v = myFields.get("Id");
@@ -43,5 +36,14 @@ public class PackageKey implements OEntityId {
     if (!myFields.containsKey("Version")) return false;
     return true;
   }
+
+  public OEntityKey getEntityKey() {
+    return OEntityKey.create("Id", getId(), "Version", getVersion());
+  }
+
+  public String getEntitySetName() {
+    return "Packages";
+  }
+
 }
 

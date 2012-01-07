@@ -6,10 +6,13 @@
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
 import org.jetbrains.annotations.NotNull;
+import org.joda.time.DateTimeZone;
+import org.odata4j.core.OAtomEntity;
+import org.odata4j.internal.InternalUtil;
 
 import java.util.Map;
 
-public class PackageEntity extends PackageKey { 
+public class PackageEntity extends PackageKey implements OAtomEntity { 
 
   public PackageEntity(@NotNull final Map<String, String> data) {
     super(data); 
@@ -208,5 +211,25 @@ public class PackageEntity extends PackageKey {
     if (!myFields.containsKey("VersionDownloadCount")) return false;
     return true;
   }
+
+  public String getAtomEntityTitle() {
+    return getId();
+  }
+
+
+  public String getAtomEntityAuthor() {
+    return getAuthors();
+  }
+
+
+  public String getAtomEntityUpdated() {
+    return InternalUtil.toString(getLastUpdated().toDateTime(DateTimeZone.UTC));
+  }
+
+
+  public String getAtomEntitySummary() {
+    return getSummary();
+  }
+
 }
 

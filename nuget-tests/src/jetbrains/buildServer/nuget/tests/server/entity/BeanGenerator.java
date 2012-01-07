@@ -56,6 +56,8 @@ public class BeanGenerator {
     wr.println("import java.util.*;");
     wr.println("import java.lang.*;");
     wr.println("import org.odata4j.core.*;");
+    wr.println("import org.odata4j.internal.*;");
+    wr.println("import org.joda.time.*;");
     wr.println();
     wr.println("import org.jetbrains.annotations.NotNull;");
     wr.println();
