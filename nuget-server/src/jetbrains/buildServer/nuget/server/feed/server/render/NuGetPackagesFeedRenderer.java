@@ -16,11 +16,14 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.render;
 
-import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntity;
+import jetbrains.buildServer.nuget.server.feed.server.entity.PackageFieldsVisitor;
 import jetbrains.buildServer.util.Dates;
+import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joda.time.LocalDateTime;
 import org.odata4j.edm.EdmSimpleType;
 
 import javax.xml.stream.XMLStreamException;
@@ -38,7 +41,7 @@ import java.util.TimeZone;
 public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
 
   public void renderFeed(@NotNull final NuGetContext context,
-                         @NotNull final Collection<NuGetIndexEntry> items,
+                         @NotNull final Collection<PackageEntity> items,
                          @NotNull final Writer output) throws IOException, XMLStreamException {
     final XMLStreamWriter w = createWriter(output);
 
@@ -69,7 +72,7 @@ public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
     w.writeAttribute("href", "Packages");
     w.writeEndElement();
 
-    for (NuGetIndexEntry item : items) {
+    for (PackageEntity item : items) {
       w.writeStartElement("entry");
       renderItem(context, item, w);
       w.writeEndElement();
@@ -86,54 +89,65 @@ public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
     return Dates.formatDate(date, "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }
 
-  private void renderItem(@NotNull NuGetContext context,
-                          @NotNull NuGetIndexEntry pitem,
-                          @NotNull XMLStreamWriter w) throws XMLStreamException {
-/*
-    final NuGetAtomItem item = pitem.getAtomItem();
+  private String formatDate(@NotNull LocalDateTime date) {
+    //TODO:fix timezone printing
+    return date.toString("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  }
 
+  private void renderItem(@NotNull final NuGetContext context,
+                          @NotNull final PackageEntity pitem,
+                          @NotNull final XMLStreamWriter w) throws XMLStreamException {
     w.writeStartElement("id");
-    w.writeCharacters(context.createId(item.getItemName(), item.getItemVersion()));
+    w.writeCharacters(context.getBaseUri() + "/Packages(Id='" + pitem.getId() + ", Version=" + pitem.getVersion());
     w.writeEndElement();
 
     w.writeStartElement("title");
     w.writeAttribute("type", "text");
-    w.writeCharacters(item.getItemTitle());
+    w.writeCharacters(pitem.getId());
     w.writeEndElement();
 
     w.writeStartElement("summary");
     w.writeAttribute("type", "text");
-    w.writeCharacters(item.getItemSummary());
+    w.writeCharacters(pitem.getSummary());
     w.writeEndElement();
 
     w.writeStartElement("updated");
-    w.writeCharacters(formatDate(item.getItemUpdated()));
+    w.writeCharacters(formatDate(pitem.getLastUpdated()));
     w.writeEndElement();
 
     w.writeStartElement("author");
     w.writeStartElement("name");
-    w.writeCharacters(item.getItemAuthors());
+    w.writeCharacters(pitem.getAuthors());
     w.writeEndElement();
     w.writeEndElement();
 
     //link tags omitted
 
     w.writeStartElement("category");
-    w.writeAttribute("term", "Gallery.Infrastructure.FeedModels.PublishedPackage");
+    w.writeAttribute("term", "NuGetGallery.V2FeedPackage");
     w.writeAttribute("scheme", "http://schemas.microsoft.com/ado/2007/08/dataservices/scheme");
     w.writeEndElement();
 
     w.writeStartElement("content");
     w.writeAttribute("type", "application/zip");
-    w.writeAttribute("src", context.resolveUrl(item.getDownloadPath()));
+    w.writeAttribute("src", context.getDownloadUrl(pitem));
     w.writeEndElement();
-
 
     w.writeStartElement(M, "properties");
     w.writeNamespace("m", M);
     w.writeNamespace("d", D);
 
+    pitem.visitFields(new PackageFieldsVisitor() {
+      public void visitPackageField(@NotNull String key, @Nullable String value, @NotNull String type) {
+        try {
+          writeProperty(w, key, value, type);
+        } catch (XMLStreamException e) {
+          ExceptionUtil.rethrowAsRuntimeException(e);
+        }
+      }
+    });
 
+/*
     final NuGetProperties p = pitem.getProperties();
     writeTypedProperty(w, "Id", p.getId());
     writeTypedProperty(w, "Version", p.getVersion());
@@ -171,10 +185,11 @@ public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
     writeTypedProperty(w, "Dependencies", p.getDependencies());
     writeTypedProperty(w, "ReportAbuseUrl", p.getReportAbuseUrl());
     writeTypedProperty(w, "GalleryDetailsUrl", p.getGalleryDetailsUrl());
+*/
 
     w.writeEndElement();
-*/
   }
+  
 
   private void writeTypedProperty(@NotNull final XMLStreamWriter w,
                                   @NotNull final String key,
@@ -192,6 +207,20 @@ public class NuGetPackagesFeedRenderer extends NuGetRendererBase {
       } else {
         w.writeCharacters(value.toString());
       }
+    }
+    w.writeEndElement();
+  }
+
+  private void writeProperty(@NotNull final XMLStreamWriter w,
+                             @NotNull final String key,
+                             @Nullable final String value,
+                             @NotNull final String type) throws XMLStreamException {
+    w.writeStartElement(D, key);
+    if (value == null) {
+      w.writeAttribute(M, "null", "true");
+    } else {
+      w.writeAttribute(M, "type", type);
+      w.writeCharacters(value);
     }
     w.writeEndElement();
   }

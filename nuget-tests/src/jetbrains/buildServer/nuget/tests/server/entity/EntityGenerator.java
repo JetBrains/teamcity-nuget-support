@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.entity;
 import jetbrains.buildServer.BaseTestCase;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.edm.EdmSimpleType;
 import org.testng.annotations.Test;
 
 import java.io.*;
@@ -46,6 +47,22 @@ public class EntityGenerator extends BaseTestCase {
     private EntityBeanGenerator(String keyName, String entityName, Collection<Property> properties) {
       super(entityName, properties);
       myKeyName = keyName;
+    }
+
+    @Override
+    protected void fieldsGenerated(@NotNull PrintWriter wr) {
+      super.fieldsGenerated(wr);
+      wr.println("  public void visitFields(@NotNull final PackageFieldsVisitor visitor) {");
+      wr.println("    String v;");
+      for (Property property : myProperties) {
+        wr.println("    v = myFields.get(\"" + property.getName() + "\");");
+        if (property.getType() == EdmSimpleType.DATETIME) {
+          wr.println("    v = jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.toODataString(v);");
+        }
+        wr.println("    if (v != null) visitor.visitPackageField(\"" + property.getName() + "\", v, \"" + property.getType().getFullyQualifiedTypeName() + "\");");
+
+      }
+      wr.println("  }");
     }
   }
 

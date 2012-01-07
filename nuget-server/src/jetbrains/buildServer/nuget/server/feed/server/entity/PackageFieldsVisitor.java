@@ -14,31 +14,17 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.render;
+package jetbrains.buildServer.nuget.server.feed.server.entity;
 
-import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntity;
-
-import java.util.Date;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 07.01.12 9:23
+ * Date: 07.01.12 10:23
  */
-public class NuGetContext {
-  public String getEncoding() {
-    return "utf-8";
-  }
-  
-  public String getBaseUri() {
-    return "//";
-  }
-
-  //returns last feed update date.
-  public Date getUpdated() {
-    return new Date();
-  }
-
-  public String getDownloadUrl(PackageEntity pitem) {
-    return getBaseUri() + "/" + pitem.getId();
-  }
+public interface PackageFieldsVisitor {
+  void visitPackageField(@NotNull final String key,
+                         @Nullable final String value,
+                         @NotNull final String type);
 }

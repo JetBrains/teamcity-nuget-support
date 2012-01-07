@@ -16,11 +16,13 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index;
 
+import jetbrains.buildServer.util.Dates;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joda.time.LocalDateTime;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -31,10 +33,25 @@ public class ODataDataFormat {
   public static String formatDate(@NotNull final Date date) {
     return "j" + date.getTime();
   }
+
+  @Nullable
+  private static Long parseDateEx(@Nullable final String text) {
+    if (text == null || !text.startsWith("j")) return null;
+    return Long.parseLong(text.substring(1));
+  }
   
   @Nullable
-  public static LocalDateTime parseDate(@NotNull final String text) {
-    if (!text.startsWith("j")) return null;
-    return new LocalDateTime(Long.parseLong(text.substring(1)));
+  public static LocalDateTime parseDate(@Nullable final String text) {
+    Long time = parseDateEx(text);
+    if (time == null) return null;
+    return new LocalDateTime(time);
+  }
+  
+  @Nullable
+  public static String toODataString(@Nullable final String text) {
+    Long time = parseDateEx(text);
+    if (time == null) return null;
+
+    return Dates.formatDate(new Date(time), "yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("GMT"));
   }
 }

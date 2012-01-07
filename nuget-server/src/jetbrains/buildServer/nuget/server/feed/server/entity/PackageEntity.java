@@ -5,11 +5,9 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
-import java.util.*;
-import java.lang.*;
-import org.odata4j.core.*;
-
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 
 public class PackageEntity { 
   protected final Map<String, String> myFields;
@@ -210,6 +208,66 @@ public class PackageEntity {
     if (!myFields.containsKey("Title")) return false;
     if (!myFields.containsKey("VersionDownloadCount")) return false;
     return true;
+  }
+  public void visitFields(@NotNull final PackageFieldsVisitor visitor) {
+    String v;
+    v = myFields.get("Id");
+    if (v != null) visitor.visitPackageField("Id", v, "Edm.String");
+    v = myFields.get("Version");
+    if (v != null) visitor.visitPackageField("Version", v, "Edm.String");
+    v = myFields.get("Authors");
+    if (v != null) visitor.visitPackageField("Authors", v, "Edm.String");
+    v = myFields.get("Copyright");
+    if (v != null) visitor.visitPackageField("Copyright", v, "Edm.String");
+    v = myFields.get("Created");
+    v = jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.toODataString(v);
+    if (v != null) visitor.visitPackageField("Created", v, "Edm.DateTime");
+    v = myFields.get("Dependencies");
+    if (v != null) visitor.visitPackageField("Dependencies", v, "Edm.String");
+    v = myFields.get("Description");
+    if (v != null) visitor.visitPackageField("Description", v, "Edm.String");
+    v = myFields.get("DownloadCount");
+    if (v != null) visitor.visitPackageField("DownloadCount", v, "Edm.Int32");
+    v = myFields.get("GalleryDetailsUrl");
+    if (v != null) visitor.visitPackageField("GalleryDetailsUrl", v, "Edm.String");
+    v = myFields.get("IconUrl");
+    if (v != null) visitor.visitPackageField("IconUrl", v, "Edm.String");
+    v = myFields.get("IsLatestVersion");
+    if (v != null) visitor.visitPackageField("IsLatestVersion", v, "Edm.Boolean");
+    v = myFields.get("IsAbsoluteLatestVersion");
+    if (v != null) visitor.visitPackageField("IsAbsoluteLatestVersion", v, "Edm.Boolean");
+    v = myFields.get("LastUpdated");
+    v = jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.toODataString(v);
+    if (v != null) visitor.visitPackageField("LastUpdated", v, "Edm.DateTime");
+    v = myFields.get("Published");
+    v = jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.toODataString(v);
+    if (v != null) visitor.visitPackageField("Published", v, "Edm.DateTime");
+    v = myFields.get("Language");
+    if (v != null) visitor.visitPackageField("Language", v, "Edm.String");
+    v = myFields.get("LicenseUrl");
+    if (v != null) visitor.visitPackageField("LicenseUrl", v, "Edm.String");
+    v = myFields.get("PackageHash");
+    if (v != null) visitor.visitPackageField("PackageHash", v, "Edm.String");
+    v = myFields.get("PackageHashAlgorithm");
+    if (v != null) visitor.visitPackageField("PackageHashAlgorithm", v, "Edm.String");
+    v = myFields.get("PackageSize");
+    if (v != null) visitor.visitPackageField("PackageSize", v, "Edm.Int64");
+    v = myFields.get("ProjectUrl");
+    if (v != null) visitor.visitPackageField("ProjectUrl", v, "Edm.String");
+    v = myFields.get("ReportAbuseUrl");
+    if (v != null) visitor.visitPackageField("ReportAbuseUrl", v, "Edm.String");
+    v = myFields.get("ReleaseNotes");
+    if (v != null) visitor.visitPackageField("ReleaseNotes", v, "Edm.String");
+    v = myFields.get("RequireLicenseAcceptance");
+    if (v != null) visitor.visitPackageField("RequireLicenseAcceptance", v, "Edm.Boolean");
+    v = myFields.get("Summary");
+    if (v != null) visitor.visitPackageField("Summary", v, "Edm.String");
+    v = myFields.get("Tags");
+    if (v != null) visitor.visitPackageField("Tags", v, "Edm.String");
+    v = myFields.get("Title");
+    if (v != null) visitor.visitPackageField("Title", v, "Edm.String");
+    v = myFields.get("VersionDownloadCount");
+    if (v != null) visitor.visitPackageField("VersionDownloadCount", v, "Edm.Int32");
   }
 }
 
