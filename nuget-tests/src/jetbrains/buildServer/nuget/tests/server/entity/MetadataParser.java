@@ -24,6 +24,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.Namespace;
 import org.jdom.xpath.XPath;
+import org.jetbrains.annotations.NotNull;
 import org.odata4j.edm.EdmSimpleType;
 import org.testng.Assert;
 
@@ -37,11 +38,16 @@ import java.util.List;
  * Date: 07.01.12 9:49
  */
 public class MetadataParser {
+  @NotNull
   public static ParseResult loadBeans() throws JDOMException, IOException {
     final File data = Paths.getTestDataPath("feed/odata/metadata.v2.xml");
     Assert.assertTrue(data.isFile());
 
-    final Element root = FileUtil.parseDocument(data);
+    return loadBeans(FileUtil.parseDocument(data));
+  }
+
+  @NotNull
+  public static ParseResult loadBeans(@NotNull final Element root) throws JDOMException {
     final Namespace edmx = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/06/edmx");
     final Namespace edm = Namespace.getNamespace("http://schemas.microsoft.com/ado/2006/04/edm");
 
