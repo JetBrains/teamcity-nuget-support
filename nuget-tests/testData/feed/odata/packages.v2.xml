@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<feed xml:base="http://nuget.org/api/v2/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">Packages</title>
+  <id>http://nuget.org/api/v2/Packages</id>
+  <updated>2012-01-07T06:35:13Z</updated>
+  <link rel="self" title="Packages" href="Packages" />
+  <entry>
+    <id>http://nuget.org/api/v2/Packages(Id='NUnit',Version='2.5.10.11092')</id>
+    <title type="text">NUnit</title>
+    <summary type="text">NUnit is a unit-testing framework for all .Net languages. Initially ported from JUnit, the current production release, version 2.5, is the sixth major release of this xUnit based unit testing tool for Microsoft .NET.</summary>
+    <updated>2011-04-25T20:20:32Z</updated>
+    <author>
+      <name>Charlie Poole</name>
+    </author>
+    <link rel="edit-media" title="V2FeedPackage" href="Packages(Id='NUnit',Version='2.5.10.11092')/$value" />
+    <link rel="edit" title="V2FeedPackage" href="Packages(Id='NUnit',Version='2.5.10.11092')" />
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://nuget.org/api/v2/package/NUnit/2.5.10.11092" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Version>2.5.10.11092</d:Version>
+      <d:Copyright m:null="true"></d:Copyright>
+      <d:Created m:type="Edm.DateTime">2011-04-25T20:20:32.973</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>NUnit is a unit-testing framework for all .Net languages. Initially ported from JUnit, the current production release, version 2.5, is the sixth major release of this xUnit based unit testing tool for Microsoft .NET.</d:Description>
+      <d:DownloadCount m:type="Edm.Int32">56523</d:DownloadCount>
+      <d:GalleryDetailsUrl>http://nuget.org/packages/NUnit/2.5.10.11092</d:GalleryDetailsUrl>
+      <d:IconUrl m:null="true"></d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">true</d:IsAbsoluteLatestVersion>
+      <d:Published m:type="Edm.DateTime">2011-04-25T20:20:34.397</d:Published>
+      <d:Language m:null="true"></d:Language>
+      <d:LicenseUrl></d:LicenseUrl>
+      <d:PackageHash>v2YKO25a8nnqunCr/XSV4LrCO3/86NV8QkA94Upkjgzg09kxTXzfSAFeEY1VIS+FfRvbw5cwVatoRvzFG6Px5A==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">824211</d:PackageSize>
+      <d:ProjectUrl></d:ProjectUrl>
+      <d:ReportAbuseUrl>http://nuget.org/package/ReportAbuse/NUnit/2.5.10.11092</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Tags m:null="true"></d:Tags>
+      <d:Title>NUnit</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">44078</d:VersionDownloadCount>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://nuget.org/api/v2/Packages(Id='NUnit',Version='2.5.7.10213')</id>
+    <title type="text">NUnit</title>
+    <summary type="text">NUnit is a unit-testing framework for all .Net languages. Initially ported from JUnit, the current production release, version 2.5, is the sixth major release of this xUnit based unit testing tool for Microsoft .NET.</summary>
+    <updated>2011-01-07T07:57:54Z</updated>
+    <author>
+      <name>Charlie Poole</name>
+    </author>
+    <link rel="edit-media" title="V2FeedPackage" href="Packages(Id='NUnit',Version='2.5.7.10213')/$value" />
+    <link rel="edit" title="V2FeedPackage" href="Packages(Id='NUnit',Version='2.5.7.10213')" />
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://nuget.org/api/v2/package/NUnit/2.5.7.10213" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Version>2.5.7.10213</d:Version>
+      <d:Copyright m:null="true"></d:Copyright>
+      <d:Created m:type="Edm.DateTime">2011-01-07T07:57:54.87</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>NUnit is a unit-testing framework for all .Net languages. Initially ported from JUnit, the current production release, version 2.5, is the sixth major release of this xUnit based unit testing tool for Microsoft .NET.</d:Description>
+      <d:DownloadCount m:type="Edm.Int32">56523</d:DownloadCount>
+      <d:GalleryDetailsUrl>http://nuget.org/packages/NUnit/2.5.7.10213</d:GalleryDetailsUrl>
+      <d:IconUrl m:null="true"></d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">false</d:IsAbsoluteLatestVersion>
+      <d:Published m:type="Edm.DateTime">2011-01-07T07:57:55.387</d:Published>
+      <d:Language m:null="true"></d:Language>
+      <d:LicenseUrl></d:LicenseUrl>
+      <d:PackageHash>4aEVHJ3K6SRvmnUn630f6LMy6wfM5tZyMhSSAcMrOs2EspiwI0wsGtTQkFWizqjhNsO+fn0I/ravWZAAVfXpqg==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">763203</d:PackageSize>
+      <d:ProjectUrl></d:ProjectUrl>
+      <d:ReportAbuseUrl>http://nuget.org/package/ReportAbuse/NUnit/2.5.7.10213</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Tags m:null="true"></d:Tags>
+      <d:Title>NUnit</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">1981</d:VersionDownloadCount>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://nuget.org/api/v2/Packages(Id='NUnit',Version='2.5.9.10348')</id>
+    <title type="text">NUnit</title>
+    <summary type="text">NUnit is a unit-testing framework for all .Net languages. Initially ported from JUnit, the current production release, version 2.5, is the sixth major release of this xUnit based unit testing tool for Microsoft .NET.</summary>
+    <updated>2011-02-09T07:26:29Z</updated>
+    <author>
+      <name>Charlie Poole</name>
+    </author>
+    <link rel="edit-media" title="V2FeedPackage" href="Packages(Id='NUnit',Version='2.5.9.10348')/$value" />
+    <link rel="edit" title="V2FeedPackage" href="Packages(Id='NUnit',Version='2.5.9.10348')" />
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://nuget.org/api/v2/package/NUnit/2.5.9.10348" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Version>2.5.9.10348</d:Version>
+      <d:Copyright m:null="true"></d:Copyright>
+      <d:Created m:type="Edm.DateTime">2011-02-09T07:26:20.63</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>NUnit is a unit-testing framework for all .Net languages. Initially ported from JUnit, the current production release, version 2.5, is the sixth major release of this xUnit based unit testing tool for Microsoft .NET.</d:Description>
+      <d:DownloadCount m:type="Edm.Int32">56523</d:DownloadCount>
+      <d:GalleryDetailsUrl>http://nuget.org/packages/NUnit/2.5.9.10348</d:GalleryDetailsUrl>
+      <d:IconUrl m:null="true"></d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">false</d:IsAbsoluteLatestVersion>
+      <d:Published m:type="Edm.DateTime">2011-02-09T07:26:34.347</d:Published>
+      <d:Language m:null="true"></d:Language>
+      <d:LicenseUrl m:null="true"></d:LicenseUrl>
+      <d:PackageHash>J04Xy1Bj89NBmzhpKfZY714fy21p1Ehe6bC+YIZThR48VVw9/FCronTfCHCjSc4Nl5Ll19S2Z37buEMruv1rjQ==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">766139</d:PackageSize>
+      <d:ProjectUrl m:null="true"></d:ProjectUrl>
+      <d:ReportAbuseUrl>http://nuget.org/package/ReportAbuse/NUnit/2.5.9.10348</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Tags m:null="true"></d:Tags>
+      <d:Title>NUnit</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">10464</d:VersionDownloadCount>
+    </m:properties>
+  </entry>
+</feed>
