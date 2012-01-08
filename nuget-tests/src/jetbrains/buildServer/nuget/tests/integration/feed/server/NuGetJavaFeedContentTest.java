@@ -20,6 +20,7 @@ import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.JDOMException;
+import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -38,13 +39,28 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     System.out.println(actualText);
 
     final String goldText = XmlUtil.to_s(FileUtil.parseDocument(Paths.getTestDataPath("/feed/odata/metadata.v2.xml")));
-    Assert.assertEquals(actualText, goldText);
+    compareXml(actualText, goldText);
   }
 
   @Test
   public void testRoot() throws JDOMException, IOException {
     final String s = openRequest("");
-    System.out.println(XmlUtil.to_s(XmlUtil.from_s(s)));
+    final String actualText = XmlUtil.to_s(XmlUtil.from_s(s));
+    System.out.println(actualText);
+    final String goldText = XmlUtil.to_s(FileUtil.parseDocument(Paths.getTestDataPath("/feed/odata/root.v2.xml")));
+    compareXml(actualText, goldText);
+  }
+  
+  private String replaceXml(@NotNull final String text) {
+    return text
+            .replace("http://nuget.org/api/v2/", "BASE_URI/")
+            .replace(getNuGetServerUrl(), "BASE_URI/")
+            .replaceAll("\\d+-\\d+-\\d+T\\d+:\\d+:\\d+Z", "TIME")
+            ;
+  }
+
+  private void compareXml(String actualText, String goldText) {
+    Assert.assertEquals(replaceXml(actualText), replaceXml(goldText));
   }
 
   @Test
@@ -57,6 +73,6 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
 
     final String goldText = XmlUtil.to_s(FileUtil.parseDocument(Paths.getTestDataPath("/feed/odata/packages.v2.CommonServiceLocator.xml")));
 
-    Assert.assertEquals(actualText, goldText);
+    compareXml(actualText, goldText);
   }
 }

@@ -5,22 +5,29 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
-import java.util.*;
-import java.lang.*;
-import org.odata4j.core.*;
-import org.odata4j.internal.*;
-import org.joda.time.*;
-
 import org.jetbrains.annotations.NotNull;
+import org.joda.time.DateTimeZone;
+import org.odata4j.core.OAtomEntity;
+import org.odata4j.core.OAtomStreamEntity;
+import org.odata4j.internal.InternalUtil;
 
-public class PackageEntity extends PackageKey implements OAtomEntity { 
+import java.util.Map;
+
+public class PackageEntity extends PackageKey implements OAtomEntity, OAtomStreamEntity {
 
   public PackageEntity(@NotNull final Map<String, String> data) {
     super(data); 
   }
 
+  public String getAtomEntityType() {
+    return "application/zip";
+  }
 
-  public java.lang.String getId() { 
+  public String getAtomEntitySource() {
+    return "package-download-url/" + getId() + "/" + getVersion();
+  }
+
+  public java.lang.String getId() {
     final String v = myFields.get("Id");
     return v;
   }

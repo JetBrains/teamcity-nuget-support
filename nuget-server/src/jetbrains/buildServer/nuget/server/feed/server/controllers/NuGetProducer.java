@@ -46,6 +46,7 @@ public class NuGetProducer {
     myProducer.register(
             PackageEntity.class,
             "Packages",
+            "V2FeedPackage",
             new Func<Iterable<PackageEntity>>() {
               public Iterable<PackageEntity> apply() {
                 return new Iterable<PackageEntity>() {
