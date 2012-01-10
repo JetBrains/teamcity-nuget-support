@@ -23,12 +23,18 @@ public class PackageKey implements OEntityId {
 
   public java.lang.String getId() { 
     final String v = myFields.get("Id");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
   public java.lang.String getVersion() { 
     final String v = myFields.get("Version");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 

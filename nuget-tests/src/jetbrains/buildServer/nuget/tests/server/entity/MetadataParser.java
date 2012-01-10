@@ -75,7 +75,7 @@ public class MetadataParser {
       final String name = el.getAttributeValue("Name");
       final EdmSimpleType<?> type = EdmSimpleType.getSimple(el.getAttributeValue("Type"));
       final String atomPath = StringUtil.nullIfEmpty(el.getAttributeValue("FC_TargetPath", m));
-      final Property prop = new Property(name, type, atomPath);
+      final Property prop = new Property(name, type, atomPath, Boolean.parseBoolean(el.getAttributeValue("Nullable")));
       if (keyNames.contains(prop.getName())) {
         keys.add(prop);
       }

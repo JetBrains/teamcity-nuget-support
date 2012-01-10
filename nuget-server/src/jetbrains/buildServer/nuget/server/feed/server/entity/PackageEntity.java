@@ -8,33 +8,31 @@ package jetbrains.buildServer.nuget.server.feed.server.entity;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTimeZone;
 import org.odata4j.core.OAtomEntity;
-import org.odata4j.core.OAtomStreamEntity;
 import org.odata4j.internal.InternalUtil;
 
 import java.util.Map;
 
-public class PackageEntity extends PackageKey implements OAtomEntity, OAtomStreamEntity {
+public class PackageEntity extends PackageKey implements OAtomEntity { 
 
   public PackageEntity(@NotNull final Map<String, String> data) {
     super(data); 
   }
 
-  public String getAtomEntityType() {
-    return "application/zip";
-  }
 
-  public String getAtomEntitySource() {
-    return "package-download-url/" + getId() + "/" + getVersion();
-  }
-
-  public java.lang.String getId() {
+  public java.lang.String getId() { 
     final String v = myFields.get("Id");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
   public java.lang.String getVersion() { 
     final String v = myFields.get("Version");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
@@ -53,6 +51,9 @@ public class PackageEntity extends PackageKey implements OAtomEntity, OAtomStrea
 
   public org.joda.time.LocalDateTime getCreated() { 
     final String v = myFields.get("Created");
+    if (v == null) { 
+      return new org.joda.time.LocalDateTime();
+    }
     return jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.parseDate(v);
   }
 
@@ -71,6 +72,9 @@ public class PackageEntity extends PackageKey implements OAtomEntity, OAtomStrea
 
   public java.lang.Integer getDownloadCount() { 
     final String v = myFields.get("DownloadCount");
+    if (v == null) { 
+      return 0;
+    }
     return Integer.parseInt(v);
   }
 
@@ -89,24 +93,36 @@ public class PackageEntity extends PackageKey implements OAtomEntity, OAtomStrea
 
   public java.lang.Boolean getIsLatestVersion() { 
     final String v = myFields.get("IsLatestVersion");
+    if (v == null) { 
+      return false;
+    }
     return Boolean.valueOf(v);
   }
 
 
   public java.lang.Boolean getIsAbsoluteLatestVersion() { 
     final String v = myFields.get("IsAbsoluteLatestVersion");
+    if (v == null) { 
+      return false;
+    }
     return Boolean.valueOf(v);
   }
 
 
   public org.joda.time.LocalDateTime getLastUpdated() { 
     final String v = myFields.get("LastUpdated");
+    if (v == null) { 
+      return new org.joda.time.LocalDateTime();
+    }
     return jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.parseDate(v);
   }
 
 
   public org.joda.time.LocalDateTime getPublished() { 
     final String v = myFields.get("Published");
+    if (v == null) { 
+      return new org.joda.time.LocalDateTime();
+    }
     return jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.parseDate(v);
   }
 
@@ -137,6 +153,9 @@ public class PackageEntity extends PackageKey implements OAtomEntity, OAtomStrea
 
   public java.lang.Long getPackageSize() { 
     final String v = myFields.get("PackageSize");
+    if (v == null) { 
+      return 0L;
+    }
     return Long.parseLong(v);
   }
 
@@ -161,6 +180,9 @@ public class PackageEntity extends PackageKey implements OAtomEntity, OAtomStrea
 
   public java.lang.Boolean getRequireLicenseAcceptance() { 
     final String v = myFields.get("RequireLicenseAcceptance");
+    if (v == null) { 
+      return false;
+    }
     return Boolean.valueOf(v);
   }
 
@@ -185,6 +207,9 @@ public class PackageEntity extends PackageKey implements OAtomEntity, OAtomStrea
 
   public java.lang.Integer getVersionDownloadCount() { 
     final String v = myFields.get("VersionDownloadCount");
+    if (v == null) { 
+      return 0;
+    }
     return Integer.parseInt(v);
   }
 

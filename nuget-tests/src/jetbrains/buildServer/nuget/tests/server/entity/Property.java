@@ -28,11 +28,20 @@ public final class Property {
   private final String myName;
   private final EdmSimpleType myType;
   private final String myAtomPath;
+  private final boolean myNullable;
 
-  public Property(@NotNull final String name, @NotNull final EdmSimpleType type, @Nullable final String atomPath) {
+  public Property(@NotNull final String name,
+                  @NotNull final EdmSimpleType type,
+                  @Nullable final String atomPath,
+                  final boolean nullable) {
     myName = name;
     myType = type;
     myAtomPath = atomPath;
+    myNullable = nullable;
+  }
+
+  public boolean isNullable() {
+    return myNullable;
   }
 
   @NotNull

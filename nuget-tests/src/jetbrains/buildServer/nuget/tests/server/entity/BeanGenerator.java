@@ -85,6 +85,23 @@ public class BeanGenerator {
       final String name = p.getName();
       wr.println("  public " + type + " get" + name + "() { ");
       wr.println("    final String v = myFields.get(\"" + name + "\");");
+      if (!p.isNullable()) {
+        wr.println("    if (v == null) { ");
+        if (p.getType() == EdmSimpleType.STRING) {
+          wr.println("      return \"\";");
+        } else if (p.getType() == EdmSimpleType.BOOLEAN) {
+          wr.println("      return false;");
+        } else if (p.getType() == EdmSimpleType.INT32) {
+          wr.println("      return 0;");
+        } else if (p.getType() == EdmSimpleType.INT64) {
+          wr.println("      return 0L;");
+        } else if (p.getType() == EdmSimpleType.DATETIME) {
+          wr.println("      return new org.joda.time.LocalDateTime();");
+        } else {
+          wr.println("    !!!Unsupported type!!!");
+        }
+        wr.println("    }");
+      }
       if (p.getType() == EdmSimpleType.STRING) {
         wr.println("    return v;");
       } else if (p.getType() == EdmSimpleType.BOOLEAN){
