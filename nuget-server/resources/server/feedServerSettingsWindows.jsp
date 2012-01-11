@@ -52,7 +52,7 @@
 
    <table class="runnerFormTable">
     <tr>
-      <th style="width: 8em;">TeamCity Url:</th>
+      <th style="width: 7em;">TeamCity Url:</th>
       <td>
         <props:textProperty name="${fb.nugetServerUrl}" className="longField"/>
         <span class="smallNote">
@@ -73,9 +73,10 @@
   </table>
 
   <div class="saveButtonsBlock" style="border: none; margin-top: 1em;">
-    <a href="#" class="cancel" onclick="return BS.NuGet.FeedServer.EnableForm.close();">Cancel</a>
-    <input class="submitButton" type="submit" value="Enable">
+    <forms:cancel onclick="BS.NuGet.FeedServer.EnableForm.close();"/>
+    <forms:submit label="Enable"/>
     <forms:saving id="nugetSettingsSaving"/>
+    <div class="clr"></div>
   </div>
 
   <div class="clr"></div>
@@ -91,9 +92,10 @@
   TeamCity NuGet Feed server will be stopped. Continue?
 
   <div class="saveButtonsBlock" style="border: none; margin-top: 1em;">
-    <a href="#" class="cancel" onclick="return BS.NuGet.FeedServer.DisableForm.close();">Cancel</a>
-    <input class="submitButton" type="submit" value="Disable">
+    <forms:cancel onclick="return BS.NuGet.FeedServer.DisableForm.close();"/>
+    <forms:submit label="Disable"/>
     <forms:saving id="nugetSettingsSaving"/>
+    <div class="clr"></div>
   </div>
 
   <div class="clr"></div>

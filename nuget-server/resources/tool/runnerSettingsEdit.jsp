@@ -41,7 +41,7 @@
   </c:forEach>
   <props:option value="custom" selected="${not hasSelected}">Custom</props:option>
 </props:selectProperty>
-<span class="smallNote">Specify NuGet.exe version.
+<span class="smallNote">Specify path to NuGet.exe (relative to checkout directory).
   Check installed NuGet Commandline tools in <a href="<c:url value="${settingsUrl}"/>" target="_blank">NuGet Settings</a>
 </span>
 

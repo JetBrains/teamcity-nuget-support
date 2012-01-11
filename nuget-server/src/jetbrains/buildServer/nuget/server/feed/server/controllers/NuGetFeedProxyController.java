@@ -140,7 +140,6 @@ public class NuGetFeedProxyController extends BaseController {
       return null;
     } catch (Throwable t) {
       LOG.warn("Failed to process request to NuGet server to " + method.getURI());
-      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "" + t.getMessage());
       return null;
     } finally {
       method.abort();

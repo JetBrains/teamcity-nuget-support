@@ -16,7 +16,7 @@
 <%@ include file="/include-internal.jsp" %>
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 
-<jsp:useBean id="serverUrl" scope="request" type="java.lang.String" />
+<jsp:useBean id="actualServerUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="nugetStatusRefreshUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="imagesBase" scope="request" type="java.lang.String" />
 <jsp:useBean id="serverStatus" scope="request" type="jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus" />
@@ -74,7 +74,7 @@
 
   <c:if test="${isError}">
     <p>
-    See <a href="<c:url value='/admin/serverConfig.html?init=1&tab=diagnostic&subTab=logs&file=teamcity-nuget-server.log'/>">NuGet Server logs</a> for more details
+    See <a href="<c:url value='/admin/admin.html?item=diagnostic&tab=log4j&file=teamcity-nuget-server.log'/>">NuGet Server logs</a> for more details
     </p>
   </c:if>
 
@@ -83,24 +83,25 @@
     <h2 class="noBorder" style="padding-top: 2em;">NuGet Server Url:</h2>
     <table class="runnerFormTable nugetUrls">
       <tr>
-        <th>Authenticated Url:</th>
+        <th>Authenticated Feed Url:</th>
         <td>
-          <c:set var="url"><c:url value="${serverUrl}${privateFeedUrl}"/></c:set>
+          <c:set var="url"><c:url value="${actualServerUrl}${privateFeedUrl}"/></c:set>
           <div><a href="${url}">${url}</a></div>
           <span class="smallNote">Access to the url requires HTTP authentication</span>
         </td>
       </tr>
       <tr>
-        <th>Public Url:</th>
+        <th>Public Feed Url:</th>
         <td>
         <c:choose>
           <c:when test="${not isGuestEnabled}">
-            <div>Not available. You need to allow guest user in TeamCity general server settings</div>
+            <div>Not available.</div>
+            <span class="smallNote">Guest user is disabled. You need to enable guest user login in TeamCity general server settings for public feed to work.</span>
           </c:when>
           <c:otherwise>
-            <c:set var="url"><c:url value="${serverUrl}${publicFeedUrl}"/></c:set>
+            <c:set var="url"><c:url value="${actualServerUrl}${publicFeedUrl}"/></c:set>
             <div><a href="${url}">${url}</a></div>
-            <span class="smallNote">Public feed. No authentication checks are performed</span>
+            <span class="smallNote">No authentication is required.</span>
           </c:otherwise>
         </c:choose>
         </td>

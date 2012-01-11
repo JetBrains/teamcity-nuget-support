@@ -19,19 +19,37 @@
 <jsp:useBean id="nuget_teamcity_include_selected" scope="request" type="jetbrains.buildServer.nuget.server.settings.SettingsSection"/>
 <jsp:useBean id="nuget_teamcity_include_key" scope="request" type="java.lang.String"/>
 
-<div style="padding: 1em 0 0.5em 0;">
+<div id="nugetSettingsTabContainer" style="padding: 1em 0 1.5em 0; display: block;" class="simpleTabs">
+
   <c:forEach items="${nuget_teamcity_include_controllers}" var="nugetSettingsPage" varStatus="step">
     <c:choose>
       <c:when test="${nuget_teamcity_include_selected.sectionId eq nugetSettingsPage.sectionId}">
         <strong><c:out value="${nugetSettingsPage.sectionName}"/></strong>
       </c:when>
       <c:otherwise>
-        <a href="<c:url value='/admin/serverConfig.html?tab=nugetServerSettingsTab&${nuget_teamcity_include_key}=${nugetSettingsPage.sectionId}'/>"><c:out value="${nugetSettingsPage.sectionName}"/></a>
+        <a href="<c:url value='/admin/admin.html?item=nugetServerSettingsTab&${nuget_teamcity_include_key}=${nugetSettingsPage.sectionId}'/>"><c:out value="${nugetSettingsPage.sectionName}"/></a>
       </c:otherwise>
     </c:choose>
     <c:if test="${not step.last}"> | </c:if>
   </c:forEach>
 </div>
+<div class="clr"></div>
+
+<script type="text/javascript">
+  <c:url var="baseUrl" value="/admin/admin.html?item=nugetServerSettingsTab"/>
+  (function(){
+    var tabs = new TabbedPane();
+    <c:forEach items="${nuget_teamcity_include_controllers}" var="nugetSettingsPage" varStatus="step">
+    tabs.addTab('${nugetSettingsPage.sectionId}', {
+      caption : '${util:forJS(nugetSettingsPage.sectionName, false, false)}',
+      url : '${baseUrl}&${nuget_teamcity_include_key}=${nugetSettingsPage.sectionId}'
+    });
+    </c:forEach>
+
+    tabs.showIn('nugetSettingsTabContainer');
+    tabs.setActiveCaption('${nuget_teamcity_include_selected.sectionId}');
+  })();
+</script>
 
 <!-- start of NuGet Settings page: <c:out value="${nuget_teamcity_include_selected}"/> -->
 <jsp:include page="${nuget_teamcity_include_selected.includePath}"/>

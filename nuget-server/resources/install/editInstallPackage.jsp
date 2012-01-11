@@ -62,7 +62,7 @@
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       Exclude version from package folder names
       <span class="smallNote">Makes NuGet exlude package version from package folders.
-                              Equivalent of -ExcludeVersion commandline argument</span>
+                              Equivalent to -ExcludeVersion NuGet.exe commandline argument</span>
 
       <props:checkboxProperty name="${ib.updatePackagesKey}"/>
       Update packages with help of NuGet update command

@@ -40,7 +40,7 @@ public class PermissionChecker {
 
   public void assertAccess(AuthorityHolder holder) {
     if (!hasAccess(holder)) {
-      throw new AccessDeniedException(holder, "You do not have access to view or update nuget server settings.");
+      throw new AccessDeniedException(holder, "You do not have access to view or update NuGet server settings.");
     }
   }
 }
