@@ -77,7 +77,7 @@ public class PackRunType extends NuGetRunType {
         notEmpty(NUGET_PACK_SPEC_FILE, "Package definition files must be specified", map, result);
         notEmpty(NUGET_PACK_OUTPUT_DIR, "Package creation output directory must be specified", map, result);
         final String version = notEmpty(NUGET_PACK_VERSION, "Version must be specified", map, result);
-        if (version != null && !ReferencesResolverUtil.containsReference(version)) {
+        if (version != null && !ReferencesResolverUtil.containsReference(version) && !version.matches("\\d+(\\.\\d+){1,3}")) {
           result.add(new InvalidProperty(NUGET_PACK_VERSION, "Version must be NuGet version format, i.e. 1.2.3 or 5.4.3.2"));
         }
 
