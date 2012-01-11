@@ -20,13 +20,13 @@
 <div id="nugetInstallFormResreshInner">
   <c:choose>
     <c:when test="${fn:length(available) eq 0}">
-      No other NuGet.exe Command Line packages available
+      No other NuGet command line versions available
     </c:when>
     <c:otherwise>
       <table class="runnerFormTable">
         <tr>
           <td colspan="2">
-            Select NuGet.exe Command Line to install:
+            Select NuGet command line version to download:
           </td>
         </tr>
         <tr>
@@ -39,9 +39,6 @@
                 <forms:option value="${t.id}"><c:out value="${t.version}"/></forms:option>
               </c:forEach>
             </forms:select>
-            <span class="smallNote">
-              Choose version of NuGet Commandline Tools to install.
-            </span>
             <span class="error" id="error_toolId"></span>
           </td>
         </tr>

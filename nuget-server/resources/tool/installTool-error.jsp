@@ -18,7 +18,7 @@
 <div id="nugetInstallFormResreshInner">
   <div class="error" style="margin-left: 0">
     <div>
-      Failed to fetch latest NuGet packages from default feed.
+      Failed to fetch latest NuGet from default feed.
     </div>
     <div>
       <c:out value="${errorText}"/>
