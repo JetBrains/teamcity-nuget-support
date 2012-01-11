@@ -36,16 +36,12 @@ public class EntityGenerator extends BaseTestCase {
   @Test
   public void generateEntityClasses() throws IOException, JDOMException {
     final String entity = "PackageEntityImpl";
-    final String ientityV1 = "PackageEntityV1";
     final String ientityV2 = "PackageEntityV2";
 
-    final ParseResult V1 = MetadataParser.loadBeans_v1();
     final ParseResult V2 = MetadataParser.loadBeans_v2();
 
-    new EntityInterfaceGenerator(ientityV1, V1.getKey(), V1.getData()).generateSimpleBean();
     new EntityInterfaceGenerator(ientityV2, V2.getKey(), V2.getData()).generateSimpleBean();
-
-    new EntityBeanGenerator(entity, Arrays.asList(ientityV1, ientityV2), V2.getData()).generateSimpleBean();
+    new EntityBeanGenerator(entity, Arrays.asList(ientityV2), V2.getData()).generateSimpleBean();
   }
 
   private static class EntityBeanGenerator extends BeanGenerator {

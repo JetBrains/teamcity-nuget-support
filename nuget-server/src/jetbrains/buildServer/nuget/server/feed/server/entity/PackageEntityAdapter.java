@@ -19,7 +19,6 @@ package jetbrains.buildServer.nuget.server.feed.server.entity;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDateTime;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 /**
@@ -29,48 +28,6 @@ import java.util.Map;
 public abstract class PackageEntityAdapter extends PackageEntityImpl implements PackageEntity {
   public PackageEntityAdapter(@NotNull Map<String, String> data) {
     super(data);
-  }
-
-  public String getExternalPackageUrl() {
-    return getProjectUrl();
-  }
-
-  @NotNull
-  public Integer getRatingsCount() {
-    return 0;
-  }
-
-  @NotNull
-  public Integer getVersionRatingsCount() {
-    return 0;
-  }
-
-  @NotNull
-  public Double getRating() {
-    return 5.0;
-  }
-
-  @NotNull
-  public Double getVersionRating() {
-    return 5.0;
-  }
-
-  public String getCategories() {
-    return null;
-  }
-
-  public String getPackageType() {
-    return "Package";
-  }
-
-  @NotNull
-  public BigDecimal getPrice() {
-    return BigDecimal.ZERO;
-  }
-
-  @NotNull
-  public Boolean getPrerelease() {
-    return false;
   }
 
   @NotNull

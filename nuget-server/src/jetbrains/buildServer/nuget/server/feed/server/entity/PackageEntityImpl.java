@@ -13,7 +13,7 @@ import org.odata4j.internal.InternalUtil;
 
 import java.util.Map;
 
-public abstract class PackageEntityImpl  implements PackageEntityV1, PackageEntityV2, OAtomEntity { 
+public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity { 
   protected final Map<String, String> myFields;
 
   public PackageEntityImpl(@NotNull final Map<String, String> data) {
