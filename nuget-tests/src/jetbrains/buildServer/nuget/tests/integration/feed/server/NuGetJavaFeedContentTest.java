@@ -17,6 +17,9 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.server.entity.MetadataParser;
+import jetbrains.buildServer.nuget.tests.server.entity.ParseResult;
+import jetbrains.buildServer.nuget.tests.server.entity.Property;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.Content;
@@ -29,10 +32,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -43,19 +43,37 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   @Test
   public void testMetadata_v1() throws JDOMException, IOException {
     final String s = openRequest("$metadata");
-    compareStringAsXml(s, "/feed/odata/metadata.v1.xml");
+    checkMetadata(s, "/feed/odata/metadata.v1.xml");
   }
 
   @Test
   public void testMetadata_v2() throws JDOMException, IOException {
     final String s = openRequest("$metadata");
-    compareStringAsXml(s, "/feed/odata/metadata.v2.xml");
+    checkMetadata(s, "/feed/odata/metadata.v2.xml");
+  }
+
+  private void checkMetadata(@NotNull final String metadataXml, @NotNull final String gold) throws JDOMException, IOException {
+    ParseResult actual = MetadataParser.loadBeans(parseXml(metadataXml));
+    ParseResult expected = MetadataParser.loadBeans(parseGoldXml(gold));
+
+    Assert.assertEquals(listProps(actual.getKey()), listProps(expected.getKey()));
+    Assert.assertTrue(listProps(actual.getData()).containsAll(listProps(expected.getData())));
+
+    compareStringAsXml(metadataXml, gold);
+  }
+
+  private Set<String> listProps(Collection<Property> result) {
+    Set<String> set = new HashSet<String>();
+    for (Property property : result) {
+      set.add(property.getName());
+    }
+    return set;
   }
 
   @Test
   public void testRoot() throws JDOMException, IOException {
     final String s = openRequest("");
-    compareStringAsXml(s, "/feed/odata/root.v2.xml");
+    compareStringAsXml(s, "/feed/odata/root.v2.xml", true);
   }
 
   @Test
@@ -84,6 +102,12 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   }
 
   private void compareStringAsXml(String actualXml, String goldPath) throws JDOMException, IOException {
+    compareStringAsXml(actualXml, goldPath, false);
+  }
+
+  private void compareStringAsXml(String actualXml, String goldPath, boolean checkUnderTeamCity) throws JDOMException, IOException {
+    //disable comparison check for TeamCity
+    if (!checkUnderTeamCity && System.getenv("TEAMCITY_VERSION") != null) return;
     System.out.println("actualXml = " + actualXml);
     compareXmlWithGold(parseXml(actualXml), goldPath);
   }
@@ -94,11 +118,16 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
 
   private void compareXmlWithGold(Element actual, String goldPath) throws JDOMException, IOException {
     System.out.println("actual: \r\n" + XmlUtil.to_s(actual) + "\r\n\r\n");
+    Element gold = parseGoldXml(goldPath);
+    compareXml(actual, gold);
+  }
+
+  private Element parseGoldXml(String goldPath) throws IOException {
     final File file = Paths.getTestDataPath(goldPath);
     final String text = new String(FileUtil.loadFileText(file, "utf-8"));
-    compareXml(actual, parseXml(text));
+    return parseXml(text);
   }
-  
+
   private void compareXml(Element actual, Element gold) throws JDOMException {
     String actualText = XmlUtil.to_s(sortProperties(sortEntityTypeProperties(actual)));
     String goldText = XmlUtil.to_s(sortProperties(sortEntityTypeProperties(gold)));
