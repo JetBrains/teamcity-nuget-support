@@ -85,7 +85,9 @@ public class PackagesIndexImpl implements PackagesIndex {
                 if (isLatestVersion == null) return null;
 
                 metadata.put("TeamCityBuildId", String.valueOf(e.getBuildId()));
+                //TODO: consider semVersions here
                 metadata.put("IsLatestVersion", String.valueOf(isLatestVersion));
+                metadata.put("IsAbsoluteLatestVersion", String.valueOf(isLatestVersion));
 
                 final String relPath = metadata.get(TEAMCITY_ARTIFACT_RELPATH);
                 if (relPath == null) return null;
