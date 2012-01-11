@@ -46,7 +46,7 @@ public class BeanGenerator extends MethodsGenerator {
 
   @Override
   protected String getTypeKind() {
-    return "class";
+    return "abstract class";
   }
 
   @Override
@@ -67,7 +67,7 @@ public class BeanGenerator extends MethodsGenerator {
   @NotNull
   @Override
   protected String generatePropertyModifier(@NotNull Property p) {
-    return "public";
+    return "public final ";
   }
 
   protected void generatePropertyBody(@NotNull PrintWriter wr, @NotNull Property p) {
@@ -121,10 +121,12 @@ public class BeanGenerator extends MethodsGenerator {
 
   }
 
+  @NotNull
   protected String getExtends() {
     return "";
   }
 
+  @NotNull
   protected Collection<String> getImplements() {
     return Collections.emptyList();
   }

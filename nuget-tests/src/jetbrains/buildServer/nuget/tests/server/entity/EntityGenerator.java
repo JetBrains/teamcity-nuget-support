@@ -25,10 +25,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collection;
-
-import static jetbrains.buildServer.nuget.tests.server.entity.MetadataParser.loadBeans;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -39,22 +36,43 @@ public class EntityGenerator extends BaseTestCase {
   @Test
   public void generateEntityClasses() throws IOException, JDOMException {
     final String entity = "PackageEntityImpl";
-    final String ientity = "PackageEntity";
-    new EntityInterfaceGenerator(ientity, loadBeans().getKey(), loadBeans().getData()).generateSimpleBean();
-    new EntityBeanGenerator(entity, ientity, loadBeans().getData()).generateSimpleBean();
+    final String ientityV1 = "PackageEntityV1";
+    final String ientityV2 = "PackageEntityV2";
+
+    final ParseResult V1 = MetadataParser.loadBeans_v1();
+    final ParseResult V2 = MetadataParser.loadBeans_v2();
+
+    new EntityInterfaceGenerator(ientityV1, V1.getKey(), V1.getData()).generateSimpleBean();
+    new EntityInterfaceGenerator(ientityV2, V2.getKey(), V2.getData()).generateSimpleBean();
+
+    new EntityBeanGenerator(entity, Arrays.asList(ientityV1, ientityV2), V2.getData()).generateSimpleBean();
   }
 
   private static class EntityBeanGenerator extends BeanGenerator {
-    private final String myIentity;
+    private final Collection<String> myIentities;
+    private final Set<String> myExplicit = new HashSet<String>(Arrays.asList(
+                "Created",
+                "Published",
+                "GalleryDetailsUrl",
+                "Summary",
+                "Title",
+                "VersionDownloadCount",
+                "DownloadCount"
+        ));
 
-    private EntityBeanGenerator(String entityName, String ientity, Collection<Property> properties) {
+
+    private EntityBeanGenerator(String entityName, List<String> ientity, Collection<Property> properties) {
       super(entityName, properties);
-      myIentity = ientity;
+      myIentities = ientity;
     }
 
+    @NotNull
     @Override
     protected Collection<String> getImplements() {
-      return Arrays.asList(OAtomEntity.class.getSimpleName(), myIentity);
+      final List<String> result = new ArrayList<String>();
+      result.addAll(myIentities);
+      result.add(OAtomEntity.class.getSimpleName());
+      return result;
     }
 
     @Override
@@ -66,7 +84,7 @@ public class EntityGenerator extends BaseTestCase {
         path = path.substring("Syndication".length()).replace("AuthorName", "Author");
 
         wr.println();
-        wr.println("  public String getAtomEntity" + path + "() {");
+        wr.println("  public final String getAtomEntity" + path + "() {");
         if (property.getType() == EdmSimpleType.DATETIME) {
           wr.println("    return InternalUtil.toString(get" + property.getName() + "().toDateTime(DateTimeZone.UTC));");
         } else {
@@ -75,7 +93,12 @@ public class EntityGenerator extends BaseTestCase {
         wr.println("  }");
         wr.println();
       }
+    }
 
+    @Override
+    protected void generateProperty(@NotNull final PrintWriter w, @NotNull final Property p) {
+      if (myExplicit.contains(p.getName())) return;
+      super.generateProperty(w, p);
     }
   }
 

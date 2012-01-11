@@ -6,13 +6,14 @@
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.joda.time.DateTimeZone;
 import org.odata4j.core.OAtomEntity;
 import org.odata4j.internal.InternalUtil;
 
 import java.util.Map;
 
-public class PackageEntityImpl  implements OAtomEntity, PackageEntity { 
+public abstract class PackageEntityImpl  implements PackageEntityV1, PackageEntityV2, OAtomEntity { 
   protected final Map<String, String> myFields;
 
   public PackageEntityImpl(@NotNull final Map<String, String> data) {
@@ -21,7 +22,8 @@ public class PackageEntityImpl  implements OAtomEntity, PackageEntity {
 
 
 
-  public java.lang.String getId(){ 
+  @NotNull
+  public final  java.lang.String getId(){ 
     final String v = myFields.get("Id");
     if (v == null) { 
       return "";
@@ -30,7 +32,8 @@ public class PackageEntityImpl  implements OAtomEntity, PackageEntity {
   }
 
 
-  public java.lang.String getVersion(){ 
+  @NotNull
+  public final  java.lang.String getVersion(){ 
     final String v = myFields.get("Version");
     if (v == null) { 
       return "";
@@ -39,61 +42,43 @@ public class PackageEntityImpl  implements OAtomEntity, PackageEntity {
   }
 
 
-  public java.lang.String getAuthors(){ 
+  @Nullable
+  public final  java.lang.String getAuthors(){ 
     final String v = myFields.get("Authors");
     return v;
   }
 
 
-  public java.lang.String getCopyright(){ 
+  @Nullable
+  public final  java.lang.String getCopyright(){ 
     final String v = myFields.get("Copyright");
     return v;
   }
 
 
-  public org.joda.time.LocalDateTime getCreated(){ 
-    final String v = myFields.get("Created");
-    if (v == null) { 
-      return new org.joda.time.LocalDateTime();
-    }
-    return jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.parseDate(v);
-  }
-
-
-  public java.lang.String getDependencies(){ 
+  @Nullable
+  public final  java.lang.String getDependencies(){ 
     final String v = myFields.get("Dependencies");
     return v;
   }
 
 
-  public java.lang.String getDescription(){ 
+  @Nullable
+  public final  java.lang.String getDescription(){ 
     final String v = myFields.get("Description");
     return v;
   }
 
 
-  public java.lang.Integer getDownloadCount(){ 
-    final String v = myFields.get("DownloadCount");
-    if (v == null) { 
-      return 0;
-    }
-    return Integer.parseInt(v);
-  }
-
-
-  public java.lang.String getGalleryDetailsUrl(){ 
-    final String v = myFields.get("GalleryDetailsUrl");
-    return v;
-  }
-
-
-  public java.lang.String getIconUrl(){ 
+  @Nullable
+  public final  java.lang.String getIconUrl(){ 
     final String v = myFields.get("IconUrl");
     return v;
   }
 
 
-  public java.lang.Boolean getIsLatestVersion(){ 
+  @NotNull
+  public final  java.lang.Boolean getIsLatestVersion(){ 
     final String v = myFields.get("IsLatestVersion");
     if (v == null) { 
       return false;
@@ -102,7 +87,8 @@ public class PackageEntityImpl  implements OAtomEntity, PackageEntity {
   }
 
 
-  public java.lang.Boolean getIsAbsoluteLatestVersion(){ 
+  @NotNull
+  public final  java.lang.Boolean getIsAbsoluteLatestVersion(){ 
     final String v = myFields.get("IsAbsoluteLatestVersion");
     if (v == null) { 
       return false;
@@ -111,7 +97,8 @@ public class PackageEntityImpl  implements OAtomEntity, PackageEntity {
   }
 
 
-  public org.joda.time.LocalDateTime getLastUpdated(){ 
+  @NotNull
+  public final  org.joda.time.LocalDateTime getLastUpdated(){ 
     final String v = myFields.get("LastUpdated");
     if (v == null) { 
       return new org.joda.time.LocalDateTime();
@@ -120,40 +107,36 @@ public class PackageEntityImpl  implements OAtomEntity, PackageEntity {
   }
 
 
-  public org.joda.time.LocalDateTime getPublished(){ 
-    final String v = myFields.get("Published");
-    if (v == null) { 
-      return new org.joda.time.LocalDateTime();
-    }
-    return jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.parseDate(v);
-  }
-
-
-  public java.lang.String getLanguage(){ 
+  @Nullable
+  public final  java.lang.String getLanguage(){ 
     final String v = myFields.get("Language");
     return v;
   }
 
 
-  public java.lang.String getLicenseUrl(){ 
+  @Nullable
+  public final  java.lang.String getLicenseUrl(){ 
     final String v = myFields.get("LicenseUrl");
     return v;
   }
 
 
-  public java.lang.String getPackageHash(){ 
+  @Nullable
+  public final  java.lang.String getPackageHash(){ 
     final String v = myFields.get("PackageHash");
     return v;
   }
 
 
-  public java.lang.String getPackageHashAlgorithm(){ 
+  @Nullable
+  public final  java.lang.String getPackageHashAlgorithm(){ 
     final String v = myFields.get("PackageHashAlgorithm");
     return v;
   }
 
 
-  public java.lang.Long getPackageSize(){ 
+  @NotNull
+  public final  java.lang.Long getPackageSize(){ 
     final String v = myFields.get("PackageSize");
     if (v == null) { 
       return 0L;
@@ -162,25 +145,29 @@ public class PackageEntityImpl  implements OAtomEntity, PackageEntity {
   }
 
 
-  public java.lang.String getProjectUrl(){ 
+  @Nullable
+  public final  java.lang.String getProjectUrl(){ 
     final String v = myFields.get("ProjectUrl");
     return v;
   }
 
 
-  public java.lang.String getReportAbuseUrl(){ 
+  @Nullable
+  public final  java.lang.String getReportAbuseUrl(){ 
     final String v = myFields.get("ReportAbuseUrl");
     return v;
   }
 
 
-  public java.lang.String getReleaseNotes(){ 
+  @Nullable
+  public final  java.lang.String getReleaseNotes(){ 
     final String v = myFields.get("ReleaseNotes");
     return v;
   }
 
 
-  public java.lang.Boolean getRequireLicenseAcceptance(){ 
+  @NotNull
+  public final  java.lang.Boolean getRequireLicenseAcceptance(){ 
     final String v = myFields.get("RequireLicenseAcceptance");
     if (v == null) { 
       return false;
@@ -189,50 +176,30 @@ public class PackageEntityImpl  implements OAtomEntity, PackageEntity {
   }
 
 
-  public java.lang.String getSummary(){ 
-    final String v = myFields.get("Summary");
-    return v;
-  }
-
-
-  public java.lang.String getTags(){ 
+  @Nullable
+  public final  java.lang.String getTags(){ 
     final String v = myFields.get("Tags");
     return v;
   }
 
 
-  public java.lang.String getTitle(){ 
-    final String v = myFields.get("Title");
-    return v;
-  }
 
-
-  public java.lang.Integer getVersionDownloadCount(){ 
-    final String v = myFields.get("VersionDownloadCount");
-    if (v == null) { 
-      return 0;
-    }
-    return Integer.parseInt(v);
-  }
-
-
-
-  public String getAtomEntityTitle() {
+  public final String getAtomEntityTitle() {
     return getId();
   }
 
 
-  public String getAtomEntityAuthor() {
+  public final String getAtomEntityAuthor() {
     return getAuthors();
   }
 
 
-  public String getAtomEntityUpdated() {
+  public final String getAtomEntityUpdated() {
     return InternalUtil.toString(getLastUpdated().toDateTime(DateTimeZone.UTC));
   }
 
 
-  public String getAtomEntitySummary() {
+  public final String getAtomEntitySummary() {
     return getSummary();
   }
 

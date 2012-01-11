@@ -29,8 +29,6 @@ import org.testng.annotations.Test;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static jetbrains.buildServer.nuget.tests.server.entity.MetadataParser.loadBeans;
-
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.01.12 9:50
@@ -38,7 +36,7 @@ import static jetbrains.buildServer.nuget.tests.server.entity.MetadataParser.loa
 public class MetadataLoaderTest {
   @Test
   public void test_parses_properties() throws JDOMException, IOException {
-    final ParseResult result = loadBeans();
+    final ParseResult result = MetadataParser.loadBeans_v2();
     Assert.assertFalse(result.getData().isEmpty());
     Assert.assertFalse(result.getKey().isEmpty());
 
@@ -49,7 +47,27 @@ public class MetadataLoaderTest {
   }
 
   @Test
-  public void generateEntitries() throws IOException, JDOMException {
+  public void generateEntitries_v1() throws IOException, JDOMException {
+    final FeedClient fc = new FeedHttpClientHolder();
+    final HttpGet get = new HttpGet("https://nuget.org/api/v1/$metadata");
+    try {
+      final HttpResponse execute = fc.execute(get);
+      final ByteArrayOutputStream box = new ByteArrayOutputStream();
+      final HttpEntity entity = execute.getEntity();
+      entity.writeTo(box);
+      final String source = box.toString("utf-8");
+      System.out.println("source = " + source);
+
+      final ParseResult result = MetadataParser.loadBeans(XmlUtil.from_s(source));
+      Assert.assertFalse(result.getData().isEmpty());
+      Assert.assertFalse(result.getKey().isEmpty());
+    } finally {
+      get.abort();
+    }
+  }
+
+  @Test
+  public void generateEntitries_v2() throws IOException, JDOMException {
     final FeedClient fc = new FeedHttpClientHolder();
     final HttpGet get = new HttpGet("https://nuget.org/api/v2/$metadata");
     try {

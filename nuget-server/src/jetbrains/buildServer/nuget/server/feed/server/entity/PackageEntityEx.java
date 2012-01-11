@@ -25,7 +25,7 @@ import java.util.Map;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 11.01.12 12:40
  */
-public class PackageEntityEx extends PackageEntityImpl implements OAtomStreamEntity {
+public class PackageEntityEx extends PackageEntityAdapter implements OAtomStreamEntity {
   public PackageEntityEx(@NotNull Map<String, String> data) {
     super(data);
   }

@@ -43,7 +43,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     addPackage(Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg"), true);
   }
 
-  @Test
+  @Test(enabled = false)
   public void startDebugServer() throws InterruptedException {
     System.out.println("-Source " + getNuGetServerUrl());
     //noinspection InfiniteLoopStatement

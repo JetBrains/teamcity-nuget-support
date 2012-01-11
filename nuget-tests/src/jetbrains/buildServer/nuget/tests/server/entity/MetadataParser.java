@@ -40,7 +40,15 @@ import java.util.List;
  */
 public class MetadataParser {
   @NotNull
-  public static ParseResult loadBeans() throws JDOMException, IOException {
+  public static ParseResult loadBeans_v1() throws JDOMException, IOException {
+    final File data = Paths.getTestDataPath("feed/odata/metadata.v1.xml");
+    Assert.assertTrue(data.isFile());
+
+    return loadBeans(FileUtil.parseDocument(data));
+  }
+
+  @NotNull
+  public static ParseResult loadBeans_v2() throws JDOMException, IOException {
     final File data = Paths.getTestDataPath("feed/odata/metadata.v2.xml");
     Assert.assertTrue(data.isFile());
 
@@ -53,7 +61,7 @@ public class MetadataParser {
     final Namespace edm = Namespace.getNamespace("http://schemas.microsoft.com/ado/2006/04/edm");
     final Namespace m = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
 
-    final XPath xKeys = XPath.newInstance("/x:Edmx/x:DataServices/m:Schema/m:EntityType[@Name='V2FeedPackage']/m:Key/m:PropertyRef/@Name");
+    final XPath xKeys = XPath.newInstance("/x:Edmx/x:DataServices/m:Schema/m:EntityType[@Name='V2FeedPackage' or @Name='V1FeedPackage']/m:Key/m:PropertyRef/@Name");
     xKeys.addNamespace("m", edm.getURI());
     xKeys.addNamespace("x", edmx.getURI());
 
@@ -63,7 +71,7 @@ public class MetadataParser {
     }
 
     System.out.println("Selected keys: " + keyNames);
-    final XPath xProps = XPath.newInstance("/x:Edmx/x:DataServices/m:Schema/m:EntityType[@Name='V2FeedPackage']/m:Property");
+    final XPath xProps = XPath.newInstance("/x:Edmx/x:DataServices/m:Schema/m:EntityType[@Name='V2FeedPackage' or @Name='V1FeedPackage']/m:Property");
     xProps.addNamespace("m", edm.getURI());
     xProps.addNamespace("x", edmx.getURI());
 

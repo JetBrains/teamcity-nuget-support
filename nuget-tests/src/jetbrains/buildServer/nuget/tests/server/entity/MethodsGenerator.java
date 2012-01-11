@@ -94,6 +94,11 @@ public abstract class MethodsGenerator {
     wr.println();
     final String type = p.getType().getCanonicalJavaType().getName();
     final String name = p.getName();
+    if (p.isNullable()) {
+      wr.println("  @Nullable");
+    } else {
+      wr.println("  @NotNull");
+    }
     wr.print("  " + generatePropertyModifier(p) + " " + type + " get" + name + "()");
   }
 
@@ -110,6 +115,8 @@ public abstract class MethodsGenerator {
             "org.odata4j.core.*",
             "org.odata4j.internal.*",
             "org.joda.time.*",
-            "org.jetbrains.annotations.NotNull");
+            "org.jetbrains.annotations.NotNull",
+            "org.jetbrains.annotations.Nullable"
+            );
   }
 }
