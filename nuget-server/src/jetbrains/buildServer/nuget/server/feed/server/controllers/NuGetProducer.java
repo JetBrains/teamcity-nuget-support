@@ -21,11 +21,13 @@ import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntity;
-import jetbrains.buildServer.nuget.server.feed.server.entity.PackageKey;
+import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntityEx;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.inmemory.InMemoryProducer;
+import org.odata4j.stax2.XMLFactoryProvider2;
+import org.odata4j.stax2.xppimpl.XmlPullXMLFactoryProvider2;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -41,6 +43,11 @@ public class NuGetProducer {
 
   public NuGetProducer(@NotNull final PackagesIndex index) {
     myIndex = index;
+
+    //Workaround for Xml generation. Default STAX xml writer
+    //used to generate <foo></foo> that is badly parsed in
+    //.NET OData WCF client
+    XMLFactoryProvider2.setInstance(new XmlPullXMLFactoryProvider2());
 
     myProducer = new InMemoryProducer("NuGetGallery");
     myProducer.register(
@@ -64,14 +71,14 @@ public class NuGetProducer {
                         map.put("VersionDownloadCount", "42");
                         map.put("DownloadCount", "42");
                         //create package object
-                        return new PackageEntity(map);
+                        return new PackageEntityEx(map);
                       }
                     });
                   }
                 };
               }
             },
-            PackageKey.getKeyPropertyNames()
+            PackageEntity.KeyPropertyNames
     );
   }
 

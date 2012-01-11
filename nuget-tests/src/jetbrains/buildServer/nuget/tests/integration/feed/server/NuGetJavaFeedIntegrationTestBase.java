@@ -82,9 +82,9 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myServer = ODataProducerUtil.hostODataServer(getNuGetServerUrl());
   }
 
-  protected void addPackage(@NotNull final File file) throws IOException {
+  protected void addPackage(@NotNull final File file, boolean isLatest) throws IOException {
     final int buildId = myCount++;
-    final Map<String,String> map = indexPackage(file, false, buildId);
+    final Map<String,String> map = indexPackage(file, isLatest, buildId);
     myFeed.add(new NuGetIndexEntry(file.getName(), map, "bt-xx" + buildId, buildId));
   }
 

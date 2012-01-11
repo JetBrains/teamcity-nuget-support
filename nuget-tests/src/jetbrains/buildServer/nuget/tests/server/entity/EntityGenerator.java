@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import static jetbrains.buildServer.nuget.tests.server.entity.MetadataParser.loadBeans;
 
@@ -39,47 +38,34 @@ import static jetbrains.buildServer.nuget.tests.server.entity.MetadataParser.loa
 public class EntityGenerator extends BaseTestCase {
   @Test
   public void generateEntityClasses() throws IOException, JDOMException {
-    final String key = "PackageKey";
-    final String entity = "PackageEntity";
-    new EntityBeanGenerator(key, entity, loadBeans().getData()).generateSimpleBean();
-    new KeyBeanGenerator(key, entity, loadBeans().getKey()).generateSimpleBean();
+    final String entity = "PackageEntityImpl";
+    final String ientity = "PackageEntity";
+    new EntityInterfaceGenerator(ientity, loadBeans().getKey(), loadBeans().getData()).generateSimpleBean();
+    new EntityBeanGenerator(entity, ientity, loadBeans().getData()).generateSimpleBean();
   }
 
   private static class EntityBeanGenerator extends BeanGenerator {
-    private final String myKeyName;
-    private EntityBeanGenerator(String keyName, String entityName, Collection<Property> properties) {
-      super(entityName, properties);
-      myKeyName = keyName;
-    }
+    private final String myIentity;
 
-    @Override
-    protected String getExtends() {
-      return myKeyName;
+    private EntityBeanGenerator(String entityName, String ientity, Collection<Property> properties) {
+      super(entityName, properties);
+      myIentity = ientity;
     }
 
     @Override
     protected Collection<String> getImplements() {
-      return Arrays.asList(OAtomEntity.class.getSimpleName());
+      return Arrays.asList(OAtomEntity.class.getSimpleName(), myIentity);
     }
 
     @Override
-    protected void generateConstructor(PrintWriter wr) {
-      wr.println("    super(data); ");
-    }
-
-    @Override
-    protected void generateFields(PrintWriter wr) {
-    }
-
-    @Override
-    protected void fieldsGenerated(@NotNull PrintWriter wr) {
-      super.fieldsGenerated(wr);
+    protected void generateAfterContent(@NotNull PrintWriter wr) {
+      super.generateAfterContent(wr);
       for (Property property : myProperties) {
         String path = property.getAtomPath();
         if (path == null) continue;
         path = path.substring("Syndication".length()).replace("AuthorName", "Author");
 
-        wr.println(); 
+        wr.println();
         wr.println("  public String getAtomEntity" + path + "() {");
         if (property.getType() == EdmSimpleType.DATETIME) {
           wr.println("    return InternalUtil.toString(get" + property.getName() + "().toDateTime(DateTimeZone.UTC));");
@@ -93,42 +79,49 @@ public class EntityGenerator extends BaseTestCase {
     }
   }
 
-  private static class KeyBeanGenerator extends BeanGenerator {
-    private final String myEntityName;
+  private static class EntityInterfaceGenerator extends MethodsGenerator {
+    private final Collection<Property> myKeys;
 
-    private KeyBeanGenerator(String name, String entityName, Collection<Property> properties) {
-      super(name, properties);
-      myEntityName = entityName;
+    private EntityInterfaceGenerator(String entityName, Collection<Property> keys, Collection<Property> properties) {
+      super(entityName, properties);
+      myKeys = keys;
     }
 
     @Override
-    protected Collection<String> getImplements() {
-      return Collections.singleton("OEntityId");
-    }
-
-    @Override
-    protected void fieldsGenerated(@NotNull PrintWriter wr) {
-      super.fieldsGenerated(wr);
-      
+    protected void generateAfterContent(@NotNull PrintWriter wr) {
       wr.println();
-      wr.println("  public OEntityKey getEntityKey() {");
-      wr.println("    return OEntityKey.create(\"Id\", getId(), \"Version\", getVersion());");
-      wr.println("  }");
-      wr.println();
-      wr.println("  public String getEntitySetName() {");
-      wr.println("    return \"Packages\";");
-      wr.println("  }");
-      wr.println();
-      wr.println("  public static String[] getKeyPropertyNames() {");
-      wr.println("    return new String[]{");
-      for (Property property : myProperties) {
-        wr.println("      \"" + property.getName() + "\", ");
+      wr.println("  String[] KeyPropertyNames = new String[] {");
+      for (Property property : myKeys) {
+        wr.println("    \"" + property.getName() + "\", ");
       }
-      wr.println("    };");
-      wr.println("  }");
+      wr.println("  };");
       wr.println();
+      wr.println();
+    }
+
+    @Override
+    protected String getTypeKind() {
+      return "interface";
+    }
+
+    @Override
+    protected String getExtendsString() {
+      return "";
+    }
+
+    @NotNull
+    @Override
+    protected String generatePropertyModifier(@NotNull Property p) {
+      return "";
+    }
+
+    @Override
+    protected void generatePropertyBody(@NotNull PrintWriter wr, @NotNull Property p) {
+      wr.println(";");
+    }
+
+    @Override
+    protected void generateBeforeContent(@NotNull PrintWriter wr) {
     }
   }
-
-
 }

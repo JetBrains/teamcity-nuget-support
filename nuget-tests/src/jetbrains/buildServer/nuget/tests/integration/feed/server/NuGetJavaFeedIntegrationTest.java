@@ -39,8 +39,17 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   protected void setUp() throws Exception {
     super.setUp();
 
-    addPackage(Paths.getTestDataPath("/packages/" + packageId_1 + ".1.0.nupkg"));
-    addPackage(Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg"));
+    addPackage(Paths.getTestDataPath("/packages/" + packageId_1 + ".1.0.nupkg"), true);
+    addPackage(Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg"), true);
+  }
+
+  @Test
+  public void startDebugServer() throws InterruptedException {
+    System.out.println("-Source " + getNuGetServerUrl());
+    //noinspection InfiniteLoopStatement
+    while (true) {
+      Thread.sleep(1000);
+    }
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
@@ -51,6 +60,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     cmd.setExePath(nuget.getPath().getPath());
     cmd.addParameter("list");
     cmd.addParameter("-Verbose");
+    cmd.addParameter("-AllVersions");
     cmd.addParameter("-Source");
     cmd.addParameter(getNuGetServerUrl());
 
@@ -71,6 +81,8 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     cmd.setExePath(nuget.getPath().getPath());
     cmd.addParameter("list");
     cmd.addParameter("Common");
+    cmd.addParameter("-Verbose");
+    cmd.addParameter("-AllVersions");
     cmd.addParameter("-Source");
     cmd.addParameter(getNuGetServerUrl());
 
