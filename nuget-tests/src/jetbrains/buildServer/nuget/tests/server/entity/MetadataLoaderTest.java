@@ -36,11 +36,11 @@ import java.io.IOException;
 public class MetadataLoaderTest {
   @Test
   public void test_parses_properties() throws JDOMException, IOException {
-    final ParseResult result = MetadataParser.loadBeans_v2();
+    final MetadataParseResult result = XmlFeedParsers.loadBeans_v2();
     Assert.assertFalse(result.getData().isEmpty());
     Assert.assertFalse(result.getKey().isEmpty());
 
-    for (Property property : result.getData()) {
+    for (MetadataBeanProperty property : result.getData()) {
       if (property.getAtomPath() != null) return;
     }
     Assert.fail("Property must have FC_AtomPath");
@@ -58,7 +58,7 @@ public class MetadataLoaderTest {
       final String source = box.toString("utf-8");
       System.out.println("source = " + source);
 
-      final ParseResult result = MetadataParser.loadBeans(XmlUtil.from_s(source));
+      final MetadataParseResult result = XmlFeedParsers.loadMetadataBeans(XmlUtil.from_s(source));
       Assert.assertFalse(result.getData().isEmpty());
       Assert.assertFalse(result.getKey().isEmpty());
     } finally {
@@ -78,7 +78,7 @@ public class MetadataLoaderTest {
       final String source = box.toString("utf-8");
       System.out.println("source = " + source);
 
-      final ParseResult result = MetadataParser.loadBeans(XmlUtil.from_s(source));
+      final MetadataParseResult result = XmlFeedParsers.loadMetadataBeans(XmlUtil.from_s(source));
       Assert.assertFalse(result.getData().isEmpty());
       Assert.assertFalse(result.getKey().isEmpty());
     } finally {

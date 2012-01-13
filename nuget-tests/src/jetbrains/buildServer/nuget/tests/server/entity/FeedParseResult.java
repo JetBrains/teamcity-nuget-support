@@ -19,28 +19,22 @@ package jetbrains.buildServer.nuget.tests.server.entity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
-* Created by Eugene Petrenko (eugene.petrenko@gmail.com)
-* Date: 07.01.12 9:49
-*/
-public final class ParseResult {
-  private final Collection<Property> myKey;
-  private final Collection<Property> myData;
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 13.01.12 13:26
+ */
+public class FeedParseResult {
+  private final Set<String> myProperties;
 
-  public ParseResult(@NotNull final Collection<Property> key,
-                     @NotNull final Collection<Property> data) {
-    myKey = key;
-    myData = data;
+  public FeedParseResult(@NotNull Collection<String> properties) {
+    myProperties = new TreeSet<String>(properties);
   }
 
   @NotNull
-  public Collection<Property> getKey() {
-    return myKey;
-  }
-
-  @NotNull
-  public Collection<Property> getData() {
-    return myData;
+  public Set<String> getPropertyNames() {
+    return myProperties;
   }
 }

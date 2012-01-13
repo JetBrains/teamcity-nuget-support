@@ -20,7 +20,6 @@ import jetbrains.buildServer.BaseTestCase;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OAtomEntity;
-import org.odata4j.edm.EdmSimpleType;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
@@ -38,7 +37,7 @@ public class EntityGenerator extends BaseTestCase {
     final String entity = "PackageEntityImpl";
     final String ientityV2 = "PackageEntityV2";
 
-    final ParseResult V2 = MetadataParser.loadBeans_v2();
+    final MetadataParseResult V2 = XmlFeedParsers.loadBeans_v2();
 
     new EntityInterfaceGenerator(ientityV2, V2.getKey(), V2.getData()).generateSimpleBean();
     new EntityBeanGenerator(entity, Arrays.asList(ientityV2), V2.getData()).generateSimpleBean();
@@ -57,7 +56,7 @@ public class EntityGenerator extends BaseTestCase {
         ));
 
 
-    private EntityBeanGenerator(String entityName, List<String> ientity, Collection<Property> properties) {
+    private EntityBeanGenerator(String entityName, List<String> ientity, Collection<MetadataBeanProperty> properties) {
       super(entityName, properties);
       myIentities = ientity;
     }
@@ -74,34 +73,30 @@ public class EntityGenerator extends BaseTestCase {
     @Override
     protected void generateAfterContent(@NotNull PrintWriter wr) {
       super.generateAfterContent(wr);
-      for (Property property : myProperties) {
+      for (MetadataBeanProperty property : myProperties) {
         String path = property.getAtomPath();
         if (path == null) continue;
         path = path.substring("Syndication".length()).replace("AuthorName", "Author");
 
         wr.println();
-        wr.println("  public final String getAtomEntity" + path + "() {");
-        if (property.getType() == EdmSimpleType.DATETIME) {
-          wr.println("    return InternalUtil.toString(get" + property.getName() + "().toDateTime(DateTimeZone.UTC));");
-        } else {
-          wr.println("    return get" + property.getName() + "();");
-        }
+        wr.println("  public final " + property.getType().getCanonicalJavaType().getName() + " getAtomEntity" + path + "() {");
+        wr.println("    return get" + property.getName() + "();");
         wr.println("  }");
         wr.println();
       }
     }
 
     @Override
-    protected void generateProperty(@NotNull final PrintWriter w, @NotNull final Property p) {
+    protected void generateProperty(@NotNull final PrintWriter w, @NotNull final MetadataBeanProperty p) {
       if (myExplicit.contains(p.getName())) return;
       super.generateProperty(w, p);
     }
   }
 
   private static class EntityInterfaceGenerator extends MethodsGenerator {
-    private final Collection<Property> myKeys;
+    private final Collection<MetadataBeanProperty> myKeys;
 
-    private EntityInterfaceGenerator(String entityName, Collection<Property> keys, Collection<Property> properties) {
+    private EntityInterfaceGenerator(String entityName, Collection<MetadataBeanProperty> keys, Collection<MetadataBeanProperty> properties) {
       super(entityName, properties);
       myKeys = keys;
     }
@@ -110,7 +105,7 @@ public class EntityGenerator extends BaseTestCase {
     protected void generateAfterContent(@NotNull PrintWriter wr) {
       wr.println();
       wr.println("  String[] KeyPropertyNames = new String[] {");
-      for (Property property : myKeys) {
+      for (MetadataBeanProperty property : myKeys) {
         wr.println("    \"" + property.getName() + "\", ");
       }
       wr.println("  };");
@@ -130,12 +125,12 @@ public class EntityGenerator extends BaseTestCase {
 
     @NotNull
     @Override
-    protected String generatePropertyModifier(@NotNull Property p) {
+    protected String generatePropertyModifier(@NotNull MetadataBeanProperty p) {
       return "";
     }
 
     @Override
-    protected void generatePropertyBody(@NotNull PrintWriter wr, @NotNull Property p) {
+    protected void generatePropertyBody(@NotNull PrintWriter wr, @NotNull MetadataBeanProperty p) {
       wr.println(";");
     }
 

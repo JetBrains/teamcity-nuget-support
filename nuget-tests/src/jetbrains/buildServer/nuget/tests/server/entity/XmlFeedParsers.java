@@ -38,25 +38,25 @@ import java.util.List;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.01.12 9:49
  */
-public class MetadataParser {
+public class XmlFeedParsers {
   @NotNull
-  public static ParseResult loadBeans_v1() throws JDOMException, IOException {
+  public static MetadataParseResult loadBeans_v1() throws JDOMException, IOException {
     final File data = Paths.getTestDataPath("feed/odata/metadata.v1.xml");
     Assert.assertTrue(data.isFile());
 
-    return loadBeans(FileUtil.parseDocument(data));
+    return loadMetadataBeans(FileUtil.parseDocument(data));
   }
 
   @NotNull
-  public static ParseResult loadBeans_v2() throws JDOMException, IOException {
+  public static MetadataParseResult loadBeans_v2() throws JDOMException, IOException {
     final File data = Paths.getTestDataPath("feed/odata/metadata.v2.xml");
     Assert.assertTrue(data.isFile());
 
-    return loadBeans(FileUtil.parseDocument(data));
+    return loadMetadataBeans(FileUtil.parseDocument(data));
   }
 
   @NotNull
-  public static ParseResult loadBeans(@NotNull final Element root) throws JDOMException {
+  public static MetadataParseResult loadMetadataBeans(@NotNull final Element root) throws JDOMException {
     final Namespace edmx = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/06/edmx");
     final Namespace edm = Namespace.getNamespace("http://schemas.microsoft.com/ado/2006/04/edm");
     final Namespace m = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
@@ -75,21 +75,43 @@ public class MetadataParser {
     xProps.addNamespace("m", edm.getURI());
     xProps.addNamespace("x", edmx.getURI());
 
-    final List<Property> keys = new ArrayList<Property>();
-    final List<Property> props = new ArrayList<Property>();
+    final List<MetadataBeanProperty> keys = new ArrayList<MetadataBeanProperty>();
+    final List<MetadataBeanProperty> props = new ArrayList<MetadataBeanProperty>();
     for (Object o : xProps.selectNodes(root)) {
       Element el = (Element) o;
       System.out.println(XmlUtil.to_s(el));
       final String name = el.getAttributeValue("Name");
       final EdmSimpleType<?> type = EdmSimpleType.getSimple(el.getAttributeValue("Type"));
       final String atomPath = StringUtil.nullIfEmpty(el.getAttributeValue("FC_TargetPath", m));
-      final Property prop = new Property(name, type, atomPath, Boolean.parseBoolean(el.getAttributeValue("Nullable")));
+      final MetadataBeanProperty prop = new MetadataBeanProperty(name, type, atomPath, Boolean.parseBoolean(el.getAttributeValue("Nullable")));
       if (keyNames.contains(prop.getName())) {
         keys.add(prop);
       }
       props.add(prop);
     }
-    return new ParseResult(keys, props);
+    return new MetadataParseResult(keys, props);
+  }
+
+  @NotNull
+  public static FeedParseResult loadFeedBeans(@NotNull final Element root) throws JDOMException {
+    final Namespace m = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
+    final Namespace d = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices");
+
+    final XPath xKeys = XPath.newInstance("//m:properties");
+    xKeys.addNamespace("m", m.getURI());
+
+    final List<String> names = new ArrayList<String>();
+    for (Object o : xKeys.selectNodes(root)) {
+      Element e = (Element) o;
+      for (Object c : e.getChildren()) {
+        Element child = (Element) c;
+        if (child.getNamespace().equals(d)) {
+          names.add(child.getName());
+        }
+      }
+    }
+
+    return new FeedParseResult(names);
   }
 
 }

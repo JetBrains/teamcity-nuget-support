@@ -30,7 +30,7 @@ import java.util.Collections;
 * Date: 07.01.12 9:54
 */
 public class BeanGenerator extends MethodsGenerator {
-  public BeanGenerator(String name, Collection<Property> properties) {
+  public BeanGenerator(String name, Collection<MetadataBeanProperty> properties) {
     super(name, properties);
   }
 
@@ -66,11 +66,11 @@ public class BeanGenerator extends MethodsGenerator {
 
   @NotNull
   @Override
-  protected String generatePropertyModifier(@NotNull Property p) {
+  protected String generatePropertyModifier(@NotNull MetadataBeanProperty p) {
     return "public final ";
   }
 
-  protected void generatePropertyBody(@NotNull PrintWriter wr, @NotNull Property p) {
+  protected void generatePropertyBody(@NotNull PrintWriter wr, @NotNull MetadataBeanProperty p) {
     final String name = p.getName();
     wr.println("{ ");
     wr.println("    final String v = myFields.get(\"" + name + "\");");

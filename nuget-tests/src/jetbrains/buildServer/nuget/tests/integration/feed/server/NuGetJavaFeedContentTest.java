@@ -17,9 +17,10 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.tests.integration.Paths;
-import jetbrains.buildServer.nuget.tests.server.entity.MetadataParser;
-import jetbrains.buildServer.nuget.tests.server.entity.ParseResult;
-import jetbrains.buildServer.nuget.tests.server.entity.Property;
+import jetbrains.buildServer.nuget.tests.server.entity.FeedParseResult;
+import jetbrains.buildServer.nuget.tests.server.entity.XmlFeedParsers;
+import jetbrains.buildServer.nuget.tests.server.entity.MetadataParseResult;
+import jetbrains.buildServer.nuget.tests.server.entity.MetadataBeanProperty;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.Content;
@@ -43,7 +44,7 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   @Test
   public void testMetadata_v1() throws JDOMException, IOException {
     final String s = openRequest("$metadata");
-    checkMetadata(s, "/feed/odata/metadata.v1.xml");
+    compareStringAsXml(s, "/feed/odata/metadata.v1.xml");
   }
 
   @Test
@@ -53,8 +54,8 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   }
 
   private void checkMetadata(@NotNull final String metadataXml, @NotNull final String gold) throws JDOMException, IOException {
-    ParseResult actual = MetadataParser.loadBeans(parseXml(metadataXml));
-    ParseResult expected = MetadataParser.loadBeans(parseGoldXml(gold));
+    MetadataParseResult actual = XmlFeedParsers.loadMetadataBeans(parseXml(metadataXml));
+    MetadataParseResult expected = XmlFeedParsers.loadMetadataBeans(parseGoldXml(gold));
 
     Assert.assertEquals(listProps(actual.getKey()), listProps(expected.getKey()));
     Assert.assertTrue(listProps(actual.getData()).containsAll(listProps(expected.getData())));
@@ -62,9 +63,20 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     compareStringAsXml(metadataXml, gold);
   }
 
-  private Set<String> listProps(Collection<Property> result) {
+  private void checkFeed(@NotNull final String feedXml, @NotNull final String gold) throws JDOMException, IOException {
+    FeedParseResult actual = XmlFeedParsers.loadFeedBeans(parseXml(feedXml));
+    FeedParseResult expected = XmlFeedParsers.loadFeedBeans(parseGoldXml(gold));
+
+    Assert.assertFalse(actual.getPropertyNames().isEmpty());
+    Assert.assertFalse(expected.getPropertyNames().isEmpty());
+
+    Assert.assertTrue(actual.getPropertyNames().containsAll(expected.getPropertyNames()));
+    compareStringAsXml(feedXml, gold);
+  }
+
+  private Set<String> listProps(Collection<MetadataBeanProperty> result) {
     Set<String> set = new HashSet<String>();
-    for (Property property : result) {
+    for (MetadataBeanProperty property : result) {
       set.add(property.getName());
     }
     return set;
@@ -81,7 +93,7 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"), false);
     final String s = openRequest("Packages()");
 
-    compareStringAsXml(s, "/feed/odata/packages.v1.CommonServiceLocator.xml");
+    checkFeed(s, "/feed/odata/packages.v1.CommonServiceLocator.xml");
   }
 
   @Test
@@ -89,7 +101,7 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"), false);
     final String s = openRequest("Packages()");
 
-    compareStringAsXml(s, "/feed/odata/packages.v2.CommonServiceLocator.xml");
+    checkFeed(s, "/feed/odata/packages.v2.CommonServiceLocator.xml");
   }
 
 

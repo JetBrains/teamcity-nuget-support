@@ -5,6 +5,11 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
+import java.util.*;
+import java.lang.*;
+import org.odata4j.core.*;
+import org.odata4j.internal.*;
+import org.joda.time.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,85 +17,85 @@ public interface PackageEntityV2  {
 
 
   @NotNull
-   java.lang.String getId();
+  java.lang.String getId();
 
   @NotNull
-   java.lang.String getVersion();
+  java.lang.String getVersion();
 
   @Nullable
-   java.lang.String getAuthors();
+  java.lang.String getAuthors();
 
   @Nullable
-   java.lang.String getCopyright();
+  java.lang.String getCopyright();
 
   @NotNull
-   org.joda.time.LocalDateTime getCreated();
+  org.joda.time.LocalDateTime getCreated();
 
   @Nullable
-   java.lang.String getDependencies();
+  java.lang.String getDependencies();
 
   @Nullable
-   java.lang.String getDescription();
+  java.lang.String getDescription();
 
   @NotNull
-   java.lang.Integer getDownloadCount();
+  java.lang.Integer getDownloadCount();
 
   @Nullable
-   java.lang.String getGalleryDetailsUrl();
+  java.lang.String getGalleryDetailsUrl();
 
   @Nullable
-   java.lang.String getIconUrl();
+  java.lang.String getIconUrl();
 
   @NotNull
-   java.lang.Boolean getIsLatestVersion();
+  java.lang.Boolean getIsLatestVersion();
 
   @NotNull
-   java.lang.Boolean getIsAbsoluteLatestVersion();
+  java.lang.Boolean getIsAbsoluteLatestVersion();
 
   @NotNull
-   org.joda.time.LocalDateTime getLastUpdated();
+  org.joda.time.LocalDateTime getLastUpdated();
 
   @NotNull
-   org.joda.time.LocalDateTime getPublished();
+  org.joda.time.LocalDateTime getPublished();
 
   @Nullable
-   java.lang.String getLanguage();
+  java.lang.String getLanguage();
 
   @Nullable
-   java.lang.String getLicenseUrl();
+  java.lang.String getLicenseUrl();
 
   @Nullable
-   java.lang.String getPackageHash();
+  java.lang.String getPackageHash();
 
   @Nullable
-   java.lang.String getPackageHashAlgorithm();
+  java.lang.String getPackageHashAlgorithm();
 
   @NotNull
-   java.lang.Long getPackageSize();
+  java.lang.Long getPackageSize();
 
   @Nullable
-   java.lang.String getProjectUrl();
+  java.lang.String getProjectUrl();
 
   @Nullable
-   java.lang.String getReportAbuseUrl();
+  java.lang.String getReportAbuseUrl();
 
   @Nullable
-   java.lang.String getReleaseNotes();
+  java.lang.String getReleaseNotes();
 
   @NotNull
-   java.lang.Boolean getRequireLicenseAcceptance();
+  java.lang.Boolean getRequireLicenseAcceptance();
 
   @Nullable
-   java.lang.String getSummary();
+  java.lang.String getSummary();
 
   @Nullable
-   java.lang.String getTags();
+  java.lang.String getTags();
 
   @Nullable
-   java.lang.String getTitle();
+  java.lang.String getTitle();
 
   @NotNull
-   java.lang.Integer getVersionDownloadCount();
+  java.lang.Integer getVersionDownloadCount();
 
 
   String[] KeyPropertyNames = new String[] {

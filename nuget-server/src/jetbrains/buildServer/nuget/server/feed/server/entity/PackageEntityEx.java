@@ -34,7 +34,7 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
     return "application/zip";
   }
 
-  public String getAtomEntitySource() {
+  public String getAtomEntitySource(String baseUri) {
     return "package-download-url/" + getId() + "/" + getVersion();
   }
 }

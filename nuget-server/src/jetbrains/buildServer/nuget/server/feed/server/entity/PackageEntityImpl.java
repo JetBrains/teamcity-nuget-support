@@ -5,13 +5,13 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
+import java.util.*;
+import java.lang.*;
+import org.odata4j.core.*;
+import org.odata4j.internal.*;
+import org.joda.time.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joda.time.DateTimeZone;
-import org.odata4j.core.OAtomEntity;
-import org.odata4j.internal.InternalUtil;
-
-import java.util.Map;
 
 public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity { 
   protected final Map<String, String> myFields;
@@ -23,7 +23,7 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
 
 
   @NotNull
-  public final  java.lang.String getId(){ 
+  public final java.lang.String getId(){ 
     final String v = myFields.get("Id");
     if (v == null) { 
       return "";
@@ -33,7 +33,7 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
 
 
   @NotNull
-  public final  java.lang.String getVersion(){ 
+  public final java.lang.String getVersion(){ 
     final String v = myFields.get("Version");
     if (v == null) { 
       return "";
@@ -43,42 +43,42 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
 
 
   @Nullable
-  public final  java.lang.String getAuthors(){ 
+  public final java.lang.String getAuthors(){ 
     final String v = myFields.get("Authors");
     return v;
   }
 
 
   @Nullable
-  public final  java.lang.String getCopyright(){ 
+  public final java.lang.String getCopyright(){ 
     final String v = myFields.get("Copyright");
     return v;
   }
 
 
   @Nullable
-  public final  java.lang.String getDependencies(){ 
+  public final java.lang.String getDependencies(){ 
     final String v = myFields.get("Dependencies");
     return v;
   }
 
 
   @Nullable
-  public final  java.lang.String getDescription(){ 
+  public final java.lang.String getDescription(){ 
     final String v = myFields.get("Description");
     return v;
   }
 
 
   @Nullable
-  public final  java.lang.String getIconUrl(){ 
+  public final java.lang.String getIconUrl(){ 
     final String v = myFields.get("IconUrl");
     return v;
   }
 
 
   @NotNull
-  public final  java.lang.Boolean getIsLatestVersion(){ 
+  public final java.lang.Boolean getIsLatestVersion(){ 
     final String v = myFields.get("IsLatestVersion");
     if (v == null) { 
       return false;
@@ -88,7 +88,7 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
 
 
   @NotNull
-  public final  java.lang.Boolean getIsAbsoluteLatestVersion(){ 
+  public final java.lang.Boolean getIsAbsoluteLatestVersion(){ 
     final String v = myFields.get("IsAbsoluteLatestVersion");
     if (v == null) { 
       return false;
@@ -98,7 +98,7 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
 
 
   @NotNull
-  public final  org.joda.time.LocalDateTime getLastUpdated(){ 
+  public final org.joda.time.LocalDateTime getLastUpdated(){ 
     final String v = myFields.get("LastUpdated");
     if (v == null) { 
       return new org.joda.time.LocalDateTime();
@@ -108,35 +108,35 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
 
 
   @Nullable
-  public final  java.lang.String getLanguage(){ 
+  public final java.lang.String getLanguage(){ 
     final String v = myFields.get("Language");
     return v;
   }
 
 
   @Nullable
-  public final  java.lang.String getLicenseUrl(){ 
+  public final java.lang.String getLicenseUrl(){ 
     final String v = myFields.get("LicenseUrl");
     return v;
   }
 
 
   @Nullable
-  public final  java.lang.String getPackageHash(){ 
+  public final java.lang.String getPackageHash(){ 
     final String v = myFields.get("PackageHash");
     return v;
   }
 
 
   @Nullable
-  public final  java.lang.String getPackageHashAlgorithm(){ 
+  public final java.lang.String getPackageHashAlgorithm(){ 
     final String v = myFields.get("PackageHashAlgorithm");
     return v;
   }
 
 
   @NotNull
-  public final  java.lang.Long getPackageSize(){ 
+  public final java.lang.Long getPackageSize(){ 
     final String v = myFields.get("PackageSize");
     if (v == null) { 
       return 0L;
@@ -146,28 +146,28 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
 
 
   @Nullable
-  public final  java.lang.String getProjectUrl(){ 
+  public final java.lang.String getProjectUrl(){ 
     final String v = myFields.get("ProjectUrl");
     return v;
   }
 
 
   @Nullable
-  public final  java.lang.String getReportAbuseUrl(){ 
+  public final java.lang.String getReportAbuseUrl(){ 
     final String v = myFields.get("ReportAbuseUrl");
     return v;
   }
 
 
   @Nullable
-  public final  java.lang.String getReleaseNotes(){ 
+  public final java.lang.String getReleaseNotes(){ 
     final String v = myFields.get("ReleaseNotes");
     return v;
   }
 
 
   @NotNull
-  public final  java.lang.Boolean getRequireLicenseAcceptance(){ 
+  public final java.lang.Boolean getRequireLicenseAcceptance(){ 
     final String v = myFields.get("RequireLicenseAcceptance");
     if (v == null) { 
       return false;
@@ -177,29 +177,29 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
 
 
   @Nullable
-  public final  java.lang.String getTags(){ 
+  public final java.lang.String getTags(){ 
     final String v = myFields.get("Tags");
     return v;
   }
 
 
 
-  public final String getAtomEntityTitle() {
+  public final java.lang.String getAtomEntityTitle() {
     return getId();
   }
 
 
-  public final String getAtomEntityAuthor() {
+  public final java.lang.String getAtomEntityAuthor() {
     return getAuthors();
   }
 
 
-  public final String getAtomEntityUpdated() {
-    return InternalUtil.toString(getLastUpdated().toDateTime(DateTimeZone.UTC));
+  public final org.joda.time.LocalDateTime getAtomEntityUpdated() {
+    return getLastUpdated();
   }
 
 
-  public final String getAtomEntitySummary() {
+  public final java.lang.String getAtomEntitySummary() {
     return getSummary();
   }
 

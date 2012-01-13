@@ -29,10 +29,10 @@ import java.util.Collection;
  */
 public abstract class MethodsGenerator {
   protected final String myName;
-  protected final Collection<Property> myProperties;
+  protected final Collection<MetadataBeanProperty> myProperties;
 
   public MethodsGenerator(@NotNull final String name,
-                          @NotNull final Collection<Property> properties) {
+                          @NotNull final Collection<MetadataBeanProperty> properties) {
     myName = name;
     myProperties = properties;
   }
@@ -65,7 +65,7 @@ public abstract class MethodsGenerator {
     wr.println("public " + getTypeKind() + " " + myName + " " + getExtendsString() + " { ");
     generateBeforeContent(wr);
     wr.println();
-    for (Property p : myProperties) {
+    for (MetadataBeanProperty p : myProperties) {
       generateProperty(wr, p);
     }
 
@@ -81,16 +81,16 @@ public abstract class MethodsGenerator {
   }
 
   protected void generateProperty(@NotNull final PrintWriter wr,
-                                  @NotNull final Property p) {
+                                  @NotNull final MetadataBeanProperty p) {
     generatePropertyDeclaration(wr, p);
     generatePropertyBody(wr, p);
   }
 
   @NotNull
-  protected abstract String generatePropertyModifier(@NotNull final Property p);
+  protected abstract String generatePropertyModifier(@NotNull final MetadataBeanProperty p);
 
   protected void generatePropertyDeclaration(@NotNull final PrintWriter wr,
-                                             @NotNull final Property p) {
+                                             @NotNull final MetadataBeanProperty p) {
     wr.println();
     final String type = p.getType().getCanonicalJavaType().getName();
     final String name = p.getName();
@@ -99,11 +99,13 @@ public abstract class MethodsGenerator {
     } else {
       wr.println("  @NotNull");
     }
-    wr.print("  " + generatePropertyModifier(p) + " " + type + " get" + name + "()");
+    String mod = generatePropertyModifier(p).trim();
+    if (mod.length() > 0) mod += " ";
+    wr.print("  " + mod + type + " get" + name + "()");
   }
 
   protected abstract void generatePropertyBody(@NotNull final PrintWriter wr,
-                                               @NotNull final Property p);
+                                               @NotNull final MetadataBeanProperty p);
 
   protected abstract void generateBeforeContent(@NotNull final PrintWriter wr);
   protected abstract void generateAfterContent(@NotNull final PrintWriter wr);

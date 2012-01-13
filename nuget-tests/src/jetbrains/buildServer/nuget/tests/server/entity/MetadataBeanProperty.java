@@ -24,16 +24,16 @@ import org.odata4j.edm.EdmSimpleType;
 * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
 * Date: 07.01.12 9:48
 */
-public final class Property {
+public final class MetadataBeanProperty {
   private final String myName;
   private final EdmSimpleType myType;
   private final String myAtomPath;
   private final boolean myNullable;
 
-  public Property(@NotNull final String name,
-                  @NotNull final EdmSimpleType type,
-                  @Nullable final String atomPath,
-                  final boolean nullable) {
+  public MetadataBeanProperty(@NotNull final String name,
+                              @NotNull final EdmSimpleType type,
+                              @Nullable final String atomPath,
+                              final boolean nullable) {
     myName = name;
     myType = type;
     myAtomPath = atomPath;
