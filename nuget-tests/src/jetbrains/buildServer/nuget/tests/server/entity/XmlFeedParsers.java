@@ -29,10 +29,10 @@ import org.jetbrains.annotations.NotNull;
 import org.odata4j.edm.EdmSimpleType;
 import org.testng.Assert;
 
+import javax.management.modelmbean.XMLParseException;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -94,6 +94,7 @@ public class XmlFeedParsers {
 
   @NotNull
   public static FeedParseResult loadFeedBeans(@NotNull final Element root) throws JDOMException {
+    final Namespace a = Namespace.getNamespace("http://www.w3.org/2005/Atom");
     final Namespace m = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
     final Namespace d = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices");
 
@@ -111,7 +112,22 @@ public class XmlFeedParsers {
       }
     }
 
-    return new FeedParseResult(names);
+    final Map<String, String> properties = new HashMap<String, String>();
+    for (String xpath : Arrays.asList("//a:entry/a:title", "//a:entry/a:summary", "//a:entry/a:author", "//a:entry/a:category", "//a:entry/a:content/@type")) {
+      XPath xPath = XPath.newInstance(xpath);
+      xPath.addNamespace("a", a.getURI());
+      Object o = xPath.selectSingleNode(root);
+      if (o != null) {
+        if (o instanceof Element) {
+          properties.put(xpath, XmlUtil.to_s((Element)o));
+        } else if (o instanceof Attribute) {
+          properties.put(xpath, ((Attribute) o).getValue());
+        }
+      }
+    }
+
+
+    return new FeedParseResult(names, properties);
   }
 
 }

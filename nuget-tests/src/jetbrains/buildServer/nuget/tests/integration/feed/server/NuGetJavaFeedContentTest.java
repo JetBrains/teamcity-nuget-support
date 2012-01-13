@@ -69,8 +69,12 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
 
     Assert.assertFalse(actual.getPropertyNames().isEmpty());
     Assert.assertFalse(expected.getPropertyNames().isEmpty());
+    Assert.assertFalse(actual.getAtomProperties().isEmpty());
+    Assert.assertFalse(expected.getAtomProperties().isEmpty());
 
     Assert.assertTrue(actual.getPropertyNames().containsAll(expected.getPropertyNames()));
+    Assert.assertEquals(actual.getAtomProperties().toString(), expected.getAtomProperties().toString());
+
     compareStringAsXml(feedXml, gold);
   }
 
