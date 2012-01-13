@@ -26,10 +26,6 @@ import java.util.Map;
  *         Date: 11.01.12 18:36
  */
 public abstract class PackageEntityAdapter extends PackageEntityImpl implements PackageEntity {
-  public PackageEntityAdapter(@NotNull Map<String, String> data) {
-    super(data);
-  }
-
   @NotNull
   public LocalDateTime getCreated() {
     return getLastUpdated();

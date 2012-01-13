@@ -31,9 +31,7 @@ import java.util.Map;
 public class PackageEntityEx extends PackageEntityAdapter implements OAtomStreamEntity {
   private final NuGetIndexEntry myEntry;
 
-
   public PackageEntityEx(@NotNull final NuGetIndexEntry entry) {
-    super(entry.getAttributes());
     myEntry = entry;
   }
 
@@ -41,11 +39,17 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
     return "application/zip";
   }
 
+  @Override
+  protected String getValue(@NotNull String key) {
+    return myEntry.getAttributes().get(key);
+  }
+
   public String getAtomEntitySource(String baseUri) {
     int idx = baseUri.indexOf(PackagesFeedController.PATH);
     if (idx < 0) {
       return null;
     }
+    //TODO: check slashes here
     return baseUri.substring(0, idx) + myEntry.getPackageDownloadUrl();
   }
 }

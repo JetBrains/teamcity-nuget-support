@@ -20,6 +20,7 @@ import jetbrains.buildServer.NetworkUtil;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetProducer;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.PackagesFeedController;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.odata4j.producer.ODataProducer;
@@ -72,7 +73,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   @Override
   protected String getNuGetServerUrl() {
-    return "http://localhost:" + myPort + "/feed.svc/";
+    return "http://localhost:" + myPort + PackagesFeedController.PATH + "/";
   }
 
   protected void startNuGetFeedServer() {
@@ -85,7 +86,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected void addPackage(@NotNull final File file, boolean isLatest) throws IOException {
     final int buildId = myCount++;
     final Map<String,String> map = indexPackage(file, isLatest, buildId);
-    myFeed.add(new NuGetIndexEntry(file.getName(), map, "bt-xx" + buildId, buildId, "downlaod-url"));
+    myFeed.add(new NuGetIndexEntry(file.getName(), map, "bt-xx" + buildId, buildId, "/downlaodREpoCon/downlaod-url"));
   }
 
 }

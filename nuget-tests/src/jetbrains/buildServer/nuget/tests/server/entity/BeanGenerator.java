@@ -36,12 +36,6 @@ public class BeanGenerator extends MethodsGenerator {
 
   @Override
   protected void generateBeforeContent(@NotNull PrintWriter wr) {
-    generateFields(wr);
-    wr.println();
-    wr.println("  public " + myName + "(@NotNull final Map<String, String> data) {");
-    generateConstructor(wr);
-    wr.println("  }");
-    wr.println();
   }
 
   @Override
@@ -73,7 +67,7 @@ public class BeanGenerator extends MethodsGenerator {
   protected void generatePropertyBody(@NotNull PrintWriter wr, @NotNull MetadataBeanProperty p) {
     final String name = p.getName();
     wr.println("{ ");
-    wr.println("    final String v = myFields.get(\"" + name + "\");");
+    wr.println("    final String v = getValue(\"" + name + "\");");
     if (!p.isNullable()) {
       wr.println("    if (v == null) { ");
       if (p.getType() == EdmSimpleType.STRING) {
@@ -108,17 +102,10 @@ public class BeanGenerator extends MethodsGenerator {
     wr.println();
   }
 
-
-  protected void generateConstructor(PrintWriter wr) {
-    wr.println("    myFields = data;");
-  }
-
-  protected void generateFields(PrintWriter wr) {
-    wr.println("  protected final Map<String, String> myFields;");
-  }
-
   protected void generateAfterContent(@NotNull final PrintWriter wr) {
-
+    wr.println("  @Nullable");
+    wr.println("  protected abstract String getValue(@NotNull final String key);");
+    wr.println();
   }
 
   @NotNull
