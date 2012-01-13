@@ -85,7 +85,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected void addPackage(@NotNull final File file, boolean isLatest) throws IOException {
     final int buildId = myCount++;
     final Map<String,String> map = indexPackage(file, isLatest, buildId);
-    myFeed.add(new NuGetIndexEntry(file.getName(), map, "bt-xx" + buildId, buildId));
+    myFeed.add(new NuGetIndexEntry(file.getName(), map, "bt-xx" + buildId, buildId, "downlaod-url"));
   }
 
 }

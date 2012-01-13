@@ -39,7 +39,8 @@ import java.util.*;
 public class PackagesFeedController extends BaseController {
   private final NuGetProducer myProducer;
   private final ServletContainer myContainer;
-  private final String PATH = "/app/nuget2";
+  //TODO: move inside
+  public static final String PATH = "/app/nuget2";
 
   public PackagesFeedController(@NotNull final NuGetProducer producer,
                                 @NotNull final ServletConfig config,

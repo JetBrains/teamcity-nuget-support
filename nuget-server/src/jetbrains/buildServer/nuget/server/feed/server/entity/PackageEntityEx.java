@@ -16,6 +16,9 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
+import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.PackagesFeedController;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OAtomStreamEntity;
 
@@ -26,8 +29,12 @@ import java.util.Map;
  * Date: 11.01.12 12:40
  */
 public class PackageEntityEx extends PackageEntityAdapter implements OAtomStreamEntity {
-  public PackageEntityEx(@NotNull Map<String, String> data) {
-    super(data);
+  private final NuGetIndexEntry myEntry;
+
+
+  public PackageEntityEx(@NotNull final NuGetIndexEntry entry) {
+    super(entry.getAttributes());
+    myEntry = entry;
   }
 
   public String getAtomEntityType() {
@@ -35,6 +42,10 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
   }
 
   public String getAtomEntitySource(String baseUri) {
-    return "package-download-url/" + getId() + "/" + getVersion();
+    int idx = baseUri.indexOf(PackagesFeedController.PATH);
+    if (idx < 0) {
+      return null;
+    }
+    return baseUri.substring(0, idx) + myEntry.getPackageDownloadUrl();
   }
 }

@@ -91,13 +91,15 @@ public class PackagesIndexImpl implements PackagesIndex {
 
                 final String relPath = metadata.get(TEAMCITY_ARTIFACT_RELPATH);
                 if (relPath == null) return null;
-                metadata.put("TeamCityDownloadUrl", myPaths.getArtifactDownloadUrl(buildTypeId, e.getBuildId(), relPath));
+                String downloadUrl = myPaths.getArtifactDownloadUrl(buildTypeId, e.getBuildId(), relPath);
+                metadata.put("TeamCityDownloadUrl", downloadUrl);
 
                 return new NuGetIndexEntry(
                         e.getKey(),
                         metadata,
                         buildTypeId,
-                        e.getBuildId());
+                        e.getBuildId(),
+                        downloadUrl);
               }
             });
   }

@@ -29,15 +29,18 @@ public class NuGetIndexEntry {
   @NotNull private final Map<String, String> myAttributes;
   @NotNull private final String myBuildTypeId;
   private final long myBuildId;
+  @NotNull private final String myDownloadUrl;
 
   public NuGetIndexEntry(@NotNull String key,
                          @NotNull Map<String, String> attributes,
                          @NotNull String buildTypeId,
-                         long buildId) {
+                         long buildId,
+  @NotNull final String downloadUrl) {
     myKey = key;
     myAttributes = attributes;
     myBuildTypeId = buildTypeId;
     myBuildId = buildId;
+    myDownloadUrl = downloadUrl;
   }
 
   @NotNull
@@ -57,5 +60,11 @@ public class NuGetIndexEntry {
 
   public long getBuildId() {
     return myBuildId;
+  }
+
+  @NotNull
+  public String getPackageDownloadUrl() {
+    //TODO: inline computation code here to minimize memory usage
+    return myDownloadUrl;
   }
 }
