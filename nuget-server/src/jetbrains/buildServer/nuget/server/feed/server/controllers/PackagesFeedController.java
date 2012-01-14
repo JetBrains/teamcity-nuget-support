@@ -27,29 +27,28 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 30.12.11 17:49
  */
 public class PackagesFeedController extends BaseController {
-  private final NuGetProducer myProducer;
   private final ServletContainer myContainer;
+  //TODO: move inside.
+  //path after TeamCity Spring servlet mapping
+  public static final String SERVLET_PATH = "/nuget2";
   //TODO: move inside
-  public static final String PATH = "/app/nuget2";
+  public static final String PATH = "/app" + SERVLET_PATH;
 
   public PackagesFeedController(@NotNull final NuGetProducer producer,
                                 @NotNull final ServletConfig config,
                                 @NotNull final WebControllerManager web) {
-    myProducer = producer;
-
     web.registerController(PATH + "/**", this);
-
-    myContainer = new ServletContainer(new NuGetODataApplication(myProducer));
+    myContainer = new ServletContainer(new NuGetODataApplication(producer));
 
     try {
       myContainer.init(createServletConfig(config));
@@ -58,22 +57,6 @@ public class PackagesFeedController extends BaseController {
     }
   }
 
-  @NotNull
-  private ServletContext createServletContext(@NotNull final ServletContext baseContext) {
-    return (ServletContext) Proxy.newProxyInstance(
-            getClass().getClassLoader(),
-            new Class<?>[]{ServletContext.class},
-            new InvocationHandler() {
-              public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                if (method.getName().equals("getContextPath")) {
-                  return baseContext.getContextPath() + PATH;
-                }
-                return method.invoke(baseContext, args);
-              }
-            }
-    );
-  }
-  
   private ServletConfig createServletConfig(@NotNull final ServletConfig config) {
     final Map<String, String> myInit = new HashMap<String, String>();
     final Enumeration<String> it = config.getInitParameterNames();
@@ -82,14 +65,13 @@ public class PackagesFeedController extends BaseController {
       myInit.put(key, config.getInitParameter(key));
     }
     myInit.put("com.sun.jersey.config.property.packages", "jetbrains.buildServer.nuget");
-    final ServletContext context = createServletContext(config.getServletContext());
     return new ServletConfig() {
       public String getServletName() {
         return config.getServletName();
       }
 
       public ServletContext getServletContext() {
-        return context;
+        return config.getServletContext();
       }
 
       public String getInitParameter(String s) {
@@ -110,7 +92,7 @@ public class PackagesFeedController extends BaseController {
       response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
     }
 
-    myContainer.service(new RequestWrapper(request, PATH), response);
+    myContainer.service(new RequestWrapper(request, SERVLET_PATH), response);
     return null;
   }
 

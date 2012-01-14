@@ -16,80 +16,35 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
-import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
 
 /**
  * @author Yegor.Yarko
  *         Date: 16.11.2009
  */
 public class RequestWrapper extends HttpServletRequestWrapper {
-  final Logger LOG = Logger.getInstance(RequestWrapper.class.getName());
-  public static final String ORIGINAL_REQUEST_URI_HEADER_NAME = "X-TeamCity-Original-Request-Url";
-  private final String myPath;
+  private final String myExtraServletPath;
 
   public RequestWrapper(@NotNull final HttpServletRequest request,
-                        @NotNull final String path) {
+                        @NotNull final String extraServletPath) {
     super(request);
-    myPath = path;
-    LOG.debug("Establishing request mapping: '" + request.getRequestURI() + "' -> '" + getRequestURI() + "'");
+    myExtraServletPath = extraServletPath;
   }
 
   @Override
   public String getPathInfo() {
     final String info = super.getPathInfo();
-    if (info.startsWith("/nuget2")) {
-      return info.substring("/nuget2".length());
+    if (info.startsWith(myExtraServletPath)) {
+      return info.substring(myExtraServletPath.length());
     }
     return info;
   }
 
   @Override
-  public String getRequestURI() {
-    return (super.getRequestURI());
-  }
-
-  @Override
-  public StringBuffer getRequestURL() {
-    return new StringBuffer((super.getRequestURL().toString()));
-  }
-
-  @Override
-  public String getContextPath() {
-    return super.getContextPath();
-  }
-
-  @Override
   public String getServletPath() {
-    return super.getServletPath() + "/nuget2";
-  }
-
-  @Override
-  public Enumeration<String> getHeaderNames() {
-    final List<String> headerNames = Collections.list(super.getHeaderNames());
-    headerNames.add(ORIGINAL_REQUEST_URI_HEADER_NAME);
-    return Collections.enumeration(headerNames);
-  }
-
-  @Override
-  public Enumeration<String> getHeaders(final String name) {
-    if (ORIGINAL_REQUEST_URI_HEADER_NAME.equals(name)) {
-      return Collections.enumeration(Collections.singleton(super.getRequestURI()));
-    }
-    return super.getHeaders(name);
-  }
-
-  @Override
-  public String getHeader(final String name) {
-    if (ORIGINAL_REQUEST_URI_HEADER_NAME.equals(name)) {
-      return super.getRequestURI();
-    }
-    return super.getHeader(name);
+    return super.getServletPath() + myExtraServletPath;
   }
 }

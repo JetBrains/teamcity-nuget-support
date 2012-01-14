@@ -16,11 +16,9 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
-import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
