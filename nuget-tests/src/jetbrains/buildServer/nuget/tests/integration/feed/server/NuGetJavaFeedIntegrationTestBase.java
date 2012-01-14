@@ -32,6 +32,7 @@ import org.testng.annotations.BeforeMethod;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,7 +44,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected NuGetProducer myProducer;
   private int myPort;
   private List<NuGetIndexEntry> myFeed;
-  private PackagesIndex myIndex;
+  protected PackagesIndex myIndex;
   private ODataServer myServer;
   private int myCount;
 
@@ -83,10 +84,28 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myServer = ODataProducerUtil.hostODataServer(getNuGetServerUrl());
   }
 
-  protected void addPackage(@NotNull final File file, boolean isLatest) throws IOException {
+  protected NuGetIndexEntry addPackage(@NotNull final File file, boolean isLatest) throws IOException {
     final int buildId = myCount++;
     final Map<String,String> map = indexPackage(file, isLatest, buildId);
-    myFeed.add(new NuGetIndexEntry(file.getName(), map, "bt-xx" + buildId, buildId, "/downlaodREpoCon/downlaod-url"));
+    NuGetIndexEntry e = new NuGetIndexEntry(file.getName(), map, "bt-xx" + buildId, buildId, "/downlaodREpoCon/downlaod-url");
+    myFeed.add(e);
+    return e;
+  }
+
+  protected NuGetIndexEntry addMockPackage(@NotNull final NuGetIndexEntry entry, boolean isLatest) {
+    final Map<String, String> map = new HashMap<String, String>(entry.getAttributes());
+    final int buildId = myCount++;
+
+    final String id = entry.getAttributes().get("Id");
+    final String ver = entry.getAttributes().get("Version");
+
+    map.put("Version", ver + "." + myCount);
+    map.put("IsLatestVersion", String.valueOf(isLatest));
+    map.put("IsAbsoluteLatestVersion", String.valueOf(isLatest));
+
+    NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map, "bt-xx" + buildId, buildId, "/downlaodREpoCon/downlaod-url");
+    myFeed.add(e);
+    return e;
   }
 
 }

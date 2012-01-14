@@ -2,6 +2,7 @@
 <suite name="nuget">
   <test name="nuget performance test">
     <classes>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedContentPerformanceTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetServerFeedPerfomanceTest"/>
     </classes>
   </test>

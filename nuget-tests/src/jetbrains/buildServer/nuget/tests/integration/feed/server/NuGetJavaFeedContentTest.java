@@ -108,6 +108,13 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     checkFeed(s, "/feed/odata/packages.v2.CommonServiceLocator.xml");
   }
 
+  @Test(dependsOnGroups = "Issue 22 for OData4j")
+  public void testPackages_count() throws JDOMException, IOException {
+    addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"), false);
+    final String s = openRequest("Packages()/$count");
+    System.out.println(s);
+  }
+
 
   private String replaceXml(@NotNull final String text) {
     return text
