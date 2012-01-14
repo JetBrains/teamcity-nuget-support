@@ -26,25 +26,36 @@ import javax.servlet.http.HttpServletRequestWrapper;
  *         Date: 16.11.2009
  */
 public class RequestWrapper extends HttpServletRequestWrapper {
+  private final String myPossibleServletMappingPath;
   private final String myExtraServletPath;
 
   public RequestWrapper(@NotNull final HttpServletRequest request,
+                        @NotNull final String possibleServletMappingPath,
                         @NotNull final String extraServletPath) {
     super(request);
+    myPossibleServletMappingPath = possibleServletMappingPath;
     myExtraServletPath = extraServletPath;
   }
 
   @Override
   public String getPathInfo() {
-    final String info = super.getPathInfo();
-    if (info.startsWith(myExtraServletPath)) {
-      return info.substring(myExtraServletPath.length());
+    String info = super.getPathInfo();
+
+    if (info.startsWith(myPossibleServletMappingPath)) {
+      info = info.substring(myPossibleServletMappingPath.length());
     }
+
+    if (info.startsWith(myExtraServletPath)) {
+      info = info.substring(myExtraServletPath.length());
+    }
+
     return info;
   }
 
   @Override
   public String getServletPath() {
-    return super.getServletPath() + myExtraServletPath;
+    String path = super.getServletPath();
+    if (path.equals(myPossibleServletMappingPath)) return path + myExtraServletPath;
+    return path + myPossibleServletMappingPath + myExtraServletPath;
   }
 }

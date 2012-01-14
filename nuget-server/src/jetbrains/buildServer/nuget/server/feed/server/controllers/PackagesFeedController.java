@@ -42,8 +42,9 @@ public class PackagesFeedController extends BaseController {
   //TODO: move inside.
   //path after TeamCity Spring servlet mapping
   public static final String SERVLET_PATH = "/nuget2";
+  public static final String MAP_PATH = "/app";
   //TODO: move inside
-  public static final String PATH = "/app" + SERVLET_PATH;
+  public static final String PATH = MAP_PATH + SERVLET_PATH;
   @NotNull
   private final RecentNuGetRequests myRequests;
 
@@ -104,7 +105,7 @@ public class PackagesFeedController extends BaseController {
     final String query = request.getQueryString();
     myRequests.reportFeedRequest(path + (query != null ? ("?" + query) : ""));
 
-    myContainer.service(new RequestWrapper(request, SERVLET_PATH), response);
+    myContainer.service(new RequestWrapper(request, MAP_PATH, SERVLET_PATH), response);
     return null;
   }
 
