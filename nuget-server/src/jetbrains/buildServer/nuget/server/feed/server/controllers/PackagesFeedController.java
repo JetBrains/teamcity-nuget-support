@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.server.controllers;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -43,10 +44,14 @@ public class PackagesFeedController extends BaseController {
   public static final String SERVLET_PATH = "/nuget2";
   //TODO: move inside
   public static final String PATH = "/app" + SERVLET_PATH;
+  @NotNull
+  private final RecentNuGetRequests myRequests;
 
   public PackagesFeedController(@NotNull final NuGetProducer producer,
                                 @NotNull final ServletConfig config,
-                                @NotNull final WebControllerManager web) {
+                                @NotNull final WebControllerManager web,
+                                @NotNull final RecentNuGetRequests requests) {
+    myRequests = requests;
     web.registerController(PATH + "/**", this);
     myContainer = new ServletContainer(new NuGetODataApplication(producer));
 
@@ -91,6 +96,13 @@ public class PackagesFeedController extends BaseController {
       //error response according to OData spec for unsupported oprtaions (modification operations)
       response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
     }
+
+    String requestPath = WebUtil.getPathWithoutAuthenticationType(request);
+    if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
+
+    final String path = requestPath.substring(PATH.length());
+    final String query = request.getQueryString();
+    myRequests.reportFeedRequest(path + (query != null ? ("?" + query) : ""));
 
     myContainer.service(new RequestWrapper(request, SERVLET_PATH), response);
     return null;
