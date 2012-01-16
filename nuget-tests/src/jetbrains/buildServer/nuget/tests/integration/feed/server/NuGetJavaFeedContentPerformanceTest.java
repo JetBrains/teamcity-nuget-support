@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -51,24 +52,60 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
     do_test_list_packages(5000, 0.4, "?$filter=Id+eq+'Foo'");
   }
 
+  @Test
+  public void test_list_query_search_5000() throws IOException {
+    do_test_list_packages(
+            5000,
+            0.4,
+            "?$filter=(((Id%20ne%20null)%20and%20substringof('mm',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('mm',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20mm%20',tolower(Tags)))" +
+                    "&$orderby=Id" +
+                    "&$skip=0" +
+                    "&$top=30");
+  }
+
+  @Test
+  public void test_list_query_search_50000() throws IOException {
+    do_test_list_packages(
+            50000,
+            0.4,
+            "?$filter=(((Id%20ne%20null)%20and%20substringof('mm',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('mm',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20mm%20',tolower(Tags)))" +
+                    "&$orderby=Id" +
+                    "&$skip=0" +
+                    "&$top=30");
+  }
+
+  @Test
+  public void test_list_isLatestVersion_50000() throws IOException {
+    do_test_list_packages(
+            50000,
+            0.4,
+            "?$filter=IsLatestVersion" +
+                    "&$orderby=Id" +
+                    "&$skip=0" +
+                    "&$top=30");
+  }
+
 
   public void do_test_list_packages(int sz, double time, @NotNull final String query) throws IOException {
-    NuGetIndexEntry base = addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"), false);
+    NuGetIndexEntry base = addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"), true);
     for(int i = 1; i < sz; i ++) {
       addMockPackage(base, false);
     }
 
     Assert.assertEquals(count(myIndex.getNuGetEntries()), sz);
 
+    final AtomicReference<String> s = new AtomicReference<String>();
     assertTime(time, "aaa", 5, new Runnable() {
       public void run() {
         String req = openRequest("Packages()" + query);
-        System.out.println("req.length() = " + req.length());
-        System.out.println(req);
-        System.out.println(XmlUtil.to_s(XmlUtil.from_s(req)));
+        s.set(req);
       }
     });
 
+    final String req = s.get();
+    System.out.println("req.length() = " + req.length());
+    System.out.println(req);
+    System.out.println(XmlUtil.to_s(XmlUtil.from_s(req)));
   }
 }
 

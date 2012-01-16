@@ -108,11 +108,32 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     checkFeed(s, "/feed/odata/packages.v2.CommonServiceLocator.xml");
   }
 
-  @Test(dependsOnGroups = "Issue 22 for OData4j")
+  @Test
   public void testPackages_count() throws JDOMException, IOException {
     addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"), false);
     final String s = openRequest("Packages()/$count");
-    System.out.println(s);
+    Assert.assertEquals(s, "1");
+  }
+
+
+  @Test
+  public void testVSRequests() {
+    String[] reqs = {
+            "Packages()",
+            "Packages()/$count?$filter=((((Id%20ne%20null)%20and%20substringof('freerereeee',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('freerereeee',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20freerereeee%20',tolower(Tags))))%20and%20IsLatestVersion",
+            "Packages()/$count?$filter=((((Id%20ne%20null)%20and%20substringof('freerereeeeff',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('freerereeeeff',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20freerereeeeff%20',tolower(Tags))))%20and%20IsLatestVersion",
+            "Packages()/$count?$filter=((((Id%20ne%20null)%20and%20substringof('freerereeeeffdfg',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('freerereeeeffdfg',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20freerereeeeffdfg%20',tolower(Tags))))%20and%20IsLatestVersion",
+            "Packages()/$count?$filter=((((Id%20ne%20null)%20and%20substringof('freerereeeeffdfgdfg',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('freerereeeeffdfgdfg',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20freerereeeeffdfgdfg%20',tolower(Tags))))%20and%20IsLatestVersion",
+            "Packages()/$count?$filter=((((Id%20ne%20null)%20and%20substringof('freerereeeeffdfgdfgdfg',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('freerereeeeffdfgdfgdfg',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20freerereeeeffdfgdfgdfg%20',tolower(Tags))))%20and%20IsLatestVersion",
+            "Packages()/$count?$filter=((((Id%20ne%20null)%20and%20substringof('freerereeeeffdfgdfgdfgdf',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('freerereeeeffdfgdfgdfgdf',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20freerereeeeffdfgdfgdfgdf%20',tolower(Tags))))%20and%20IsLatestVersion",
+            "Packages()/$count?$filter=((((Id%20ne%20null)%20and%20substringof('freerereeeeffdfgdfgdfgdfgdfg',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('freerereeeeffdfgdfgdfgdfgdfg',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20freerereeeeffdfgdfgdfgdfgdfg%20',tolower(Tags))))%20and%20IsLatestVersion",
+            "Packages()/$count?$filter=IsLatestVersion",
+            "Packages()?$filter=(tolower(Id)%20eq%20'castle.core')%20or%20(tolower(Id)%20eq%20'castle.windsor')&$orderby=Id&$skip=0&$top=30",
+    };
+
+    for (String req : reqs) {
+      assert200(req).run();
+    }
   }
 
 
