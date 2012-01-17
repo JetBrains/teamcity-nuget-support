@@ -17,6 +17,8 @@
 package jetbrains.buildServer.nuget.server.feed.server;
 
 import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
+import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsProvider;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsPublisher;
 import jetbrains.buildServer.usageStatistics.presentation.UsageStatisticsFormatter;

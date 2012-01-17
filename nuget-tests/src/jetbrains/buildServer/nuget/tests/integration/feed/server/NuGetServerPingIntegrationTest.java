@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
-import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerPingCommandImpl;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerPingCommandImpl;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

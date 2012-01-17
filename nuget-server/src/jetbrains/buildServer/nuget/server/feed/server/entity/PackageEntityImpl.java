@@ -5,11 +5,10 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.entity;
 
-import java.util.*;
 import java.lang.*;
+
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.ODataDataFormat;
 import org.odata4j.core.*;
-import org.odata4j.internal.*;
-import org.joda.time.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,7 +96,7 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
     if (v == null) { 
       return new org.joda.time.LocalDateTime();
     }
-    return jetbrains.buildServer.nuget.server.feed.server.index.ODataDataFormat.parseDate(v);
+    return ODataDataFormat.parseDate(v);
   }
 
 

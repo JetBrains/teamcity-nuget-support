@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.impl;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataControllersPaths;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPaths;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;

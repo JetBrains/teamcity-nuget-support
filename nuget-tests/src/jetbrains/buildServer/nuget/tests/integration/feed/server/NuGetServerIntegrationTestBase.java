@@ -23,12 +23,12 @@ import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImp
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataControllersPaths;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataControllersPathsImpl;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPaths;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPathsImpl;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl;
-import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
-import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunnerImpl;
-import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerRunner;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerRunnerImpl;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerUriImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;

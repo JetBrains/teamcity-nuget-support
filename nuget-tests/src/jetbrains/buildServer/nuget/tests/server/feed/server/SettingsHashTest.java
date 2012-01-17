@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
-import jetbrains.buildServer.nuget.server.feed.server.process.SettingsHashProvider;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.SettingsHashProvider;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;

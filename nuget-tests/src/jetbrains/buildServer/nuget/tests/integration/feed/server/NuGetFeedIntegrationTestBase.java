@@ -18,8 +18,8 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
-import jetbrains.buildServer.nuget.server.feed.server.index.LocalNuGetPackageItemsFactory;
-import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -41,8 +41,8 @@ import org.testng.annotations.BeforeMethod;
 import java.io.*;
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
-import static jetbrains.buildServer.nuget.server.feed.server.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
+import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
+import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
 import static org.apache.http.HttpStatus.SC_OK;
 
 /**

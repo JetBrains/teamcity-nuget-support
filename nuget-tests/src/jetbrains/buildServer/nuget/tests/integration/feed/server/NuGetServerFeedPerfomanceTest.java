@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
-import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;

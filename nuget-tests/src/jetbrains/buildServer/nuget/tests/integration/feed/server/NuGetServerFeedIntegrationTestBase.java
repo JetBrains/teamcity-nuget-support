@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
-import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase;
 import jetbrains.buildServer.util.FileUtil;
