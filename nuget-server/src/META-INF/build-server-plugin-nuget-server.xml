@@ -4,6 +4,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
 
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedController"/>
+
   <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerRunnerImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerCruiser"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerCruiserTask"/>

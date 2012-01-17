@@ -36,10 +36,10 @@
     NuGet Server<bs:help file="NuGet"/> is
     <c:choose>
       <c:when test="${serverEnabled}">
-        <strong>enabled</strong> <input type="button" class="btn" value="Disable" onclick="return BS.NuGet.FeedServer.disableFeedServer(this);" />
+        <strong>enabled</strong> <input type="button" class="btn btn_mini" value="Disable" onclick="return BS.NuGet.FeedServer.disableFeedServer(this);" />
       </c:when>
       <c:otherwise>
-        <strong>disabled</strong> <input type="button" class="btn" value="Enable" onclick="return BS.NuGet.FeedServer.enableFeedServer(this);" />
+        <strong>disabled</strong> <input type="button" class="btn btn_mini" value="Enable" onclick="return BS.NuGet.FeedServer.enableFeedServer(this);" />
       </c:otherwise>
     </c:choose>
     <span><%--used for loading icon--%></span>
@@ -48,7 +48,7 @@
   <c:if test="${serverEnabled}">
     <table class="runnerFormTable nugetUrls">
       <tr>
-        <th>Authenticated Feed Url:</th>
+        <th>Authenticated Feed URL:</th>
         <td>
           <c:set var="url"><c:url value="${actualServerUrl}${privateFeedUrl}"/></c:set>
           <div><a href="${url}">${url}</a></div>
@@ -56,7 +56,7 @@
         </td>
       </tr>
       <tr>
-        <th>Public Feed Url:</th>
+        <th>Public Feed URL:</th>
         <td>
         <c:choose>
           <c:when test="${not isGuestEnabled}">

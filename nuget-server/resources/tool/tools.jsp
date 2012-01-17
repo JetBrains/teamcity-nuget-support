@@ -61,6 +61,7 @@
     </table>
   </c:if>
   <div style="margin-top: 1em;">
+    <%--TODO: Use <forms:addButton></forms:addButton> --%>
     <a href="#" class="btn" onclick="return BS.NuGet.Tools.InstallPopup.show();">
       <span class="addNew">Download NuGet</span>
     </a>
