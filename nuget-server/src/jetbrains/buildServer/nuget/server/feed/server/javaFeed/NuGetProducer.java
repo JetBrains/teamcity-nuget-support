@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
 import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntity;
@@ -37,9 +38,12 @@ import java.util.Iterator;
 public class NuGetProducer {
   private final InMemoryProducer myProducer;
   private final PackagesIndex myIndex;
+  private final NuGetServerSettings mySettings;
 
-  public NuGetProducer(@NotNull final PackagesIndex index) {
+  public NuGetProducer(@NotNull final PackagesIndex index,
+                       @NotNull final NuGetServerSettings settings) {
     myIndex = index;
+    mySettings = settings;
 
     //Workaround for Xml generation. Default STAX xml writer
     //used to generate <foo></foo> that is badly parsed in
@@ -57,7 +61,7 @@ public class NuGetProducer {
                   public Iterator<PackageEntity> iterator() {
                     return new DecoratingIterator<PackageEntity, NuGetIndexEntry>(myIndex.getNuGetEntries(), new Mapper<NuGetIndexEntry, PackageEntity>() {
                       public PackageEntity mapKey(@NotNull NuGetIndexEntry internal) {
-                        return new PackageEntityEx(internal);
+                        return new PackageEntityEx(internal, settings);
                       }
                     });
                   }

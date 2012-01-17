@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.NetworkUtil;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
@@ -47,6 +48,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected PackagesIndex myIndex;
   private ODataServer myServer;
   private int myCount;
+  private NuGetServerSettings mySettings;
 
   @BeforeMethod
   @Override
@@ -56,11 +58,13 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myPort = NetworkUtil.getFreePort(14444);
     myFeed = new ArrayList<NuGetIndexEntry>();
     myIndex = m.mock(PackagesIndex.class);
+    mySettings = m.mock(NuGetServerSettings.class);
     m.checking(new Expectations() {{
       allowing(myIndex).getNuGetEntries();
       will(returnIterator(myFeed));
+      allowing(mySettings).getNuGetFeedControllerPath(); will(returnValue(NuGetServerSettingsImpl.PATH));
     }});
-    myProducer = new NuGetProducer(myIndex);
+    myProducer = new NuGetProducer(myIndex, mySettings);
 
     startNuGetFeedServer();
   }

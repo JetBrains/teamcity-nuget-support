@@ -45,7 +45,9 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 
   @Override
   public StringBuffer getRequestURL() {
-    return new StringBuffer(getRequestURI());
+    final StringBuffer buf = super.getRequestURL();
+    if (buf.toString().endsWith(myMapping)) buf.append("/");
+    return buf;
   }
 
   @Override
