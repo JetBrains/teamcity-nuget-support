@@ -18,6 +18,8 @@ package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.java.NuGetODataApplication;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.java.NuGetProducer;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;

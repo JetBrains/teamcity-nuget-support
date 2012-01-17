@@ -24,7 +24,6 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.NuGetArtifactsMetadataProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndexImpl"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PackageInfoSerializer"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PackageWriterImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PingBackController"/>
@@ -46,5 +45,5 @@
 
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PackagesFeedController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetProducer"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.java.NuGetProducer"/>
 </beans>

@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 import jetbrains.buildServer.NetworkUtil;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetProducer;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.java.NuGetProducer;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.PackagesFeedController;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;

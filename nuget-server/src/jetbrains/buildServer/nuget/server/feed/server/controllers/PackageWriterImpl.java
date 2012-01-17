@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
+import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import org.jetbrains.annotations.NotNull;
@@ -31,15 +32,10 @@ import java.util.Iterator;
  *         Date: 21.10.11 16:58
  */
 public class PackageWriterImpl implements PackagesWriter {
-  @NotNull
-  private final PackagesIndex myIndex;
-  @NotNull
-  private final PackageInfoSerializer mySerializer;
+  @NotNull private final PackagesIndex myIndex;
 
-  public PackageWriterImpl(@NotNull final PackagesIndex index,
-                           @NotNull final PackageInfoSerializer serializer) {
+  public PackageWriterImpl(@NotNull final PackagesIndex index) {
     myIndex = index;
-    mySerializer = serializer;
   }
 
   public void serializePackages(@NotNull final HttpServletRequest request,
@@ -48,7 +44,7 @@ public class PackageWriterImpl implements PackagesWriter {
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
     while (it.hasNext()) {
       final NuGetIndexEntry e = it.next();
-      mySerializer.serializePackage(e.getAttributes(), writer);
+      writer.write(ServiceMessage.asString("package", e.getAttributes()));
       writer.write("\r\n");
     }
 

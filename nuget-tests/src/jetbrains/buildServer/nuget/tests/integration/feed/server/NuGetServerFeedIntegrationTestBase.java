@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import jetbrains.buildServer.nuget.server.feed.server.controllers.PackageInfoSerializer;
+import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServer;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase;
@@ -71,8 +71,7 @@ public class NuGetServerFeedIntegrationTestBase extends NuGetServerIntegrationTe
                              final boolean isLatest,
                              final long buildId) throws PackageLoadException, IOException {
     final Map<String, String> map = indexPackage(packageFile, isLatest, buildId);
-
-    new PackageInfoSerializer().serializePackage(map, w);
+    w.write(ServiceMessage.asString("package", map));
     w.append("                 ");
   }
 
