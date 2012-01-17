@@ -147,7 +147,7 @@ public class NuGetServerIntegrationTestBase extends NuGetFeedIntegrationTestBase
     final NuGetServerRunnerSettings settings = m.mock(NuGetServerRunnerSettings.class);
     final SystemInfo systemInfo = m.mock(SystemInfo.class);
     m.checking(new Expectations() {{
-      allowing(settings).getPackagesControllerUrl(); will(returnValue(myHttpServerUrl));
+      allowing(settings).getTeamCityBackBaseUrl(); will(returnValue(myHttpServerUrl));
       allowing(settings).getLogFilePath(); will(returnValue(myLogsFile));
 
       allowing(systemInfo).canStartNuGetProcesses(); will(returnValue(true));

@@ -100,7 +100,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
       allowing(myPaths).getBasePath(); will(returnValue("nuget5"));
     }});
 
-    Assert.assertEquals(mySettings.getPackagesControllerUrl(), "http://jonnyzzz.name/teamcity/nuget5");
+    Assert.assertEquals(mySettings.getTeamCityBackBaseUrl(), "http://jonnyzzz.name/teamcity/nuget5");
     Assert.assertNull(mySettings.getCustomTeamCityBaseUrl());
   }
 
@@ -112,7 +112,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
     }});
 
     mySettings.setTeamCityBaseUrl("http://jonnyzzz.com/n");
-    Assert.assertEquals(mySettings.getPackagesControllerUrl(), "http://jonnyzzz.com/n/nuget5");
+    Assert.assertEquals(mySettings.getTeamCityBackBaseUrl(), "http://jonnyzzz.com/n/nuget5");
     Assert.assertEquals(mySettings.getCustomTeamCityBaseUrl(), "http://jonnyzzz.com/n");
   }
 
@@ -135,7 +135,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
     }});
 
     mySettings.setTeamCityBaseUrl("http://jonnyzzz.com/n/");
-    Assert.assertEquals(mySettings.getPackagesControllerUrl(), "http://jonnyzzz.com/n/nuget5");
+    Assert.assertEquals(mySettings.getTeamCityBackBaseUrl(), "http://jonnyzzz.com/n/nuget5");
     Assert.assertEquals(mySettings.getCustomTeamCityBaseUrl(), "http://jonnyzzz.com/n/");
   }
 
@@ -147,7 +147,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
     }});
 
     mySettings.setDefaultTeamCityBaseUrl();
-    Assert.assertEquals(mySettings.getPackagesControllerUrl(), "http://jonnyzzz.name/teamcity/nuget5");
+    Assert.assertEquals(mySettings.getTeamCityBackBaseUrl(), "http://jonnyzzz.name/teamcity/nuget5");
     Assert.assertNull(mySettings.getCustomTeamCityBaseUrl());
   }
 }

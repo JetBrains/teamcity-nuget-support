@@ -28,7 +28,7 @@ public interface NuGetServerRunnerSettings {
   boolean isNuGetFeedEnabled();
 
   @NotNull
-  String getPackagesControllerUrl();
+  String getTeamCityBackBaseUrl();
 
   @NotNull
   File getLogFilePath();

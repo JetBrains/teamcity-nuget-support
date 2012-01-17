@@ -109,7 +109,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
   }
 
   @NotNull
-  public String getPackagesControllerUrl() {
+  public String getTeamCityBackBaseUrl() {
     final String basePath = myController.getBasePath();
     return join(getActualRootUrl(), basePath);
   }

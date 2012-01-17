@@ -63,7 +63,7 @@ public class NuGetServerRunnerImpl implements NuGetServerRunner {
       myHandle.set(
               myExecutor.startNuGetServer(
                       port,
-                      myPaths.getPackagesControllerUrl(),
+                      myPaths.getTeamCityBackBaseUrl(),
                       myPaths.getLogFilePath(),
                       myTokens.getAccessToken()
               ));

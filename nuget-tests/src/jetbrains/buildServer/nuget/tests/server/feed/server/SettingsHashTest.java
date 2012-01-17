@@ -98,7 +98,7 @@ public class SettingsHashTest extends BaseTestCase {
       oneOf(myTokens).getServerToken(); will(returnValue(serverToken));
       oneOf(mySettings).getLogFilePath(); will(returnValue(logs));
       oneOf(mySettings).isNuGetFeedEnabled(); will(returnValue(enabled));
-      oneOf(mySettings).getPackagesControllerUrl(); will(returnValue(url));
+      oneOf(mySettings).getTeamCityBackBaseUrl(); will(returnValue(url));
     }});
   }
 
