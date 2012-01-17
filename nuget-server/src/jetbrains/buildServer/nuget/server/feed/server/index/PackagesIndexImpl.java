@@ -39,16 +39,13 @@ public class PackagesIndexImpl implements PackagesIndex {
   private final MetadataStorage myStorage;
   private final BuildsManager myBuilds;
   private final ProjectManager myProjects;
-  private final MetadataControllersPaths myPaths;
 
   public PackagesIndexImpl(@NotNull final MetadataStorage storage,
                            @NotNull final BuildsManager builds,
-                           @NotNull final ProjectManager projects,
-                           @NotNull final MetadataControllersPaths paths) {
+                           @NotNull final ProjectManager projects) {
     myStorage = storage;
     myBuilds = builds;
     myProjects = projects;
-    myPaths = paths;
   }
 
   @NotNull
