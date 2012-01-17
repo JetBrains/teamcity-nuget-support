@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.server.feed.server.impl;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettingsEx;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPaths;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
@@ -37,8 +36,8 @@ import java.io.File;
  *         Date: 21.10.11 18:55
  */
 public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsEx {
-  private static final String NUGET_SERVER_ENABLED = "feed.enabled";
-  private static final String NUGET_SERVER_URL = "feed.teamcity.url";
+  private static final String NUGET_DOTNET_SERVER_ENABLED = "feed.enabled";
+  private static final String NUGET_DOTNET_SERVER_URL = "feed.teamcity.url";
 
   private final RootUrlHolder myRootUrl;
   private final ServerPaths myPaths;
@@ -62,7 +61,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
   public void setNuGetFeedEnabled(final boolean newValue) {
     mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
       public Object executeAction(@NotNull NuGetSettingsWriter action) {
-        action.setBooleanParameter(NUGET_SERVER_ENABLED, newValue);
+        action.setBooleanParameter(NUGET_DOTNET_SERVER_ENABLED, newValue);
         return null;
       }
     });
@@ -72,9 +71,9 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
     mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
       public Object executeAction(@NotNull NuGetSettingsWriter action) {
         if (myRootUrl.getRootUrl().equals(url.trim())) {
-          action.removeParameter(NUGET_SERVER_URL);
+          action.removeParameter(NUGET_DOTNET_SERVER_URL);
         } else {
-          action.setStringParameter(NUGET_SERVER_URL, url);
+          action.setStringParameter(NUGET_DOTNET_SERVER_URL, url);
         }
         return null;
       }
@@ -84,7 +83,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
   public void setDefaultTeamCityBaseUrl() {
     mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
       public Object executeAction(@NotNull NuGetSettingsWriter action) {
-        action.removeParameter(NUGET_SERVER_URL);
+        action.removeParameter(NUGET_DOTNET_SERVER_URL);
         return null;
       }
     });
@@ -93,7 +92,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
   public String getCustomTeamCityBaseUrl() {
     return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
       public String executeAction(@NotNull NuGetSettingsReader action) {
-        return action.getStringParameter(NUGET_SERVER_URL);
+        return action.getStringParameter(NUGET_DOTNET_SERVER_URL);
       }
     });
 
@@ -104,7 +103,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
 
     return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
       public Boolean executeAction(@NotNull NuGetSettingsReader action) {
-        return action.getBooleanParameter(NUGET_SERVER_ENABLED, false);
+        return action.getBooleanParameter(NUGET_DOTNET_SERVER_ENABLED, false);
       }
     });
   }
