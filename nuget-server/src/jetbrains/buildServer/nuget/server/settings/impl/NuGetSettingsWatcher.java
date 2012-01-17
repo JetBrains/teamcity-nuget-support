@@ -41,7 +41,7 @@ public class NuGetSettingsWatcher {
                               @NotNull final NuGetSettingsPersistance persist,
                               @NotNull final NuGetSettingsManagerImpl settings) {
     myWatcher = new FileWatcher(configuration.getNuGetConfigXml());
-    myWatcher.setSleepingPeriod(1000 * 60 * 5);
+    myWatcher.setSleepingPeriod(1000 * 15);
 
     events.addListener(new BuildServerAdapter() {
       @Override
