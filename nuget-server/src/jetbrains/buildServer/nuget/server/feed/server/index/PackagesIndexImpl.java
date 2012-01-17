@@ -20,7 +20,6 @@ import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.LatestBuildsCache;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.ProjectManager;

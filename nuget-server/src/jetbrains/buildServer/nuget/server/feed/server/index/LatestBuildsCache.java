@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.controllers;
+package jetbrains.buildServer.nuget.server.feed.server.index;
 
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
