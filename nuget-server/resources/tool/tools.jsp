@@ -94,5 +94,4 @@
 
 <script type="text/javascript">
   BS.NuGet.Tools.installUrl = "<bs:forJs>${actualInstallerUrl}</bs:forJs>";
-  BS.NuGet.Tools.InstallPopup.disableSubmit();
 </script>

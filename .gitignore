@@ -1,6 +1,7 @@
 out
 *.tmp
 .idea/workspace.xml
+.idea/dictionaries/**
 nuget-extensions/bin*
 nuget-extensions/**/bin
 nuget-extensions/**/obj
