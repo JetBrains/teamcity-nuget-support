@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.impl;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettingsEx;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPaths;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
@@ -35,7 +36,7 @@ import java.io.File;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 18:55
  */
-public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsEx {
+public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsEx, NuGetServerSettings {
   private static final String NUGET_DOTNET_SERVER_ENABLED = "feed.enabled";
   private static final String NUGET_DOTNET_SERVER_URL = "feed.teamcity.url";
 
@@ -56,6 +57,11 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
     myPaths = paths;
     mySettings = settings;
     mySystemInfo = systemInfo;
+  }
+
+
+  public boolean isNuGetServerEnabled() {
+    return isNuGetFeedEnabled();
   }
 
   public void setNuGetFeedEnabled(final boolean newValue) {

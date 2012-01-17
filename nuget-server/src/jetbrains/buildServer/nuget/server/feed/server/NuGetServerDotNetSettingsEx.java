@@ -34,7 +34,4 @@ public interface NuGetServerDotNetSettingsEx extends NuGetServerDotNetSettings {
    */
   @Nullable
   String getCustomTeamCityBaseUrl();
-
-  @NotNull
-  String getActualRootUrl();
 }
