@@ -30,10 +30,11 @@ import java.util.TreeSet;
 public class RecentNuGetRequests {
   private static final Logger LOG = Logger.getInstance(RecentNuGetRequests.class.getName());
   
-  private final RecentEntriesCache<String, String> myRequests = new RecentEntriesCache<String, String>(1000, false);
+  private final RecentEntriesCache<String, String> myRequests = new RecentEntriesCache<String, String>(5000, false);
   
   public void reportFeedRequest(@NotNull final String url) {
     LOG.debug("NuGet Feed Request: " + url);
+    //TODO: trim identifiers in request to merge same trees
     myRequests.put(url, url);
   }
   
