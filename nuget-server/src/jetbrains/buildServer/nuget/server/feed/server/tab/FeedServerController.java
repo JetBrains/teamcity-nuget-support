@@ -20,7 +20,8 @@ import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.BasePropertiesBean;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettingsEx;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerStatusHolder;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
@@ -45,26 +46,20 @@ import java.util.Map;
 public class FeedServerController extends BaseController {
   @NotNull private final FeedServerSettingsSection mySection;
   @NotNull private final PluginDescriptor myDescriptor;
-  @NotNull private final NuGetServerRunnerSettingsEx mySettings;
-  @NotNull private final NuGetServerStatusHolder myStatusHolder;
+  @NotNull private final NuGetServerSettings mySettings;
   @NotNull private final ServerSettings myServerSettings;
-  @NotNull private final SystemInfo mySystemInfo;
 
   public FeedServerController(@NotNull final AuthorizationInterceptor auth,
                               @NotNull final PermissionChecker checker,
                               @NotNull final FeedServerSettingsSection section,
                               @NotNull final WebControllerManager web,
                               @NotNull final PluginDescriptor descriptor,
-                              @NotNull final NuGetServerRunnerSettingsEx settings,
-                              @NotNull final NuGetServerStatusHolder holder,
                               @NotNull final ServerSettings serverSettings,
-                              @NotNull final SystemInfo systemInfo) {
+                              @NotNull final NuGetServerSettings settings) {
     mySection = section;
     myDescriptor = descriptor;
     mySettings = settings;
-    myStatusHolder = holder;
     myServerSettings = serverSettings;
-    mySystemInfo = systemInfo;
     final String myPath = section.getIncludePath();
 
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
@@ -78,33 +73,17 @@ public class FeedServerController extends BaseController {
   @Override
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
-    if (!mySystemInfo.canStartNuGetProcesses()) {
-      final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsOther.jsp"));
-      mv.getModel().put("canStartNuGetProcessesMessage", mySystemInfo.getNotAvailableMessage());
-      return mv;
-    }
+    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsWindows.jsp"));
 
-    final ModelAndView modelAndView = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsWindows.jsp"));
-    final Map<String, String> properties = new HashMap<String, String>();
-    if (mySettings.isNuGetFeedEnabled()) {
-      properties.put(FeedServerContants.NUGET_SERVER_ENABLED_CHECKBOX, "checked");
+    mv.getModel().put("actualServerUrl", WebUtil.getRootUrl(request));
+    mv.getModel().put("nugetStatusRefreshUrl", mySection.getIncludePath());
+    mv.getModel().put("nugetSettingsPostUrl", mySection.getSettingsPath());
+    mv.getModel().put("privateFeedUrl", mySettings.getNuGetHttpAuthFeedControllerPath());
+    mv.getModel().put("publicFeedUrl", mySettings.getNuGetGuestAuthFeedControllerPath());
+    mv.getModel().put("serverEnabled", mySettings.isNuGetServerEnabled());
+    mv.getModel().put("isGuestEnabled", myServerSettings.isGuestLoginAllowed());
 
-    }
-    properties.put(FeedServerContants.NUGET_SERVER_URL, mySettings.getActualRootUrl());
-
-    modelAndView.getModel().put("propertiesBean", new BasePropertiesBean(properties));
-    modelAndView.getModel().put("serverUrl", myServerSettings.getRootUrl());
-    modelAndView.getModel().put("actualServerUrl", WebUtil.getRootUrl(request));
-    modelAndView.getModel().put("nugetStatusRefreshUrl", mySection.getIncludePath());
-    modelAndView.getModel().put("nugetSettingsPostUrl", mySection.getSettingsPath());
-    modelAndView.getModel().put("serverStatus", myStatusHolder.getStatus());
-    modelAndView.getModel().put("imagesBase", myDescriptor.getPluginResourcesPath("server/img"));
-    modelAndView.getModel().put("privateFeedUrl", mySettings.getNuGetHttpAuthFeedControllerPath());
-    modelAndView.getModel().put("publicFeedUrl", mySettings.getNuGetGuestAuthFeedControllerPath());
-    modelAndView.getModel().put("serverEnabled", mySettings.isNuGetFeedEnabled());
-    modelAndView.getModel().put("isGuestEnabled", myServerSettings.isGuestLoginAllowed());
-
-    return modelAndView;
+    return mv;
   }
 
 }

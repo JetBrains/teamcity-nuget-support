@@ -37,11 +37,11 @@ public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvid
   public static final String SERVER_ENABLED_KEY = "jetbrains.nuget.server";
   public static final String TOTAL_REQUESTS = "jetbrains.nuget.differentRequests";
   public static final String TOTAL_PACKAGES = "jetbrains.nuget.totalPackages";
-  private final NuGetServerRunnerSettings mySettings;
+  private final NuGetServerDotNetSettings mySettings;
   private final RecentNuGetRequests myRequests;
   private final PackagesIndex myIndex;
 
-  public NuGetServerUsageStatisticsProvider(@NotNull final NuGetServerRunnerSettings settings,
+  public NuGetServerUsageStatisticsProvider(@NotNull final NuGetServerDotNetSettings settings,
                                             @NotNull final RecentNuGetRequests requests,
                                             @NotNull final PackagesIndex index) {
     mySettings = settings;

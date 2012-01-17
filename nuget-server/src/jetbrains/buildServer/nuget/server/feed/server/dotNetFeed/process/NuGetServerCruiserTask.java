@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NuGetServerCruiserTask {
   private static final Logger LOG = Logger.getInstance(NuGetServerCruiserTask.class.getName());
-  private final NuGetServerRunnerSettings mySettings;
+  private final NuGetServerDotNetSettings mySettings;
   private final NuGetServerStatusReporting myStatus;
   private final NuGetServerPingCommand myPing;
   private final NuGetServerRunner myRunner;
@@ -36,7 +36,7 @@ public class NuGetServerCruiserTask {
 
   private volatile String mySettingsHash;
 
-  public NuGetServerCruiserTask(@NotNull final NuGetServerRunnerSettings settings,
+  public NuGetServerCruiserTask(@NotNull final NuGetServerDotNetSettings settings,
                                 @NotNull final NuGetServerStatusReporting status,
                                 @NotNull final NuGetServerPingCommand ping,
                                 @NotNull final NuGetServerRunner runner,

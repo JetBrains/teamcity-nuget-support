@@ -17,7 +17,8 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerRunnerTokens;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.SettingsHashProvider;
 import org.jmock.Expectations;
@@ -39,7 +40,7 @@ import java.util.Set;
  */
 public class SettingsHashTest extends BaseTestCase {
   private Mockery m;
-  private NuGetServerRunnerSettings mySettings;
+  private NuGetServerDotNetSettings mySettings;
   private NuGetServerRunnerTokens myTokens;
   private SettingsHashProvider myHash;
 
@@ -48,7 +49,7 @@ public class SettingsHashTest extends BaseTestCase {
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    mySettings = m.mock(NuGetServerRunnerSettings.class);
+    mySettings = m.mock(NuGetServerDotNetSettings.class);
     myTokens = m.mock(NuGetServerRunnerTokens.class);
 
     myHash = new SettingsHashProvider(mySettings, myTokens);
@@ -64,7 +65,7 @@ public class SettingsHashTest extends BaseTestCase {
   @Test
   public void test_all_parameters_included() throws InvocationTargetException, IllegalAccessException {
     assertAllGettersCalled(NuGetServerRunnerTokens.class, myTokens, "getAccessTokenHeaderName", "getServerTokenHeaderName");
-    assertAllGettersCalled(NuGetServerRunnerSettings.class, mySettings, "getNuGetFeedControllerPath", "getNuGetHttpAuthFeedControllerPath", "getNuGetGuestAuthFeedControllerPath");
+    assertAllGettersCalled(NuGetServerDotNetSettings.class, mySettings, "getNuGetFeedControllerPath", "getNuGetHttpAuthFeedControllerPath", "getNuGetGuestAuthFeedControllerPath");
 
     myHash.getSettingsHash();
     m.assertIsSatisfied();

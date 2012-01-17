@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 31.10.11 12:09
  */
-public interface NuGetServerRunnerSettingsEx extends NuGetServerRunnerSettings {
+public interface NuGetServerDotNetSettingsEx extends NuGetServerDotNetSettings {
   void setNuGetFeedEnabled(boolean newValue);
 
   void setTeamCityBaseUrl(@NotNull String url);

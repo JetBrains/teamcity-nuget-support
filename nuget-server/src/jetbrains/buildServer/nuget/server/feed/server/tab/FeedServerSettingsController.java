@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.server.tab;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettingsEx;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
@@ -37,13 +37,13 @@ import javax.servlet.http.HttpServletResponse;
  *         Date: 01.11.11 17:56
  */
 public class FeedServerSettingsController extends BaseController {
-  @NotNull private final NuGetServerRunnerSettingsEx mySettings;
+  @NotNull private final NuGetServerDotNetSettingsEx mySettings;
 
   public FeedServerSettingsController(@NotNull final AuthorizationInterceptor auth,
                                       @NotNull final PermissionChecker checker,
                                       @NotNull final FeedServerSettingsSection section,
                                       @NotNull final WebControllerManager web,
-                                      @NotNull final NuGetServerRunnerSettingsEx settings) {
+                                      @NotNull final NuGetServerDotNetSettingsEx settings) {
     mySettings = settings;
     final String myPath = section.getSettingsPath();
 

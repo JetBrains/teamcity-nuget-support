@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RootUrlHolder;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettingsEx;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPaths;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerRunnerSettingsImpl;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
@@ -40,7 +40,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
   private MetadataControllersPaths myPaths;
   private ServerPaths myServerPaths;
   private SystemInfo mySystemInfo;
-  private NuGetServerRunnerSettingsEx mySettings;
+  private NuGetServerDotNetSettingsEx mySettings;
 
 
   @BeforeMethod

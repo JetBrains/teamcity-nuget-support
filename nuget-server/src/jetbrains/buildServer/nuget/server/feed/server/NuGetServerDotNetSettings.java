@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import java.io.File;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 21.10.11 18:53
+ *         Date: 17.01.12 16:52
  */
-public interface NuGetServerRunnerSettings {
+public interface NuGetServerDotNetSettings {
   boolean isNuGetFeedEnabled();
 
   @NotNull
@@ -32,16 +32,4 @@ public interface NuGetServerRunnerSettings {
 
   @NotNull
   File getLogFilePath();
-
-  /**
-   * @return context based path of nuget feed OData service
-   */
-  @NotNull
-  String getNuGetFeedControllerPath();
-  
-  @NotNull
-  String getNuGetHttpAuthFeedControllerPath();
-
-  @NotNull
-  String getNuGetGuestAuthFeedControllerPath();
 }

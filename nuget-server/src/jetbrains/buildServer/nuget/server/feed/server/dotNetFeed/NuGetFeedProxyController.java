@@ -19,7 +19,8 @@ package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.users.User;
@@ -48,7 +49,8 @@ public class NuGetFeedProxyController extends BaseController {
   private static final Logger LOG = Logger.getInstance(NuGetFeedProxyController.class.getName());
 
   @NotNull private final FeedClient myClient;
-  @NotNull private final NuGetServerRunnerSettings mySettings;
+  @NotNull private final NuGetServerSettings mySettings;
+  @NotNull private final NuGetServerDotNetSettings myDotNetSettings;
   @NotNull private final RecentNuGetRequests myRequestsList;
   @NotNull private final SecurityContext myContext;
   @NotNull private final NuGetServerUri myUri;
@@ -58,13 +60,15 @@ public class NuGetFeedProxyController extends BaseController {
                                   @NotNull final SecurityContext context,
                                   @NotNull final FeedClient client,
                                   @NotNull final NuGetServerUri uri,
-                                  @NotNull final NuGetServerRunnerSettings settings,
+                                  @NotNull final NuGetServerSettings settings,
+                                  @NotNull final NuGetServerDotNetSettings dotNetSettings,
                                   @NotNull final RecentNuGetRequests requestsList) {
     myContext = context;
     myUri = uri;
     myClient = client;
     mySettings = settings;
     myRequestsList = requestsList;
+    myDotNetSettings = dotNetSettings;
     myNuGetPath = settings.getNuGetFeedControllerPath();
 
     web.registerController(myNuGetPath + "/**", this);
@@ -75,7 +79,7 @@ public class NuGetFeedProxyController extends BaseController {
                                   @NotNull final HttpServletResponse response) throws Exception {
     LOG.debug("Feed request: " + WebUtil.createPathWithParameters(request));
 
-    if (!mySettings.isNuGetFeedEnabled()) {
+    if (!myDotNetSettings.isNuGetFeedEnabled()) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed server is not switched on in server configuration");
     }
 

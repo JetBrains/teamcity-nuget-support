@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process;
 
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerRunnerTokens;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,10 +25,10 @@ import org.jetbrains.annotations.NotNull;
  *         Date: 10.11.11 10:30
  */
 public class SettingsHashProvider {
-  private final NuGetServerRunnerSettings mySettings;
+  private final NuGetServerDotNetSettings mySettings;
   private final NuGetServerRunnerTokens myTokens;
 
-  public SettingsHashProvider(@NotNull final NuGetServerRunnerSettings settings,
+  public SettingsHashProvider(@NotNull final NuGetServerDotNetSettings settings,
                               @NotNull final NuGetServerRunnerTokens tokens) {
     mySettings = settings;
     myTokens = tokens;

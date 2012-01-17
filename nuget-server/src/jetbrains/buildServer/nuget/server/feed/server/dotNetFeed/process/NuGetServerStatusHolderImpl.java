@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.admin.logs.LogViewUtil;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerStatus;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerStatusHolder;
 import jetbrains.buildServer.util.StringUtil;
@@ -37,9 +37,9 @@ public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder, NuG
   private static final Logger LOG = Logger.getInstance(NuGetServerStatusHolderImpl.class.getName());
 
   private final AtomicReference<State> myState = new AtomicReference<State>(INITIAL_STATE);
-  private final NuGetServerRunnerSettings mySettings;
+  private final NuGetServerDotNetSettings mySettings;
 
-  public NuGetServerStatusHolderImpl(@NotNull final NuGetServerRunnerSettings settings) {
+  public NuGetServerStatusHolderImpl(@NotNull final NuGetServerDotNetSettings settings) {
     mySettings = settings;
   }
 

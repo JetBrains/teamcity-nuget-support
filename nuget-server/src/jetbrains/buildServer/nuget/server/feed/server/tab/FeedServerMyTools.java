@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.tab;
 
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PlaceId;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -34,11 +34,11 @@ import java.util.Map;
  */
 public class FeedServerMyTools extends SimplePageExtension {
   @NotNull private final PluginDescriptor myDescriptor;
-  @NotNull private final NuGetServerRunnerSettings mySettings;
+  @NotNull private final NuGetServerSettings mySettings;
 
   public FeedServerMyTools(@NotNull final PagePlaces pagePlaces,
                            @NotNull final PluginDescriptor descriptor,
-                           @NotNull final NuGetServerRunnerSettings settings) {
+                           @NotNull final NuGetServerSettings settings) {
     super(
             pagePlaces,
             PlaceId.MY_TOOLS_SECTION,
@@ -66,6 +66,6 @@ public class FeedServerMyTools extends SimplePageExtension {
 
   @Override
   public boolean isAvailable(@NotNull HttpServletRequest request) {
-    return super.isAvailable(request) && mySettings.isNuGetFeedEnabled();
+    return super.isAvailable(request) && mySettings.isNuGetServerEnabled();
   }
 }

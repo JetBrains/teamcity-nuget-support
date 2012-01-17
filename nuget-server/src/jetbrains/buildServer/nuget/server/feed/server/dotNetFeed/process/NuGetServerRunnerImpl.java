@@ -21,7 +21,7 @@ import jetbrains.buildServer.NetworkUtil;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.NuGetServerHandle;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerRunnerTokens;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import org.jetbrains.annotations.NotNull;
@@ -35,13 +35,13 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class NuGetServerRunnerImpl implements NuGetServerRunner {
   private static final Logger LOG = Logger.getInstance(NuGetServerRunnerImpl.class.getName());
-  private final NuGetServerRunnerSettings myPaths;
+  private final NuGetServerDotNetSettings myPaths;
   private final NuGetServerRunnerTokens myTokens;
   private final NuGetExecutor myExecutor;
 
   private final AtomicReference<NuGetServerHandle> myHandle = new AtomicReference<NuGetServerHandle>();
 
-  public NuGetServerRunnerImpl(@NotNull final NuGetServerRunnerSettings paths,
+  public NuGetServerRunnerImpl(@NotNull final NuGetServerDotNetSettings paths,
                                @NotNull final NuGetServerRunnerTokens tokens,
                                @NotNull final NuGetExecutor executor) {
     myPaths = paths;

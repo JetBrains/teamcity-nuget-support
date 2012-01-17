@@ -21,7 +21,8 @@ import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.NuGetFeedReaderImpl;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImpl;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerRunnerTokens;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPaths;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPathsImpl;
@@ -144,7 +145,7 @@ public class NuGetServerIntegrationTestBase extends NuGetFeedIntegrationTestBase
   }
 
   private void startNuGetServer() {
-    final NuGetServerRunnerSettings settings = m.mock(NuGetServerRunnerSettings.class);
+    final NuGetServerDotNetSettings settings = m.mock(NuGetServerDotNetSettings.class);
     final SystemInfo systemInfo = m.mock(SystemInfo.class);
     m.checking(new Expectations() {{
       allowing(settings).getTeamCityBackBaseUrl(); will(returnValue(myHttpServerUrl));

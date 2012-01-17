@@ -17,7 +17,8 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerStatus;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerStatusHolderImpl;
 import org.jmock.Expectations;
@@ -34,7 +35,7 @@ import org.testng.annotations.Test;
  */
 public class NuGetServerStatusHolderTest extends BaseTestCase {
   private Mockery m;
-  private NuGetServerRunnerSettings mySettings;
+  private NuGetServerDotNetSettings mySettings;
   private NuGetServerStatusHolderImpl myHolder;
 
   private boolean myIsEnabled;
@@ -44,7 +45,7 @@ public class NuGetServerStatusHolderTest extends BaseTestCase {
   protected void setUp() throws Exception {
     m = new Mockery();
     myIsEnabled = false;
-    mySettings = m.mock(NuGetServerRunnerSettings.class);
+    mySettings = m.mock(NuGetServerDotNetSettings.class);
     m.checking(new Expectations(){{
       allowing(mySettings).isNuGetFeedEnabled(); will(new CustomAction("return myIsEnabled") {
         public Object invoke(Invocation invocation) throws Throwable {

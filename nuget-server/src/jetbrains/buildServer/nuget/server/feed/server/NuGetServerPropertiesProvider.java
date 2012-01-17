@@ -32,16 +32,17 @@ import java.util.Map;
  *         Date: 07.10.11 17:52
  */
 public class NuGetServerPropertiesProvider implements BuildParametersProvider, ParameterDescriptionProvider {
-  @NotNull private final NuGetServerRunnerSettings mySettings;
+  @NotNull private final NuGetServerSettings mySettings;
 
-  public NuGetServerPropertiesProvider(@NotNull final NuGetServerRunnerSettings settings) {
+  public NuGetServerPropertiesProvider(@NotNull final NuGetServerSettings settings) {
     mySettings = settings;
   }
 
   @NotNull
   public Map<String, String> getParameters(@NotNull SBuild build, boolean emulationMode) {
     Map<String, String> map = new HashMap<String, String>();
-    if (mySettings.isNuGetFeedEnabled()) {
+    if (mySettings.isNuGetServerEnabled()) {
+      //TODO: set here httpAuth url as NuGet is able to support authentication.
       map.put(NuGetServerConstants.FEED_REFERENCE, "%teamcity.serverUrl%" + WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
     }
     return map;

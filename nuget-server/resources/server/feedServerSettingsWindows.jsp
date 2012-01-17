@@ -17,12 +17,13 @@
 <%@ include file="/include-internal.jsp" %>
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 
+<jsp:useBean id="serverEnabled" type="java.lang.Boolean" scope="request"/>
+<jsp:useBean id="isGuestEnabled" type="java.lang.Boolean" scope="request"/>
+
 <jsp:useBean id="nugetStatusRefreshUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="nugetSettingsPostUrl" scope="request" type="java.lang.String"/>
-<jsp:useBean id="serverEnabled" type="java.lang.Boolean" scope="request"/>
 <jsp:useBean id="privateFeedUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="publicFeedUrl" scope="request" type="java.lang.String" />
-<jsp:useBean id="isGuestEnabled" type="java.lang.Boolean" scope="request"/>
 <jsp:useBean id="actualServerUrl" scope="request" type="java.lang.String" />
 
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerContants"/>
