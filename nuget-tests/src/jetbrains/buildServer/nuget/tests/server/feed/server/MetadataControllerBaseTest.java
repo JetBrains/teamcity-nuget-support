@@ -18,7 +18,8 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.*;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataControllerBase;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataControllerHandler;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

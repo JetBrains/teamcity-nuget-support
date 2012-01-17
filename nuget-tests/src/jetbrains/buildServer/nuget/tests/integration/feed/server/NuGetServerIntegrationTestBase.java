@@ -23,8 +23,8 @@ import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImp
 import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPathsImpl;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataControllersPaths;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataControllersPathsImpl;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunner;
 import jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerRunnerImpl;
@@ -37,7 +37,6 @@ import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;

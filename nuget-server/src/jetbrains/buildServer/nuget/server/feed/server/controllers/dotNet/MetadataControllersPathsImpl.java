@@ -14,21 +14,34 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.controllers;
+package jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet;
 
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 02.11.11 12:26
+ *         Date: 24.10.11 19:47
  */
-public interface MetadataControllersPaths {
-  @NotNull
-  String getBasePath();
+public class MetadataControllersPathsImpl implements MetadataControllersPaths {
+  private final PluginDescriptor myDescriptor;
+
+  public MetadataControllersPathsImpl(@NotNull final PluginDescriptor descriptor) {
+    myDescriptor = descriptor;
+  }
 
   @NotNull
-  String getMetadataControllerPath();
+  public String getBasePath() {
+    return myDescriptor.getPluginResourcesPath();
+  }
 
   @NotNull
-  String getPingControllerPath();
+  public String getMetadataControllerPath() {
+    return myDescriptor.getPluginResourcesPath("packages-metadata.html");
+  }
+
+  @NotNull
+  public String getPingControllerPath() {
+    return myDescriptor.getPluginResourcesPath("packages-ping.html");
+  }
 }

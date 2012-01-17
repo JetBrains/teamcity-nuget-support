@@ -16,8 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
-import jetbrains.buildServer.nuget.server.feed.server.controllers.RecentNuGetRequests;
-import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsProvider;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsPublisher;
 import jetbrains.buildServer.usageStatistics.presentation.UsageStatisticsFormatter;

@@ -18,8 +18,8 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPaths;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.PingBackController;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataControllersPaths;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.PingBackController;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

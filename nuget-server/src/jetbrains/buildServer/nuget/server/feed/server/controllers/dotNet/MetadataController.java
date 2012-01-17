@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.controllers;
+package jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet;
 
 import jetbrains.buildServer.serverSide.SecurityContextEx;
 import jetbrains.buildServer.users.SUser;

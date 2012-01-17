@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.controllers;
+package jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet;
 
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import org.jetbrains.annotations.NotNull;

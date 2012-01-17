@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.entity;
+package jetbrains.buildServer.nuget.server.feed.server.controllers.java;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.PackagesFeedController;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.java.ODataPackagesFeedController;
+import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntityAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OAtomStreamEntity;
-
-import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -45,7 +43,7 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
   }
 
   public String getAtomEntitySource(String baseUri) {
-    int idx = baseUri.indexOf(PackagesFeedController.PATH);
+    int idx = baseUri.indexOf(ODataPackagesFeedController.PATH);
     if (idx < 0) {
       return null;
     }

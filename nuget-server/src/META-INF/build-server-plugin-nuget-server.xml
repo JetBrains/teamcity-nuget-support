@@ -10,12 +10,12 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerUriImpl"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataController"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.RecentNuGetRequests"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedRequestsController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.RecentNuGetRequestsDumper"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedProxyController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.requests.NuGetFeedRequestsController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequestsDumper"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.NuGetFeedProxyController"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerRunnerSettingsImpl"/>
@@ -24,16 +24,16 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.NuGetArtifactsMetadataProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndexImpl"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PackageWriterImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.PackageWriterImpl"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PingBackController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.PingBackController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerPingCommandImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllersPathsImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataControllersPathsImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.process.NuGetServerStatusHolderImpl"/>
 
   <!-- UI -->
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.MetadataControllerRegistrar"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.dotNet.MetadataControllerRegistrar"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsSection"/>
@@ -44,6 +44,6 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerUsageStatisticsProvider"/>
 
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.PackagesFeedController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.java.ODataPackagesFeedController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.java.NuGetProducer"/>
 </beans>

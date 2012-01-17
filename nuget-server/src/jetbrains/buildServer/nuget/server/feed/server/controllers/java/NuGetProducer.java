@@ -21,7 +21,6 @@ import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntity;
-import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntityEx;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;

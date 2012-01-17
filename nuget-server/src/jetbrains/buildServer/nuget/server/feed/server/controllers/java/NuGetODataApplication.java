@@ -31,7 +31,7 @@ import java.util.Set;
 public class NuGetODataApplication extends AbstractODataApplication {
   private final NuGetProducer myProducer;
 
-  NuGetODataApplication(@NotNull final NuGetProducer producer) {
+  public NuGetODataApplication(@NotNull final NuGetProducer producer) {
     myProducer = producer;
   }
 
