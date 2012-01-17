@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.entity;
+package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDateTime;
-
-import java.util.Map;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)

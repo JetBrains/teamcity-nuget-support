@@ -45,7 +45,7 @@ public abstract class MethodsGenerator {
 
 
   public final void generateSimpleBean() throws IOException {
-    final File file = new File("nuget-server/src/jetbrains/buildServer/nuget/server/feed/server/entity/" + myName + ".java");
+    final File file = new File("nuget-server/src/jetbrains/buildServer/nuget/server/feed/server/javaFeed/entity/" + myName + ".java");
     final String pkg = "jetbrains.buildServer.nuget.server.feed.server.entity";
     FileUtil.createParentDirs(file);
 

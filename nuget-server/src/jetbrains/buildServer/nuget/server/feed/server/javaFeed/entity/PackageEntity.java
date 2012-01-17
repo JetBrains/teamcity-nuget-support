@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.entity;
+package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
 import org.odata4j.core.OAtomStreamEntity;
 

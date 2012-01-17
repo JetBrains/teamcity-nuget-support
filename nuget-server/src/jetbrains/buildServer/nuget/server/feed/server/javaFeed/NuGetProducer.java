@@ -20,7 +20,7 @@ import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntity;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntity;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;

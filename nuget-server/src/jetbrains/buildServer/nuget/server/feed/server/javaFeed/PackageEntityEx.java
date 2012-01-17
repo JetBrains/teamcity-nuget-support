@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.feed.server.entity.PackageEntityAdapter;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntityAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OAtomStreamEntity;
 
