@@ -45,10 +45,4 @@ public class MetadataControllersPathsImpl implements MetadataControllersPaths {
   public String getPingControllerPath() {
     return myDescriptor.getPluginResourcesPath("packages-ping.html");
   }
-
-  @NotNull
-  public String getArtifactDownloadUrl(@NotNull String buildTypeId, long buildId, @NotNull String path) {
-    while(path.startsWith("/")) path = path.substring(1);
-    return "/repository/download/" + buildTypeId + "/" + buildId + ":id/" + path;
-  }
 }

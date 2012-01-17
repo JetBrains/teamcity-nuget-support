@@ -88,9 +88,10 @@ public class PackagesIndexImpl implements PackagesIndex {
                 metadata.put("IsLatestVersion", String.valueOf(isLatestVersion));
                 metadata.put("IsAbsoluteLatestVersion", String.valueOf(isLatestVersion));
 
-                final String relPath = metadata.get(TEAMCITY_ARTIFACT_RELPATH);
+                String relPath = metadata.get(TEAMCITY_ARTIFACT_RELPATH);
                 if (relPath == null) return null;
-                String downloadUrl = myPaths.getArtifactDownloadUrl(buildTypeId, e.getBuildId(), relPath);
+                while(relPath.startsWith("/")) relPath = relPath.substring(1);
+                final String downloadUrl = "/repository/download/" + buildTypeId + "/" + e.getBuildId() + ":id/" + relPath;
                 metadata.put("TeamCityDownloadUrl", downloadUrl);
 
                 return new NuGetIndexEntry(

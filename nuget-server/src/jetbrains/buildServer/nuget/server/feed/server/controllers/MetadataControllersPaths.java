@@ -31,9 +31,4 @@ public interface MetadataControllersPaths {
 
   @NotNull
   String getPingControllerPath();
-
-  @NotNull
-  String getArtifactDownloadUrl(@NotNull final String buildTypeId,
-                                final long buildId,
-                                @NotNull final String path);
 }
