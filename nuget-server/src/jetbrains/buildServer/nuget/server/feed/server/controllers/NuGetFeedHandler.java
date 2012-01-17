@@ -29,6 +29,7 @@ import java.io.IOException;
 public interface NuGetFeedHandler {
   boolean isAvailable();
 
-  void handleRequest(@NotNull final HttpServletRequest request,
+  void handleRequest(@NotNull final String baseMappingPath,
+                     @NotNull final HttpServletRequest request,
                      @NotNull final HttpServletResponse response) throws Exception;
 }

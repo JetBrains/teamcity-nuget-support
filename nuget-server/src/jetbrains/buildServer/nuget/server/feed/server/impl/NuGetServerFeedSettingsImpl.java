@@ -59,11 +59,11 @@ public class NuGetServerFeedSettingsImpl implements NuGetServerDotNetSettingsEx,
   }
 
   public void setNuGetDotNetFeedEnabled(final boolean newValue) {
-    setServerEnabled(ServerMode.DotNet);
+    setServerEnabled(newValue ? ServerMode.DotNet : ServerMode.Disabled);
   }
 
   public void setNuGetJavaFeedEnabled(final boolean newValue) {
-    setServerEnabled(ServerMode.Java);
+    setServerEnabled(newValue ? ServerMode.Java : ServerMode.Disabled);
   }
 
   private void setServerEnabled(@NotNull final ServerMode mode) {

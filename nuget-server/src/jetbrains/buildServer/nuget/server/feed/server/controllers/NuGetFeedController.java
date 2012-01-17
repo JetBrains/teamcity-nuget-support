@@ -72,14 +72,13 @@ public class NuGetFeedController extends BaseController {
 
     for (NuGetFeedHandler handler : myHandlers) {
       if (handler.isAvailable()) {
-        handler.handleRequest(request, response);
+        handler.handleRequest(myNuGetPath, request, response);
         return null;
       }
     }
 
     return noImplementationFoundError(response);
   }
-
 
   private ModelAndView nugetFeedIsDisabled(@NotNull final HttpServletResponse response) throws IOException {
     response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed server is not enabled in TeamCity server configuration");

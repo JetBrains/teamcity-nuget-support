@@ -46,11 +46,9 @@ public class NuGetFeedProxyController implements NuGetFeedHandler {
   private static final Logger LOG = Logger.getInstance(NuGetFeedProxyController.class.getName());
 
   @NotNull private final FeedClient myClient;
-  @NotNull private final NuGetServerSettings mySettings;
   @NotNull private final NuGetServerDotNetSettings myDotNetSettings;
   @NotNull private final SecurityContext myContext;
   @NotNull private final NuGetServerUri myUri;
-  @NotNull private final String myNuGetPath;
 
   public NuGetFeedProxyController(@NotNull final SecurityContext context,
                                   @NotNull final FeedClient client,
@@ -60,16 +58,16 @@ public class NuGetFeedProxyController implements NuGetFeedHandler {
     myContext = context;
     myUri = uri;
     myClient = client;
-    mySettings = settings;
     myDotNetSettings = dotNetSettings;
-    myNuGetPath = settings.getNuGetFeedControllerPath();
   }
 
   public boolean isAvailable() {
     return myDotNetSettings.isNuGetDotNetFeedEnabled();
   }
 
-  public void handleRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+  public void handleRequest(@NotNull final String baseMappingPath,
+                            @NotNull final HttpServletRequest request,
+                            @NotNull final HttpServletResponse response) throws Exception {
     if (!myDotNetSettings.isNuGetDotNetFeedEnabled()) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed server is not switched on in server configuration");
     }
@@ -77,26 +75,21 @@ public class NuGetFeedProxyController implements NuGetFeedHandler {
     String requestPath = WebUtil.getPathWithoutAuthenticationType(request);
     if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
 
-    if (!requestPath.startsWith(myNuGetPath) && !requestPath.equals(myNuGetPath)) {
-      response.sendError(HttpStatus.SC_NOT_FOUND, "Path not found");
-      return;
-    }
-
     final String baseFeed = myUri.getNuGetFeedBaseUri();
     if (baseFeed == null) {
       response.sendError(HttpStatus.SC_SERVICE_UNAVAILABLE);
       return;
     }
 
-    final String path = requestPath.substring(myNuGetPath.length());
+    final String path = requestPath.substring(baseMappingPath.length());
     final String query = request.getQueryString();
 
     final HttpRequestBase method = createRequest(request);
     method.setURI(new URI(baseFeed + path + (query != null ? ("?" + query) : "")));
-    final String baseUrl = getFeedUrlBase(request);
+    final String baseUrl = getFeedUrlBase(baseMappingPath, request);
 
     method.setHeader("X-TeamCityUrl", baseUrl);
-    method.setHeader("X-TeamCityFeedBase", baseUrl + mySettings.getNuGetFeedControllerPath());
+    method.setHeader("X-TeamCityFeedBase", baseUrl + baseMappingPath);
     final User associatedUser = myContext.getAuthorityHolder().getAssociatedUser();
     if (associatedUser != null) {
       method.setHeader("X-TeamCity-UserId", String.valueOf(associatedUser.getId()));
@@ -137,15 +130,17 @@ public class NuGetFeedProxyController implements NuGetFeedHandler {
   }
 
   /**
+   *
+   * @param baseMappingPath base servlet mapping path
    * @param request request
    * @return path with httpAuth or guestAuth infix if any
    */
   @NotNull
-  private String getFeedUrlBase(@NotNull final HttpServletRequest request) {
+  private String getFeedUrlBase(@NotNull String baseMappingPath, @NotNull final HttpServletRequest request) {
     String baseUrl = WebUtil.getPathWithoutContext(request);
     if (!baseUrl.startsWith("/")) baseUrl = "/" + baseUrl;
 
-    int idx = baseUrl.indexOf(mySettings.getNuGetFeedControllerPath());
+    int idx = baseUrl.indexOf(baseMappingPath);
     String infix = "";
     if (idx > 0) {
       infix = baseUrl.substring(0, idx);

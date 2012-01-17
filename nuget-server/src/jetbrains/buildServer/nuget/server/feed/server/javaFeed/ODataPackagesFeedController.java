@@ -84,7 +84,8 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
     return mySettings.isNuGetJavaFeedEnabled();
   }
 
-  public void handleRequest(@NotNull final HttpServletRequest request,
+  public void handleRequest(@NotNull final String baseMappingPath,
+                            @NotNull final HttpServletRequest request,
                             @NotNull final HttpServletResponse response) throws Exception {
 
     if (!BaseController.isGet(request)) {
@@ -92,6 +93,6 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
       response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, "TeamCity provided feed is readonly.");
     }
 
-    myContainer.service(new RequestWrapper(request, "/app", "/nuget/v1/FeedService.svc"), response);
+    myContainer.service(new RequestWrapper(request, baseMappingPath), response);
   }
 }

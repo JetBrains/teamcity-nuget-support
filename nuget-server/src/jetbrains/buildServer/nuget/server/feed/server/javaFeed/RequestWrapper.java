@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
+import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,36 +27,49 @@ import javax.servlet.http.HttpServletRequestWrapper;
  *         Date: 16.11.2009
  */
 public class RequestWrapper extends HttpServletRequestWrapper {
-  private final String myPossibleServletMappingPath;
-  private final String myExtraServletPath;
+  private final String myMapping;
 
   public RequestWrapper(@NotNull final HttpServletRequest request,
-                        @NotNull final String possibleServletMappingPath,
-                        @NotNull final String extraServletPath) {
+                        @NotNull final String mappingPath) {
     super(request);
-    myPossibleServletMappingPath = possibleServletMappingPath;
-    myExtraServletPath = extraServletPath;
+    myMapping = mappingPath;
+  }
+
+  @Override
+  public String getRequestURI() {
+    final String uri = super.getRequestURI();
+    //Workaound for Jersey baseUri and requestUri computation.
+    if (uri.endsWith(myMapping)) return uri + "/";
+    return uri;
+  }
+
+  @Override
+  public StringBuffer getRequestURL() {
+    return new StringBuffer(getRequestURI());
   }
 
   @Override
   public String getPathInfo() {
-    String info = super.getPathInfo();
-
-    if (info.startsWith(myPossibleServletMappingPath)) {
-      info = info.substring(myPossibleServletMappingPath.length());
+    final String uri = getRequestURI();
+    int i = uri.indexOf(myMapping);
+    if (i >= 0) {
+      String s = uri.substring(myMapping.length() + i);
+      while(s.startsWith("/")) s = s.substring(1);
+      return "/" + s;
     }
 
-    if (info.startsWith(myExtraServletPath)) {
-      info = info.substring(myExtraServletPath.length());
-    }
-
-    return info;
+    //fallback
+    return super.getPathInfo();
   }
 
   @Override
   public String getServletPath() {
-    String path = super.getServletPath();
-    if (path.equals(myPossibleServletMappingPath)) return path + myExtraServletPath;
-    return path + myPossibleServletMappingPath + myExtraServletPath;
+    String fullPath = WebUtil.getPathWithoutContext(this);
+    final int i = fullPath.indexOf(myMapping);
+    if (i >= 0) {
+      return fullPath.substring(0, i + myMapping.length());
+    }
+    //fallback
+    return super.getServletPath();
   }
 }
