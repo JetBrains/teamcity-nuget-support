@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  *         Date: 31.10.11 12:09
  */
 public interface NuGetServerDotNetSettingsEx extends NuGetServerDotNetSettings {
-  void setNuGetFeedEnabled(boolean newValue);
+  void setNuGetDotNetFeedEnabled(boolean newValue);
 
   void setTeamCityBaseUrl(@NotNull String url);
   void setDefaultTeamCityBaseUrl();

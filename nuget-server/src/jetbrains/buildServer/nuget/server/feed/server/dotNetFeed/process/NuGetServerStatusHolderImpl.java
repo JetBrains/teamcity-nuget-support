@@ -46,7 +46,7 @@ public class NuGetServerStatusHolderImpl implements NuGetServerStatusHolder, NuG
   @NotNull
   public NuGetServerStatus getStatus() {
     final State state = getState();
-    final boolean isEnabled = mySettings.isNuGetFeedEnabled();
+    final boolean isEnabled = mySettings.isNuGetDotNetFeedEnabled();
     final String logsSlice = NuGetServerStatusHolderImpl.this.getLogsSlice();
 
     return new NuGetServerStatus() {

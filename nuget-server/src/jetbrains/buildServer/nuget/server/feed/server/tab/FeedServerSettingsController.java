@@ -66,7 +66,7 @@ public class FeedServerSettingsController extends BaseController {
       return null;
     }
 
-    mySettings.setNuGetFeedEnabled(param);
+    mySettings.setNuGetDotNetFeedEnabled(param);
     response.setStatus(HttpServletResponse.SC_OK);
     return null;
   }

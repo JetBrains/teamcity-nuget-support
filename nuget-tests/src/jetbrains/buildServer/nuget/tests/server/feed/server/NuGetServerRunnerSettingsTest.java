@@ -20,7 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettingsEx;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPaths;
-import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerRunnerSettingsImpl;
+import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerFeedSettingsImpl;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.ServerPaths;
@@ -54,7 +54,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
     myServerPaths = new ServerPaths(createTempDir().getPath());
     mySystemInfo = m.mock(SystemInfo.class);
 
-    mySettings = new NuGetServerRunnerSettingsImpl(
+    mySettings = new NuGetServerFeedSettingsImpl(
             myRoot,
             myPaths,
             myServerPaths,
@@ -70,7 +70,7 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
       allowing(mySystemInfo).canStartNuGetProcesses(); will(returnValue(true));
     }});
 
-    Assert.assertFalse(mySettings.isNuGetFeedEnabled());
+    Assert.assertFalse(mySettings.isNuGetDotNetFeedEnabled());
   }
 
   @Test
@@ -79,8 +79,8 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
       allowing(mySystemInfo).canStartNuGetProcesses(); will(returnValue(true));
     }});
 
-    mySettings.setNuGetFeedEnabled(true);
-    Assert.assertTrue(mySettings.isNuGetFeedEnabled());
+    mySettings.setNuGetDotNetFeedEnabled(true);
+    Assert.assertTrue(mySettings.isNuGetDotNetFeedEnabled());
   }
 
   @Test
@@ -89,8 +89,8 @@ public class NuGetServerRunnerSettingsTest extends BaseTestCase {
       allowing(mySystemInfo).canStartNuGetProcesses(); will(returnValue(false));
     }});
 
-    mySettings.setNuGetFeedEnabled(true);
-    Assert.assertFalse(mySettings.isNuGetFeedEnabled());
+    mySettings.setNuGetDotNetFeedEnabled(true);
+    Assert.assertFalse(mySettings.isNuGetDotNetFeedEnabled());
   }
 
   @Test

@@ -16,20 +16,12 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 17.01.12 16:52
+ *         Date: 17.01.12 17:22
  */
-public interface NuGetServerDotNetSettings {
-  boolean isNuGetDotNetFeedEnabled();
+public interface NuGetServerJavaSettings {
+  boolean isNuGetJavaFeedEnabled();
 
-  @NotNull
-  String getTeamCityBackBaseUrl();
-
-  @NotNull
-  File getLogFilePath();
+  void setNuGetJavaFeedEnabled(boolean newValue);
 }

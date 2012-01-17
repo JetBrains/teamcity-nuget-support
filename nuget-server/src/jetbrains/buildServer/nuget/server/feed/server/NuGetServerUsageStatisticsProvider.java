@@ -50,7 +50,7 @@ public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvid
   }
 
   public void accept(@NotNull UsageStatisticsPublisher publisher) {
-    if (mySettings.isNuGetFeedEnabled()) {
+    if (mySettings.isNuGetDotNetFeedEnabled()) {
       publisher.publishStatistic(SERVER_ENABLED_KEY, "enabled");
       publisher.publishStatistic(TOTAL_REQUESTS, myRequests.getTotalRequests());
       publisher.publishStatistic(TOTAL_PACKAGES, countEntries());

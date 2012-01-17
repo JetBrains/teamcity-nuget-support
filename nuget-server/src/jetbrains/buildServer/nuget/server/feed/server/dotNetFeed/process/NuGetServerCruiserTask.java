@@ -62,7 +62,7 @@ public class NuGetServerCruiserTask {
       myRunner.stopServer();
     }
 
-    if (mySettings.isNuGetFeedEnabled()) {
+    if (mySettings.isNuGetDotNetFeedEnabled()) {
       myRunner.ensureAlive();
       myStatus.setRunning();
 

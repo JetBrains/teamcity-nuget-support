@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.impl;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettingsEx;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPaths;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
@@ -26,19 +26,19 @@ import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.ServerPaths;
-import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
 import static jetbrains.buildServer.nuget.server.feed.server.impl.UrlUtil.join;
+import static jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent.SERVER;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 18:55
  */
-public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsEx {
-  private static final String NUGET_DOTNET_SERVER_ENABLED = "feed.dotNet.enabled";
+public class NuGetServerFeedSettingsImpl implements NuGetServerDotNetSettingsEx, NuGetServerJavaSettings {
+  private static final String NUGET_SERVER_MODE = "feed.enabled";
   private static final String NUGET_DOTNET_SERVER_URL = "feed.teamcity.url";
 
   private final RootUrlHolder myRootUrl;
@@ -47,12 +47,11 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
   private final SystemInfo mySystemInfo;
   private final MetadataControllersPaths myController;
 
-
-  public NuGetServerRunnerSettingsImpl(@NotNull final RootUrlHolder rootUrl,
-                                       @NotNull final MetadataControllersPaths controller,
-                                       @NotNull final ServerPaths paths,
-                                       @NotNull final NuGetSettingsManager settings,
-                                       @NotNull final SystemInfo systemInfo) {
+  public NuGetServerFeedSettingsImpl(@NotNull final RootUrlHolder rootUrl,
+                                     @NotNull final MetadataControllersPaths controller,
+                                     @NotNull final ServerPaths paths,
+                                     @NotNull final NuGetSettingsManager settings,
+                                     @NotNull final SystemInfo systemInfo) {
     myRootUrl = rootUrl;
     myController = controller;
     myPaths = paths;
@@ -60,18 +59,43 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
     mySystemInfo = systemInfo;
   }
 
+  public void setNuGetDotNetFeedEnabled(final boolean newValue) {
+    setServerEnabled(ServerMode.DotNet);
+  }
 
-  public void setNuGetFeedEnabled(final boolean newValue) {
-    mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
+  public void setNuGetJavaFeedEnabled(final boolean newValue) {
+    setServerEnabled(ServerMode.Java);
+  }
+
+  private void setServerEnabled(@NotNull final ServerMode mode) {
+    mySettings.writeSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
       public Object executeAction(@NotNull NuGetSettingsWriter action) {
-        action.setBooleanParameter(NUGET_DOTNET_SERVER_ENABLED, newValue);
+        action.setStringParameter(NUGET_SERVER_MODE, mode.getValue());
         return null;
       }
     });
   }
 
+  public boolean isNuGetJavaFeedEnabled() {
+    return getServerMode() == ServerMode.Java;
+  }
+
+  public boolean isNuGetDotNetFeedEnabled() {
+    return getServerMode() == ServerMode.DotNet;
+  }
+
+  private ServerMode getServerMode() {
+    final ServerMode mode = mySettings.readSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, ServerMode>() {
+      public ServerMode executeAction(@NotNull NuGetSettingsReader action) {
+        return ServerMode.parse(action.getStringParameter(NUGET_SERVER_MODE));
+      }
+    });
+    if (mode == ServerMode.DotNet && !mySystemInfo.canStartNuGetProcesses()) return ServerMode.Disabled;
+    return mode;
+  }
+
   public void setTeamCityBaseUrl(@NotNull final String url) {
-    mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
+    mySettings.writeSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
       public Object executeAction(@NotNull NuGetSettingsWriter action) {
         if (myRootUrl.getRootUrl().equals(url.trim())) {
           action.removeParameter(NUGET_DOTNET_SERVER_URL);
@@ -84,7 +108,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
   }
 
   public void setDefaultTeamCityBaseUrl() {
-    mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
+    mySettings.writeSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
       public Object executeAction(@NotNull NuGetSettingsWriter action) {
         action.removeParameter(NUGET_DOTNET_SERVER_URL);
         return null;
@@ -93,20 +117,9 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
   }
 
   public String getCustomTeamCityBaseUrl() {
-    return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
+    return mySettings.readSettings(SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
       public String executeAction(@NotNull NuGetSettingsReader action) {
         return action.getStringParameter(NUGET_DOTNET_SERVER_URL);
-      }
-    });
-
-  }
-
-  public boolean isNuGetFeedEnabled() {
-    if (!mySystemInfo.canStartNuGetProcesses()) return false;
-
-    return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
-      public Boolean executeAction(@NotNull NuGetSettingsReader action) {
-        return action.getBooleanParameter(NUGET_DOTNET_SERVER_ENABLED, false);
       }
     });
   }
@@ -129,5 +142,4 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
   public File getLogFilePath() {
     return new File(myPaths.getLogsPath(), "teamcity-nuget-server.log");
   }
-
 }

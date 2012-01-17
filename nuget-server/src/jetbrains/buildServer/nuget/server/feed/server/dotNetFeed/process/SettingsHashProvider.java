@@ -36,6 +36,6 @@ public class SettingsHashProvider {
 
   @NotNull
   public String getSettingsHash() {
-    return "@" + mySettings.getLogFilePath() + "#" + mySettings.isNuGetFeedEnabled() + "#" + mySettings.getTeamCityBackBaseUrl() + myTokens.getServerToken() + "!" + myTokens.getAccessToken();
+    return "@" + mySettings.getLogFilePath() + "#" + mySettings.isNuGetDotNetFeedEnabled() + "#" + mySettings.getTeamCityBackBaseUrl() + myTokens.getServerToken() + "!" + myTokens.getAccessToken();
   }
 }

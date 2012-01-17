@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerRunnerTokens;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.SettingsHashProvider;
 import org.jmock.Expectations;
@@ -98,7 +97,7 @@ public class SettingsHashTest extends BaseTestCase {
       oneOf(myTokens).getAccessToken(); will(returnValue(agentToken));
       oneOf(myTokens).getServerToken(); will(returnValue(serverToken));
       oneOf(mySettings).getLogFilePath(); will(returnValue(logs));
-      oneOf(mySettings).isNuGetFeedEnabled(); will(returnValue(enabled));
+      oneOf(mySettings).isNuGetDotNetFeedEnabled(); will(returnValue(enabled));
       oneOf(mySettings).getTeamCityBackBaseUrl(); will(returnValue(url));
     }});
   }

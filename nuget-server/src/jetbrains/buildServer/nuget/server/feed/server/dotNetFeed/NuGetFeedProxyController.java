@@ -79,7 +79,7 @@ public class NuGetFeedProxyController extends BaseController {
                                   @NotNull final HttpServletResponse response) throws Exception {
     LOG.debug("Feed request: " + WebUtil.createPathWithParameters(request));
 
-    if (!myDotNetSettings.isNuGetFeedEnabled()) {
+    if (!myDotNetSettings.isNuGetDotNetFeedEnabled()) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed server is not switched on in server configuration");
     }
 

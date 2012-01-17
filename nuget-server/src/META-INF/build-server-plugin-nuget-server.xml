@@ -18,7 +18,7 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetFeedProxyController"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerRunnerSettingsImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerFeedSettingsImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory"/>

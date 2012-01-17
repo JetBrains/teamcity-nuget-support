@@ -28,14 +28,14 @@ import static jetbrains.buildServer.nuget.server.feed.server.impl.UrlUtil.join;
  *         Date: 17.01.12 17:14
  */
 public class NuGetServerSettingsImpl implements NuGetServerSettings {
-  private final NuGetServerDotNetSettings myDotNetSettings;
+  private final NuGetServerFeedSettingsImpl myDotNetSettings;
 
-  public NuGetServerSettingsImpl(@NotNull final NuGetServerDotNetSettings dotNetSettings) {
+  public NuGetServerSettingsImpl(@NotNull final NuGetServerFeedSettingsImpl dotNetSettings) {
     myDotNetSettings = dotNetSettings;
   }
 
   public boolean isNuGetServerEnabled() {
-    return myDotNetSettings.isNuGetFeedEnabled();
+    return myDotNetSettings.isNuGetDotNetFeedEnabled() || myDotNetSettings.isNuGetJavaFeedEnabled();
   }
 
   @NotNull
