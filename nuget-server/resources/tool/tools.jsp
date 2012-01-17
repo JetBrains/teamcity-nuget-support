@@ -60,9 +60,9 @@
         </tbody>
     </table>
   </c:if>
-  <div class="addNew" style="margin-top: 1em;">
-    <a href="#" onclick="return BS.NuGet.Tools.InstallPopup.show();">
-      Download NuGet
+  <div style="margin-top: 1em;">
+    <a href="#" class="btn" onclick="return BS.NuGet.Tools.InstallPopup.show();">
+      <span class="addNew">Download NuGet</span>
     </a>
   </div>
 </bs:refreshable>
