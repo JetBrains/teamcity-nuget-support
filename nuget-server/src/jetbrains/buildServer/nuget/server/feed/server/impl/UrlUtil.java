@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,19 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server;
+package jetbrains.buildServer.nuget.server.feed.server.impl;
 
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 21.10.11 18:53
+ *         Date: 17.01.12 17:13
  */
-public interface NuGetServerSettings {
-
-  /**
-   * @return true if any of NuGet server implementations are enabled
-   */
-  boolean isNuGetServerEnabled();
-
-  /**
-   * @return context based path of nuget feed OData service
-   */
+public class UrlUtil {
   @NotNull
-  //TODO: Allow to register minor NuGet Feed urls, will be used to migrated to new feed url
-  String getNuGetFeedControllerPath();
-  
-  @NotNull
-  String getNuGetHttpAuthFeedControllerPath();
+  public static String join(@NotNull String url, @NotNull String basePath) {
+    return StringUtil.trimEnd(url, "/") + "/" + StringUtil.trimStart(basePath, "/");
+  }
 
-  @NotNull
-  String getNuGetGuestAuthFeedControllerPath();
 }

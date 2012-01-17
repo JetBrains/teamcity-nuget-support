@@ -26,18 +26,19 @@ import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.ServerPaths;
-import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
+import static jetbrains.buildServer.nuget.server.feed.server.impl.UrlUtil.join;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 18:55
  */
-public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsEx, NuGetServerSettings {
-  private static final String NUGET_DOTNET_SERVER_ENABLED = "feed.enabled";
+public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsEx {
+  private static final String NUGET_DOTNET_SERVER_ENABLED = "feed.dotNet.enabled";
   private static final String NUGET_DOTNET_SERVER_URL = "feed.teamcity.url";
 
   private final RootUrlHolder myRootUrl;
@@ -59,10 +60,6 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
     mySystemInfo = systemInfo;
   }
 
-
-  public boolean isNuGetServerEnabled() {
-    return isNuGetFeedEnabled();
-  }
 
   public void setNuGetFeedEnabled(final boolean newValue) {
     mySettings.writeSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
@@ -116,8 +113,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
 
   @NotNull
   public String getTeamCityBackBaseUrl() {
-    final String basePath = myController.getBasePath();
-    return join(getActualRootUrl(), basePath);
+    return join(getActualRootUrl(), myController.getBasePath());
   }
 
   @NotNull
@@ -129,27 +125,9 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerDotNetSettingsE
     return url;
   }
 
-  private String join(@NotNull String url, @NotNull String basePath) {
-    return StringUtil.trimEnd(url, "/") + "/" + StringUtil.trimStart(basePath, "/");
-  }
-
   @NotNull
   public File getLogFilePath() {
     return new File(myPaths.getLogsPath(), "teamcity-nuget-server.log");
   }
 
-  @NotNull
-  public String getNuGetFeedControllerPath() {
-    return "/app/nuget";
-  }
-
-  @NotNull
-  public String getNuGetHttpAuthFeedControllerPath() {
-    return join(WebUtil.HTTP_AUTH_PREFIX, getNuGetFeedControllerPath());
-  }
-
-  @NotNull
-  public String getNuGetGuestAuthFeedControllerPath() {
-    return join(WebUtil.GUEST_AUTH_PREFIX, getNuGetFeedControllerPath());
-  }
 }
