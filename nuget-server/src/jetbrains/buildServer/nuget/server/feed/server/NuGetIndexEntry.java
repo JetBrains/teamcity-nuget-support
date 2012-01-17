@@ -25,15 +25,11 @@ import java.util.Map;
  * Date: 30.12.11 19:29
  */
 public class NuGetIndexEntry {
-  @NotNull
-  private final String myKey;
-  @NotNull
-  private final Map<String, String> myAttributes;
-  @NotNull
-  private final String myBuildTypeId;
   private final long myBuildId;
-  @NotNull
-  private final String myDownloadUrl;
+  @NotNull private final String myKey;
+  @NotNull private final Map<String, String> myAttributes;
+  @NotNull private final String myBuildTypeId;
+  @NotNull private final String myDownloadUrl;
 
   public NuGetIndexEntry(@NotNull String key,
                          @NotNull Map<String, String> attributes,
