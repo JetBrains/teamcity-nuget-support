@@ -50,7 +50,9 @@ public class NuGetServerPingCommandImpl implements NuGetServerPingCommand {
   }
 
   public boolean pingNuGetServer() {
-    final HttpGet get = new HttpGet(myUri.getNuGetPingUri());
+    final String uri = myUri.getNuGetPingUri();
+    if (uri == null) return true;
+    final HttpGet get = new HttpGet(uri);
     try {
       final HttpResponse execute = myHttp.execute(get);
       final StatusLine line = execute.getStatusLine();
