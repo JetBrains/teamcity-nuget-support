@@ -61,10 +61,9 @@
     </table>
   </c:if>
   <div style="margin-top: 1em;">
-    <%--TODO: Use <forms:addButton></forms:addButton> --%>
-    <a href="#" class="btn" onclick="return BS.NuGet.Tools.InstallPopup.show();">
-      <span class="addNew">Download NuGet</span>
-    </a>
+    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.show()">
+      Download NuGet
+    </forms:addButton>
   </div>
 </bs:refreshable>
 
@@ -84,10 +83,11 @@
   <bs:refreshable containerId="nugetInstallFormResresh" pageUrl="${actualInstallerUrl}">
 
   </bs:refreshable>
-  <a href="javascript://" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" class="cancel">Refresh</a>
+
   <div class="popupSaveButtonsBlock">
     <forms:cancel onclick="BS.NuGet.Tools.InstallPopup.closeToolsDialog();"/>
-    <forms:submit label="Install"/>
+    <forms:submit id="installNuGetApplyButton" label="Install"/>
+    <input type="button" class="btn cancel" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" value="Refresh"/>
     <forms:saving id="installNuGetApplyProgress"/>
     <div class="clr"></div>
   </div>
