@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.impl;
 
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +27,7 @@ import static jetbrains.buildServer.nuget.server.feed.server.impl.UrlUtil.join;
  *         Date: 17.01.12 17:14
  */
 public class NuGetServerSettingsImpl implements NuGetServerSettings {
+  public static final String PATH = "/app/nuget/v1/FeedService.svc";
   private final NuGetServerFeedSettingsImpl myDotNetSettings;
 
   public NuGetServerSettingsImpl(@NotNull final NuGetServerFeedSettingsImpl dotNetSettings) {
@@ -41,7 +41,7 @@ public class NuGetServerSettingsImpl implements NuGetServerSettings {
   @NotNull
   public String getNuGetFeedControllerPath() {
     //NOTE: Do not change it unless you want to break compatibility
-    return "/app/nuget/v1/FeedService.svc";
+    return PATH;
   }
 
   @NotNull

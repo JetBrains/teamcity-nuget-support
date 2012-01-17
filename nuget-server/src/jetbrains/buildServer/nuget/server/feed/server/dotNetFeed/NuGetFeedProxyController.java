@@ -17,14 +17,12 @@
 package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettings;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.users.User;
-import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.Header;
@@ -34,7 +32,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,66 +42,57 @@ import java.net.URI;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 07.10.11 16:17
  */
-public class NuGetFeedProxyController extends BaseController {
+public class NuGetFeedProxyController implements NuGetFeedHandler {
   private static final Logger LOG = Logger.getInstance(NuGetFeedProxyController.class.getName());
 
   @NotNull private final FeedClient myClient;
   @NotNull private final NuGetServerSettings mySettings;
   @NotNull private final NuGetServerDotNetSettings myDotNetSettings;
-  @NotNull private final RecentNuGetRequests myRequestsList;
   @NotNull private final SecurityContext myContext;
   @NotNull private final NuGetServerUri myUri;
   @NotNull private final String myNuGetPath;
 
-  public NuGetFeedProxyController(@NotNull final WebControllerManager web,
-                                  @NotNull final SecurityContext context,
+  public NuGetFeedProxyController(@NotNull final SecurityContext context,
                                   @NotNull final FeedClient client,
                                   @NotNull final NuGetServerUri uri,
                                   @NotNull final NuGetServerSettings settings,
-                                  @NotNull final NuGetServerDotNetSettings dotNetSettings,
-                                  @NotNull final RecentNuGetRequests requestsList) {
+                                  @NotNull final NuGetServerDotNetSettings dotNetSettings) {
     myContext = context;
     myUri = uri;
     myClient = client;
     mySettings = settings;
-    myRequestsList = requestsList;
     myDotNetSettings = dotNetSettings;
     myNuGetPath = settings.getNuGetFeedControllerPath();
-
-    web.registerController(myNuGetPath + "/**", this);
   }
 
-  @Override
-  protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
-                                  @NotNull final HttpServletResponse response) throws Exception {
-    LOG.debug("Feed request: " + WebUtil.createPathWithParameters(request));
+  public boolean isAvailable() {
+    return myDotNetSettings.isNuGetDotNetFeedEnabled();
+  }
 
+  public void handleRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
     if (!myDotNetSettings.isNuGetDotNetFeedEnabled()) {
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed server is not switched on in server configuration");
     }
 
     String requestPath = WebUtil.getPathWithoutAuthenticationType(request);
-
     if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
 
     if (!requestPath.startsWith(myNuGetPath) && !requestPath.equals(myNuGetPath)) {
       response.sendError(HttpStatus.SC_NOT_FOUND, "Path not found");
-      return null;
+      return;
     }
 
     final String baseFeed = myUri.getNuGetFeedBaseUri();
     if (baseFeed == null) {
       response.sendError(HttpStatus.SC_SERVICE_UNAVAILABLE);
-      return null;
+      return;
     }
 
     final String path = requestPath.substring(myNuGetPath.length());
     final String query = request.getQueryString();
 
     final HttpRequestBase method = createRequest(request);
-    final String pathAndQuery = path + (query != null ? ("?" + query) : "");
-    myRequestsList.reportFeedRequest(pathAndQuery);
-    method.setURI(new URI(baseFeed + pathAndQuery));
+    method.setURI(new URI(baseFeed + path + (query != null ? ("?" + query) : "")));
     final String baseUrl = getFeedUrlBase(request);
 
     method.setHeader("X-TeamCityUrl", baseUrl);
@@ -121,7 +109,7 @@ public class NuGetFeedProxyController extends BaseController {
       response.setStatus(resp.getStatusLine().getStatusCode());
 
       final HttpEntity entity = resp.getEntity();
-      if (entity == null) return null;
+      if (entity == null) return;
 
       final Header encodingHeader = entity.getContentEncoding();
       if (encodingHeader != null) {
@@ -141,10 +129,8 @@ public class NuGetFeedProxyController extends BaseController {
         entity.writeTo(response.getOutputStream());
       }
 
-      return null;
     } catch (Throwable t) {
       LOG.warn("Failed to process request to NuGet server to " + method.getURI());
-      return null;
     } finally {
       method.abort();
     }

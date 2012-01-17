@@ -18,11 +18,9 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
-import jetbrains.buildServer.web.openapi.WebControllerManager;
-import jetbrains.buildServer.web.util.WebUtil;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerJavaSettings;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedHandler;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -38,23 +36,14 @@ import java.util.Vector;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 30.12.11 17:49
  */
-public class ODataPackagesFeedController extends BaseController {
+public class ODataPackagesFeedController implements NuGetFeedHandler {
   private final ServletContainer myContainer;
-  //TODO: move inside.
-  //path after TeamCity Spring servlet mapping
-  public static final String SERVLET_PATH = "/nuget2";
-  public static final String MAP_PATH = "/app";
-  //TODO: move inside
-  public static final String PATH = MAP_PATH + SERVLET_PATH;
-  @NotNull
-  private final RecentNuGetRequests myRequests;
+  private final NuGetServerJavaSettings mySettings;
 
   public ODataPackagesFeedController(@NotNull final NuGetProducer producer,
                                      @NotNull final ServletConfig config,
-                                     @NotNull final WebControllerManager web,
-                                     @NotNull final RecentNuGetRequests requests) {
-    myRequests = requests;
-    web.registerController(PATH + "/**", this);
+                                     @NotNull final NuGetServerJavaSettings settings) {
+    mySettings = settings;
     myContainer = new ServletContainer(new NuGetODataApplication(producer));
 
     try {
@@ -91,23 +80,18 @@ public class ODataPackagesFeedController extends BaseController {
     };
   }
 
-  @Override
-  protected ModelAndView doHandle(@NotNull HttpServletRequest request,
-                                  @NotNull HttpServletResponse response) throws Exception {
-    if (!isGet(request)) {
-      //error response according to OData spec for unsupported oprtaions (modification operations)
-      response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE);
-    }
-
-    String requestPath = WebUtil.getPathWithoutAuthenticationType(request);
-    if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
-
-    final String path = requestPath.substring(PATH.length());
-    final String query = request.getQueryString();
-    myRequests.reportFeedRequest(path + (query != null ? ("?" + query) : ""));
-
-    myContainer.service(new RequestWrapper(request, MAP_PATH, SERVLET_PATH), response);
-    return null;
+  public boolean isAvailable() {
+    return mySettings.isNuGetJavaFeedEnabled();
   }
 
+  public void handleRequest(@NotNull final HttpServletRequest request,
+                            @NotNull final HttpServletResponse response) throws Exception {
+
+    if (!BaseController.isGet(request)) {
+      //error response according to OData spec for unsupported oprtaions (modification operations)
+      response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, "TeamCity provided feed is readonly.");
+    }
+
+    myContainer.service(new RequestWrapper(request, "/app", "/nuget/v1/FeedService.svc"), response);
+  }
 }

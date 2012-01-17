@@ -17,10 +17,10 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.NetworkUtil;
+import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducer;
-import jetbrains.buildServer.nuget.server.feed.server.javaFeed.ODataPackagesFeedController;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.odata4j.producer.ODataProducer;
@@ -74,7 +74,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   @Override
   protected String getNuGetServerUrl() {
-    return "http://localhost:" + myPort + ODataPackagesFeedController.PATH + "/";
+    return "http://localhost:" + myPort + NuGetServerSettingsImpl.PATH + "/";
   }
 
   protected void startNuGetFeedServer() {

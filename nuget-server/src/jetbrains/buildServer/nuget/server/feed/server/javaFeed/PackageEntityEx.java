@@ -42,7 +42,7 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
   }
 
   public String getAtomEntitySource(String baseUri) {
-    int idx = baseUri.indexOf(ODataPackagesFeedController.PATH);
+    int idx = baseUri.indexOf(baseUri);
     if (idx < 0) {
       return null;
     }

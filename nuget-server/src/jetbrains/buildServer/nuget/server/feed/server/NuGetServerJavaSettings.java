@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 17.01.12 17:22
