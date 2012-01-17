@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed;
 
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 

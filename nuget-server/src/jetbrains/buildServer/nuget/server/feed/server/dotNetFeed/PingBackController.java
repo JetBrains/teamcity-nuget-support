@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed;
 
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;

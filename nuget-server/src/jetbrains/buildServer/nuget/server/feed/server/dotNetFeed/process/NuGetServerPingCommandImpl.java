@@ -18,8 +18,8 @@ package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerUri;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerRunnerTokens;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerUri;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;

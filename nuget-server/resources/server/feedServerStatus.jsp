@@ -19,7 +19,7 @@
 <jsp:useBean id="actualServerUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="nugetStatusRefreshUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="imagesBase" scope="request" type="java.lang.String" />
-<jsp:useBean id="serverStatus" scope="request" type="jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus" />
+<jsp:useBean id="serverStatus" scope="request" type="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerStatus" />
 <jsp:useBean id="privateFeedUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="publicFeedUrl" scope="request" type="java.lang.String" />
 

@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerRunnerTokens;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllerBase;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllerHandler;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl;

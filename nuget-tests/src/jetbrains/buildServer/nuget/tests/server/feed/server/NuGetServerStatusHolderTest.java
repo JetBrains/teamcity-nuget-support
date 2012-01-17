@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerStatus;
 import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerStatusHolderImpl;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

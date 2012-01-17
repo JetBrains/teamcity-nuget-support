@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server;
+package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed;
 
 import org.jetbrains.annotations.Nullable;
 

@@ -134,7 +134,7 @@ public class NuGetServerRunnerSettingsImpl implements NuGetServerRunnerSettingsE
 
   @NotNull
   public String getNuGetFeedControllerPath() {
-    return "/app/nuget/v1/FeedService.svc";
+    return "/app/nuget";
   }
 
   @NotNull

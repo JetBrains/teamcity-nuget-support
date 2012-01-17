@@ -21,7 +21,7 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.BasePropertiesBean;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettingsEx;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatusHolder;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerStatusHolder;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;

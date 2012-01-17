@@ -14,33 +14,38 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server;
+package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed;
 
 import org.jetbrains.annotations.NotNull;
 
 /**
+ * NuGet Server status snapshot.
+ *
+ * Use {@link NuGetServerStatusHolder#getStatus()} to recieve a snapshot
+ *
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 02.11.11 12:41
+ *         Date: 01.11.11 17:29
+ * @see NuGetServerStatusHolder
  */
-public interface NuGetServerRunnerTokens {
+public interface NuGetServerStatus {
   /**
-   * @return http header that is used to provide auth token
+   * @return true is nuget server is running now
+   */
+  boolean isRunning();
+
+  /**
+   * @return true if nuget server is not running but soon be started
+   */
+  boolean isScheduledToStart();
+
+  /**
+   * @return null if no ping tasts were started or the ping result
+   */
+  Boolean getServerAccessible();
+
+  /**
+   * @return number of latest log lines to be shown on the web
    */
   @NotNull
-  String getAccessTokenHeaderName();
-
-  /**
-   * Access token is used to authorize NuGet Feed server requests to TeamCity
-   * to avoid leaks
-   * @return unique token.
-   */
-  @NotNull
-  String getAccessToken();
-
-
-  @NotNull
-  String getServerTokenHeaderName();
-
-  @NotNull
-  String getServerToken();
+  String getLogsSlice();
 }

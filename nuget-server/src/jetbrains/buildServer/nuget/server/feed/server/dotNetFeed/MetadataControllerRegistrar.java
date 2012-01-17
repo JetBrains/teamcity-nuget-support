@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed;
 
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 

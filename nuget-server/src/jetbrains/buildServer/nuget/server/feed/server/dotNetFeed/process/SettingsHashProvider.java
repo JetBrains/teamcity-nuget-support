@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process;
 
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerSettings;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerRunnerTokens;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerRunnerTokens;
 import org.jetbrains.annotations.NotNull;
 
 /**

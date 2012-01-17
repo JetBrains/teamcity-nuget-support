@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process;
 
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerUri;
+import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerUri;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
