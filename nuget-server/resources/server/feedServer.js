@@ -30,51 +30,30 @@ BS.NuGet.FeedServer = {
     }, 1000);
   },
 
-  refreshLog : function () {
-    $('nugetServerLogs').refresh();
+  _request : function(el, enabled) {
+    var url = $j(el).closest("div").data("url");
+
+    $j(el).closest("div").find("span:last").html(BS.loadingIcon);
+    $j(el).prop("disabled", "true");
+
+    BS.ajaxRequest(url, {
+      method : "POST",
+      parameters : {
+        'nuget-feed-enabled' : enabled
+      },
+      onComplete : function() {
+        $j(el).closest("div").find("span:last").html('');
+        $('nugetEnableDisable').refresh();
+      }
+    });
+
   },
 
-  disableFeedServer : function() {
-    BS.NuGet.FeedServer.DisableForm.show();
+  disableFeedServer : function(el) {
+    BS.NuGet.FeedServer._request(el, false);
   },
 
-  enableFeedServer : function() {
-    BS.NuGet.FeedServer.EnableForm.show();
+  enableFeedServer : function(el) {
+    BS.NuGet.FeedServer._request(el, true);
   }
 };
-
-BS.NuGet.FeedServer.EnableDisableForm = OO.extend(BS.PluginPropertiesForm, OO.extend(BS.AbstractModalDialog, {
-  getContainer : function () {
-    return $(this.formElement().id + 'Dialog');
-  },
-
-  saveForm : function () {
-    var that = this;
-    BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
-      onCompleteSave : function () {
-        BS.Util.reenableForm(that.formElement());
-        BS.NuGet.FeedServer.refreshStatus();
-        $('nugetEnableDisable').refresh();
-        $('nugetServerStatus').refresh();
-        that.close();
-      }
-    }));
-    return false;
-  },
-
-  show : function() {
-    this.showCentered();
-  }
-}));
-
-BS.NuGet.FeedServer.EnableForm = OO.extend(BS.NuGet.FeedServer.EnableDisableForm, {
-  formElement : function () {
-    return $('nugetEnableFeed');
-  }
-});
-
-BS.NuGet.FeedServer.DisableForm = OO.extend(BS.NuGet.FeedServer.EnableDisableForm, {
-  formElement : function () {
-    return $('nugetDisableFeed');
-  }
-});

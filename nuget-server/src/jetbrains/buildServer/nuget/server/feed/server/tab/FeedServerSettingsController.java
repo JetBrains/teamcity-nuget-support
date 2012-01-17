@@ -66,15 +66,6 @@ public class FeedServerSettingsController extends BaseController {
       return null;
     }
 
-    if (Boolean.TRUE.equals(param)) {
-      final String url = request.getParameter("prop:" + FeedServerContants.NUGET_SERVER_URL);
-      if (StringUtil.isEmptyOrSpaces(url)) {
-        mySettings.setDefaultTeamCityBaseUrl();
-      } else {
-        mySettings.setTeamCityBaseUrl(url.trim());
-      }
-    }
-
     mySettings.setNuGetFeedEnabled(param);
     response.setStatus(HttpServletResponse.SC_OK);
     return null;
@@ -82,7 +73,7 @@ public class FeedServerSettingsController extends BaseController {
 
   @Nullable
   private Boolean getServerStatus(@NotNull final HttpServletRequest request) {
-    final String v = request.getParameter("prop:" + FeedServerContants.NUGET_SERVER_ENABLED_CHECKBOX);
+    final String v = request.getParameter("nuget-feed-enabled");
     if (StringUtil.isEmptyOrSpaces(v)) return false;
     try {
       return Boolean.valueOf(v);

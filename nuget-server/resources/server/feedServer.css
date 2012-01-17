@@ -15,20 +15,16 @@
  */
 
 .nugetEnableFeedDialog {
-  width: 45em;
+  width: 60em;
 }
 
 table.nugetUrls {
-  width: 50em;
+  width: 60em;
 }
 
-table.nugetUrls td,
-table.nugetUrls th {
-  border: none;
-}
 
 table.nugetUrls th {
-  width: 20em;
+  width: 15em;
 }
 
 table.nugetUrls td div {

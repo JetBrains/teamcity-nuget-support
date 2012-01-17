@@ -22,7 +22,6 @@
 <jsp:useBean id="serverStatus" scope="request" type="jetbrains.buildServer.nuget.server.feed.server.NuGetServerStatus" />
 <jsp:useBean id="privateFeedUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="publicFeedUrl" scope="request" type="java.lang.String" />
-<jsp:useBean id="isGuestEnabled" type="java.lang.Boolean" scope="request"/>
 
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
 
@@ -77,35 +76,5 @@
     See <a href="<c:url value='/admin/admin.html?item=diagnostic&tab=log4j&file=teamcity-nuget-server.log'/>">NuGet Server logs</a> for more details
     </p>
   </c:if>
-
-
-
-    <h2 class="noBorder" style="padding-top: 2em;">NuGet Server Url:</h2>
-    <table class="runnerFormTable nugetUrls">
-      <tr>
-        <th>Authenticated Feed Url:</th>
-        <td>
-          <c:set var="url"><c:url value="${actualServerUrl}${privateFeedUrl}"/></c:set>
-          <div><a href="${url}">${url}</a></div>
-          <span class="smallNote">Access to the url requires HTTP authentication</span>
-        </td>
-      </tr>
-      <tr>
-        <th>Public Feed Url:</th>
-        <td>
-        <c:choose>
-          <c:when test="${not isGuestEnabled}">
-            <div>Not available.</div>
-            <span class="smallNote">Guest user is disabled. You need to enable guest user login in TeamCity general server settings for public feed to work.</span>
-          </c:when>
-          <c:otherwise>
-            <c:set var="url"><c:url value="${actualServerUrl}${publicFeedUrl}"/></c:set>
-            <div><a href="${url}">${url}</a></div>
-            <span class="smallNote">No authentication is required.</span>
-          </c:otherwise>
-        </c:choose>
-        </td>
-      </tr>
-    </table>
 
 </bs:refreshable>

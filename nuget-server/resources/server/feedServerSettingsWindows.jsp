@@ -17,94 +17,67 @@
 <%@ include file="/include-internal.jsp" %>
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 
-<jsp:useBean id="serverUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="nugetStatusRefreshUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="nugetSettingsPostUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="serverEnabled" type="java.lang.Boolean" scope="request"/>
+<jsp:useBean id="privateFeedUrl" scope="request" type="java.lang.String" />
+<jsp:useBean id="publicFeedUrl" scope="request" type="java.lang.String" />
+<jsp:useBean id="isGuestEnabled" type="java.lang.Boolean" scope="request"/>
+<jsp:useBean id="actualServerUrl" scope="request" type="java.lang.String" />
+
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerContants"/>
 
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
 <c:set var="nugetSettingsPostFullUrl"><c:url value="${nugetSettingsPostUrl}"/></c:set>
 
 <bs:refreshable containerId="nugetEnableDisable" pageUrl="${nugetStatusRefreshFullUrl}">
-  <div style="padding-top:1em;">
-    NuGet Server is
+  <div style="padding-top:1em;" data-url="${nugetSettingsPostFullUrl}">
+    NuGet Server<bs:help file="NuGet"/> is
     <c:choose>
       <c:when test="${serverEnabled}">
-        <strong>enabled</strong> <input type="button" value="Disable" onclick="return BS.NuGet.FeedServer.disableFeedServer();" />
+        <strong>enabled</strong> <input type="button" class="btn" value="Disable" onclick="return BS.NuGet.FeedServer.disableFeedServer(this);" />
       </c:when>
       <c:otherwise>
-        <strong>disabled</strong> <input type="button" value="Enable" onclick="return BS.NuGet.FeedServer.enableFeedServer();" />
+        <strong>disabled</strong> <input type="button" class="btn" value="Enable" onclick="return BS.NuGet.FeedServer.enableFeedServer(this);" />
       </c:otherwise>
     </c:choose>
+    <span><%--used for loading icon--%></span>
   </div>
+
+  <c:if test="${serverEnabled}">
+    <table class="runnerFormTable nugetUrls">
+      <tr>
+        <th>Authenticated Feed Url:</th>
+        <td>
+          <c:set var="url"><c:url value="${actualServerUrl}${privateFeedUrl}"/></c:set>
+          <div><a href="${url}">${url}</a></div>
+          <span class="smallNote">Access to the url requires HTTP authentication</span>
+        </td>
+      </tr>
+      <tr>
+        <th>Public Feed Url:</th>
+        <td>
+        <c:choose>
+          <c:when test="${not isGuestEnabled}">
+            <div>Not available.</div>
+            <span class="smallNote">
+              Guest user is disabled.
+            </span>
+            <span class="smallNote">
+              You need to enable guest user login in
+              TeamCity <a href="<c:url value="/admin/admin.html?item=serverConfigGeneral"/>">Global Settings</a>
+              for public feed to work.
+            </span>
+          </c:when>
+          <c:otherwise>
+            <c:set var="url"><c:url value="${actualServerUrl}${publicFeedUrl}"/></c:set>
+            <div><a href="${url}">${url}</a></div>
+            <span class="smallNote">No authentication is required.</span>
+          </c:otherwise>
+        </c:choose>
+        </td>
+      </tr>
+    </table>
+  </c:if>
+
 </bs:refreshable>
-
-<jsp:include page="feedServerStatus.jsp"/>
-
-
-<bs:modalDialog formId="nugetEnableFeed"
-                title="Configure NuGet Server"
-                action="${nugetSettingsPostFullUrl}"
-                closeCommand="BS.NuGet.FeedServer.EnableForm.close();"
-                saveCommand="BS.NuGet.FeedServer.EnableForm.saveForm();">
-  <props:hiddenProperty name="${fb.nugetServerEnabledCheckbox}" value="true"/>
-
-   <table class="runnerFormTable">
-    <tr>
-      <th style="width: 7em;">TeamCity Url:</th>
-      <td>
-        <props:textProperty name="${fb.nugetServerUrl}" className="longField"/>
-        <span class="smallNote">
-          Specify URL or TeamCity server for internally running
-          NuGet server process. Leave blank to use TeamCity server URL(${serverUrl})
-        </span>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <div class="attentionComment">
-          Server URL<bs:help file="Configuring+Server+URL"/> is <strong>${serverUrl}</strong>.
-          It will be used by NuGet Server process to connect to TeamCity server to fetch data.
-          Make sure this URL is available for localhost connections.
-        </div>
-      </td>
-    </tr>
-  </table>
-
-  <div class="saveButtonsBlock" style="border: none; margin-top: 1em;">
-    <forms:cancel onclick="BS.NuGet.FeedServer.EnableForm.close();"/>
-    <forms:submit label="Enable"/>
-    <forms:saving id="nugetSettingsSaving"/>
-    <div class="clr"></div>
-  </div>
-
-  <div class="clr"></div>
-</bs:modalDialog>
-
-<bs:modalDialog formId="nugetDisableFeed"
-                title="Configure NuGet Server"
-                action="${nugetSettingsPostFullUrl}"
-                closeCommand="BS.NuGet.FeedServer.DisableForm.close();"
-                saveCommand="BS.NuGet.FeedServer.DisableForm.saveForm();">
-  <props:hiddenProperty name="${fb.nugetServerEnabledCheckbox}" value="false"/>
-
-  TeamCity NuGet Feed server will be stopped. Continue?
-
-  <div class="saveButtonsBlock" style="border: none; margin-top: 1em;">
-    <forms:cancel onclick="return BS.NuGet.FeedServer.DisableForm.close();"/>
-    <forms:submit label="Disable"/>
-    <forms:saving id="nugetSettingsSaving"/>
-    <div class="clr"></div>
-  </div>
-
-  <div class="clr"></div>
-</bs:modalDialog>
-
-
-<script type="text/javascript">
-  Event.observe(window, "load", function () {
-    BS.NuGet.FeedServer.registerStatusRefresh();
-  });
-</script>
-
