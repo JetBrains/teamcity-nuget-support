@@ -27,14 +27,11 @@ import java.util.Map;
 public class NuGetIndexEntry {
   @NotNull private final String myKey;
   @NotNull private final Map<String, String> myAttributes;
-  @NotNull private final String myDownloadUrl;
 
   public NuGetIndexEntry(@NotNull String key,
-                         @NotNull Map<String, String> attributes,
-                         @NotNull final String downloadUrl) {
+                         @NotNull Map<String, String> attributes) {
     myKey = key;
     myAttributes = attributes;
-    myDownloadUrl = downloadUrl;
   }
 
   @NotNull
@@ -49,6 +46,6 @@ public class NuGetIndexEntry {
 
   @NotNull
   public String getPackageDownloadUrl() {
-    return myDownloadUrl;
+    return myAttributes.get(PackagesIndex.TEAMCITY_DOWNLOAD_URL);
   }
 }

@@ -91,7 +91,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected NuGetIndexEntry addPackage(@NotNull final File file, boolean isLatest) throws IOException {
     final int buildId = myCount++;
     final Map<String,String> map = indexPackage(file, isLatest, buildId);
-    NuGetIndexEntry e = new NuGetIndexEntry(file.getName(), map, "/downlaodREpoCon/downlaod-url");
+    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
+    NuGetIndexEntry e = new NuGetIndexEntry(file.getName(), map);
     myFeed.add(e);
     return e;
   }
@@ -106,8 +107,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     map.put("Version", ver + "." + myCount);
     map.put("IsLatestVersion", String.valueOf(isLatest));
     map.put("IsAbsoluteLatestVersion", String.valueOf(isLatest));
-
-    NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map, "/downlaodREpoCon/downlaod-url");
+    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
+    NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
     myFeed.add(e);
     return e;
   }

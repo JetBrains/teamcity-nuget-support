@@ -17,13 +17,14 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.*;
 
 /**
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -38,7 +39,7 @@ public class NuGetPackageBuilder {
     myKey = entry.getKey();
     myMetadata = new HashMap<String, String>(entry.getMetadata());
     myBuildId = entry.getBuildId();
-    setMetadata("TeamCityBuildId", String.valueOf(myBuildId));
+    setMetadata(TEAMCITY_BUILD_ID, String.valueOf(myBuildId));
   }
 
   @NotNull
@@ -57,20 +58,20 @@ public class NuGetPackageBuilder {
 
   @Nullable
   public String getBuildTypeId() {
-    return myMetadata.get(PackagesIndex.TEAMCITY_BUILD_TYPE_ID);
+    return myMetadata.get(TEAMCITY_BUILD_TYPE_ID);
   }
 
   public void setBuildTypeId(@NotNull String buildTypeId) {
-    setMetadata(PackagesIndex.TEAMCITY_BUILD_TYPE_ID, buildTypeId);
+    setMetadata(TEAMCITY_BUILD_TYPE_ID, buildTypeId);
   }
 
   public void setDownloadUrl(@NotNull final String downloadUrl) {
-    setMetadata("TeamCityDownloadUrl", downloadUrl);
+    setMetadata(TEAMCITY_DOWNLOAD_URL, downloadUrl);
   }
 
   @Nullable
   public String getDownloadUrl() {
-    return myMetadata.get("TeamCityDownloadUrl");
+    return myMetadata.get(TEAMCITY_DOWNLOAD_URL);
   }
 
   public void setMetadata(@NotNull final String key, @NotNull final String value) {
@@ -79,13 +80,11 @@ public class NuGetPackageBuilder {
 
   @Nullable
   public NuGetIndexEntry build() {
-    final String downloadUrl = getDownloadUrl();
-    if (downloadUrl == null) return null;
+    if (getDownloadUrl() == null) return null;
     if (getBuildTypeId() == null) return null;
     return new NuGetIndexEntry(
             myKey,
-            myMetadata,
-            downloadUrl
+            myMetadata
     );
   }
 }
