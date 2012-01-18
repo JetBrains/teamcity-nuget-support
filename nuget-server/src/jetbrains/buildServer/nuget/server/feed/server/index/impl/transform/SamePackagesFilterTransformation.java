@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.index.impl;
+package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
-import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
-*         Date: 18.01.12 20:31
+*         Date: 18.01.12 20:29
 */
-public class IsLatestFieldTransformation implements PackageTransformation {
-  private final ProjectManager myProjects;
-  private final LatestBuildsCache latestCache;
-
-  public IsLatestFieldTransformation(@NotNull final ProjectManager projects) {
-    myProjects = projects;
-    latestCache = new LatestBuildsCache(myProjects);
-  }
+public class SamePackagesFilterTransformation implements PackageTransformation {
+  private final Set<String> reportedPackages = new HashSet<String>();
 
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
-    final Boolean isLatestVersion = latestCache.isLatest(builder.getBuildTypeId(), builder.getBuildId());
-    if (isLatestVersion == null) {
+    if (!reportedPackages.add(builder.getKey())) {
       return Status.SKIP;
     }
-    //TODO: consider semVersions here
-    builder.setMetadata("IsLatestVersion", String.valueOf(isLatestVersion));
-    builder.setMetadata("IsAbsoluteLatestVersion", String.valueOf(isLatestVersion));
     return Status.CONTINUE;
   }
 }

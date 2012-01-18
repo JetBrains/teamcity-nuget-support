@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.index.impl;
+package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.auth.AuthUtil;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.index.impl;
+package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -26,16 +28,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
-* Created by Eugene Petrenko (eugene.petrenko@gmail.com)
-* Date: 30.12.11 19:16
+* @author Eugene Petrenko (eugene.petrenko@gmail.com)
+*         Date: 18.01.12 20:31
 */
-public class LatestBuildsCache {
-  @NotNull
+public class IsLatestFieldTransformation implements PackageTransformation {
   private final ProjectManager myProjectManager;
-  @NotNull private final Map<String, Long> myBuildTypeToLatest = new HashMap<String, Long>();
+  private final Map<String, Long> myBuildTypeToLatest = new HashMap<String, Long>();
 
-  public LatestBuildsCache(@NotNull final ProjectManager projectManager) {
-    myProjectManager = projectManager;
+  public IsLatestFieldTransformation(@NotNull final ProjectManager projects) {
+    myProjectManager = projects;
   }
 
   @Nullable
@@ -64,5 +65,16 @@ public class LatestBuildsCache {
       ///AccessDeniedException could be thrown
       return null;
     }
+  }
+
+  public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
+    final Boolean isLatestVersion = isLatest(builder.getBuildTypeId(), builder.getBuildId());
+    if (isLatestVersion == null) {
+      return Status.SKIP;
+    }
+    //TODO: consider semVersions here
+    builder.setMetadata("IsLatestVersion", String.valueOf(isLatestVersion));
+    builder.setMetadata("IsAbsoluteLatestVersion", String.valueOf(isLatestVersion));
+    return Status.CONTINUE;
   }
 }

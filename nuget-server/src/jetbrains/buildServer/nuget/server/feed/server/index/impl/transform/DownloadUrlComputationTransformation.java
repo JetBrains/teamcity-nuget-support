@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.index.impl;
+package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import org.jetbrains.annotations.NotNull;
 
 /**

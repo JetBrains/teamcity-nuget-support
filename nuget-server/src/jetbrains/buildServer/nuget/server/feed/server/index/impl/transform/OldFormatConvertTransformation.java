@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.index.impl;
+package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.ODataDataFormat;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
