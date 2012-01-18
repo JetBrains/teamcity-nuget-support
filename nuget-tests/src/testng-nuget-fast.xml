@@ -33,6 +33,7 @@
       <class name="jetbrains.buildServer.nuget.tests.server.feed.server.SettingsHashTest" />
       <class name="jetbrains.buildServer.nuget.tests.server.feed.server.NuGetServerRunnerSettingsTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.feed.server.RequestWrapperTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.PackageIndexTest"/>
 
       <!-- misc -->
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest" />

@@ -34,7 +34,7 @@ public class LatestBuildsCache {
   private final ProjectManager myProjectManager;
   @NotNull private final Map<String, Long> myBuildTypeToLatest = new HashMap<String, Long>();
 
-  public LatestBuildsCache(@NotNull ProjectManager projectManager) {
+  public LatestBuildsCache(@NotNull final ProjectManager projectManager) {
     myProjectManager = projectManager;
   }
 
@@ -42,7 +42,7 @@ public class LatestBuildsCache {
   public Boolean isLatest(@NotNull final String buildTypeId, final long buildId) {
     Long build = myBuildTypeToLatest.get(buildTypeId);
     if (build == null) {
-      final SBuildType buildTypeById = myProjectManager.findBuildTypeById(buildTypeId);
+      final SBuildType buildTypeById = safeFindBuildTypeById(buildTypeId);
       //skip project if no build type found
       if (buildTypeById == null) return null;
 
@@ -53,5 +53,15 @@ public class LatestBuildsCache {
       myBuildTypeToLatest.put(buildTypeId, build = lastChangesFinished.getBuildId());
     }
     return build == buildId;
+  }
+
+  @Nullable
+  private SBuildType safeFindBuildTypeById(@NotNull final String buildTypeId) {
+    try {
+      return myProjectManager.findBuildTypeById(buildTypeId);
+    } catch (RuntimeException e) {
+      ///AccessDeniedException could be thrown
+      return null;
+    }
   }
 }
