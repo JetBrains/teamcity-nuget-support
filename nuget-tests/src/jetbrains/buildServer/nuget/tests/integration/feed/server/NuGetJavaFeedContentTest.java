@@ -18,17 +18,16 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.server.entity.FeedParseResult;
-import jetbrains.buildServer.nuget.tests.server.entity.XmlFeedParsers;
-import jetbrains.buildServer.nuget.tests.server.entity.MetadataParseResult;
 import jetbrains.buildServer.nuget.tests.server.entity.MetadataBeanProperty;
+import jetbrains.buildServer.nuget.tests.server.entity.MetadataParseResult;
+import jetbrains.buildServer.nuget.tests.server.entity.XmlFeedParsers;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.XmlUtil;
-import org.jdom.Content;
-import org.jdom.Element;
-import org.jdom.JDOMException;
+import org.jdom.*;
 import org.jdom.xpath.XPath;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -40,6 +39,12 @@ import java.util.*;
  * Date: 06.01.12 22:23
  */
 public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
+  private static final boolean LOCAL_DIFF_GOLD_AND_GENERATED = false;
+
+  @BeforeMethod
+  protected void setUp() throws Exception {
+    super.setUp();
+  }
 
   @Test
   public void testMetadata_v1() throws JDOMException, IOException {
@@ -64,7 +69,20 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   }
 
   private void checkFeed(@NotNull final String feedXml, @NotNull final String gold) throws JDOMException, IOException {
-    FeedParseResult actual = XmlFeedParsers.loadFeedBeans(parseXml(feedXml));
+    final Element root = parseXml(feedXml);
+
+    final String base = root.getAttributeValue("base", Namespace.XML_NAMESPACE);
+    Assert.assertTrue(base.startsWith(getNuGetServerUrl()), base);
+
+    XPath xp = XPath.newInstance("//a:content/@src");
+    xp.addNamespace("a", "http://www.w3.org/2005/Atom");
+    for (Object o : xp.selectNodes(root)) {
+      Attribute att = (Attribute) o;
+      final String value = att.getValue();
+      Assert.assertTrue(value.startsWith(getServerBase() + "/"), value);
+    }
+
+    FeedParseResult actual = XmlFeedParsers.loadFeedBeans(root);
     FeedParseResult expected = XmlFeedParsers.loadFeedBeans(parseGoldXml(gold));
 
     Assert.assertFalse(actual.getPropertyNames().isEmpty());
@@ -152,6 +170,8 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   private void compareStringAsXml(String actualXml, String goldPath, boolean checkUnderTeamCity) throws JDOMException, IOException {
     //disable comparison check for TeamCity
     if (!checkUnderTeamCity && System.getenv("TEAMCITY_VERSION") != null) return;
+    //noinspection PointlessBooleanExpression
+    if (!checkUnderTeamCity && !LOCAL_DIFF_GOLD_AND_GENERATED) return;
     System.out.println("actualXml = " + actualXml);
     compareXmlWithGold(parseXml(actualXml), goldPath);
   }

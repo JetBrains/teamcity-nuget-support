@@ -76,9 +76,14 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myServer.stop();
   }
 
+  @NotNull
+  protected String getServerBase() {
+    return "http://localhost:" + myPort;
+  }
+
   @Override
   protected String getNuGetServerUrl() {
-    return "http://localhost:" + myPort + NuGetServerSettingsImpl.PATH + "/";
+    return getServerBase() + NuGetServerSettingsImpl.PATH + "/";
   }
 
   protected void startNuGetFeedServer() {
