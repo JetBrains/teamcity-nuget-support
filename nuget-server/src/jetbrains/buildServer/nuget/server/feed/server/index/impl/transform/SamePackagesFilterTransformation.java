@@ -32,9 +32,6 @@ public class SamePackagesFilterTransformation implements PackageTransformation {
 
   @NotNull
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
-    if (!reportedPackages.add(builder.getKey())) {
-      return Status.SKIP;
-    }
-    return Status.CONTINUE;
+    return reportedPackages.add(builder.getKey()) ? Status.CONTINUE : Status.SKIP;
   }
 }
