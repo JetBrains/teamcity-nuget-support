@@ -39,7 +39,8 @@ public class LatestBuildsCache {
   }
 
   @Nullable
-  public Boolean isLatest(@NotNull final String buildTypeId, final long buildId) {
+  public Boolean isLatest(@Nullable final String buildTypeId, final long buildId) {
+    if (buildTypeId == null) return null;
     Long build = myBuildTypeToLatest.get(buildTypeId);
     if (build == null) {
       final SBuildType buildTypeById = safeFindBuildTypeById(buildTypeId);
