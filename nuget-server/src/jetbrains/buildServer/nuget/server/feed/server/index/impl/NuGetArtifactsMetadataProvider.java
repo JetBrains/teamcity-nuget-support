@@ -80,8 +80,6 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
         ma.put(TEAMCITY_ARTIFACT_RELPATH, aPackage.getRelativePath());
         ma.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
 
-
-        
         store.addParameters(aPackage.getName(), ma);
       } catch (PackageLoadException e) {
         LOG.warn("Failed to read nuget package: " + aPackage);
