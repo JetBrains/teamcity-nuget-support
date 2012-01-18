@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
 *         Date: 18.01.12 20:29
 */
-class DownloadUrlComputationTransformation implements PackageTransformation {
+public class DownloadUrlComputationTransformation implements PackageTransformation {
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
     String relPath = builder.getMetadata().get(PackagesIndex.TEAMCITY_ARTIFACT_RELPATH);
     final String buildTypeId = builder.getBuildTypeId();

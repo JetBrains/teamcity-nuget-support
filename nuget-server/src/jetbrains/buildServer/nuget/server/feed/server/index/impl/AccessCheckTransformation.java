@@ -23,15 +23,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
-* @author Eugene Petrenko (eugene.petrenko@gmail.com)
-*         Date: 18.01.12 20:30
-*/
-class AccessCheckTransformation implements PackageTransformation {
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 18.01.12 20:30
+ */
+public class AccessCheckTransformation implements PackageTransformation {
   private final ProjectManager myProjects;
   private final SecurityContext myContext;
 
-  AccessCheckTransformation(@NotNull final ProjectManager projects,
-                            @NotNull final SecurityContext context) {
+  public AccessCheckTransformation(@NotNull final ProjectManager projects,
+                                   @NotNull final SecurityContext context) {
     myProjects = projects;
     myContext = context;
   }

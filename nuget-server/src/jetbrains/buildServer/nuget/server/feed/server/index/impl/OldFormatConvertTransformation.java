@@ -26,10 +26,10 @@ import org.jetbrains.annotations.Nullable;
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
 *         Date: 18.01.12 20:29
 */
-class OldFormatConvertTransformation implements PackageTransformation {
+public class OldFormatConvertTransformation implements PackageTransformation {
   private final BuildsManager myBuilds;
 
-  OldFormatConvertTransformation(@NotNull final BuildsManager builds) {
+  public OldFormatConvertTransformation(@NotNull final BuildsManager builds) {
     myBuilds = builds;
   }
 

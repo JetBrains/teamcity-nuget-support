@@ -23,11 +23,11 @@ import org.jetbrains.annotations.NotNull;
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
 *         Date: 18.01.12 20:31
 */
-class IsLatestFieldTransformation implements PackageTransformation {
+public class IsLatestFieldTransformation implements PackageTransformation {
   private final ProjectManager myProjects;
   private final LatestBuildsCache latestCache;
 
-  IsLatestFieldTransformation(@NotNull final ProjectManager projects) {
+  public IsLatestFieldTransformation(@NotNull final ProjectManager projects) {
     myProjects = projects;
     latestCache = new LatestBuildsCache(myProjects);
   }

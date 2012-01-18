@@ -25,7 +25,7 @@ import java.util.Set;
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
 *         Date: 18.01.12 20:29
 */
-class SamePackagesFilterTransformation implements PackageTransformation {
+public class SamePackagesFilterTransformation implements PackageTransformation {
   private final Set<String> reportedPackages = new HashSet<String>();
 
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
