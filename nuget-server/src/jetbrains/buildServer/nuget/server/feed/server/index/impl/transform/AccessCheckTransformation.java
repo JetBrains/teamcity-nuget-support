@@ -58,6 +58,7 @@ public class AccessCheckTransformation implements PackageTransformation {
     return AuthUtil.hasReadAccessTo(myContext.getAuthorityHolder(), projectId);
   }
 
+  @NotNull
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
     if (!isAccessible(builder.getBuildTypeId())) {
       return Status.SKIP;

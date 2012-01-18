@@ -67,6 +67,7 @@ public class IsLatestFieldTransformation implements PackageTransformation {
     }
   }
 
+  @NotNull
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
     final Boolean isLatestVersion = isLatest(builder.getBuildTypeId(), builder.getBuildId());
     if (isLatestVersion == null) {

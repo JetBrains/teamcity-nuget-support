@@ -56,6 +56,7 @@ public class OldFormatConvertTransformation implements PackageTransformation {
     return build.getBuildTypeId();
   }
 
+  @NotNull
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
     if (builder.getBuildTypeId() == null) {
       final String buildTypeId = findBuildTypeId(builder);

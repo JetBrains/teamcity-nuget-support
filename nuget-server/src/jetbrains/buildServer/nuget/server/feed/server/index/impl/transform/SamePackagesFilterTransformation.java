@@ -30,6 +30,7 @@ import java.util.Set;
 public class SamePackagesFilterTransformation implements PackageTransformation {
   private final Set<String> reportedPackages = new HashSet<String>();
 
+  @NotNull
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
     if (!reportedPackages.add(builder.getKey())) {
       return Status.SKIP;

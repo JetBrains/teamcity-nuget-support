@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 *         Date: 18.01.12 20:29
 */
 public class DownloadUrlComputationTransformation implements PackageTransformation {
+  @NotNull
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
     String relPath = builder.getMetadata().get(PackagesIndex.TEAMCITY_ARTIFACT_RELPATH);
     final String buildTypeId = builder.getBuildTypeId();

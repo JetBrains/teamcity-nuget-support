@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 *         Date: 18.01.12 20:17
 */
 public interface PackageTransformation {
+  @NotNull
   Status applyTransformation(@NotNull final NuGetPackageBuilder builder);
 
   enum Status {
