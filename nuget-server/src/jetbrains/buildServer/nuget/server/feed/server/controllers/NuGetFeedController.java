@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -70,12 +71,15 @@ public class NuGetFeedController extends BaseController {
     final String pathAndQuery = path + (query != null ? ("?" + query) : "");
     myRequestsList.reportFeedRequest(pathAndQuery);
 
+    final long startTime = new Date().getTime();
     for (NuGetFeedHandler handler : myHandlers) {
       if (handler.isAvailable()) {
         handler.handleRequest(myNuGetPath, request, response);
         return null;
       }
     }
+    final long actualTime = new Date().getTime() - startTime;
+    myRequestsList.reportFeedRequestFinished(pathAndQuery, actualTime);
 
     return noImplementationFoundError(response);
   }

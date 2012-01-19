@@ -35,7 +35,7 @@ import java.util.Iterator;
  */
 public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvider, UsageStatisticsPresentationProvider {
   public static final String SERVER_ENABLED_KEY = "jetbrains.nuget.server";
-  public static final String TOTAL_REQUESTS = "jetbrains.nuget.differentRequests";
+  public static final String TOTAL_REQUESTS = "jetbrains.nuget.feedDailyRequests";
   public static final String TOTAL_PACKAGES = "jetbrains.nuget.totalPackages";
   private final NuGetServerSettings mySettings;
   private final RecentNuGetRequests myRequests;
@@ -68,7 +68,7 @@ public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvid
   }
 
   public void accept(@NotNull UsageStatisticsPresentationManager presentationManager) {
-    presentationManager.applyPresentation(TOTAL_REQUESTS, "Feed Request Kinds", "NuGet", null, null);
+    presentationManager.applyPresentation(TOTAL_REQUESTS, "Feed Requests Count per Day", "NuGet", null, null);
     presentationManager.applyPresentation(TOTAL_PACKAGES, "Packages Count", "NuGet", null, null);
     presentationManager.applyPresentation(SERVER_ENABLED_KEY, "NuGet Feed Server", "NuGet", new UsageStatisticsFormatter() {
       @NotNull
