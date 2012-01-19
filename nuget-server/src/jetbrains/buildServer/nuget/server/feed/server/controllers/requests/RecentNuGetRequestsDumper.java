@@ -41,13 +41,7 @@ public class RecentNuGetRequestsDumper {
       public void run() {
         final Collection<String> recentRequests = requests.getRecentRequests();
         if (recentRequests.isEmpty()) return;
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("NuGet recent requests:\r\n");
-        for (String s : recentRequests) {
-          sb.append(s).append("\r\n");
-        }
-        LOG.info(sb.toString());
+        LOG.info("NuGet recent requests: " + recentRequests);
       }
     };
     final ScheduledFuture<?> future = services.getNormalExecutorService().scheduleWithFixedDelay(command, 60, 60, TimeUnit.MINUTES);
