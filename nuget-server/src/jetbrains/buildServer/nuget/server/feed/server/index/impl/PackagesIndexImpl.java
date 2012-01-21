@@ -71,7 +71,13 @@ public class PackagesIndexImpl implements PackagesIndex {
             new Mapper<BuildMetadataEntry, NuGetIndexEntry>() {
               @Nullable
               public NuGetIndexEntry mapKey(@NotNull BuildMetadataEntry e) {
-                final NuGetPackageBuilder pb = new NuGetPackageBuilder(e);
+                final NuGetPackageBuilder pb = new NuGetPackageBuilder(
+                        e.getKey(), 
+                        e.getBuildId(), 
+                        e.getMetadata());
+
+                //todo: move into transform
+                pb.setMetadata(TEAMCITY_BUILD_ID, String.valueOf(e.getBuildId()));
                 for (PackageTransformation transformation : trasformations) {
                   if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
                 }
