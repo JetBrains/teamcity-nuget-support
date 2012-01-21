@@ -18,25 +18,25 @@ package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
-* @author Eugene Petrenko (eugene.petrenko@gmail.com)
-*         Date: 18.01.12 20:29
-*/
-public class DownloadUrlComputationTransformation implements PackageTransformation {
-  @NotNull
-  public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 18.01.12 20:29
+ */
+public class DownloadUrlComputationTransformation extends DownloadUrlComputationTransformationBase {
+  @Override
+  @Nullable
+  protected String getDownloadUrl(@NotNull NuGetPackageBuilder builder) {
     String relPath = builder.getMetadata().get(PackagesIndex.TEAMCITY_ARTIFACT_RELPATH);
     final String buildTypeId = builder.getBuildTypeId();
     if (relPath == null || buildTypeId == null) {
-      return Status.SKIP;
+      return null;
     }
 
     while (relPath.startsWith("/")) relPath = relPath.substring(1);
-    final String downloadUrl = "/repository/download/" + buildTypeId + "/" + builder.getBuildId() + ":id/" + relPath;
-    builder.setDownloadUrl(downloadUrl);
-    return Status.CONTINUE;
+    return "/repository/download/" + buildTypeId + "/" + builder.getBuildId() + ":id/" + relPath;
   }
+
 }

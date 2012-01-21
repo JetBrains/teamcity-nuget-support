@@ -18,6 +18,9 @@ package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
+import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SFinishedBuild;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;

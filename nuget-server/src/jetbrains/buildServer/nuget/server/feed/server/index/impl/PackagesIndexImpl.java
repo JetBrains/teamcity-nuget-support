@@ -16,10 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
-import jetbrains.buildServer.dataStructures.DecoratingIterator;
-import jetbrains.buildServer.dataStructures.Mapper;
-import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.*;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.ProjectManager;
@@ -27,7 +23,6 @@ import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -35,7 +30,7 @@ import java.util.*;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 19.10.11 16:18
  */
-public class PackagesIndexImpl implements PackagesIndex {
+public class PackagesIndexImpl extends PackagesIndexBase<BuildMetadataEntry> {
   private final MetadataStorage myStorage;
   private final BuildsManager myBuilds;
   private final ProjectManager myProjects;
@@ -51,38 +46,39 @@ public class PackagesIndexImpl implements PackagesIndex {
     myContext = context;
   }
 
+  @Override
   @NotNull
   public Iterator<BuildMetadataEntry> getEntries() {
     return myStorage.getAllEntries(NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
   }
 
-  @NotNull
-  public Iterator<NuGetIndexEntry> getNuGetEntries() {
-    final Collection<PackageTransformation> trasformations = Arrays.asList(
-            new AddBuildIdTransformation(),
-            new SamePackagesFilterTransformation(),
-            new OldFormatConvertTransformation(myBuilds),
-            new AccessCheckTransformation(myProjects, myContext),
-            new IsLatestFieldTransformation(),
-            new DownloadUrlComputationTransformation()
-    );
-
-    return new DecoratingIterator<NuGetIndexEntry, BuildMetadataEntry>(
-            getEntries(),
-            new Mapper<BuildMetadataEntry, NuGetIndexEntry>() {
-              @Nullable
-              public NuGetIndexEntry mapKey(@NotNull BuildMetadataEntry e) {
-                final NuGetPackageBuilder pb = new NuGetPackageBuilder(
-                        e.getKey(), 
-                        e.getBuildId(), 
-                        e.getMetadata());
-
-                for (PackageTransformation transformation : trasformations) {
-                  if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
-                }
-                return pb.build();
-              }
-            });
+  @Override
+  protected NuGetPackageBuilder builderFromEntry(@NotNull BuildMetadataEntry e) {
+    return new NuGetPackageBuilder(
+            e.getKey(),
+            e.getBuildId(),
+            e.getMetadata());
   }
+
+  @NotNull
+  @Override
+  protected Collection<PackageTransformation> getTransformations() {
+    List<PackageTransformation> res = new ArrayList<PackageTransformation>();
+
+    res.add(new AddBuildIdTransformation());
+    res.add(new OldFormatConvertTransformation(myBuilds));
+    res.add(new AccessCheckTransformation(myProjects, myContext));
+
+    res.addAll(super.getTransformations());
+
+    return res;
+  }
+
+  @NotNull
+  @Override
+  protected DownloadUrlComputationTransformation createDownloadUrlTranslation() {
+    return new DownloadUrlComputationTransformation();
+  }
+
 
 }
