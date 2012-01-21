@@ -63,12 +63,16 @@ public abstract class PackagesIndexBase<TEntry> implements PackagesIndex {
     return Arrays.asList(
             new SamePackagesFilterTransformation(),
             createIsLatestTransformation(),
-            createDownloadUrlTranslation()
+            new DownloadUrlComputationTransformationBase() {
+              @Override
+              protected String getDownloadUrl(@NotNull NuGetPackageBuilder builder) {
+                return PackagesIndexBase.this.getDownloadUrl(builder);
+              }
+            }
     );
   }
-
-  @NotNull
-  protected abstract DownloadUrlComputationTransformation createDownloadUrlTranslation();
+  
+  protected abstract String getDownloadUrl(@NotNull final NuGetPackageBuilder builder);
 
   @NotNull
   protected abstract IsLatestFieldTransformationBase createIsLatestTransformation();
