@@ -52,6 +52,7 @@
     <orderEntry type="library" name="TeamCity server runtime" level="project" />
     <orderEntry type="library" name="odata4j" level="project" />
     <orderEntry type="library" name="jersey" level="project" />
+    <orderEntry type="module" module-name="nuget-feed" />
   </component>
 </module>
 
