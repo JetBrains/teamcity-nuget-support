@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -31,7 +30,7 @@ import java.util.Map;
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
 *         Date: 18.01.12 20:31
 */
-public class IsLatestFieldTransformation implements PackageTransformation {
+public class IsLatestFieldTransformation extends IsLatestFieldTransformationBase {
   private final ProjectManager myProjectManager;
   private final Map<String, Long> myBuildTypeToLatest = new HashMap<String, Long>();
 
@@ -39,8 +38,9 @@ public class IsLatestFieldTransformation implements PackageTransformation {
     myProjectManager = projects;
   }
 
-  @Nullable
-  public Boolean isLatest(@Nullable final String buildTypeId, final long buildId) {
+  @Override
+  protected Boolean isLatest(@NotNull final NuGetPackageBuilder builder) {
+    final String buildTypeId = builder.getBuildTypeId();
     if (buildTypeId == null) return null;
     Long build = myBuildTypeToLatest.get(buildTypeId);
     if (build == null) {
@@ -54,7 +54,7 @@ public class IsLatestFieldTransformation implements PackageTransformation {
 
       myBuildTypeToLatest.put(buildTypeId, build = lastChangesFinished.getBuildId());
     }
-    return build == buildId;
+    return build == builder.getBuildId();
   }
 
   @Nullable
@@ -65,17 +65,5 @@ public class IsLatestFieldTransformation implements PackageTransformation {
       ///AccessDeniedException could be thrown
       return null;
     }
-  }
-
-  @NotNull
-  public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
-    final Boolean isLatestVersion = isLatest(builder.getBuildTypeId(), builder.getBuildId());
-    if (isLatestVersion == null) {
-      return Status.SKIP;
-    }
-    //TODO: consider semVersions here
-    builder.setMetadata("IsLatestVersion", String.valueOf(isLatestVersion));
-    builder.setMetadata("IsAbsoluteLatestVersion", String.valueOf(isLatestVersion));
-    return Status.CONTINUE;
   }
 }
