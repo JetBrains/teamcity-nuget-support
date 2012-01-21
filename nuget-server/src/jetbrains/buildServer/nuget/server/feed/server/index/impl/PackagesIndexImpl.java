@@ -59,6 +59,7 @@ public class PackagesIndexImpl implements PackagesIndex {
   @NotNull
   public Iterator<NuGetIndexEntry> getNuGetEntries() {
     final Collection<PackageTransformation> trasformations = Arrays.asList(
+            new AddBuildIdTransformation(),
             new SamePackagesFilterTransformation(),
             new OldFormatConvertTransformation(myBuilds),
             new AccessCheckTransformation(myProjects, myContext),
@@ -76,8 +77,6 @@ public class PackagesIndexImpl implements PackagesIndex {
                         e.getBuildId(), 
                         e.getMetadata());
 
-                //todo: move into transform
-                pb.setMetadata(TEAMCITY_BUILD_ID, String.valueOf(e.getBuildId()));
                 for (PackageTransformation transformation : trasformations) {
                   if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
                 }
