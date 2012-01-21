@@ -98,7 +98,7 @@ public class LocalNuGetPackageItemsFactory {
     addParameter(map, "PackageHashAlgorithm", "SHA512");
     addParameter(map, "PackageSize", String.valueOf(size));
     //addParameter(map, "IsLatestVersion", "");
-    addParameter(map, "LastUpdated", ODataDataFormat.formatDate(nupkg.getLastUpdated()));
+    addParameter(map, "LastUpdated", IndexDateFormat.formatDate(nupkg.getLastUpdated()));
     //addParameter(map, "Updated", formatDate(updated));
 
     return map;

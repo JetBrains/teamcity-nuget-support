@@ -26,7 +26,7 @@ import java.util.Date;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 24.11.11 13:09
  */
-public class ODataDataFormat {
+public class IndexDateFormat {
   @NotNull
   public static String formatDate(@NotNull final Date date) {
     return "j" + date.getTime();

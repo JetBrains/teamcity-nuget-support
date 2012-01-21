@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.ODataDataFormat;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.IndexDateFormat;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -52,7 +52,7 @@ public class OldFormatConvertTransformation implements PackageTransformation {
     if (aBuild == null || !(aBuild instanceof SFinishedBuild)) return null;
     final SFinishedBuild build = (SFinishedBuild) aBuild;
 
-    builder.setMetadata("LastUpdated", ODataDataFormat.formatDate(build.getFinishDate()));
+    builder.setMetadata("LastUpdated", IndexDateFormat.formatDate(build.getFinishDate()));
     return build.getBuildTypeId();
   }
 

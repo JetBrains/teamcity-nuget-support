@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.server.entity;
 
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.ODataDataFormat;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.IndexDateFormat;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.edm.EdmSimpleType;
@@ -94,7 +94,7 @@ public class BeanGenerator extends MethodsGenerator {
     } else if (p.getType() == EdmSimpleType.INT64){
       wr.println("    return Long.parseLong(v);");
     } else if (p.getType() == EdmSimpleType.DATETIME){
-      wr.println("    return " + ODataDataFormat.class.getName() + ".parseDate(v);");
+      wr.println("    return " + IndexDateFormat.class.getName() + ".parseDate(v);");
     } else {
       wr.println("    UnsupportedTypeError");
     }
