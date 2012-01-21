@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.ArtifactPackageFile;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
@@ -126,7 +127,7 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
 
     try {
       final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-      final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(artifact, new Date()));
+      final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(new ArtifactPackageFile(artifact, new Date())));
       map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
       map.put(TEAMCITY_BUILD_TYPE_ID, "bt_" + packageFile.getName());
       map.put("TeamCityDownloadUrl", "some-download-url/" + packageFile.getName());
