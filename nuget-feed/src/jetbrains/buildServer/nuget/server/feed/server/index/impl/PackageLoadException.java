@@ -16,16 +16,19 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.09.11 20:49
  */
 public class PackageLoadException extends Exception {
-  public PackageLoadException(String message) {
+  public PackageLoadException(@NotNull final String message) {
     super(message);
   }
 
-  public PackageLoadException(String message, Throwable cause) {
+  public PackageLoadException(@NotNull final String message,
+                              @NotNull final Throwable cause) {
     super(message, cause);
   }
 }
