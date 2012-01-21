@@ -7,7 +7,7 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
 import java.lang.*;
 
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.ODataDataFormat;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.IndexDateFormat;
 import org.odata4j.core.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -96,7 +96,7 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
     if (v == null) { 
       return new org.joda.time.LocalDateTime();
     }
-    return ODataDataFormat.parseDate(v);
+    return IndexDateFormat.parseDate(v);
   }
 
 
