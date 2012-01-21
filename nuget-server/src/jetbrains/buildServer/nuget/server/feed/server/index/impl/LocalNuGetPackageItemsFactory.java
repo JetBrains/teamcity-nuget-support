@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.codec.binary.Base64;
@@ -43,7 +42,7 @@ public class LocalNuGetPackageItemsFactory {
   public static final String NS = "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd";
 
   @NotNull
-  private String sha512(@NotNull final BuildArtifact file) throws PackageLoadException {
+  private String sha512(@NotNull final PackageFile file) throws PackageLoadException {
     InputStream is = null;
     try {
       is = new BufferedInputStream(file.getInputStream());
@@ -58,8 +57,7 @@ public class LocalNuGetPackageItemsFactory {
   }
 
   @NotNull
-  public Map<String, String> loadPackage(@NotNull final BuildArtifact nupkg,
-                                         @NotNull final Date finishDate) throws PackageLoadException {
+  public Map<String, String> loadPackage(@NotNull final PackageFile nupkg) throws PackageLoadException {
     final String sha = sha512(nupkg);
     final long size = nupkg.getSize();
 
@@ -100,7 +98,7 @@ public class LocalNuGetPackageItemsFactory {
     addParameter(map, "PackageHashAlgorithm", "SHA512");
     addParameter(map, "PackageSize", String.valueOf(size));
     //addParameter(map, "IsLatestVersion", "");
-    addParameter(map, "LastUpdated", ODataDataFormat.formatDate(finishDate));
+    addParameter(map, "LastUpdated", ODataDataFormat.formatDate(nupkg.getLastUpdated()));
     //addParameter(map, "Updated", formatDate(updated));
 
     return map;
@@ -157,7 +155,7 @@ public class LocalNuGetPackageItemsFactory {
   }
 
   @Nullable
-  private Element parseNuSpec(@NotNull final BuildArtifact nupkg) {
+  private Element parseNuSpec(@NotNull final PackageFile nupkg) {
     ZipInputStream zos = null;
     try {
       zos = new ZipInputStream(new BufferedInputStream(nupkg.getInputStream()));

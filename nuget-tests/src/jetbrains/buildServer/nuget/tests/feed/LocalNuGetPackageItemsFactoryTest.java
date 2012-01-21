@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.feed;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.ArtifactPackageFile;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
@@ -104,7 +105,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
     final File pkg = Paths.getTestDataPath("packages/Ninject.MVC3.2.2.2.0.nupkg");
     Assert.assertTrue(pkg.isFile());
 
-    final Map<String, String> aPackage = myFactory.loadPackage(artifact(pkg), new Date());
+    final Map<String, String> aPackage = myFactory.loadPackage(new ArtifactPackageFile(artifact(pkg), new Date()));
     Assert.assertEquals(
             store(aPackage),
             "Authors = Remo Gloor, Ian Davis\n" +

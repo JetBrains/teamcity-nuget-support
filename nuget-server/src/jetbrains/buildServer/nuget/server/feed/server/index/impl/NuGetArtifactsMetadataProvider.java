@@ -76,7 +76,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
         Date finishDate = build.getFinishDate();
         if (finishDate == null) finishDate = new Date();
 
-        final Map<String,String> ma = myFactory.loadPackage(aPackage, finishDate);
+        final Map<String,String> ma = myFactory.loadPackage(new ArtifactPackageFile(aPackage, finishDate));
         ma.put(TEAMCITY_ARTIFACT_RELPATH, aPackage.getRelativePath());
         ma.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
 
