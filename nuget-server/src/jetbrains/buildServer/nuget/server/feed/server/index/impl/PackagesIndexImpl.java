@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
+import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.*;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.ProjectManager;
@@ -74,11 +75,15 @@ public class PackagesIndexImpl extends PackagesIndexBase<BuildMetadataEntry> {
     return res;
   }
 
-  @NotNull
   @Override
-  protected DownloadUrlComputationTransformation createDownloadUrlTranslation() {
-    return new DownloadUrlComputationTransformation();
+  protected String getDownloadUrl(@NotNull NuGetPackageBuilder builder) {
+    String relPath = builder.getMetadata().get(PackagesIndex.TEAMCITY_ARTIFACT_RELPATH);
+    final String buildTypeId = builder.getBuildTypeId();
+    if (relPath == null || buildTypeId == null) {
+      return null;
+    }
+
+    while (relPath.startsWith("/")) relPath = relPath.substring(1);
+    return "/repository/download/" + buildTypeId + "/" + builder.getBuildId() + ":id/" + relPath;
   }
-
-
 }
