@@ -17,14 +17,14 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.*;
+import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
+import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_DOWNLOAD_URL;
 
 /**
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -35,11 +35,12 @@ public class NuGetPackageBuilder {
   private final long myBuildId;
   private final Map<String, String> myMetadata;
 
-  public NuGetPackageBuilder(@NotNull final BuildMetadataEntry entry) {
-    myKey = entry.getKey();
-    myMetadata = new HashMap<String, String>(entry.getMetadata());
-    myBuildId = entry.getBuildId();
-    setMetadata(TEAMCITY_BUILD_ID, String.valueOf(myBuildId));
+  public NuGetPackageBuilder(@NotNull final String key,
+                             final long buildId,
+                             @NotNull final Map<String, String> metadata) {
+    myKey = key;
+    myBuildId = buildId;
+    myMetadata = new HashMap<String, String>(metadata);
   }
 
   @NotNull
