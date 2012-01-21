@@ -13,6 +13,8 @@
     <orderEntry type="library" name="idea annotations.jar" level="project" />
     <orderEntry type="library" name="Idea-OpenApi" level="project" />
     <orderEntry type="library" name="Common-Api" level="project" />
+    <orderEntry type="library" name="joda-time" level="project" />
+    <orderEntry type="library" name="Commons-Codec" level="project" />
   </component>
 </module>
 
