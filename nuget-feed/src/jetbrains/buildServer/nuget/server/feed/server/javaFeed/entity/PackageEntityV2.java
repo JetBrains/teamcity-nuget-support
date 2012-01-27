@@ -5,11 +5,6 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
-import java.util.*;
-import java.lang.*;
-import org.odata4j.core.*;
-import org.odata4j.internal.*;
-import org.joda.time.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

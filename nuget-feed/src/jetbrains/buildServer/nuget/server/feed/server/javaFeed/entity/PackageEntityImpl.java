@@ -5,12 +5,10 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
-import java.lang.*;
-
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.IndexDateFormat;
-import org.odata4j.core.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.odata4j.core.OAtomEntity;
 
 public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity { 
 
