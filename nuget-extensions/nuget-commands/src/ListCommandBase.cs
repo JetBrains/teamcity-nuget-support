@@ -63,7 +63,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     }
   }
 
-  public static class PackageExtensions
+  public static class PackageExtensions2
   {
     public static string VersionString(this IPackage package)
     {

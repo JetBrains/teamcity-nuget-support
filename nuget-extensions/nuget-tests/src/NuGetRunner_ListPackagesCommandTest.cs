@@ -185,6 +185,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
                 ;
 
               var text = File.ReadAllText(fileOut);
+              Console.Out.WriteLine(text);
               Assert.False(text.Contains("version=\"2.5.10"));
 
               Console.Out.WriteLine("Result: " + text);
