@@ -118,12 +118,14 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
           {
             try
             {
-              return string.IsNullOrWhiteSpace(VersionSpec)
-                       ? True
-                       : VersionUtility.ParseVersionSpec(VersionSpec).ToDelegate();
+              var spec = VersionSpec;
+              if (string.IsNullOrWhiteSpace(spec)) return True;
+              var pSpec = VersionUtility.ParseVersionSpec(spec);
+              return xx => new[] {xx}.FindByVersion(pSpec).Any();
             }
-            catch
+            catch(Exception e)
             {
+              Console.Out.WriteLine("Error: " + e);
               return True;
             }
           });

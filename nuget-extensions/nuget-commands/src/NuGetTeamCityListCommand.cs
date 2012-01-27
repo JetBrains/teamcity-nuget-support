@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using NuGet;
+using System.Linq;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
@@ -37,11 +36,12 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       if (string.IsNullOrWhiteSpace(Source))
         throw new CommandLineException("-Source must be specified.");
 
-      var allPackages = GetAllPackages(Source, new[] { Id });
+      var allPackages = GetAllPackages(Source, new[] { Id }).ToList();
       if (string.IsNullOrWhiteSpace(Version))
         return allPackages;
 
-      return allPackages.Where(VersionUtility.ParseVersionSpec(Version).ToDelegate());
+      var versionSpec = VersionUtility.ParseVersionSpec(Version);
+      return allPackages.FindByVersion(versionSpec);
     }
   }
 }
