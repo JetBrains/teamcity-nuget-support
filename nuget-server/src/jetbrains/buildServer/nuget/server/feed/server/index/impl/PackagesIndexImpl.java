@@ -77,7 +77,7 @@ public class PackagesIndexImpl extends PackagesIndexBase<BuildMetadataEntry> {
 
   @NotNull
   @Override
-  protected IsLatestFieldTransformationBase createIsLatestTransformation() {
+  protected IsLatestCalculator createIsLatestTransformation() {
     return new IsLatestFieldTransformation(myProjects);
   }
 

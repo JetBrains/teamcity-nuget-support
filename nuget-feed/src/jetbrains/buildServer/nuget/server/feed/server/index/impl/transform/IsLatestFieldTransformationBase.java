@@ -22,4 +22,5 @@ public abstract class IsLatestFieldTransformationBase implements PackageTransfor
     builder.setMetadata("IsAbsoluteLatestVersion", String.valueOf(isLatestVersion));
     return Status.CONTINUE;
   }
+
 }

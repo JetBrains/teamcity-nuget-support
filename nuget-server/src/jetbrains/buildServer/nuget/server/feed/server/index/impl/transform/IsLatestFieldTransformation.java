@@ -30,7 +30,7 @@ import java.util.Map;
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
 *         Date: 18.01.12 20:31
 */
-public class IsLatestFieldTransformation extends IsLatestFieldTransformationBase {
+public class IsLatestFieldTransformation implements IsLatestCalculator {
   private final ProjectManager myProjectManager;
   private final Map<String, Long> myBuildTypeToLatest = new HashMap<String, Long>();
 
@@ -38,8 +38,8 @@ public class IsLatestFieldTransformation extends IsLatestFieldTransformationBase
     myProjectManager = projects;
   }
 
-  @Override
-  protected Boolean isLatest(@NotNull final NuGetPackageBuilder builder) {
+  @Nullable
+  public Boolean isLatest(@NotNull final NuGetPackageBuilder builder) {
     final String buildTypeId = builder.getBuildTypeId();
     if (buildTypeId == null) return null;
     Long build = myBuildTypeToLatest.get(buildTypeId);

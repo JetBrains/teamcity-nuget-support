@@ -60,9 +60,15 @@ public abstract class PackagesIndexBase<TEntry> implements PackagesIndex {
 
   @NotNull
   protected Collection<PackageTransformation> getTransformations() {
+    final IsLatestCalculator calculator = createIsLatestTransformation();
     return Arrays.asList(
             new SamePackagesFilterTransformation(),
-            createIsLatestTransformation(),
+            new IsLatestFieldTransformationBase() {
+              @Override
+              protected Boolean isLatest(@NotNull NuGetPackageBuilder builder) {
+                return calculator.isLatest(builder);
+              }
+            },
             new DownloadUrlComputationTransformationBase() {
               @Override
               protected String getDownloadUrl(@NotNull NuGetPackageBuilder builder) {
@@ -71,9 +77,10 @@ public abstract class PackagesIndexBase<TEntry> implements PackagesIndex {
             }
     );
   }
-  
+
+  @Nullable
   protected abstract String getDownloadUrl(@NotNull final NuGetPackageBuilder builder);
 
   @NotNull
-  protected abstract IsLatestFieldTransformationBase createIsLatestTransformation();
+  protected abstract IsLatestCalculator createIsLatestTransformation();
 }
