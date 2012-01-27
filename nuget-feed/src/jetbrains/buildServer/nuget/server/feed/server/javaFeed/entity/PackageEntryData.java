@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
+package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntryData;
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.core.OAtomStreamEntity;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 11.01.12 12:40
+ * Date: 28.01.12 0:48
  */
-public class PackageEntityEx extends PackageEntryData {
-  private final NuGetServerSettings mySettings;
+public abstract class PackageEntryData extends PackageEntityAdapter implements OAtomStreamEntity {
+  protected final NuGetIndexEntry myEntry;
 
-  public PackageEntityEx(@NotNull final NuGetIndexEntry entry, @NotNull final NuGetServerSettings settings) {
-    super(entry);
-    mySettings = settings;
+  public PackageEntryData(@NotNull final NuGetIndexEntry entry) {
+    myEntry = entry;
   }
 
-  public String getAtomEntitySource(String baseUri) {
-    int idx = baseUri.indexOf(mySettings.getNuGetFeedControllerPath());
-    if (idx < 0) {
-      return null;
-    }
-    //TODO: check slashes here
-    return baseUri.substring(0, idx) + myEntry.getPackageDownloadUrl();
+  public String getAtomEntityType() {
+    return "application/zip";
   }
+
+  @Override
+  protected String getValue(@NotNull String key) {
+    return myEntry.getAttributes().get(key);
+  }
+
+  public abstract String getAtomEntitySource(String baseUri);
 }
