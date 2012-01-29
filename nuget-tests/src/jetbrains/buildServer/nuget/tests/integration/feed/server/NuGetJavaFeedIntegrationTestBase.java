@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsIm
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducer;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.odata4j.producer.ODataProducer;
@@ -64,7 +65,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       will(returnIterator(myFeed));
       allowing(mySettings).getNuGetFeedControllerPath(); will(returnValue(NuGetServerSettingsImpl.PATH));
     }});
-    myProducer = new NuGetProducer(myIndex, mySettings);
+    myProducer = new NuGetProducerImpl(myIndex, mySettings);
 
     startNuGetFeedServer();
   }
