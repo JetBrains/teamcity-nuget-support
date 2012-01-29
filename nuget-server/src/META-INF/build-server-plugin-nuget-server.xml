@@ -47,5 +47,5 @@
 
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.ODataPackagesFeedController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducer"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducerImpl"/>
 </beans>
