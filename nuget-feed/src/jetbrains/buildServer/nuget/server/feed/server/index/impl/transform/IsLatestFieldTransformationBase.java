@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * Date: 21.01.12 15:10
  */
 public abstract class IsLatestFieldTransformationBase implements PackageTransformation {
+
   protected abstract Boolean isLatest(@NotNull NuGetPackageBuilder builder);
 
   @NotNull
