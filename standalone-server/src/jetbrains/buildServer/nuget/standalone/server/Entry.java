@@ -16,26 +16,35 @@
 
 package jetbrains.buildServer.nuget.standalone.server;
 
-import com.sun.jersey.api.container.filter.LoggingFilter;
-import org.odata4j.jersey.producer.server.JerseyServer;
-import org.odata4j.producer.resources.RootApplication;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 29.01.12 23:18
+ * Date: 29.01.12 23:44
  */
-public class Main {
-  public static void main(String[] args) {
-    System.out.println("NuGet Feed server.");
-    final String appBaseUri = "http://localhost:9878";
-    final JerseyServer server = new JerseyServer(
-            appBaseUri,
-            NuGetApplication.class,
-            RootApplication.class);
+public class Entry {
+  private final long myId;
+  private final Map<String, String> myMap;
 
-    server.addJerseyRequestFilter(LoggingFilter.class);
-    server.start();
-    System.out.println("Server started at " + appBaseUri);
+  public Entry(long id, @NotNull final Map<String, String> map) {
+    myId = id;
+    myMap = new TreeMap<String, String>(map);
   }
 
+  @NotNull
+  public String getKey() {
+    return myMap.get("Id") + "." + myMap.get("Version");
+  }
+
+  public long getId() {
+    return myId;
+  }
+
+  @NotNull
+  public Map<String,String> getMap() {
+    return myMap;
+  }
 }
