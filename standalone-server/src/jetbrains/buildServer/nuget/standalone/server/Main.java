@@ -27,7 +27,7 @@ import org.odata4j.producer.resources.RootApplication;
 public class Main {
   public static void main(String[] args) {
     System.out.println("NuGet Feed server.");
-    final String appBaseUri = "http://localhost:9878";
+    final String appBaseUri = "http://localhost:9878/";
     final JerseyServer server = new JerseyServer(
             appBaseUri,
             NuGetApplication.class,
