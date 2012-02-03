@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.standalone.server;
 
-import com.sun.jersey.api.container.filter.LoggingFilter;
 import org.odata4j.jersey.producer.server.JerseyServer;
 import org.odata4j.producer.resources.RootApplication;
 
@@ -33,7 +32,6 @@ public class Main {
             NuGetApplication.class,
             RootApplication.class);
 
-    server.addJerseyRequestFilter(LoggingFilter.class);
     server.start();
     System.out.println("Server started at " + appBaseUri);
   }
