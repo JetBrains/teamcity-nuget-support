@@ -16,15 +16,26 @@
 
 package jetbrains.buildServer.nuget.standalone.server;
 
+import org.jetbrains.annotations.NotNull;
 import org.odata4j.jersey.producer.server.JerseyServer;
 import org.odata4j.producer.resources.RootApplication;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 29.01.12 23:18
  */
 public class Main {
-  public static void main(String[] args) {
+  private static File outRoot;
+  
+  @NotNull
+  public static File getPackagesRoot() {
+    return outRoot;
+  }
+  
+  public static void main(String[] args) throws IOException {
     System.out.println("NuGet Feed server.");
     final String appBaseUri = "http://localhost:9878/";
     final JerseyServer server = new JerseyServer(
@@ -32,6 +43,14 @@ public class Main {
             NuGetApplication.class,
             RootApplication.class);
 
+    if (args.length >= 1) {
+      outRoot = new File(args[0]).getCanonicalFile();
+    } else {
+      outRoot = new File(".").getCanonicalFile();
+    }
+    
+    System.out.println("Starting packages index from: " + outRoot);
+    
     server.start();
     System.out.println("Server started at " + appBaseUri);
   }
