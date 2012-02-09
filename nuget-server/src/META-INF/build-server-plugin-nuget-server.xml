@@ -10,6 +10,7 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerCruiser"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerCruiserTask"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesDescription"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerUriImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataController"/>

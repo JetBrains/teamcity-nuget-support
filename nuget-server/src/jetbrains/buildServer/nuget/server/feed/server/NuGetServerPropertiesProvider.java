@@ -17,13 +17,10 @@
 package jetbrains.buildServer.nuget.server.feed.server;
 
 import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.parameters.BuildParametersProvider;
-import jetbrains.buildServer.serverSide.parameters.ParameterDescriptionProvider;
+import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +28,7 @@ import java.util.Map;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 07.10.11 17:52
  */
-public class NuGetServerPropertiesProvider implements BuildParametersProvider, ParameterDescriptionProvider {
+public class NuGetServerPropertiesProvider extends AbstractBuildParametersProvider {
   @NotNull private final NuGetServerSettings mySettings;
 
   public NuGetServerPropertiesProvider(@NotNull final NuGetServerSettings settings) {
@@ -39,6 +36,7 @@ public class NuGetServerPropertiesProvider implements BuildParametersProvider, P
   }
 
   @NotNull
+  @Override
   public Map<String, String> getParameters(@NotNull SBuild build, boolean emulationMode) {
     Map<String, String> map = new HashMap<String, String>();
     if (mySettings.isNuGetServerEnabled()) {
@@ -46,15 +44,5 @@ public class NuGetServerPropertiesProvider implements BuildParametersProvider, P
       map.put(NuGetServerConstants.FEED_REFERENCE, "%teamcity.serverUrl%" + WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
     }
     return map;
-  }
-
-  @NotNull
-  public Collection<String> getParametersAvailableOnAgent(@NotNull SBuild build) {
-    return Collections.emptyList();
-  }
-
-  public String describe(@NotNull String paramName) {
-    if (NuGetServerConstants.FEED_REFERENCE.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed";
-    return null;
   }
 }
