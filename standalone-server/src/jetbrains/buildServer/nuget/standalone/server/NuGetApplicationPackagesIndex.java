@@ -16,67 +16,24 @@
 
 package jetbrains.buildServer.nuget.standalone.server;
 
-import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.*;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexBase;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsLatestCalculator;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
-import java.util.*;
+import java.util.Iterator;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 29.01.12 23:42
  */
 public class NuGetApplicationPackagesIndex extends PackagesIndexBase<Entry> {
-  private static final Logger LOG = Logger.getInstance(NuGetApplicationPackagesIndex.class.getName());
+  private final NuGetPackages myPackages = new NuGetPackages();
 
   @NotNull
   @Override
   protected Iterator<Entry> getEntries() {
-    int id = 42;
-    final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-    final File[] file = Main.getPackagesRoot().listFiles();
-    if (file == null) return Collections.<Entry>emptyList().iterator();
-    final List<Entry> result = new ArrayList<Entry>();
-    for (final File ch : file) {
-      if (ch.isFile() && ch.getName().endsWith(".nupkg")) {
-        final Map<String, String> map = loadPackage(factory, ch);
-        if (map != null) {
-          result.add(new Entry(++id, map));
-        }
-      }
-    }
-    return result.iterator();
-  }
-
-  @Nullable
-  private Map<String, String> loadPackage(LocalNuGetPackageItemsFactory factory, final File ch) {
-    try {
-      return factory.loadPackage(file(ch));
-    } catch (PackageLoadException e) {
-      LOG.warn("Failed to load package: " + ch);
-      return null;
-    }
-  }
-
-  private PackageFile file(final File ch) {
-    return new PackageFile() {
-      public long getSize() {
-        return ch.length();
-      }
-
-      @NotNull
-      public Date getLastUpdated() {
-        return new Date(ch.lastModified());
-      }
-
-      @NotNull
-      public InputStream getInputStream() throws IOException {
-        return new BufferedInputStream(new FileInputStream(ch));
-      }
-    };
+    return myPackages.getEntries();
   }
 
   @Override
