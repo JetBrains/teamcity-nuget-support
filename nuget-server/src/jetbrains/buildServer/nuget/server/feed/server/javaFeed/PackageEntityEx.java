@@ -33,12 +33,13 @@ public class PackageEntityEx extends PackageEntryData {
     mySettings = settings;
   }
 
-  public String getAtomEntitySource(String baseUri) {
-    int idx = baseUri.indexOf(mySettings.getNuGetFeedControllerPath());
+  @Override
+  protected String resolveUrl(@NotNull String baseUrl, @NotNull String url) {
+    int idx = baseUrl.indexOf(mySettings.getNuGetFeedControllerPath());
     if (idx < 0) {
       return null;
     }
     //TODO: check slashes here
-    return baseUri.substring(0, idx) + myEntry.getPackageDownloadUrl();
+    return baseUrl.substring(0, idx) + url;
   }
 }
