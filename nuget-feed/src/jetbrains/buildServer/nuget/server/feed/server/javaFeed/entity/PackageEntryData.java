@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OAtomStreamEntity;
 
 /**
@@ -25,7 +26,7 @@ import org.odata4j.core.OAtomStreamEntity;
  * Date: 28.01.12 0:48
  */
 public abstract class PackageEntryData extends PackageEntityAdapter implements OAtomStreamEntity {
-  protected final NuGetIndexEntry myEntry;
+  private final NuGetIndexEntry myEntry;
 
   public PackageEntryData(@NotNull final NuGetIndexEntry entry) {
     myEntry = entry;
@@ -40,5 +41,11 @@ public abstract class PackageEntryData extends PackageEntityAdapter implements O
     return myEntry.getAttributes().get(key);
   }
 
-  public abstract String getAtomEntitySource(String baseUri);
+  @Nullable
+  public String getAtomEntitySource(String baseUri) {
+    return resolveUrl(baseUri, myEntry.getPackageDownloadUrl());
+  }
+
+  @Nullable
+  protected abstract String resolveUrl(@NotNull String baseUrl, @NotNull String url);
 }

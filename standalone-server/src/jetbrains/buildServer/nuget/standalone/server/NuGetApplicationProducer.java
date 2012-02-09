@@ -32,10 +32,10 @@ public class NuGetApplicationProducer extends NuGetProducerBase {
   }
 
   @Override
-  protected PackageEntity createODataPackageEntry(@NotNull NuGetIndexEntry internal) {
+  protected PackageEntity createODataPackageEntry(@NotNull final NuGetIndexEntry internal) {
     return new PackageEntryData(internal) {
       @Override
-      public String getAtomEntitySource(String baseUri) {
+      protected String resolveUrl(@NotNull String baseUrl, @NotNull String url) {
         return null;
       }
     };
