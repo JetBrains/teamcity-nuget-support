@@ -161,6 +161,25 @@ public class PackageIndexTest extends BaseTestCase {
   }
 
   @Test
+  public void test_same_packages() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myProjectManager).findProjectId("btY"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+
+    addEntry("Foo", "1.2.34", "btY", 9);
+
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+    final NuGetIndexEntry next = it.next();
+
+    Assert.assertFalse(it.hasNext());
+
+    Assert.assertEquals(next.getAttributes().get("teamcity.buildTypeId"), "btY");
+  }
+
+  @Test
+  @TestFor(issues = "TW-19686")
   public void test_two_package_isLatest_prerelease() {
     m.checking(new Expectations(){{
       allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
