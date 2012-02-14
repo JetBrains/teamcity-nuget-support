@@ -101,7 +101,7 @@ public class PackRunType extends NuGetRunType {
   @Override
   public Map<String, String> getDefaultRunnerProperties() {
     return new HashMap<String, String>(){{
-      put(PackagesConstants.NUGET_PACK_VERSION, "0." + ReferencesResolverUtil.makeReference(ServerProvidedProperties.BUILD_NUMBER_PROP));
+      put(PackagesConstants.NUGET_PACK_VERSION, "0.%" + ServerProvidedProperties.BUILD_NUMBER_PROP + "%");
       put(PackagesConstants.NUGET_PACK_OUTPUT_CLEAR, "checked");
       put(PackagesConstants.NUGET_PACK_PROPERTIES, "Configuration=Release");
     }};

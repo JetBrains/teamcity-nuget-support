@@ -61,7 +61,7 @@
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       Exclude version from package folder names
-      <span class="smallNote">Makes NuGet exlude package version from package folders.
+      <span class="smallNote">Makes NuGet exclude package version from package folders.
                               Equivalent to -ExcludeVersion NuGet.exe commandline argument</span>
 
       <props:checkboxProperty name="${ib.updatePackagesKey}"/>
