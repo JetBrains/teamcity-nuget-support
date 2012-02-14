@@ -62,7 +62,7 @@ public class PackagesIndexImpl implements PackagesIndex {
             new SamePackagesFilterTransformation(),
             new OldFormatConvertTransformation(myBuilds),
             new AccessCheckTransformation(myProjects, myContext),
-            new IsLatestFieldTransformation(myProjects),
+            new IsLatestFieldTransformation(),
             new DownloadUrlComputationTransformation()
     );
 

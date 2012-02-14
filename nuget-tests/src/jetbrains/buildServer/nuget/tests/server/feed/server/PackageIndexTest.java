@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.serverSide.BuildsManager;
@@ -26,14 +27,15 @@ import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
+import jetbrains.buildServer.util.TestFor;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -47,8 +49,7 @@ public class PackageIndexTest extends BaseTestCase {
   private AuthorityHolder myAuthorityHolder;
   private PackagesIndex myIndex;
   private MetadataStorage myStorage;
-  private BuildMetadataEntry myEntry;
-  private Map<String, String> myEntryData;
+  private List<BuildMetadataEntry> myEntries;
 
   @BeforeMethod
   @Override
@@ -60,26 +61,109 @@ public class PackageIndexTest extends BaseTestCase {
     myContext = m.mock(SecurityContext.class);
     myAuthorityHolder = m.mock(AuthorityHolder.class);
     myStorage = m.mock(MetadataStorage.class);
-    myEntry = m.mock(BuildMetadataEntry.class);
-    myEntryData = new TreeMap<String, String>();
-
     myIndex = new PackagesIndexImpl(
             myStorage,
             myBuildsManager,
             myProjectManager,
             myContext);
 
+    myEntries = new ArrayList<BuildMetadataEntry>();
+
     m.checking(new Expectations(){{
       allowing(myContext).getAuthorityHolder(); will(returnValue(myAuthorityHolder));
-      allowing(myStorage).getAllEntries("nuget"); will(returnIterator(myEntry));
-      allowing(myEntry).getBuildId(); will(returnValue(7L));
-      allowing(myEntry).getMetadata(); will(returnValue(myEntryData));
-      allowing(myEntry).getKey(); will(returnValue("Foo.1.2.34"));
+      allowing(myStorage).getAllEntries("nuget"); will(returnIterator(myEntries));
     }});
-    myEntryData.put("teamcity.buildTypeId", "btX");
-    myEntryData.put("teamcity.artifactPath", "btX/ZZZ");
+
+    addEntry("Foo", "1.2.34", "btX", 7);
   }
 
+  private void addEntry(final String name, final String version, final String bt, final long buildId) {
+    final Map<String, String> myEntryData = new TreeMap<String, String>();
+    final String key = name + "." + version;
+    final BuildMetadataEntry myEntry = m.mock(BuildMetadataEntry.class, key + "-" + System.nanoTime());
+
+    m.checking(new Expectations(){{
+      allowing(myEntry).getBuildId(); will(returnValue(buildId));
+      allowing(myEntry).getMetadata(); will(returnValue(myEntryData));
+      allowing(myEntry).getKey(); will(returnValue(key));
+    }});
+    myEntryData.put("teamcity.buildTypeId", bt);
+    myEntryData.put("teamcity.artifactPath", "btX/ZZZ");
+    myEntries.add(myEntry);
+
+    //recall natural sort order of metadata entries
+    Collections.sort(myEntries, new Comparator<BuildMetadataEntry>() {
+      public int compare(BuildMetadataEntry o1, BuildMetadataEntry o2) {
+        final long b1 = o1.getBuildId();
+        final long b2 = o2.getBuildId();
+        return b1 > b2 ? 1 : b1 == b2 ? 0 : 1;
+      }
+    });
+  }
+
+  @Test
+  @TestFor(issues = "TW-20047")
+  public void testIsLatestFromBuildTypes() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myProjectManager).findProjectId("btY"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+
+    addEntry("Foo", "1.2.44", "btY", 9);
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+
+    NuGetIndexEntry next = it.next();
+    Assert.assertEquals(next.getKey(), "Foo.1.2.44");
+    Assert.assertTrue(isLatestVersion(next));
+    Assert.assertTrue(isAbsoluteLatestVersion(next));
+
+    next = it.next();
+    Assert.assertEquals(next.getKey(), "Foo.1.2.34");
+    Assert.assertFalse(isLatestVersion(next));
+    Assert.assertFalse(isAbsoluteLatestVersion(next));
+  }
+
+  @Test
+  public void test_one_package_isLatest() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+
+    final NuGetIndexEntry next = myIndex.getNuGetEntries().next();
+    Assert.assertTrue(isLatestVersion(next));
+    Assert.assertTrue(isAbsoluteLatestVersion(next));
+  }
+
+  @Test
+  public void test_two_package_isLatest() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+
+    addEntry("Foo", "1.2.44", "btX", 9);
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+
+    NuGetIndexEntry next = it.next();
+    Assert.assertEquals(next.getKey(), "Foo.1.2.44");
+    Assert.assertTrue(isLatestVersion(next));
+    Assert.assertTrue(isAbsoluteLatestVersion(next));
+
+    next = it.next();
+    Assert.assertEquals(next.getKey(), "Foo.1.2.34");
+    Assert.assertFalse(isLatestVersion(next));
+    Assert.assertFalse(isAbsoluteLatestVersion(next));
+  }
+
+  private boolean isLatestVersion(@NotNull NuGetIndexEntry entry) {
+    return Boolean.parseBoolean(entry.getAttributes().get("IsLatestVersion"));
+  }
+
+  private boolean isAbsoluteLatestVersion(@NotNull NuGetIndexEntry entry) {
+    return Boolean.parseBoolean(entry.getAttributes().get("IsAbsoluteLatestVersion"));
+  }
 
   @Test
   public void testCheckesProjectAccess() {

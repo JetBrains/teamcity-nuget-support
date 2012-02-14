@@ -18,61 +18,26 @@ package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
-import jetbrains.buildServer.serverSide.ProjectManager;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SFinishedBuild;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
 *         Date: 18.01.12 20:31
 */
 public class IsLatestFieldTransformation implements PackageTransformation {
-  private final ProjectManager myProjectManager;
-  private final Map<String, Long> myBuildTypeToLatest = new HashMap<String, Long>();
-
-  public IsLatestFieldTransformation(@NotNull final ProjectManager projects) {
-    myProjectManager = projects;
-  }
-
-  @Nullable
-  public Boolean isLatest(@Nullable final String buildTypeId, final long buildId) {
-    if (buildTypeId == null) return null;
-    Long build = myBuildTypeToLatest.get(buildTypeId);
-    if (build == null) {
-      final SBuildType buildTypeById = safeFindBuildTypeById(buildTypeId);
-      //skip project if no build type found
-      if (buildTypeById == null) return null;
-
-      final SFinishedBuild lastChangesFinished = buildTypeById.getLastChangesFinished();
-      //no latest build found, than skip this build
-      if (lastChangesFinished == null) return null;
-
-      myBuildTypeToLatest.put(buildTypeId, build = lastChangesFinished.getBuildId());
-    }
-    return build == buildId;
-  }
-
-  @Nullable
-  private SBuildType safeFindBuildTypeById(@NotNull final String buildTypeId) {
-    try {
-      return myProjectManager.findBuildTypeById(buildTypeId);
-    } catch (RuntimeException e) {
-      ///AccessDeniedException could be thrown
-      return null;
-    }
-  }
+  private final Set<String> myVisitedPackages = new HashSet<String>();
 
   @NotNull
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
-    final Boolean isLatestVersion = isLatest(builder.getBuildTypeId(), builder.getBuildId());
-    if (isLatestVersion == null) {
-      return Status.SKIP;
-    }
+    final String packageName = builder.getPackageName();
+
+    //Metadata entries are sorted from newer to older packages
+    //isLatestVersion === this is the firts occurence of package in the collection
+    final boolean isLatestVersion = myVisitedPackages.add(packageName);
+
     //TODO: consider semVersions here
     builder.setMetadata("IsLatestVersion", String.valueOf(isLatestVersion));
     builder.setMetadata("IsAbsoluteLatestVersion", String.valueOf(isLatestVersion));
