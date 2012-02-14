@@ -28,19 +28,32 @@ import java.util.Set;
 *         Date: 18.01.12 20:31
 */
 public class IsLatestFieldTransformation implements PackageTransformation {
-  private final Set<String> myVisitedPackages = new HashSet<String>();
+  private final Set<String> myReleasedPackages = new HashSet<String>();
+  private final Set<String> myAllPackages = new HashSet<String>();
 
   @NotNull
-  public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
+  public Status applyTransformation(@NotNull final NuGetPackageBuilder builder) {
     final String packageName = builder.getPackageName();
+    final String version = builder.getVersion();
+
+    //release or preselease version is parsed from package information according for semver.org
+    //http://semver.org/
+    //http://docs.nuget.org/docs/reference/versioning
+    final boolean isReleaseVersion = version.matches("^\\d+(\\.\\d+)+$");
 
     //Metadata entries are sorted from newer to older packages
     //isLatestVersion === this is the firts occurence of package in the collection
-    final boolean isLatestVersion = myVisitedPackages.add(packageName);
+    final boolean isLatestVersion = isReleaseVersion && myReleasedPackages.add(packageName);
+    final boolean isAbsoluteLatestVersion = myAllPackages.add(packageName);
 
-    //TODO: consider semVersions here
+    //here we assume there is a package with full version
+    //otherwise there will be a feed with packages without specified IsLatestVersion == true package
+
+    //Note, here we assume the package version is always incremented by the time,
+    //Note, thus there is no need to take case about comparison of version
+    //Note, i.e. 1.0.0+build ? 1.1.0-release ? 1.0.0 ? 1.1.1 and so on.
     builder.setMetadata("IsLatestVersion", String.valueOf(isLatestVersion));
-    builder.setMetadata("IsAbsoluteLatestVersion", String.valueOf(isLatestVersion));
+    builder.setMetadata("IsAbsoluteLatestVersion", String.valueOf(isAbsoluteLatestVersion));
     return Status.CONTINUE;
   }
 }

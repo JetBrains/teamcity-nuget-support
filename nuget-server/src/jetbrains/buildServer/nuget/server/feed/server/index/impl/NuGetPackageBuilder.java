@@ -51,8 +51,14 @@ public class NuGetPackageBuilder {
     return myBuildId;
   }
 
+  @NotNull
   public String getPackageName() {
     return getMetadata().get("Id");
+  }
+
+  @NotNull
+  public String getVersion() {
+    return getMetadata().get("Version");
   }
 
   @NotNull

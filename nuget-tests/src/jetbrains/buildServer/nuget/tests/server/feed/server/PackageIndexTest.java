@@ -80,23 +80,26 @@ public class PackageIndexTest extends BaseTestCase {
   private void addEntry(final String name, final String version, final String bt, final long buildId) {
     final Map<String, String> myEntryData = new TreeMap<String, String>();
     final String key = name + "." + version;
-    final BuildMetadataEntry myEntry = m.mock(BuildMetadataEntry.class, key + "-" + System.nanoTime());
+    final BuildMetadataEntry entry = m.mock(BuildMetadataEntry.class, key + "-" + System.nanoTime());
 
     m.checking(new Expectations(){{
-      allowing(myEntry).getBuildId(); will(returnValue(buildId));
-      allowing(myEntry).getMetadata(); will(returnValue(myEntryData));
-      allowing(myEntry).getKey(); will(returnValue(key));
+      allowing(entry).getBuildId(); will(returnValue(buildId));
+      allowing(entry).getMetadata(); will(returnValue(myEntryData));
+      allowing(entry).getKey(); will(returnValue(key));
     }});
+
     myEntryData.put("teamcity.buildTypeId", bt);
     myEntryData.put("teamcity.artifactPath", "btX/ZZZ");
-    myEntries.add(myEntry);
+    myEntryData.put("Version", version);
+    myEntryData.put("Id", name);
+    myEntries.add(entry);
 
     //recall natural sort order of metadata entries
     Collections.sort(myEntries, new Comparator<BuildMetadataEntry>() {
       public int compare(BuildMetadataEntry o1, BuildMetadataEntry o2) {
         final long b1 = o1.getBuildId();
         final long b2 = o2.getBuildId();
-        return b1 > b2 ? 1 : b1 == b2 ? 0 : 1;
+        return (b1 > b2 ? 1 : b1 == b2 ? 0 : 1);
       }
     });
   }
@@ -154,6 +157,27 @@ public class PackageIndexTest extends BaseTestCase {
     next = it.next();
     Assert.assertEquals(next.getKey(), "Foo.1.2.34");
     Assert.assertFalse(isLatestVersion(next));
+    Assert.assertFalse(isAbsoluteLatestVersion(next));
+  }
+
+  @Test
+  public void test_two_package_isLatest_prerelease() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+
+    addEntry("Foo", "1.2.44-alpha", "btX", 9);
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+
+    NuGetIndexEntry next = it.next();
+    Assert.assertEquals(next.getKey(), "Foo.1.2.44-alpha");
+    Assert.assertFalse(isLatestVersion(next));
+    Assert.assertTrue(isAbsoluteLatestVersion(next));
+
+    next = it.next();
+    Assert.assertEquals(next.getKey(), "Foo.1.2.34");
+    Assert.assertTrue(isLatestVersion(next));
     Assert.assertFalse(isAbsoluteLatestVersion(next));
   }
 
