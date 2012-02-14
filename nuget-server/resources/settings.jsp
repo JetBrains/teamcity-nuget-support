@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright 2000-2011 JetBrains s.r.o.
+  ~ Copyright 2000-2012 JetBrains s.r.o.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 <jsp:useBean id="nuget_teamcity_include_selected" scope="request" type="jetbrains.buildServer.nuget.server.settings.SettingsSection"/>
 <jsp:useBean id="nuget_teamcity_include_key" scope="request" type="java.lang.String"/>
 
-<div id="nugetSettingsTabContainer" style="padding: 1em 0 1.5em 0; display: block;" class="simpleTabs">
+<div id="nugetSettingsTabContainer" style="padding: 0 0 1.5em 0; display: block;" class="simpleTabs">
 
   <c:forEach items="${nuget_teamcity_include_controllers}" var="nugetSettingsPage" varStatus="step">
     <c:choose>

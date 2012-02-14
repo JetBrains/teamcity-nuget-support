@@ -33,18 +33,17 @@
 </p>
 
   <c:if test="${not (installedPluginsCount eq 0)}">
-      <table class="dark borderBottom" cellpadding="0" cellspacing="0" style="width: 30em;">
+      <table class="settings" cellpadding="0" cellspacing="0" style="width: 50%;">
         <thead>
         <tr>
-          <th class="header" style="width: 66%">Version</th>
-          <th class="header"></th>
+          <th class="name" colspan="2">NuGet Version</th>
         </tr>
         </thead>
         <tbody>
           <c:forEach var="tool" items="${tools}">
             <tr>
-              <td><c:out value="${tool.version}"/></td>
-              <td>
+              <td class="name"><c:out value="${tool.version}"/></td>
+              <td class="value edit" style="width: 4%;">
                 <c:choose>
                   <c:when test="${tool.state.installed}">
                     <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
