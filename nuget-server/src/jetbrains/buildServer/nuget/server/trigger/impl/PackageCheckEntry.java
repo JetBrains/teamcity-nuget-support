@@ -116,7 +116,9 @@ public class PackageCheckEntry implements CheckablePackage {
   }
 
   public void setResult(@NotNull CheckResult result) {
-    myNextCheckTime = myTime.now() + myCheckInterval;
+    final long now = myTime.now();
+    myNextCheckTime = now + myCheckInterval;
+    myRemoveTime = now + myRemoveInterval;
 
     myResult.set(result);
     myExecuting.set(false);
