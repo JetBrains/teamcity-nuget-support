@@ -129,7 +129,7 @@ public class PackageCheckEntryTest extends BaseTestCase {
     final long c1 = e.getNextCheckTime();
     myNow += 11123L;
     e.setResult(CheckResult.failed("asdasd"));
-    Assert.assertTrue(r1 != e.getRemoveTime(), "data update should increment request life");
+    Assert.assertTrue(r1 == e.getRemoveTime(), "data update should increment request life");
     Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
   }
 
