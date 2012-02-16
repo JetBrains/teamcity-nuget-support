@@ -129,6 +129,53 @@ public class PackageCheckEntryTest extends BaseTestCase {
     final long c1 = e.getNextCheckTime();
     myNow += 11123L;
     e.setResult(CheckResult.failed("asdasd"));
+    Assert.assertTrue(r1 != e.getRemoveTime(), "data update should increment request life");
+    Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
+  }
+
+  @Test
+  public void testUpdatesRemoveDateOnSetResult2() {
+    PackageCheckEntry e = new PackageCheckEntry(request("WWWW", "asda", "asrwerw", null), myTime, mySettings);
+    e.setResult(CheckResult.failed("asdasd"));
+    final long r1 = e.getRemoveTime();
+    final long c1 = e.getNextCheckTime();
+    myNow += 11123L;
+    e.setResult(CheckResult.failed("asdasd"));
+
+    Assert.assertTrue(r1 == e.getRemoveTime(), "data update should increment request life");
+    Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
+  }
+
+  @Test
+  public void testUpdatesRemoveDateOnSetResult3() {
+    final PackageCheckRequest r = request("WWWW", "asda", "asrwerw", null);
+    PackageCheckEntry e = new PackageCheckEntry(r, myTime, mySettings);
+    e.setResult(CheckResult.failed("asdasd"));
+    e.setResult(CheckResult.failed("asdasd"));
+    e.update(r);
+
+    final long r1 = e.getRemoveTime();
+    final long c1 = e.getNextCheckTime();
+    myNow += 11123L;
+    e.setResult(CheckResult.failed("asdasd"));
+
+    Assert.assertTrue(r1 != e.getRemoveTime(), "data update should increment request life");
+    Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
+  }
+
+  @Test
+  public void testUpdatesRemoveDateOnSetResult4() {
+    final PackageCheckRequest r = request("WWWW", "asda", "asrwerw", null);
+    PackageCheckEntry e = new PackageCheckEntry(r, myTime, mySettings);
+    e.setResult(CheckResult.failed("asdasd"));
+    e.setResult(CheckResult.failed("asdasd"));
+    e.update(r);
+    e.setResult(CheckResult.failed("asdasd"));
+    myNow += 11123L;
+    final long r1 = e.getRemoveTime();
+    final long c1 = e.getNextCheckTime();
+    e.setResult(CheckResult.failed("asdasd"));
+
     Assert.assertTrue(r1 == e.getRemoveTime(), "data update should increment request life");
     Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
   }

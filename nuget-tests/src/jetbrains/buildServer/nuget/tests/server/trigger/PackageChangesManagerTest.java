@@ -178,6 +178,32 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   }
 
   @Test
+  public void test_too_long_feed_query() {
+    final PackageCheckRequest req = req("a1");
+    checkAll(req);
+    advanceTime(42 * 1000 * 1000L);
+
+    myManager.cleaupObsolete();
+    PackageCheckEntry n = myManager.getItemsToCheckNow().iterator().next();
+    Assert.assertNull(n.getResult());
+    Assert.assertTrue(n.getRemoveTime() < myTime);
+
+    advanceTime(442 * 1000 * 1000L);
+    //package should wait for result
+    myManager.cleaupObsolete();
+    n = myManager.getItemsToCheckNow().iterator().next();
+    n.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
+
+    //package should be available after that to let trigger get the data
+    Assert.assertTrue(n.getRemoveTime() > myTime);
+
+    advanceTime(442 * 1000 * 1000L);
+    //package should wait for result
+    myManager.cleaupObsolete();
+    Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
+  }
+
+  @Test
   public void test_group_by_mode() {
     final PackageCheckRequest a1 = req("a");
     final PackageCheckRequest a2 = req("a");

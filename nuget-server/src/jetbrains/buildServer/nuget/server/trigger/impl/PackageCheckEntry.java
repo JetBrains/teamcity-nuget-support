@@ -34,6 +34,7 @@ public class PackageCheckEntry implements CheckablePackage {
   private final PackageCheckRequest myKey;
   private final AtomicReference<CheckResult> myResult = new AtomicReference<CheckResult>();
   private final AtomicBoolean myExecuting = new AtomicBoolean();
+  private final AtomicBoolean myFreshRequest = new AtomicBoolean(true);
 
   private volatile long myNextCheckTime;
   private volatile long myRemoveTime;
@@ -76,6 +77,8 @@ public class PackageCheckEntry implements CheckablePackage {
   public void update(@NotNull final PackageCheckRequest request) {
     if (!forRequest(request)) throw new IllegalArgumentException("Incompatible request");
 
+    myFreshRequest.set(true);
+
     myCheckInterval = Math.min(myCheckInterval, request.getCheckInterval());
     myRemoveInterval = Math.max(myRemoveInterval, removeInterval(request));
 
@@ -116,7 +119,12 @@ public class PackageCheckEntry implements CheckablePackage {
   }
 
   public void setResult(@NotNull CheckResult result) {
-    myNextCheckTime = myTime.now() + myCheckInterval;
+    final long now = myTime.now();
+    myNextCheckTime = now + myCheckInterval;
+    //if this is the first update after requires, let's recall it longer
+    if (myFreshRequest.getAndSet(false)) {
+      myRemoveTime = now + myRemoveInterval;
+    }
     //should not change remove time, to give
     //a chance to remove package from the list
 
