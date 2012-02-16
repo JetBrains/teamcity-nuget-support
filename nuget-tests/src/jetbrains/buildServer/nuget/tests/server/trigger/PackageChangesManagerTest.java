@@ -48,7 +48,17 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    final PackageCheckerSettings settings = new PackageCheckerSettingsImpl();
+    final PackageCheckerSettings settings = new PackageCheckerSettingsImpl(){
+      @Override
+      public long getTriggerPollInterval() {
+        return 5 * 60 * 1000;
+      }
+
+      @Override
+      public long getPackageCheckInterval() {
+        return 20 * 1000;
+      }
+    };
     myFactory = new PackageCheckRequestFactory(settings);
     myManager = new PackageChangesManagerImpl(this, settings);
   }
@@ -65,7 +75,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   @Test
   public void test_empty() {
     Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
-    Assert.assertEquals(myManager.getSleepTime(), 450000);
+    Assert.assertEquals(myManager.getSleepTime(), 30000);
     myManager.cleaupObsolete();
   }
 
@@ -85,7 +95,13 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     advanceTime(100L * 10 * 60 * 1001);
 
     myManager.cleaupObsolete();
-    Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
+    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
+    myManager.getItemsToCheckNow().iterator().next().setResult(CheckResult.failed("asdasd"));
+
+    advanceTime(100L * 10 * 60 * 1001);
+
+    myManager.cleaupObsolete();
+    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 0);
   }
 
   @Test
@@ -119,7 +135,6 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     next.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
   }
 
-
   @Test
   public void test_should_remove_old_task() {
     final PackageCheckRequest a = req("a");
@@ -128,7 +143,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     checkAll(a);
     advanceTime(1000 * 1000 + 1);
 
-    int totalTimes = 10;
+    int totalTimes = 100;
     while(true) {
       Assert.assertTrue(totalTimes-- > 0, "Task must be removed as absolete");
 
@@ -139,7 +154,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
       setResult(next);
 
       myManager.cleaupObsolete();
-      advanceTime(1000 * 1000 + 1);
+      advanceTime(100* 1000 * 1000 + 1);
     }
   }
 
@@ -153,9 +168,11 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     checkAll(a, b);
     advanceTime(1000 * 1000 + 1);
 
-    for(int totalTimes = 10; totalTimes-- > 0; ) {
+    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
+
+    for(int totalTimes = 10; totalTimes --> 0; ) {
       final Collection<PackageCheckEntry> items = myManager.getItemsToCheckNow();
-      Assert.assertFalse(items.isEmpty());
+      Assert.assertFalse(items.isEmpty(), "times: " + totalTimes);
 
       final PackageCheckEntry next = items.iterator().next();
       setResult(next);
@@ -165,6 +182,32 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     }
 
     advanceTime(11 * 10000 * 1000);
+    myManager.cleaupObsolete();
+    Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
+  }
+
+  @Test
+  public void test_too_long_feed_query() {
+    final PackageCheckRequest req = req("a1");
+    checkAll(req);
+    advanceTime(42 * 1000 * 1000L);
+
+    myManager.cleaupObsolete();
+    PackageCheckEntry n = myManager.getItemsToCheckNow().iterator().next();
+    Assert.assertNull(n.getResult());
+    Assert.assertTrue(n.getRemoveTime() < myTime);
+
+    advanceTime(442 * 1000 * 1000L);
+    //package should wait for result
+    myManager.cleaupObsolete();
+    n = myManager.getItemsToCheckNow().iterator().next();
+    n.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
+
+    //package should be available after that to let trigger get the data
+    Assert.assertTrue(n.getRemoveTime() > myTime);
+
+    advanceTime(442 * 1000 * 1000L);
+    //package should wait for result
     myManager.cleaupObsolete();
     Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
   }

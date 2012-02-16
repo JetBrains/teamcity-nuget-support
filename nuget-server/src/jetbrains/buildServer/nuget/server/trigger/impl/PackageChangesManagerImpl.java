@@ -100,7 +100,11 @@ public class PackageChangesManagerImpl implements PackageChangesManager, Package
       for (Iterator<PackageCheckEntry> it = myEntries.iterator(); it.hasNext(); ) {
         PackageCheckEntry entry = it.next();
 
-        if (entry.getRemoveTime() < now) it.remove();
+        //do not remove entry if result is not yet computed
+        if (entry.getResult() == null) continue;
+        if (entry.getRemoveTime() < now) {
+          it.remove();
+        }
       }
     }
   }

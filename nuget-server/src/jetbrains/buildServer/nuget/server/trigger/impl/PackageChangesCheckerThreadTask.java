@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import jetbrains.buildServer.util.ExceptionUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -57,17 +58,20 @@ public class PackageChangesCheckerThreadTask {
     myExecutor.schedule(asRunnable(), myHolder.getSleepTime(), TimeUnit.MILLISECONDS);
   }
 
+  @NotNull
   private Runnable asRunnable() {
-    return new Runnable() {
-      public void run() {
-        PackageChangesCheckerThreadTask.this.checkForUpdates();
-      }
-    };
+    return ExceptionUtil.catchAll(
+            "NuGet Trigger update scheduler",
+            new Runnable() {
+              public void run() {
+                PackageChangesCheckerThreadTask.this.checkForUpdates();
+              }
+            });
   }
 
   @NotNull
   private List<CheckablePackage> getMatchedItems(@NotNull final PackageChecker checker,
-                                                  @NotNull final Collection<PackageCheckEntry> toCheck) {
+                                                 @NotNull final Collection<PackageCheckEntry> toCheck) {
     final List<CheckablePackage> items = new ArrayList<CheckablePackage>();
     for (PackageCheckEntry entry : toCheck) {
       if (checker.accept(entry.getRequest())) {

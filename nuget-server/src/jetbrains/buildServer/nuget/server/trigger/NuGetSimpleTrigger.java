@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.buildTriggers.*;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.util.StringUtil;
@@ -31,14 +32,16 @@ import java.util.Map;
  *         Date: 03.05.11 15:25
  */
 public class NuGetSimpleTrigger extends BuildTriggerService {
-  @NotNull
-  private final NuGetTriggerController myController;
-  private final NamedPackagesUpdateChecker myChecker;
+  @NotNull private final NuGetTriggerController myController;
+  @NotNull private final NamedPackagesUpdateChecker myChecker;
+  @NotNull private final PackageCheckerSettings mySettings;
 
   public NuGetSimpleTrigger(@NotNull final NuGetTriggerController controller,
-                            @NotNull final NamedPackagesUpdateChecker checker) {
+                            @NotNull final NamedPackagesUpdateChecker checker,
+                            @NotNull final PackageCheckerSettings settings) {
     myController = controller;
     myChecker = checker;
+    mySettings = settings;
   }
 
   @NotNull
@@ -72,6 +75,12 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
   @Override
   public BuildTriggeringPolicy getBuildTriggeringPolicy() {
     return new PolledBuildTrigger() {
+
+      @Override
+      public int getPollInterval(@NotNull PolledTriggerContext context) {
+        return (int)(mySettings.getTriggerPollInterval()/1000);
+      }
+
       @Override
       public void triggerBuild(@NotNull PolledTriggerContext context) throws BuildTriggerException {
         final BuildStartReason result = myChecker.checkChanges(context.getTriggerDescriptor(), context.getCustomDataStorage());

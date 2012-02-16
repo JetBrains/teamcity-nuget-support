@@ -25,6 +25,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -41,6 +43,7 @@ public class PackageCheckEntryTest extends BaseTestCase {
   private TimeService myTime;
   private SystemInfo mySystemInfo;
   private CheckRequestModeFactory myFactory;
+  private long myNow;
 
   @BeforeMethod
   @Override
@@ -51,9 +54,14 @@ public class PackageCheckEntryTest extends BaseTestCase {
     myTime = m.mock(TimeService.class);
     mySystemInfo = m.mock(SystemInfo.class);
     myFactory = new CheckRequestModeFactory(mySystemInfo);
+    myNow = 42;
 
     m.checking(new Expectations(){{
-      allowing(myTime).now(); will(returnValue(42L));
+      allowing(myTime).now(); will(new CustomAction("return myNow") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return myNow;
+        }
+      });
       allowing(mySettings).getPackageCheckRequestIdleRemoveInterval(with(any(long.class))); will(returnValue(45L));
       allowing(mySystemInfo).canStartNuGetProcesses(); will(returnValue(true));
     }});
@@ -113,6 +121,75 @@ public class PackageCheckEntryTest extends BaseTestCase {
             request("zzz", null, "package2", null));
   }
 
+  @Test
+  public void testUpdatesRemoveDateOnSetResult() {
+    PackageCheckEntry e = new PackageCheckEntry(request("WWWW", "asda", "asrwerw", null), myTime, mySettings);
+
+    final long r1 = e.getRemoveTime();
+    final long c1 = e.getNextCheckTime();
+    myNow += 11123L;
+    e.setResult(CheckResult.failed("asdasd"));
+    Assert.assertTrue(r1 != e.getRemoveTime(), "data update should increment request life");
+    Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
+  }
+
+  @Test
+  public void testUpdatesRemoveDateOnSetResult2() {
+    PackageCheckEntry e = new PackageCheckEntry(request("WWWW", "asda", "asrwerw", null), myTime, mySettings);
+    e.setResult(CheckResult.failed("asdasd"));
+    final long r1 = e.getRemoveTime();
+    final long c1 = e.getNextCheckTime();
+    myNow += 11123L;
+    e.setResult(CheckResult.failed("asdasd"));
+
+    Assert.assertTrue(r1 == e.getRemoveTime(), "data update should increment request life");
+    Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
+  }
+
+  @Test
+  public void testUpdatesRemoveDateOnSetResult3() {
+    final PackageCheckRequest r = request("WWWW", "asda", "asrwerw", null);
+    PackageCheckEntry e = new PackageCheckEntry(r, myTime, mySettings);
+    e.setResult(CheckResult.failed("asdasd"));
+    e.setResult(CheckResult.failed("asdasd"));
+    e.update(r);
+
+    final long r1 = e.getRemoveTime();
+    final long c1 = e.getNextCheckTime();
+    myNow += 11123L;
+    e.setResult(CheckResult.failed("asdasd"));
+
+    Assert.assertTrue(r1 != e.getRemoveTime(), "data update should increment request life");
+    Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
+  }
+
+  @Test
+  public void testUpdatesRemoveDateOnSetResult4() {
+    final PackageCheckRequest r = request("WWWW", "asda", "asrwerw", null);
+    PackageCheckEntry e = new PackageCheckEntry(r, myTime, mySettings);
+    e.setResult(CheckResult.failed("asdasd"));
+    e.setResult(CheckResult.failed("asdasd"));
+    e.update(r);
+    e.setResult(CheckResult.failed("asdasd"));
+    myNow += 11123L;
+    final long r1 = e.getRemoveTime();
+    final long c1 = e.getNextCheckTime();
+    e.setResult(CheckResult.failed("asdasd"));
+
+    Assert.assertTrue(r1 == e.getRemoveTime(), "data update should increment request life");
+    Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
+  }
+
+  @Test
+  public void testUpdatesRemoveDateOnUpdateRequest() {
+    final PackageCheckRequest r = request("WWWW", "asda", "asrwerw", null);
+    PackageCheckEntry e = new PackageCheckEntry(r, myTime, mySettings);
+
+    final long r1 = e.getRemoveTime();
+    myNow += 11123L;
+    e.update(r);
+    Assert.assertTrue(r1 != e.getRemoveTime(), "data update should increment request life");
+  }
 
   private void assertAccept(final boolean accept,
                             @NotNull final PackageCheckRequest init,
