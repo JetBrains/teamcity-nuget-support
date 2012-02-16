@@ -7,6 +7,9 @@ import org.jetbrains.annotations.NotNull;
  *         Date: 04.10.11 20:27
  */
 public interface PackageCheckerSettings {
+
+  int getTriggerPollInterval();
+
   long getPackageCheckInterval();
 
   long getPackageCheckRequestIdleRemoveInterval(long checkInterval);
