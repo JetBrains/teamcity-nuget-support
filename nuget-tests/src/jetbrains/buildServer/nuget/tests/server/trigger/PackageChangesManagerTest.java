@@ -65,7 +65,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   @Test
   public void test_empty() {
     Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
-    Assert.assertEquals(myManager.getSleepTime(), 450000);
+    Assert.assertEquals(myManager.getSleepTime(), 150000);
     myManager.cleaupObsolete();
   }
 
@@ -85,7 +85,13 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     advanceTime(100L * 10 * 60 * 1001);
 
     myManager.cleaupObsolete();
-    Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
+    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
+    myManager.getItemsToCheckNow().iterator().next().setResult(CheckResult.failed("asdasd"));
+
+    advanceTime(100L * 10 * 60 * 1001);
+
+    myManager.cleaupObsolete();
+    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 0);
   }
 
   @Test
@@ -153,9 +159,11 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     checkAll(a, b);
     advanceTime(1000 * 1000 + 1);
 
-    for(int totalTimes = 10; totalTimes-- > 0; ) {
+    Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
+
+    for(int totalTimes = 10; totalTimes --> 0; ) {
       final Collection<PackageCheckEntry> items = myManager.getItemsToCheckNow();
-      Assert.assertFalse(items.isEmpty());
+      Assert.assertFalse(items.isEmpty(), "times: " + totalTimes);
 
       final PackageCheckEntry next = items.iterator().next();
       setResult(next);

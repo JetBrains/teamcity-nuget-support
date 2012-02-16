@@ -36,7 +36,7 @@ public class PackageCheckerSettingsImpl implements PackageCheckerSettings {
 
   public long getPackageCheckRequestIdleRemoveInterval(long checkInterval) {
     //make sure package is not cleaned up before requests from trigger
-    return 5 * getTriggerPollInterval();
+    return Math.max(5 * checkInterval, 5 * getTriggerPollInterval());
   }
 
   public long getMinSleepInterval() {
