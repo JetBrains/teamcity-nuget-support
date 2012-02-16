@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface PackageCheckerSettings {
 
-  int getTriggerPollInterval();
+  long getTriggerPollInterval();
 
   long getPackageCheckInterval();
 

@@ -48,7 +48,17 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    final PackageCheckerSettings settings = new PackageCheckerSettingsImpl();
+    final PackageCheckerSettings settings = new PackageCheckerSettingsImpl(){
+      @Override
+      public long getTriggerPollInterval() {
+        return 5 * 60 * 1000;
+      }
+
+      @Override
+      public long getPackageCheckInterval() {
+        return 20 * 1000;
+      }
+    };
     myFactory = new PackageCheckRequestFactory(settings);
     myManager = new PackageChangesManagerImpl(this, settings);
   }
@@ -65,7 +75,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   @Test
   public void test_empty() {
     Assert.assertTrue(myManager.getItemsToCheckNow().isEmpty());
-    Assert.assertEquals(myManager.getSleepTime(), 150000);
+    Assert.assertEquals(myManager.getSleepTime(), 30000);
     myManager.cleaupObsolete();
   }
 
@@ -125,7 +135,6 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     next.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
   }
 
-
   @Test
   public void test_should_remove_old_task() {
     final PackageCheckRequest a = req("a");
@@ -134,7 +143,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     checkAll(a);
     advanceTime(1000 * 1000 + 1);
 
-    int totalTimes = 10;
+    int totalTimes = 100;
     while(true) {
       Assert.assertTrue(totalTimes-- > 0, "Task must be removed as absolete");
 
@@ -145,7 +154,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
       setResult(next);
 
       myManager.cleaupObsolete();
-      advanceTime(1000 * 1000 + 1);
+      advanceTime(100* 1000 * 1000 + 1);
     }
   }
 

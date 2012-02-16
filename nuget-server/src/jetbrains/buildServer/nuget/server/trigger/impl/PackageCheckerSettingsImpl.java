@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.trigger.impl;
 
 import jetbrains.buildServer.buildTriggers.PolledBuildTrigger;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
+import jetbrains.buildServer.util.Dates;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,13 +31,14 @@ public class PackageCheckerSettingsImpl implements PackageCheckerSettings {
     return TeamCityProperties.getInteger("teamcity.nuget.packageCheckInterval", 5 * 60 * 1000);
   }
 
-  public int getTriggerPollInterval() {
-    return TeamCityProperties.getInteger("teamcity.nuget.trigger.pollInterval", PolledBuildTrigger.DEFAULT_POLL_TRIGGER_INTERVAL);
+  public long getTriggerPollInterval() {
+    //triggers are called every second, not faster
+    return Math.min(1000, TeamCityProperties.getInteger("teamcity.nuget.packageTriggerPollInterval", PolledBuildTrigger.DEFAULT_POLL_TRIGGER_INTERVAL * 1000));
   }
 
   public long getPackageCheckRequestIdleRemoveInterval(long checkInterval) {
     //make sure package is not cleaned up before requests from trigger
-    return Math.max(5 * checkInterval, 5 * getTriggerPollInterval());
+    return 5 * Math.max(checkInterval, getTriggerPollInterval()) + Dates.hours(1);
   }
 
   public long getMinSleepInterval() {

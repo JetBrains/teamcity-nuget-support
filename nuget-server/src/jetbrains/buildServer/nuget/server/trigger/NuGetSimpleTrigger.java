@@ -62,7 +62,7 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
 
       @Override
       public int getPollInterval(@NotNull PolledTriggerContext context) {
-        return mySettings.getTriggerPollInterval();
+        return (int)(mySettings.getTriggerPollInterval()/1000);
       }
 
       @Override
