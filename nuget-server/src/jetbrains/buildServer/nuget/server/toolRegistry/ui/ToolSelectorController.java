@@ -83,7 +83,7 @@ public class ToolSelectorController extends BaseController {
       mv.getModel().put("clazz", safe(request.getParameter("class")));
       mv.getModel().put("style", safe(request.getParameter("style")));
       mv.getModel().put("items", tools);
-      mv.getModel().put("settingsUrl", "/admin/serverConfig.html?init=1&tab=" + ServerSettingsTab.TAB_ID + "&" + SettingsSection.SELECTED_SECTION_KEY + "=" + InstalledToolsController.SETTINGS_PAGE_ID) ;
+      mv.getModel().put("settingsUrl", "/admin/admin.html?init=1&section=" + ServerSettingsTab.TAB_ID + "&" + SettingsSection.SELECTED_SECTION_KEY + "=" + InstalledToolsController.SETTINGS_PAGE_ID) ;
       return mv;
     }
   }
