@@ -70,12 +70,12 @@
   </tr>
   <tr>
     <td>
-      <props:checkboxProperty name="${ib.packOutputClear}"/> Clean output directory
+      <props:checkboxProperty name="${ib.packOutputClear}"/><label for="${ib.packOutputClear}">Clean output directory</label>
     </td>
   </tr>
   <tr>
     <td>
-      <props:checkboxProperty name="${ib.packAsArtifact}"/> Publish created packages to build artifacts
+      <props:checkboxProperty name="${ib.packAsArtifact}"/><label for="${ib.packAsArtifact}">Publish created packages to build artifacts</label>
       <span class="smallNote">Created packages will be published to the root of artifacts</span>
     </td>
   </tr>
