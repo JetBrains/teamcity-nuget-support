@@ -61,7 +61,7 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
   public String describeTrigger(@NotNull final BuildTriggerDescriptor trigger) {
     Map<String, String> props = trigger.getProperties();
     StringBuilder sb = new StringBuilder();
-    sb.append("Package Id: ").append(props.get(TriggerConstants.PACKAGE)).append("\n");
+    sb.append("Package Id: ").append(props.get(TriggerConstants.PACKAGE));
     String version = props.get(TriggerConstants.VERSION);
     if (!StringUtil.isEmptyOrSpaces(version)) {
       sb.append("\n");

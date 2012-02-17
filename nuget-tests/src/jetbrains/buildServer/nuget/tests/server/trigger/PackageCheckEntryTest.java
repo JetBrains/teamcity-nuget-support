@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
@@ -32,6 +33,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Collections;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -134,13 +136,27 @@ public class PackageCheckEntryTest extends BaseTestCase {
   }
 
   @Test
-  public void testUpdatesRemoveDateOnSetResult2() {
+  public void testUpdatesRemoveDateOnSetResult2_fail() {
     PackageCheckEntry e = new PackageCheckEntry(request("WWWW", "asda", "asrwerw", null), myTime, mySettings);
     e.setResult(CheckResult.failed("asdasd"));
     final long r1 = e.getRemoveTime();
     final long c1 = e.getNextCheckTime();
     myNow += 11123L;
     e.setResult(CheckResult.failed("asdasd"));
+
+    Assert.assertTrue(r1 == e.getRemoveTime(), "data update should increment request life");
+    Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
+    Assert.assertTrue(e.getRemoveTime() < e.getNextCheckTime(), "should not check errors before remove");
+  }
+
+  @Test
+  public void testUpdatesRemoveDateOnSetResult2_success() {
+    PackageCheckEntry e = new PackageCheckEntry(request("WWWW", "asda", "asrwerw", null), myTime, mySettings);
+    e.setResult(CheckResult.failed("asdasd"));
+    final long r1 = e.getRemoveTime();
+    final long c1 = e.getNextCheckTime();
+    myNow += 11123L;
+    e.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
 
     Assert.assertTrue(r1 == e.getRemoveTime(), "data update should increment request life");
     Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");
