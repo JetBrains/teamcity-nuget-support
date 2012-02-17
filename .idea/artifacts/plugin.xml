@@ -42,6 +42,9 @@
       <element id="directory" name="bin-server">
         <element id="dir-copy" path="$PROJECT_DIR$/nuget-extensions/bin-server" />
       </element>
+      <element id="directory" name="licenses">
+        <element id="dir-copy" path="$PROJECT_DIR$/licenses" />
+      </element>
     </root>
   </artifact>
 </component>
