@@ -8,7 +8,6 @@
       <WebApplicationFiles Include="$(OutputPath)\**\*"><Destination>Bin</Destination></WebApplicationFiles>
       <WebApplicationFiles Include="Web.config;Default.aspx;Log4Net.xml"><Destination></Destination></WebApplicationFiles>
       <WebApplicationFiles Include="DataServices\*.svc"><Destination>DataServices</Destination></WebApplicationFiles>
-      <WebApplicationFiles Include="licenses\**\*"><Destination>Licenses</Destination></WebApplicationFiles>
     </ItemGroup>
 
     <Copy 
