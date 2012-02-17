@@ -125,6 +125,11 @@ public class PackageCheckEntry implements CheckablePackage {
     if (myFreshRequest.getAndSet(false)) {
       myRemoveTime = now + myRemoveInterval;
     }
+
+    //avoid checking errorneous requiests
+    if (result.getError() != null) {
+      myNextCheckTime = now + myRemoveInterval + myCheckInterval;
+    }
     //should not change remove time, to give
     //a chance to remove package from the list
 

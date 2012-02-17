@@ -187,6 +187,25 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   }
 
   @Test
+  public void test_should_not_re_schedule_package_refresh_on_error() {
+    final PackageCheckRequest p = req("a");
+
+    checkAll(p);
+    myTime += 19999;
+    final PackageCheckEntry pp = myManager.getItemsToCheckNow().iterator().next();
+    pp.setResult(CheckResult.failed("error"));
+
+    Assert.assertTrue(pp.getNextCheckTime() > pp.getRemoveTime());
+    myTime += 19999;
+    pp.update(p);
+    Assert.assertTrue(pp.getNextCheckTime() < pp.getRemoveTime());
+
+    myTime += 19999;
+    pp.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
+    Assert.assertTrue(pp.getNextCheckTime() <= pp.getRemoveTime());
+  }
+
+  @Test
   public void test_too_long_feed_query() {
     final PackageCheckRequest req = req("a1");
     checkAll(req);
