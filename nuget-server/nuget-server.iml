@@ -38,7 +38,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Commons-Codec" level="project" />
     <orderEntry type="library" name="commons-http" level="project" />
     <orderEntry type="library" name="log4j" level="project" />
     <orderEntry type="library" name="idea annotations.jar" level="project" />
