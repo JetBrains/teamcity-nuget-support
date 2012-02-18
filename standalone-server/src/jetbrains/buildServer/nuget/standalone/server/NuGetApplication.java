@@ -18,6 +18,9 @@ package jetbrains.buildServer.nuget.standalone.server;
 
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetODataApplication;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
 * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
 * Date: 29.01.12 23:41
@@ -27,4 +30,10 @@ public class NuGetApplication extends NuGetODataApplication {
     super(new NuGetApplicationProducer());
   }
 
+  @Override
+  public Set<Object> getSingletons() {
+    final Set<Object> list = new HashSet<Object>(super.getSingletons());
+    list.add(new PackageDownload(Main.getPackagesRoot()));
+    return list;
+  }
 }
