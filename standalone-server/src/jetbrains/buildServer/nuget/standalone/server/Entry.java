@@ -47,4 +47,8 @@ public class Entry {
   public Map<String,String> getMap() {
     return myMap;
   }
+
+  public String getVersion() {
+    return myMap.get("Version");
+  }
 }

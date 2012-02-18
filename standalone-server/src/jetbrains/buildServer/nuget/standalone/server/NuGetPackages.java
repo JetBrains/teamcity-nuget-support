@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.standalone.server;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.text.VersionComparatorUtil;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageFile;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageLoadException;
@@ -33,7 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class NuGetPackages {
   private static final Logger LOG = Logger.getInstance(NuGetPackages.class.getName());
-  private static final long SPAN = 5 * 1000;
+  private static final long SPAN = 60 * 1000;
   
   private final AtomicReference<Collection<Entry>> myPackagesCache = new AtomicReference<Collection<Entry>>();
   private long myLastReadTime;
@@ -47,7 +48,10 @@ public class NuGetPackages {
   }
 
   private synchronized void reloadPackagesIfNeeded() {
-    if (myLastReadTime + SPAN > System.currentTimeMillis()) return;
+    //TODO: use filewatcher
+    final long now = System.currentTimeMillis();
+    if (myLastReadTime + SPAN > now) return;
+    myLastReadTime = now;
 
     int id = 42;
     final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
@@ -66,8 +70,23 @@ public class NuGetPackages {
         }
       }
     }
+
+    Collections.sort(result, new Comparator<Entry>() {
+      public int compare(Entry o1, Entry o2) {
+        final String v1 = o1.getVersion();
+        final String v2 = o2.getVersion();
+
+        if (v1 == null && v2 != null) return 1;
+        if (v1 != null && v2 == null) return -1;
+        //noinspection ConstantConditions
+        if (v1 == null && v2 == null) return 0;
+
+        return -VersionComparatorUtil.compare(v1, v2);
+      }
+    });
+
     myPackagesCache.set(result);
-    myLastReadTime = System.currentTimeMillis();
+    myLastReadTime = now;
   }
 
   @Nullable
