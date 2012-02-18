@@ -60,7 +60,6 @@ public abstract class PackagesIndexBase<TEntry> implements PackagesIndex {
 
   @NotNull
   protected Collection<PackageTransformation> getTransformations() {
-    final IsLatestCalculator calculator = createIsLatestTransformation();
     return Arrays.asList(
             new SamePackagesFilterTransformation(),
             new IsLatestFieldTransformation(),

@@ -47,15 +47,4 @@ public class NuGetApplicationPackagesIndex extends PackagesIndexBase<Entry> {
   protected String getDownloadUrl(@NotNull NuGetPackageBuilder builder) {
     return "/download/" + builder.getKey();
   }
-
-  @NotNull
-  @Override
-  protected IsLatestCalculator createIsLatestTransformation() {
-    return new IsLatestCalculator() {
-      public Boolean isLatest(@NotNull NuGetPackageBuilder builder) {
-        //TODO: implement is latest computation
-        return false;
-      }
-    };
-  }
 }
