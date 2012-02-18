@@ -44,6 +44,6 @@ public class NuGetApplicationPackagesIndex extends PackagesIndexBase<Entry> {
 
   @Override
   protected String getDownloadUrl(@NotNull NuGetPackageBuilder builder) {
-    return "/download/" + builder.getKey();
+    return "download/" + builder.getKey();
   }
 }

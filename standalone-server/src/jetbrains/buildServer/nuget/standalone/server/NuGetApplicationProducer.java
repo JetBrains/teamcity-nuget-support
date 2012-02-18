@@ -36,7 +36,7 @@ public class NuGetApplicationProducer extends NuGetProducerBase {
     return new PackageEntryData(internal) {
       @Override
       protected String resolveUrl(@NotNull String baseUrl, @NotNull String url) {
-        return null;
+        return baseUrl + url;
       }
     };
   }
