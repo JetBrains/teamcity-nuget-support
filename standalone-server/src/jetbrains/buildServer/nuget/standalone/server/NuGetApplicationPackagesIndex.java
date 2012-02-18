@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.standalone.server;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexBase;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsLatestCalculator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
