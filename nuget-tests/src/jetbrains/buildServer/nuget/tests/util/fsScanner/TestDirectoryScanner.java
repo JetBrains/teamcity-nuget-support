@@ -19,8 +19,8 @@ package jetbrains.buildServer.nuget.tests.util.fsScanner;
 import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.agent.util.fsScanner.DirectoryScanner;
-import jetbrains.buildServer.nuget.agent.util.fsScanner.DirectoryScanner;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.TestFor;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -181,6 +181,37 @@ public class TestDirectoryScanner extends BaseTestCase {
                     });
   }
 
+  @Test
+  @TestFor(issues = "TW-20436")
+  public void testManyPatterns() throws IOException {
+    final File fsp = createTempDir();
+
+    Collection<File> files = DirectoryScanner.findFiles(fsp, Arrays.asList(
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/e/t/g/d/r/t/h/hg/f/d/r/f/d/r/g/d",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/e/t/g/d/r/t/h/hg/f/d/r/f/d/E/g/d",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/e/t/g/d/r/t/h/hh/f/d/r/f/d/E/g/d",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/e/t/g/d/r/t/h/hh/frd/r/f/d/E/g/d",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/e/t/g/d/r/t/hh/frd/r/f/d/E/g/d",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/t/g/d/r/t/hh/frd/r/f/d/E/g/d",
+            "a/b/v/d/e/r/g/f/g/h/t/d/t/g/d/r/t/hh/frd/r/f/d/E/g/d",
+            "a/b/v/d//g/f/g/h/t/d/t/g/d/r/t/hh/frd/r/f/d/E/g/d",
+            "a/b/v/d/Ui/g/f/g/h/t/d/t/g/d/r/t/hh/frd/r/f/d/E/g/d",
+            "a/b/v/d/g/f/g/h/t/d/t/g/d/r/t/hh/frd/r/f/d/E/g/d",
+            "a/b/v/d/g/f/g/h/t/d/t/g/d/r/t/hh/frd/r/f/d/E/g/d",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/e/t/g/d/r/t/h/hg/f/d/r/f/d/r/g/d",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/e/t/g/d/r/t/h/hg/f/d/r/f/d/E/g/d",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/e/t/g/d/r/t/h/hh/f/d/r/f/d/E/g/dd",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/e/t/g/d/r/t/h/hh/frd/r/f/d/E/g/dd",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/e/t/g/d/r/t/hh/frd/r/f/d/E/g/dd",
+            "a/b/v/d/e/r/g/f/g/h/t/g/d/t/g/d/r/t/hh/frd/r/f/d/E/g/dd",
+            "a/b/v/d/e/r/g/f/g/h/t/d/t/g/d/r/t/hh/frd/r/f/d/E/g/d/f/d/d",
+            "a/b/v/d//g/f/g/h/t/d/t/g/d/r/t/hh/frd/r/f/d/E/g//e/e/d/e/sdd",
+            "a/b/v/d/Ui/g/f/g/h/t/d/t/g/d/r/t/hh/frd/r/f/d/E/g/d/e/t/d/d",
+            "a/b/v/d/g/f/g/h/t/d/t/g/d/r/t/hh/frd/r/f/d/E/g//e/dc/r/d",
+            "a/b/v/d/g/f/g/h/t/d/t/g/d/r/t/hh/frd/r/f/d/E/g/d/e/r/t/yt/d"),
+            Collections.<String>emptyList());
+    Assert.assertEquals(0, files.size());
+  }
 
   @Test
   public void AbsoluteIncludePath() throws IOException {

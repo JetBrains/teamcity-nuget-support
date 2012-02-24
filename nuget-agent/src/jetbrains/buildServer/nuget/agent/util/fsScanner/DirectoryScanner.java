@@ -122,7 +122,7 @@ public class DirectoryScanner {
     LOG.debug("Scanning directory: " + directory.getName());
 
     boolean mayContainFiles = false;
-    Collection<String> explicits = new ArrayList<String>();
+    Collection<String> explicits = new HashSet<String>();
     for (AntPatternState state : includeState) {
       final Collection<String> nextTokens = state.nextTokes();
       if (nextTokens == null) {
