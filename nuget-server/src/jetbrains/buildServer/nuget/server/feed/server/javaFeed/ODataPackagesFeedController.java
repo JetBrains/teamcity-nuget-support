@@ -16,10 +16,13 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedHandler;
+import jetbrains.buildServer.util.FuncThrow;
+import jetbrains.buildServer.util.Util;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletConfig;
@@ -37,19 +40,25 @@ import java.util.Vector;
  * Date: 30.12.11 17:49
  */
 public class ODataPackagesFeedController implements NuGetFeedHandler {
-  private final ServletContainer myContainer;
+  private static final Logger LOG = Logger.getInstance(ODataPackagesFeedController.class.getName());
+
+  private ServletContainer myContainer;
   private final NuGetServerJavaSettings mySettings;
 
   public ODataPackagesFeedController(@NotNull final NuGetProducer producer,
                                      @NotNull final ServletConfig config,
                                      @NotNull final NuGetServerJavaSettings settings) {
     mySettings = settings;
-    myContainer = new ServletContainer(new NuGetODataApplication(producer));
-
     try {
-      myContainer.init(createServletConfig(config));
-    } catch (ServletException e) {
-      e.printStackTrace();
+      myContainer = Util.doUnderContextClassLoader(getClass().getClassLoader(), new FuncThrow<ServletContainer, ServletException>() {
+        public ServletContainer apply() throws ServletException {
+          ServletContainer sc = new ServletContainer(new NuGetODataApplication(producer));
+          sc.init(createServletConfig(config));
+          return sc;
+        }
+      });
+    } catch (Throwable e) {
+      LOG.warn("Failed to initialize NuGet Feed container. " + e.getMessage(), e);
     }
   }
 
@@ -87,12 +96,23 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
   public void handleRequest(@NotNull final String baseMappingPath,
                             @NotNull final HttpServletRequest request,
                             @NotNull final HttpServletResponse response) throws Exception {
+    if (myContainer == null) {
+      //error response according to OData spec for unsupported oprtaions (modification operations)
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "TeamCity provided feed is not initialized.");
+      return;
+    }
 
     if (!BaseController.isGet(request)) {
       //error response according to OData spec for unsupported oprtaions (modification operations)
       response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, "TeamCity provided feed is readonly.");
+      return;
     }
 
-    myContainer.service(new RequestWrapper(request, baseMappingPath), response);
+    Util.doUnderContextClassLoader(getClass().getClassLoader(), new FuncThrow<Object, Exception>() {
+      public Object apply() throws Exception {
+        myContainer.service(new RequestWrapper(request, baseMappingPath), response);
+        return null;
+      }
+    });
   }
 }
