@@ -27,8 +27,8 @@ import org.jetbrains.annotations.NotNull;
 * Date: 29.01.12 23:42
 */
 public class NuGetApplicationProducer extends NuGetProducerBase {
-  public NuGetApplicationProducer() {
-    super(new NuGetApplicationPackagesIndex());
+  public NuGetApplicationProducer(@NotNull final ServerSettings settings) {
+    super(new NuGetApplicationPackagesIndex(settings));
   }
 
   @Override

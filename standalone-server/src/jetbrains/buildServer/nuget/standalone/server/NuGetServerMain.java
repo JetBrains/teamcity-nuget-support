@@ -28,7 +28,7 @@ import java.io.IOException;
  * Date: 29.01.12 23:18
  */
 public class NuGetServerMain {
-  private static ServerSettings outSettings;
+  private static ServerSettings outSettings = new DefaultSettings();
   
   @NotNull
   public static ServerSettings getSettings() {

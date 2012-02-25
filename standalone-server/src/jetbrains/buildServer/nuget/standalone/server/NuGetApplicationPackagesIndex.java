@@ -27,7 +27,11 @@ import java.util.Iterator;
  * Date: 29.01.12 23:42
  */
 public class NuGetApplicationPackagesIndex extends PackagesIndexBase<Entry> {
-  private final NuGetPackages myPackages = new NuGetPackages();
+  private final NuGetPackages myPackages;
+
+  public NuGetApplicationPackagesIndex(@NotNull final ServerSettings settings) {
+    myPackages = new NuGetPackages(settings);
+  }
 
   @NotNull
   @Override

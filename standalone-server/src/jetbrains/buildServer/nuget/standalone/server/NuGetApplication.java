@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.standalone.server;
 
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetODataApplication;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -26,14 +27,21 @@ import java.util.Set;
 * Date: 29.01.12 23:41
 */
 public class NuGetApplication extends NuGetODataApplication {
+  @NotNull private final ServerSettings mySettings;
+
   public NuGetApplication() {
-    super(new NuGetApplicationProducer());
+    this(NuGetServerMain.getSettings());
+  }
+
+  private NuGetApplication(@NotNull final ServerSettings settings) {
+    super(new NuGetApplicationProducer(settings));
+    mySettings = settings;
   }
 
   @Override
   public Set<Object> getSingletons() {
     final Set<Object> list = new HashSet<Object>(super.getSingletons());
-    list.add(new PackageDownload(NuGetServerMain.getSettings().getPackagesFolder()));
+    list.add(new PackageDownload(mySettings.getPackagesFolder()));
     return list;
   }
 }

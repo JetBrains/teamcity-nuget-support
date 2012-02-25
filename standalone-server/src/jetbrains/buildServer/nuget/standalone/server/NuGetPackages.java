@@ -18,6 +18,8 @@ package jetbrains.buildServer.nuget.standalone.server;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.text.VersionComparatorUtil;
+import jetbrains.buildServer.configuration.ChangeListener;
+import jetbrains.buildServer.configuration.FilesWatcher;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageFile;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageLoadException;
@@ -34,28 +36,45 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class NuGetPackages {
   private static final Logger LOG = Logger.getInstance(NuGetPackages.class.getName());
-  private static final long SPAN = 60 * 1000;
-  
+
   private final AtomicReference<Collection<Entry>> myPackagesCache = new AtomicReference<Collection<Entry>>();
-  private long myLastReadTime;
+  private final FilesWatcher myWatcher;
+  @NotNull
+  private final ServerSettings mySettings;
+
+  public NuGetPackages(@NotNull final ServerSettings settings) {
+    mySettings = settings;
+    myWatcher = new FilesWatcher(new FilesWatcher.WatchedFilesProvider() {
+      public File[] getWatchedFiles() {
+        final File[] files = settings.getPackagesFolder().listFiles(PACKAGES_FILTER);
+        return files == null ? new File[0] : files;
+      }
+    });
+
+    myWatcher.registerListener(new ChangeListener() {
+      public void changeOccured(String requestor) {
+        //TODO: use myWatcher.{added, removed, changed} to work faster
+        reloadPackagesIfNeeded();
+      }
+    });
+
+    myWatcher.setSleepingPeriod(settings.getPackagesRefreshInterval());
+
+    reloadPackagesIfNeeded();
+    myWatcher.start();
+  }
 
   @NotNull
   protected Iterator<Entry> getEntries() {
-    reloadPackagesIfNeeded();
     final Collection<Entry> entries = myPackagesCache.get();
     if (entries != null) return entries.iterator();
     return Collections.<Entry>emptyList().iterator();
   }
 
   private synchronized void reloadPackagesIfNeeded() {
-    //TODO: use filewatcher
-    final long now = System.currentTimeMillis();
-    if (myLastReadTime + SPAN > now) return;
-    myLastReadTime = now;
-
     int id = 42;
     final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-    final File packagesFolder = NuGetServerMain.getSettings().getPackagesFolder();
+    final File packagesFolder = mySettings.getPackagesFolder();
     final File[] file = packagesFolder.listFiles();
     if (file == null) {
       System.out.println("Failed to read packages folder contents: " + packagesFolder);
@@ -87,7 +106,6 @@ public class NuGetPackages {
     });
 
     myPackagesCache.set(result);
-    myLastReadTime = now;
   }
 
   @Nullable
@@ -117,4 +135,10 @@ public class NuGetPackages {
       }
     };
   }
+
+  private final FilenameFilter PACKAGES_FILTER = new FilenameFilter() {
+    public boolean accept(File dir, String name) {
+      return name.equalsIgnoreCase(".nupkg");
+    }
+  };
 }
