@@ -14,7 +14,7 @@
       <element id="library" level="project" name="Idea-OpenApi" />
       <element id="library" level="project" name="xpp3-1.1.4c" />
       <element id="library" level="project" name="Commons-Codec" />
-      <element id="archive" name="nuget-feed.jar">
+      <element id="archive" name="nuget-feed-common.jar">
         <element id="module-output" name="nuget-feed" />
       </element>
     </root>
