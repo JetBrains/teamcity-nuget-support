@@ -1,0 +1,22 @@
+<component name="ArtifactManager">
+  <artifact name="standalone-server">
+    <output-path>$PROJECT_DIR$/out/artifacts/standalone_server</output-path>
+    <root id="root">
+      <element id="archive" name="nuget-standalone-server.jar">
+        <element id="module-output" name="standalone-server" />
+      </element>
+      <element id="library" level="project" name="odata4j" />
+      <element id="library" level="project" name="joda-time" />
+      <element id="library" level="project" name="idea annotations.jar" />
+      <element id="library" level="project" name="jersey" />
+      <element id="library" level="project" name="Common-Api" />
+      <element id="library" level="project" name="log4j" />
+      <element id="library" level="project" name="Idea-OpenApi" />
+      <element id="library" level="project" name="xpp3-1.1.4c" />
+      <element id="library" level="project" name="Commons-Codec" />
+      <element id="archive" name="nuget-feed.jar">
+        <element id="module-output" name="nuget-feed" />
+      </element>
+    </root>
+  </artifact>
+</component>

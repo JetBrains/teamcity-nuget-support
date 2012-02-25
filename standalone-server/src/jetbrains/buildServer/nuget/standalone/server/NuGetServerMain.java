@@ -27,7 +27,7 @@ import java.io.IOException;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 29.01.12 23:18
  */
-public class Main {
+public class NuGetServerMain {
   private static File outRoot;
   
   @NotNull
@@ -36,7 +36,9 @@ public class Main {
   }
   
   public static void main(String[] args) throws IOException {
-    System.out.println("NuGet Feed server.");
+    System.out.println("NuGet Feed server");
+    System.out.println("");
+
     final String appBaseUri = "http://localhost:9878/";
     final JerseyServer server = new JerseyServer(
             appBaseUri,

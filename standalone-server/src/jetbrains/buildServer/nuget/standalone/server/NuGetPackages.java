@@ -55,7 +55,7 @@ public class NuGetPackages {
 
     int id = 42;
     final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-    final File[] file = Main.getPackagesRoot().listFiles();
+    final File[] file = NuGetServerMain.getPackagesRoot().listFiles();
     if (file == null) {
       myPackagesCache.set(null);
       return;

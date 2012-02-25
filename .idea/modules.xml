@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/nuget-feed/nuget-feed.iml" filepath="$PROJECT_DIR$/nuget-feed/nuget-feed.iml" />
       <module fileurl="file://$PROJECT_DIR$/nuget-server/nuget-server.iml" filepath="$PROJECT_DIR$/nuget-server/nuget-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/nuget-tests/nuget-tests.iml" filepath="$PROJECT_DIR$/nuget-tests/nuget-tests.iml" />
+      <module fileurl="file://$PROJECT_DIR$/standalone-launcher/standalone-launcher.iml" filepath="$PROJECT_DIR$/standalone-launcher/standalone-launcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/standalone-server/standalone-server.iml" filepath="$PROJECT_DIR$/standalone-server/standalone-server.iml" />
     </modules>
   </component>
