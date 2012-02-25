@@ -15,6 +15,7 @@
     <orderEntry type="library" name="log4j" level="project" />
     <orderEntry type="library" name="odata4j" level="project" />
     <orderEntry type="library" name="xpp3-1.1.4c" level="project" />
+    <orderEntry type="library" name="Common-Api" level="project" />
   </component>
 </module>
 

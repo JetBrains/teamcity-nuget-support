@@ -16,24 +16,20 @@
 
 package jetbrains.buildServer.nuget.standalone.server;
 
-import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetODataApplication;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.File;
 
 /**
-* Created by Eugene Petrenko (eugene.petrenko@gmail.com)
-* Date: 29.01.12 23:41
-*/
-public class NuGetApplication extends NuGetODataApplication {
-  public NuGetApplication() {
-    super(new NuGetApplicationProducer());
-  }
+ * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 25.02.12 14:28
+ */
+public interface ServerSettings {
+  @NotNull
+  File getPackagesFolder();
 
-  @Override
-  public Set<Object> getSingletons() {
-    final Set<Object> list = new HashSet<Object>(super.getSingletons());
-    list.add(new PackageDownload(NuGetServerMain.getSettings().getPackagesFolder()));
-    return list;
-  }
+  long getPackagesRefreshInterval();
+
+  @NotNull
+  String getServerUrl();
 }

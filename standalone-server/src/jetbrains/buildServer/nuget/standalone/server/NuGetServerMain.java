@@ -28,33 +28,58 @@ import java.io.IOException;
  * Date: 29.01.12 23:18
  */
 public class NuGetServerMain {
-  private static File outRoot;
+  private static ServerSettings outSettings;
   
   @NotNull
-  public static File getPackagesRoot() {
-    return outRoot;
+  public static ServerSettings getSettings() {
+    return outSettings;
   }
   
   public static void main(String[] args) throws IOException {
     System.out.println("NuGet Feed server");
     System.out.println("");
+    initializeSettings(args);
 
-    final String appBaseUri = "http://localhost:9878/";
+    final String appBaseUri = getSettings().getServerUrl();
     final JerseyServer server = new JerseyServer(
             appBaseUri,
             NuGetApplication.class,
             RootApplication.class);
 
+    System.out.println("Starting packages index from: " + outSettings.getPackagesFolder());
+    
+    server.start();
+    System.out.println("Server started at " + outSettings.getServerUrl());
+  }
+
+  private static void initializeSettings(String[] args) throws IOException {
+    final File outRoot;
     if (args.length >= 1) {
       outRoot = new File(args[0]).getCanonicalFile();
     } else {
-      outRoot = new File(".").getCanonicalFile();
+      outRoot = null;
     }
-    
-    System.out.println("Starting packages index from: " + outRoot);
-    
-    server.start();
-    System.out.println("Server started at " + appBaseUri);
+
+    outSettings = new DefaultSettings() {
+      @NotNull
+      @Override
+      public File getPackagesFolder() {
+        return outRoot == null
+                ? super.getPackagesFolder()
+                : outRoot;
+      }
+
+      @Override
+      public long getPackagesRefreshInterval() {
+        return super.getPackagesRefreshInterval();
+      }
+
+      @NotNull
+      @Override
+      public String getServerUrl() {
+        return super.getServerUrl();
+      }
+    };
   }
 
 }

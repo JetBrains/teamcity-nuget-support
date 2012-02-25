@@ -55,9 +55,10 @@ public class NuGetPackages {
 
     int id = 42;
     final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-    final File[] file = NuGetServerMain.getPackagesRoot().listFiles();
+    final File packagesFolder = NuGetServerMain.getSettings().getPackagesFolder();
+    final File[] file = packagesFolder.listFiles();
     if (file == null) {
-      myPackagesCache.set(null);
+      System.out.println("Failed to read packages folder contents: " + packagesFolder);
       return;
     }
 
