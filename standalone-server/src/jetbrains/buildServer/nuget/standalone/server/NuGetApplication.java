@@ -33,7 +33,7 @@ public class NuGetApplication extends NuGetODataApplication {
   @Override
   public Set<Object> getSingletons() {
     final Set<Object> list = new HashSet<Object>(super.getSingletons());
-    list.add(new PackageDownload(Main.getPackagesRoot()));
+    list.add(new PackageDownload(NuGetServerMain.getPackagesRoot()));
     return list;
   }
 }

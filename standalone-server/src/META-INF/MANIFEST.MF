@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Class-Path: odata4j-core-0.6.0-SNAPSHOT.jar odata4j-jersey-0.6.0-SNAPS
+ HOT.jar core4j-0.5.jar joda-time-1.5.2.jar annotations.jar asm-3.1.ja
+ r jackson-core-asl-1.9.2.jar jackson-jaxrs-1.9.2.jar jackson-mapper-a
+ sl-1.9.2.jar jackson-xc-1.9.2.jar jersey-apache-client-1.11.jar jerse
+ y-atom-abdera-1.11.jar jersey-client-1.11.jar jersey-core-1.11.jar je
+ rsey-json-1.11.jar jersey-multipart-1.11.jar jersey-server-1.11.jar j
+ ersey-servlet-1.11.jar jersey-spring-1.11.jar jettison-1.1.jar jsr311
+ -api-1.1.1.jar common-api.jar annotations.jar log4j-1.2.12.jar util.j
+ ar openapi.jar trove4j.jar resources_en.jar jdom.jar xpp3-1.1.4c.jar 
+ commons-codec-1.5.jar
+Main-Class: stansalone-server
+
