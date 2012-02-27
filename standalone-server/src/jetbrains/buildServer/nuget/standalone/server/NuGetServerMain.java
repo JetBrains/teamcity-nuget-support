@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.odata4j.jersey.producer.server.JerseyServer;
 import org.odata4j.producer.resources.RootApplication;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -36,9 +35,20 @@ public class NuGetServerMain {
   }
   
   public static void main(String[] args) throws IOException {
-    System.out.println("NuGet Feed server");
+    System.out.println("NuGet Java Feed Server");
     System.out.println("");
-    initializeSettings(args);
+    System.out.println("Starting...");
+
+    try {
+      outSettings = new CommandlineSettings(args);
+    } catch (CommandlineException e) {
+      System.out.println();
+      System.err.println("Invalid commandline: " + e.getMessage());
+      System.out.println();
+      e.dumpUsage();
+      System.exit(2);
+      return;
+    }
 
     final String appBaseUri = getSettings().getServerUrl();
     final JerseyServer server = new JerseyServer(
@@ -47,39 +57,22 @@ public class NuGetServerMain {
             RootApplication.class);
 
     System.out.println("Starting packages index from: " + outSettings.getPackagesFolder());
-    
-    server.start();
+    System.out.println("Starting server at " + outSettings.getServerUrl() + "...");
+
+    startServer(server);
     System.out.println("Server started at " + outSettings.getServerUrl());
+    System.out.println();
+    System.out.println();
   }
 
-  private static void initializeSettings(String[] args) throws IOException {
-    final File outRoot;
-    if (args.length >= 1) {
-      outRoot = new File(args[0]).getCanonicalFile();
-    } else {
-      outRoot = null;
+  private static void startServer(@NotNull final JerseyServer server) {
+    try {
+      server.start();
+    } catch (Exception e) {
+      System.out.println("Failed to start server. " + e.getMessage());
+      System.out.println();
+      e.printStackTrace();
+      System.exit(4);
     }
-
-    outSettings = new DefaultSettings() {
-      @NotNull
-      @Override
-      public File getPackagesFolder() {
-        return outRoot == null
-                ? super.getPackagesFolder()
-                : outRoot;
-      }
-
-      @Override
-      public long getPackagesRefreshInterval() {
-        return super.getPackagesRefreshInterval();
-      }
-
-      @NotNull
-      @Override
-      public String getServerUrl() {
-        return super.getServerUrl();
-      }
-    };
   }
-
 }
