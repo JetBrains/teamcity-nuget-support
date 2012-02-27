@@ -9,4 +9,5 @@
   <bean class="jetbrains.buildServer.plugins.bean.PluginInfo"/>
   <bean class="jetbrains.buildServer.serverSide.ServerPaths"/>
   <bean class="jetbrains.buildServer.TempFolderProvider"/>
+  <bean class="javax.servlet.ServletConfig"/>
 </beans>
