@@ -34,6 +34,9 @@
         <element id="library" level="project" name="commons-http" />
         <element id="library" level="project" name="odata4j" />
         <element id="library" level="project" name="jersey" />
+        <element id="archive" name="nuget-feed.jar">
+          <element id="module-output" name="nuget-feed" />
+        </element>
       </element>
       <element id="file-copy" path="$PROJECT_DIR$/nuget-server/teamcity-server-plugin.xml" output-file-name="teamcity-plugin.xml" />
       <element id="directory" name="bin">
