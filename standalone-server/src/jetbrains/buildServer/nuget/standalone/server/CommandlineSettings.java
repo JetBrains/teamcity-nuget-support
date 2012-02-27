@@ -56,6 +56,8 @@ public class CommandlineSettings extends DefaultSettings {
   }
 
   public static void dumpUsage() {
+    System.out.println();
+    System.out.println("Usage:");
     System.out.println("java -jar standalonge-nuget-feed.jar <packages folder> [/url:<server url>]");
     System.out.println(" where: ");
     System.out.println(" <packages folder>    is path to .nupkg files");

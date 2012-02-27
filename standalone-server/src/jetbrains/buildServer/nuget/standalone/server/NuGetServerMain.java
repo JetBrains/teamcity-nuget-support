@@ -44,7 +44,6 @@ public class NuGetServerMain {
     } catch (CommandlineException e) {
       System.out.println();
       System.err.println("Invalid commandline: " + e.getMessage());
-      System.out.println();
       e.dumpUsage();
       System.exit(2);
       return;
