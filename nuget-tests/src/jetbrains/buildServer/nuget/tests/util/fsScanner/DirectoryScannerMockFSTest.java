@@ -24,6 +24,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -47,18 +48,18 @@ public class DirectoryScannerMockFSTest extends BaseTestCase {
 
       allowing(fsRoot).getName(); will(returnValue("fsRoot"));
       allowing(fsRoot).getParent(); will(returnValue(null));
-      allowing(fsRoot).getSubdirectories(Arrays.asList("root")); will(returnValue(new DirectoryEntry[]{ root} ));
+      allowing(fsRoot).getSubdirectories(new HashSet<String>(Arrays.asList("root"))); will(returnValue(new DirectoryEntry[]{ root} ));
 
       allowing(root).getParent(); will(returnValue(proot));
       allowing(root).getName(); will(returnValue("root"));
-      allowing(root).getSubdirectories(Arrays.asList("a")); will(returnValue(new DirectoryEntry[] { a }));
+      allowing(root).getSubdirectories(new HashSet<String>(Arrays.asList("a"))); will(returnValue(new DirectoryEntry[] { a }));
       allowing(root).getFiles(Arrays.asList("a")); will(returnValue(new FileEntry[0]));
       allowing(proot).getParent(); will(returnValue(null));
       allowing(proot).getName(); will(returnValue("proot"));
 
       allowing(a).getName(); will(returnValue("a"));
-      allowing(a).getFiles(Arrays.asList("c.txt")); will(returnValue(new FileEntry[]{c_txt} ));
-      allowing(a).getSubdirectories(Arrays.asList("c.txt")); will(returnValue(new DirectoryEntry[0]));
+      allowing(a).getFiles(new HashSet<String>(Arrays.asList("c.txt"))); will(returnValue(new FileEntry[]{c_txt} ));
+      allowing(a).getSubdirectories(new HashSet<String>(Arrays.asList("c.txt"))); will(returnValue(new DirectoryEntry[0]));
 
       allowing(c_txt).getName(); will(returnValue("c.txt"));
       allowing(c_txt).getPath(); will(returnValue(new FileSystemPath("ccc")));
