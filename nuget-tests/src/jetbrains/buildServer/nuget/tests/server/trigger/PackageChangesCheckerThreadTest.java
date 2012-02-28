@@ -21,6 +21,8 @@ import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.util.TimeService;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -41,6 +43,7 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
   private PackageCheckQueue myQueue;
   private ScheduledExecutorService myService;
   private TimeService myTime;
+  private boolean myIsShutdown;
 
   @BeforeMethod
   @Override
@@ -57,7 +60,18 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
 
     m.checking(new Expectations(){{
       allowing(myTime).now(); will(returnValue(1L));
+      allowing(myService).isShutdown(); will(new CustomAction("isShutdown flag") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return myIsShutdown;
+        }
+      });
     }});
+  }
+
+  @Test
+  public void test_no_work_if_shutdown() {
+    myIsShutdown = true;
+    myTask.checkForUpdates();
   }
 
   @Test
