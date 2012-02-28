@@ -16,6 +16,7 @@
 package jetbrains.buildServer.nuget.agent.util.fsScanner;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -49,7 +50,7 @@ public class DirectoryScanner {
 
     Set<File> foundFiles = new TreeSet<File>();
     for (FileSystemPath path : result) {
-      foundFiles.add(path.getFilePath());
+      foundFiles.add(FileUtil.getCanonicalFile(path.getFilePath()));
     }
     return foundFiles;
   }
