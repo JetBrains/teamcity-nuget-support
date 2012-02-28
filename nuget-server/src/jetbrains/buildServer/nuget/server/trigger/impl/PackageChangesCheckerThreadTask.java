@@ -43,8 +43,11 @@ public class PackageChangesCheckerThreadTask {
   }
 
   public void checkForUpdates() {
+    if (myExecutor.isShutdown()) return;
+
     for (final PackageChecker checker : myCheckers) {
       final List<CheckablePackage> items = getMatchedItems(checker, myHolder.getItemsToCheckNow());
+      if (myExecutor.isShutdown()) return;
       if (items.size() > 0) {
         checker.update(myExecutor, items);
       }
@@ -55,6 +58,7 @@ public class PackageChangesCheckerThreadTask {
   }
 
   public void postCheckTask() {
+    if (myExecutor.isShutdown()) return;
     myExecutor.schedule(asRunnable(), myHolder.getSleepTime(), TimeUnit.MILLISECONDS);
   }
 
