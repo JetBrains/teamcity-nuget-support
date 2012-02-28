@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run Performance Tests" type="TestNG" factoryName="TestNG">
+  <configuration default="false" name="Run Performance Tests (.NET Feed)" type="TestNG" factoryName="TestNG">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
       <pattern>
         <option name="PATTERN" value="jetbrains.*" />
@@ -9,7 +9,7 @@
     <module name="nuget-tests" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" value="" />
-    <option name="SUITE_NAME" value="$PROJECT_DIR$/nuget-tests/src/testng-nuget-performance.xml" />
+    <option name="SUITE_NAME" value="$PROJECT_DIR$/nuget-tests/src/testng-nuget-performance-dotNet-feed.xml" />
     <option name="PACKAGE_NAME" value="" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />

@@ -10,19 +10,5 @@
       <class name="jetbrains.buildServer.nuget.tests.integration.ServerListPackagesCommandIntegrationTest"/>
     </classes>
   </test>
-
-  <test name="nuget java feed integration">
-    <classes>
-      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedIntegrationTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedContentTest"/>
-    </classes>
-  </test>
-
-  <test name="NuGet Feed Server integration">
-    <classes>
-      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetServerFeedIntegrationTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetServerPingIntegrationTest"/>
-    </classes>
-  </test>
 </suite>
 

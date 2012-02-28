@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="nuget">
+  <test name="NuGet Feed Server integration">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetServerFeedIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetServerPingIntegrationTest"/>
+    </classes>
+  </test>
+</suite>
+
