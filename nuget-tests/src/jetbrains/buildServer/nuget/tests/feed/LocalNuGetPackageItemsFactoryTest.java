@@ -100,6 +100,12 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
     return sb.toString().trim();
   }
 
+  @Test(expectedExceptions = PackageLoadException.class)
+  public void test_empty() throws IOException, PackageLoadException {
+    final File f = createTempFile("");
+    myFactory.loadPackage(new ArtifactPackageFile(artifact(f), new Date()));
+  }
+
   @Test
   public void test_NinjectMVC() throws InvocationTargetException, IllegalAccessException, PackageLoadException, IOException {
     final File pkg = Paths.getTestDataPath("packages/Ninject.MVC3.2.2.2.0.nupkg");
