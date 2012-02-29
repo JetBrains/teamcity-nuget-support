@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>NuGet.Java.Server</id>
+    <version>0.0.7</version>
+    <authors>Eugene Petrenko</authors>
+    <owners>Eugene Petrenko</owners>
+    <licenseUrl>https://raw.github.com/JetBrains/teamcity-nuget-support/standalone3/standalone-launcher/README.txt</licenseUrl>
+    <projectUrl>https://github.com/JetBrains/teamcity-nuget-support/tree/standalone3/standalone-launcher</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Java base NuGet Feed server</description>
+    <releaseNotes>Provides simple NuGet server running in pure Java</releaseNotes>
+    <copyright>Copyright 2012</copyright>
+    <tags>NuGet Server Java Feed</tags>
+    <dependencies />
+  </metadata>
+  <files>
+    <file src="..\out\artifacts\standalone_launcher\**\*" target="tools" />
+  </files>
+</package>
