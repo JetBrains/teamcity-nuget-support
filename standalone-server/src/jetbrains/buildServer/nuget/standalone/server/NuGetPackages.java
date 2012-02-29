@@ -75,7 +75,7 @@ public class NuGetPackages {
     int id = 42;
     final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
     final File packagesFolder = mySettings.getPackagesFolder();
-    final File[] file = packagesFolder.listFiles();
+    final File[] file = packagesFolder.listFiles(PACKAGES_FILTER);
     if (file == null) {
       System.out.println("Failed to read packages folder contents: " + packagesFolder);
       return;
@@ -138,7 +138,7 @@ public class NuGetPackages {
 
   private final FilenameFilter PACKAGES_FILTER = new FilenameFilter() {
     public boolean accept(File dir, String name) {
-      return name.equalsIgnoreCase(".nupkg");
+      return name.toLowerCase().endsWith(".nupkg");
     }
   };
 }
