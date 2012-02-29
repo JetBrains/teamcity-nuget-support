@@ -7,16 +7,27 @@
         <target>create-version-file</target>
       </options>
     </properties>
+    <properties id="ant-preprocessing">
+      <options enabled="true">
+        <file>file://$PROJECT_DIR$/build/ant.build.xml</file>
+        <target>generate-manifest</target>
+      </options>
+    </properties>
     <root id="root">
       <element id="directory" name="lib">
         <element id="artifact" artifact-name="standalone-server" />
       </element>
       <element id="archive" name="standalonge-nuget-feed.jar">
-        <element id="directory" name="META-INF">
-          <element id="file-copy" path="$PROJECT_DIR$/standalone-launcher/src/META-INF/MANIFEST.MF" />
-        </element>
         <element id="module-output" name="standalone-launcher" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/build/manifest-launcher.mf" output-file-name="MANIFEST.MF" />
+        </element>
       </element>
+      <element id="directory" name="licenses">
+        <element id="dir-copy" path="$PROJECT_DIR$/licenses" />
+      </element>
+      <element id="file-copy" path="$PROJECT_DIR$/LICENSE.txt" />
+      <element id="file-copy" path="$PROJECT_DIR$/standalone-launcher/README.txt" />
     </root>
   </artifact>
 </component>
