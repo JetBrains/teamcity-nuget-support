@@ -2,6 +2,7 @@
 <suite name="nuget">
   <test name="NuGet Feed Commands">
     <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.NamedPackagesUpdateCheckerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.PackIntegrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.InstallPackageIntegtatoinTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.NuGetExecutorTest"/>

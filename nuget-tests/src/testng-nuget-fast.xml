@@ -61,8 +61,6 @@
       <class name="jetbrains.buildServer.nuget.tests.server.ListPackagesCommandTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.ListPackagesCommandProcessorTest"/>
 
-
-      <class name="jetbrains.buildServer.nuget.tests.server.NamedPackagesUpdateCheckerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.PackagesHashCalculatorTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckEntryTest"/>
