@@ -14,11 +14,29 @@
     <echo message="Setting version to: ${build.number}"/>
   </target>
 
-  <target name="create-version-file" depends="set-build-number">
+  <target name="create-version-file" depends="set-build-number, generate-manifest">
+    <delete>
+      <fileset dir="${artifact.output.path}">
+        <include name="build-*"/>
+      </fileset>
+    </delete>
     <touch file="${artifact.output.path}/build-${build.number}"/>
   </target>
 
-  <target name="replace-tokens-in-teamcity-plugin-xml" depends="set-build-number">
+  <target name="generate-manifest" depends="set-build-number">
+    <manifest file="manifest.mf">
+      <attribute name="Built-By" value="JetBrains TeamCity"/>
+      <attribute name="Implementation-Version" value="${build.number}"/>
+    </manifest>
+
+    <manifest file="manifest-launcher.mf">
+      <attribute name="Built-By" value="JetBrains TeamCity"/>
+      <attribute name="Implementation-Version" value="${build.number}"/>
+      <attribute name="Main-Class" value="jetbrains.buildServer.nuget.stanalone.launch.Launcher"/>
+    </manifest>
+  </target>
+
+  <target name="replace-tokens-in-teamcity-plugin-xml" depends="set-build-number, generate-manifest">
     <property name="home" value="${artifact.output.path}"/>
 
     <echo message="replacing tokens in teamcity-plugin.xml file under ${home}"/>
