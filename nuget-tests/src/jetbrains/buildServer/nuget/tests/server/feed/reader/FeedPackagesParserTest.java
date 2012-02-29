@@ -30,6 +30,8 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.util.Collection;
 
+import static com.intellij.openapi.util.text.StringUtil.isEmptyOrSpaces;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 12.08.11 13:44
@@ -72,8 +74,8 @@ public class FeedPackagesParserTest extends BaseTestCase {
 
     Assert.assertEquals(packages.size(), 21);
     for (FeedPackage pkg : packages) {
-      Assert.assertFalse(pkg.getAtomId().isEmpty());
-      Assert.assertFalse(pkg.getDownloadUrl().isEmpty());
+      Assert.assertFalse(isEmptyOrSpaces(pkg.getAtomId()));
+      Assert.assertFalse(isEmptyOrSpaces(pkg.getDownloadUrl()));
       Assert.assertEquals(pkg.getInfo().getId(), "NuGet.CommandLine");
       Assert.assertTrue(pkg.getInfo().getVersion().startsWith("1."));
       Assert.assertTrue(pkg.getDescription().length() > 0, "package should have deseciription");
