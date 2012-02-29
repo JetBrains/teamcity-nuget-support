@@ -1,0 +1,13 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="nuget">
+  <test name="NuGet Feed Commands">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.integration.PackIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.InstallPackageIntegtatoinTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.NuGetExecutorTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.PackagesPublishIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.ServerListPackagesCommandIntegrationTest"/>
+    </classes>
+  </test>
+</suite>
+
