@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact name="standalone-zip">
+    <output-path>$PROJECT_DIR$/out/artifacts/standalone_zip</output-path>
+    <root id="root">
+      <element id="archive" name="nuget-java-feed.zip">
+        <element id="artifact" artifact-name="standalone-launcher" />
+      </element>
+    </root>
+  </artifact>
+</component>
