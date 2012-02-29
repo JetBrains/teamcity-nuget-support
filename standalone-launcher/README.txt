@@ -8,15 +8,14 @@ and Java runtime.
 
 To start the server use the following commandline:
 
-    java -jar standalonge-nuget-feed.jar <path to packages folder> [/url:<server url>]
+    java -jar standalone-nuget-feed.jar <path to packages folder> [/url:<server url>]
 
 Where:
  <path to packages folder>  is path to .nupkg files
- <server url>               is url to start server for, i.e. http://localhost:8888/nuget/feed
+ <server url>               is url to bind server to,
+                            i.e. http://localhost:8888/nuget/feed
 
-
-The server will monitor any changes to in the packages 
-folder to synchronize with the feed.
+The server will monitor any changes in the packages folder to update the feed.
 
 Feel free to contribute/comment/bug-report for the project at
 https://github.com/JetBrains/teamcity-nuget-support/tree/standalone3

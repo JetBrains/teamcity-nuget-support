@@ -20,7 +20,7 @@
         <include name="build-*"/>
       </fileset>
     </delete>
-    <touch file="${artifact.output.path}/build-${build.number}"/>
+    <touch file="${artifact.output.path}/build-${build.number}.txt"/>
   </target>
 
   <target name="generate-manifest" depends="set-build-number">

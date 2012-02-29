@@ -17,7 +17,7 @@
       <element id="directory" name="lib">
         <element id="artifact" artifact-name="standalone-server" />
       </element>
-      <element id="archive" name="standalonge-nuget-feed.jar">
+      <element id="archive" name="standalone-nuget-feed.jar">
         <element id="module-output" name="standalone-launcher" />
         <element id="directory" name="META-INF">
           <element id="file-copy" path="$PROJECT_DIR$/build/manifest-launcher.mf" output-file-name="MANIFEST.MF" />

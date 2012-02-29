@@ -61,7 +61,7 @@ public class CommandlineSettings extends DefaultSettings {
     System.out.println("java -jar standalonge-nuget-feed.jar <packages folder> [/url:<server url>]");
     System.out.println(" where: ");
     System.out.println(" <packages folder>    is path to .nupkg files");
-    System.out.println(" <server url>         is url to start server for, i.e. " + new DefaultSettings().getServerUrl());
+    System.out.println(" <server url>         is url to bind server to, i.e. " + new DefaultSettings().getServerUrl());
     System.out.println();
   }
 
