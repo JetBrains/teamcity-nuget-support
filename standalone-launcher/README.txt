@@ -33,7 +33,7 @@ https://github.com/JetBrains/teamcity-nuget-support/tree/standalone3
 
 Third-party license
 ==================
-Dustribution includes several open-source libraries. 
+Distribution includes several open-source libraries. 
 Please refer to licenses folder for details.
 
 
