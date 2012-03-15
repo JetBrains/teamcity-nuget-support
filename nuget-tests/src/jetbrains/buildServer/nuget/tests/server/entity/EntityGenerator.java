@@ -20,7 +20,6 @@ import jetbrains.buildServer.BaseTestCase;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OAtomEntity;
-import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -32,8 +31,9 @@ import java.util.*;
  */
 
 public class EntityGenerator extends BaseTestCase {
-  @Test
-  public void generateEntityClasses() throws IOException, JDOMException {
+  public static void main(String[] args) throws IOException, JDOMException {
+    new MetadataLoaderTest().test_feed_api_not_changed();
+
     final String entity = "PackageEntityImpl";
     final String ientityV2 = "PackageEntityV2";
 
