@@ -22,6 +22,8 @@
   <test name="fast tests">
     <classes>
 
+      <class name="jetbrains.buildServer.nuget.tests.server.entity.MetadataLoaderTest"/>
+
       <!-- setting manager -->
       <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerPersitedTest"/>

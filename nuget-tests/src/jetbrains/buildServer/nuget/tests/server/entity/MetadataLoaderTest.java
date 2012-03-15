@@ -23,11 +23,13 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.jdom.JDOMException;
+import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -68,8 +70,32 @@ public class MetadataLoaderTest {
 
   @Test
   public void generateEntitries_v2() throws IOException, JDOMException {
+    final MetadataParseResult result = fetchNuGetOrgMetadata_v2();
+    Assert.assertFalse(result.getData().isEmpty());
+    Assert.assertFalse(result.getKey().isEmpty());
+  }
+
+
+  @Test
+  public void test_feed_api_not_changed() throws JDOMException, IOException {
+    MetadataParseResult result = fetchNuGetOrgMetadata_v2();
+    MetadataParseResult our = XmlFeedParsers.loadBeans_v2();
+
+    Assert.assertEquals(new HashSet<MetadataBeanProperty>(result.getKey()), new HashSet<MetadataBeanProperty>(our.getKey()));
+    Assert.assertEquals(new HashSet<MetadataBeanProperty>(result.getData()), new HashSet<MetadataBeanProperty>(our.getData()));
+  }
+
+
+
+  @NotNull
+  private MetadataParseResult fetchNuGetOrgMetadata_v2() throws IOException, JDOMException {
+    return fetchNuGetMetadata("https://nuget.org/api/v2/$metadata");
+  }
+
+  @NotNull
+  private MetadataParseResult fetchNuGetMetadata(String uri) throws IOException, JDOMException {
     final FeedClient fc = new FeedHttpClientHolder();
-    final HttpGet get = new HttpGet("https://nuget.org/api/v2/$metadata");
+    final HttpGet get = new HttpGet(uri);
     try {
       final HttpResponse execute = fc.execute(get);
       final ByteArrayOutputStream box = new ByteArrayOutputStream();
@@ -78,9 +104,7 @@ public class MetadataLoaderTest {
       final String source = box.toString("utf-8");
       System.out.println("source = " + source);
 
-      final MetadataParseResult result = XmlFeedParsers.loadMetadataBeans(XmlUtil.from_s(source));
-      Assert.assertFalse(result.getData().isEmpty());
-      Assert.assertFalse(result.getKey().isEmpty());
+      return XmlFeedParsers.loadMetadataBeans(XmlUtil.from_s(source));
     } finally {
       get.abort();
     }

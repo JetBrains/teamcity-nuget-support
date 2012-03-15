@@ -67,4 +67,28 @@ public final class MetadataBeanProperty {
             ", myAtomPath='" + myAtomPath + '\'' +
             '}';
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof MetadataBeanProperty)) return false;
+
+    MetadataBeanProperty that = (MetadataBeanProperty) o;
+
+    if (myNullable != that.myNullable) return false;
+    if (myAtomPath != null ? !myAtomPath.equals(that.myAtomPath) : that.myAtomPath != null) return false;
+    if (!myName.equals(that.myName)) return false;
+    if (!myType.equals(that.myType)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = myName.hashCode();
+    result = 31 * result + myType.hashCode();
+    result = 31 * result + (myAtomPath != null ? myAtomPath.hashCode() : 0);
+    result = 31 * result + (myNullable ? 1 : 0);
+    return result;
+  }
 }
