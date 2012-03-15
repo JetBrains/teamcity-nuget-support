@@ -19,6 +19,7 @@
         <Property Name="IconUrl" Type="Edm.String" Nullable="true" />
         <Property Name="IsLatestVersion" Type="Edm.Boolean" Nullable="false" />
         <Property Name="IsAbsoluteLatestVersion" Type="Edm.Boolean" Nullable="false" />
+        <Property Name="IsPrerelease" Type="Edm.Boolean" Nullable="false" />
         <Property Name="LastUpdated" Type="Edm.DateTime" Nullable="false" m:FC_TargetPath="SyndicationUpdated" m:FC_ContentKind="text" m:FC_KeepInContent="false" />
         <Property Name="Published" Type="Edm.DateTime" Nullable="false" />
         <Property Name="Language" Type="Edm.String" Nullable="true" />
@@ -41,6 +42,9 @@
           <Parameter Name="searchTerm" Type="Edm.String" Mode="In" />
           <Parameter Name="targetFramework" Type="Edm.String" Mode="In" />
           <Parameter Name="includePrerelease" Type="Edm.Boolean" Mode="In" />
+        </FunctionImport>
+        <FunctionImport Name="FindPackagesById" EntitySet="Packages" ReturnType="Collection(NuGetGallery.V2FeedPackage)" m:HttpMethod="GET">
+          <Parameter Name="id" Type="Edm.String" Mode="In" />
         </FunctionImport>
       </EntityContainer>
     </Schema>

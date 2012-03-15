@@ -20,6 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntityAdapter;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
@@ -73,8 +74,6 @@ public class PackageIndexTest extends BaseTestCase {
       allowing(myContext).getAuthorityHolder(); will(returnValue(myAuthorityHolder));
       allowing(myStorage).getAllEntries("nuget"); will(returnIterator(myEntries));
     }});
-
-    addEntry("Foo", "1.2.34", "btX", 7);
   }
 
   private void addEntry(final String name, final String version, final String bt, final long buildId) {
@@ -99,7 +98,7 @@ public class PackageIndexTest extends BaseTestCase {
       public int compare(BuildMetadataEntry o1, BuildMetadataEntry o2) {
         final long b1 = o1.getBuildId();
         final long b2 = o2.getBuildId();
-        return (b1 > b2 ? 1 : b1 == b2 ? 0 : 1);
+        return (b1 > b2 ? -1 : b1 == b2 ? 0 : 1);
       }
     });
   }
@@ -113,6 +112,7 @@ public class PackageIndexTest extends BaseTestCase {
       allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
     }});
 
+    addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.44", "btY", 9);
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
 
@@ -134,6 +134,8 @@ public class PackageIndexTest extends BaseTestCase {
       allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
     }});
 
+    addEntry("Foo", "1.2.34", "btX", 7);
+
     final NuGetIndexEntry next = myIndex.getNuGetEntries().next();
     Assert.assertTrue(isLatestVersion(next));
     Assert.assertTrue(isAbsoluteLatestVersion(next));
@@ -146,6 +148,7 @@ public class PackageIndexTest extends BaseTestCase {
       allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
     }});
 
+    addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.44", "btX", 9);
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
 
@@ -168,6 +171,7 @@ public class PackageIndexTest extends BaseTestCase {
       allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
     }});
 
+    addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.34", "btY", 9);
 
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
@@ -186,6 +190,7 @@ public class PackageIndexTest extends BaseTestCase {
       allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
     }});
 
+    addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.44-alpha", "btX", 9);
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
 
@@ -201,11 +206,11 @@ public class PackageIndexTest extends BaseTestCase {
   }
 
   private boolean isLatestVersion(@NotNull NuGetIndexEntry entry) {
-    return Boolean.parseBoolean(entry.getAttributes().get("IsLatestVersion"));
+    return FlagMode.IsLatest.readField(entry);
   }
 
   private boolean isAbsoluteLatestVersion(@NotNull NuGetIndexEntry entry) {
-    return Boolean.parseBoolean(entry.getAttributes().get("IsAbsoluteLatestVersion"));
+    return FlagMode.IsAbsoluteLatest.readField(entry);
   }
 
   @Test
@@ -214,6 +219,7 @@ public class PackageIndexTest extends BaseTestCase {
       allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
       allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(false));
     }});
+    addEntry("Foo", "1.2.34", "btX", 7);
 
     Assert.assertFalse(myIndex.getNuGetEntries().hasNext());
   }
@@ -223,8 +229,134 @@ public class PackageIndexTest extends BaseTestCase {
     m.checking(new Expectations(){{
       allowing(myProjectManager).findProjectId("btX"); will(throwException(new RuntimeException("proj1")));
     }});
+    addEntry("Foo", "1.2.34", "btX", 7);
 
     Assert.assertFalse(myIndex.getNuGetEntries().hasNext());
   }
+
+  @Test
+  @TestFor(issues = "TW-20661")
+  public void test_Flags_prerelease_only() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+    addEntry("Foo", "1.2.34-alpha", "btX", 7);
+    addEntry("Foo", "1.2.34-beta", "btX", 8);
+
+    dumpFeed();
+    assertPackagesCollection(FlagMode.Exists, "Foo.1.2.34-alpha", "Foo.1.2.34-beta");
+    assertPackagesCollection(FlagMode.IsPrerelease, "Foo.1.2.34-alpha", "Foo.1.2.34-beta");
+    assertPackagesCollection(FlagMode.IsAbsoluteLatest, "Foo.1.2.34-beta"); //sorted by build number
+    assertPackagesCollection(FlagMode.IsLatest); //first entry in list
+  }
+
+  @Test
+  @TestFor(issues = "TW-20661")
+  public void test_Flags_mixrelease_only() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+    addEntry("Foo", "1.2.34-alpha", "btX", 7);
+    addEntry("Foo", "1.2.34-beta", "btX", 9);
+    addEntry("Foo", "1.2.32", "btX", 8);
+    addEntry("Foo", "1.2.36", "btX", 10);
+
+    assertPackagesCollection(FlagMode.Exists, "Foo.1.2.34-alpha", "Foo.1.2.34-beta", "Foo.1.2.32", "Foo.1.2.36");
+    assertPackagesCollection(FlagMode.IsPrerelease, "Foo.1.2.34-alpha", "Foo.1.2.34-beta");
+    assertPackagesCollection(FlagMode.IsAbsoluteLatest, "Foo.1.2.36"); //sorted by build number
+    assertPackagesCollection(FlagMode.IsLatest, "Foo.1.2.36"); //first entry in list
+  }
+
+  @Test
+  @TestFor(issues = "TW-20661")
+  public void test_Flags_mixrelease2_only() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+    addEntry("Foo", "1.2.34-alpha", "btX", 7);
+    addEntry("Foo", "1.2.34-beta", "btX", 9);
+    addEntry("Foo", "1.2.32", "btX", 8);
+    addEntry("Foo", "1.2.36", "btX", 10);
+    addEntry("Foo", "1.2.37-b", "btX", 12);
+
+    dumpFeed();
+    assertPackagesCollection(FlagMode.Exists, "Foo.1.2.34-alpha", "Foo.1.2.34-beta", "Foo.1.2.32", "Foo.1.2.36", "Foo.1.2.37-b");
+    assertPackagesCollection(FlagMode.IsPrerelease, "Foo.1.2.34-alpha", "Foo.1.2.34-beta", "Foo.1.2.37-b");
+    assertPackagesCollection(FlagMode.IsAbsoluteLatest, "Foo.1.2.37-b"); //sorted by build number
+    assertPackagesCollection(FlagMode.IsLatest, "Foo.1.2.36"); //first entry in list
+  }
+
+  @Test
+  @TestFor(issues = "TW-20661")
+  public void test_Flags_release_only() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+    addEntry("Foo", "1.2.34", "btX", 7);
+    addEntry("Foo", "1.2.38", "btX", 8);
+
+    dumpFeed();
+    assertPackagesCollection(FlagMode.Exists, "Foo.1.2.34", "Foo.1.2.38");
+    assertPackagesCollection(FlagMode.IsPrerelease);
+    assertPackagesCollection(FlagMode.IsAbsoluteLatest, "Foo.1.2.38"); //sorted by build number
+    assertPackagesCollection(FlagMode.IsLatest, "Foo.1.2.38"); //first entry in list
+  }
+
+  private void dumpFeed() {
+    System.out.println("Dump the feed: ");
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+    while(it.hasNext()) {
+      NuGetIndexEntry p = it.next();
+      System.out.println("p = " + p);
+    }
+  }
+
+  private void assertPackagesCollection(FlagMode mode, String... ids) {
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+    final Set<String> t = new HashSet<String>(Arrays.asList(ids));
+    while(it.hasNext()) {
+      NuGetIndexEntry p = it.next();
+      Assert.assertTrue(mode.readField(p) == t.remove(p.getKey()), "package " + p + " must have " + mode);
+    }
+    Assert.assertTrue(t.isEmpty(), "Unexpected package for " + mode + ": " + t.toString());
+  }
+
+  private static enum FlagMode {
+    IsPrerelease,
+    IsLatest,
+    IsAbsoluteLatest,
+    Exists
+    ;
+
+    public boolean readField(@NotNull final NuGetIndexEntry e) {
+      final PackageEntityAdapter ad = new PackageEntityAdapter() {
+        public String getAtomEntityType() {
+          return null;
+        }
+
+        public String getAtomEntitySource(String baseUrl) {
+          return null;
+        }
+
+        @Override
+        protected String getValue(@NotNull String key) {
+          return e.getAttributes().get(key);
+        }
+      };
+
+      switch (this) {
+        case Exists: return true;
+        case IsAbsoluteLatest: return ad.getIsAbsoluteLatestVersion();
+        case IsLatest: return ad.getIsLatestVersion();
+        case IsPrerelease: return ad.getIsPrerelease();
+        default: throw new IllegalArgumentException("unknown");
+      }
+    }
+  }
+
 
 }
