@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.server.util.BasePropertiesProcessor;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,8 +77,11 @@ public class PackRunType extends NuGetRunType {
         notEmpty(NUGET_PATH, "Path to nuget.exe must be specified", map, result);
         notEmpty(NUGET_PACK_SPEC_FILE, "Package definition files must be specified", map, result);
         notEmpty(NUGET_PACK_OUTPUT_DIR, "Package creation output directory must be specified", map, result);
-        final String version = notEmpty(NUGET_PACK_VERSION, "Version must be specified", map, result);
-        if (version != null && !ReferencesResolverUtil.containsReference(version) && !version.matches("\\d+(\\.\\d+){1,3}")) {
+        final String version = map.get(NUGET_PACK_VERSION);
+
+        if (version != null && !StringUtil.isEmptyOrSpaces(version)
+                && !ReferencesResolverUtil.containsReference(version)
+                && !version.matches("\\d+(\\.\\d+(-.*)?){1,3}")) {
           result.add(new InvalidProperty(NUGET_PACK_VERSION, "Version must be NuGet version format, i.e. 1.2.3 or 5.4.3.2"));
         }
 

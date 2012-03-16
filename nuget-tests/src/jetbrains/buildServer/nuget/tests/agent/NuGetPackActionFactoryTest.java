@@ -27,6 +27,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.TestFor;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -92,7 +93,6 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(myPackParameters).getBaseDirectory(); will(returnValue(myRoot));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(myOut));
-      allowing(myPackParameters).getVersion(); will(returnValue("45.239.32.12"));
 
       allowing(myPackParameters).getCustomCommandline(); will(returnValue(myExtra));
       allowing(myPackParameters).getProperties(); will(returnValue(myProperties));
@@ -107,6 +107,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool(); will(returnValue(false));
       allowing(myPackParameters).packSymbols(); will(returnValue(false));
 
+      allowing(myPackParameters).getVersion(); will(returnValue("45.239.32.12"));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(myFile.getPath())));
 
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
@@ -134,11 +135,35 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool(); will(returnValue(false));
       allowing(myPackParameters).packSymbols(); will(returnValue(false));
 
+      allowing(myPackParameters).getVersion(); will(returnValue("45.239.32.12"));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(myFile.getPath())));
 
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
                       "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Properties", "p1=p2", "-Properties", "p3=p24")
+              , myWorkingDir,
+              Collections.<String, String>emptyMap());
+    }});
+
+    i.createPack(ctx, myFile, myPackParameters);
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-20067")
+  public void test_no_version() throws RunBuildException {
+    myProperties.add("p1=p2");
+    myProperties.add("p3=p24");
+    m.checking(new Expectations(){{
+      allowing(myPackParameters).packTool(); will(returnValue(false));
+      allowing(myPackParameters).packSymbols(); will(returnValue(false));
+
+      allowing(myPackParameters).getVersion(); will(returnValue("  "));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(myFile.getPath())));
+
+      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
+              Arrays.asList(
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Properties", "p1=p2", "-Properties", "p3=p24")
               , myWorkingDir,
               Collections.<String, String>emptyMap());
     }});
@@ -155,6 +180,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool();    will(returnValue(false));
       allowing(myPackParameters).packSymbols();  will(returnValue(false));
 
+      allowing(myPackParameters).getVersion(); will(returnValue("45.239.32.12"));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(myFile.getPath())));
 
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
@@ -176,6 +202,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool(); will(returnValue(false));
       allowing(myPackParameters).packSymbols(); will(returnValue(false));
 
+      allowing(myPackParameters).getVersion(); will(returnValue("45.239.32.12"));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(myFile.getPath())));
 
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
@@ -195,6 +222,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool(); will(returnValue(true));
       allowing(myPackParameters).packSymbols(); will(returnValue(false));
 
+      allowing(myPackParameters).getVersion(); will(returnValue("45.239.32.12"));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(myFile.getPath())));
 
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
@@ -214,6 +242,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).packTool(); will(returnValue(false));
       allowing(myPackParameters).packSymbols(); will(returnValue(true));
 
+      allowing(myPackParameters).getVersion(); will(returnValue("45.239.32.12"));
       allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(myFile.getPath())));
 
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),

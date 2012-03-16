@@ -90,6 +90,7 @@
 
       <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.UrlResolverTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackagesInstallerRunTypeTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackRunTypeTest"/>
     </classes>
   </test>
 </suite>
