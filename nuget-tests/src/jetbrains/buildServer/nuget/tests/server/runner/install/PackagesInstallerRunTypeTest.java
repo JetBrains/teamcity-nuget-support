@@ -16,46 +16,19 @@
 
 package jetbrains.buildServer.nuget.tests.server.runner.install;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunType;
-import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.util.TestFor;
-import jetbrains.buildServer.web.openapi.PluginDescriptor;
-import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
-import org.jmock.Mockery;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 16.03.12 13:38
  */
-public class PackagesInstallerRunTypeTest extends BaseTestCase {
-  private Mockery m;
-  private PluginDescriptor myDescriptor;
-  private PackagesInstallerRunType myRunType;
-
-  @BeforeMethod
-  @Override
-  protected void setUp() throws Exception {
-    super.setUp();
-    m = new Mockery();
-    myDescriptor = m.mock(PluginDescriptor.class);
-    myRunType = new PackagesInstallerRunType(myDescriptor);
-  }
-
-  private void doTestValidator(@NotNull Map<String, String> parameters, @NotNull Set<String> errors) {
-    Collection<InvalidProperty> errs = myRunType.getRunnerPropertiesProcessor().process(parameters);
-
-    Set<String> actualErrors = new TreeSet<String>();
-    for (InvalidProperty err : errs) {
-      actualErrors.add(err.getPropertyName());
-    }
-
-    Assert.assertEquals(new TreeSet<String>(errors), actualErrors);
+public class PackagesInstallerRunTypeTest extends NuGetRunTypeTest<PackagesInstallerRunType> {
+  @NotNull
+  protected PackagesInstallerRunType createRunType() {
+    return new PackagesInstallerRunType(myDescriptor);
   }
 
 
@@ -82,21 +55,4 @@ public class PackagesInstallerRunTypeTest extends BaseTestCase {
   public void testParametersValidator_empty() {
     doTestValidator(m(), s("nuget.path", "sln.path"));
   }
-
-  @NotNull
-  private Map<String, String> m(String... kvs) {
-    Map<String, String> m = new TreeMap<String, String>();
-    for(int i = 0; i < kvs.length; i+=2) {
-      m.put(kvs[i], kvs[i+1]);
-    }
-    return m;
-  }
-
-  @NotNull
-  private Set<String> s(String... kvs) {
-    Set<String> m = new TreeSet<String>();
-    Collections.addAll(m, kvs);
-    return m;
-  }
-
 }
