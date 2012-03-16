@@ -30,6 +30,7 @@ import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerImpl;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -79,6 +80,22 @@ public class PackIntegrationTest extends IntegrationTestBase {
     FileUtil.copy(getTestDataPath("SamplePackage.nuspec"), spec);
 
     callRunner(nuget, spec, false, false, false);
+
+    Assert.assertTrue(myOutputDir.list(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return name.endsWith(".nupkg");
+      }
+    }).length == 1, "There should be only one package created");
+
+    m.assertIsSatisfied();
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_simple_no_version(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    final File spec = new File(myRoot, "SamplePackage3.nuspec");
+    FileUtil.copy(getTestDataPath("SamplePackage3.nuspec"), spec);
+
+    callRunner(nuget, false, false, false, null, Arrays.asList(spec.getPath()));
 
     Assert.assertTrue(myOutputDir.list(new FilenameFilter() {
       public boolean accept(File dir, String name) {
@@ -207,6 +224,10 @@ public class PackIntegrationTest extends IntegrationTestBase {
   }
 
   private void callRunner(final NuGet nuget, final boolean packAsTool, final boolean symbols, final boolean cleanOutput, final List<String> wildcard) throws RunBuildException {
+    callRunner(nuget, packAsTool, symbols, cleanOutput, "45.239.32.12", wildcard);
+  }
+
+  private void callRunner(final NuGet nuget, final boolean packAsTool, final boolean symbols, final boolean cleanOutput, @Nullable final String version, final List<String> wildcard) throws RunBuildException {
     m.checking(new Expectations(){{
       allowing(myPackParameters).getCustomCommandline(); will(returnValue(Collections.<String>emptyList()));
       allowing(myPackParameters).getProperties(); will(returnValue(Collections.<String>emptyList()));
@@ -214,7 +235,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
       allowing(myPackParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
       allowing(myPackParameters).getBaseDirectory(); will(returnValue(myRoot));
       allowing(myPackParameters).getExclude(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myPackParameters).getVersion(); will(returnValue("45.239.32.12"));
+      allowing(myPackParameters).getVersion(); will(returnValue(version));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(myOutputDir));
       allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(cleanOutput));
 

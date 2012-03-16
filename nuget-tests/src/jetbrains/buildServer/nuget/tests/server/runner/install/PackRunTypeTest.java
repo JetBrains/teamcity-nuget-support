@@ -31,10 +31,9 @@ public class PackRunTypeTest extends NuGetRunTypeTest<PackRunType> {
     return new PackRunType(myDescriptor);
   }
 
-
   @Test
   public void test_no_parameters() {
-    doTestValidator(m(), s("nuget.pack.output.directory", "nuget.pack.specFile", "nuget.pack.version", "nuget.path"));
+    doTestValidator(m(), s("nuget.pack.output.directory", "nuget.pack.specFile", "nuget.path"));
   }
 
   @Test
@@ -44,6 +43,16 @@ public class PackRunTypeTest extends NuGetRunTypeTest<PackRunType> {
                     "nuget.pack.output.directory", "dir",
                     "nuget.pack.specFile", "spec",
                     "nuget.pack.version", "123.2",
+                    "nuget.path", "foo.exe"),
+            s());
+  }
+
+  @Test
+  public void test_no_version() {
+    doTestValidator(
+            m(
+                    "nuget.pack.output.directory", "dir",
+                    "nuget.pack.specFile", "spec",
                     "nuget.path", "foo.exe"),
             s());
   }

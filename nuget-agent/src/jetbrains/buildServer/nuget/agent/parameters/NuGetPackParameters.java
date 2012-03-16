@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.agent.parameters;
 
 import jetbrains.buildServer.RunBuildException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
@@ -48,7 +49,7 @@ public interface NuGetPackParameters extends NuGetParameters {
   @NotNull
   File getBaseDirectory() throws RunBuildException;
 
-  @NotNull
+  @Nullable
   String getVersion() throws RunBuildException;
 
   boolean packSymbols();

@@ -84,8 +84,11 @@ public class CommandFactoryImpl implements CommandFactory {
 
     arguments.add("-Verbose");
 
-    arguments.add("-Version");
-    arguments.add(params.getVersion());
+    String version = params.getVersion();
+    if (!StringUtil.isEmptyOrSpaces(version)) {
+      arguments.add("-Version");
+      arguments.add(version);
+    }
 
     for (String exclude : params.getExclude()) {
       arguments.add("-Exclude");

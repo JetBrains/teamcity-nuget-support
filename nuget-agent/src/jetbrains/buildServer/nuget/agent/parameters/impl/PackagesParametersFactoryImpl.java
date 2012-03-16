@@ -297,9 +297,9 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
         return file;
       }
 
-      @NotNull
+      @Nullable
       public String getVersion() throws RunBuildException {
-        return getParameter(context, NUGET_PACK_VERSION, "Version must be specified");
+        return getParameter(context, NUGET_PACK_VERSION);
       }
 
       public boolean packSymbols() {
