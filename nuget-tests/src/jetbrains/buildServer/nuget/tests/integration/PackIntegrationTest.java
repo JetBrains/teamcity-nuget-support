@@ -167,6 +167,37 @@ public class PackIntegrationTest extends IntegrationTestBase {
     m.assertIsSatisfied();
   }
 
+
+  @Test(dataProvider = NUGET_VERSIONS_16p)
+  public void test_vs_solutions_nuget_autopackages(@NotNull final NuGet nuget) throws RunBuildException, IOException {
+    final File pRoot = new File(myRoot, "a/b/c");
+    pRoot.mkdirs();
+    ZipUtil.extract(getTestDataPath("test-04-autonuget.zip"), pRoot, null);
+
+    msbuild(new File(pRoot, "ClassLibrary1/ClassLibrary1.sln"));
+    msbuild(new File(pRoot, "ClassLibrary2/ClassLibrary1.sln"));
+    callRunner(nuget, false, false, false,
+            Arrays.asList(
+                    new File(pRoot, "ClassLibrary1/ClassLibrary1.csproj").getPath(),
+                    new File(pRoot, "rr/ClassLibrary2/ClassLibrary2.csproj").getPath(),
+                    new File(pRoot, "ClassLibrary1/ClassLibrary3/ClassLibrary3.csproj").getPath(),
+                    new File(pRoot, "ClassLibrary2/ClassLibrary1/ClassLibrary1.csproj").getPath()
+            ));
+
+    final File[] nupkgs = nupkgs();
+    Assert.assertTrue(nupkgs.length == 4, "There should be only one package created");
+    for (File nupkg : nupkgs) {
+      ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(nupkg)));
+      for(ZipEntry ze; (ze = zis.getNextEntry()) != null;) {
+        System.out.println(ze.getName());
+      }
+      zis.close();
+    }
+
+    m.assertIsSatisfied();
+  }
+
+
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_vs_solution_symbols(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     ZipUtil.extract(getTestDataPath("solution.zip"), myRoot, null);

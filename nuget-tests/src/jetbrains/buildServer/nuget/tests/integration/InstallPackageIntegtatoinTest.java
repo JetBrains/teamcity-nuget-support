@@ -53,7 +53,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     myInstall = m.mock(PackagesInstallParameters.class);
     myUpdate = m.mock(PackagesUpdateParameters.class);
 
-    m.checking(new Expectations(){{
+    m.checking(new Expectations() {{
       allowing(myInstall).getNuGetParameters();
       will(returnValue(myNuGet));
       allowing(myUpdate).getNuGetParameters();
@@ -250,6 +250,25 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertTrue(new File(myRoot, "lib/Microsoft.Web.Infrastructure").isDirectory());
     Assert.assertTrue(new File(myRoot, "lib/WebActivator").isDirectory());
     Assert.assertEquals(6, packageses.size());
+  }
+
+
+  @Test(dataProvider = NUGET_VERSIONS_16p)
+  public void test_04_nugetautopackages(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-04-autonuget.zip"), "", myRoot);
+
+    fetchPackages(new File(myRoot, "ClassLibrary1/ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Newtonsoft.Json", "4.0.8"),
+                    new PackageInfo("log4net", "2.0.0")));
+
+    File pkgs = new File(myRoot, "ClassLibrary1/packages");
+    List<File> packageses = Arrays.asList(pkgs.listFiles());
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(pkgs, "Newtonsoft.Json.4.0.8").isDirectory());
+    Assert.assertTrue(new File(pkgs, "log4net.2.0.0").isDirectory());
+    Assert.assertEquals(3, packageses.size());
   }
 
 
