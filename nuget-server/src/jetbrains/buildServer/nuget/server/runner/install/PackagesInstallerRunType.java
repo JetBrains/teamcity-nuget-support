@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.runner.install;
 
 import jetbrains.buildServer.nuget.server.runner.NuGetRunType;
+import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.util.StringUtil;
@@ -66,7 +67,7 @@ public class PackagesInstallerRunType extends NuGetRunType {
         String sln = properties.get(SLN_PATH);
         if (StringUtil.isEmptyOrSpaces(sln)) {
           checks.add(new InvalidProperty(SLN_PATH, "Path to solution file should be specified"));
-        } else if (!sln.toLowerCase().endsWith(".sln")) {
+        } else if (!ReferencesResolverUtil.containsReference(sln) && !sln.toLowerCase().endsWith(".sln")) {
           checks.add(new InvalidProperty(SLN_PATH, "File extension must be .sln. Specify path to .sln file."));
         }
 
