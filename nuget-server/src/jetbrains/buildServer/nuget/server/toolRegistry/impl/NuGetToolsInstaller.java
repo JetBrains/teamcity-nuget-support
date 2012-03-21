@@ -57,17 +57,46 @@ public class NuGetToolsInstaller {
     }
 
     LOG.info("Downloading package from: " + tool.getDownloadUrl());
-    File dest = new File(myToolPaths.getPackages(), tool.getInfo().getId() + "." + tool.getInfo().getVersion() + ".nupkg");
-    try {
-      File tmp = File.createTempFile(dest.getName(), ".nupkg");
-      FileUtil.createParentDirs(tmp);
-      myClient.downloadPackage(tool, tmp);
-      if (!tmp.renameTo(dest)) {
-        throw new IOException("Failed to plug downloaded package to " + dest);
-      }
-    } catch (Exception e) {
-      throw new ToolException("Failed to download package " + tool + ". " + e.getMessage(), e);
-    }
+    final File dest = new File(myToolPaths.getPackages(), tool.getInfo().getId() + "." + tool.getInfo().getVersion() + ".nupkg");
+    final File tmp = createTempFile(dest.getName());
+
+    downloadPackage(tool, tmp);
+    publishDownloadedPackage(dest, tmp);
     myWatcher.checkNow();
+  }
+
+  @NotNull
+  private File createTempFile(@NotNull final String name) throws ToolException {
+    try {
+      File tempFile = File.createTempFile(name, ".nupkg");
+      FileUtil.createParentDirs(tempFile);
+      return tempFile;
+    } catch (IOException e) {
+      String msg = "Failed to create temp file";
+      LOG.debug(e);
+      throw new ToolException(msg);
+    }
+  }
+
+  private void downloadPackage(@NotNull final FeedPackage tool,
+                               @NotNull final File file) throws ToolException {
+    try {
+      myClient.downloadPackage(tool, file);
+    } catch (Exception e) {
+      String msg = "Failed to download package " + tool + " to " + file + ". " + e.getMessage();
+      LOG.debug(msg, e);
+      throw new ToolException(msg);
+    }
+  }
+
+  private void publishDownloadedPackage(File dest, File tmp) throws ToolException {
+    try {
+      FileUtil.copy(tmp, dest);
+      FileUtil.delete(tmp);
+    } catch (IOException e) {
+      String msg = "Failed to copy downloaded package from " + tmp + " to " + dest + ". " + e.getMessage();
+      LOG.debug(msg, e);
+      throw new ToolException(msg);
+    }
   }
 }
