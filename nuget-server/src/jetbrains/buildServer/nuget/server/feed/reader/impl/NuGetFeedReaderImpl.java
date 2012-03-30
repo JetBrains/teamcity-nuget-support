@@ -69,7 +69,7 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
             feedUrl + "/Packages()",
             new Param("$filter", "Id eq '" + packageId + "'")
     );
-    get.setHeader(HttpHeaders.ACCEPT_ENCODING, "application/atom+xml");
+    get.setHeader(HttpHeaders.ACCEPT, "application/atom+xml");
 
     LOG.debug("Query for packages: " + get.getRequestLine());
 
