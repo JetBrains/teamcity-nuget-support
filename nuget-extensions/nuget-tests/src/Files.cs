@@ -12,8 +12,9 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourCachedNuGetExe_1_6 = PathSearcher.SearchFile("lib/nuget/1.6/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetRunnerPath = PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
-    private static readonly Lazy<string> ourCachedNuGet_CI_Last = new Lazy<string>(() => FetchLatestNuGetPackage("bt4")); 
-    private static readonly Lazy<string> ourCachedNuGet_CI_16 = new Lazy<string>(() => FetchLatestNuGetPackage("bt28")); 
+    private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
+    private static readonly Lazy<string> ourCachedNuGet_CI_Last = new Lazy<string>(() => FetchLatestNuGetPackage("bt4"));
+    private static readonly Lazy<string> ourCachedNuGet_CI_17 = new Lazy<string>(() => FetchLatestNuGetPackage("bt32"));
     private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline); 
     
     public static string NuGetExe_1_4 { get { return ourCachedNuGetExe_1_4.Value; } }
@@ -34,8 +35,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return NuGetExe_1_6;
         case NuGetVersion.NuGet_Latest_CI:
           return ourCachedNuGet_CI_Last.Value;
-        case NuGetVersion.NuGet_16_CI:
-          return ourCachedNuGet_CI_16.Value;
+        case NuGetVersion.NuGet_17_CI:
+          return ourCachedNuGet_CI_17.Value;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
           return ourCachedNuGet_CommandLinePackage_Last.Value;
         default:
@@ -79,7 +80,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     NuGet_1_6,
 
     NuGet_Latest_CI,
-    NuGet_16_CI,
+    NuGet_17_CI,
     NuGet_CommandLine_Package_Latest
   }
 }

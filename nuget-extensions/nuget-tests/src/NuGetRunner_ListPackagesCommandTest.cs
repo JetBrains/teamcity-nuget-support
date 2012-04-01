@@ -14,7 +14,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
-    [TestCase(NuGetVersion.NuGet_16_CI)]
+    [TestCase(NuGetVersion.NuGet_17_CI)]
     public void TestCommand_ListPublic(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -49,7 +49,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
-    [TestCase(NuGetVersion.NuGet_16_CI)]
+    [TestCase(NuGetVersion.NuGet_17_CI)]
     public void TestCommand_ListPublic_Multiple(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -86,7 +86,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
-    [TestCase(NuGetVersion.NuGet_16_CI)]
+    [TestCase(NuGetVersion.NuGet_17_CI)]
     public void TestCommand_ListPublic_Multiple_sameIds(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -128,7 +128,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
-    [TestCase(NuGetVersion.NuGet_16_CI)]
+    [TestCase(NuGetVersion.NuGet_17_CI)]
     public void TestCommand_ListPublicVersions_v1(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -161,7 +161,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
-    [TestCase(NuGetVersion.NuGet_16_CI)]
+    [TestCase(NuGetVersion.NuGet_17_CI)]
     public void TestCommand_ListPublicVersions_v2(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
@@ -198,7 +198,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
-    [TestCase(NuGetVersion.NuGet_16_CI)]
+    [TestCase(NuGetVersion.NuGet_17_CI)]
     public void TestCommand_TeamListPublic_Local(NuGetVersion version)
     {
       TempFilesHolder.WithTempFile(
