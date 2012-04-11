@@ -20,11 +20,8 @@ import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.zip.ZipInputStream;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -34,8 +31,7 @@ public class ToolUnpacker {
   public void extractPackage(@NotNull final File pkg,
                              @NotNull final File dest) throws IOException {
     FileUtil.createDir(dest);
-    final ZipInputStream zip = new ZipInputStream(new BufferedInputStream(new FileInputStream(pkg)));
-    if (!ArchiveUtil.unpackZip(zip, dest)) {
+    if (!ArchiveUtil.unpackZip(pkg, "", dest)) {
       throw new IOException("Failed to unpack package " + pkg + " to " + dest);
     }
   }
