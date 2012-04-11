@@ -81,6 +81,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new Object[] { NuGet.NuGet_1_4},
             new Object[] { NuGet.NuGet_1_5},
             new Object[] { NuGet.NuGet_1_6},
+            new Object[] { NuGet.NuGet_1_7},
     };
   }
 
@@ -89,6 +90,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     return new Object[][]{
             new Object[] { NuGet.NuGet_1_5},
             new Object[] { NuGet.NuGet_1_6},
+            new Object[] { NuGet.NuGet_1_7},
     };
   }
 
@@ -96,6 +98,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   public Object[][] dataProviderNuGetVersions16p() {
     return new Object[][]{
             new Object[] { NuGet.NuGet_1_6},
+            new Object[] { NuGet.NuGet_1_7},
     };
   }
 
