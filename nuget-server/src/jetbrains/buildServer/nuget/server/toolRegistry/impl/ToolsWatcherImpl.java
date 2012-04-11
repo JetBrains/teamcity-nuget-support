@@ -95,8 +95,10 @@ public class ToolsWatcherImpl implements ToolsWatcher {
 
       myUnpacker.extractPackage(file, unpackedFolder);
       myPacker.packTool(agentFile, unpackedFolder);
-    } catch (Throwable t){
+    } catch (Throwable t) {
       LOG.warn("Failed to unpack nuget commandline: " + file);
+      FileUtil.delete(unpackedFolder);
+      FileUtil.delete(agentFile);
     }
   }
 
