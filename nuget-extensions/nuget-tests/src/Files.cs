@@ -40,10 +40,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return NuGetExe_1_7;
         case NuGetVersion.NuGet_Latest_CI:
           return ourCachedNuGet_CI_Last.Value;
-        case NuGetVersion.NuGet_17_CI:
-          return ourCachedNuGet_CI_17.Value;
-        case NuGetVersion.NuGet_18_CI:
-          return ourCachedNuGet_CI_18.Value;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
           return ourCachedNuGet_CommandLinePackage_Last.Value;
         default:
@@ -53,13 +49,22 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     private static string FetchLatestNuGetPackage(string bt)
     {
-      var homePath = CreateTempPath();
-      //TODO: better is to download entire nuget.commandline package
-      string url = "http://ci.nuget.org:8080/guestAuth/repository/download/" + bt + "/.lastSuccessful/Console/NuGet.exe";
-      var nugetPath = Path.Combine(homePath, "NuGet.exe");
-      var cli = new WebClient();
-      cli.DownloadFile(url, nugetPath);
-      return nugetPath;
+      try
+      {
+        var homePath = CreateTempPath();
+        string url = "http://ci.nuget.org:8080/guestAuth/repository/download/" + bt +
+                     "/.lastSuccessful/Console/NuGet.exe";
+        var nugetPath = Path.Combine(homePath, "NuGet.exe");
+        var cli = new WebClient();
+        cli.DownloadFile(url, nugetPath);
+        return nugetPath;
+      } catch(Exception e)
+      {
+        string message = "Failed to fetch NuGet build: " + bt;
+        Assert.Ignore(message);
+        Console.Out.WriteLine(e);
+        throw new IgnoreException(message);
+      }
     }
 
     private static string CreateTempPath()
@@ -88,8 +93,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
     NuGet_1_7,
 
     NuGet_Latest_CI,
-    NuGet_17_CI,
-    NuGet_18_CI,
     NuGet_CommandLine_Package_Latest
   }
 }
