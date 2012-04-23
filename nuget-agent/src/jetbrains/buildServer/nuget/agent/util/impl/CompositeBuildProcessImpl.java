@@ -57,8 +57,8 @@ public class CompositeBuildProcessImpl extends BuildProcessBase implements Compo
       myCurrentProcess.set(proc);
       try {
         proc.start();
-        BuildFinishedStatus status = proc.waitFor();
-        if (status == BuildFinishedStatus.FINISHED_FAILED) return BuildFinishedStatus.FINISHED_FAILED;
+        final BuildFinishedStatus status = proc.waitFor();
+        if (status != BuildFinishedStatus.INTERRUPTED && status != BuildFinishedStatus.FINISHED_SUCCESS) return status;
       } finally {
         myCurrentProcess.set(null);
       }
