@@ -6,20 +6,12 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedController"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerRunnerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerCruiser"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerCruiserTask"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesDescription"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerUriImpl"/>
-
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataController"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.requests.NuGetFeedRequestsController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetFeedProxyController"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerTokensImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerFeedSettingsImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsImpl"/>
 
@@ -27,20 +19,10 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.PackageWriterImpl"/>
-
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.PingBackController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerPingCommandImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllersPathsImpl"/>
-
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.NuGetServerStatusHolderImpl"/>
-
   <!-- UI -->
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.MetadataControllerRegistrar"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsSection"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.process.SettingsHashProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerMyTools"/>
 
   <!--stats -->
