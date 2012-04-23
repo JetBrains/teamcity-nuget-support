@@ -19,7 +19,6 @@ package jetbrains.buildServer.nuget.server.feed.server.tab;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettingsEx;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;

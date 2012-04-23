@@ -18,13 +18,9 @@ package jetbrains.buildServer.nuget.server.feed.server.tab;
 
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.controllers.BasePropertiesBean;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerDotNetSettingsEx;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
-import jetbrains.buildServer.nuget.server.feed.server.dotNetFeed.NuGetServerStatusHolder;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
-import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.serverSide.impl.ServerSettings;
@@ -36,8 +32,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)

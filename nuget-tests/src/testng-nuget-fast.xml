@@ -28,15 +28,6 @@
       <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerPersitedTest"/>
 
-      <!-- nuget server -->
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.NuGetServerStatusHolderTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.MetadataControllerBaseTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.PingControllerTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.SettingsHashTest" />
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.NuGetServerRunnerSettingsTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.RequestWrapperTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.PackageIndexTest"/>
-
       <!-- misc -->
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest" />
       <class name="jetbrains.buildServer.nuget.tests.server.SystemInfoTest" />

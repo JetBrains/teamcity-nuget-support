@@ -35,7 +35,7 @@ public class NuGetServerSettingsImpl implements NuGetServerSettings {
   }
 
   public boolean isNuGetServerEnabled() {
-    return myDotNetSettings.isNuGetDotNetFeedEnabled() || myDotNetSettings.isNuGetJavaFeedEnabled();
+    return myDotNetSettings.isNuGetJavaFeedEnabled();
   }
 
   @NotNull
@@ -53,6 +53,4 @@ public class NuGetServerSettingsImpl implements NuGetServerSettings {
   public String getNuGetGuestAuthFeedControllerPath() {
     return join(WebUtil.GUEST_AUTH_PREFIX, getNuGetFeedControllerPath());
   }
-
-
 }

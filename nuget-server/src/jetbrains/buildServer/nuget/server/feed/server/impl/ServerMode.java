@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 */
 public enum ServerMode {
   Disabled("disabled"),
-  DotNet("dotNet"),
   Java("java"),
   ;
 
