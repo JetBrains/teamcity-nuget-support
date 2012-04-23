@@ -2,6 +2,8 @@ This is NuGet Support TeamCity plugin, mainly NuGet support for TeamCity.
 
 This plugin will be compatible with TeamCity 7.0 and newer.
 
+As we fully migrated to java-based feed, there will be no .NET Feed implementation.
+
 ==== NOTE ======
 This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 6.5. Use v0.5-bugfix branch instead.
 ================
