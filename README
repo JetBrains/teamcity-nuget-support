@@ -1,4 +1,4 @@
-This is dotNetPackageManagers TeamCity plugin, mainly NuGet support for TeamCity.
+This is NuGet Support TeamCity plugin, mainly NuGet support for TeamCity.
 
 This plugin will be compatible with TeamCity 7.0 and newer.
 
@@ -67,6 +67,7 @@ API gaps TeamCity:
  - Extract interfaces from jetbrains.buildServer.controllers.admin.projects.EditBuildTypeFormFactory#getOrCreateForm to make it available in open API
  - No Ant Path matcher component to convert relative and absolute patterns to list of files.
  - Option for commandline runner to avoid dumping executing commandline  (I need to hide passwords)
+ - Directory scanner may be reused
 
 API gaps NuGet:
  - Allow to call nuget.exe with plugins without installing them into %USERPROFILE%
