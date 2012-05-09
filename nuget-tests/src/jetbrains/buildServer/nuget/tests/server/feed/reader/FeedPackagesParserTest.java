@@ -22,12 +22,16 @@ import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParser;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.TestFor;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import static com.intellij.openapi.util.text.StringUtil.isEmptyOrSpaces;
@@ -41,9 +45,9 @@ public class FeedPackagesParserTest extends BaseTestCase {
 
   @Test
   public void test_ParseRealFeed() throws JDOMException, IOException {
-    final Element doc = FileUtil.parseDocument(Paths.getTestDataPath("feed/reader/feed-response.xml"));
+    String url = "feed/reader/feed-response.xml";
+    final Collection<FeedPackage> feedPackages = readPackages(url, null);
     boolean hasLatest = false;
-    final Collection<FeedPackage> feedPackages = myParser.readPackages(doc);
     for (FeedPackage feedPackage : feedPackages) {
       Assert.assertFalse(hasLatest && feedPackage.isLatestVersion(), "There could be only one latest");
       hasLatest |= feedPackage.isLatestVersion();
@@ -52,9 +56,16 @@ public class FeedPackagesParserTest extends BaseTestCase {
   }
 
   @Test
+  @TestFor(issues = "TW-21048")
+  public void test_ParseNextLink() throws JDOMException, IOException {
+    String nextUrl = "http://packages.nuget.org/v1/FeedService.svc/Packages?$skiptoken='Adam.JSGenerator','1.2.0.0'";
+    Collection<FeedPackage> packages = readPackages("feed/reader/feed-next.xml", nextUrl);
+    Assert.assertEquals(packages.size(), 100);
+  }
+
+  @Test
   public void test_ParseOnePackage() throws JDOMException, IOException {
-    final Element doc = FileUtil.parseDocument(Paths.getTestDataPath("feed/reader/feed-one.xml"));
-    final Collection<FeedPackage> packages = myParser.readPackages(doc);
+    final Collection<FeedPackage> packages = readPackages("feed/reader/feed-one.xml", null);
 
     Assert.assertEquals(packages.size(), 1);
     final FeedPackage pkg = packages.iterator().next();
@@ -69,8 +80,7 @@ public class FeedPackagesParserTest extends BaseTestCase {
 
   @Test
   public void test_ParsePackagesNewFormat_2011_12_06() throws JDOMException, IOException {
-    final Element doc = FileUtil.parseDocument(Paths.getTestDataPath("feed/reader/feed-new.xml"));
-    final Collection<FeedPackage> packages = myParser.readPackages(doc);
+    final Collection<FeedPackage> packages = readPackages("feed/reader/feed-new.xml", null);
 
     Assert.assertEquals(packages.size(), 21);
     for (FeedPackage pkg : packages) {
@@ -85,7 +95,17 @@ public class FeedPackagesParserTest extends BaseTestCase {
   @Test
   public void test_broken() {
     Element el = new Element("broken");
-    final Collection<FeedPackage> feedPackages = myParser.readPackages(el);
+    final Collection<FeedPackage> feedPackages = new ArrayList<FeedPackage>();
+    myParser.readPackages(el, feedPackages);
     Assert.assertTrue(feedPackages.isEmpty());
   }
+
+  @NotNull
+  private Collection<FeedPackage> readPackages(@NotNull String url, @Nullable final String nextUrl) throws JDOMException, IOException {
+    final Element doc = FileUtil.parseDocument(Paths.getTestDataPath(url));
+    final Collection<FeedPackage> feedPackages = new ArrayList<FeedPackage>();
+    Assert.assertEquals(myParser.readPackages(doc, feedPackages), nextUrl);
+    return feedPackages;
+  }
+
 }
