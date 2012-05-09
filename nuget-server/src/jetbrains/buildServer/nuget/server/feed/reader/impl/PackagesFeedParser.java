@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.reader.impl;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -27,6 +28,12 @@ import java.util.Collection;
  * Date: 12.08.11 15:14
  */
 public interface PackagesFeedParser {
-  @NotNull
-  Collection<FeedPackage> readPackages(@NotNull Element root);
+  /**
+   * Parses the feed output
+   * @param root Xml tree of ATOM resoponse
+   * @param results collection to add results
+   * @return url of next portion af any or null
+   */
+  @Nullable
+  String readPackages(@NotNull Element root, @NotNull Collection<FeedPackage> results);
 }

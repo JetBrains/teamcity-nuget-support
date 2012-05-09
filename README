@@ -6,6 +6,7 @@ As we fully migrated to java-based feed, there will be no .NET Feed implementati
 
 ==== NOTE ======
 This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 6.5. Use v0.5-bugfix branch instead.
+This is a closed branch. Consider v0.8 for 7.0 compatible builds. Only bugfixes to be added
 ================
 
 For more details, see 

@@ -32,7 +32,10 @@ import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -65,20 +68,32 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     final Element element = toDocument(pair.second);
     LOG.debug("Recieved xml: " + XmlUtil.to_s(element));
 
-    final HttpGet get = myMethodFactory.createGet(
-            feedUrl + "/Packages()",
+    final List<FeedPackage> allPackages = new ArrayList<FeedPackage>();
+    HttpGet get = myMethodFactory.createGet(feedUrl + "/Packages()",
+
             new Param("$filter", "Id eq '" + packageId + "'")
     );
-    get.setHeader(HttpHeaders.ACCEPT, "application/atom+xml");
 
-    LOG.debug("Query for packages: " + get.getRequestLine());
 
-    final HttpResponse execute = myClient.execute(get);
-    try {
-      return myParser.readPackages(toDocument(execute));
-    } finally {
-      get.abort();
-    }
+    do {
+      get.setHeader(HttpHeaders.ACCEPT, "application/atom+xml");
+
+
+      LOG.debug("Query for packages part: " + get.getURI());
+      final HttpResponse execute = myClient.execute(get);
+      String packagesUrl;
+      try {
+        packagesUrl = myParser.readPackages(toDocument(execute), allPackages);
+      } finally {
+        get.abort();
+      }
+
+      if (packagesUrl == null) break;
+      get = myMethodFactory.createGet(packagesUrl);
+    } while (true);
+
+    Collections.sort(allPackages);
+    return allPackages;
   }
 
   public void downloadPackage(@NotNull FeedPackage pkg, @NotNull File file) throws IOException {
@@ -105,22 +120,10 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
 
   private Element toDocument(@NotNull HttpResponse response) throws IOException {
     final HttpEntity entity = response.getEntity();
-    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
     try {
-      final InputStream parent = entity.getContent();
-      final InputStream debugStream = new InputStream() {
-        @Override
-        public int read() throws IOException {
-          final int ch = parent.read();
-          if (ch >= 0) bos.write(ch);
-          return ch;
-        }
-      };
-      return FileUtil.parseDocument(LOG.isDebugEnabled() ? debugStream : parent, false);
+      return FileUtil.parseDocument(new BufferedInputStream(entity.getContent()), false);
     } catch (final JDOMException e) {
-      throw new IOException("Failed to parse xml document. " + e.getMessage() + ". " + bos.toString()) {{
-        initCause(e);
-      }};
+      throw new IOException("Failed to parse xml document. " + e.getMessage());
     } finally {
       EntityUtils.consume(entity);
     }
