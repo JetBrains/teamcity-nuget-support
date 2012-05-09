@@ -23,10 +23,9 @@ import jetbrains.buildServer.util.StringUtil;
 import org.jdom.Element;
 import org.jdom.Namespace;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,10 +39,8 @@ public class PackagesFeedParserImpl implements PackagesFeedParser {
   private static final Namespace metadata = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
   private static final Namespace services = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices");
 
-  @NotNull
-  public Collection<FeedPackage> readPackages(@NotNull Element root) {
-    final List<FeedPackage> result = new ArrayList<FeedPackage>();
-
+  @Nullable
+  public String readPackages(@NotNull final Element root, @NotNull final Collection<FeedPackage> result) {
     final List entries = root.getChildren("entry", atom);
     for (Object o : entries) {
       final Element entry = (Element) o;
@@ -54,12 +51,19 @@ public class PackagesFeedParserImpl implements PackagesFeedParser {
         LOG.debug("Failed to parse feed entry. " + e.getMessage());
       }
     }
-    Collections.sort(result);
-    return result;
+
+    for (Object entry : root.getChildren("link", atom)) {
+      final Element link = (Element)entry;
+      if ("next".equals(link.getAttributeValue("rel"))) {
+        String href = link.getAttributeValue("href");
+        if (!StringUtil.isEmptyOrSpaces(href)) return href;
+      }
+    }
+    return null;
   }
 
   @NotNull
-  private FeedPackage parseOneEntry(Element entry) throws InvalidXmlException {
+  private FeedPackage parseOneEntry(@NotNull final Element entry) throws InvalidXmlException {
     final Element atomIdElement = getChild(entry, "id", atom);
     final String atomId = atomIdElement.getText();
 
@@ -130,7 +134,7 @@ public class PackagesFeedParserImpl implements PackagesFeedParser {
   }
 
   private static class InvalidXmlException extends Exception {
-    private InvalidXmlException(String message) {
+    private InvalidXmlException(@NotNull final String message) {
       super(message);
     }
   }

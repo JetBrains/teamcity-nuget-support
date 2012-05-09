@@ -30,7 +30,10 @@ import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -63,19 +66,29 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     final Element element = toDocument(pair.second);
     LOG.debug("Recieved xml: " + XmlUtil.to_s(element));
 
-    final HttpGet get = myMethodFactory.createGet(feedUrl + "/Packages()",
+    final List<FeedPackage> allPackages = new ArrayList<FeedPackage>();
+    HttpGet get = myMethodFactory.createGet(feedUrl + "/Packages()",
             new Param("$filter", "Id eq '" + packageId + "'")
     );
-    get.setHeader(HttpHeaders.ACCEPT, "application/atom+xml");
 
-    LOG.debug("Query for packages: " + get.getURI());
+    do {
+      get.setHeader(HttpHeaders.ACCEPT, "application/atom+xml");
 
-    final HttpResponse execute = myClient.execute(get);
-    try {
-      return myParser.readPackages(toDocument(execute));
-    } finally {
-      get.abort();
-    }
+      LOG.debug("Query for packages part: " + get.getURI());
+      final HttpResponse execute = myClient.execute(get);
+      String packagesUrl;
+      try {
+        packagesUrl = myParser.readPackages(toDocument(execute), allPackages);
+      } finally {
+        get.abort();
+      }
+
+      if (packagesUrl == null) break;
+      get = myMethodFactory.createGet(packagesUrl);
+    } while (true);
+
+    Collections.sort(allPackages);
+    return allPackages;
   }
 
   public void downloadPackage(@NotNull FeedPackage pkg, @NotNull File file) throws IOException {

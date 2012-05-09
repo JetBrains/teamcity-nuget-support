@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.*;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.SimpleHttpServerBase;
+import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -58,6 +59,14 @@ public class FeedReaderTest extends BaseTestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     myClient.dispose();
+  }
+
+  @Test
+  @TestFor(issues = "TW-21048")
+  public void testFollowsNext() throws IOException {
+    Collection<FeedPackage> packages = myReader.queryPackageVersions(FeedConstants.NUGET_FEED_V2, "jonnyzzz.nuget.teamcity.testPackage");
+    //NuGet.org feed returns 100 packages per request
+    Assert.assertTrue(packages.size() > 100);
   }
 
   @DataProvider(name = "nuget-feeds")
