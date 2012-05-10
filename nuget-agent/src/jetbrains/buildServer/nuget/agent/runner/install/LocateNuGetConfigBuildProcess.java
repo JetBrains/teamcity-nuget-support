@@ -27,6 +27,7 @@ import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlXppAbstractParser;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,7 +96,12 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
 
     myLogger.message("Found packages folder: " + packages);
     myLogger.message("Found list of packages.config files: " + repositoriesConfig);
-    Collection<File> files = listPackagesConfigs(repositoriesConfig);
+    final Collection<File> files = listPackagesConfigs(repositoriesConfig);
+    final File solutionPackagesConfig = findSolutionPackagesConfigFile(sln);
+    if (solutionPackagesConfig != null) {
+      myLogger.message("Found solution-wide packages.config: " + solutionPackagesConfig);
+      files.add(solutionPackagesConfig);
+    }
 
     if (files.isEmpty()) {
       myLogger.warning("No packages.config files were found under solution. Nothing to install");
@@ -107,6 +113,15 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     }
 
     return BuildFinishedStatus.FINISHED_SUCCESS;
+  }
+
+  @Nullable
+  private File findSolutionPackagesConfigFile(@NotNull final File sln) {
+    final File parentFile = sln.getParentFile();
+    if (parentFile == null) return null;
+    final File path = new File(parentFile, ".nuget/packages.config");
+    if (path.isFile()) return path;
+    return null;
   }
 
   @NotNull

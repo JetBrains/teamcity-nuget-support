@@ -27,6 +27,7 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResol
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.ArchiveUtil;
+import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
@@ -250,6 +251,31 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertTrue(new File(myRoot, "lib/Microsoft.Web.Infrastructure").isDirectory());
     Assert.assertTrue(new File(myRoot, "lib/WebActivator").isDirectory());
     Assert.assertEquals(6, packageses.size());
+  }
+
+  @TestFor(issues = "TW-21061")
+  @Test(dataProvider = NUGET_VERSIONS_17p)
+  public void test_solution_wide_online_sources(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-shared-packages.zip"), "", myRoot);
+
+    fetchPackages(new File(myRoot, "ConsoleApplication1.sln"), Collections.<String>emptyList(), false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
+                    new PackageInfo("NUnit", "2.5.10.11092"),
+                    new PackageInfo("Ninject", "3.0.0.15"),
+                    new PackageInfo("WebActivator", "1.5"),
+                    new PackageInfo("jQuery", "1.7.2"))
+    );
+
+    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/Microsoft.Web.Infrastructure.1.0.0.0").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.10.11092").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject.3.0.0.15").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/WebActivator.1.5").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/jQuery.1.7.2").isDirectory());
+    Assert.assertEquals(5 + 1 , packageses.size());
   }
 
 
