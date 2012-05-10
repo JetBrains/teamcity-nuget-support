@@ -3,14 +3,10 @@ package jetbrains.buildServer.nuget.server.trigger;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
-import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.File;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -20,21 +16,16 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
   private static final Logger LOG = Logger.getInstance(NamedPackagesUpdateChecker.class.getName());
 
   public static final String KEY = "hash";
-  private final NuGetToolManager myManager;
+
   private final PackageChangesManager myPackageChangesManager;
-  private final CheckRequestModeFactory myModeFactory;
-  private final PackageCheckRequestFactory myRequestFactory;
+  private final TriggerRequestFactory myRequestFactory;
   private final PackagesHashCalculator myCalculator;
 
 
-  public NamedPackagesUpdateChecker(@NotNull final NuGetToolManager manager,
-                                    @NotNull final PackageChangesManager packageChangesManager,
-                                    @NotNull final CheckRequestModeFactory modeFactory,
-                                    @NotNull final PackageCheckRequestFactory requestFactory,
+  public NamedPackagesUpdateChecker(@NotNull final PackageChangesManager packageChangesManager,
+                                    @NotNull final TriggerRequestFactory requestFactory,
                                     @NotNull final PackagesHashCalculator calculator) {
-    myManager = manager;
     myPackageChangesManager = packageChangesManager;
-    myModeFactory = modeFactory;
     myRequestFactory = requestFactory;
     myCalculator = calculator;
   }
@@ -42,39 +33,14 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
   @Nullable
   public BuildStartReason checkChanges(@NotNull BuildTriggerDescriptor descriptor,
                                        @NotNull CustomDataStorage storage) throws BuildTriggerException {
-    final String path = myManager.getNuGetPath(descriptor.getProperties().get(TriggerConstants.NUGET_EXE));
-    final String pkgId = descriptor.getProperties().get(TriggerConstants.PACKAGE);
-    final String version = descriptor.getProperties().get(TriggerConstants.VERSION);
-    final String source = descriptor.getProperties().get(TriggerConstants.SOURCE);
-
-    if (StringUtil.isEmptyOrSpaces(path)) {
-      throw new BuildTriggerException("Path to NuGet.exe must be specified");
-    }
-
-    if (StringUtil.isEmptyOrSpaces(pkgId)) {
-      throw new BuildTriggerException("Package Id must be specified");
-    }
-
-    final File nugetPath = new File(path);
-    if (!nugetPath.isFile()) {
-      throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
-    }
-
-
-    final PackageCheckRequest checkRequest = myRequestFactory.createRequest(
-            myModeFactory.createNuGetChecker(nugetPath),
-            source,
-            pkgId,
-            version
-    );
-
+    final PackageCheckRequest checkRequest = myRequestFactory.createRequest(descriptor);
 
     CheckResult result;
     try {
       result = myPackageChangesManager.checkPackage(checkRequest);
       //no change available
     } catch (Throwable t) {
-      LOG.warn("Failed to ckeck changes for package: " + pkgId + ". " + t.getMessage(), t);
+      LOG.warn("Failed to ckeck changes for package: " + checkRequest.getPackage().getPackageId() + ". " + t.getMessage(), t);
       result = CheckResult.failed(t.getMessage());
     }
 
@@ -94,7 +60,7 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       storage.flush();
 
       if (oldHash != null) {
-        return new BuildStartReason("NuGet Package " + pkgId + " updated");
+        return new BuildStartReason("NuGet Package " + checkRequest.getPackage().getPackageId() + " updated");
       }
     }
 
