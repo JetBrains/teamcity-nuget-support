@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
+import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider;
 import jetbrains.buildServer.web.util.WebUtil;
@@ -41,7 +42,7 @@ public class NuGetServerPropertiesProvider extends AbstractBuildParametersProvid
     Map<String, String> map = new HashMap<String, String>();
     if (mySettings.isNuGetServerEnabled()) {
       //TODO: set here httpAuth url as NuGet is able to support authentication.
-      map.put(NuGetServerConstants.FEED_REFERENCE, "%teamcity.serverUrl%" + WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
+      map.put(NuGetServerConstants.FEED_REFERENCE, "%" + AgentRuntimeProperties.TEAMCITY_SERVER_URL + "%" + WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
     }
     return map;
   }
