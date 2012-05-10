@@ -17,6 +17,8 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.RootUrlHolder;
+import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
@@ -43,6 +45,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -59,6 +62,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   private PackageChangesManager chk;
   private Map<String, String> params;
   private File nugetFakePath;
+  private RootUrlHolder myRootUrlHolder;
+
 
   private boolean myIsWindows;
 
@@ -74,10 +79,11 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     params = new TreeMap<String, String>();
     manager = m.mock(NuGetToolManager.class);
     chk = m.mock(PackageChangesManager.class);
+    myRootUrlHolder = m.mock(RootUrlHolder.class);
 
     final SystemInfo si = m.mock(SystemInfo.class);
 
-    checker = new NamedPackagesUpdateChecker(manager, chk, new CheckRequestModeFactory(si), new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()), new PackagesHashCalculator());
+    checker = new NamedPackagesUpdateChecker(chk, new TriggerRequestFactory(new CheckRequestModeFactory(si), manager, new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()), myRootUrlHolder), new PackagesHashCalculator());
     nugetFakePath = Paths.getNuGetRunnerPath();
     final String path = nugetFakePath.getPath();
 
@@ -94,6 +100,25 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     params.put(TriggerConstants.NUGET_EXE, path);
     params.put(TriggerConstants.PACKAGE, "NUnit");
+  }
+
+  @Test
+  public void test_resolves_own_feed_url() {
+    params.put(TriggerConstants.SOURCE, "%"+ AgentRuntimeProperties.TEAMCITY_SERVER_URL+"%/a/b/c");
+
+    m.checking(new Expectations(){{
+      allowing(myRootUrlHolder).getRootUrl(); will(returnValue("http://some-teamcity-with-nuget.org/jonnyzzz"));
+
+      oneOf(chk).checkPackage(with(req(nugetFakePath, "http://some-teamcity-with-nuget.org/jonnyzzz/a/b/c", "NUnit", null)));
+      will(returnValue(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList())));
+
+      oneOf(store).getValue("hash"); will(returnValue(null));
+      oneOf(store).putValue(with(equal("hash")), with(any(String.class)));
+      oneOf(store).flush();
+    }});
+    Assert.assertNull(checker.checkChanges(desr, store));
+
+    m.assertIsSatisfied();
   }
 
   @Test
