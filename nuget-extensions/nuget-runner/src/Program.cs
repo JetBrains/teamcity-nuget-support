@@ -37,6 +37,10 @@ namespace JetBrains.TeamCity.NuGetRunner
         case "---TeamCity.DumpExtensionsPath":
           Console.Out.WriteLine("ExtensionsPath: {0}", runner.LocateNuGetExtensionsPath() ?? "null");
           return 0;
+        case "--TeamCity.NuGetVersion":
+          Console.Out.WriteLine("TeamCity.NuGetVersion: " + runner.NuGetVersion);
+          Console.Out.WriteLine();
+          return 0;
         
         default:
           return runner.Run(args.Skip(1).ToArray());
