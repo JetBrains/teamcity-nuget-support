@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Linq.Expressions;
+using JetBrains.Annotations;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Util;
 using NuGet;
 
@@ -28,13 +29,55 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       while (enuRight.MoveNext()) yield return enuRight.Current;
     }
 
-    protected IEnumerable<IPackage> GetAllPackages(string source, IEnumerable<string> ids)
+    protected IEnumerable<IPackage> GetAllPackages(string source, PackageFetchOption fetchOption, IEnumerable<string> ids)
     {
-      IPackageRepository packageRepository = RepositoryFactory.CreateRepository(source);
+      var param = Expression.Parameter(typeof (IPackage));
 
-      var param = Expression.Parameter(typeof (IPackageMetadata));
+      var items = GetPackageRepository(source).GetPackages();
 
-      var expressions = ids.Distinct().Select(id => Expression.Equal(Expression.Property(param, "Id"), Expression.Constant(id))).ToList();
+      Expression filter = GenerateQuery(fetchOption, ids, param);      
+      return items.Where(Expression.Lambda<Func<IPackage, bool>>(filter, param));
+    }
+
+    private IPackageRepository GetPackageRepository(string source)
+    {
+      return RepositoryFactory.CreateRepository(source);
+    }
+
+    [NotNull]
+    private Expression GenerateQuery(PackageFetchOption fetchOption, IEnumerable<string> ids, ParameterExpression param)
+    {
+      var idFilter = GeneratePackageIdFilter(ids, param);
+      switch(fetchOption)
+      {
+        case PackageFetchOption.IncludeAll:
+          return idFilter;
+        case PackageFetchOption.IncludeLatest:
+          {
+            var pi = typeof (IPackage).GetProperty("IsLatestVersion");
+            if (pi == null) goto case PackageFetchOption.IncludeAll;
+            return Expression.And(Expression.Property(param, pi), idFilter);
+          }
+        case PackageFetchOption.IncludeLatestAndPrerelease:
+          {
+            var pi = typeof (IPackage).GetProperty("IsAbsoluteLatestVersion");
+            if (pi == null) goto case PackageFetchOption.IncludeAll;
+              return Expression.And(Expression.Property(param, pi), idFilter);
+          }
+        default:
+          throw new Exception("Unexpected PackageFetchOption: " + fetchOption);
+      }
+    }
+
+    [NotNull]
+    private static Expression GeneratePackageIdFilter(IEnumerable<string> ids, ParameterExpression param)
+    {
+      var pi = typeof(IPackageMetadata).GetProperty("Id");
+      var expressions = ids
+        .Distinct()
+        .Select(id => Expression.Equal(Expression.Property(param, pi), Expression.Constant(id)))
+        .ToList();
+
       while (expressions.Count > 1)
       {
         var left = expressions.Where((x, i) => i%2 == 0);
@@ -42,9 +85,10 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         expressions = ZipEx(left, right, Expression.Or).ToList();
       }
 
-      var items = packageRepository.GetPackages();
-      if (expressions.Count == 0) return items;
-      return items.Where(Expression.Lambda<Func<IPackage, bool>>(expressions.Single(), param));
+      if (expressions.Count == 0) 
+        return Expression.Constant(true);
+
+      return expressions.Single();
     }
 
     /// <summary>
@@ -61,6 +105,13 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
       System.Console.Out.WriteLine(msg);
     }
+  }
+
+  public enum PackageFetchOption
+  {
+    IncludeAll, 
+    IncludeLatest,
+    IncludeLatestAndPrerelease,
   }
 
   public static class PackageExtensions2

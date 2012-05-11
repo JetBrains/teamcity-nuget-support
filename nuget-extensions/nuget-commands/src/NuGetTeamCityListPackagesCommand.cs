@@ -29,33 +29,50 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       }
 
       var sourceToRequest = reqs.Packages.GroupBy(x => x.Feed, Id, StringComparer.InvariantCultureIgnoreCase);
-      foreach (var req in sourceToRequest)
+      foreach (var sourceRequest in sourceToRequest)
       {
-        //todo: optimize query to return only required set of versions.
-
-        var packagesToCheck = req.GroupBy(x => x.Id, Id, StringComparer.InvariantCultureIgnoreCase).ToDictionary(x => x.Key, Id<IEnumerable<NuGetPackage>>, StringComparer.InvariantCultureIgnoreCase);
-        var ids = packagesToCheck.Select(x => x.Key).Distinct().ToList();
-
-        int count = 0;
-        var allPackages = GetAllPackages(req.Key, ids);
-        foreach (var feedPackage in allPackages)
-        {
-          count++;
-          IEnumerable<NuGetPackage> enu;
-          if (packagesToCheck.TryGetValue(feedPackage.Id, out enu))
-          {
-            foreach (var p in enu)
-            {
-              if (!p.VersionChecker(feedPackage)) continue;
-              p.AddEntry(new NuGetPackageEntry {Version = feedPackage.VersionString()});
-            }
-          }
-        }
-
-        System.Console.Out.WriteLine("Scanned {0} packages for feed {1}", count, req.Key);
+        ProcessPackageSource(sourceRequest.Key, sourceRequest.ToList());
       }
 
       SaveRequests(reqs);
+    }
+
+    private void ProcessPackageSource(string source, List<NuGetPackage> request)
+    {
+      //todo: optimize query to return only required set of versions.
+      foreach (var req in new[]
+                              {
+                                new { Data = request.Where(x => x.VersionSpec == null).ToArray(), FetchOption = PackageFetchOption.IncludeLatest }, 
+                                new { Data = request.Where(x => x.VersionSpec != null).ToArray(), FetchOption = PackageFetchOption.IncludeAll }
+                              })
+      {
+        ProcessPackages(source, req.FetchOption, req.Data);
+      }
+    }
+
+    private void ProcessPackages(string source, PackageFetchOption fetchOptions, IEnumerable<NuGetPackage> package)
+    {
+      var packageToData = package
+        .GroupBy(x => x.Id, Id, PACKAGE_ID_COMPARER)
+        .ToDictionary(x=>x.Key, Id, PACKAGE_ID_COMPARER);
+
+      if (packageToData.Count == 0) return;
+      var data = GetAllPackages(source, fetchOptions, packageToData.Keys);
+      int count = 0;
+      foreach (var p in data)
+      {
+        count++;
+        IGrouping<string, NuGetPackage> res;
+        if (!packageToData.TryGetValue(p.Id, out res)) continue;
+
+        foreach (var r in res)
+        {
+          if (!r.VersionChecker(p)) continue;
+          r.AddEntry(new NuGetPackageEntry {Version = p.VersionString()});
+        }
+      }
+
+      System.Console.Out.WriteLine("Scanned {0} packages for feed {1}", count, source);
     }
 
     private void SaveRequests(NuGetPackages reqs)
@@ -90,6 +107,8 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     {
       return t;
     }
+
+    private static readonly IEqualityComparer<string> PACKAGE_ID_COMPARER = StringComparer.InvariantCultureIgnoreCase;
   }
 
   [Serializable]
@@ -99,6 +118,14 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [XmlArray("packages")]
     [XmlArrayItem("package")]
     public NuGetPackage[] Packages { get; set; }
+
+    public void ClearCheckResults()
+    {
+      foreach (var p in Packages)
+      {
+        p.Entries = null;
+      }
+    }
   }
 
 

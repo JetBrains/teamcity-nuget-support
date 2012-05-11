@@ -5,6 +5,16 @@ namespace JetBrains.TeamCity.NuGet.Tests
 {
   public static class TempFilesHolder
   {
+    public static T WithTempFile<T>(Func<string, T> action)
+    {
+      T t = default(T);
+      WithTempFile(f =>
+                     {
+                       t = action(f);
+                     });
+      return t;
+    }
+
     public static void WithTempFile(Action<string> action)
     {
       string tmp = Path.GetTempFileName();

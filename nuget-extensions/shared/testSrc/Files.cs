@@ -105,13 +105,13 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
   public enum NuGetVersion
   {
-    NuGet_1_4,
-    NuGet_1_5,
-    NuGet_1_6,
-    NuGet_1_7,
+    NuGet_1_4 = 4,
+    NuGet_1_5 = 5,
+    NuGet_1_6 = 6,
+    NuGet_1_7 = 7,
 
-    NuGet_Latest_CI,
-    NuGet_CommandLine_Package_Latest
+    NuGet_Latest_CI = 990,
+    NuGet_CommandLine_Package_Latest = 999
   }
 
 

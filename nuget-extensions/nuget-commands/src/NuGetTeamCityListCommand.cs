@@ -36,12 +36,12 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       if (string.IsNullOrWhiteSpace(Source))
         throw new CommandLineException("-Source must be specified.");
 
-      var allPackages = GetAllPackages(Source, new[] { Id }).ToList();
+
       if (string.IsNullOrWhiteSpace(Version))
-        return allPackages;
+        return GetAllPackages(Source, PackageFetchOption.IncludeLatest, new[] {Id}).ToList();
 
       var versionSpec = VersionUtility.ParseVersionSpec(Version);
-      return allPackages.FindByVersion(versionSpec);
+      return GetAllPackages(Source, PackageFetchOption.IncludeAll, new[] {Id}).ToList().FindByVersion(versionSpec);
     }
   }
 }
