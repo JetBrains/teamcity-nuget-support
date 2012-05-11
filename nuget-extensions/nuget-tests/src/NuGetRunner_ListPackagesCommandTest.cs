@@ -52,17 +52,19 @@ namespace JetBrains.TeamCity.NuGet.Tests
     {
       var doc = DoTestWithSpec(version, Serialize(p1("NUnit"), p1("NUnit", "(1.1.1,2.5.8]")));
 
-      var mpdes = PackagesCount(doc, "NUnit");
+      var notVersioned = doc.SelectNodes("//package[@id='NUnit' and not(@versions='(1.1.1,2.5.8]')]//package-entry").Count;
+      var versioned = doc.SelectNodes("//package[@id='NUnit' and @versions='(1.1.1,2.5.8]']//package-entry").Count;
+
+      Assert.True(versioned > 0);
+      Assert.True(notVersioned > 0);
+
       if (version > NuGetVersion.NuGet_1_4)
       {
-        Assert.True(mpdes == 1);
-        Assert.True(doc.SelectNodes("//package[@id='NUnit' and @versions='(1.1.1,2.5.8]']//package-entry").Count > 0);
+        Assert.True(notVersioned == 1);        
       }
       else
       {
-        Assert.True(mpdes > 0);
-        Assert.True(doc.SelectNodes("//package[@id='NUnit' and @versions='(1.1.1,2.5.8]']//package-entry").Count <
-                    doc.SelectNodes("//package[@id='NUnit' and not(@versions='(1.1.1,2.5.8]')]//package-entry").Count);
+        Assert.True(versioned < notVersioned);
       }
     }
 
