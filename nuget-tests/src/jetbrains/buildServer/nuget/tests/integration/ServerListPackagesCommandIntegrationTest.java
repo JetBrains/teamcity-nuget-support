@@ -61,13 +61,6 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
-  public void test_reportsNUnit_from_default_feed(@NotNull final NuGet nuget) throws NuGetExecutionException {
-    final Collection<SourcePackageInfo> nUnit = myCommand.checkForChanges(nuget.getPath(), new SourcePackageReference(null, "NUnit", null));
-    System.out.println("nUnit = " + nUnit);
-    Assert.assertTrue(nUnit.size() > 0);
-  }
-
-  @Test(dataProvider = NUGET_VERSIONS)
   public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed(@NotNull final NuGet nuget) throws NuGetExecutionException {
     final SourcePackageReference nunit_all = new SourcePackageReference(null, "NUnit", null);
     final SourcePackageReference nunit_filter = new SourcePackageReference(null, "NUnit", "(1.1.1.1, 2.5.9.1)");

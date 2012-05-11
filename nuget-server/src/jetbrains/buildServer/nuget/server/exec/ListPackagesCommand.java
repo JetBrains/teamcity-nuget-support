@@ -27,11 +27,8 @@ import java.util.Map;
  * Date: 14.07.11 19:04
  */
 public interface ListPackagesCommand {
+
   @NotNull
-  Collection<SourcePackageInfo> checkForChanges(@NotNull File nugetPath,
-                                                @NotNull SourcePackageReference ref) throws NuGetExecutionException;
-
-
   Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath,
                                                                              @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException;
 

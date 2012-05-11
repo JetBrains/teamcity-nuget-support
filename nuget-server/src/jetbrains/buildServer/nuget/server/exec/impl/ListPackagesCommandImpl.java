@@ -19,7 +19,6 @@ package jetbrains.buildServer.nuget.server.exec.impl;
 import jetbrains.buildServer.TempFolderProvider;
 import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.util.FileUtil;
-import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -41,27 +40,6 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
   }
 
   @NotNull
-  public Collection<SourcePackageInfo> checkForChanges(@NotNull File nugetPath, @NotNull SourcePackageReference ref) throws NuGetExecutionException {
-    List<String> cmd = new ArrayList<String>();
-
-    final String commandName = "TeamCity.List";
-    cmd.add(commandName);
-    if (!StringUtil.isEmptyOrSpaces(ref.getSource())) {
-      cmd.add("-Source");
-      cmd.add(ref.getSource());
-    }
-    cmd.add("-Id");
-    cmd.add(ref.getPackageId());
-
-    if (!StringUtil.isEmptyOrSpaces(ref.getVersionSpec())) {
-      cmd.add("-Version");
-      cmd.add(ref.getVersionSpec());
-    }
-
-    return myExec.executeNuGet(nugetPath, cmd, new ListPackageCommandProcessor(ref.getSource(), commandName));
-  }
-
-
   public Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath,
                                                                                     @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException {
     final File spec = createTempFile("trigger.spec");

@@ -91,36 +91,6 @@ public class ListPackagesCommandTest extends BaseTestCase {
   }
 
   @Test
-  public void test_run_no_version() throws NuGetExecutionException {
-    allowCommandLineCall(Collections.emptyList(),
-            "TeamCity.List",
-            "-Source",
-            "source",
-            "-Id",
-            "package"
-    );
-
-    cmd.checkForChanges(new File("nuget"), new SourcePackageReference("source", "package", null));
-    m.assertIsSatisfied();
-  }
-
-  @Test
-  public void test_run_version() throws NuGetExecutionException {
-    allowCommandLineCall(Collections.emptyList(),
-            "TeamCity.List",
-            "-Source",
-            "source",
-            "-Id",
-            "package",
-            "-Version",
-            "version"
-    );
-
-    cmd.checkForChanges(new File("nuget"), new SourcePackageReference("source", "package", "version"));
-    m.assertIsSatisfied();
-  }
-
-  @Test
   public void test_run_packages() throws NuGetExecutionException  {
     allowCommandLineCall(Collections.emptyMap(),
 

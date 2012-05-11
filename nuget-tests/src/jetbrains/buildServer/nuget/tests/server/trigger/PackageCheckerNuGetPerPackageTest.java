@@ -19,8 +19,13 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.trigger.impl.*;
-import org.jmock.Expectations;
+import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
+import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGetPerPackage;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -76,7 +81,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(any(CheckResult.class)));
 
-      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equal(ref))); will(returnValue(Collections.emptyList()));
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(returnValue(Collections.emptyMap()));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
@@ -97,7 +102,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
       oneOf(task).setExecuting();
       oneOf(task).setResult(CheckResult.succeeded(result));
 
-      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equal(ref))); will(returnValue(result));
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(returnValue(Collections.singletonMap(ref,result)));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
@@ -117,11 +122,29 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
       oneOf(task).setExecuting();
       oneOf(task).setResult(CheckResult.failed("aaa"));
 
-      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equal(ref))); will(throwException(new NuGetExecutionException("aaa")));
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(throwException(new NuGetExecutionException("aaa")));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
 
     m.assertIsSatisfied();
+  }
+
+  private static class Expectations extends org.jmock.Expectations {
+    protected <T> Matcher<Collection<T>> equalL(final T t) {
+      return new BaseMatcher<Collection<T>>() {
+        public boolean matches(Object o) {
+          if (o instanceof Collection) {
+            Object i = ((Collection) o).iterator().next();
+            return i.equals(t);
+          }
+          return false;
+        }
+
+        public void describeTo(Description description) {
+          description.appendText("equals [" + t + "]");
+        }
+      };
+    }
   }
 }

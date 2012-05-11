@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -67,7 +68,9 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
           public void run() {
             try {
               final SourcePackageReference pkg = packageCheckEntry.getPackage();
-              final Collection<SourcePackageInfo> infos = myCommand.checkForChanges(nugetPath, pkg);
+              Map<SourcePackageReference, Collection<SourcePackageInfo>> map = myCommand.checkForChanges(nugetPath, Collections.singleton(pkg));
+              Collection<SourcePackageInfo> infos = map.get(pkg);
+              if (infos == null) infos = Collections.emptyList();
               packageCheckEntry.setResult(CheckResult.succeeded(infos));
             } catch (Throwable t) {
               LOG.warn("Failed to check changes of " + packageId + ". " + t.getMessage(), t);
