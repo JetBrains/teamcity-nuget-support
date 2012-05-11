@@ -62,7 +62,6 @@
     <Compile Include="src\NuGetConstants.cs" />
     <Compile Include="src\NuGetRunnerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\NuGetRunner_ListCommandTest.cs" />
     <Compile Include="src\NuGetRunner_ListPackagesCommandTest.cs" />
     <Compile Include="src\NuGetRunner_ListPackagesCommandTestBase.cs" />
     <Compile Include="src\TempFilesHolder.cs" />
