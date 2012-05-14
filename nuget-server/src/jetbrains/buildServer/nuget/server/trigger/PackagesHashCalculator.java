@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -56,5 +57,9 @@ public class PackagesHashCalculator {
       sb.append("|v:").append(info.getVersion());
     }
     return sb.toString();
+  }
+
+  public boolean isUpgradeRequired(@Nullable final String oldValue, @NotNull final String newValue) {
+    return oldValue != null && !newValue.equals(oldValue);
   }
 }

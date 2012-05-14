@@ -66,18 +66,19 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       throw new BuildTriggerException("Failed to check for package versions. " + error);
     }
 
-    final String hash = myCalculator.serializeHashcode(result.getInfos());
-    final String oldHash = storage.getValue(KEY);
+    @NotNull  final String newHash = myCalculator.serializeHashcode(result.getInfos());
+    @Nullable final String oldHash = storage.getValue(KEY);
 
-    LOG.debug("Recieved packages hash: " + hash);
+    LOG.debug("Recieved packages hash: " + newHash);
     LOG.debug("          old hash was: " + oldHash);
-    if (!hash.equals(oldHash)) {
-      storage.putValue(KEY, hash);
-      storage.flush();
 
-      if (oldHash != null) {
-        return new BuildStartReason("NuGet Package " + checkRequest.getPackage().getPackageId() + " updated");
-      }
+    if (!newHash.equals(oldHash)) {
+      storage.putValue(KEY, newHash);
+      storage.flush();
+    }
+
+    if (myCalculator.isUpgradeRequired(oldHash, newHash)) {
+      return new BuildStartReason("NuGet Package " + checkRequest.getPackage().getPackageId() + " updated");
     }
 
     return null;
