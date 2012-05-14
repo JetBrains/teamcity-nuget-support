@@ -84,7 +84,7 @@ public class PackagesHashCalculatorTest extends BaseTestCase {
 
     //12! is too much to check
     final Random r = new SecureRandom();
-    final String hash = "|s:s1|p:p1|v:0.5.4|s:s1|p:p1|v:2.3.5|s:s1|p:q|v:0.5.4|s:s1|p:q|v:2.3.5|s:s2|p:p1|v:0.5.4|s:s2|p:p1|v:2.3.5|s:s2|p:q|v:0.5.4|s:s2|p:q|v:2.3.5|p:p1|v:0.5.4|p:p1|v:2.3.5|p:q|v:0.5.4|p:q|v:2.3.5";
+    final String hash = "v2|s:s1|p:p1|v:0.5.4|s:s1|p:p1|v:2.3.5|s:s1|p:q|v:0.5.4|s:s1|p:q|v:2.3.5|s:s2|p:p1|v:0.5.4|s:s2|p:p1|v:2.3.5|s:s2|p:q|v:0.5.4|s:s2|p:q|v:2.3.5|p:p1|v:0.5.4|p:p1|v:2.3.5|p:q|v:0.5.4|p:q|v:2.3.5";
     for (int i = 0; i < 1000; i++) {
       Collections.shuffle(infos, r);
       assertHash(hash, infos);
@@ -96,6 +96,7 @@ public class PackagesHashCalculatorTest extends BaseTestCase {
   }
 
   private void doCalculatorTest(@NotNull String hash, SourcePackageInfo... infos) {
+    hash = "v2" + hash;
     assertHash(hash, Arrays.asList(infos));
     for (Collection<SourcePackageInfo> pkgs : allPermutations(Arrays.asList(infos))) {
       assertHash(hash, pkgs);

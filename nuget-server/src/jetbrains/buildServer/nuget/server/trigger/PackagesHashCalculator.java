@@ -27,6 +27,7 @@ import java.util.*;
  *         Date: 16.11.11 14:32
  */
 public class PackagesHashCalculator {
+  private static final String ourVersion = "v2";
 
   @NotNull
   public String serializeHashcode(@NotNull final Collection<SourcePackageInfo> _packages) {
@@ -47,7 +48,8 @@ public class PackagesHashCalculator {
       }
     });
 
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
+    sb.append(ourVersion);
     for (SourcePackageInfo info : sorted) {
       String source = info.getSource();
       if (source != null) {
@@ -60,6 +62,6 @@ public class PackagesHashCalculator {
   }
 
   public boolean isUpgradeRequired(@Nullable final String oldValue, @NotNull final String newValue) {
-    return oldValue != null && !newValue.equals(oldValue);
+    return oldValue != null && !newValue.equals(oldValue) && oldValue.startsWith("v2");
   }
 }
