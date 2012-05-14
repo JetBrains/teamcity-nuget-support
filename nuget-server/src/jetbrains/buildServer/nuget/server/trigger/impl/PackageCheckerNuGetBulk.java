@@ -25,10 +25,7 @@ import jetbrains.buildServer.util.MultiMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -62,19 +59,35 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
     for (Map.Entry<File, List<CheckablePackage>> nuget : entries.entrySet()) {
       final File nugetPath = nuget.getKey();
 
-      Map<SourcePackageReference, CheckablePackage> map = new HashMap<SourcePackageReference, CheckablePackage>();
-      for (CheckablePackage e : nuget.getValue()) {
-        map.put(e.getPackage(), e);
-        e.setExecuting();
+      final List<CheckablePackage> allVersions = new ArrayList<CheckablePackage>();
+      final List<CheckablePackage> setVersions = new ArrayList<CheckablePackage>();
+      for (CheckablePackage p : nuget.getValue()) {
+        (p.getPackage().getVersionSpec() == null ? allVersions : setVersions).add(p);
+      }
 
-        if (map.size() >= mySettings.getMaxPackagesToQueryInBulk()) {
-          postCkeckTask(executor, map, nugetPath);
-          map = new HashMap<SourcePackageReference, CheckablePackage>();
-        }
-      }
-      if (!map.isEmpty()) {
+      //first schedule packages check without version, this will work faster
+      chunkAndSchedule(executor, nugetPath, allVersions);
+
+      //than schedule check for packages with versions constrait
+      chunkAndSchedule(executor, nugetPath, setVersions);
+    }
+  }
+
+  private void chunkAndSchedule(@NotNull ExecutorService executor,
+                                @NotNull File nugetPath,
+                                @NotNull Collection<CheckablePackage> requests) {
+    Map<SourcePackageReference, CheckablePackage> map = new HashMap<SourcePackageReference, CheckablePackage>();
+    for (CheckablePackage e : requests) {
+      map.put(e.getPackage(), e);
+      e.setExecuting();
+
+      if (map.size() >= mySettings.getMaxPackagesToQueryInBulk()) {
         postCkeckTask(executor, map, nugetPath);
+        map = new HashMap<SourcePackageReference, CheckablePackage>();
       }
+    }
+    if (!map.isEmpty()) {
+      postCkeckTask(executor, map, nugetPath);
     }
   }
 

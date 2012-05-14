@@ -26,6 +26,8 @@ import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGetBulk;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -74,14 +76,10 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   @Test
   public void test_bulk() throws NuGetExecutionException {
     final SourcePackageReference ref = ref();
-    final CheckablePackage task = m.mock(CheckablePackage.class);
+
+
+    final CheckablePackage task = checkablePackage("qq", ref);
     m.checking(new Expectations(){{
-      allowing(task).getPackage(); will(returnValue(ref));
-      allowing(task).getMode(); will(returnValue(nugetMode()));
-
-      oneOf(task).setExecuting();
-      oneOf(task).setResult(with(any(CheckResult.class)));
-
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(returnValue(Collections.emptyMap()));
     }});
 
@@ -95,49 +93,26 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
     final SourcePackageReference ref = ref();
     final Collection<SourcePackageInfo> aaa = Arrays.asList(ref.toInfo("aaa"));
     final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.singletonMap(ref, aaa);
-    final CheckablePackage task = m.mock(CheckablePackage.class);
+    final CheckablePackage task = checkablePackage("aqqq", ref, CheckResult.succeeded(aaa));
     m.checking(new Expectations(){{
-      allowing(task).getPackage(); will(returnValue(ref));
-      allowing(task).getMode(); will(returnValue(nugetMode()));
-
-      oneOf(task).setExecuting();
-      oneOf(task).setResult(CheckResult.succeeded(aaa));
-
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(returnValue(result));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
-
     m.assertIsSatisfied();
   }
 
   @Test
   public void test_bulk_limit() throws NuGetExecutionException {
     final int N = 156;
-
-    final List<SourcePackageReference> infos = new ArrayList<SourcePackageReference>();
-    for(int i = 0; i < N; i++) {
-      infos.add(new SourcePackageReference("a", "package-" + i, null));
-    }
     final List<CheckablePackage> tasks = new ArrayList<CheckablePackage>();
     for(int i = 0; i < N; i++) {
-      tasks.add(m.mock(CheckablePackage.class, "task-" + i));
+      tasks.add(checkablePackage("task-" + i, new SourcePackageReference("a", "package-" + i, null)));
     }
 
     final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.emptyMap();
 
     m.checking(new Expectations(){{
-      for(int i = 0; i < N; i++) {
-        final CheckablePackage task = tasks.get(i);
-        final SourcePackageReference ref = infos.get(i);
-
-        allowing(task).getPackage(); will(returnValue(ref));
-        allowing(task).getMode(); will(returnValue(nugetMode()));
-
-        oneOf(task).setExecuting();
-        oneOf(task).setResult(with(any(CheckResult.class)));
-      }
-
       final int bunch = mySettings.getMaxPackagesToQueryInBulk();
       between(N/bunch, N/bunch+1).of(myCommand).checkForChanges(with(any(File.class)), with(sz(SourcePackageReference.class, bunch))); will(returnValue(result));
     }});
@@ -148,20 +123,34 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   }
 
   @Test
+  public void test_bulk_limit_chunks() throws NuGetExecutionException {
+    final SourcePackageReference p1 = new SourcePackageReference("a", "package-0", null);
+    final SourcePackageReference p2 = new SourcePackageReference("a", "package-0", "[42]");
+    final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.emptyMap();
+
+    m.checking(new Expectations(){{
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(p1))); will(returnValue(result));
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(p2))); will(returnValue(result));
+    }});
+
+    final List<CheckablePackage> tasks = new ArrayList<CheckablePackage>();
+    tasks.add(checkablePackage("task-0", p1));
+    tasks.add(checkablePackage("task-1", p2));
+    myChecker.update(myExecutor, tasks);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
   public void test_bulk_error() throws NuGetExecutionException {
     @SuppressWarnings({"unchecked"})
     final SourcePackageReference ref = ref();
-    final CheckablePackage task = m.mock(CheckablePackage.class);
+
     m.checking(new Expectations(){{
-      allowing(task).getPackage(); will(returnValue(ref));
-      allowing(task).getMode(); will(returnValue(nugetMode()));
-
-      oneOf(task).setExecuting();
-      oneOf(task).setResult(CheckResult.failed("aaa"));
-
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(throwException(new NuGetExecutionException("aaa")));
     }});
 
+    final CheckablePackage task = checkablePackage("aaa", ref, CheckResult.failed("aaa"));
     myChecker.update(myExecutor, Arrays.asList(task));
 
     m.assertIsSatisfied();
@@ -205,5 +194,30 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
         }
       };
     }
+  }
+
+  @NotNull
+  private CheckablePackage checkablePackage(@NotNull final String name,
+                                            @NotNull final SourcePackageReference ref) {
+    return checkablePackage(name, ref, null);
+  }
+
+  @NotNull
+  private CheckablePackage checkablePackage(@NotNull final String name,
+                                            @NotNull final SourcePackageReference ref,
+                                            @Nullable final CheckResult result) {
+    final CheckablePackage cp = m.mock(CheckablePackage.class, name);
+    m.checking(new Expectations(){{
+      allowing(cp).getPackage(); will(returnValue(ref));
+      allowing(cp).getMode(); will(returnValue(nugetMode()));
+
+      oneOf(cp).setExecuting();
+      if (result == null) {
+      oneOf(cp).setResult(with(any(CheckResult.class)));
+      } else {
+        oneOf(cp).setResult(with(equal(result)));
+      }
+    }});
+    return cp;
   }
 }
