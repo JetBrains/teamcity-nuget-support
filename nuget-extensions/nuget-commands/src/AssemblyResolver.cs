@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
@@ -8,6 +9,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
   [Serializable]
   public class AssemblyResolver 
   {
+    private static readonly IEnumerable<string> EXCLUDED_ASSEMBLIES = new[] { "nuget.exe" };
     private readonly object myLock = new object();
     private static AssemblyResolver myInstance;
 
@@ -65,6 +67,10 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         var assemblies = new List<string>();
         assemblies.AddRange(Directory.GetFiles(path, "*.dll"));
         assemblies.AddRange(Directory.GetFiles(path, "*.exe"));
+
+        //filter excluded assemblies
+        assemblies.RemoveAll(name => EXCLUDED_ASSEMBLIES.Any(exclude => name.ToLower().EndsWith(exclude.ToLower())));
+
         foreach (string assemblyFile in assemblies)
         {
           try
