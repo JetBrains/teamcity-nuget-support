@@ -47,6 +47,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\nuget-tests\src\NuGetConstants.cs">
+      <Link>src\Shared\NuGetConstants.cs</Link>
+    </Compile>
     <Compile Include="..\nuget-tests\src\TempFilesHolder.cs">
       <Link>src\TempFilesHolder.cs</Link>
     </Compile>
