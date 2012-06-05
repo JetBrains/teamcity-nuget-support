@@ -12,6 +12,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourCachedNuGetExe_1_5 = PathSearcher.SearchFile("lib/nuget/1.5/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_1_6 = PathSearcher.SearchFile("lib/nuget/1.6/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_1_7 = PathSearcher.SearchFile("lib/nuget/1.7/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_1_8 = PathSearcher.SearchFile("lib/nuget/1.8/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetRunnerPath = PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
@@ -29,6 +30,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string NuGetExe_1_5 { get { return ourCachedNuGetExe_1_5.Value; } }
     public static string NuGetExe_1_6 { get { return ourCachedNuGetExe_1_6.Value; } }
     public static string NuGetExe_1_7 { get { return ourCachedNuGetExe_1_7.Value; } }
+    public static string NuGetExe_1_8 { get { return ourCachedNuGetExe_1_8.Value; } }
     public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
     public static string LocalFeed { get { return ourLocalFeed.Value; } }
 
@@ -45,6 +47,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return NuGetExe_1_6;
         case NuGetVersion.NuGet_1_7:
           return NuGetExe_1_7;
+        case NuGetVersion.NuGet_1_8:
+          return NuGetExe_1_8;
         case NuGetVersion.NuGet_Latest_CI:
           return ourCachedNuGet_CI_Last.Value;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
@@ -109,6 +113,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     NuGet_1_5 = 5,
     NuGet_1_6 = 6,
     NuGet_1_7 = 7,
+    NuGet_1_8 = 8,
 
     NuGet_Latest_CI = 990,
     NuGet_CommandLine_Package_Latest = 999

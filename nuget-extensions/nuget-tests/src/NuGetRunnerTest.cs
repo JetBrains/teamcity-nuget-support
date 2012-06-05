@@ -13,6 +13,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestExcuteNuGet(NuGetVersion version)
@@ -27,6 +28,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestExcuteNuGet_NuGetFromTemp(NuGetVersion version)
@@ -47,6 +49,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestExcuteNuGet_BothInTemp(NuGetVersion version)
@@ -73,6 +76,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestDumpExtensionsPath(NuGetVersion version)
@@ -87,6 +91,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_TeamCityPing(NuGetVersion version)
@@ -102,6 +107,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_NuGetVersion(NuGetVersion version)
@@ -117,6 +123,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommands_RunConcurrently(NuGetVersion version)

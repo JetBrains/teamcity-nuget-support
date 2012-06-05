@@ -148,7 +148,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
               var spec = VersionSpec;
               if (string.IsNullOrWhiteSpace(spec)) return True;
               var pSpec = VersionUtility.ParseVersionSpec(spec);
-              return xx => new[] {xx}.FindByVersion(pSpec).Any();
+              return xx => EnumerableExtensions.Any(new[] {xx}.FindByVersion(pSpec));
             }
             catch(Exception e)
             {

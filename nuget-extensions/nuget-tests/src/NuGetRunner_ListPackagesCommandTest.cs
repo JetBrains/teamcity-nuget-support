@@ -11,6 +11,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_ListPublic(NuGetVersion version)
@@ -27,6 +28,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_ListPublic_Multiple(NuGetVersion version)
@@ -46,6 +48,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_ListPublic_Multiple_sameIds(NuGetVersion version)
@@ -72,6 +75,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_ListPublicVersions_v1(NuGetVersion version)
@@ -83,6 +87,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_ListPublicVersions_v2(NuGetVersion version)
@@ -95,6 +100,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_1_5)]
     [TestCase(NuGetVersion.NuGet_1_6)]
     [TestCase(NuGetVersion.NuGet_1_7)]
+    [TestCase(NuGetVersion.NuGet_1_8)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_TeamListPublic_Local(NuGetVersion version)
