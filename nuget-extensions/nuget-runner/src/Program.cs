@@ -52,7 +52,7 @@ namespace JetBrains.TeamCity.NuGetRunner
         new NuGetInstallExtensions4(runner, Extensions(runner));
       }
 
-      if (runner.NuGetVersion.Major == 1 && runner.NuGetVersion.Minor >= 5)
+      if (runner.NuGetVersion.Major >= 1 || (runner.NuGetVersion.Major == 1 && runner.NuGetVersion.Minor >= 5))
       {
         new NuGetInstallExtensions5(runner, Extensions(runner));
       }
