@@ -112,11 +112,15 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestCommand_NuGetVersion(NuGetVersion version)
     {
-      ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "--TeamCity.NuGetVersion")
-        .Dump()
-        .AssertExitedSuccessfully()
-        .AssertNoErrorOutput()
-        .AssertOutputContains("TeamCity.NuGetVersion: 1.");
+
+      var res =
+        ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "--TeamCity.NuGetVersion")
+          .Dump()
+          .AssertExitedSuccessfully()
+          .AssertNoErrorOutput();
+
+      var text = res.Output;
+      Assert.IsTrue(text.Contains("TeamCity.NuGetVersion: 1.") || text.Contains("TeamCity.NuGetVersion: 2."));
     }
 
     [TestCase(NuGetVersion.NuGet_1_4)]
