@@ -20,6 +20,7 @@ import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -55,6 +56,7 @@ public class TriggerRequestFactory {
     String pkgId = descriptor.getProperties().get(PACKAGE);
     String version = descriptor.getProperties().get(VERSION);
     String source = descriptor.getProperties().get(SOURCE);
+    boolean isPrerelease = !StringUtil.isEmptyOrSpaces(descriptor.getProperties().get(INCLUDE_PRERELEASE));
 
     if (StringUtil.isEmptyOrSpaces(path)) {
       throw new BuildTriggerException("Path to NuGet.exe must be specified");
@@ -78,10 +80,6 @@ public class TriggerRequestFactory {
 
     return myRequestFactory.createRequest(
             myModeFactory.createNuGetChecker(nugetPath),
-            source,
-            pkgId,
-            version
-    );
+            new SourcePackageReference(source, pkgId, version, isPrerelease));
   }
-
 }

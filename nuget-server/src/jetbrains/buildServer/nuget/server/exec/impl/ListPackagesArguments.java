@@ -52,6 +52,9 @@ public class ListPackagesArguments {
       if (spec != null) {
         pkg.setAttribute("versions", spec);
       }
+      if (ref.isIncludePrerelease()) {
+        pkg.setAttribute("include-prerelease", "true");
+      }
       packages.addContent((Content)pkg);
     }
     root.addContent((Content)packages);

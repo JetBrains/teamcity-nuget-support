@@ -67,6 +67,26 @@ public class ListPackagesArgumentsTest extends BaseTestCase {
   }
 
   @Test
+  public void testSerialize_isPrerelease() throws IOException {
+    final File tmp = createTempFile();
+
+    myArguments.encodeParameters(tmp, getFullSet());
+
+    final String xml = new String(FileUtil.loadFileText(tmp, "utf-8"));
+    final String reformatted = StringUtil.convertLineSeparators(XmlUtil.to_s(XmlUtil.from_s(xml)));
+    final String gold = StringUtil.convertLineSeparators("<nuget-packages>\n" +
+            "  <packages>\n" +
+            "    <package id=\"2\" source=\"1\" versions=\"3\" />\n" +
+            "    <package id=\"22\" versions=\"33\" />\n" +
+            "    <package id=\"222\" />\n" +
+            "  </packages>\n" +
+            "</nuget-packages>");
+
+    System.out.println(reformatted);
+    Assert.assertEquals(reformatted, gold);
+  }
+
+  @Test
   public void testDeserialize_01() throws IOException {
     final File tmp = createTempFile("<nuget-packages>\n" +
             "  <packages>\n" +

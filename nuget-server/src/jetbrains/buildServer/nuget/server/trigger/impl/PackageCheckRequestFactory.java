@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.server.trigger.impl;
 
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -33,11 +32,8 @@ public class PackageCheckRequestFactory {
 
   @NotNull
   public PackageCheckRequest createRequest(@NotNull final CheckRequestMode mode,
-                                           @Nullable final String packageSource,
-                                           @NotNull final String pacakgeId,
-                                           @Nullable final String versionSpec) {
-    final SourcePackageReference ref = new SourcePackageReference(packageSource, pacakgeId, versionSpec);
-    final PackageCheckRequest request = new PackageCheckRequest(mode, ref);
+                                           @NotNull final SourcePackageReference reference) {
+    final PackageCheckRequest request = new PackageCheckRequest(mode, reference);
     request.setCheckInterval(mySettings.getPackageCheckInterval());
     return request;
   }

@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.util.TimeService;
 import org.jmock.Expectations;
@@ -131,7 +132,7 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
   }
 
   private PackageCheckRequest createRequest() {
-    return new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()).createRequest(mode1, null, "id", null);
+    return new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()).createRequest(mode1, new SourcePackageReference(null, "id", null));
   }
 
   private final CheckRequestMode mode1 = new CheckRequestMode() {  };

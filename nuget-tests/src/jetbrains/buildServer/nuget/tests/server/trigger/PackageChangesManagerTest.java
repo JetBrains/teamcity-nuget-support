@@ -279,13 +279,13 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
 
 
   private PackageCheckRequest req(String mode) {
-    final PackageCheckRequest id = myFactory.createRequest(createMode(mode), null, "id", null);
+    final PackageCheckRequest id = myFactory.createRequest(createMode(mode), new SourcePackageReference(null, "id", null));
     id.setCheckInterval(1);
     return id;
   }
 
   private PackageCheckRequest reqS(String mode, @Nullable String source) {
-    final PackageCheckRequest id = myFactory.createRequest(createMode(mode), source, "id", null);
+    final PackageCheckRequest id = myFactory.createRequest(createMode(mode), new SourcePackageReference(source, "id", null));
     id.setCheckInterval(1);
     return id;
   }

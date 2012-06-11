@@ -31,14 +31,24 @@ public class SourcePackageReference {
   private final String myPackageId;
   @Nullable
   private final String myVersionSpec;
+  private final boolean myIncludePrerelease;
 
   public SourcePackageReference(@Nullable final String source,
                                 @NotNull final String packageId,
                                 @Nullable final String versionSpec) {
+    this(source, packageId, versionSpec, false);
+  }
+
+  public SourcePackageReference(@Nullable final String source,
+                                @NotNull final String packageId,
+                                @Nullable final String versionSpec,
+                                          final boolean includePrerelease) {
     mySource = source;
     myPackageId = packageId;
     myVersionSpec = versionSpec;
+    myIncludePrerelease = includePrerelease;
   }
+
 
   @Nullable
   public String getSource() {
@@ -55,6 +65,10 @@ public class SourcePackageReference {
     return myVersionSpec;
   }
 
+  public boolean isIncludePrerelease() {
+    return myIncludePrerelease;
+  }
+
   public SourcePackageInfo toInfo(@NotNull final String version) {
     return new SourcePackageInfo(getSource(), getPackageId(), version);
   }
@@ -69,6 +83,7 @@ public class SourcePackageReference {
     if (!myPackageId.equals(that.myPackageId)) return false;
     if (mySource != null ? !mySource.equals(that.mySource) : that.mySource != null) return false;
     if (myVersionSpec != null ? !myVersionSpec.equals(that.myVersionSpec) : that.myVersionSpec != null) return false;
+    if (myIncludePrerelease != that.myIncludePrerelease) return false;
 
     return true;
   }
@@ -78,6 +93,7 @@ public class SourcePackageReference {
     int result = mySource != null ? mySource.hashCode() : 0;
     result = 31 * result + myPackageId.hashCode();
     result = 31 * result + (myVersionSpec != null ? myVersionSpec.hashCode() : 0);
+    result = 31 * result + (myIncludePrerelease ? 42 : 239);
     return result;
   }
 
