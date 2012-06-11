@@ -103,6 +103,20 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   }
 
   @Test
+  public void test_bulk_empty_result_failure() throws NuGetExecutionException {
+    final SourcePackageReference ref = ref();
+    final Collection<SourcePackageInfo> aaa = Collections.emptyList();
+    final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.singletonMap(ref, aaa);
+    final CheckablePackage task = checkablePackage("aqqq", ref, CheckResult.failed("Package was not found in the feed"));
+    m.checking(new Expectations(){{
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(returnValue(result));
+    }});
+
+    myChecker.update(myExecutor, Arrays.asList(task));
+    m.assertIsSatisfied();
+  }
+
+  @Test
   public void test_bulk_limit() throws NuGetExecutionException {
     final int N = 156;
     final List<CheckablePackage> tasks = new ArrayList<CheckablePackage>();
@@ -213,7 +227,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
 
       oneOf(cp).setExecuting();
       if (result == null) {
-      oneOf(cp).setResult(with(any(CheckResult.class)));
+        oneOf(cp).setResult(with(any(CheckResult.class)));
       } else {
         oneOf(cp).setResult(with(equal(result)));
       }

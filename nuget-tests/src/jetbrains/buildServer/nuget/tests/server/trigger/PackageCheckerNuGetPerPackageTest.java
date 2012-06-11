@@ -31,10 +31,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -91,7 +88,27 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
 
   @Test
   public void test_bulk_success() throws NuGetExecutionException {
-    @SuppressWarnings({"unchecked"})
+    final SourcePackageReference ref = ref();
+    final Collection<SourcePackageInfo> result = Arrays.asList(ref.toInfo("aaa"));
+
+    final CheckablePackage task = m.mock(CheckablePackage.class);
+    m.checking(new Expectations(){{
+      allowing(task).getPackage(); will(returnValue(ref));
+      allowing(task).getMode(); will(returnValue(nugetMode()));
+
+      oneOf(task).setExecuting();
+      oneOf(task).setResult(CheckResult.succeeded(result));
+
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(returnValue(Collections.singletonMap(ref,result)));
+    }});
+
+    myChecker.update(myExecutor, Arrays.asList(task));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_bulk_empty_result() throws NuGetExecutionException {
     final Collection<SourcePackageInfo> result = new ArrayList<SourcePackageInfo>();
     final SourcePackageReference ref = ref();
     final CheckablePackage task = m.mock(CheckablePackage.class);
@@ -100,7 +117,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
       allowing(task).getMode(); will(returnValue(nugetMode()));
 
       oneOf(task).setExecuting();
-      oneOf(task).setResult(CheckResult.succeeded(result));
+      oneOf(task).setResult(CheckResult.failed("Package was not found in the feed"));
 
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(returnValue(Collections.singletonMap(ref,result)));
     }});

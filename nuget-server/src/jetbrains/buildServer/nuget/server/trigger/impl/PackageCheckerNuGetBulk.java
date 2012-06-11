@@ -91,7 +91,9 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
     }
   }
 
-  private void postCkeckTask(ExecutorService executor, final Map<SourcePackageReference, CheckablePackage> map, final File nugetPath) {
+  private void postCkeckTask(ExecutorService executor, Map<SourcePackageReference, CheckablePackage> _map, final File nugetPath) {
+    //avoid possible concurrency here.
+    final Map<SourcePackageReference, CheckablePackage> map = new HashMap<SourcePackageReference, CheckablePackage>(_map);
     executor.submit(ExceptionUtil.catchAll("Bulk check for update of NuGet packages", new Runnable() {
       public void run() {
         try {
@@ -100,15 +102,15 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
           for (Map.Entry<SourcePackageReference, Collection<SourcePackageInfo>> e : result.entrySet()) {
             final SourcePackageReference ref = e.getKey();
             final CheckablePackage p = map.get(ref);
-            if (p != null) {
+            if (p != null && !e.getValue().isEmpty()) {
               p.setResult(CheckResult.succeeded(e.getValue()));
               map.remove(ref);
             }
           }
 
           for (CheckablePackage entry : map.values()) {
-            LOG.warn("No information returned for package: " + entry.getPackage());
-            entry.setResult(CheckResult.failed("No information returned from bulk command"));
+            LOG.warn("Package was not found in the feed: " + entry.getPackage());
+            entry.setResult(CheckResult.failed("Package was not found in the feed"));
           }
 
         } catch (Throwable t) {

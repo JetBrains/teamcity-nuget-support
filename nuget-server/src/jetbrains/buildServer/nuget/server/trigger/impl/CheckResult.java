@@ -16,7 +16,9 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import com.intellij.util.Function;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -74,4 +76,17 @@ public class CheckResult {
     result = 31 * result + (myError != null ? myError.hashCode() : 0);
     return result;
   }
+
+  @Override
+  public String toString() {
+    String error = getError();
+    if (error != null) return "CheckResult{ " + error + " }";
+    else return "CheckResult{ " + StringUtil.join(myInfos, TO_STRING, ", ");
+  }
+
+  private static final Function<SourcePackageInfo, String> TO_STRING = new Function<SourcePackageInfo, String>() {
+    public String fun(SourcePackageInfo sourcePackageInfo) {
+      return sourcePackageInfo.toString();
+    }
+  };
 }
