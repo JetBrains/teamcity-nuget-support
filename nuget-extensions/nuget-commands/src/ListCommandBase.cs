@@ -59,9 +59,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
           }
         case PackageFetchOption.IncludeLatestAndPrerelease:
           {
-            var pi = typeof (IPackage).GetProperty("IsAbsoluteLatestVersion");
+            var pi = typeof(IPackage).GetProperty("IsAbsoluteLatestVersion");
             if (pi == null) goto case PackageFetchOption.IncludeAll;
-              return Expression.And(Expression.Property(param, pi), idFilter);
+            return Expression.And(Expression.Property(param, pi), idFilter);
           }
         default:
           throw new Exception("Unexpected PackageFetchOption: " + fetchOption);

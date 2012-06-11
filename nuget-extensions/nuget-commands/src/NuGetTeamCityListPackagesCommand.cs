@@ -42,7 +42,8 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       //todo: optimize query to return only required set of versions.
       foreach (var req in new[]
                               {
-                                new { Data = request.Where(x => x.VersionSpec == null).ToArray(), FetchOption = PackageFetchOption.IncludeLatest }, 
+                                new { Data = request.Where(x => x.VersionSpec == null && x.IncludePrerelease).ToArray(), FetchOption = PackageFetchOption.IncludeLatestAndPrerelease }, 
+                                new { Data = request.Where(x => x.VersionSpec == null && !x.IncludePrerelease).ToArray(), FetchOption = PackageFetchOption.IncludeLatest }, 
                                 new { Data = request.Where(x => x.VersionSpec != null).ToArray(), FetchOption = PackageFetchOption.IncludeAll }
                               })
       {
@@ -158,6 +159,14 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
           });
     }
 
+    [XmlAttribute("include-prerelease")]
+    public string IncludePrereleaseInternal { get; set; }
+
+    [XmlIgnore]
+    public bool IncludePrerelease
+    {
+      get { return "True".Equals(IncludePrereleaseInternal ?? "", StringComparison.InvariantCultureIgnoreCase); }
+    }
 
     [XmlAttribute("id")]
     public string Id { get; set; }

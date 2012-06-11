@@ -109,5 +109,25 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.True(doc.Contains("version=\"2.2.2"));
       Assert.True(doc.Contains("version=\"1.1.1"));      
     }
+
+    [TestCase(NuGetVersion.NuGet_1_8)]
+    public void TestCommand_TeamListPublic_Local_Prerelease(NuGetVersion version)
+    {
+      var doc = DoTestWithSpec(version, Serialize(p(Files.GetLocalFeed_1_8(), "Web", includePrerelease: true))).OuterXml;
+      Assert.True(doc.Contains("version=\"2.2.2"));
+      Assert.True(doc.Contains("version=\"1.1.1"));      
+      Assert.True(doc.Contains("version=\"4.0.1-beta"));      
+      Assert.True(doc.Contains("version=\"2.2.2-rc"));      
+    }
+        
+    [TestCase(NuGetVersion.NuGet_1_8)]
+    public void TestCommand_TeamListPublic_Web_Prerelease(NuGetVersion version)
+    {
+      var doc = DoTestWithSpec(version, Serialize(p2("EntityFramework", includePrerelease: true)));
+      Assert.True(doc.OuterXml.Contains("version=\"5.0.0-rc"));
+
+      Assert.IsTrue(PackagesCount(doc, "EntityFramework") == 1);
+    }
+
   }
 }

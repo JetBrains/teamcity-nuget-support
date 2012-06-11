@@ -29,6 +29,9 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
       [XmlAttribute("versions")]
       public string Versions { get; set; }
+
+      [XmlAttribute("include-prerelease")]
+      public string IncludePrerelease { get; set; }
     }
 
 
@@ -47,24 +50,25 @@ namespace JetBrains.TeamCity.NuGet.Tests
       return new string(Encoding.UTF8.GetChars(ms.GetBuffer()));
     }
 
-    protected static Package p(string source, string id, string version = null)
+    protected static Package p(string source, string id, string version = null, bool? includePrerelease = null)
     {
       return new Package
                {
                  Source = source,
                  Id = id,
-                 Versions = version
+                 Versions = version,
+                 IncludePrerelease = includePrerelease == null ? null : includePrerelease.ToString()
                };
     }
 
-    protected static Package p1(string id, string version = null)
+    protected static Package p1(string id, string version = null, bool? includePrerelease = null)
     {
-      return p(NuGetConstants.DefaultFeedUrl_v1, id, version);
+      return p(NuGetConstants.DefaultFeedUrl_v1, id, version, includePrerelease);
     }
 
-    protected static Package p2(string id, string version = null)
+    protected static Package p2(string id, string version = null, bool? includePrerelease = null)
     {
-      return p(NuGetConstants.DefaultFeedUrl_v2, id, version);
+      return p(NuGetConstants.DefaultFeedUrl_v2, id, version, includePrerelease);
     }
 
     protected static int PackagesCount(XmlDocument doc, string id)
