@@ -25,4 +25,5 @@ public class TriggerBean {
   public String getSourceKey() {  return TriggerConstants.SOURCE;   }
   public String getPackageKey() {  return TriggerConstants.PACKAGE;   }
   public String getVersionKey() {  return TriggerConstants.VERSION;   }
+  public String getPrereleaseKey() {  return TriggerConstants.INCLUDE_PRERELEASE;   }
 }

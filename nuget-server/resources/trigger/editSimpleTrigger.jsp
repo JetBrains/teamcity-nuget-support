@@ -84,3 +84,11 @@
   </c:otherwise>
 </c:choose>
 
+<tr>
+  <th>Options:</th>
+  <td>
+    <props:checkboxProperty name="${ib.prereleaseKey}"/> Include pre-release packages
+    <span class="smallNote">Trigger build if pre-release package version is detected. Supported for NuGet 1.8 and newer.</span>
+  </td>
+</tr>
+
