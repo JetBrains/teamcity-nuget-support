@@ -28,6 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -88,9 +89,9 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
       Assert.assertTrue(nAll.size() > nFilter.size());
       Assert.assertTrue(nYouTrack.size() > 0);
     } else {
-      Assert.assertTrue(nAll.size() == 1);
-      Assert.assertTrue(nYouTrack.size() == 1);
-      Assert.assertTrue(nFilter.size() > 0);
+      Assert.assertTrue(nAll.size() == 1, new ArrayList<SourcePackageInfo>(nAll).toString());
+      Assert.assertTrue(nYouTrack.size() == 1, new ArrayList<SourcePackageInfo>(nYouTrack).toString());
+      Assert.assertTrue(nFilter.size() > 0, new ArrayList<SourcePackageInfo>(nFilter).toString());
     }
   }
 }
