@@ -103,7 +103,7 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
             final SourcePackageReference ref = e.getKey();
             final CheckablePackage p = map.get(ref);
             if (p != null && !e.getValue().isEmpty()) {
-              p.setResult(CheckResult.succeeded(e.getValue()));
+              p.setResult(CheckResult.fromResult(e.getValue()));
               map.remove(ref);
             }
           }

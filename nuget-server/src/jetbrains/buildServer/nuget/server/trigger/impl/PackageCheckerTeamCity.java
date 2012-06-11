@@ -74,7 +74,7 @@ public class PackageCheckerTeamCity implements PackageChecker {
             for (FeedPackage aPackage : packages) {
               infos.add(new SourcePackageInfo(entry.getPackage().getSource(), packageId, aPackage.getInfo().getVersion()));
             }
-            entry.setResult(CheckResult.succeeded(infos));
+            entry.setResult(CheckResult.fromResult(infos));
           } catch (Throwable e) {
             LOG.warn("Failed to check changes of " + packageId + ". " + e.getMessage(), e);
             entry.setResult(CheckResult.failed(e.getMessage()));

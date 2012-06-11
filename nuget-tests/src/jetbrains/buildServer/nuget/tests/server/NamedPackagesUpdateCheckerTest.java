@@ -45,7 +45,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -110,7 +109,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       allowing(myRootUrlHolder).getRootUrl(); will(returnValue("http://some-teamcity-with-nuget.org/jonnyzzz"));
 
       oneOf(chk).checkPackage(with(req(nugetFakePath, "http://some-teamcity-with-nuget.org/jonnyzzz/a/b/c", "NUnit", null)));
-      will(returnValue(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList())));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(store).getValue("hash"); will(returnValue(null));
       oneOf(store).putValue(with(equal("hash")), with(any(String.class)));
@@ -125,7 +124,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   public void test_check_first_time_should_not_trigger() {
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(store).getValue("hash"); will(returnValue(null));
       oneOf(store).putValue(with(equal("hash")), with(any(String.class)));
@@ -141,7 +140,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     myIsWindows = false;
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(reqTC(null, "NUnit")));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(store).getValue("hash"); will(returnValue(null));
       oneOf(store).putValue(with(equal("hash")), with(any(String.class)));
@@ -160,10 +159,10 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     params.put(TriggerConstants.SOURCE, source);
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, source, "Common", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo(source, "Common", "1.0.0.21")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo(source, "Common", "1.0.0.21")))));
 
       oneOf(chk).checkPackage(with(req(nugetFakePath, source, "Common", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(
+      will(returnValue(CheckResult.fromResult(Arrays.asList(
               new SourcePackageInfo(source, "Common", "1.0.0.21"),
               new SourcePackageInfo(source, "Common", "2.0.0.22")
       ))));
@@ -196,10 +195,10 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     params.put(TriggerConstants.SOURCE, source);
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, source, "Common", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo(source, "Common", "1.0.0.21")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo(source, "Common", "1.0.0.21")))));
 
       oneOf(chk).checkPackage(with(req(nugetFakePath, source, "Common", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(
+      will(returnValue(CheckResult.fromResult(Arrays.asList(
               new SourcePackageInfo(source, "Common", "1.0.0.21"),
               new SourcePackageInfo(source, "Common", "2.0.0.22")
       ))));
@@ -229,7 +228,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     params.put(TriggerConstants.SOURCE, source);
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, source, "Common", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(
+      will(returnValue(CheckResult.fromResult(Arrays.asList(
               new SourcePackageInfo(source, "Common", "1.0.0.21"),
               new SourcePackageInfo(null, "Common", "2.0.0.22"),
               new SourcePackageInfo("s2", "C3ommon", "2.0.0.22"),
@@ -254,10 +253,10 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   public void test_check_should_not_trigger_twice() {
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(store).getValue("hash"); will(returnValue("v2aaa"));
       oneOf(store).putValue("hash", "v2|s:src|p:pkg|v:5.6.87");
@@ -275,10 +274,10 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   public void test_check_should_not_trigger_from_older_hash() {
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(store).getValue("hash"); will(returnValue("aaa"));
       oneOf(store).putValue("hash", "v2|s:src|p:pkg|v:5.6.87");
@@ -297,10 +296,10 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     myIsWindows = false;
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(reqTC(null, "NUnit")));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(chk).checkPackage(with(reqTC(null, "NUnit")));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(store).getValue("hash"); will(returnValue("v2aaa"));
       oneOf(store).putValue("hash", "v2|s:src|p:pkg|v:5.6.87");
@@ -318,13 +317,13 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   public void test_check_should_not_trigger_after_error() {
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(chk).checkPackage(with(req(nugetFakePath)));
       will(throwException(new RuntimeException("Failed to execute command")));
 
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
-      will(returnValue(CheckResult.succeeded(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
 
       oneOf(store).getValue("hash"); will(returnValue("v2aaa"));
       oneOf(store).putValue("hash", "v2|s:src|p:pkg|v:5.6.87");

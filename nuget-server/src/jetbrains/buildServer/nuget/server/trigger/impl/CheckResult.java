@@ -30,25 +30,31 @@ import java.util.Collection;
  *         Date: 30.09.11 15:40
  */
 public class CheckResult {
-  private final Collection<SourcePackageInfo> myInfos;
-  private final String myError;
+  @Nullable private final Collection<SourcePackageInfo> myInfos;
+  @Nullable private final String myError;
 
-  private CheckResult(Collection<SourcePackageInfo> infos, String error) {
+  private CheckResult(@Nullable final Collection<SourcePackageInfo> infos,
+                      @Nullable String error) {
     myInfos = infos;
     myError = error;
   }
 
+  @NotNull
   public static CheckResult failed(@Nullable final String error) {
     return new CheckResult(null, error == null ? "Error" : error);
   }
 
-  public static CheckResult succeeded(@NotNull final Collection<SourcePackageInfo> infos) {
+  @NotNull
+  public static CheckResult fromResult(@NotNull final Collection<SourcePackageInfo> infos) {
+    if (infos.isEmpty()) {
+      return failed("Package was not found in the feed");
+    }
     return new CheckResult(new ArrayList<SourcePackageInfo>(infos), null);
   }
 
   @NotNull
   public Collection<SourcePackageInfo> getInfos() {
-    if (myError != null) throw new RuntimeException(myError);
+    if (myError != null || myInfos == null) throw new RuntimeException(myError);
     return myInfos;
   }
 
@@ -79,8 +85,7 @@ public class CheckResult {
 
   @Override
   public String toString() {
-    String error = getError();
-    if (error != null) return "CheckResult{ " + error + " }";
+    if (myError != null || myInfos == null) return "CheckResult{ " + myError + " }";
     else return "CheckResult{ " + StringUtil.join(myInfos, TO_STRING, ", ");
   }
 

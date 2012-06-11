@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
@@ -27,10 +28,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -131,8 +129,9 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     Assert.assertEquals(myManager.getItemsToCheckNow().size(), 1);
   }
 
-  private void setResult(PackageCheckEntry next) {
-    next.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
+  private void setResult(@NotNull PackageCheckEntry next) {
+    final SourcePackageReference ref = next.getPackage();
+    next.setResult(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo(ref.getSource(), ref.getPackageId(), "42.0"))));
   }
 
   @Test
@@ -201,7 +200,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     Assert.assertTrue(pp.getNextCheckTime() < pp.getRemoveTime());
 
     myTime += 19999;
-    pp.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
+    pp.setResult(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87"))));
     Assert.assertTrue(pp.getNextCheckTime() <= pp.getRemoveTime());
   }
 
@@ -220,7 +219,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
     //package should wait for result
     myManager.cleaupObsolete();
     n = myManager.getItemsToCheckNow().iterator().next();
-    n.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
+    n.setResult(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList()));
 
     //package should be available after that to let trigger get the data
     Assert.assertTrue(n.getRemoveTime() > myTime);

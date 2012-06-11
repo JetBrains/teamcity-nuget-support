@@ -156,7 +156,7 @@ public class PackageCheckEntryTest extends BaseTestCase {
     final long r1 = e.getRemoveTime();
     final long c1 = e.getNextCheckTime();
     myNow += 11123L;
-    e.setResult(CheckResult.succeeded(Collections.<SourcePackageInfo>emptyList()));
+    e.setResult(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList()));
 
     Assert.assertTrue(r1 == e.getRemoveTime(), "data update should increment request life");
     Assert.assertTrue(c1 != e.getNextCheckTime(), "next check time should be updated");

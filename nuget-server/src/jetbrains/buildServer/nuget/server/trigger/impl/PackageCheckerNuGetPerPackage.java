@@ -73,7 +73,7 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
               if (infos == null || infos.isEmpty()) {
                 packageCheckEntry.setResult(CheckResult.failed("Package was not found in the feed"));
               } else {
-                packageCheckEntry.setResult(CheckResult.succeeded(infos));
+                packageCheckEntry.setResult(CheckResult.fromResult(infos));
               }
             } catch (Throwable t) {
               LOG.warn("Failed to check changes of " + packageId + ". " + t.getMessage(), t);
