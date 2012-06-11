@@ -69,8 +69,11 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     @NotNull  final String newHash = myCalculator.serializeHashcode(result.getInfos());
     @Nullable final String oldHash = storage.getValue(KEY);
 
-    LOG.debug("Recieved packages hash: " + newHash);
-    LOG.debug("          old hash was: " + oldHash);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Package: " + checkRequest.getPackage().toString());
+      LOG.debug("Recieved packages hash: " + newHash);
+      LOG.debug("          old hash was: " + oldHash);
+    }
 
     if (!newHash.equals(oldHash)) {
       storage.putValue(KEY, newHash);
