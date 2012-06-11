@@ -16,14 +16,18 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourCachedNuGetRunnerPath = PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
+    private static readonly Lazy<string> ourLocalFeed_1_8 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.8");
     private static readonly Lazy<string> ourCachedNuGet_CI_Last = new Lazy<string>(() => FetchLatestNuGetPackage("bt4"));
-    private static readonly Lazy<string> ourCachedNuGet_CI_17 = new Lazy<string>(() => FetchLatestNuGetPackage("bt32"));
-    private static readonly Lazy<string> ourCachedNuGet_CI_18 = new Lazy<string>(() => FetchLatestNuGetPackage("bt33"));
     private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline); 
 
     public static string GetLocalFeed(NuGetVersion version)
     {
       return version.Is_1_4() ? ourLocalFeed_1_4.Value : ourLocalFeed.Value;
+    }
+
+    public static string GetLocalFeed_1_8()
+    {
+      return ourLocalFeed_1_8.Value;
     }
     
     public static string NuGetExe_1_4 { get { return ourCachedNuGetExe_1_4.Value; } }
@@ -32,8 +36,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string NuGetExe_1_7 { get { return ourCachedNuGetExe_1_7.Value; } }
     public static string NuGetExe_1_8 { get { return ourCachedNuGetExe_1_8.Value; } }
     public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
-    public static string LocalFeed { get { return ourLocalFeed.Value; } }
-
 
     public static string GetNuGetExe(NuGetVersion version)
     {
@@ -94,16 +96,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
       string nugetPath = Path.Combine(temp, "NuGet.CommandLine/tools/NuGet.Exe");
       Assert.IsTrue(File.Exists(nugetPath));
       return nugetPath;
-    }
-
-    public static IEnumerable<string> GetNuGetPackageFiles()
-    {
-      return Directory.GetFiles(ourLocalFeed.Value, "*.nupkg");
-    }
-
-    public static string WebPackage_1_1_1
-    {
-      get { return Path.Combine(ourLocalFeed.Value, "Web.1.1.1.nupkg"); }
     }
   }
 
