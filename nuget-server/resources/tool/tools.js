@@ -51,10 +51,6 @@ BS.NuGet.Tools = {
       $('installNuGetApplyButton').disabled = 'disabled';
     },
 
-    enableSubmit : function() {
-      $('installNuGetApplyButton').disabled = '';
-    },
-
     refreshForm : function(fresh) {
       var that = this;
       this.disableSubmit();
@@ -64,6 +60,7 @@ BS.NuGet.Tools = {
         BS.Util.hide($('nugetInstallFormLoading'));
         BS.Util.show($('nugetInstallFormResresh'));
         that.showCentered();
+        $('installNuGetApplyButton').disabled = '';
       });
       return false;
     },
