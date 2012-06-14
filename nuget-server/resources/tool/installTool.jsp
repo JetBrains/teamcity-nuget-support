@@ -29,12 +29,12 @@
         <input type="hidden" name="whatToDo" value="install" />
         <forms:select name="toolId" style="width:15em;">
           <forms:option value="">-- Please choose version --</forms:option>
-          <optgroup label="Public builds">
+          <optgroup label="Public NuGet.CommandLine">
             <c:forEach var="t" items="${installTools.tools}">
               <forms:option value="${t.id}"><c:out value="${t.version}"/></forms:option>
             </c:forEach>
           </optgroup>
-          <optgroup label="Custom">
+          <optgroup label="Other">
             <forms:option value="custom">Upload</forms:option>
           </optgroup>
         </forms:select>
@@ -42,34 +42,19 @@
     </tr>
 
     <tr id="nugetUploadRow">
-      <th><label for="nugetUploadControl">Select NuGet to upload</label></th>
+      <th><label for="nugetUploadControl">Upload<l:star/>:</label></th>
       <td>
         <forms:file name="nugetUploadControl"/>
         <span class="smallNote">
-          You may download a custom build of NuGet.CommandLine package and upload it here.
-          Make sure package is named like <em>NuGet.CommandLine.x.y.z.nupkg</em>
+          Specify path to NuGet package with <em>tools/NuGet.exe</em> inside.
+          <br />
+          Check for <strong>NuGet.CommandLine</strong> package at <a href="http://nuget.org" target="_blank">NuGet.org</a>
         </span>
       </td>
     </tr>
-
-    <script type="text/javascript">
-      (function() {
-        var updateUploadRow = function() {
-          if ($j('#toolId').val() == 'custom') {
-            BS.Util.show($('nugetUploadRow'));
-          } else {
-            BS.Util.hide($('nugetUploadRow'));
-          }
-        };
-
-        $j('#toolId').change(updateUploadRow);
-        updateUploadRow();
-      })();
-    </script>
-
-    <c:if test="${installTools.showErrors}">
     <tr>
-      <td colspan="2">
+      <td></td>
+      <td>
         <c:choose>
           <c:when test="${not empty installTools.errorText}">
             <div class="error" style="margin-left: 0">
@@ -85,15 +70,30 @@
             <div>No other NuGet command line versions available</div>
           </c:when>
         </c:choose>
-      </td>
-    </tr>
-    </c:if>
 
-    <tr>
-      <td></td>
-      <td>
+        <span class="smallNote">
+          Select one of the following NuGet versions.
+          <br />
+          Installed NuGet will be distibuted to all build agents.
+        </span>
         <span class="error" id="error_toolId"></span>
       </td>
     </tr>
   </table>
+
+  <script type="text/javascript">
+    (function() {
+      var updateUploadRow = function() {
+        if ($j('#toolId').val() == 'custom') {
+          BS.Util.show($('nugetUploadRow'));
+        } else {
+          BS.Util.hide($('nugetUploadRow'));
+        }
+      };
+
+      $j('#toolId').change(updateUploadRow);
+      updateUploadRow();
+    })();
+  </script>
+
 </div>

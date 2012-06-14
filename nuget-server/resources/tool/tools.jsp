@@ -63,7 +63,7 @@
   </c:if>
   <div style="margin-top: 1em;">
     <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.show()">
-      Download NuGet
+      Add NuGet
     </forms:addButton>
   </div>
 </bs:refreshable>
@@ -88,7 +88,7 @@
 
   <div class="popupSaveButtonsBlock">
     <forms:cancel onclick="BS.NuGet.Tools.InstallPopup.closeToolsDialog();"/>
-    <forms:submit id="installNuGetApplyButton" label="Install"/>
+    <forms:submit id="installNuGetApplyButton" label="Add"/>
     <input type="button" class="btn cancel" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" value="Refresh"/>
     <forms:saving id="installNuGetApplyProgress"/>
     <div class="clr"></div>
