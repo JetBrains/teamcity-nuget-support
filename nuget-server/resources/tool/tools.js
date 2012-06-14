@@ -88,6 +88,7 @@ BS.NuGet.Tools = {
           var wereErrors = BS.XMLResponse.processErrors(responseXML, {}, form.propertiesErrorsHandler);
           BS.ErrorsAwareListener.onCompleteSave(form, responseXML, err);
 
+          BS.Util.hide($('installNuGetApplyProgress'));
           if (!wereErrors) {
             BS.NuGet.Tools.refreshPackagesList();
             form.close();
