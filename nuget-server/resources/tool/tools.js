@@ -79,16 +79,9 @@ BS.NuGet.Tools = {
     },
 
     save : function() {
+      try {
       BS.Util.show($('installNuGetApplyProgress'));
-      //here we do not let ajax work, we use iframe as resoult output
-      //to overcome complicated IE bugs.
-      //In the iframe we return js that continues execution.
-      return true;
-    },
-
-    onFormIFrameReady : function(responseText) {
-      var form = BS.NuGet.Tools.InstallPopup;
-      var listener = OO.extend(BS.ErrorsAwareListener, {
+      BS.MultipartFormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
         onCompleteSave: function(form, responseXML, err) {
           var wereErrors = BS.XMLResponse.processErrors(responseXML, {}, form.propertiesErrorsHandler);
           BS.ErrorsAwareListener.onCompleteSave(form, responseXML, err);
@@ -101,15 +94,9 @@ BS.NuGet.Tools = {
             BS.Util.reenableForm(form.formElement());
           }
         }
-      });
-
-      var responseXML = $j.parseXML(responseText);
-      listener.onBeginSave(form);
-      var err = BS.XMLResponse.processErrors(responseXML, listener);
-      listener.onCompleteSave(form, responseXML, err);
-
-      //to make sure browser will not re-submit form on refresh
-      $('nugetInstallFormFrame').src = form.formElement().action + '?iframe=2';
+      }));
+      } catch (e) {alert(e);}
+      return false;
     }
   }))
 };

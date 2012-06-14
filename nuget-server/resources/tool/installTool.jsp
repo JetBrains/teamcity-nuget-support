@@ -45,11 +45,7 @@
     <tr id="nugetUploadRow">
       <th><label for="nugetUploadControl">Select NuGet to upload</label></th>
       <td>
-
-        <input type="hidden" id="nugetUploadPathField" name="nugetUploadPathField" value=""/>
-        <input name="nugetUploadControl" id="nugetUploadControl" type="file"/>
-        <span id="nugetUploadPath"></span>
-
+        <forms:file name="nugetUploadControl"/>
         <span class="smallNote">
           You may download a custom build of NuGet.CommandLine package and upload it here.
           Make sure package is named like <em>NuGet.CommandLine.x.y.z.nupkg</em>
@@ -69,12 +65,6 @@
 
         $j('#toolId').change(updateUploadRow);
         updateUploadRow();
-
-        $j('#nugetUploadControl').change(function() {
-          var fileName = $j('#nugetUploadControl').val().split(/(\\|\/)/g).pop();
-          $j('#nugetUploadPath').text(fileName);
-          $j('#nugetUploadPathField').val(fileName);
-        });
       })();
     </script>
 

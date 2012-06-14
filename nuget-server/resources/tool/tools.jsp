@@ -23,6 +23,8 @@
 <bs:refreshable containerId="nugetPackagesList" pageUrl="${actualUpdateUrl}">
 <c:set var="installedPluginsCount" value="${fn:length(tools)}"/>
 
+<bs:linkScript>/js/bs/multipart.js</bs:linkScript>
+
 <p style="width: 40em;">
   Listed NuGet versions are automatically distributed to all build agents and can be used in NuGet-related runners.
 </p>
@@ -93,11 +95,6 @@
   </div>
 </bs:modalDialog>
 
-<iframe id="nugetInstallFormFrame" name="nugetInstallFormFrame" style="display:none;" src="${actualInstallerUrl}?iframe=1"></iframe>
 <script type="text/javascript">
   BS.NuGet.Tools.installUrl = "<bs:forJs>${actualInstallerUrl}</bs:forJs>";
-  $j("#nugetInstallForm")
-          .attr('enctype', "multipart/form-data")
-          .attr('target', "nugetInstallFormFrame")
-          .attr('method', "post");
 </script>

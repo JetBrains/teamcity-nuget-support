@@ -28,24 +28,19 @@ import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jdom.Element;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 11.08.11 12:12
  */
-public class InstallToolController extends BaseController {
+public class InstallToolController extends BaseFormXmlController {
   private static final Logger LOG = Logger.getInstance(InstallToolController.class.getName());
 
   private final String myPath;
@@ -74,23 +69,7 @@ public class InstallToolController extends BaseController {
     return myPath;
   }
 
-  @Override
-  protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
-    if (request.getParameter("iframe") != null) return simpleView("iframe");
-
-    if (isPost(request)) {
-      return doPost(request, response);
-    }
-
-    if (isGet(request)) {
-      return doGet(request, response);
-    }
-
-    //unknown request type
-    return null;
-  }
-
-  private  ModelAndView doGet(@NotNull final HttpServletRequest request,
+  protected ModelAndView doGet(@NotNull final HttpServletRequest request,
                               @NotNull final HttpServletResponse response) {
     final InstallToolBean bean = new InstallToolBean();
     final ToolsPolicy pol =
@@ -112,20 +91,15 @@ public class InstallToolController extends BaseController {
     return mv;
   }
 
-  protected ModelAndView doPost(@NotNull final HttpServletRequest request,
-                                @NotNull final HttpServletResponse response) {
+  @Override
+  protected void doPost(@NotNull final HttpServletRequest request,
+                        @NotNull final HttpServletResponse response,
+                        @NotNull final Element xmlResponse) {
+
     final ActionErrors ae = new ActionErrors();
     doPost(request, ae);
 
-    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/installToolAjax.jsp"));
-
-    final Element responseXml = XmlResponseUtil.newXmlResponse();
-    XmlResponseUtil.writeErrors(responseXml, ae);
-    final String responseText = new XMLOutputter(Format.getCompactFormat()).outputString(responseXml);
-
-    mv.getModel().put("hasToolErrors", ae.hasErrors());
-    mv.getModel().put("toolErrorsText", responseText);
-    return mv;
+    ae.serialize(xmlResponse);
   }
 
   private void doPost(@NotNull final HttpServletRequest request,
@@ -140,27 +114,19 @@ public class InstallToolController extends BaseController {
     final String whatToDo = request.getParameter("whatToDo");
     try {
       if ("install".equals(whatToDo)) {
-        if ("custom".equals(toolId) && request instanceof MultipartHttpServletRequest) {
+        if ("custom".equals(toolId)) {
           LOG.debug("Processing NuGet commandline upload.");
 
-          final String name = request.getParameter("nugetUploadPathField");
-          if (StringUtil.isEmptyOrSpaces(name)) {
-            throw new ToolException("No file was uploaded.");
-          }
-          final MultipartFile file = ((MultipartHttpServletRequest) request).getFile("nugetUploadControl");
+          final String file = request.getParameter("nugetUploadControl");
           if (file == null) {
             throw new ToolException("No file was uploaded.");
           }
+          final File tempFile = new File(file);
 
           try {
-            File tempFile = FileUtil.createTempFile("nuget.commandline", ".nupkg");
-            file.transferTo(tempFile);
-            myToolsManager.installTool(name, tempFile);
+            myToolsManager.installTool(tempFile.getName(), tempFile);
+          } finally {
             FileUtil.delete(tempFile);
-          } catch (IOException e) {
-            String msg = "Failed to upload NuGet commandline package. " + e.getMessage();
-            LOG.warn(msg, e);
-            throw new ToolException(msg);
           }
         } else {
           myToolsManager.installTool(toolId);
