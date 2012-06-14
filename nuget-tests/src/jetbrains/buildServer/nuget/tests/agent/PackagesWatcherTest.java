@@ -85,7 +85,7 @@ public class PackagesWatcherTest extends BaseTestCase {
       oneOf(watcher).addNewArtifactsPath(with(new NuGetUploadPathMatcher(tempDir)));
     }});
 
-    collector.addPackage("aaa", "1.2.4", null);
+    collector.addDependenyPackage("aaa", "1.2.4", null);
     multicaster.beforeBuildFinish(build, BuildFinishedStatus.FINISHED_FAILED);
 
     m.assertIsSatisfied();
@@ -93,7 +93,7 @@ public class PackagesWatcherTest extends BaseTestCase {
 
   @Test
   public void test_clean_packages_on_build_start() {
-    collector.addPackage("aaa", "bbb", null);
+    collector.addDependenyPackage("aaa", "bbb", null);
     multicaster.buildStarted(build);
 
     Assert.assertTrue(collector.getPackages().isEmpty());

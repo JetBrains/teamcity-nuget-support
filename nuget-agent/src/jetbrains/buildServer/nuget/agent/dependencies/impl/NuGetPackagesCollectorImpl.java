@@ -33,7 +33,7 @@ public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
   private final TreeSet<PackageInfo> myPackages = new TreeSet<PackageInfo>();
 
 
-  public void addPackage(@NotNull String packageId, @NotNull String version, @Nullable String allowedVersions) {
+  public void addDependenyPackage(@NotNull String packageId, @NotNull String version, @Nullable String allowedVersions) {
     myPackages.add(new PackageInfo(packageId, version));
   }
 

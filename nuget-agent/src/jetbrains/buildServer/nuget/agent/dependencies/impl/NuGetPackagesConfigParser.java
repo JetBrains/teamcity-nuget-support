@@ -50,7 +50,7 @@ public class NuGetPackagesConfigParser {
               return xmlElementInfo.noDeep();
 
 
-            callback.addPackage(
+            callback.addDependenyPackage(
                     id,
                     version,
                     xmlElementInfo.getAttribute("allowedVersions"));
