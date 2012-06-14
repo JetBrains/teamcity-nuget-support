@@ -46,7 +46,7 @@
       <th><label for="nugetUploadControl">Select NuGet to upload</label></th>
       <td>
 
-        <input type="hidden" id="nugetUploadPathField" name="nugetUploadPath" value=""/>
+        <input type="hidden" id="nugetUploadPathField" name="nugetUploadPathField" value=""/>
         <input name="nugetUploadControl" id="nugetUploadControl" type="file"/>
         <span id="nugetUploadPath"></span>
 

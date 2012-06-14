@@ -93,7 +93,7 @@
   </div>
 </bs:modalDialog>
 
-<iframe id="nugetInstallFormFrame" name="nugetInstallFormFrame" style="display:none;"></iframe>
+<iframe id="nugetInstallFormFrame" name="nugetInstallFormFrame" style="display:none;" src="${actualInstallerUrl}?iframe=1"></iframe>
 <script type="text/javascript">
   BS.NuGet.Tools.installUrl = "<bs:forJs>${actualInstallerUrl}</bs:forJs>";
   $j("#nugetInstallForm")

@@ -107,7 +107,9 @@ BS.NuGet.Tools = {
       listener.onBeginSave(form);
       var err = BS.XMLResponse.processErrors(responseXML, listener);
       listener.onCompleteSave(form, responseXML, err);
-      return false;
+
+      //to make sure browser will not re-submit form on refresh
+      $('nugetInstallFormFrame').src = form.formElement().action + '?iframe=2';
     }
   }))
 };
