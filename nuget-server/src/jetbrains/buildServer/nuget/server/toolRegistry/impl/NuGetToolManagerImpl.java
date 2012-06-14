@@ -85,6 +85,10 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     myInstaller.installNuGet(toolId);
   }
 
+  public void installTool(@NotNull String toolName, @NotNull File toolFile) throws ToolException {
+    myInstaller.installNuGet(toolName, toolFile);
+  }
+
   public void removeTool(@NotNull String toolId) {
     myInstalled.removeTool(toolId);
   }

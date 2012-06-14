@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
+import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -30,11 +31,14 @@ import org.jdom.Element;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -72,6 +76,8 @@ public class InstallToolController extends BaseController {
 
   @Override
   protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+    if (request.getParameter("iframe") != null) return simpleView("iframe");
+
     if (isPost(request)) {
       return doPost(request, response);
     }
@@ -134,9 +140,28 @@ public class InstallToolController extends BaseController {
     final String whatToDo = request.getParameter("whatToDo");
     try {
       if ("install".equals(whatToDo)) {
-
         if ("custom".equals(toolId) && request instanceof MultipartHttpServletRequest) {
           LOG.debug("Processing NuGet commandline upload.");
+
+          final String name = request.getParameter("nugetUploadPathField");
+          if (StringUtil.isEmptyOrSpaces(name)) {
+            throw new ToolException("No file was uploaded.");
+          }
+          final MultipartFile file = ((MultipartHttpServletRequest) request).getFile("nugetUploadControl");
+          if (file == null) {
+            throw new ToolException("No file was uploaded.");
+          }
+
+          try {
+            File tempFile = FileUtil.createTempFile("nuget.commandline", ".nupkg");
+            file.transferTo(tempFile);
+            myToolsManager.installTool(name, tempFile);
+            FileUtil.delete(tempFile);
+          } catch (IOException e) {
+            String msg = "Failed to upload NuGet commandline package. " + e.getMessage();
+            LOG.warn(msg, e);
+            throw new ToolException(msg);
+          }
         } else {
           myToolsManager.installTool(toolId);
         }

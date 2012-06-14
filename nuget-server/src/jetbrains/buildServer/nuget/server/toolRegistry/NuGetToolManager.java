@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.Collection;
 
 /**
@@ -57,6 +58,14 @@ public interface NuGetToolManager {
    */
   void installTool(@NotNull String toolId) throws ToolException;
 
+
+  /**
+   * Installs tool from a given .nupkg file
+   * @param toolName name of the NuGet Commandline package. Expected to be informat NuGet.CommandLine.x.y.z*.nupkg
+   * @param toolFile path to Tool file to be copied as the result of install
+   * @throws ToolException in case file is wrong
+   */
+  void installTool(@NotNull final String toolName, @NotNull File toolFile) throws ToolException;
 
   /**
    * Removes tool from server and build agents

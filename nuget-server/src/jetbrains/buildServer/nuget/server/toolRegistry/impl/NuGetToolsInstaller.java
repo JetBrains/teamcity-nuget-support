@@ -49,6 +49,23 @@ public class NuGetToolsInstaller {
     myWatcher = watcher;
   }
 
+  public void installNuGet(@NotNull final String toolName,
+                           @NotNull final File toolFile) throws ToolException {
+    LOG.info("Start installing package " + toolName + " from file: " + toolFile);
+
+    if (!toolName.toLowerCase().startsWith(myState.getToolPackageName().toLowerCase() + ".")) {
+      throw new ToolException("NuGet package Id should be " + myState.getToolPackageName());
+    }
+
+    if (!toolName.toLowerCase().endsWith(".nupkg".toLowerCase())) {
+      throw new ToolException("NuGet package file must have extension .nupkg");
+    }
+
+    final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolName);
+    publishDownloadedPackage(dest, toolFile);
+    myWatcher.checkNow();
+  }
+
   public void installNuGet(@NotNull final String packageId) throws ToolException {
     LOG.info("Start installing package " + packageId);
 
@@ -92,6 +109,10 @@ public class NuGetToolsInstaller {
   }
 
   private void publishDownloadedPackage(File dest, File tmp) throws ToolException {
+    if (dest.isFile()) {
+      throw new ToolException("Tool with such version already exists");
+    }
+
     try {
       FileUtil.copy(tmp, dest);
       FileUtil.delete(tmp);
