@@ -59,7 +59,8 @@ public class ToolSelectorController extends BaseController {
   }
 
   @Override
-  protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
+                                  @NotNull final HttpServletResponse response) throws Exception {
     final String name = safe(request.getParameter("name"));
     String value = parseValue(request, "value", name);
     final Collection<ToolInfo> tools = getTools();
@@ -108,13 +109,16 @@ public class ToolSelectorController extends BaseController {
     return result;
   }
 
+  @NotNull
   private static String safe(@Nullable String s) {
-    if (StringUtil.isEmptyOrSpaces(s)) return "";
+    if (s == null || StringUtil.isEmptyOrSpaces(s)) return "";
     return s;
   }
 
   @NotNull
-  private String parseValue(HttpServletRequest request, final String requestName, String propertyName) {
+  private String parseValue(@NotNull final HttpServletRequest request,
+                            @NotNull final String requestName,
+                            @NotNull final String propertyName) {
     String value = null;
 
     final BasePropertiesBean bean = (BasePropertiesBean)request.getAttribute("propertiesBean");
