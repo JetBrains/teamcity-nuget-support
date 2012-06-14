@@ -27,7 +27,10 @@ import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jdom.Element;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +41,7 @@ import java.util.HashMap;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 11.08.11 12:12
  */
-public class InstallToolController extends BaseFormXmlController {
+public class InstallToolController extends BaseController {
   private static final Logger LOG = Logger.getInstance(InstallToolController.class.getName());
 
   private final String myPath;
@@ -68,8 +71,21 @@ public class InstallToolController extends BaseFormXmlController {
   }
 
   @Override
-  protected ModelAndView doGet(@NotNull final HttpServletRequest request,
-                               @NotNull final HttpServletResponse response) {
+  protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+    if (isPost(request)) {
+      return doPost(request, response);
+    }
+
+    if (isGet(request)) {
+      return doGet(request, response);
+    }
+
+    //unknown request type
+    return null;
+  }
+
+  private  ModelAndView doGet(@NotNull final HttpServletRequest request,
+                              @NotNull final HttpServletResponse response) {
     final InstallToolBean bean = new InstallToolBean();
     final ToolsPolicy pol =
             StringUtil.isEmptyOrSpaces(request.getParameter("fresh"))
@@ -90,22 +106,40 @@ public class InstallToolController extends BaseFormXmlController {
     return mv;
   }
 
-  @Override
-  protected void doPost(@NotNull final HttpServletRequest request,
-                        @NotNull final HttpServletResponse response,
-                        @NotNull final Element xmlResponse) {
-    String toolId = request.getParameter("toolId");
+  protected ModelAndView doPost(@NotNull final HttpServletRequest request,
+                                @NotNull final HttpServletResponse response) {
+    final ActionErrors ae = new ActionErrors();
+    doPost(request, ae);
+
+    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/installToolAjax.jsp"));
+
+    final Element responseXml = XmlResponseUtil.newXmlResponse();
+    XmlResponseUtil.writeErrors(responseXml, ae);
+    final String responseText = new XMLOutputter(Format.getCompactFormat()).outputString(responseXml);
+
+    mv.getModel().put("hasToolErrors", ae.hasErrors());
+    mv.getModel().put("toolErrorsText", responseText);
+    return mv;
+  }
+
+  private void doPost(@NotNull final HttpServletRequest request,
+                      @NotNull final ActionErrors ae) {
+    final String toolId = request.getParameter("toolId");
+
     if (StringUtil.isEmptyOrSpaces(toolId)) {
-      ActionErrors ae = new ActionErrors();
       ae.addError("toolId", "Select NuGet.Commandline package version to install");
-      ae.serialize(xmlResponse);
       return;
     }
 
     final String whatToDo = request.getParameter("whatToDo");
     try {
       if ("install".equals(whatToDo)) {
-        myToolsManager.installTool(toolId);
+
+        if ("custom".equals(toolId) && request instanceof MultipartHttpServletRequest) {
+          LOG.debug("Processing NuGet commandline upload.");
+        } else {
+          myToolsManager.installTool(toolId);
+        }
         return;
       }
 
@@ -113,9 +147,7 @@ public class InstallToolController extends BaseFormXmlController {
         myToolsManager.removeTool(toolId);
       }
     } catch (ToolException e) {
-      ActionErrors ae = new ActionErrors();
       ae.addError("toolId", "Failed to install package: " + e.getMessage());
-      ae.serialize(xmlResponse);
     }
   }
 }

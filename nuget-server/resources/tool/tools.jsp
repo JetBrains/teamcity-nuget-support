@@ -74,6 +74,7 @@
         action="${actualInstallerUrl}"
         closeCommand="BS.NuGet.Tools.InstallPopup.close();"
         saveCommand="BS.NuGet.Tools.InstallPopup.save();">
+
   <div id="nugetInstallFormLoading">
     <forms:saving style="float: left; display:block;"/>
     Fetching available NuGet versions from NuGet.org
@@ -92,6 +93,11 @@
   </div>
 </bs:modalDialog>
 
+<iframe id="nugetInstallFormFrame" name="nugetInstallFormFrame" style="display:none;"></iframe>
 <script type="text/javascript">
   BS.NuGet.Tools.installUrl = "<bs:forJs>${actualInstallerUrl}</bs:forJs>";
+  $j("#nugetInstallForm")
+          .attr('enctype', "multipart/form-data")
+          .attr('target', "nugetInstallFormFrame")
+          .attr('method', "post");
 </script>
