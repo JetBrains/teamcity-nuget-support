@@ -35,7 +35,4 @@ public interface AvailableToolsState {
 
   @NotNull
   Collection<? extends NuGetTool> getAvailable(ToolsPolicy policy) throws FetchException;
-
-  @NotNull
-  String getToolPackageName();
 }

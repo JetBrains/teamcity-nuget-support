@@ -56,11 +56,6 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
     myTime = time;
   }
 
-  @NotNull
-  public String getToolPackageName() {
-    return FeedConstants.NUGET_COMMANDLINE;
-  }
-
   @Nullable
   public FeedPackage findTool(@NotNull final String id) {
     final Collection<InstallableTool> tools = myTools;
@@ -89,9 +84,9 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
 
   private Collection<InstallableTool> fetchAvailable() throws FetchException {
     FetchException exception = null;
-    for (String feedUrl : Arrays.asList(MS_REF_FEED_V2, NUGET_FEED_V2, MS_REF_FEED_V1, NUGET_FEED_V1)) {
+    for (String feedUrl : Arrays.asList(NUGET_FEED_V2, MS_REF_FEED_V2, MS_REF_FEED_V1, NUGET_FEED_V1)) {
       try {
-        final Collection<FeedPackage> packages = myReader.queryPackageVersions(feedUrl, getToolPackageName());
+        final Collection<FeedPackage> packages = myReader.queryPackageVersions(feedUrl, FeedConstants.NUGET_COMMANDLINE);
         return CollectionsUtil.filterAndConvertCollection(
                 packages,
                 new Converter<InstallableTool, FeedPackage>() {
