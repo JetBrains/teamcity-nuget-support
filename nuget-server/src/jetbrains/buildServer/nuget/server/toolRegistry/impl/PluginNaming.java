@@ -49,11 +49,11 @@ public class PluginNaming {
 
   @NotNull
   public String getVersion(@NotNull final File plugin) {
-    Pattern pt = Pattern.compile("\\d+(\\.\\d+)+");
+    Pattern pt = Pattern.compile("(\\d+(\\.\\d+)*.*)\\.[Nn][Uu][Pp][Kk][Gg]$");
     final Matcher matcher = pt.matcher(plugin.getName());
     String match = "N/A";
     while (matcher.find()) {
-      match = matcher.group();
+      match = matcher.group(1);
     }
     return StringUtil.isEmptyOrSpaces(match) ? "N/A" : match;
   }
