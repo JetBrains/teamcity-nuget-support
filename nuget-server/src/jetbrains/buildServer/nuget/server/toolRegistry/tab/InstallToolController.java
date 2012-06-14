@@ -71,7 +71,8 @@ public class InstallToolController extends BaseFormXmlController {
   }
 
   @Override
-  protected ModelAndView doGet(HttpServletRequest request, HttpServletResponse response) {
+  protected ModelAndView doGet(@NotNull final HttpServletRequest request,
+                               @NotNull final HttpServletResponse response) {
     final Collection<NuGetTool> availableTools = new ArrayList<NuGetTool>();
 
     final ToolsPolicy pol =
@@ -96,7 +97,9 @@ public class InstallToolController extends BaseFormXmlController {
   }
 
   @Override
-  protected void doPost(HttpServletRequest request, HttpServletResponse response, Element xmlResponse) {
+  protected void doPost(@NotNull final HttpServletRequest request,
+                        @NotNull final HttpServletResponse response,
+                        @NotNull final Element xmlResponse) {
     String toolId = request.getParameter("toolId");
     if (StringUtil.isEmptyOrSpaces(toolId)) {
       ActionErrors ae = new ActionErrors();
