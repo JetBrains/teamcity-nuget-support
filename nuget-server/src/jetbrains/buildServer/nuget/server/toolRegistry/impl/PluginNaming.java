@@ -16,13 +16,11 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.ToolPaths;
-import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -31,8 +29,14 @@ import java.util.regex.Pattern;
 public class PluginNaming {
   private final ToolPaths myPaths;
 
+
   public PluginNaming(@NotNull final ToolPaths paths) {
     myPaths = paths;
+  }
+
+  @NotNull
+  public String getNuGetCommandLinePackageName() {
+    return FeedConstants.NUGET_COMMANDLINE;
   }
 
   @NotNull
@@ -49,12 +53,16 @@ public class PluginNaming {
 
   @NotNull
   public String getVersion(@NotNull final File plugin) {
-    Pattern pt = Pattern.compile("(\\d+(\\.\\d+)*.*)\\.[Nn][Uu][Pp][Kk][Gg]$");
-    final Matcher matcher = pt.matcher(plugin.getName());
-    String match = "N/A";
-    while (matcher.find()) {
-      match = matcher.group(1);
+    String name = plugin.getName();
+
+    if (name.toLowerCase().endsWith(FeedConstants.NUGET_EXTENSION.toLowerCase())) {
+      name = name.substring(0, name.length() - FeedConstants.NUGET_EXTENSION.length());
+
+      if (name.toLowerCase().startsWith(getNuGetCommandLinePackageName().toLowerCase() + ".")) {
+        name = name.substring(getNuGetCommandLinePackageName().length()+1);
+      }
     }
-    return StringUtil.isEmptyOrSpaces(match) ? "N/A" : match;
+
+    return name;
   }
 }

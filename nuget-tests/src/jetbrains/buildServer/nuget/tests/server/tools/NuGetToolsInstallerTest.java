@@ -21,12 +21,23 @@ import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher;
+import jetbrains.buildServer.nuget.tests.Strings;
+import jetbrains.buildServer.util.FileUtil;
+import junit.framework.Assert;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -34,9 +45,8 @@ import java.io.File;
  */
 public class NuGetToolsInstallerTest extends BaseTestCase {
   private NuGetToolsInstaller myInstaller;
-  private File myToolsPath;
-  private File myPluginsPath;
   private ToolPaths myPaths;
+  private ToolsWatcher myWatcher;
   private NuGetFeedReader myFeed;
   private AvailableToolsState myState;
   private Mockery m;
@@ -50,24 +60,113 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
     myPaths = m.mock(ToolPaths.class);
     myFeed = m.mock(NuGetFeedReader.class);
     myState = m.mock(AvailableToolsState.class);
+    myWatcher = m.mock(ToolsWatcher.class);
 
     myInstaller = new NuGetToolsInstaller(
             myPaths,
             myFeed,
             myState,
-            new ToolsWatcherImpl(
-                    myPaths,
-                    new ToolPacker(),
-                    new ToolUnpacker()
-            ));
+            myWatcher);
 
     m.checking(new Expectations(){{
-      allowing(myPaths).getNuGetToolsPath(); will(returnValue(myToolsPath));
-      allowing(myPaths).getNuGetToolsAgentPluginsPath(); will(returnValue(myPluginsPath));
+      allowing(myPaths).getNuGetToolsPath(); will(returnValue(createTempDir()));
+      allowing(myPaths).getNuGetToolsAgentPluginsPath(); will(returnValue(createTempDir()));
+      allowing(myPaths).getNuGetToolsPackages(); will(returnValue(createTempDir()));
     }});
   }
 
   private FeedPackage feedPackage() {
     return new FeedPackage("atomId", new PackageInfo("pkd", "1.2.3.4"), false, "", "download-url");
+  }
+
+  @Test
+  public void testPackageValidation() throws ToolException, IOException {
+    final File testPackage = getNuGetPackageFile();
+    myInstaller.validatePackage(testPackage);
+  }
+
+  @NotNull
+  private File getNuGetPackageFile() throws IOException {
+    File home = createTempFile();
+    FileUtil.copy(new File("./nuget-tests/testData/nuget/NuGet.CommandLine.1.8.40002.nupkg"), home);
+    return home;
+  }
+
+  @Test(expectedExceptions = ToolException.class)
+  public void testPackageValidataionFailed() throws IOException, ToolException {
+    myInstaller.validatePackage(createTempFile(22233));
+  }
+
+  @Test
+  public void testUploadKnownFile() throws ToolException, IOException {
+    m.checking(new Expectations(){{
+      oneOf(myWatcher).checkNow();
+    }});
+
+    myInstaller.installNuGet("NuGet.1.2.3.nupkg", getNuGetPackageFile());
+    Assert.assertTrue(new File(myPaths.getNuGetToolsPackages(), "NuGet.1.2.3.nupkg").isFile());
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void testFeedFile() throws ToolException, IOException {
+    final FeedPackage fp = feedPackage();
+    m.checking(new Expectations(){{
+      oneOf(myWatcher).checkNow();
+      oneOf(myState).findTool("packageId"); will(returnValue(fp));
+      oneOf(myFeed).downloadPackage(with(equal(fp)), with(any(File.class)));
+      will(new CustomAction("fetch file") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          final File file = (File) invocation.getParameter(1);
+          FileUtil.copy(getNuGetPackageFile(), file);
+          return null;
+        }
+      });
+    }});
+
+    myInstaller.installNuGet("packageId");
+    Assert.assertTrue(new File(myPaths.getNuGetToolsPackages(), "pkd.1.2.3.4.nupkg").isFile());
+    m.assertIsSatisfied();
+  }
+
+  @Test(expectedExceptions = ToolException.class)
+  public void testFeedFile_invalid() throws ToolException, IOException {
+    final FeedPackage fp = feedPackage();
+    m.checking(new Expectations(){{
+      oneOf(myWatcher).checkNow();
+      oneOf(myState).findTool("packageId"); will(returnValue(fp));
+      oneOf(myFeed).downloadPackage(with(equal(fp)), with(any(File.class)));
+      will(new CustomAction("fetch file") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          final File file = (File) invocation.getParameter(1);
+          FileUtil.writeFileAndReportErrors(file, Strings.EXOTIC);
+          return null;
+        }
+      });
+    }});
+
+    myInstaller.installNuGet("packageId");
+  }
+
+  @Test(expectedExceptions = ToolException.class)
+  public void testFeedFile_downloadFail() throws ToolException, IOException {
+    final FeedPackage fp = feedPackage();
+    m.checking(new Expectations(){{
+      oneOf(myWatcher).checkNow();
+      oneOf(myState).findTool("packageId"); will(returnValue(fp));
+      oneOf(myFeed).downloadPackage(with(equal(fp)), with(any(File.class))); will(throwException(new IOException("oops")));
+    }});
+
+    myInstaller.installNuGet("packageId");
+  }
+
+  @Test(expectedExceptions = ToolException.class)
+  public void testFeedFile_noPackage() throws ToolException, IOException {
+    m.checking(new Expectations(){{
+      oneOf(myWatcher).checkNow();
+      oneOf(myState).findTool("packageId"); will(returnValue(null));
+    }});
+
+    myInstaller.installNuGet("packageId");
   }
 }

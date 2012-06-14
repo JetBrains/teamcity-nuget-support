@@ -27,4 +27,5 @@ public class FeedConstants {
   public static final String NUGET_FEED_V2 = "http://packages.nuget.org/api/v2";
 
   public static final String NUGET_COMMANDLINE = "NuGet.CommandLine";
+  public static final String NUGET_EXTENSION = ".nupkg";
 }

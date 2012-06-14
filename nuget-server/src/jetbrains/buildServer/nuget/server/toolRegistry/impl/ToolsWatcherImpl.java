@@ -20,12 +20,11 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FilesWatcher;
 import jetbrains.buildServer.nuget.server.ToolPaths;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -79,11 +78,11 @@ public class ToolsWatcherImpl implements ToolsWatcher {
   }
 
   private void onFilesChanged(List<File> modified, List<File> added, List<File> removed) {
-    for (File file : join(modified, removed)) {
+    for (File file : CollectionsUtil.join(modified, removed)) {
       removePackage(file, getAgentFile(file), getUnpackedFolder(file));
     }
 
-    for (File file : join(modified, added)) {
+    for (File file : CollectionsUtil.join(modified, added)) {
       installPackage(file, getAgentFile(file), getUnpackedFolder(file));
     }
   }
@@ -107,14 +106,6 @@ public class ToolsWatcherImpl implements ToolsWatcher {
     FileUtil.delete(file);
     FileUtil.delete(agentFile);
     FileUtil.delete(unpackedFolder);
-  }
-
-  @NotNull
-  private <T> Collection<T> join(@NotNull Collection<T> a, @NotNull Collection<T> b) {
-    ArrayList<T> list = new ArrayList<T>(a.size() + b.size());
-    list.addAll(a);
-    list.addAll(b);
-    return list;
   }
 
   @NotNull

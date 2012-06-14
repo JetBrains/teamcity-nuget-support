@@ -73,6 +73,7 @@
       <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolsInstallerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolUnpackerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableToolStateTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.PluginNamingTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackRunnerTest"/>

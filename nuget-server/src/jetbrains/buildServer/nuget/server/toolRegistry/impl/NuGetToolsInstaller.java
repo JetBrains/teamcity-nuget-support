@@ -26,6 +26,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.zip.ZipFile;
+
+import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_TOOL_REL_PATH;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -53,15 +56,12 @@ public class NuGetToolsInstaller {
                            @NotNull final File toolFile) throws ToolException {
     LOG.info("Start installing package " + toolName + " from file: " + toolFile);
 
-    if (!toolName.toLowerCase().startsWith(myState.getToolPackageName().toLowerCase() + ".")) {
-      throw new ToolException("NuGet package Id should be " + myState.getToolPackageName());
-    }
-
     if (!toolName.toLowerCase().endsWith(".nupkg".toLowerCase())) {
       throw new ToolException("NuGet package file must have extension .nupkg");
     }
 
     final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolName);
+    validatePackage(toolFile);
     publishDownloadedPackage(dest, toolFile);
     myWatcher.checkNow();
   }
@@ -80,6 +80,7 @@ public class NuGetToolsInstaller {
     final File tmp = createTempFile(dest.getName());
 
     downloadPackage(tool, tmp);
+    validatePackage(tmp);
     publishDownloadedPackage(dest, tmp);
     myWatcher.checkNow();
   }
@@ -108,7 +109,7 @@ public class NuGetToolsInstaller {
     }
   }
 
-  private void publishDownloadedPackage(File dest, File tmp) throws ToolException {
+  private void publishDownloadedPackage(@NotNull final File dest, @NotNull final File tmp) throws ToolException {
     if (dest.isFile()) {
       throw new ToolException("Tool with such version already exists");
     }
@@ -120,6 +121,26 @@ public class NuGetToolsInstaller {
       String msg = "Failed to copy downloaded package from " + tmp + " to " + dest + ". " + e.getMessage();
       LOG.debug(msg, e);
       throw new ToolException(msg);
+    }
+  }
+
+  public void validatePackage(@NotNull final File pkg) throws ToolException {
+    ZipFile file = null;
+    try {
+      file = new ZipFile(pkg);
+      if (file.getEntry(NUGET_TOOL_REL_PATH) == null) {
+        throw new ToolException("NuGet package must contain " + NUGET_TOOL_REL_PATH + " file");
+      }
+    } catch (IOException e) {
+      throw new ToolException("Failed to open NuGet package. " + e.getMessage());
+    } finally {
+      if (file != null) {
+        try {
+          file.close();
+        } catch (IOException e) {
+          //NOP
+        }
+      }
     }
   }
 }
