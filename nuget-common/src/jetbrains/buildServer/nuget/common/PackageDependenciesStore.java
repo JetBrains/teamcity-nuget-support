@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.common;
 
 import jetbrains.buildServer.util.FileUtil;
-import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.Content;
 import org.jdom.Document;
@@ -43,7 +42,6 @@ public class PackageDependenciesStore {
       throw new IOException("Failed to parse stream." + e.getMessage()){{initCause(e);}};
     }
 
-    final List<String> sources = new ArrayList<String>();
     final List<PackageInfo> infos = new ArrayList<PackageInfo>();
 
     Element packagesElement = element.getChild("packages");
@@ -57,18 +55,7 @@ public class PackageDependenciesStore {
         }
       }
     }
-
-    Element sourcesElement = element.getChild("sources");
-    if (sourcesElement != null) {
-      for (Object o : sourcesElement.getChildren("source")) {
-        Element source = (Element) o;
-        String text = source.getTextTrim();
-        if (!StringUtil.isEmptyOrSpaces(text)) {
-          sources.add(text);
-        }
-      }
-    }
-    return new PackageDependencies(sources, infos);
+    return new PackageDependencies(infos);
   }
 
   public PackageDependencies load(@NotNull final File file) throws IOException {
@@ -89,17 +76,7 @@ public class PackageDependenciesStore {
 
     root.addContent((Content) pkgs);
 
-    Element sources = new Element("sources");
-    for (String source : deps.getSources()) {
-      Element src = new Element("source");
-      src.setText(source);
-      sources.addContent((Content) src);
-    }
-
-    root.addContent((Content) sources);
-
     Document doc = new Document(root);
-
     OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
     try {
       XmlUtil.saveDocument(doc, os);

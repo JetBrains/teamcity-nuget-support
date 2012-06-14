@@ -55,20 +55,17 @@ public class PackageDependenciesStoreTest extends BaseTestCase {
             "  </sources>\n" +
             "</nuget-dependencies>");
 
-    PackageDependencies deps = new PackageDependencies(Arrays.asList("source1", "source2"),
-            Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")));
+    PackageDependencies deps = new PackageDependencies(Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")));
 
     PackageDependencies load = store.load(temp);
     assertEquals(deps, load);
   }
 
-
   @Test
   public void test_saveLoad() throws IOException {
     final File tmp = createTempFile();
 
-    PackageDependencies deps = new PackageDependencies(Arrays.asList("source1", "source2"),
-            Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")));
+    PackageDependencies deps = new PackageDependencies(Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")));
     store.save(deps, tmp);
 
     dumpFile(tmp);
@@ -79,7 +76,6 @@ public class PackageDependenciesStoreTest extends BaseTestCase {
   }
 
   private void assertEquals(PackageDependencies deps, PackageDependencies load) {
-    Assert.assertEquals(new TreeSet<String>(load.getSources()), new TreeSet<String>(deps.getSources()));
     Assert.assertEquals(new TreeSet<PackageInfo>(load.getPackages()), new TreeSet<PackageInfo>(deps.getPackages()));
   }
 }

@@ -22,7 +22,6 @@ import jetbrains.buildServer.nuget.common.PackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.TreeSet;
 
 /**
@@ -39,9 +38,7 @@ public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
 
   @NotNull
   public PackageDependencies getPackages() {
-    return new PackageDependencies(
-            Collections.<String>emptyList(),
-            myPackages);
+    return new PackageDependencies(myPackages);
   }
 
   public void removeAllPackages() {

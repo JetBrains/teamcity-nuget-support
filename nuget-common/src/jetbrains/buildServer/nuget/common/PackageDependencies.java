@@ -28,21 +28,10 @@ import java.util.TreeSet;
  * Date: 19.07.11 11:41
  */
 public class PackageDependencies {
-  private final Collection<String> mySources;
   private final Collection<PackageInfo> myPackages;
 
-  public PackageDependencies(@NotNull final Collection<String> sources,
-                             @NotNull final Collection<PackageInfo> packages) {
-    mySources = Collections.unmodifiableCollection(new TreeSet<String>(sources));
+  public PackageDependencies(@NotNull final Collection<PackageInfo> packages) {
     myPackages = Collections.unmodifiableCollection(new TreeSet<PackageInfo>(packages));
-  }
-
-  /**
-   * @return NuGet sources configured from web
-   */
-  @NotNull
-  public Collection<String> getSources() {
-    return mySources;
   }
 
   /**
@@ -61,8 +50,7 @@ public class PackageDependencies {
   @Override
   public String toString() {
     return "PackageDependencies{" +
-            "mySources=" + mySources +
-            ", myPackages=" + myPackages +
+            "myPackages=" + myPackages +
             '}';
   }
 }
