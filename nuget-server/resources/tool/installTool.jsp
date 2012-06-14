@@ -38,7 +38,6 @@
             <forms:option value="custom">Upload</forms:option>
           </optgroup>
         </forms:select>
-        <span class="error" id="error_toolId"></span>
       </td>
     </tr>
 
@@ -89,5 +88,12 @@
       </td>
     </tr>
     </c:if>
+
+    <tr>
+      <td></td>
+      <td>
+        <span class="error" id="error_toolId"></span>
+      </td>
+    </tr>
   </table>
 </div>
