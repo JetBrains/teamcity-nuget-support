@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageLoadException;
+import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;

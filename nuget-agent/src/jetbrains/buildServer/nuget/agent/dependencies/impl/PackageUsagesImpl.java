@@ -20,8 +20,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.common.PackageInfo;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageLoadException;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.SimplePackageInfoLoader;
+import jetbrains.buildServer.nuget.common.PackageLoadException;
+import jetbrains.buildServer.nuget.common.SimplePackageInfoLoader;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

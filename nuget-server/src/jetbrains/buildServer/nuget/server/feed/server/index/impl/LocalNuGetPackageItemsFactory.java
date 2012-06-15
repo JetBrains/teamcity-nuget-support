@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
+import jetbrains.buildServer.nuget.common.PackageInfoLoaderBase;
+import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.FileUtil;
 import org.apache.commons.codec.binary.Base64;

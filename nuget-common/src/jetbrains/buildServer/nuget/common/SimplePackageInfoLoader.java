@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.index.impl;
+package jetbrains.buildServer.nuget.common;
 
-import jetbrains.buildServer.nuget.common.PackageInfo;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 
