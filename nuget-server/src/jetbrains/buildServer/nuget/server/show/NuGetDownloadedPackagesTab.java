@@ -48,7 +48,6 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
   private static final String DEPS_FILE = NUGET_USED_PACKAGES_DIR + "/" + NUGET_USED_PACKAGES_FILE;
   private static final Logger LOG = Logger.getInstance(NuGetDownloadedPackagesTab.class.getName());
 
-
   private final PackageDependenciesStore myStore;
 
   public NuGetDownloadedPackagesTab(@NotNull final PagePlaces pagePlaces,

@@ -290,6 +290,26 @@ public class PackageIndexTest extends BaseTestCase {
   }
 
   @Test
+  public void test_for_build() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+      allowing(myStorage).getBuildEntry(42, "nuget"); will(returnIterator(myEntries));
+    }});
+    addEntry("Foo", "1.2.34-alpha", "btX", 7);
+    addEntry("Foo", "1.2.34-beta", "btX", 9);
+    addEntry("Foo", "1.2.32", "btX", 8);
+    addEntry("Foo", "1.2.36", "btX", 10);
+    addEntry("Foo", "1.2.37-b", "btX", 12);
+
+    dumpFeed();
+    assertPackagesCollection(myIndex.getNuGetEntries(42), FlagMode.Exists, "Foo.1.2.34-alpha", "Foo.1.2.34-beta", "Foo.1.2.32", "Foo.1.2.36", "Foo.1.2.37-b");
+    assertPackagesCollection(myIndex.getNuGetEntries(42), FlagMode.IsPrerelease, "Foo.1.2.34-alpha", "Foo.1.2.34-beta", "Foo.1.2.37-b");
+    assertPackagesCollection(myIndex.getNuGetEntries(42), FlagMode.IsAbsoluteLatest, "Foo.1.2.37-b"); //sorted by build number
+    assertPackagesCollection(myIndex.getNuGetEntries(42), FlagMode.IsLatest, "Foo.1.2.36"); //first entry in list
+  }
+
+  @Test
   @TestFor(issues = "TW-20661")
   public void test_Flags_release_only() {
     m.checking(new Expectations(){{
@@ -315,8 +335,14 @@ public class PackageIndexTest extends BaseTestCase {
     }
   }
 
-  private void assertPackagesCollection(FlagMode mode, String... ids) {
+  private void assertPackagesCollection(@NotNull FlagMode mode, @NotNull String... ids) {
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+    assertPackagesCollection(it, mode, ids);
+  }
+
+  private void assertPackagesCollection(@NotNull Iterator<NuGetIndexEntry> it,
+                                        @NotNull FlagMode mode,
+                                        @NotNull String... ids) {
     final Set<String> t = new HashSet<String>(Arrays.asList(ids));
     while(it.hasNext()) {
       NuGetIndexEntry p = it.next();

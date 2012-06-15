@@ -32,4 +32,7 @@ public interface PackagesIndex {
 
   @NotNull
   Iterator<NuGetIndexEntry> getNuGetEntries();
+
+  @NotNull
+  Iterator<NuGetIndexEntry> getNuGetEntries(long buildId);
 }

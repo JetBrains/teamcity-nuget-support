@@ -12,25 +12,50 @@
     </classes>
   </test>
 
-<!--
-  <test name="java feed">
+
+  <test name="feed">
     <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.PackageIndexTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.entity.MetadataLoaderTest"/>
     </classes>
   </test>
--->
+
+  <test name="tools">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolPackerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolsInstallerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolUnpackerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableToolStateTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.PluginNamingTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.AgentToolsRegistrarTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolsRegistryTest"/>
+    </classes>
+  </test>
+
+  <test name="settings">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerPersitedTest"/>
+    </classes>
+  </test>
+
+  <test name="trigger">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesManagerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckEntryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.CheckRequestModeFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesCheckerThreadTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetBulkTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetPerPackageTest"/>
+    </classes>
+  </test>
 
   <test name="fast tests">
     <classes>
 
-      <class name="jetbrains.buildServer.nuget.tests.server.entity.MetadataLoaderTest"/>
-
-      <!-- setting manager -->
-      <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerPersitedTest"/>
-
       <!-- misc -->
-      <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest" />
-      <class name="jetbrains.buildServer.nuget.tests.server.SystemInfoTest" />
+      <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.SystemInfoTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.RunTypeNameTest"/>
 
@@ -57,30 +82,17 @@
 
       <class name="jetbrains.buildServer.nuget.tests.server.NamedPackagesUpdateCheckerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.PackagesHashCalculatorTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesManagerTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckEntryTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.trigger.CheckRequestModeFactoryTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesCheckerThreadTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetBulkTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetPerPackageTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.agent.MatchFilesBuildProcessTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.FeedPackagesParserTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.FeedGetMethodFactoryTest"/>
 
-      <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolPackerTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolsInstallerTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolUnpackerTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableToolStateTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.tools.PluginNamingTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackRunnerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackageUsagesTest"/>
 
-      <class name="jetbrains.buildServer.nuget.tests.server.tools.AgentToolsRegistrarTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolsRegistryTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.UrlResolverTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackagesInstallerRunTypeTest"/>

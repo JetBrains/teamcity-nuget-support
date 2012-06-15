@@ -52,12 +52,29 @@ public class PackagesIndexImpl implements PackagesIndex {
   }
 
   @NotNull
-  public Iterator<BuildMetadataEntry> getEntries() {
-    return myStorage.getAllEntries(NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
+  public Iterator<NuGetIndexEntry> getNuGetEntries(long buildId) {
+    return decorateMetadata(getBuildEntries(buildId));
+  }
+
+  private Iterator<BuildMetadataEntry> getBuildEntries(long buildId) {
+    try {
+      return myStorage.getBuildEntry(buildId, NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
+    } catch (NoSuchMethodError e) {
+      //workaround for TeamCity 7.0
+      return Collections.<BuildMetadataEntry>emptyList().iterator();
+    }
+  }
+
+  private Iterator<BuildMetadataEntry> doGetBuildEntries(long buildId) {
+    return myStorage.getBuildEntry(buildId, NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
   }
 
   @NotNull
   public Iterator<NuGetIndexEntry> getNuGetEntries() {
+    return decorateMetadata(myStorage.getAllEntries(NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID));
+  }
+
+  private Iterator<NuGetIndexEntry> decorateMetadata(Iterator<BuildMetadataEntry> entries) {
     final Collection<PackageTransformation> trasformations = Arrays.asList(
             new SamePackagesFilterTransformation(),
             new OldFormatConvertTransformation(myBuilds),
@@ -66,8 +83,9 @@ public class PackagesIndexImpl implements PackagesIndex {
             new DownloadUrlComputationTransformation()
     );
 
+
     return new DecoratingIterator<NuGetIndexEntry, BuildMetadataEntry>(
-            getEntries(),
+            entries,
             new Mapper<BuildMetadataEntry, NuGetIndexEntry>() {
               @Nullable
               public NuGetIndexEntry mapKey(@NotNull BuildMetadataEntry e) {
