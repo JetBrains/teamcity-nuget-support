@@ -25,11 +25,13 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTracker;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerImpl;
+import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.FileUtil;
 import junit.framework.Assert;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;
@@ -39,10 +41,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -62,7 +61,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   private Map<String, String> myConfigParameters;
   private PackRunnerOutputDirectoryTracker myTracker;
   private ArtifactsWatcher myPublisher;
-  private boolean myPublishAsArtifacts;
+  private List<List<File>> myDetectedFiles;
 
 
   @BeforeMethod
@@ -81,6 +80,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
     myConfigParameters = new TreeMap<String, String>();
     myTracker = new PackRunnerOutputDirectoryTrackerImpl();
     myPublisher = m.mock(ArtifactsWatcher.class);
+    myDetectedFiles = new ArrayList<List<File>>();
 
     myCheckoutDir = createTempDir();
     m.checking(new Expectations(){{
@@ -104,7 +104,29 @@ public class PackRunnerTest extends BuildProcessTestCase {
           return null;
         }
       });
+
+      //noinspection unchecked
+      allowing(myActionFactory).createCreatedPackagesReport(with(equal(myContext)), with(any(Collection.class)));
+      will(new CustomAction("report created packages") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          @SuppressWarnings("unchecked")
+          final Collection<File> detectedFiles = (Collection<File>) invocation.getParameter(1);
+          return new BuildProcessBase() {
+            @NotNull
+            @Override
+            protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+              myDetectedFiles.add(new ArrayList<File>(detectedFiles));
+              return BuildFinishedStatus.FINISHED_SUCCESS;
+            }
+          };
+        }
+      });
     }});
+  }
+
+  private void assertReportedFiles(File... files) {
+    Assert.assertEquals(myDetectedFiles.size(), 1);
+    Assert.assertEquals(new TreeSet<File>(myDetectedFiles.get(0)), new TreeSet<File>(Arrays.asList(files)));
   }
 
   private PackRunner createRunner() {
@@ -192,6 +214,41 @@ public class PackRunnerTest extends BuildProcessTestCase {
     final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
 
+    assertReportedFiles(foo, bar);
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_packRunner_outputDirectory_notCleaned_no_artifacts_change() throws RunBuildException, IOException {
+    final File spec = createTempFile();
+    final File outputDir = createTempDir();
+
+    final File bar = new File(outputDir, "bar.nupkg");
+    final File foo = new File(outputDir, "foo.nupkg");
+
+    FileUtil.writeFile(foo, "zzz");
+    m.checking(new Expectations(){{
+      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
+      allowing(myPackParameters).getOutputDirectory(); will(returnValue(outputDir));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
+      oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
+
+      oneOf(myProc).start(); will(new CustomAction("create/update fake package") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          FileUtil.writeFile(bar, "zUUz");
+          FileUtil.writeFile(foo, "zsssUUz");
+          return null;
+        }
+      });
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+    }});
+
+    final PackRunner runner = createRunner();
+    final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
+    assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    assertReportedFiles(foo, bar);
     m.assertIsSatisfied();
   }
 
@@ -415,6 +472,8 @@ public class PackRunnerTest extends BuildProcessTestCase {
     assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
 
     m.assertIsSatisfied();
+    //should not report files as no nuget package files were created
+    assertReportedFiles();
   }
 
   @Test
