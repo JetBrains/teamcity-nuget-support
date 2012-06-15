@@ -31,9 +31,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -104,13 +102,13 @@ public class ToolsRegistryTest extends BaseTestCase {
     nupkg("NuGet.aaaamandLine.4.4.4");
 
     final Collection<? extends NuGetInstalledTool> tools = myRegistry.getTools();
-    final Iterator<String> versions = Arrays.asList("1.2.3.4", "1.2.6.4", "1.3.3.4", "2.2.3.4", "2.2.3.14", "4.4.4").iterator();
-
+    final List<String> names = new ArrayList<String>();
     for (NuGetInstalledTool tool : tools) {
       System.out.println("tool.getVersion() = " + tool.getVersion());
-      final String v = versions.next();
-      Assert.assertEquals(tool.getVersion(), v);
+      names.add(tool.getVersion());
     }
+
+    Assert.assertEquals(names, Arrays.asList("NuGet.aaaamandLine.4.4.4", "1.2.3.4", "1.2.6.4", "1.3.3.4", "2.2.3.4.z", "2.2.3.14.y"));
   }
 
 
