@@ -31,6 +31,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 19.10.11 16:18
@@ -58,20 +60,16 @@ public class PackagesIndexImpl implements PackagesIndex {
 
   private Iterator<BuildMetadataEntry> getBuildEntries(long buildId) {
     try {
-      return myStorage.getBuildEntry(buildId, NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
-    } catch (NoSuchMethodError e) {
+      return myStorage.getBuildEntry(buildId, NUGET_PROVIDER_ID);
+    } catch (Error e) {
       //workaround for TeamCity 7.0
       return Collections.<BuildMetadataEntry>emptyList().iterator();
     }
   }
 
-  private Iterator<BuildMetadataEntry> doGetBuildEntries(long buildId) {
-    return myStorage.getBuildEntry(buildId, NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
-  }
-
   @NotNull
   public Iterator<NuGetIndexEntry> getNuGetEntries() {
-    return decorateMetadata(myStorage.getAllEntries(NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID));
+    return decorateMetadata(myStorage.getAllEntries(NUGET_PROVIDER_ID));
   }
 
   private Iterator<NuGetIndexEntry> decorateMetadata(Iterator<BuildMetadataEntry> entries) {

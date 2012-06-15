@@ -21,6 +21,7 @@
   --%>
 
 <jsp:useBean id="packages" scope="request" type="jetbrains.buildServer.nuget.common.PackageDependencies"/>
+<jsp:useBean id="feedPackages" scope="request" type="java.util.Set<jetbrains.buildServer.nuget.common.PackageInfo>"/>
 
 <h3>Used Packages</h3>
 <c:set var="numberOfUsedPackages" value="${fn:length(packages.usedPackages)}"/>
@@ -54,6 +55,26 @@ This build created ${numberOfUsedPackages} NuGet package<bs:s val="${numberOfCre
     </tr>
     </thead>
     <c:forEach var="it" items="${packages.createdPackages}">
+      <tr>
+        <td class="name"><c:out value="${it.id}"/></td>
+        <td class="value"><c:out value="${it.version}"/></td>
+      </tr>
+    </c:forEach>
+  </table>
+</c:if>
+
+<c:set var="numberOfPublishedPackages" value="${fn:length(feedPackages)}" />
+<c:if test="${numberOfPublishedPackages gt 0}">
+  <h3>Published to TeamCity NuGet feed</h3>
+  TeamCity detected and added ${numberOfPublishedPackages} NuGet package<bs:s val="${numberOfPublishedPackages}"/> to the feed.
+  <table class="settings" style="width:50em">
+    <thead>
+    <tr>
+      <th class="name">Package Name</th>
+      <th class="value">Package Version</th>
+    </tr>
+    </thead>
+    <c:forEach var="it" items="${feedPackages}">
       <tr>
         <td class="name"><c:out value="${it.id}"/></td>
         <td class="value"><c:out value="${it.version}"/></td>

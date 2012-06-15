@@ -20,6 +20,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
 import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -34,8 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_USED_PACKAGES_DIR;
 import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_USED_PACKAGES_FILE;
@@ -49,13 +50,16 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
   private static final Logger LOG = Logger.getInstance(NuGetDownloadedPackagesTab.class.getName());
 
   private final PackageDependenciesStore myStore;
+  private final PackagesIndex myPackageFeed;
 
   public NuGetDownloadedPackagesTab(@NotNull final PagePlaces pagePlaces,
                                     @NotNull final SBuildServer server,
                                     @NotNull final PluginDescriptor descriptor,
-                                    @NotNull final PackageDependenciesStore store) {
+                                    @NotNull final PackageDependenciesStore store,
+                                    @NotNull final PackagesIndex packageFeed) {
     super("NuGet Packages", "nugetPackagesBuildTab", pagePlaces, server);
     myStore = store;
+    myPackageFeed = packageFeed;
     setIncludeUrl(descriptor.getPluginResourcesPath("show/showPackages.jsp"));
     register();
   }
@@ -81,6 +85,13 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
                            @Nullable final SBuild build) {
     if (build == null) return;
     model.put("packages", loadDependencies(build));
+
+    Set<PackageInfo> infos = new TreeSet<PackageInfo>();
+    for(Iterator<NuGetIndexEntry> entries = myPackageFeed.getNuGetEntries(build.getBuildId());entries.hasNext();) {
+      infos.add(entries.next().getPackageInfo());
+    }
+
+    model.put("feedPackages", infos);
   }
 
   @NotNull

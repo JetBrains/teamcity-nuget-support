@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index;
 
+import jetbrains.buildServer.nuget.common.PackageInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -47,6 +48,11 @@ public class NuGetIndexEntry {
   @NotNull
   public String getPackageDownloadUrl() {
     return myAttributes.get(PackagesIndex.TEAMCITY_DOWNLOAD_URL);
+  }
+
+  @NotNull
+  public PackageInfo getPackageInfo() {
+    return new PackageInfo(myAttributes.get("Id"), myAttributes.get("Version"));
   }
 
   @Override
