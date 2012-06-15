@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.PackagesInfoUploader;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.PackagesWatcher;
+import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
 import jetbrains.buildServer.util.EventDispatcher;
 import org.hamcrest.BaseMatcher;
@@ -68,6 +69,28 @@ public class PackagesWatcherTest extends BaseTestCase {
             nuGetPackagesCollector,
             new PackagesInfoUploader(watcher, new PackageDependenciesStore())
     );
+  }
+
+  @Test
+  public void test_state_is_clean_after_build() {
+    collector.addCreatedPackage("aaa", "22.3.4");
+    collector.addDependenyPackage("aaa", "22.3.4", "x");
+    multicaster.buildFinished(build, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    Assert.assertTrue(collector.getUsedPackages().getCreatedPackages().isEmpty());
+    Assert.assertTrue(collector.getUsedPackages().getUsedPackages().isEmpty());
+  }
+
+  @Test
+  public void test_data_does_not_removed_on_build_stop() {
+    collector.addCreatedPackage("aaa", "22.3.4");
+    collector.addDependenyPackage("aaa", "22.3.4", "x");
+
+    final PackageDependencies data = collector.getUsedPackages();
+    multicaster.buildFinished(build, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    Assert.assertFalse(data.getCreatedPackages().isEmpty());
+    Assert.assertFalse(data.getUsedPackages().isEmpty());
   }
 
   @Test
