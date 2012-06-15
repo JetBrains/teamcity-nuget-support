@@ -37,7 +37,7 @@ public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
     myUsedPackages.add(new PackageInfo(packageId, version));
   }
 
-  public void addCreatedPackage(@NotNull String packageId, @NotNull String version, @Nullable String allowedVersions) {
+  public void addCreatedPackage(@NotNull String packageId, @NotNull String version) {
     myUsedPackages.add(new PackageInfo(packageId, version));
   }
 

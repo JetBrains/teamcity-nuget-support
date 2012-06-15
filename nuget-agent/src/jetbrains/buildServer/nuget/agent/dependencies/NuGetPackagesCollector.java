@@ -26,9 +26,23 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface NuGetPackagesCollector {
 
-  void addDependenyPackage(@NotNull final String packageId,
-                           @NotNull final String version,
-                           @Nullable final String allowedVersions);
+  /**
+   * Adds used package to the list of packages
+   * @param packageId package Id
+   * @param version version
+   * @param allowedVersions version constraint
+   */
+  void addDependenyPackage(@NotNull String packageId,
+                           @NotNull String version,
+                           @Nullable String allowedVersions);
+
+  /**
+   * Adds create package to the list of packages
+   * @param packageId package Id
+   * @param version version
+   */
+  void addCreatedPackage(@NotNull String packageId,
+                         @NotNull String version);
 
   /**
    * @return sorted list of packages that were registered

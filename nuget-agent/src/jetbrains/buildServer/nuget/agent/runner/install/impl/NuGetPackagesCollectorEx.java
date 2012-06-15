@@ -17,8 +17,6 @@
 package jetbrains.buildServer.nuget.agent.runner.install.impl;
 
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -26,6 +24,4 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface NuGetPackagesCollectorEx extends NuGetPackagesCollector {
   void removeAllPackages();
-
-  void addCreatedPackage(@NotNull String packageId, @NotNull String version, @Nullable String allowedVersions);
 }
