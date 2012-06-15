@@ -50,6 +50,12 @@
     </classes>
   </test>
 
+  <test name="sln">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.agent.SolutionParserTest"/>
+    </classes>
+  </test>
+
   <test name="fast tests">
     <classes>
 
