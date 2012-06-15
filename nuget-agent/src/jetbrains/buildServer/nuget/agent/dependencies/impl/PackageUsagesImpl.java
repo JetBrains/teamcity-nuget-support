@@ -19,10 +19,14 @@ package jetbrains.buildServer.nuget.agent.dependencies.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
+import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageLoadException;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.SimplePackageInfoLoader;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -33,14 +37,17 @@ public class PackageUsagesImpl implements PackageUsages {
 
   private final NuGetPackagesCollector myCollector;
   private final NuGetPackagesConfigParser myParser;
+  private final SimplePackageInfoLoader myLoader;
 
   public PackageUsagesImpl(@NotNull final NuGetPackagesCollector collector,
-                           @NotNull final NuGetPackagesConfigParser parser) {
+                           @NotNull final NuGetPackagesConfigParser parser,
+                           @NotNull final SimplePackageInfoLoader loader) {
     myCollector = collector;
     myParser = parser;
+    myLoader = loader;
   }
 
-  public void createReport(@NotNull final File packagesConfig) {
+  public void reportInstalledPackages(@NotNull final File packagesConfig) {
     if (!packagesConfig.exists()) {
       LOG.debug("Packages file: " + packagesConfig + " does not exit");
       return;
@@ -50,6 +57,17 @@ public class PackageUsagesImpl implements PackageUsages {
       myParser.parseNuGetPackages(packagesConfig, myCollector);
     } catch (IOException e) {
       LOG.warn("Failed to parse " + packagesConfig + ". " + e.getMessage(), e);
+    }
+  }
+
+  public void reportCreatedPackages(@NotNull final Collection<File> packageFiles) {
+    for (File file : packageFiles) {
+      try {
+        PackageInfo info = myLoader.loadPackageInfo(file);
+        myCollector.addCreatedPackage(info.getId(), info.getVersion());
+      } catch (PackageLoadException e) {
+        LOG.warn("Failed to parse create NuGet package: " + file);
+      }
     }
   }
 }

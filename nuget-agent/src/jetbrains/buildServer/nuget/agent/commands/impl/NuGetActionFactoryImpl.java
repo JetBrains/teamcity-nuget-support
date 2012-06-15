@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.agent.commands.impl;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
@@ -38,8 +37,6 @@ import java.util.Map;
  * Date: 07.07.11 17:49
  */
 public class NuGetActionFactoryImpl implements NuGetActionFactory {
-  private static final Logger LOG = Logger.getInstance(NuGetActionFactoryImpl.class.getName());
-
   private final CommandFactory myCommandFactory;
   private final CommandlineBuildProcessFactory myFactory;
   private final PackageUsages myPackageUsages;
@@ -100,7 +97,20 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
       @NotNull
       @Override
       protected BuildFinishedStatus waitForImpl() throws RunBuildException {
-        myPackageUsages.createReport(packagesConfig);
+        myPackageUsages.reportInstalledPackages(packagesConfig);
+        return BuildFinishedStatus.FINISHED_SUCCESS;
+      }
+    };
+  }
+
+  @NotNull
+  public BuildProcess createCreatedPackagesReport(@NotNull final BuildRunnerContext context,
+                                                  @NotNull final Collection<File> packageFiles) throws RunBuildException {
+    return new BuildProcessBase() {
+      @NotNull
+      @Override
+      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+        myPackageUsages.reportCreatedPackages(packageFiles);
         return BuildFinishedStatus.FINISHED_SUCCESS;
       }
     };

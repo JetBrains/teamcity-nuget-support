@@ -64,15 +64,12 @@ public class PackRunner extends NuGetRunnerBase {
     final CompositeBuildProcess process = new CompositeBuildProcessImpl();
     final NuGetPackParameters params = myParametersFactory.loadPackParameters(context);
 
+    final CompositeBuildProcess packRunners = new CompositeBuildProcessImpl();
     final FilesWatcher watcher = createFileWatcher(params.getOutputDirectory());
+    final Set<File> createdPackages = new TreeSet<File>();
 
     process.pushBuildProcess(new OutputDirectoryCleanerProcess(params, runningBuild, myCleaner, myTracker.getState(runningBuild)));
-
-    if (params.publishAsArtifacts()) {
-      process.pushBuildProcess(resetFileWatcherProcess(watcher));
-    }
-
-    final CompositeBuildProcess packRunners = new CompositeBuildProcessImpl();
+    process.pushBuildProcess(resetFileWatcherProcess(watcher));
 
     process.pushBuildProcess(
             new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcessBase.Callback() {
@@ -81,10 +78,15 @@ public class PackRunner extends NuGetRunnerBase {
               }
             })
     );
+    //calls NuGet to pack all selected packages
     process.pushBuildProcess(packRunners);
-
+    //collect changed files
+    process.pushBuildProcess(collectCreatedFiles(watcher, createdPackages));
+    //publish packages data
+    process.pushBuildProcess(myActionFactory.createCreatedPackagesReport(context, createdPackages));
+    //publish files as artifacts if needed
     if (params.publishAsArtifacts()) {
-      process.pushBuildProcess(publishArtifactsProcess(runningBuild, watcher));
+      process.pushBuildProcess(publishArtifactsProcess(runningBuild, createdPackages));
     }
 
     return process;
@@ -101,28 +103,42 @@ public class PackRunner extends NuGetRunnerBase {
     };
   }
 
-  private BuildProcessBase publishArtifactsProcess(@NotNull final AgentRunningBuild runningBuild,
-                                                   @NotNull final FilesWatcher watcher) {
+  @NotNull
+  private BuildProcessBase collectCreatedFiles(@NotNull final FilesWatcher watcher,
+                                               @NotNull final Set<File> detectedFiles) {
     return new BuildProcessBase() {
       @NotNull
       @Override
       protected BuildFinishedStatus waitForImpl() throws RunBuildException {
-        final Set<File> allFiles = new TreeSet<File>();
-        watcher.registerListener(new ChangeListener() {
+        detectedFiles.clear();
+        final ChangeListener listener = new ChangeListener() {
           public void changeOccured(String requestor) {
-            allFiles.addAll(watcher.getModifiedFiles());
-            allFiles.addAll(watcher.getNewFiles());
+            detectedFiles.addAll(watcher.getModifiedFiles());
+            detectedFiles.addAll(watcher.getNewFiles());
           }
-        });
+        };
+        watcher.registerListener(listener);
         watcher.checkForModifications();
+        watcher.unregisterListener(listener);
 
-        LOG.debug("Created packages to publish as artifacts: " + allFiles);
-        if (allFiles.isEmpty()) {
+        return BuildFinishedStatus.FINISHED_SUCCESS;
+      }
+    };
+  }
+
+  private BuildProcessBase publishArtifactsProcess(@NotNull final AgentRunningBuild runningBuild,
+                                                   @NotNull final Set<File> createdPackages) {
+    return new BuildProcessBase() {
+      @NotNull
+      @Override
+      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+        LOG.debug("Created packages to publish as artifacts: " + createdPackages);
+        if (createdPackages.isEmpty()) {
           runningBuild.getBuildLogger().warning("No new package files were created. Nothing to publish as artifacs.");
         } else {
-          runningBuild.getBuildLogger().message("Uploading created packages to build artifacts: " + filesList(allFiles));
+          runningBuild.getBuildLogger().message("Uploading created packages to build artifacts: " + filesList(createdPackages));
           final StringBuilder sb = new StringBuilder();
-          for (File file : allFiles) {
+          for (File file : createdPackages) {
             sb.append(file.getPath()).append(" => .").append("\r\n");
           }
           myPublisher.addNewArtifactsPath(sb.toString());
@@ -141,7 +157,7 @@ public class PackRunner extends NuGetRunnerBase {
     };
   }
 
-  private FilesWatcher createFileWatcher(final File outputDir) {
+  private FilesWatcher createFileWatcher(@NotNull final File outputDir) {
     return new FilesWatcher(new FilesWatcher.WatchedFilesProvider() {
       public File[] getWatchedFiles() {
         final File[] files = outputDir.listFiles();

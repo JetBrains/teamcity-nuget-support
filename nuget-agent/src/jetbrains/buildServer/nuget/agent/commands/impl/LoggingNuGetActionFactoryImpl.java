@@ -27,6 +27,7 @@ import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Collection;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -42,6 +43,11 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
   @NotNull
   public BuildProcess createUsageReport(@NotNull BuildRunnerContext context, @NotNull NuGetFetchParameters params, @NotNull File packagesConfig, @NotNull File targetFolder) throws RunBuildException {
     return myActionFactory.createUsageReport(context, params, packagesConfig, targetFolder);
+  }
+
+  @NotNull
+  public BuildProcess createCreatedPackagesReport(@NotNull BuildRunnerContext context, @NotNull Collection<File> packageFiles) throws RunBuildException {
+    return myActionFactory.createCreatedPackagesReport(context, packageFiles);
   }
 
   @NotNull

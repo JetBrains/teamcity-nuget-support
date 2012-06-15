@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.agent.parameters.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Collection;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -46,6 +47,10 @@ public interface NuGetActionFactory {
                                  @NotNull NuGetFetchParameters params,
                                  @NotNull File packagesConfig,
                                  @NotNull File targetFolder) throws RunBuildException;
+
+  @NotNull
+  BuildProcess createCreatedPackagesReport(@NotNull BuildRunnerContext context,
+                                           @NotNull Collection<File> packageFiles) throws RunBuildException;
 
 
   @NotNull
