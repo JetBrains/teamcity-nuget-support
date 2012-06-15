@@ -26,17 +26,17 @@
 <c:set var="numberOfUsedPackages" value="${fn:length(packages.usedPackages)}"/>
 This build used and downlaoded ${numberOfUsedPackages} NuGet package<bs:s val="${numberOfUsedPackages}"/>.
 <c:if test="${numberOfUsedPackages gt 0}">
-  <table class="runnerFormTable" style="width:40em">
+  <table class="settings" style="width:50em">
     <thead>
     <tr>
-      <th>Package Name</th>
-      <th>Package Version</th>
+      <th class="name">Package Name</th>
+      <th class="value">Package Version</th>
     </tr>
     </thead>
     <c:forEach var="it" items="${packages.usedPackages}">
       <tr>
-        <td><c:out value="${it.id}"/></td>
-        <td><c:out value="${it.version}"/></td>
+        <td class="name"><c:out value="${it.id}"/></td>
+        <td class="value"><c:out value="${it.version}"/></td>
       </tr>
     </c:forEach>
   </table>
@@ -46,17 +46,17 @@ This build used and downlaoded ${numberOfUsedPackages} NuGet package<bs:s val="$
 <h3>Created Packages</h3>
 This build created ${numberOfUsedPackages} NuGet package<bs:s val="${numberOfCreatedPackages}"/>.
 <c:if test="${numberOfCreatedPackages gt 0}">
-  <table class="runnerFormTable" style="width:40em">
+  <table class="settings" style="width:50em">
     <thead>
     <tr>
-      <th>Package Name</th>
-      <th>Package Version</th>
+      <th class="name">Package Name</th>
+      <th class="value">Package Version</th>
     </tr>
     </thead>
     <c:forEach var="it" items="${packages.createdPackages}">
       <tr>
-        <td><c:out value="${it.id}"/></td>
-        <td><c:out value="${it.version}"/></td>
+        <td class="name"><c:out value="${it.id}"/></td>
+        <td class="value"><c:out value="${it.version}"/></td>
       </tr>
     </c:forEach>
   </table>
