@@ -28,10 +28,13 @@ import java.util.TreeSet;
  * Date: 19.07.11 11:41
  */
 public class PackageDependencies {
-  private final Collection<PackageInfo> myPackages;
+  private final Collection<PackageInfo> myUsedPackages;
+  private final Collection<PackageInfo> myCreatedPackages;
 
-  public PackageDependencies(@NotNull final Collection<PackageInfo> packages) {
-    myPackages = Collections.unmodifiableCollection(new TreeSet<PackageInfo>(packages));
+  public PackageDependencies(@NotNull final Collection<PackageInfo> usedPackages,
+                             @NotNull final Collection<PackageInfo> createdPackages) {
+    myUsedPackages = Collections.unmodifiableCollection(new TreeSet<PackageInfo>(usedPackages));
+    myCreatedPackages = Collections.unmodifiableCollection(new TreeSet<PackageInfo>(createdPackages));
   }
 
   /**
@@ -39,18 +42,24 @@ public class PackageDependencies {
    * @return sorted list of packages that were used in project
    */
   @NotNull
-  public Collection<PackageInfo> getPackages() {
-    return myPackages;
+  public Collection<PackageInfo> getUsedPackages() {
+    return myUsedPackages;
   }
 
-  public boolean isEmpty() {
-    return getPackages().isEmpty();
+  /**
+   *
+   * @return sorted list of packages that were used in project
+   */
+  @NotNull
+  public Collection<PackageInfo> getCreatedPackages() {
+    return myCreatedPackages;
   }
 
   @Override
   public String toString() {
     return "PackageDependencies{" +
-            "myPackages=" + myPackages +
+            "myUsedPackaged=" + myUsedPackages +
+            ", myCreatedPackages=" + myCreatedPackages +
             '}';
   }
 }

@@ -96,7 +96,7 @@ public class PackagesWatcherTest extends BaseTestCase {
     collector.addDependenyPackage("aaa", "bbb", null);
     multicaster.buildStarted(build);
 
-    Assert.assertTrue(collector.getPackages().isEmpty());
+    Assert.assertTrue(collector.getUsedPackages().getUsedPackages().isEmpty());
 
     m.assertIsSatisfied();
   }

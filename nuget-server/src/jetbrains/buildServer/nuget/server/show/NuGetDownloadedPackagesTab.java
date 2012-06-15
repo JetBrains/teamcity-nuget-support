@@ -88,7 +88,7 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
     PackageDependencies deps = loadDependencies(build);
 
     if (deps != null) {
-      for (PackageInfo info : deps.getPackages()) {
+      for (PackageInfo info : deps.getUsedPackages()) {
         packages.put(info.getId(), info.getVersion());
       }
     }

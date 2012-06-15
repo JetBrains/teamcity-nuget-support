@@ -29,19 +29,24 @@ import java.util.TreeSet;
  * Date: 18.07.11 22:52
  */
 public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
-  private final TreeSet<PackageInfo> myPackages = new TreeSet<PackageInfo>();
+  private final TreeSet<PackageInfo> myUsedPackages = new TreeSet<PackageInfo>();
+  private final TreeSet<PackageInfo> myCreatedPackages = new TreeSet<PackageInfo>();
 
 
   public void addDependenyPackage(@NotNull String packageId, @NotNull String version, @Nullable String allowedVersions) {
-    myPackages.add(new PackageInfo(packageId, version));
+    myUsedPackages.add(new PackageInfo(packageId, version));
+  }
+
+  public void addCreatedPackage(@NotNull String packageId, @NotNull String version, @Nullable String allowedVersions) {
+    myUsedPackages.add(new PackageInfo(packageId, version));
   }
 
   @NotNull
-  public PackageDependencies getPackages() {
-    return new PackageDependencies(myPackages);
+  public PackageDependencies getUsedPackages() {
+    return new PackageDependencies(myUsedPackages, myCreatedPackages);
   }
 
   public void removeAllPackages() {
-    myPackages.clear();
+    myUsedPackages.clear();
   }
 }

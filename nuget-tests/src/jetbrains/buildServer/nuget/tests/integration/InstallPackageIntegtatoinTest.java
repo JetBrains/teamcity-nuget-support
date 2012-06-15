@@ -313,10 +313,10 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
 
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
 
-    System.out.println(myCollector.getPackages());
+    System.out.println(myCollector.getUsedPackages());
     if (detectedPackages != null) {
       Assert.assertEquals(
-              new TreeSet<PackageInfo>(myCollector.getPackages().getPackages()),
+              new TreeSet<PackageInfo>(myCollector.getUsedPackages().getUsedPackages()),
               new TreeSet<PackageInfo>(detectedPackages));
     }
 

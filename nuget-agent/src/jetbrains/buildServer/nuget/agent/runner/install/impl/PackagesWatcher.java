@@ -22,13 +22,10 @@ import jetbrains.buildServer.agent.AgentLifeCycleListener;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
-import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.util.EventDispatcher;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -48,8 +45,8 @@ public class PackagesWatcher {
 
       @Override
       public void beforeBuildFinish(@NotNull AgentRunningBuild build, @NotNull BuildFinishedStatus buildStatus) {
-        PackageDependencies packages = collector.getPackages();
-        if (packages.isEmpty()) return;
+        PackageDependencies packages = collector.getUsedPackages();
+        if (packages.getUsedPackages().isEmpty()) return;
 
         try {
           uploader.uploadDepectedPackages(build, packages);

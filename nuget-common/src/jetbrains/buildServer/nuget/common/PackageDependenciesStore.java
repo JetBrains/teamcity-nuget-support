@@ -23,9 +23,12 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,6 +36,11 @@ import java.util.List;
  * Date: 19.07.11 11:39
  */
 public class PackageDependenciesStore {
+  private static final String USED_PACKAGES_ELEMENT = "packages";
+  private static final String CREATED_PACKAGES_ELEMENT = "created";
+  private static final String PACKAGE_ELEMENT = "package";
+  private static final String PACKAGE_ID = "id";
+  private static final String PACKAGE_VERSION = "version";
 
   public PackageDependencies load(@NotNull final InputStream is) throws IOException {
     Element element = null;
@@ -42,20 +50,39 @@ public class PackageDependenciesStore {
       throw new IOException("Failed to parse stream." + e.getMessage()){{initCause(e);}};
     }
 
-    final List<PackageInfo> infos = new ArrayList<PackageInfo>();
+    return new PackageDependencies(
+            readPackagesList(element.getChild(USED_PACKAGES_ELEMENT)),
+            readPackagesList(element.getChild(CREATED_PACKAGES_ELEMENT))
+    );
+  }
 
-    Element packagesElement = element.getChild("packages");
-    if (packagesElement != null) {
-      for (Object pkg : packagesElement.getChildren("package")) {
-        Element el = (Element) pkg;
-        final String id = el.getAttributeValue("id");
-        final String version = el.getAttributeValue("version");
-        if (id != null && version != null) {
-          infos.add(new PackageInfo(id, version));
-        }
+  private List<PackageInfo> readPackagesList(@Nullable final Element packagesElement) {
+    if (packagesElement == null) return Collections.emptyList();
+
+    final List<PackageInfo> infos = new ArrayList<PackageInfo>();
+    for (Object pkg : packagesElement.getChildren(PACKAGE_ELEMENT)) {
+      Element el = (Element) pkg;
+      final String id = el.getAttributeValue(PACKAGE_ID);
+      final String version = el.getAttributeValue(PACKAGE_VERSION);
+      if (id != null && version != null) {
+        infos.add(new PackageInfo(id, version));
       }
     }
-    return new PackageDependencies(infos);
+
+    return infos;
+  }
+
+  private void savePackagesList(@NotNull final Collection<PackageInfo> usedPackages,
+                                @NotNull final Element root,
+                                @NotNull final String containerName) {
+    final Element container = new Element(containerName);
+    for (PackageInfo info : usedPackages) {
+      final Element pkg = new Element(PACKAGE_ELEMENT);
+      pkg.setAttribute(PACKAGE_ID, info.getId());
+      pkg.setAttribute(PACKAGE_VERSION, info.getVersion());
+      container.addContent((Content) pkg);
+    }
+    root.addContent((Content) container);
   }
 
   public PackageDependencies load(@NotNull final File file) throws IOException {
@@ -64,20 +91,13 @@ public class PackageDependenciesStore {
 
   public void save(@NotNull final PackageDependencies deps,
                    @NotNull final File file) throws IOException {
-    Element root = new Element("nuget-dependencies");
+    final Element root = new Element("nuget-dependencies");
 
-    Element pkgs = new Element("packages");
-    for (PackageInfo info : deps.getPackages()) {
-      Element pkg = new Element("package");
-      pkg.setAttribute("id", info.getId());
-      pkg.setAttribute("version", info.getVersion());
-      pkgs.addContent((Content) pkg);
-    }
+    savePackagesList(deps.getUsedPackages(), root, USED_PACKAGES_ELEMENT);
+    savePackagesList(deps.getCreatedPackages(), root, CREATED_PACKAGES_ELEMENT);
 
-    root.addContent((Content) pkgs);
-
-    Document doc = new Document(root);
-    OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
+    final Document doc = new Document(root);
+    final OutputStream os = new BufferedOutputStream(new FileOutputStream(file));
     try {
       XmlUtil.saveDocument(doc, os);
     } finally {
