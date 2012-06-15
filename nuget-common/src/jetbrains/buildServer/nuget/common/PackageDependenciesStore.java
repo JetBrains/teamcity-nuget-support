@@ -42,8 +42,9 @@ public class PackageDependenciesStore {
   private static final String PACKAGE_ID = "id";
   private static final String PACKAGE_VERSION = "version";
 
+  @NotNull
   public PackageDependencies load(@NotNull final InputStream is) throws IOException {
-    Element element = null;
+    Element element;
     try {
       element = FileUtil.parseDocument(is, false);
     } catch (final JDOMException e) {

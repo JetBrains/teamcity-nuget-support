@@ -34,8 +34,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Map;
-import java.util.TreeMap;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_USED_PACKAGES_DIR;
 import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_USED_PACKAGES_FILE;
@@ -80,21 +80,11 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
   protected void fillModel(@NotNull final Map<String, Object> model,
                            @NotNull final HttpServletRequest request,
                            @Nullable final SBuild build) {
-    final Map<String, String> packages = new TreeMap<String, String>();
-    //noinspection unchecked
-    model.put("nugetPackages", packages);
-
     if (build == null) return;
-    PackageDependencies deps = loadDependencies(build);
-
-    if (deps != null) {
-      for (PackageInfo info : deps.getUsedPackages()) {
-        packages.put(info.getId(), info.getVersion());
-      }
-    }
+    model.put("packages", loadDependencies(build));
   }
 
-  @Nullable
+  @NotNull
   private PackageDependencies loadDependencies(@NotNull final SBuild build) {
     final BuildArtifact file = getPackagesFile(build);
     if (file != null) {
@@ -108,6 +98,6 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
         FileUtil.close(inputStream);
       }
     }
-    return null;
+    return new PackageDependencies(Collections.<PackageInfo>emptyList(), Collections.<PackageInfo>emptyList());
   }
 }

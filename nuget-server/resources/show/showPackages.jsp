@@ -20,30 +20,45 @@
   ~ limitations under the License.
   --%>
 
-<jsp:useBean id="nugetPackages" scope="request" type="java.util.Map<java.lang.String, java.lang.String>"/>
-<c:set var="numberOfPackages" value="${fn:length(nugetPackages)}" />
+<jsp:useBean id="packages" scope="request" type="jetbrains.buildServer.nuget.common.PackageDependencies"/>
 
-This build downloaded ${numberOfPackages} NuGet package<bs:s val="${numberOfPackages}"/>.
-
-<c:choose>
-  <c:when test="${fn:length(nugetPackages) eq 0}">
-    No packages were reported
-  </c:when>
-  <c:otherwise>
-    <table class="runnerFormTable" style="width:40em">
-      <thead>
+<h3>Used Packages</h3>
+<c:set var="numberOfUsedPackages" value="${fn:length(packages.usedPackages)}"/>
+This build used and downlaoded ${numberOfUsedPackages} NuGet package<bs:s val="${numberOfUsedPackages}"/>.
+<c:if test="${numberOfUsedPackages gt 0}">
+  <table class="runnerFormTable" style="width:40em">
+    <thead>
+    <tr>
+      <th>Package Name</th>
+      <th>Package Version</th>
+    </tr>
+    </thead>
+    <c:forEach var="it" items="${packages.usedPackages}">
       <tr>
-        <th>Package Name</th>
-        <th>Package Version</th>
+        <td><c:out value="${it.id}"/></td>
+        <td><c:out value="${it.version}"/></td>
       </tr>
-      </thead>
-      <c:forEach var="it" items="${nugetPackages}">
-        <tr>
-          <td><c:out value="${it.key}"/></td>
-          <td><c:out value="${it.value}"/></td>
-        </tr>
-      </c:forEach>
-    </table>
-  </c:otherwise>
-</c:choose>
+    </c:forEach>
+  </table>
+</c:if>
+
+<c:set var="numberOfCreatedPackages" value="${fn:length(packages.createdPackages)}" />
+<h3>Created Packages</h3>
+This build created ${numberOfUsedPackages} NuGet package<bs:s val="${numberOfCreatedPackages}"/>.
+<c:if test="${numberOfCreatedPackages gt 0}">
+  <table class="runnerFormTable" style="width:40em">
+    <thead>
+    <tr>
+      <th>Package Name</th>
+      <th>Package Version</th>
+    </tr>
+    </thead>
+    <c:forEach var="it" items="${packages.createdPackages}">
+      <tr>
+        <td><c:out value="${it.id}"/></td>
+        <td><c:out value="${it.version}"/></td>
+      </tr>
+    </c:forEach>
+  </table>
+</c:if>
 
