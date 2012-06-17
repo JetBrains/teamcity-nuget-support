@@ -87,6 +87,30 @@ public class SolutionParserTest extends BaseTestCase {
             );
   }
 
+  @Test
+  public void test_webSite11_ts() throws IOException {
+    doTest( "IncorrectTreeSectionStructure.sln",
+            "CSSL4MusicPlayer\\CSSL4MusicPlayer.Web\\CSSL4MusicPlayer.Web.csproj",
+            "CSSL4MusicPlayer\\CSSL4MusicPlayer\\CSSL4MusicPlayer.csproj"
+            );
+  }
+
+  @Test
+  public void test_webSite11_base() throws IOException {
+    doTest( "webProject2010.sln",
+            "e:\\Temp\\x44"
+            );
+  }
+
+  @Test
+  public void test_projectData() throws IOException {
+    doTest( "ProjectsData.sln",
+            "WebSite",
+            "MVC_WebApp\\MVC_WebApp.csproj",
+            "MVC2_WebApp\\MVC2_WebApp.csproj"
+            );
+  }
+
   @NotNull
   private File getTestDataPath(@NotNull String path) {
     return Paths.getTestDataPath("sln/" + path);
