@@ -71,6 +71,14 @@ public class SolutionParserTest extends BaseTestCase {
             );
   }
 
+  @Test
+  public void test_webSite11_1() throws IOException {
+    doTest( "VS11Website.sln",
+            "..\\..\\WebSites\\WebSite2",
+            "ClassLibrary1\\ClassLibrary1.csproj"
+            );
+  }
+
   @NotNull
   private File getTestDataPath(@NotNull String path) {
     return Paths.getTestDataPath("sln/" + path);

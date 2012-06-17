@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.agent.util.sln.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.StreamUtil;
 import jetbrains.buildServer.nuget.agent.util.sln.SolutionFileParser;
 import jetbrains.buildServer.util.FileUtil;
@@ -33,19 +34,27 @@ import java.util.regex.Pattern;
  *         Date: 15.06.12 20:05
  */
 public class SolutionParserImpl implements SolutionFileParser {
+  private static final Logger LOG = Logger.getInstance(SolutionParserImpl.class.getName());
+
   @NotNull
   public Collection<File> parseProjectFiles(@NotNull final File sln) throws IOException {
     final File root = sln.getParentFile();
     if (root == null) Collections.emptyList();
 
     final Collection<String> lines = readFileText(sln);
-    final Pattern pt = Pattern.compile("^\\s*Project\\(\".*\"\\)\\s*");
+    final Pattern pt = Pattern.compile("^\\s*Project\\(\"\\{[0-9A-Z\\-]+\\}\"\\)\\s*=\\s*\".*\"\\s*,\\s*\"(.*)\"\\s*,.*$", Pattern.CASE_INSENSITIVE);
 
     final List<File> files = new ArrayList<File>();
     for (String line : lines) {
       final Matcher matcher = pt.matcher(line);
       if (matcher.matches()) {
-        files.add(new File(root, matcher.group(1)));
+        //TODO: check there is no network paths here
+        String relPath = matcher.group(1).trim();
+        if (relPath.contains(":\\") || relPath.contains("://")) {
+          LOG.warn("Failed to resolve project path: " + line);
+          continue;
+        }
+        files.add(FileUtil.getCanonicalFile(new File(root, relPath)));
       }
     }
 
