@@ -28,9 +28,11 @@ import java.util.Collection;
  */
 public interface SolutionFileParser {
   /**
-   * Parses .sln file to fetch project files from it
+   * Parses .sln file to fetch project files from it.
+   * Web projects does not have explicit project files, thus,
+   * web project home directory will be returned.
    * @param sln path to solution file
-   * @return collection of full paths to referenced projects
+   * @return collection of full paths to referenced projects files or home directories
    */
   @NotNull
   Collection<File> parseProjectFiles(@NotNull final File sln) throws IOException;
