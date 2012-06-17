@@ -39,27 +39,52 @@ public class SolutionParserImpl implements SolutionFileParser {
   @NotNull
   public Collection<File> parseProjectFiles(@NotNull final File sln) throws IOException {
     final File root = sln.getParentFile();
-    if (root == null) Collections.emptyList();
+    if (root == null) return Collections.emptyList();
 
     final Collection<String> lines = readFileText(sln);
-    final Pattern pt = Pattern.compile("^\\s*Project\\(\"\\{[0-9A-Z\\-]+\\}\"\\)\\s*=\\s*\".*\"\\s*,\\s*\"(.*)\"\\s*,.*$", Pattern.CASE_INSENSITIVE);
+    boolean isInsideProject = false;
 
     final List<File> files = new ArrayList<File>();
     for (String line : lines) {
-      final Matcher matcher = pt.matcher(line);
-      if (matcher.matches()) {
-        //TODO: check there is no network paths here
-        String relPath = matcher.group(1).trim();
-        if (relPath.contains(":\\") || relPath.contains("://")) {
-          LOG.warn("Failed to resolve project path: " + line);
-          continue;
-        }
-        files.add(FileUtil.getCanonicalFile(new File(root, relPath)));
+      final Matcher projectStart = PROJECT_PATTERTN.matcher(line);
+      if (projectStart.matches()) {
+        isInsideProject = true;
+        resolveAndAddFile(root, files, line, projectStart.group(1));
+        continue;
+      }
+
+      if (PROJECT_END_PATTERTN.matcher(line).matches()) {
+        isInsideProject = false;
+        continue;
+      }
+
+      final Matcher slnRelPath = PROJECT_SLN_RELATIVE_PATH.matcher(line);
+      if (isInsideProject && slnRelPath.matches()) {
+        resolveAndAddFile(root, files, line, slnRelPath.group(1));
       }
     }
 
     return Collections.unmodifiableList(files);
   }
+
+  private void resolveAndAddFile(File root, List<File> files, String line, String relPath) {
+    if (relPath.contains("://") || relPath.trim().startsWith("\\\\")) {
+      LOG.warn("Failed to resolve project path: " + line);
+    } else {
+      files.add(FileUtil.resolvePath(root, relPath));
+    }
+  }
+
+  private final Pattern PROJECT_PATTERTN = Pattern.compile(
+          "^\\s*Project\\(\"\\{[0-9A-Z\\-]+\\}\"\\)\\s*=\\s*\".*\"\\s*,\\s*\"(.*)\"\\s*,.*$",
+          Pattern.CASE_INSENSITIVE);
+  private final Pattern PROJECT_END_PATTERTN = Pattern.compile(
+          "^\\s*EndProject\\s*$",
+          Pattern.CASE_INSENSITIVE);
+  private final Pattern PROJECT_SLN_RELATIVE_PATH = Pattern.compile(
+          "^\\s*SlnRelativePath\\s*=\\s*\"(.*)\".*$",
+          Pattern.CASE_INSENSITIVE);
+
 
   @NotNull
   private Collection<String> readFileText(@NotNull final File file) throws IOException {

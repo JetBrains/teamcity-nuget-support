@@ -74,8 +74,16 @@ public class SolutionParserTest extends BaseTestCase {
   @Test
   public void test_webSite11_1() throws IOException {
     doTest( "VS11Website.sln",
-            "..\\..\\WebSites\\WebSite2",
-            "ClassLibrary1\\ClassLibrary1.csproj"
+            "e:\\temp\\VS11Website"
+            );
+  }
+
+  @Test
+  public void test_webSite11_2() throws IOException {
+    doTest( "VS11Website2.sln",
+            "..\\..\\WebSites\\WebSite1\\",
+            "Test",
+            "WebApplication1\\WebApplication1.csproj"
             );
   }
 
@@ -88,7 +96,7 @@ public class SolutionParserTest extends BaseTestCase {
     final File sln = getTestDataPath(slnName);
     final Collection<File> projects = new TreeSet<File>();
     for (String path : relPaths) {
-      projects.add(FileUtil.getCanonicalFile(new File(sln.getParent(), path)));
+      projects.add(FileUtil.resolvePath(sln.getParentFile(), path));
     }
 
     Assert.assertEquals(projects, new TreeSet<File>(myParser.parseProjectFiles(sln)));
