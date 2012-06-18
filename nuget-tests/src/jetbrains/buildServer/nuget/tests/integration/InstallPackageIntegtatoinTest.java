@@ -281,6 +281,26 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertEquals(5 + 1 , packageses.size());
   }
 
+  @Test(dataProvider = NUGET_VERSIONS_17p)
+  public void test_solution_scanner(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-web-noRepository.zip"), "", myRoot);
+
+    fetchPackages(new File(myRoot, "ClassLibrary1/ClassLibrary1.sln"), Collections.<String>emptyList(), false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Ninject", "3.0.1.10"),
+                    new PackageInfo("elmah", "1.2.2"),
+                    new PackageInfo("elmah.corelibrary", "1.2.2")
+                    )
+    );
+
+    List<File> packageses = listFiles("ClassLibrary1/packages");
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "ClassLibrary1/packages/Ninject.3.0.1.10").isDirectory());
+    Assert.assertTrue(new File(myRoot, "ClassLibrary1/packages/elmah.1.2.2").isDirectory());
+    Assert.assertTrue(new File(myRoot, "ClassLibrary1/packages/elmah.corelibrary.1.2.2").isDirectory());
+    Assert.assertEquals(3, packageses.size());
+  }
 
   private void fetchPackages(final File sln,
                              final List<String> sources,
@@ -334,8 +354,9 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
 
   @NotNull
   private List<File> listFiles(String packages) {
-    final File[] files = new File(myRoot, packages).listFiles();
-    Assert.assertNotNull(files);
+    File file = new File(myRoot, packages);
+    final File[] files = file.listFiles();
+    Assert.assertNotNull(files, "Failed to list for: " + file);
     return Arrays.asList(files);
   }
 }

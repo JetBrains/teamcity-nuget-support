@@ -92,4 +92,13 @@ public class PackagesScannerTest extends PackagesConfigScannerTestBase {
     );
   }
 
+  @Test
+  public void test_web_no_repository() throws IOException, RunBuildException {
+    doTest("integration/test-web-noRepository.zip",
+            "ClassLibrary1/ClassLibrary1.sln",
+            "ClassLibrary1/packages.config",
+            "../WS/packages.config"
+    );
+  }
+
 }
