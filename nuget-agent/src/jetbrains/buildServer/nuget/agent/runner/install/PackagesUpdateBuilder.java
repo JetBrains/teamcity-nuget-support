@@ -56,6 +56,7 @@ public class PackagesUpdateBuilder extends PackagesInstallerBuilder {
   }
 
   public void onSolutionFileFound(@NotNull File sln, @NotNull File targetFolder) throws RunBuildException {
+    super.onSolutionFileFound(sln, targetFolder);
     if (myUpdateParameters.getUpdateMode() != PackagesUpdateMode.FOR_SLN) return;
 
     myStages.pushBuildProcess(
@@ -69,6 +70,7 @@ public class PackagesUpdateBuilder extends PackagesInstallerBuilder {
   }
 
   public void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException {
+    super.onPackagesConfigFound(config, targetFolder);
     if (myUpdateParameters.getUpdateMode() == FOR_EACH_PACKAGES_CONFIG) {
       myStages.pushBuildProcess(
               myActionFactory.createUpdate(

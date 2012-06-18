@@ -21,11 +21,10 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
-import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerBuilder;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesReportBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesUpdateBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerCallback;
@@ -83,37 +82,24 @@ public class PackagesInstallerBuilderTest extends BaseTestCase {
     updateParameters = m.mock(PackagesUpdateParameters.class);
     nugetSettings = m.mock(NuGetFetchParameters.class);
 
-    final InstallStages is = m.mock(InstallStages.class);
-    final BuildProcess reportProcess = m.mock(BuildProcess.class, "report process");
-    m.checking(new Expectations(){{
-      allowing(is).getInstallStage(); will(returnValue(install));
-      allowing(is).getUpdateStage(); will(returnValue(update));
-      allowing(is).getPostUpdateStart(); will(returnValue(postUpdate));
-      allowing(is).getReportStage(); will(returnValue(report));
-
-      allowing(factory).createUsageReport(context, myConfig, myTaget); will(returnValue(reportProcess));
-      allowing(factory).createUsageReport(context, myConfig2, myTaget); will(returnValue(reportProcess));
-      allowing(report).pushBuildProcess(reportProcess);
-    }});
-
-    builderUpdate = new PackagesUpdateBuilder(
-            factory,
-            is.getUpdateStage(),
-            is.getPostUpdateStart(),
-            context,
-            installParameters,
-            updateParameters
-            );
-
     builderInstall = new PackagesInstallerBuilder(
             factory,
-            is.getInstallStage(),
+            install,
             context,
             installParameters);
 
+    builderUpdate = new PackagesUpdateBuilder(
+            factory,
+            update,
+            postUpdate,
+            context,
+            installParameters,
+            updateParameters
+    );
+
     builderReport = new PackagesReportBuilder(
             factory,
-            is.getReportStage(),
+            report,
             context);
 
     m.checking(new Expectations(){{
@@ -134,6 +120,20 @@ public class PackagesInstallerBuilderTest extends BaseTestCase {
 
     builderInstall.onSolutionFileFound(mySln, myTaget);
     builderInstall.onPackagesConfigFound(myConfig, myTaget);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_report() throws RunBuildException {
+    final BuildProcess bp = m.mock(BuildProcess.class, "bp");
+    m.checking(new Expectations(){{
+      oneOf(factory).createUsageReport(context, myConfig, myTaget); will(returnValue(bp));
+      oneOf(report).pushBuildProcess(bp);
+    }});
+
+    builderReport.onSolutionFileFound(mySln, myTaget);
+    builderReport.onPackagesConfigFound(myConfig, myTaget);
 
     m.assertIsSatisfied();
   }
@@ -184,7 +184,9 @@ public class PackagesInstallerBuilderTest extends BaseTestCase {
 
     }});
 
+    builderInstall.onSolutionFileFound(mySln, myTaget);
     builderUpdate.onSolutionFileFound(mySln, myTaget);
+    builderInstall.onPackagesConfigFound(myConfig, myTaget);
     builderUpdate.onPackagesConfigFound(myConfig, myTaget);
 
     m.assertIsSatisfied();
@@ -261,7 +263,9 @@ public class PackagesInstallerBuilderTest extends BaseTestCase {
 
     }});
 
+    builderInstall.onSolutionFileFound(mySln, myTaget);
     builderUpdate.onSolutionFileFound(mySln, myTaget);
+    builderInstall.onPackagesConfigFound(myConfig, myTaget);
     builderUpdate.onPackagesConfigFound(myConfig, myTaget);
 
     m.assertIsSatisfied();
@@ -303,8 +307,13 @@ public class PackagesInstallerBuilderTest extends BaseTestCase {
       oneOf(postUpdate).pushBuildProcess(bpPostInstall2);
     }});
 
+    builderInstall.onSolutionFileFound(mySln, myTaget);
     builderUpdate.onSolutionFileFound(mySln, myTaget);
+
+    builderInstall.onPackagesConfigFound(myConfig, myTaget);
     builderUpdate.onPackagesConfigFound(myConfig, myTaget);
+
+    builderInstall.onPackagesConfigFound(myConfig2, myTaget);
     builderUpdate.onPackagesConfigFound(myConfig2, myTaget);
 
     m.assertIsSatisfied();
