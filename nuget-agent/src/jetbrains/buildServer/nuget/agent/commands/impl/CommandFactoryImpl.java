@@ -55,6 +55,9 @@ public class CommandFactoryImpl implements CommandFactory {
     if (params.getUseSafeUpdate()) {
       argz.add("-Safe");
     }
+    if (params.getIncludePrereleasePackages()) {
+      argz.add("-Prerelease");
+    }
     argz.add("-Verbose");
     argz.add("-RepositoryPath");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());

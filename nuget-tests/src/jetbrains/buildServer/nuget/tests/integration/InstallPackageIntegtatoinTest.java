@@ -99,6 +99,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
 
       allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(false));
       allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
     }});
@@ -124,12 +125,10 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
       allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
 
-      allowing(myUpdate).getUseSafeUpdate();
-      will(returnValue(false));
-      allowing(myUpdate).getPackagesToUpdate();
-      will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode();
-      will(returnValue(PackagesUpdateMode.FOR_SLN));
+      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(false));
+      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
@@ -153,12 +152,10 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
       allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
 
-      allowing(myUpdate).getUseSafeUpdate();
-      will(returnValue(true));
-      allowing(myUpdate).getPackagesToUpdate();
-      will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode();
-      will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
+      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(true));
+      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(true));
+      allowing(myUpdate).getPackagesToUpdate();  will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
     }});
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
@@ -172,6 +169,64 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
     Assert.assertEquals(5, packageses.size());
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS_17p)
+  public void test_prerelease_local(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-prerelease.zip"), "prereleaseUpdate/", myRoot);
+
+    m.checking(new Expectations() {{
+      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
+      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
+
+      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(true));
+
+      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
+    }});
+
+    fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, true, nuget,
+            Arrays.asList(
+                    new PackageInfo("Jonnyz.Package", "3.0.4001-beta"),
+                    new PackageInfo("Elmah", "1.2")));
+
+    List<File> packageses = listFiles("packages");
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/Elmah.1.2").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.3001").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.4001-beta").isDirectory());
+    Assert.assertEquals(3 + 1, packageses.size());
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS_17p)
+  public void test_prerelease_config_removed(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-prerelease-cleanup.zip"), "prereleaseUpdate/", myRoot);
+
+    m.checking(new Expectations() {{
+      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
+      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
+
+      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(true));
+
+      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
+    }});
+
+    fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, true, nuget,
+            Arrays.asList(
+                    new PackageInfo("Jonnyz.Package", "3.0.4001-beta"),
+                    new PackageInfo("Elmah", "1.2")));
+
+    List<File> packageses = listFiles("packages");
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/Elmah.1.2").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.3001").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.4001-beta").isDirectory());
+    Assert.assertEquals(3 + 1, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS)

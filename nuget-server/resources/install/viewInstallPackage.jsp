@@ -46,3 +46,9 @@
     <props:displayCheckboxValue name="${ib.updatePackagesSafeKey}"/>
   </strong>
 </div>
+<div class="parameter">
+  Include PreRelease packages
+  <strong>
+    <props:displayCheckboxValue name="${ib.updatePackagesPrerelease}"/>
+  </strong>
+</div>

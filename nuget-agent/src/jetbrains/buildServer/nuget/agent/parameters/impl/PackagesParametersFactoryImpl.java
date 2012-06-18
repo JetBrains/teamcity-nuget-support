@@ -210,6 +210,10 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
         return getBoolean(context, NUGET_UPDATE_PACKAGES_SAFE);
       }
 
+      public boolean getIncludePrereleasePackages() {
+        return getBoolean(context, NUGET_UPDATE_PACKAGES_PRERELEASE);
+      }
+
       @NotNull
       public Collection<String> getPackagesToUpdate() {
         return getMultilineParameter(context, NUGET_UPDATE_PACKAGE_IDS);

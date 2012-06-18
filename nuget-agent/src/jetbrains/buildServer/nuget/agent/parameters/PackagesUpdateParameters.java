@@ -40,6 +40,12 @@ public interface PackagesUpdateParameters extends NuGetFetchParametersHolder {
    */
   boolean getUseSafeUpdate();
 
+
+  /**
+   * @return true if update should include prerelease packages
+   */
+  boolean getIncludePrereleasePackages();
+
   /**
    * @return list of package Ids to update. Empty list
    *         means update all packages

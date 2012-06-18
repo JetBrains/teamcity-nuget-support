@@ -71,6 +71,12 @@
                               packages.config files</span>
 
       <div style="margin-left: 2em;">
+        <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
+        Include pre-release packages.
+        <span class="smallNote">Equivalent to -Prerelease NuGet option</span>
+      </div>
+
+      <div style="margin-left: 2em;">
         <props:checkboxProperty name="${ib.updatePackagesSafeKey}"/>
         Perform safe update.
         <span class="smallNote">Equivalent to -Safe NuGet option</span>
@@ -81,7 +87,9 @@
   <script type="text/javascript">
     (function() {
     var handler = function() {
-      $('${ib.updatePackagesSafeKey}').disabled = !$('${ib.updatePackagesKey}').checked;
+      var dis = !$('${ib.updatePackagesKey}').checked;
+      $('${ib.updatePackagesSafeKey}').disabled = dis;
+      $('${ib.updatePackagesPrerelease}').disabled = dis;
     };
     Event.observe($('${ib.updatePackagesKey}'), 'change', handler);
     handler();

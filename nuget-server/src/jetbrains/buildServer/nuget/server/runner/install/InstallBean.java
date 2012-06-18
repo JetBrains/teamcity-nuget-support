@@ -32,6 +32,7 @@ public class InstallBean {
   public String getExcludeVersionKey() { return PackagesConstants.NUGET_EXCLUDE_VERSION;}
   public String getUpdatePackagesKey() { return PackagesConstants.NUGET_UPDATE_PACKAGES;}
   public String getUpdatePackagesSafeKey() { return PackagesConstants.NUGET_UPDATE_PACKAGES_SAFE;}
+  public String getUpdatePackagesPrerelease() { return PackagesConstants.NUGET_UPDATE_PACKAGES_PRERELEASE;}
   public String getUpdateModeKey() { return PackagesConstants.NUGET_UPDATE_MODE;}
   public String getUpdatePerSolutionValue() { return PackagesUpdateMode.FOR_SLN.getName();}
   public String getUpdatePerConfigValue() { return PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG.getName();}
