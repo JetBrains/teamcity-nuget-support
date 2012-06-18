@@ -21,10 +21,8 @@ import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigBuildProcess;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesConfigScanner;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerCallback;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.ResourcesConfigPackagesScanner;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.*;
+import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
@@ -56,8 +54,17 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
     log = m.mock(BuildProgressLogger.class);
     ps = m.mock(NuGetFetchParameters.class);
     cb = m.mock(PackagesInstallerCallback.class);
-    proc = new LocateNuGetConfigBuildProcess(ps, log, new RepositoryPathResolverImpl(), Arrays.<PackagesConfigScanner>asList(new ResourcesConfigPackagesScanner()));
+    proc = new LocateNuGetConfigBuildProcess(ps, log, new RepositoryPathResolverImpl(), Arrays.<PackagesConfigScanner>asList(
+            new ResourcesConfigPackagesScanner(),
+            new SolutionPackagesScanner(new SolutionParserImpl()),
+            new SolutionWidePackagesConfigScanner()));
     proc.addInstallStageListener(cb);
+
+    m.checking(new Expectations(){{
+      allowing(log).activityStarted(with(any(String.class)),with(any(String.class)), with(any(String.class)));
+      allowing(log).activityFinished(with(any(String.class)), with(any(String.class)));
+      allowing(log).message(with(any(String.class)));
+    }});
   }
 
   @Test
@@ -65,9 +72,10 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
     m.checking(new Expectations() {{
       allowing(ps).getSolutionFile();
       will(returnValue(new File(myRoot, "foo.sln")));
+      allowing(log).warning(with(any(String.class)));
     }});
 
-    assertRunException(proc, "Failed to find");
+    assertRunException(proc, "Failed to open solution file");
     m.assertIsSatisfied();
   }
 
@@ -81,9 +89,10 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
       will(returnValue(sln));
 
       oneOf(cb).onSolutionFileFound(sln, new File(sln.getParentFile(), "packages"));
+      allowing(log).warning(with(any(String.class)));
     }});
 
-    assertRunException(proc, "Failed to find repositories.config");
+    assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
     m.assertIsSatisfied();
   }
 
@@ -99,9 +108,11 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
       will(returnValue(sln));
 
       oneOf(cb).onSolutionFileFound(sln, packages);
+
+      allowing(log).warning(with(any(String.class)));
     }});
 
-    assertRunException(proc, "Failed to find repositories.config");
+    assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
     m.assertIsSatisfied();
   }
 
