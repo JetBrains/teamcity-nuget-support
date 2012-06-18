@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
 import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
+import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -89,13 +90,21 @@ public class SolutionParserTest extends BaseTestCase {
 
   @Test
   public void test_webSite11_1() throws IOException, RunBuildException {
-    doTest( "VS11Website.sln",
+    m.checking(new Expectations(){{
+      allowing(myLogger).warning(with(any(String.class)));
+    }});
+
+    doTest("VS11Website.sln",
             "e:\\temp\\VS11Website"
-            );
+    );
   }
 
   @Test
   public void test_webSite11_2() throws IOException, RunBuildException {
+    m.checking(new Expectations() {{
+      allowing(myLogger).warning(with(any(String.class)));
+    }});
+
     doTest( "VS11Website2.sln",
             "..\\..\\WebSites\\WebSite1\\",
             "Test",
