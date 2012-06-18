@@ -85,13 +85,8 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
     final Collection<SourcePackageInfo> nFilter = m1.get(nunit_filter);
     final Collection<SourcePackageInfo> nYouTrack = m1.get(youTrackSharp);
 
-    if (nuget == NuGet.NuGet_1_4) {
-      Assert.assertTrue(nAll.size() > nFilter.size());
-      Assert.assertTrue(nYouTrack.size() > 0);
-    } else {
-      Assert.assertTrue(nAll.size() == 1, new ArrayList<SourcePackageInfo>(nAll).toString());
-      Assert.assertTrue(nYouTrack.size() == 1, new ArrayList<SourcePackageInfo>(nYouTrack).toString());
-      Assert.assertTrue(nFilter.size() > 0, new ArrayList<SourcePackageInfo>(nFilter).toString());
-    }
+    Assert.assertTrue(nAll.size() == 1, new ArrayList<SourcePackageInfo>(nAll).toString());
+    Assert.assertTrue(nYouTrack.size() == 1, new ArrayList<SourcePackageInfo>(nYouTrack).toString());
+    Assert.assertTrue(nFilter.size() > 0, new ArrayList<SourcePackageInfo>(nFilter).toString());
   }
 }

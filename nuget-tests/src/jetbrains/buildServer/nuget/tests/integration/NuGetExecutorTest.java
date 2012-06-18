@@ -17,12 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.*;
-import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
-import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
-import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
-import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
@@ -75,7 +70,7 @@ public class NuGetExecutorTest extends IntegrationTestBase {
   public void test_does_not_run_on_linux() throws NuGetExecutionException {
     setIsWindows(false);
     try {
-      doPingTest(NuGet.NuGet_1_5);
+      doPingTest(NuGet.NuGet_1_8);
     } catch (NuGetExecutionException e) {
       return;
     }

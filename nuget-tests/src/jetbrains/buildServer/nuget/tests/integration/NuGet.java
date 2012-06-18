@@ -26,8 +26,6 @@ import java.io.File;
 * Date: 31.08.11 10:39
 */
 public enum NuGet {
-  NuGet_1_4,
-  NuGet_1_5,
   NuGet_1_6,
   NuGet_1_7,
   NuGet_1_8,
@@ -37,10 +35,6 @@ public enum NuGet {
   @NotNull
   public File getPath() {
     switch (this) {
-      case NuGet_1_4:
-        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.4/NuGet.exe"));
-      case NuGet_1_5:
-        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.5/NuGet.exe"));
       case NuGet_1_6:
         return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.6/NuGet.exe"));
       case NuGet_1_7:

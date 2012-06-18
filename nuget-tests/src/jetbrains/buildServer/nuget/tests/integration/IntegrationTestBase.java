@@ -80,7 +80,6 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   @DataProvider(name = NUGET_VERSIONS)
   public Object[][] dataProviderNuGetVersions() {
     return new Object[][]{
-            new Object[] { NuGet.NuGet_1_4},
             new Object[] { NuGet.NuGet_1_6},
             new Object[] { NuGet.NuGet_1_7},
             new Object[] { NuGet.NuGet_1_8},
