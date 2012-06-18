@@ -17,12 +17,16 @@
 package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.util.sln.SolutionFileParser;
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.FileUtil;
 import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
+import org.jmock.Mockery;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -35,15 +39,27 @@ import java.util.TreeSet;
  *         Date: 15.06.12 20:06
  */
 public class SolutionParserTest extends BaseTestCase {
+  private Mockery m;
+  private BuildProgressLogger myLogger;
   private SolutionFileParser myParser = new SolutionParserImpl();
 
-  @Test
-  public void test_vs2008() throws IOException {
-    doTest("vs2008.sln", "SystemCoreReferenced\\SystemCoreReferenced.csproj", "SystemCoreNotReferenced\\SystemCoreNotReferenced.csproj");
+  @BeforeMethod
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    m = new Mockery();
+    myLogger = m.mock(BuildProgressLogger.class);
   }
 
   @Test
-  public void test_vs2010() throws IOException {
+  public void test_vs2008() throws IOException, RunBuildException {
+    doTest("vs2008.sln",
+            "SystemCoreReferenced\\SystemCoreReferenced.csproj",
+            "SystemCoreNotReferenced\\SystemCoreNotReferenced.csproj");
+  }
+
+  @Test
+  public void test_vs2010() throws IOException, RunBuildException {
     doTest( "vs2010.sln",
             "SystemCoreReferenced/SystemCoreReferenced.csproj",
             "SystemCoreNotReferenced_ImplicitAllowed/SystemCoreNotReferenced_ImplicitAllowed.csproj",
@@ -52,7 +68,7 @@ public class SolutionParserTest extends BaseTestCase {
   }
 
   @Test
-  public void test_vs2010_maxi() throws IOException {
+  public void test_vs2010_maxi() throws IOException, RunBuildException {
     doTest( "Lunochod1.sln",
             "Lunochod1\\Lunochod1.csproj",
             "Lunochod2\\Lunochod2.vcxproj",
@@ -64,7 +80,7 @@ public class SolutionParserTest extends BaseTestCase {
   }
 
   @Test
-  public void test_webSite() throws IOException {
+  public void test_webSite() throws IOException, RunBuildException {
     doTest( "WebSiteReferencedProjects.sln",
             "..\\..\\WebSites\\WebSite2",
             "ClassLibrary1\\ClassLibrary1.csproj"
@@ -72,14 +88,14 @@ public class SolutionParserTest extends BaseTestCase {
   }
 
   @Test
-  public void test_webSite11_1() throws IOException {
+  public void test_webSite11_1() throws IOException, RunBuildException {
     doTest( "VS11Website.sln",
             "e:\\temp\\VS11Website"
             );
   }
 
   @Test
-  public void test_webSite11_2() throws IOException {
+  public void test_webSite11_2() throws IOException, RunBuildException {
     doTest( "VS11Website2.sln",
             "..\\..\\WebSites\\WebSite1\\",
             "Test",
@@ -88,7 +104,7 @@ public class SolutionParserTest extends BaseTestCase {
   }
 
   @Test
-  public void test_webSite11_ts() throws IOException {
+  public void test_webSite11_ts() throws IOException, RunBuildException {
     doTest( "IncorrectTreeSectionStructure.sln",
             "CSSL4MusicPlayer\\CSSL4MusicPlayer.Web\\CSSL4MusicPlayer.Web.csproj",
             "CSSL4MusicPlayer\\CSSL4MusicPlayer\\CSSL4MusicPlayer.csproj"
@@ -96,14 +112,14 @@ public class SolutionParserTest extends BaseTestCase {
   }
 
   @Test
-  public void test_webSite11_base() throws IOException {
+  public void test_webSite11_base() throws IOException, RunBuildException {
     doTest( "webProject2010.sln",
             "e:\\Temp\\x44"
             );
   }
 
   @Test
-  public void test_projectData() throws IOException {
+  public void test_projectData() throws IOException, RunBuildException {
     doTest( "ProjectsData.sln",
             "WebSite",
             "MVC_WebApp\\MVC_WebApp.csproj",
@@ -116,14 +132,14 @@ public class SolutionParserTest extends BaseTestCase {
     return Paths.getTestDataPath("sln/" + path);
   }
 
-  private void doTest(String slnName, String... relPaths) throws IOException {
+  private void doTest(String slnName, String... relPaths) throws IOException, RunBuildException {
     final File sln = getTestDataPath(slnName);
     final Collection<File> projects = new TreeSet<File>();
     for (String path : relPaths) {
       projects.add(FileUtil.resolvePath(sln.getParentFile(), path));
     }
 
-    Assert.assertEquals(projects, new TreeSet<File>(myParser.parseProjectFiles(sln)));
+    Assert.assertEquals(projects, new TreeSet<File>(myParser.parseProjectFiles(myLogger, sln)));
   }
 
 }

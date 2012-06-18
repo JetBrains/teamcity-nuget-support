@@ -18,6 +18,8 @@ package jetbrains.buildServer.nuget.agent.util.sln.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.io.StreamUtil;
+import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.util.sln.SolutionFileParser;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +39,8 @@ public class SolutionParserImpl implements SolutionFileParser {
   private static final Logger LOG = Logger.getInstance(SolutionParserImpl.class.getName());
 
   @NotNull
-  public Collection<File> parseProjectFiles(@NotNull final File sln) throws IOException {
+  public Collection<File> parseProjectFiles(@NotNull final BuildProgressLogger logger,
+                                            @NotNull final File sln) throws RunBuildException {
     final File root = sln.getParentFile();
     if (root == null) return Collections.emptyList();
 
@@ -49,7 +52,7 @@ public class SolutionParserImpl implements SolutionFileParser {
       final Matcher projectStart = PROJECT_PATTERTN.matcher(line);
       if (projectStart.matches()) {
         isInsideProject = true;
-        resolveAndAddFile(root, files, line, projectStart.group(1));
+        resolveAndAddFile(logger, root, line, projectStart.group(1), files);
         continue;
       }
 
@@ -60,18 +63,26 @@ public class SolutionParserImpl implements SolutionFileParser {
 
       final Matcher slnRelPath = PROJECT_SLN_RELATIVE_PATH.matcher(line);
       if (isInsideProject && slnRelPath.matches()) {
-        resolveAndAddFile(root, files, line, slnRelPath.group(1));
+        resolveAndAddFile(logger, root, line, slnRelPath.group(1), files);
       }
     }
 
     return Collections.unmodifiableList(files);
   }
 
-  private void resolveAndAddFile(File root, List<File> files, String line, String relPath) {
+  private void resolveAndAddFile(@NotNull final BuildProgressLogger logger,
+                                 @NotNull final File root,
+                                 @NotNull final String line,
+                                 @NotNull final String relPath,
+                                 @NotNull final List<File> files) {
     if (relPath.contains("://") || relPath.trim().startsWith("\\\\")) {
-      LOG.warn("Failed to resolve project path: " + line);
+      String msg = "Failed to resolve project reference from solution file: " + line;
+      LOG.warn(msg);
+      logger.warning(msg);
     } else {
-      files.add(FileUtil.resolvePath(root, relPath));
+      final File path = FileUtil.resolvePath(root, relPath);
+      LOG.debug("Found project: " + path);
+      files.add(path);
     }
   }
 
@@ -85,13 +96,16 @@ public class SolutionParserImpl implements SolutionFileParser {
           "^\\s*SlnRelativePath\\s*=\\s*\"(.*)\".*$",
           Pattern.CASE_INSENSITIVE);
 
-
   @NotNull
-  private Collection<String> readFileText(@NotNull final File file) throws IOException {
-    final FileInputStream is = new FileInputStream(file);
+  private Collection<String> readFileText(@NotNull final File file) throws RunBuildException {
+    FileInputStream is = null;
+
     try {
+      is = new FileInputStream(file);
       final String text = StreamUtil.readText(is, "utf-8");
       return Arrays.asList(text.split("[\\r\\n]+"));
+    } catch (IOException e) {
+      throw new RunBuildException("Failed to open solution file: " + file);
     } finally {
       FileUtil.close(is);
     }
