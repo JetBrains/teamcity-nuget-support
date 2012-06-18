@@ -81,18 +81,20 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   public Object[][] dataProviderNuGetVersions() {
     return new Object[][]{
             new Object[] { NuGet.NuGet_1_4},
-            new Object[] { NuGet.NuGet_1_5},
             new Object[] { NuGet.NuGet_1_6},
             new Object[] { NuGet.NuGet_1_7},
+            new Object[] { NuGet.NuGet_1_8},
+            new Object[] { NuGet.NuGet_2_0},
     };
   }
 
   @DataProvider(name = NUGET_VERSIONS_15p)
   public Object[][] dataProviderNuGetVersions15p() {
     return new Object[][]{
-            new Object[] { NuGet.NuGet_1_5},
             new Object[] { NuGet.NuGet_1_6},
             new Object[] { NuGet.NuGet_1_7},
+            new Object[] { NuGet.NuGet_1_8},
+            new Object[] { NuGet.NuGet_2_0},
     };
   }
 
@@ -101,6 +103,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     return new Object[][]{
             new Object[] { NuGet.NuGet_1_6},
             new Object[] { NuGet.NuGet_1_7},
+            new Object[] { NuGet.NuGet_1_8},
+            new Object[] { NuGet.NuGet_2_0},
     };
   }
 
@@ -108,6 +112,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   public Object[][] dataProviderNuGetVersions17p() {
     return new Object[][]{
             new Object[] { NuGet.NuGet_1_7},
+            new Object[] { NuGet.NuGet_1_8},
+            new Object[] { NuGet.NuGet_2_0},
     };
   }
 

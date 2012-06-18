@@ -30,6 +30,8 @@ public enum NuGet {
   NuGet_1_5,
   NuGet_1_6,
   NuGet_1_7,
+  NuGet_1_8,
+  NuGet_2_0,
   ;
 
   @NotNull
@@ -43,6 +45,10 @@ public enum NuGet {
         return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.6/NuGet.exe"));
       case NuGet_1_7:
         return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.7/NuGet.exe"));
+      case NuGet_1_8:
+        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/1.8/NuGet.exe"));
+      case NuGet_2_0:
+        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/2.0/NuGet.exe"));
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }
