@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.runner.install;
+package jetbrains.buildServer.nuget.agent.runner.install.impl.locate;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
@@ -46,34 +46,16 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   private final NuGetFetchParameters myContext;
   private final BuildProgressLogger myLogger;
   private final RepositoryPathResolver myResolver;
-  private final Callback myCallback;
+  private final PackagesInstallerCallback myCallback;
 
   public LocateNuGetConfigBuildProcess(@NotNull final NuGetFetchParameters context,
                                        @NotNull final BuildProgressLogger logger,
                                        @NotNull final RepositoryPathResolver resolver,
-                                       @NotNull final Callback callback) {
+                                       @NotNull final PackagesInstallerCallback callback) {
     myContext = context;
     myLogger = logger;
     myResolver = resolver;
     myCallback = callback;
-  }
-
-  public static interface Callback {
-    /**
-     * Called when packages.config is found
-     * @param config full path to packages.config file
-     * @param targetFolder target folder to store packages
-     * @throws RunBuildException on erorr
-     */
-    void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException;
-
-    /**
-     * Called when solution file is found
-     * @param sln path to sln file
-     * @param targetFolder target folder to store packages
-     * @throws RunBuildException on error
-     */
-    void onSolutionFileFound(@NotNull final File sln, @NotNull final File targetFolder) throws RunBuildException;
   }
 
   @NotNull

@@ -30,6 +30,4 @@ public interface RepositoryPathResolver {
   @NotNull
   File resolvePath(@NotNull BuildProgressLogger logger,
                    @NotNull File solutionFile) throws RunBuildException;
-
-
 }

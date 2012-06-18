@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.runner.install.impl;
+package jetbrains.buildServer.nuget.agent.runner.install;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.runner.install.LocateNuGetConfigBuildProcess;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerCallback;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +34,7 @@ import static jetbrains.buildServer.nuget.common.PackagesUpdateMode.FOR_EACH_PAC
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 11.07.11 14:57
  */
-public class PackagesInstallerBuilder implements LocateNuGetConfigBuildProcess.Callback {
+public class PackagesInstallerBuilder implements PackagesInstallerCallback {
   private final NuGetActionFactory myActionFactory;
   private final InstallStages myStages;
   private final BuildRunnerContext myContext;

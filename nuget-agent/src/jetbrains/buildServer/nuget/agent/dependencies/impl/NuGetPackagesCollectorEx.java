@@ -14,28 +14,14 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.runner.install.impl;
+package jetbrains.buildServer.nuget.agent.dependencies.impl;
 
-import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
-import org.jetbrains.annotations.NotNull;
+import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 18.07.11 23:36
+ * Date: 18.07.11 23:00
  */
-public interface InstallStages {
-  @NotNull
-  BuildProcessContinuation getLocateStage();
-
-  @NotNull
-  BuildProcessContinuation getInstallStage();
-
-  @NotNull
-  BuildProcessContinuation getUpdateStage();
-
-  @NotNull
-  BuildProcessContinuation getPostUpdateStart();
-
-  @NotNull
-  BuildProcessContinuation getReportStage();
+public interface NuGetPackagesCollectorEx extends NuGetPackagesCollector {
+  void removeAllPackages();
 }

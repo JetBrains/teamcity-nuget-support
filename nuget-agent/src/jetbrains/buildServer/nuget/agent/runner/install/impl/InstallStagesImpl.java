@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.agent.runner.install.impl;
 
+import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import org.jetbrains.annotations.NotNull;
