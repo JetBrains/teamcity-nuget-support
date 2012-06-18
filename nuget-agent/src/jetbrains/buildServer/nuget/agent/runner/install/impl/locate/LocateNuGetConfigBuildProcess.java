@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -93,6 +94,14 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     final Collection<File> files = new HashSet<File>();
     for (PackagesConfigScanner scanner : myScanners) {
       files.addAll(scanner.scanResourceConfig(myLogger, sln, packages));
+    }
+
+    for (Iterator<File> it = files.iterator(); it.hasNext(); ) {
+      final File file = it.next();
+      if (!file.isFile()) {
+        myLogger.warning("Found packages.config file does not exist: " + file);
+        it.remove();
+      }
     }
 
     if (files.isEmpty()) {

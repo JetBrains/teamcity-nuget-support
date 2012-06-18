@@ -185,12 +185,10 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
       will(returnValue(sln));
 
       oneOf(cb).onSolutionFileFound(sln, packages);
-      oneOf(cb).onPackagesConfigFound(new File(myRoot, "Mvc/packages.config"), packages);
-      oneOf(cb).onPackagesConfigFound(new File("c:\\Mvc2/packages.config"), packages);
-
       allowing(log).message(with(new StartsWithMatcher("Found packages folder: ")));
       allowing(log).message(with(new StartsWithMatcher("Found list of packages.config files: ")));
       allowing(log).warning(with(new StartsWithMatcher("No packages.config files were found under solution.")));
+      allowing(log).warning(with(new StartsWithMatcher("Found packages.config file does not exist")));
     }});
 
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
