@@ -64,6 +64,8 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
 
       allowing(myLogger).activityStarted(with(equal("install")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("install")), with(any(String.class)));
+      allowing(myLogger).activityStarted(with(equal("scan")), with(any(String.class)), with(any(String.class)));
+      allowing(myLogger).activityFinished(with(equal("scan")), with(any(String.class)));
     }});
   }
 
