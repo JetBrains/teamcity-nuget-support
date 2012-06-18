@@ -9,13 +9,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
   [TestFixture]
   public class NuGetRunnerTest
   {
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestExcuteNuGet(NuGetVersion version)
     {
       var r = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "help");
@@ -24,13 +18,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.IsTrue(r.ExitCode == 0);
     }
 
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestExcuteNuGet_NuGetFromTemp(NuGetVersion version)
     {
       TempFilesHolder.WithTempDirectory(
@@ -45,13 +33,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
         });
     }
 
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestExcuteNuGet_BothInTemp(NuGetVersion version)
     {
       TempFilesHolder.WithTempDirectory(
@@ -72,13 +54,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
         });
     }
 
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestDumpExtensionsPath(NuGetVersion version)
     {
       var r = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "---TeamCity.DumpExtensionsPath");
@@ -87,13 +63,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.IsTrue(r.ExitCode == 0);
     }
 
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_TeamCityPing(NuGetVersion version)
     {
       ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "TeamCity.Ping")
@@ -102,14 +72,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
         .AssertNoErrorOutput()
         .AssertOutputContains("TeamCity NuGet Extension is available.");
     }
-    
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_NuGetVersion(NuGetVersion version)
     {
 
@@ -123,13 +87,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.IsTrue(text.Contains("TeamCity.NuGetVersion: 1.") || text.Contains("TeamCity.NuGetVersion: 2."));
     }
 
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommands_RunConcurrently(NuGetVersion version)
     {
       bool failed = false;

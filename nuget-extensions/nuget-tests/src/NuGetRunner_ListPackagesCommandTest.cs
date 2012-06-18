@@ -7,13 +7,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
   [TestFixture]
   public class NuGetRunner_ListPackagesCommandTest : NuGetRunner_ListPackagesCommandTestBase
   {
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_ListPublic(NuGetVersion version)
     {
       var doc = DoTestWithSpec(version, Serialize(p1("NUnit")));
@@ -25,12 +19,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
         Assert.True(mpdes > 0);
     }
 
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions15p")]
     public void TestCommand_ListPublic_Multiple(NuGetVersion version)
     {
       var doc = DoTestWithSpec(
@@ -44,13 +33,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.True(PackagesCount(doc, "jquery") == 1);
     }
 
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_ListPublic_Multiple_sameIds(NuGetVersion version)
     {
       var doc = DoTestWithSpec(version, Serialize(p1("NUnit"), p1("NUnit", "(1.1.1,2.5.8]")));
@@ -71,13 +54,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       }
     }
 
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_ListPublicVersions_v1(NuGetVersion version)
     {
       var doc = DoTestWithSpec(version, Serialize(p1("NUnit", "(1.1.1,2.5.8]")));
@@ -85,24 +62,14 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Console.Out.WriteLine("Result: " + doc.OuterXml);
     }
 
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions16p")]
     public void TestCommand_ListPublicVersions_v2(NuGetVersion version)
     {
       var doc = DoTestWithSpec(version, Serialize(p2("NUnit", "(1.1.1,2.5.8]")));
       Assert.False(doc.OuterXml.Contains("version=\"2.5.10"));
     }
 
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_1_8)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_TeamListPublic_Local(NuGetVersion version)
     {
       var doc = DoTestWithSpec(version, Serialize(p(Files.GetLocalFeed(version), "Web"))).OuterXml;
@@ -110,7 +77,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.True(doc.Contains("version=\"1.1.1"));      
     }
 
-    [TestCase(NuGetVersion.NuGet_1_8)]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions18p")]
     public void TestCommand_TeamListPublic_Local_Prerelease(NuGetVersion version)
     {
       var doc = DoTestWithSpec(version, Serialize(p(Files.GetLocalFeed_1_8(), "Web", includePrerelease: true))).OuterXml;
@@ -119,8 +86,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.True(doc.Contains("version=\"4.0.1-beta"));      
       Assert.True(doc.Contains("version=\"2.2.2-rc"));      
     }
-        
-    [TestCase(NuGetVersion.NuGet_1_8)]
+
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions18p")]
     public void TestCommand_TeamListPublic_Web_Prerelease(NuGetVersion version)
     {
       var doc = DoTestWithSpec(version, Serialize(p2("EntityFramework", includePrerelease: true)));

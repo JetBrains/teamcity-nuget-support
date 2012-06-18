@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using NUnit.Framework;
+using System.Linq;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {
@@ -13,11 +14,13 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourCachedNuGetExe_1_6 = PathSearcher.SearchFile("lib/nuget/1.6/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_1_7 = PathSearcher.SearchFile("lib/nuget/1.7/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_1_8 = PathSearcher.SearchFile("lib/nuget/1.8/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_0 = PathSearcher.SearchFile("lib/nuget/2.0/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetRunnerPath = PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
-    private static readonly Lazy<string> ourLocalFeed_1_8 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.8");
+    private static readonly Lazy<string> ourLocalFeed_1_8 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.8");    
     private static readonly Lazy<string> ourCachedNuGet_CI_Last = new Lazy<string>(() => FetchLatestNuGetPackage("bt4"));
+    private static readonly Lazy<string> ourCachedNuGet_CI_2_1 = new Lazy<string>(() => FetchLatestNuGetPackage("bt36"));
     private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline); 
 
     public static string GetLocalFeed(NuGetVersion version)
@@ -35,6 +38,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string NuGetExe_1_6 { get { return ourCachedNuGetExe_1_6.Value; } }
     public static string NuGetExe_1_7 { get { return ourCachedNuGetExe_1_7.Value; } }
     public static string NuGetExe_1_8 { get { return ourCachedNuGetExe_1_8.Value; } }
+    public static string NuGetExe_2_0 { get { return ourCachedNuGetExe_2_0.Value; } }
     public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
 
     public static string GetNuGetExe(NuGetVersion version)
@@ -51,6 +55,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return NuGetExe_1_7;
         case NuGetVersion.NuGet_1_8:
           return NuGetExe_1_8;
+        case NuGetVersion.NuGet_2_0:
+          return NuGetExe_2_0;
+        case NuGetVersion.NuGet_2_1_CI:
+          return ourCachedNuGet_CI_2_1.Value;
         case NuGetVersion.NuGet_Latest_CI:
           return ourCachedNuGet_CI_Last.Value;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
@@ -97,6 +105,33 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.IsTrue(File.Exists(nugetPath));
       return nugetPath;
     }
+
+
+    public static NuGetVersion[] NuGetVersions
+    {
+      get { return AllNuGets().ToArray(); }
+    }
+
+    private static IEnumerable<NuGetVersion> AllNuGets()
+    {
+      return Enum.GetValues(typeof (NuGetVersion)).Cast<NuGetVersion>();
+    }
+
+    public static NuGetVersion[] NuGetVersions15p
+    {
+      get { return AllNuGets().Where(x => x >= NuGetVersion.NuGet_1_5).ToArray(); }
+    }
+
+    public static NuGetVersion[] NuGetVersions16p
+    {
+      get { return AllNuGets().Where(x => x >= NuGetVersion.NuGet_1_6).ToArray(); }
+    }
+
+    public static NuGetVersion[] NuGetVersions18p
+    {
+      get { return AllNuGets().Where(x => x >= NuGetVersion.NuGet_1_8).ToArray(); }
+    }
+
   }
 
   public enum NuGetVersion
@@ -106,6 +141,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
     NuGet_1_6 = 6,
     NuGet_1_7 = 7,
     NuGet_1_8 = 8,
+    NuGet_2_0 = 9,
+    NuGet_2_1_CI = 10,
 
     NuGet_Latest_CI = 990,
     NuGet_CommandLine_Package_Latest = 999
