@@ -24,9 +24,8 @@ import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigProcessFactory;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesConfigScanner;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.ResourcesConfigPackagesScanner;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.*;
+import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.ArchiveUtil;
@@ -311,7 +310,13 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     BuildProcess proc = new PackagesInstallerRunner(
             myActionFactory,
             myParametersFactory,
-            new LocateNuGetConfigProcessFactory(new RepositoryPathResolverImpl(), Arrays.<PackagesConfigScanner>asList(new ResourcesConfigPackagesScanner()))
+            new LocateNuGetConfigProcessFactory(
+                    new RepositoryPathResolverImpl(),
+                    Arrays.asList(
+                            new ResourcesConfigPackagesScanner(),
+                            new SolutionPackagesScanner(new SolutionParserImpl()),
+                            new SolutionWidePackagesConfigScanner())
+            )
     ).createBuildProcess(myBuild, myContext);
     ((NuGetPackagesCollectorImpl)myCollector).removeAllPackages();
 

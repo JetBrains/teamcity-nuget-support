@@ -74,13 +74,15 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
             context,
             installParameters));
 
-    locate.addInstallStageListener(new PackagesUpdateBuilder(
-            myActionFactory,
-            stages.getUpdateStage(),
-            stages.getPostUpdateStart(),
-            context,
-            installParameters,
-            updateParameters));
+    if (updateParameters != null) {
+      locate.addInstallStageListener(new PackagesUpdateBuilder(
+              myActionFactory,
+              stages.getUpdateStage(),
+              stages.getPostUpdateStart(),
+              context,
+              installParameters,
+              updateParameters));
+    }
 
     locate.addInstallStageListener(new PackagesReportBuilder(
             myActionFactory,
