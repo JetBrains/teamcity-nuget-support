@@ -30,6 +30,8 @@
     <envs />
     <properties />
     <listeners />
+    <RunnerSettings RunnerId="Run" />
+    <ConfigurationWrapper RunnerId="Run" />
     <method />
   </configuration>
 </component>
