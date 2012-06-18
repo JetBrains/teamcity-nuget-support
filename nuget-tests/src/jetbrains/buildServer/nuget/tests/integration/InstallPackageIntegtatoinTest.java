@@ -215,18 +215,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
-    fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, true, nuget,
-            Arrays.asList(
-                    new PackageInfo("Jonnyz.Package", "3.0.4001-beta"),
-                    new PackageInfo("Elmah", "1.2")));
-
-    List<File> packageses = listFiles("packages");
-    System.out.println("installed packageses = " + packageses);
-
-    Assert.assertTrue(new File(myRoot, "packages/Elmah.1.2").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.3001").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.4001-beta").isDirectory());
-    Assert.assertEquals(3 + 1, packageses.size());
+    fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, true, nuget, null);
   }
 
   @Test(dataProvider = NUGET_VERSIONS)

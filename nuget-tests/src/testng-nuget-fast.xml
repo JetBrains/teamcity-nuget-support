@@ -62,6 +62,10 @@
 
       <class name="jetbrains.buildServer.nuget.tests.agent.SolutionPackagesScannerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.ResourcesConfigPackagesScannerTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackageInstallerBuilderUpdateTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackageInstallerBuilderInstallTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackageInstallerBuilderReportTest"/>
     </classes>
   </test>
 
@@ -78,7 +82,7 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackagesConfigParserTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackagesWatcherTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.LocateNuGetConfigBuildProcessTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.agent.PackagesInstallerBuilderTest"/>
+
 
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetInstallPackageActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.RepositoryPathResolverTest"/>
