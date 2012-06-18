@@ -34,6 +34,18 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
   @NotNull
   public File resolvePath(@NotNull final BuildProgressLogger logger,
                           @NotNull final File solutionFile) {
+
+    final File path = resolvePathImpl(logger, solutionFile);
+    //noinspection ResultOfMethodCallIgnored
+    path.mkdirs();
+    if (!path.isDirectory()) {
+      logger.warning("Failed to create packages directory: " + path);
+    }
+    return path;
+  }
+
+  private File resolvePathImpl(@NotNull final BuildProgressLogger logger,
+                               @NotNull final File solutionFile) {
     final File home = solutionFile.getParentFile();
     final File config = new File(home, "nuget.config");
 

@@ -89,9 +89,10 @@ public class RepositoryPathResolverTest extends BaseTestCase {
   }
 
   private void doResolveTest(String packages) throws RunBuildException {
-
     final File actual = myResolver.resolvePath(myLogger, mySln);
+    Assert.assertTrue(actual.exists(), "Resolved file must exist");
     Assert.assertEquals(actual, FileUtil.getCanonicalFile(actual), "should return absolute canonical path");
     Assert.assertEquals(actual, FileUtil.getCanonicalFile(new File(myHome, packages)));
+
   }
 }
