@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 public class StartsWithMatcher extends BaseMatcher<String> {
   private final String myPrefix;
 
-  StartsWithMatcher(@NotNull final String prefix) {
+  public StartsWithMatcher(@NotNull final String prefix) {
     myPrefix = prefix;
   }
 

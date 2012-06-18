@@ -28,6 +28,7 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.*;
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
+import jetbrains.buildServer.nuget.tests.agent.StartsWithMatcher;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
@@ -213,6 +214,8 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
 
       allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
+
+      allowing(myLogger).warning(with(new StartsWithMatcher("Packages.config file was removed by NuGet.exe update command")));
     }});
 
     fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, true, nuget, null);
