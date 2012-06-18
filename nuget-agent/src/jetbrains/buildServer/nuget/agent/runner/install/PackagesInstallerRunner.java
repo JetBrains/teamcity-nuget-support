@@ -26,26 +26,25 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.*;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigBuildProcess;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigProcessFactory;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 13:55
  */
 public class PackagesInstallerRunner extends NuGetRunnerBase {
-  @NotNull
-  private final RepositoryPathResolver myResolver;
+  private final LocateNuGetConfigProcessFactory myFactory;
 
   public PackagesInstallerRunner(@NotNull final NuGetActionFactory actionFactory,
                                  @NotNull final PackagesParametersFactory parametersFactory,
-                                 @NotNull final RepositoryPathResolver resolver) {
+                                 @NotNull final LocateNuGetConfigProcessFactory factory) {
     super(actionFactory, parametersFactory);
-    myResolver = resolver;
+    myFactory = factory;
   }
 
   @NotNull
@@ -67,21 +66,8 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
       throw new RunBuildException("NuGet install packages must be enabled");
     }
 
-    final LocateNuGetConfigBuildProcess locate = new LocateNuGetConfigBuildProcess(
-            parameters,
-            context.getBuild().getBuildLogger(),
-            myResolver);
+    final LocateNuGetConfigBuildProcess locate = myFactory.createPrecess(context, parameters);
 
-    registerCallbacks(context, stages, installParameters, updateParameters, locate);
-
-    stages.getLocateStage().pushBuildProcess(locate);
-  }
-
-  private void registerCallbacks(@NotNull final BuildRunnerContext context,
-                                 @NotNull final InstallStages stages,
-                                 @NotNull final PackagesInstallParameters installParameters,
-                                 @Nullable final PackagesUpdateParameters updateParameters,
-                                 @NotNull final LocateNuGetConfigBuildProcess locate) {
     locate.addInstallStageListener(new PackagesInstallerBuilder(
             myActionFactory,
             stages.getInstallStage(),
@@ -100,6 +86,8 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
             myActionFactory,
             stages.getReportStage(),
             context));
+
+    stages.getLocateStage().pushBuildProcess(locate);
   }
 
   @NotNull

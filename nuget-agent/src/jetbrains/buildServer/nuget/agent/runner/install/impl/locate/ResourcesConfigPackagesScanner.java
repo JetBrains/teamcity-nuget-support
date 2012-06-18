@@ -42,7 +42,7 @@ public class ResourcesConfigPackagesScanner implements PackagesConfigScanner {
   @NotNull
   public Collection<File> scanResourceConfig(@NotNull final BuildProgressLogger logger,
                                              @NotNull final File sln,
-                                              @NotNull final File packages) throws RunBuildException {
+                                             @NotNull final File packages) throws RunBuildException {
     final File repositoriesConfig = new File(packages, "repositories.config");
     LOG.debug("resources.config path is " + repositoriesConfig);
 
@@ -77,7 +77,7 @@ public class ResourcesConfigPackagesScanner implements PackagesConfigScanner {
   private Collection<File> listPackagesConfigs(@NotNull final File repositoriesConfig) throws RunBuildException {
     final Collection<File> files = new ArrayList<File>();
     try {
-      new XmlXppAbstractParser(){
+      new XmlXppAbstractParser() {
         @Override
         protected List<XmlHandler> getRootHandlers() {
           return Arrays.asList(elementsPath(new Handler() {
