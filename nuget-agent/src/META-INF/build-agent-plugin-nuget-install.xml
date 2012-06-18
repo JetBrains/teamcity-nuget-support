@@ -7,6 +7,7 @@
   <bean class="jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerRunner"/>
   <bean class="jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigProcessFactory"/>
   <bean class="jetbrains.buildServer.nuget.agent.runner.install.impl.locate.ResourcesConfigPackagesScanner"/>
+  <bean class="jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionPackagesScanner"/>
 
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.PackagesWatcher"/>
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.PackagesInfoUploader"/>
