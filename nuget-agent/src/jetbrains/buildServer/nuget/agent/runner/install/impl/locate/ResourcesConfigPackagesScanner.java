@@ -23,14 +23,10 @@ import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlXppAbstractParser;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -47,31 +43,14 @@ public class ResourcesConfigPackagesScanner implements PackagesConfigScanner {
     LOG.debug("resources.config path is " + repositoriesConfig);
 
     if (!repositoriesConfig.isFile()) {
-      throw new RunBuildException("Failed to find repositories.config at " + repositoriesConfig);
+      logger.message("Failed to find repositories.config at " + repositoriesConfig);
+      return Collections.emptyList();
     }
 
-    logger.message("Found packages folder: " + packages);
     logger.message("Found list of packages.config files: " + repositoriesConfig);
-    final Collection<File> files = listPackagesConfigs(repositoriesConfig);
-    final File solutionPackagesConfig = findSolutionPackagesConfigFile(sln);
-    if (solutionPackagesConfig != null) {
-      logger.message("Found solution-wide packages.config: " + solutionPackagesConfig);
-      files.add(solutionPackagesConfig);
-    }
-
-    return files;
+    return listPackagesConfigs(repositoriesConfig);
   }
 
-  @Nullable
-  private File findSolutionPackagesConfigFile(@NotNull final File sln) {
-    final File parentFile = sln.getParentFile();
-    if (parentFile == null) return null;
-
-    final File path = new File(parentFile, ".nuget/packages.config");
-
-    if (path.isFile()) return path;
-    return null;
-  }
 
   @NotNull
   private Collection<File> listPackagesConfigs(@NotNull final File repositoriesConfig) throws RunBuildException {

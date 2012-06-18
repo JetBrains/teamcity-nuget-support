@@ -43,6 +43,7 @@ public class SolutionPackagesScanner implements PackagesConfigScanner {
     final Collection<File> result = new ArrayList<File>();
     final Collection<File> files = myParser.parseProjectFiles(logger, sln);
     for (File file : files) {
+      logger.message("Found project " + file.getPath());
       final File config;
       if (file.isFile()) {
         File parentFile = file.getParentFile();

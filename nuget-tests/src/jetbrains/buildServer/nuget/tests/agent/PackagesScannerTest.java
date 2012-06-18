@@ -18,7 +18,9 @@ package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesConfigScanner;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.ResourcesConfigPackagesScanner;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionPackagesScanner;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionWidePackagesConfigScanner;
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.Test;
@@ -29,14 +31,16 @@ import java.util.Collection;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 18.06.12 15:23
+ *         Date: 18.06.12 16:12
  */
-public class SolutionPackagesScannerTest extends PackagesConfigScannerTestBase {
-
+public class PackagesScannerTest extends PackagesConfigScannerTestBase {
   @NotNull
   @Override
   protected Collection<? extends PackagesConfigScanner> createScanner() {
-    return Arrays.asList(new SolutionPackagesScanner(new SolutionParserImpl()));
+    return Arrays.asList(
+            new ResourcesConfigPackagesScanner(),
+            new SolutionWidePackagesConfigScanner(),
+            new SolutionPackagesScanner(new SolutionParserImpl()));
   }
 
   @Test
@@ -87,6 +91,5 @@ public class SolutionPackagesScannerTest extends PackagesConfigScannerTestBase {
             "../WS/packages.config"
     );
   }
-
 
 }

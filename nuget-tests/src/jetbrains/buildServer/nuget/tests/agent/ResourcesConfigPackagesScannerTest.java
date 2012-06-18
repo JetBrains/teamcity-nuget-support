@@ -17,9 +17,7 @@
 package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesConfigScanner;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionPackagesScanner;
-import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.ResourcesConfigPackagesScanner;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.Test;
 
@@ -29,21 +27,19 @@ import java.util.Collection;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 18.06.12 15:23
+ *         Date: 18.06.12 15:46
  */
-public class SolutionPackagesScannerTest extends PackagesConfigScannerTestBase {
-
+public class ResourcesConfigPackagesScannerTest extends PackagesConfigScannerTestBase {
   @NotNull
   @Override
-  protected Collection<? extends PackagesConfigScanner> createScanner() {
-    return Arrays.asList(new SolutionPackagesScanner(new SolutionParserImpl()));
+  protected Collection<? extends ResourcesConfigPackagesScanner> createScanner() {
+    return Arrays.asList(new ResourcesConfigPackagesScanner());
   }
 
   @Test
   public void test_dotNuGet() throws IOException, RunBuildException {
     doTest("integration/nuget-nopackages.zip",
-            "nuget-nopackages/ConsoleApplication1.sln",
-            "packages.config");
+            "nuget-nopackages/ConsoleApplication1.sln");
   }
 
   @Test
@@ -74,8 +70,7 @@ public class SolutionPackagesScannerTest extends PackagesConfigScannerTestBase {
   public void test_shared() throws IOException, RunBuildException {
     doTest("integration/test-shared-packages.zip",
             "ConsoleApplication1.sln",
-            "ConsoleApplication1/packages.config",
-            ".nuget/packages.config"
+            "ConsoleApplication1/packages.config"
     );
   }
 
@@ -87,6 +82,5 @@ public class SolutionPackagesScannerTest extends PackagesConfigScannerTestBase {
             "../WS/packages.config"
     );
   }
-
 
 }

@@ -78,6 +78,8 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
       myDispatcher.getMulticaster().onSolutionFileFound(sln, packages);
     }
 
+    myLogger.message("Found packages folder: " + packages);
+
     final Collection<File> files = new HashSet<File>();
     for (PackagesConfigScanner scanner : myScanners) {
       files.addAll(scanner.scanResourceConfig(myLogger, sln, packages));

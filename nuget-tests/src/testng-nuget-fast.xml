@@ -53,7 +53,15 @@
   <test name="sln">
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.agent.SolutionParserTest"/>
+    </classes>
+  </test>
+
+  <test name="install packages runner">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackagesScannerTest"/>
+
       <class name="jetbrains.buildServer.nuget.tests.agent.SolutionPackagesScannerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.ResourcesConfigPackagesScannerTest"/>
     </classes>
   </test>
 
