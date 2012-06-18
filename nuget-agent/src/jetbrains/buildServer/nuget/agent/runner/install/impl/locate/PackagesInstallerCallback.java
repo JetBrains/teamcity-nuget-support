@@ -20,12 +20,13 @@ import jetbrains.buildServer.RunBuildException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.EventListener;
 
 /**
 * @author Eugene Petrenko (eugene.petrenko@gmail.com)
 *         Date: 18.06.12 11:45
 */
-public interface PackagesInstallerCallback {
+public interface PackagesInstallerCallback extends EventListener {
   /**
    * Called when packages.config is found
    * @param config full path to packages.config file

@@ -31,6 +31,7 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetC
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -69,16 +70,36 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
     final LocateNuGetConfigBuildProcess locate = new LocateNuGetConfigBuildProcess(
             parameters,
             context.getBuild().getBuildLogger(),
-            myResolver,
-            new PackagesInstallerBuilder(
-                    myActionFactory,
-                    stages,
-                    context,
-                    installParameters,
-                    updateParameters
-            ));
+            myResolver);
+
+    registerCallbacks(context, stages, installParameters, updateParameters, locate);
 
     stages.getLocateStage().pushBuildProcess(locate);
+  }
+
+  private void registerCallbacks(@NotNull final BuildRunnerContext context,
+                                 @NotNull final InstallStages stages,
+                                 @NotNull final PackagesInstallParameters installParameters,
+                                 @Nullable final PackagesUpdateParameters updateParameters,
+                                 @NotNull final LocateNuGetConfigBuildProcess locate) {
+    locate.addInstallStageListener(new PackagesInstallerBuilder(
+            myActionFactory,
+            stages.getInstallStage(),
+            context,
+            installParameters));
+
+    locate.addInstallStageListener(new PackagesUpdateBuilder(
+            myActionFactory,
+            stages.getUpdateStage(),
+            stages.getPostUpdateStart(),
+            context,
+            installParameters,
+            updateParameters));
+
+    locate.addInstallStageListener(new PackagesReportBuilder(
+            myActionFactory,
+            stages.getReportStage(),
+            context));
   }
 
   @NotNull

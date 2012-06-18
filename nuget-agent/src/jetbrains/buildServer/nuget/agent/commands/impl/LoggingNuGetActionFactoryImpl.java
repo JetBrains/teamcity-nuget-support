@@ -41,8 +41,8 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
-  public BuildProcess createUsageReport(@NotNull BuildRunnerContext context, @NotNull NuGetFetchParameters params, @NotNull File packagesConfig, @NotNull File targetFolder) throws RunBuildException {
-    return myActionFactory.createUsageReport(context, params, packagesConfig, targetFolder);
+  public BuildProcess createUsageReport(@NotNull BuildRunnerContext context, @NotNull File packagesConfig, @NotNull File targetFolder) throws RunBuildException {
+    return myActionFactory.createUsageReport(context, packagesConfig, targetFolder);
   }
 
   @NotNull

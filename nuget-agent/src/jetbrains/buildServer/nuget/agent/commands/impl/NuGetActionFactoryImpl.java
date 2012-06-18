@@ -90,7 +90,6 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
 
   @NotNull
   public BuildProcess createUsageReport(@NotNull final BuildRunnerContext context,
-                                        @NotNull final NuGetFetchParameters params,
                                         @NotNull final File packagesConfig,
                                         @NotNull final File targetFolder) throws RunBuildException {
     return new BuildProcessBase() {

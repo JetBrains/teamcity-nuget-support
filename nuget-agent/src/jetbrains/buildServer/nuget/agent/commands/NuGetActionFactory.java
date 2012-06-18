@@ -44,7 +44,6 @@ public interface NuGetActionFactory {
 
   @NotNull
   BuildProcess createUsageReport(@NotNull BuildRunnerContext context,
-                                 @NotNull NuGetFetchParameters params,
                                  @NotNull File packagesConfig,
                                  @NotNull File targetFolder) throws RunBuildException;
 

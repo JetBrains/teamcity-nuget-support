@@ -23,9 +23,7 @@ import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolver;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
-import jetbrains.buildServer.util.FileUtil;
-import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.util.XmlXppAbstractParser;
+import jetbrains.buildServer.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,19 +41,28 @@ import java.util.List;
 public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   private static final Logger LOG = Logger.getInstance(LocateNuGetConfigBuildProcess.class.getName());
 
+  private final EventDispatcher<PackagesInstallerCallback> myDispatcher;
   private final NuGetFetchParameters myContext;
   private final BuildProgressLogger myLogger;
   private final RepositoryPathResolver myResolver;
-  private final PackagesInstallerCallback myCallback;
 
   public LocateNuGetConfigBuildProcess(@NotNull final NuGetFetchParameters context,
                                        @NotNull final BuildProgressLogger logger,
-                                       @NotNull final RepositoryPathResolver resolver,
-                                       @NotNull final PackagesInstallerCallback callback) {
+                                       @NotNull final RepositoryPathResolver resolver) {
     myContext = context;
     myLogger = logger;
     myResolver = resolver;
-    myCallback = callback;
+    myDispatcher = EventDispatcher.create(PackagesInstallerCallback.class);
+    myDispatcher.setErrorHandler(new EventDispatcher.ErrorHandler() {
+      public void handle(Throwable e) {
+        LOG.warn("Failed to process Installer Runner task. " + e.getMessage(), e);
+        ExceptionUtil.rethrowAsRuntimeException(e);
+      }
+    });
+  }
+
+  public void addInstallStageListener(@NotNull final PackagesInstallerCallback callback) {
+    myDispatcher.addListener(callback);
   }
 
   @NotNull
@@ -67,7 +74,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
 
     if (sln.isFile()) {
       LOG.debug("Found Visual Studio .sln file: " + sln);
-      myCallback.onSolutionFileFound(sln, packages);
+      myDispatcher.getMulticaster().onSolutionFileFound(sln, packages);
     }
 
     LOG.debug("resources.config path is " + repositoriesConfig);
@@ -91,7 +98,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     }
 
     for (File file : files) {
-      myCallback.onPackagesConfigFound(file, packages);
+      myDispatcher.getMulticaster().onPackagesConfigFound(file, packages);
     }
 
     return BuildFinishedStatus.FINISHED_SUCCESS;

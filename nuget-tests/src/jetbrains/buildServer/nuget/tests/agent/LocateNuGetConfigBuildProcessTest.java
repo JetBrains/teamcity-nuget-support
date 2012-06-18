@@ -53,7 +53,8 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
     log = m.mock(BuildProgressLogger.class);
     ps = m.mock(NuGetFetchParameters.class);
     cb = m.mock(PackagesInstallerCallback.class);
-    proc = new LocateNuGetConfigBuildProcess(ps, log, new RepositoryPathResolverImpl(), cb);
+    proc = new LocateNuGetConfigBuildProcess(ps, log, new RepositoryPathResolverImpl());
+    proc.addInstallStageListener(cb);
   }
 
   @Test
