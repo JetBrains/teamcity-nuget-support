@@ -23,16 +23,14 @@ import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolver;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
-import jetbrains.buildServer.util.*;
+import jetbrains.buildServer.util.EventDispatcher;
+import jetbrains.buildServer.util.ExceptionUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -45,6 +43,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   private final NuGetFetchParameters myContext;
   private final BuildProgressLogger myLogger;
   private final RepositoryPathResolver myResolver;
+  private final Collection<? extends PackagesConfigScanner> myScannes;
 
   public LocateNuGetConfigBuildProcess(@NotNull final NuGetFetchParameters context,
                                        @NotNull final BuildProgressLogger logger,
@@ -59,6 +58,8 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
         ExceptionUtil.rethrowAsRuntimeException(e);
       }
     });
+
+    myScannes = Arrays.asList(new ResourcesConfigPackagesScanner());
   }
 
   public void addInstallStageListener(@NotNull final PackagesInstallerCallback callback) {
@@ -70,26 +71,15 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   protected BuildFinishedStatus waitForImpl() throws RunBuildException {
     final File sln = myContext.getSolutionFile();
     final File packages = myResolver.resolvePath(myLogger, sln);
-    final File repositoriesConfig = new File(packages, "repositories.config");
 
     if (sln.isFile()) {
       LOG.debug("Found Visual Studio .sln file: " + sln);
       myDispatcher.getMulticaster().onSolutionFileFound(sln, packages);
     }
 
-    LOG.debug("resources.config path is " + repositoriesConfig);
-
-    if (!repositoriesConfig.isFile()) {
-      throw new RunBuildException("Failed to find repositories.config at " + repositoriesConfig);
-    }
-
-    myLogger.message("Found packages folder: " + packages);
-    myLogger.message("Found list of packages.config files: " + repositoriesConfig);
-    final Collection<File> files = listPackagesConfigs(repositoriesConfig);
-    final File solutionPackagesConfig = findSolutionPackagesConfigFile(sln);
-    if (solutionPackagesConfig != null) {
-      myLogger.message("Found solution-wide packages.config: " + solutionPackagesConfig);
-      files.add(solutionPackagesConfig);
+    final Collection<File> files = new HashSet<File>();
+    for (PackagesConfigScanner scanner : myScannes) {
+      files.addAll(scanner.scanResourceConfig(myLogger, sln, packages));
     }
 
     if (files.isEmpty()) {
@@ -102,39 +92,5 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     }
 
     return BuildFinishedStatus.FINISHED_SUCCESS;
-  }
-
-  @Nullable
-  private File findSolutionPackagesConfigFile(@NotNull final File sln) {
-    final File parentFile = sln.getParentFile();
-    if (parentFile == null) return null;
-    final File path = new File(parentFile, ".nuget/packages.config");
-    if (path.isFile()) return path;
-    return null;
-  }
-
-  @NotNull
-  private Collection<File> listPackagesConfigs(@NotNull final File repositoriesConfig) throws RunBuildException {
-    final Collection<File> files = new ArrayList<File>();
-    try {
-      new XmlXppAbstractParser(){
-        @Override
-        protected List<XmlHandler> getRootHandlers() {
-          return Arrays.asList(elementsPath(new Handler() {
-            public XmlReturn processElement(@NotNull XmlElementInfo xmlElementInfo) {
-              final String relPath = xmlElementInfo.getAttribute("path");
-              if (relPath != null && !StringUtil.isEmptyOrSpaces(relPath)) {
-                files.add(FileUtil.resolvePath(repositoriesConfig.getParentFile(), relPath));
-              }
-              return xmlElementInfo.noDeep();
-            }
-          }, "repositories", "repository"));
-        }
-      }.parse(repositoriesConfig);
-    } catch (IOException e) {
-      throw new RunBuildException("Failed to parse repositories.config at " + repositoriesConfig + ". " + e.getMessage(), e);
-    }
-
-    return files;
   }
 }
