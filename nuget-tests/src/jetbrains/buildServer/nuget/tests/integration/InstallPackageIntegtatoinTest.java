@@ -79,7 +79,8 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
                     new PackageInfo("Ninject", "2.2.1.4"))
     );
 
-    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    String packages = "packages";
+    List<File> packageses = listFiles(packages);
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
@@ -104,7 +105,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
 
 
-    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
@@ -133,7 +134,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
 
 
-    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
@@ -162,7 +163,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
 
 
-    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
@@ -182,7 +183,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
                     new PackageInfo("NUnit", "2.5.7.10213"),
                     new PackageInfo("Ninject", "2.2.1.4")));
 
-    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit").isDirectory());
@@ -199,7 +200,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false, false, nuget, null);
 
-    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
@@ -220,7 +221,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
                     new PackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
                     new PackageInfo("WebActivator", "1.5")));
 
-    List<File> packageses = Arrays.asList(new File(myRoot, "lib").listFiles());
+    List<File> packageses = listFiles("lib");
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "lib/NUnit").isDirectory());
@@ -245,7 +246,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
                     new PackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
                     new PackageInfo("WebActivator", "1.5")));
 
-    List<File> packageses = Arrays.asList(new File(myRoot, "lib").listFiles());
+    List<File> packageses = listFiles("lib");
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "lib/NUnit").isDirectory());
@@ -270,7 +271,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
                     new PackageInfo("jQuery", "1.7.2"))
     );
 
-    List<File> packageses = Arrays.asList(new File(myRoot, "packages").listFiles());
+    List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/Microsoft.Web.Infrastructure.1.0.0.0").isDirectory());
@@ -326,4 +327,10 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     m.assertIsSatisfied();
   }
 
+  @NotNull
+  private List<File> listFiles(String packages) {
+    final File[] files = new File(myRoot, packages).listFiles();
+    Assert.assertNotNull(files);
+    return Arrays.asList(files);
+  }
 }
