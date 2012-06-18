@@ -70,6 +70,16 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   @NotNull
   @Override
   protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+    myLogger.activityStarted("scan", "Searching for nuget.config files", "NuGet.Search");
+    try {
+      locatePackagesConfigFiles();
+    } finally {
+      myLogger.activityFinished("scan", "NuGet.Search");
+    }
+    return BuildFinishedStatus.FINISHED_SUCCESS;
+  }
+
+  private void locatePackagesConfigFiles() throws RunBuildException {
     final File sln = myContext.getSolutionFile();
     final File packages = myResolver.resolvePath(myLogger, sln);
 
@@ -87,13 +97,11 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
 
     if (files.isEmpty()) {
       myLogger.warning("No packages.config files were found under solution. Nothing to install");
-      return BuildFinishedStatus.FINISHED_SUCCESS;
+      return;
     }
 
     for (File file : files) {
       myDispatcher.getMulticaster().onPackagesConfigFound(file, packages);
     }
-
-    return BuildFinishedStatus.FINISHED_SUCCESS;
   }
 }

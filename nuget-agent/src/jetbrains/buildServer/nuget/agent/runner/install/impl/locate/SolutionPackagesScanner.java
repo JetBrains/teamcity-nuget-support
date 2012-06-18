@@ -42,6 +42,7 @@ public class SolutionPackagesScanner implements PackagesConfigScanner {
                                              @NotNull final File packages) throws RunBuildException {
     final Collection<File> result = new ArrayList<File>();
     final Collection<File> files = myParser.parseProjectFiles(logger, sln);
+    logger.message("Scanning projects in solution file: " + sln);
     for (File file : files) {
       logger.message("Found project " + file.getPath());
       final File config;
