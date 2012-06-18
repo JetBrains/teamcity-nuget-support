@@ -28,9 +28,9 @@ import jetbrains.buildServer.util.ExceptionUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -43,11 +43,12 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   private final NuGetFetchParameters myContext;
   private final BuildProgressLogger myLogger;
   private final RepositoryPathResolver myResolver;
-  private final Collection<? extends PackagesConfigScanner> myScannes;
+  private final Collection<? extends PackagesConfigScanner> myScanners;
 
   public LocateNuGetConfigBuildProcess(@NotNull final NuGetFetchParameters context,
                                        @NotNull final BuildProgressLogger logger,
-                                       @NotNull final RepositoryPathResolver resolver) {
+                                       @NotNull final RepositoryPathResolver resolver,
+                                       @NotNull final List<PackagesConfigScanner> scanners) {
     myContext = context;
     myLogger = logger;
     myResolver = resolver;
@@ -59,7 +60,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
       }
     });
 
-    myScannes = Arrays.asList(new ResourcesConfigPackagesScanner());
+    myScanners = scanners;
   }
 
   public void addInstallStageListener(@NotNull final PackagesInstallerCallback callback) {
@@ -78,7 +79,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     }
 
     final Collection<File> files = new HashSet<File>();
-    for (PackagesConfigScanner scanner : myScannes) {
+    for (PackagesConfigScanner scanner : myScanners) {
       files.addAll(scanner.scanResourceConfig(myLogger, sln, packages));
     }
 

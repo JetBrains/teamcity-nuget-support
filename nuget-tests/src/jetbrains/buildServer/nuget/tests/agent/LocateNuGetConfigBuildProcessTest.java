@@ -19,10 +19,12 @@ package jetbrains.buildServer.nuget.tests.agent;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProgressLogger;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigBuildProcess;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerCallback;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigBuildProcess;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesConfigScanner;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerCallback;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.ResourcesConfigPackagesScanner;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
@@ -31,6 +33,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -53,7 +56,7 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
     log = m.mock(BuildProgressLogger.class);
     ps = m.mock(NuGetFetchParameters.class);
     cb = m.mock(PackagesInstallerCallback.class);
-    proc = new LocateNuGetConfigBuildProcess(ps, log, new RepositoryPathResolverImpl());
+    proc = new LocateNuGetConfigBuildProcess(ps, log, new RepositoryPathResolverImpl(), Arrays.<PackagesConfigScanner>asList(new ResourcesConfigPackagesScanner()));
     proc.addInstallStageListener(cb);
   }
 
