@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
+import com.intellij.openapi.util.Pair;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
@@ -27,7 +28,9 @@ import jetbrains.buildServer.usageStatistics.presentation.UsageStatisticsPresent
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -37,6 +40,7 @@ public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvid
   public static final String SERVER_ENABLED_KEY = "jetbrains.nuget.server";
   public static final String TOTAL_REQUESTS = "jetbrains.nuget.feedDailyRequests";
   public static final String TOTAL_PACKAGES = "jetbrains.nuget.totalPackages";
+  public static final String DIFF_PACKAGES = "jetbrains.nuget.differentPackages";
   private final NuGetServerSettings mySettings;
   private final RecentNuGetRequests myRequests;
   private final PackagesIndex myIndex;
@@ -53,23 +57,28 @@ public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvid
     if (mySettings.isNuGetServerEnabled()) {
       publisher.publishStatistic(SERVER_ENABLED_KEY, "enabled");
       publisher.publishStatistic(TOTAL_REQUESTS, myRequests.getTotalRequests());
-      publisher.publishStatistic(TOTAL_PACKAGES, countEntries());
+      final Pair<Integer, Integer> entries = countEntries();
+      publisher.publishStatistic(TOTAL_PACKAGES, entries.first);
+      publisher.publishStatistic(DIFF_PACKAGES, entries.second);
     }
   }
   
-  private int countEntries() {
+  private Pair<Integer, Integer> countEntries() {
     int count = 0;
+    final Set<String> packagesCounter = new HashSet<String>();
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
     while(it.hasNext()) {
-      it.next();
+      NuGetIndexEntry next = it.next();
+      packagesCounter.add(next.getAttributes().get("Id"));
       count++;
     }
-    return count;
+    return Pair.create(count, packagesCounter.size());
   }
 
   public void accept(@NotNull UsageStatisticsPresentationManager presentationManager) {
     presentationManager.applyPresentation(TOTAL_REQUESTS, "Feed Requests Count per Day", "NuGet", null, null);
     presentationManager.applyPresentation(TOTAL_PACKAGES, "Packages Count", "NuGet", null, null);
+    presentationManager.applyPresentation(DIFF_PACKAGES, "Different Package Ids Count", "NuGet", null, null);
     presentationManager.applyPresentation(SERVER_ENABLED_KEY, "NuGet Feed Server", "NuGet", new UsageStatisticsFormatter() {
       @NotNull
       public String format(@Nullable Object statisticValue) {
