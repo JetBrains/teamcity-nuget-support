@@ -40,7 +40,7 @@ public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvid
   public static final String SERVER_ENABLED_KEY = "jetbrains.nuget.server";
   public static final String TOTAL_REQUESTS = "jetbrains.nuget.feedDailyRequests";
   public static final String TOTAL_PACKAGES = "jetbrains.nuget.totalPackages";
-  public static final String DIFF_PACKAGES = "jetbrains.nuget.differentPackages";
+  public static final String DIFF_PACKAGES = "jetbrains.nuget.packagesIds";
   private final NuGetServerSettings mySettings;
   private final RecentNuGetRequests myRequests;
   private final PackagesIndex myIndex;
