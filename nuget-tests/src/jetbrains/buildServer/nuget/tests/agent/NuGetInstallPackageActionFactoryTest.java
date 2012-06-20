@@ -88,7 +88,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
               nuget.getPath(),
               Arrays.asList("install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath()),
               myConfig.getParentFile(),
-              Collections.<String, String>emptyMap()
+              Collections.singletonMap("EnableNuGetPackageRestore", "True")
       );
     }});
 
@@ -109,7 +109,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
               nuget.getPath(),
               Arrays.asList("install", myConfig.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath()),
               myConfig.getParentFile(),
-              Collections.<String, String>emptyMap()
+              Collections.singletonMap("EnableNuGetPackageRestore", "True")
       );
     }});
 
@@ -130,7 +130,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
               nuget.getPath(),
               Arrays.asList("install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
               myConfig.getParentFile(),
-              Collections.<String, String>emptyMap()
+              Collections.singletonMap("EnableNuGetPackageRestore", "True")
       );
     }});
 
