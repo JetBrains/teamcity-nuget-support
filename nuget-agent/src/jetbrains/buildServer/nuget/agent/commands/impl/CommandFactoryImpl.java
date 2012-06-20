@@ -44,7 +44,7 @@ public class CommandFactoryImpl implements CommandFactory {
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 
     final NuGetFetchParameters nuget = params.getNuGetParameters();
-    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), factory);
+    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), Collections.singletonMap("EnableNuGetPackageRestore", "True"), factory);
   }
 
   @NotNull
