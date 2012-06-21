@@ -27,4 +27,19 @@
     </replace>
   </target>
 
+
+  <target name="cleanup-nuget-native">
+    <property name="home" value="${artifact.output.path}"/>
+
+    <echo message="cleaning up NuGet plugin sources at ${home}"/>
+
+    <delete>
+      <fileset dir="${home}">
+        <include name="**/NuGet.exe"/>
+        <include name="**/*vshost*"/>
+      </fileset>
+    </delete>
+
+  </target>
+
 </project>
