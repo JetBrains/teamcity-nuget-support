@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("JetBrains, s.r.o.")]
 [assembly: AssemblyProduct("TeamCity NuGet integration")]
-[assembly: AssemblyCopyright("Copyright © JetBrains 2011")]
+[assembly: AssemblyCopyright("Copyright © JetBrains 2011-2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

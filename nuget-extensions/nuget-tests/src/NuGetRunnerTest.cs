@@ -45,8 +45,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
           File.Copy(Files.GetNuGetExe(version), destNuGet);
           File.Copy(Files.NuGetRunnerExe, destRunner);
           const string ext = "JetBrains.TeamCity.NuGet.ExtendedCommands.dll";
-          Directory.CreateDirectory(Path.Combine(home, "plugins4"));
-          File.Copy(Path.Combine(Files.NuGetRunnerExe, "../plugins4/" + ext), Path.Combine(home, "plugins4/" + ext));
+          Directory.CreateDirectory(Path.Combine(home, "plugins-1.4"));
+          File.Copy(Path.Combine(Files.NuGetRunnerExe, "../plugins-1.4/" + ext), Path.Combine(home, "plugins-1.4/" + ext));
 
           ProcessExecutor.ExecuteProcess(destRunner, destNuGet, "TeamCity.Ping")
             .Dump()
@@ -71,6 +71,17 @@ namespace JetBrains.TeamCity.NuGet.Tests
         .AssertExitedSuccessfully()
         .AssertNoErrorOutput()
         .AssertOutputContains("TeamCity NuGet Extension is available.");
+    }
+
+    //[Test, TestCaseSource(typeof(Files), "NuGetVersions20p")]
+    [TestCase(NuGetVersion.NuGet_2_0)]
+    public void TestCommand_TeamCityPing_20(NuGetVersion version)
+    {
+      ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "TeamCity.Ping.2.0")
+        .Dump()
+        .AssertExitedSuccessfully()
+        .AssertNoErrorOutput()
+        .AssertOutputContains("TeamCity NuGet Extension 2.0 is available.");
     }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
@@ -117,7 +128,5 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
       Assert.IsFalse(failed);
     }
-
   }
-
 }

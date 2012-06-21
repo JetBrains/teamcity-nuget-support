@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -34,22 +33,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
       public string IncludePrerelease { get; set; }
     }
 
-
-    protected static string Serialize(IEnumerable<Package> pp)
-    {
-      return Serialize(pp.ToArray());
-    }
-
-    protected static string Serialize(params Package[] pp)
-    {
-      var s = new XmlSerializer(typeof (NuGetPackages));
-      var ms = new MemoryStream();
-      using(var tw = new StreamWriter(ms, Encoding.UTF8))
-        s.Serialize(tw, new NuGetPackages {Packages = pp});
-
-      return new string(Encoding.UTF8.GetChars(ms.GetBuffer()));
-    }
-
     protected static Package p(string source, string id, string version = null, bool? includePrerelease = null)
     {
       return new Package
@@ -73,18 +56,22 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     protected static int PackagesCount(XmlDocument doc, string id)
     {
-      var p = doc.SelectNodes("//package[@id='" + id + "']//package-entry");
-      return p == null ? 0 : p.Count;
+      return doc.XPathCount("//package[@id='" + id + "']//package-entry");
     }
 
-    protected static XmlDocument DoTestWithSpec(NuGetVersion version, string spec)
+    protected static XmlDocument DoTestWithSpec(NuGetVersion version, IEnumerable<Package> ppp)
+    {
+      return DoTestWithSpec(version, ppp.ToArray());
+    }
+
+    protected static XmlDocument DoTestWithSpec(NuGetVersion version, params Package[] ppp)
     {
       return TempFilesHolder.WithTempFile(
         fileOut =>
         TempFilesHolder.WithTempFile(
           fileIn =>
             {
-              File.WriteAllText(fileIn, spec);
+              fileIn.SaveAsXml(new NuGetPackages { Packages = ppp });
 
               ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version),
                                              "TeamCity.ListPackages", "-Request", fileIn, "-Response", fileOut)
@@ -93,9 +80,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
                 ;
 
               Console.Out.WriteLine("Result: " + File.ReadAllText(fileOut));
-              var doc = new XmlDocument();
-              doc.Load(fileOut);
-              return doc;
+              return fileOut.LoadDocument();
             }));
     }
   }

@@ -5,42 +5,44 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6D862627-466B-4CD1-82DE-E57B7B976EB6}</ProjectGuid>
+    <ProjectGuid>{C6F0CBF9-B66A-45BA-86D1-7BBD407DECF4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>JetBrains.TeamCity.NuGet.Tests</RootNamespace>
-    <AssemblyName>JetBrains.TeamCity.NuGet.Tests</AssemblyName>
+    <RootNamespace>JetBrains.TeamCity.NuGet.ExtendedCommands</RootNamespace>
+    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.2.0</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\plugins-2.0\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\bin\plugins-2.0\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework">
-      <HintPath>..\lib\nunit\nunit.framework.dll</HintPath>
+    <Reference Include="NuGet">
+      <HintPath>..\lib\nuget\2.0\NuGet.exe</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -50,26 +52,22 @@
     <Compile Include="..\shared\src\AssemblyHelper.cs">
       <Link>src\Shared\AssemblyHelper.cs</Link>
     </Compile>
-    <Compile Include="..\shared\testSrc\Files.cs">
-      <Link>src\Shared\Files.cs</Link>
+    <Compile Include="..\shared\src\AssemblyResolver.cs">
+      <Link>src\Shared\AssemblyResolver.cs</Link>
     </Compile>
-    <Compile Include="..\shared\testSrc\PathSearcher.cs">
-      <Link>src\Shared\PathSearcher.cs</Link>
+    <Compile Include="..\shared\src\CommandBase.cs">
+      <Link>src\Shared\CommandBase.cs</Link>
     </Compile>
-    <Compile Include="..\shared\testSrc\ProcessExecutor.cs">
-      <Link>src\Shared\ProcessExecutor.cs</Link>
+    <Compile Include="..\shared\src\XmlSerialization.cs">
+      <Link>src\Shared\XmlSerialization.cs</Link>
     </Compile>
-    <Compile Include="src\NuGetConstants.cs" />
-    <Compile Include="src\NuGetFeedAuthenticationTest.cs" />
-    <Compile Include="src\NuGetFeedAuthenticationTestCase.cs" />
-    <Compile Include="src\NuGetRunnerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\NuGetRunner_ListPackagesCommandTest.cs" />
-    <Compile Include="src\NuGetRunner_ListPackagesCommandTestBase.cs" />
-    <Compile Include="src\NuGetSettingsBackupingTestCase.cs" />
-    <Compile Include="src\TempFilesHolder.cs" />
-    <Compile Include="src\XmlWooDoo.cs" />
+    <Compile Include="src\AuthenticatedFeedsList.cs" />
+    <Compile Include="src\AuthorizeFeedCommand.cs" />
+    <Compile Include="src\DumpFeeds.cs" />
+    <Compile Include="src\NuGetTeamCityPingCommand.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
