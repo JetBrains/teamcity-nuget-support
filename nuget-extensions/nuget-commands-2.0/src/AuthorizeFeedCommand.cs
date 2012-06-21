@@ -5,7 +5,7 @@ using NuGet;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
-  [Command("TeamCity.AuthorizeFeed", "Command that dump NuGet and TeamCity extension versions. It is used to check NuGet<->TeamCity communications")]
+  [Command("TeamCity.AuthorizeFeed", "Adds login/password into NuGet settings")]
   public class AuthorizeFeedCommand : CommandBase
   {
     [Option("Path to file containing feed credentials to update")]

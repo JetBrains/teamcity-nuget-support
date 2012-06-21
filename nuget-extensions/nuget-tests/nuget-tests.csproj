@@ -60,11 +60,15 @@
       <Link>src\Shared\ProcessExecutor.cs</Link>
     </Compile>
     <Compile Include="src\NuGetConstants.cs" />
+    <Compile Include="src\NuGetFeedAuthenticationTest.cs" />
+    <Compile Include="src\NuGetFeedAuthenticationTestCase.cs" />
     <Compile Include="src\NuGetRunnerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\NuGetRunner_ListPackagesCommandTest.cs" />
     <Compile Include="src\NuGetRunner_ListPackagesCommandTestBase.cs" />
+    <Compile Include="src\NuGetSettingsBackupingTestCase.cs" />
     <Compile Include="src\TempFilesHolder.cs" />
+    <Compile Include="src\XmlWooDoo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

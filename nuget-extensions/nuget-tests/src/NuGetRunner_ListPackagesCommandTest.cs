@@ -95,6 +95,5 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
       Assert.IsTrue(PackagesCount(doc, "EntityFramework") == 1);
     }
-
   }
 }
