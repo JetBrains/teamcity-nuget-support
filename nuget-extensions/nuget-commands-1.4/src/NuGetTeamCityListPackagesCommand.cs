@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
 using NuGet;
 using System.Linq;
 
@@ -75,31 +74,14 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     private void SaveRequests(NuGetPackages reqs)
     {
-      using (var file = File.CreateText(Response))
-      {
-        GetSerializer().Serialize(file, reqs);
-      }
+      XmlSerialization.SaveRequests(reqs, Response);
     }
 
     private NuGetPackages LoadRequests()
     {
-      if (!File.Exists(Request))
-        throw new CommandLineException("Failed to find file at {0}", Request);
-
-      using (var file = File.OpenRead(Request))
-      {
-        return (NuGetPackages)GetSerializer().Deserialize(file);
-      }
+      return XmlSerialization.LoadRequests<NuGetPackages>(Request);
     }
 
-    private static XmlSerializer GetSerializer()
-    {
-      var parser = new XmlSerializerFactory().CreateSerializer(typeof (NuGetPackages));
-      if (parser == null)
-        throw new CommandLineException("Failed to create serialized for parameters xml");
-
-      return parser;
-    }
 
     private static T Id<T>(T t)
     {

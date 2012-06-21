@@ -58,7 +58,12 @@
     <Compile Include="..\shared\src\CommandBase.cs">
       <Link>src\Shared\CommandBase.cs</Link>
     </Compile>
+    <Compile Include="..\shared\src\XmlSerialization.cs">
+      <Link>src\Shared\XmlSerialization.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\AuthenticatedFeedsList.cs" />
+    <Compile Include="src\AuthorizeFeedCommand.cs" />
     <Compile Include="src\NuGetTeamCityPingCommand.cs" />
   </ItemGroup>
   <ItemGroup />
