@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("JetBrains TeamCity NuGet Runner")]
+[assembly: AssemblyTitle("JetBrains TeamCity NuGet Extended Commands")]
 [assembly: AssemblyDescription("NuGet commands for TeamCity NuGet integration")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("JetBrains, s.r.o.")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("f29a877e-de2c-4eb4-8908-85b9808253c4")]
+[assembly: Guid("2d0d18a6-8fc5-47a4-802d-c521b72d2d56")]
 
 // Version information for an assembly consists of the following four values:
 //

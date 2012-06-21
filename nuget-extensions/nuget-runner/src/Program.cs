@@ -54,17 +54,19 @@ namespace JetBrains.TeamCity.NuGetRunner
         Console.Out.WriteLine("Using shared plugin and mutex");
         new NuGetRunMutex(runner);
         new NuGetInstallExtensions4(runner, Extensions(runner));
+        return;
       }
 
-      if (runner.NuGetVersion.Major > 1 || (runner.NuGetVersion.Major == 1 && runner.NuGetVersion.Minor >= 5))
-      {
-        new NuGetInstallExtensions5(runner, Extensions(runner));
-      }
+      new NuGetInstallExtensions5(runner, Extensions(runner));
     }
 
     private static IEnumerable<string> Extensions(NuGetRunner runner)
     {
-      return new[] { Path.Combine(typeof(Program).GetAssemblyDirectory(), "plugins4/JetBrains.TeamCity.NuGet.ExtendedCommands.dll") };
+      yield return Path.Combine(typeof(Program).GetAssemblyDirectory(), "plugins-1.4/JetBrains.TeamCity.NuGet.ExtendedCommands.1.4.dll");
+      if (runner.NuGetVersion.Major >= 2)
+      {
+        yield return Path.Combine(typeof(Program).GetAssemblyDirectory(), "plugins-2.0/JetBrains.TeamCity.NuGet.ExtendedCommands.2.0.dll");
+      }
     }
 
     static int Usage()

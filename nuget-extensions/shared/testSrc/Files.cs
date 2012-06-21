@@ -132,6 +132,11 @@ namespace JetBrains.TeamCity.NuGet.Tests
       get { return AllNuGets().Where(x => x >= NuGetVersion.NuGet_1_8).ToArray(); }
     }
 
+    public static NuGetVersion[] NuGetVersions20p
+    {
+      get { return AllNuGets().Where(x => x >= NuGetVersion.NuGet_2_0).ToArray(); }
+    }
+
   }
 
   public enum NuGetVersion

@@ -73,6 +73,17 @@ namespace JetBrains.TeamCity.NuGet.Tests
         .AssertOutputContains("TeamCity NuGet Extension is available.");
     }
 
+    //[Test, TestCaseSource(typeof(Files), "NuGetVersions20p")]
+    [TestCase(NuGetVersion.NuGet_2_0)]
+    public void TestCommand_TeamCityPing_20(NuGetVersion version)
+    {
+      ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "TeamCity.Ping.2.0")
+        .Dump()
+        .AssertExitedSuccessfully()
+        .AssertNoErrorOutput()
+        .AssertOutputContains("TeamCity NuGet Extension 2.0 is available.");
+    }
+
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_NuGetVersion(NuGetVersion version)
     {
