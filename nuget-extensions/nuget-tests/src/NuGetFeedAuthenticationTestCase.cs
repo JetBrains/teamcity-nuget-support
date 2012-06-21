@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Xml.Serialization;
 
 namespace JetBrains.TeamCity.NuGet.Tests
@@ -42,10 +41,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       return TempFilesHolder.WithTempFile(
         fileIn =>
           {
-            var s = new XmlSerializer(typeof(AuthenticatedFeedsList));
-            using (var tw = File.CreateText(fileIn))
-              s.Serialize(tw, new AuthenticatedFeedsList { Feeds = pp });
-
+            fileIn.SaveAsXml(new AuthenticatedFeedsList { Feeds = pp });
             return ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version),
                                                   "TeamCity.AuthorizeFeed", "-Request", fileIn)
               .Dump()
@@ -66,9 +62,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
               .AssertExitedSuccessfully()
               ;
 
-            var ser = new XmlSerializerFactory().CreateSerializer(typeof(AuthenticatedFeedsList));
-            using (var s = File.OpenRead(fileOut))
-              return ((AuthenticatedFeedsList)ser.Deserialize(s)).Feeds;
+            return fileOut.LoadAsXml<AuthenticatedFeedsList>().Feeds;
           });
     }
 

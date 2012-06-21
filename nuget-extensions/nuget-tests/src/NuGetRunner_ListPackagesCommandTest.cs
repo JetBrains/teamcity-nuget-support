@@ -10,7 +10,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_ListPublic(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p1("NUnit")));
+      var doc = DoTestWithSpec(version, p1("NUnit"));
       var mpdes = PackagesCount(doc, "NUnit");
       
       if (version > NuGetVersion.NuGet_1_4)
@@ -24,9 +24,9 @@ namespace JetBrains.TeamCity.NuGet.Tests
     {
       var doc = DoTestWithSpec(
         version,
-        Serialize(
+        
           new[] {"NUnit", "YouTrackSharp", "Machine.Specifications", "jquery", "ninject"}
-            .Select(x => p1(x))));
+            .Select(x => p1(x)));
       
       Assert.True(PackagesCount(doc, "NUnit") == 1);
       Assert.True(PackagesCount(doc, "YouTrackSharp") == 1);
@@ -36,10 +36,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_ListPublic_Multiple_sameIds(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p1("NUnit"), p1("NUnit", "(1.1.1,2.5.8]")));
+      var doc = DoTestWithSpec(version, p1("NUnit"), p1("NUnit", "(1.1.1,2.5.8]"));
 
-      var notVersioned = doc.SelectNodes("//package[@id='NUnit' and not(@versions='(1.1.1,2.5.8]')]//package-entry").Count;
-      var versioned = doc.SelectNodes("//package[@id='NUnit' and @versions='(1.1.1,2.5.8]']//package-entry").Count;
+      var notVersioned = doc.XPathCount("//package[@id='NUnit' and not(@versions='(1.1.1,2.5.8]')]//package-entry");
+      var versioned = doc.XPathCount("//package[@id='NUnit' and @versions='(1.1.1,2.5.8]']//package-entry");
 
       Assert.True(versioned > 0);
       Assert.True(notVersioned > 0);
@@ -57,7 +57,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_ListPublicVersions_v1(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p1("NUnit", "(1.1.1,2.5.8]")));
+      var doc = DoTestWithSpec(version, p1("NUnit", "(1.1.1,2.5.8]"));
       Assert.False(doc.OuterXml.Contains("version=\"2.5.10"));
       Console.Out.WriteLine("Result: " + doc.OuterXml);
     }
@@ -65,14 +65,14 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test, TestCaseSource(typeof(Files), "NuGetVersions16p")]
     public void TestCommand_ListPublicVersions_v2(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p2("NUnit", "(1.1.1,2.5.8]")));
+      var doc = DoTestWithSpec(version, p2("NUnit", "(1.1.1,2.5.8]"));
       Assert.False(doc.OuterXml.Contains("version=\"2.5.10"));
     }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_TeamListPublic_Local(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p(Files.GetLocalFeed(version), "Web"))).OuterXml;
+      var doc = DoTestWithSpec(version, p(Files.GetLocalFeed(version), "Web")).OuterXml;
       Assert.True(doc.Contains("version=\"2.2.2"));
       Assert.True(doc.Contains("version=\"1.1.1"));      
     }
@@ -80,7 +80,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test, TestCaseSource(typeof(Files), "NuGetVersions18p")]
     public void TestCommand_TeamListPublic_Local_Prerelease(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p(Files.GetLocalFeed_1_8(), "Web", includePrerelease: true))).OuterXml;
+      var doc = DoTestWithSpec(version, p(Files.GetLocalFeed_1_8(), "Web", includePrerelease: true)).OuterXml;
       Assert.True(doc.Contains("version=\"2.2.2"));
       Assert.True(doc.Contains("version=\"1.1.1"));      
       Assert.True(doc.Contains("version=\"4.0.1-beta"));      
@@ -90,7 +90,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test, TestCaseSource(typeof(Files), "NuGetVersions18p")]
     public void TestCommand_TeamListPublic_Web_Prerelease(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p2("EntityFramework", includePrerelease: true)));
+      var doc = DoTestWithSpec(version, p2("EntityFramework", includePrerelease: true));
       Assert.True(doc.OuterXml.Contains("version=\"5.0.0-rc"));
 
       Assert.IsTrue(PackagesCount(doc, "EntityFramework") == 1);
