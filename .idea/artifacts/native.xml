@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact name="native">
+    <output-path>$PROJECT_DIR$/out/artifacts/native</output-path>
+    <properties id="ant-postprocessing">
+      <options enabled="true">
+        <file>file://$PROJECT_DIR$/build/ant.build.xml</file>
+        <target>cleanup-nuget-native</target>
+      </options>
+    </properties>
+    <root id="root">
+      <element id="dir-copy" path="$PROJECT_DIR$/nuget-extensions/bin" />
+    </root>
+  </artifact>
+</component>
