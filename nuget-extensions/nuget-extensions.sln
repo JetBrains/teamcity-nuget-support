@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands", "nuget-commands\nuget-commands.csproj", "{8FA969EA-85C0-464E-9745-66B9820121A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-1.4", "nuget-commands-1.4\nuget-commands-1.4.csproj", "{8FA969EA-85C0-464E-9745-66B9820121A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-runner", "nuget-runner\nuget-runner.csproj", "{B79E58CB-F8FD-4CD6-8B62-10EBA0DF592B}"
 EndProject
