@@ -30,10 +30,4 @@ public interface NuGetExecutor {
   <T> T executeNuGet(@NotNull File nugetExePath,
                      @NotNull List<String> arguments,
                      @NotNull NuGetOutputProcessor<T> listener) throws NuGetExecutionException;
-
-  @NotNull
-  NuGetServerHandle startNuGetServer(int port,
-                                     @NotNull String teamcityUrl,
-                                     @NotNull File logFile,
-                                     @NotNull String accessToken) throws NuGetExecutionException;
 }

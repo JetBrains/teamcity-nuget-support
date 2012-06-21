@@ -116,7 +116,7 @@ public class CommandFactoryImpl implements CommandFactory {
       arguments.add(cmd);
     }
 
-    return executeNuGet(params, Collections.<String>emptyList(), arguments, workdir, factory);
+    return executeNuGet(params, Collections.<PackageSource>emptyList(), arguments, workdir, factory);
   }
 
   @NotNull
@@ -133,11 +133,11 @@ public class CommandFactoryImpl implements CommandFactory {
       arguments.add("-CreateOnly");
     }
 
-    final String source = params.getPublishSource();
+    final PackageSource source = params.getPublishSource();
     return executeNuGet(
             params,
-            StringUtil.isEmptyOrSpaces(source)
-                    ? Collections.<String>emptyList()
+            source == null
+                    ? Collections.<PackageSource>emptyList()
                     : Arrays.asList(source),
             arguments,
             packagePath.getParentFile(),
@@ -146,7 +146,7 @@ public class CommandFactoryImpl implements CommandFactory {
   }
 
   private <T> T executeNuGet(@NotNull final NuGetParameters nuget,
-                             @NotNull final Collection<String> sources,
+                             @NotNull final Collection<PackageSource> sources,
                              @NotNull final Collection<String> arguments,
                              @NotNull final File workingDir,
                              @NotNull final Callback<T> factory) throws RunBuildException {
@@ -154,15 +154,15 @@ public class CommandFactoryImpl implements CommandFactory {
   }
 
   private <T> T executeNuGet(@NotNull final NuGetParameters nuget,
-                             @NotNull final Collection<String> sources,
+                             @NotNull final Collection<PackageSource> sources,
                              @NotNull final Collection<String> arguments,
                              @NotNull final File workingDir,
                              @NotNull final Map<String,String> additionalEnvironment,
                              @NotNull final Callback<T> factory) throws RunBuildException {
     final List<String> argz = new ArrayList<String>(arguments);
-    for (String source : sources) {
+    for (PackageSource source : sources) {
       argz.add("-Source");
-      argz.add(source);
+      argz.add(source.getSource());
     }
 
     return factory.createCommand(

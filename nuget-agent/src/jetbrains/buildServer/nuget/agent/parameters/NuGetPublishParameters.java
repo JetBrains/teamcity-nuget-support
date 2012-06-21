@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 public interface NuGetPublishParameters extends NuGetParameters {
   @Nullable
-  String getPublishSource() throws RunBuildException;
+  PackageSource getPublishSource() throws RunBuildException;
 
   @NotNull
   String getApiKey() throws RunBuildException;

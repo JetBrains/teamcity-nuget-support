@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,20 @@
 
 package jetbrains.buildServer.nuget.agent.parameters;
 
-import jetbrains.buildServer.RunBuildException;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
-import java.util.Collection;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 10.07.11 14:27
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 21.06.12 16:04
  */
-public interface NuGetFetchParameters extends NuGetParameters {
-
-  /**
-   * @return collection of nuget sources to fetch packages
-   */
+public interface PackageSource {
   @NotNull
-  Collection<PackageSource> getNuGetPackageSources();
+  String getSource();
 
-  /**
-   * @return path to solution file.
-   * @throws jetbrains.buildServer.RunBuildException
-   *          if .sln file is not found
-   */
-  @NotNull
-  File getSolutionFile() throws RunBuildException;
+  @Nullable
+  String getUserName();
+
+  @Nullable
+  String getPassword();
 }

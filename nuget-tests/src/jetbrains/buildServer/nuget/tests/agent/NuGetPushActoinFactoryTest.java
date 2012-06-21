@@ -125,7 +125,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       allowing(ps).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
-      allowing(ps).getPublishSource(); will(returnValue("push-feed"));
+      allowing(ps).getPublishSource(); will(returnValue(new PackageSourceImpl("push-feed")));
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
@@ -165,7 +165,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       allowing(ps).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
-      allowing(ps).getPublishSource(); will(returnValue("push-feed"));
+      allowing(ps).getPublishSource(); will(returnValue(new PackageSourceImpl("push-feed")));
       allowing(ps).getCreateOnly(); will(returnValue(true));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),

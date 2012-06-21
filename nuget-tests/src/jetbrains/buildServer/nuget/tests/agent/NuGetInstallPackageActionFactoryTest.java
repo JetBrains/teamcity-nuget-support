@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import org.jmock.Expectations;
@@ -79,7 +80,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   public void test_no_sources() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<PackageSource>emptyList()));
       allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(false));
 
@@ -100,7 +101,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   public void test_no_sources_excludeVersion() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<PackageSource>emptyList()));
       allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(true));
 
@@ -121,7 +122,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   public void test_sources() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(PackageSourceImpl.convert("aaa", "bbb")));
       allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(false));
 

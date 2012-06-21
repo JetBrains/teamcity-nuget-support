@@ -17,7 +17,10 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 
-import jetbrains.buildServer.nuget.server.exec.*;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
+import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
+import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +30,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -75,18 +77,6 @@ public class NuGetExecutorTest extends IntegrationTestBase {
       return;
     }
     Assert.fail("Exception expected");
-  }
-
-  @Test
-  public void test_does_not_run_nuget_server_on_linux() throws NuGetExecutionException, IOException {
-    setIsWindows(false);
-    try {
-      final NuGetServerHandle handle = exec.startNuGetServer(9999, "http-mock://mockurl", createTempFile(), "mock-token");
-      handle.stop();
-      Assert.fail("Exception expected");
-    } catch (NuGetExecutionException e) {
-      //NOP
-    }
   }
 
   private void doPingTest(NuGet nuget) throws NuGetExecutionException {

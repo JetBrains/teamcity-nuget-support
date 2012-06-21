@@ -63,12 +63,27 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       }
 
       @NotNull
-      public Collection<String> getNuGetPackageSources() {
-        return getMultilineParameter(context, NUGET_SOURCES);
-      }
+      public Collection<PackageSource> getNuGetPackageSources() {
+        List<PackageSource> sources = new ArrayList<PackageSource>();
+        for (final String source : getMultilineParameter(context, NUGET_SOURCES)) {
+          sources.add(new PackageSource() {
+            @NotNull
+            public String getSource() {
+              return source;
+            }
 
-      public boolean getExcludeVersion() {
-        return getBoolean(context, NUGET_EXCLUDE_VERSION);
+            @Nullable
+            public String getUserName() {
+              return null;
+            }
+
+            @Nullable
+            public String getPassword() {
+              return null;
+            }
+          });
+        }
+        return sources;
       }
     };
   }
@@ -224,8 +239,23 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   @NotNull
   public NuGetPublishParameters loadPublishParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
     return new NuGetPublishParameters() {
-      public String getPublishSource() throws RunBuildException {
-        return getParameter(context, NUGET_PUBLISH_SOURCE);
+      @Nullable
+      public PackageSource getPublishSource() throws RunBuildException {
+        final String source = getParameter(context, NUGET_PUBLISH_SOURCE);
+        return source == null || StringUtil.isEmptyOrSpaces(source) ? null : new PackageSource() {
+          @NotNull
+          public String getSource() {
+            return source;
+          }
+
+          public String getUserName() {
+            return null;
+          }
+
+          public String getPassword() {
+            return null;
+          }
+        };
       }
 
       @NotNull
