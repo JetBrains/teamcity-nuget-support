@@ -126,7 +126,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   public void test_safe() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<PackageSource>emptyList()));
       allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getUseSafeUpdate(); will(returnValue(true));
       allowing(ps).getIncludePrereleasePackages(); will(returnValue(false));
