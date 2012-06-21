@@ -52,7 +52,9 @@
     <Compile Include="..\shared\src\AssemblyHelper.cs">
       <Link>src\Shared\AssemblyHelper.cs</Link>
     </Compile>
-    <Compile Include="src\AssemblyResolver.cs" />
+    <Compile Include="..\shared\src\AssemblyResolver.cs">
+      <Link>src\Shared\AssemblyResolver.cs</Link>
+    </Compile>
     <Compile Include="src\CommandBase.cs" />
     <Compile Include="src\ListCommandBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
