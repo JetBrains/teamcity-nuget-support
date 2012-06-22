@@ -84,6 +84,8 @@
   <test name="fast tests">
     <classes>
 
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetVersionFactoryTest"/>
+
       <!-- misc -->
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.SystemInfoTest"/>

@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.agent.commands.impl;
 
 import jetbrains.buildServer.nuget.agent.commands.NuGetVersion;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -27,5 +28,5 @@ import java.io.File;
  */
 public interface NuGetVersionFactory {
   @NotNull
-  NuGetVersion getFromVersionFile(@NotNull File versionFile);
+  NuGetVersion getFromVersionFile(@Nullable File versionFile);
 }
