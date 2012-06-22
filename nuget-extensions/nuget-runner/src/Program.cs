@@ -40,6 +40,13 @@ namespace JetBrains.TeamCity.NuGetRunner
         case "--TeamCity.NuGetVersion":
           Console.Out.WriteLine("TeamCity.NuGetVersion: " + runner.NuGetVersion);
           Console.Out.WriteLine();
+
+          if (args.Length >= 3)
+          {
+            string path = args[2];
+            File.WriteAllText(path, runner.NuGetVersion.ToString());
+          }
+
           return 0;
         
         default:

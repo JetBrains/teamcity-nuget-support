@@ -99,6 +99,26 @@ namespace JetBrains.TeamCity.NuGet.Tests
     }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
+    public void TestCommand_NuGetVersion_File(NuGetVersion version)
+    {
+      TempFilesHolder.WithTempFile(
+        fileOut =>
+          {
+            var res =
+              ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "--TeamCity.NuGetVersion", fileOut)
+                .Dump()
+                .AssertExitedSuccessfully()
+                .AssertNoErrorOutput();
+
+            var text = res.Output;
+            Assert.IsTrue(text.Contains("TeamCity.NuGetVersion: 1.") || text.Contains("TeamCity.NuGetVersion: 2."));
+
+            text = File.ReadAllText(fileOut);
+            Assert.IsTrue(text.StartsWith("1.") || text.StartsWith("2."));
+          });
+    }
+
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommands_RunConcurrently(NuGetVersion version)
     {
       bool failed = false;
