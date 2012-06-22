@@ -49,10 +49,6 @@ public class NuGetActionFactoryTestCase extends BaseTestCase {
   protected NuGetTeamCityProvider myProvider;
   protected File myWorkingDir;
 
-
-
-
-
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
@@ -72,6 +68,7 @@ public class NuGetActionFactoryTestCase extends BaseTestCase {
     myBuildParametersMap = m.mock(BuildParametersMap.class);
 
     m.checking(new Expectations(){{
+      allowing(ctx).getBuild(); will(returnValue(build));
       allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
       allowing(build).getCheckoutDirectory(); will(returnValue(myWorkingDir));
     }});
