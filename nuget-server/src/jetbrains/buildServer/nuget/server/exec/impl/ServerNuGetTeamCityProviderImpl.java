@@ -26,10 +26,10 @@ import java.io.File;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 14.07.11 18:47
  */
-public class NuGetTeamCityProviderImpl implements NuGetTeamCityProvider {
+public class ServerNuGetTeamCityProviderImpl implements NuGetTeamCityProvider {
   private final PluginInfo myPluginInfo;
 
-  public NuGetTeamCityProviderImpl(@NotNull final PluginInfo pluginInfo) {
+  public ServerNuGetTeamCityProviderImpl(@NotNull final PluginInfo pluginInfo) {
     myPluginInfo = pluginInfo;
   }
 

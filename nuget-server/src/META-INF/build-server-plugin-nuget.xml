@@ -11,7 +11,7 @@
   <bean class="jetbrains.buildServer.nuget.server.NuGetDownloadFeature"/>
 -->
 
-  <bean class="jetbrains.buildServer.nuget.server.exec.impl.NuGetTeamCityProviderImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.exec.impl.ServerNuGetTeamCityProviderImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl"/>
 
