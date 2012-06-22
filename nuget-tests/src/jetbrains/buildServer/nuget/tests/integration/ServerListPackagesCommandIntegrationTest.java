@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
+import jetbrains.buildServer.nuget.tests.Paths;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

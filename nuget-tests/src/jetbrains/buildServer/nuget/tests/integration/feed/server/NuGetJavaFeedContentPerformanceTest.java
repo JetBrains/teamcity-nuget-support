@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.Paths;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;

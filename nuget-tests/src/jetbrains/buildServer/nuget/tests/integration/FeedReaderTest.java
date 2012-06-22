@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.*;
+import jetbrains.buildServer.nuget.tests.Paths;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.SimpleHttpServerBase;
 import jetbrains.buildServer.util.TestFor;

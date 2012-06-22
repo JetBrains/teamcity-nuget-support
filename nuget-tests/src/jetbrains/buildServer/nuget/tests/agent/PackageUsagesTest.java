@@ -26,7 +26,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.SimplePackageInfoLoader;
-import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.Paths;
 import jetbrains.buildServer.util.StringUtil;
 import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;

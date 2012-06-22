@@ -88,7 +88,7 @@
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.SystemInfoTest"/>
 
-      <class name="jetbrains.buildServer.nuget.tests.RunTypeNameTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.RunTypeNameTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.agent.CommandlineBuildProcessFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackagesConfigParserTest"/>

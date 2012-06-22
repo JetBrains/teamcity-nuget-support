@@ -21,7 +21,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolver;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
-import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.Paths;
 import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

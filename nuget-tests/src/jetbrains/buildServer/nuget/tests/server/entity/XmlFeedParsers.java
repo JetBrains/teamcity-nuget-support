@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.server.entity;
 
-import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.Paths;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 import org.odata4j.edm.EdmSimpleType;
 import org.testng.Assert;
 
-import javax.management.modelmbean.XMLParseException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.integration;
+package jetbrains.buildServer.nuget.tests;
 
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;

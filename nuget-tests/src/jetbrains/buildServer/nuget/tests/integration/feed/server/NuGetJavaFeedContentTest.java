@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.Paths;
 import jetbrains.buildServer.nuget.tests.server.entity.FeedParseResult;
 import jetbrains.buildServer.nuget.tests.server.entity.MetadataBeanProperty;
 import jetbrains.buildServer.nuget.tests.server.entity.MetadataParseResult;

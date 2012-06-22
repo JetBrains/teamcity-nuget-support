@@ -34,6 +34,7 @@ import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.common.SimplePackageInfoLoader;
 import jetbrains.buildServer.nuget.common.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.tests.Paths;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;

@@ -20,7 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser;
 import jetbrains.buildServer.nuget.common.PackageInfo;
-import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.Paths;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.Test;

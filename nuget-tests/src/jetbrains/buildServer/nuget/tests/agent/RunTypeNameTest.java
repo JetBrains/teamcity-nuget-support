@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests;
+package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunType;

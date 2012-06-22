@@ -29,7 +29,7 @@ import jetbrains.buildServer.nuget.server.trigger.PackagesHashCalculator;
 import jetbrains.buildServer.nuget.server.trigger.TriggerConstants;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
-import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.Paths;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import junit.framework.Assert;
 import org.hamcrest.BaseMatcher;
