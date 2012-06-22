@@ -38,6 +38,7 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
             myActionFactory,
             stages,
             myContext,
+            myVersionHolder,
             myInstall,
             myUpdate
     );
@@ -54,6 +55,26 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
 
       oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("i1")));
+
+      allowing(myVersion).supportInstallNoCache(); will(returnValue(false));
+    }});
+
+    doTest(t(myConfig), t("u1", "i1"));
+  }
+
+  @Test
+  public void test_install_update_per_sln_no_cache() throws RunBuildException {
+    m.checking(new Expectations(){{
+      allowing(myUpdate).getUpdateMode();
+      will(returnValue(PackagesUpdateMode.FOR_SLN));
+
+      oneOf(myActionFactory).createUpdate(myContext, myUpdate, mySln, myTaget);
+      will(returnValue(createMockBuildProcess("u1")));
+
+      oneOf(myActionFactory).createInstall(myContext, myInstall, true, myConfig, myTaget);
+      will(returnValue(createMockBuildProcess("i1")));
+
+      allowing(myVersion).supportInstallNoCache(); will(returnValue(true));
     }});
 
     doTest(t(myConfig), t("u1", "i1"));
@@ -70,6 +91,8 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
 
       oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("install")));
+
+      allowing(myVersion).supportInstallNoCache(); will(returnValue(false));
     }});
 
     doTest(t(myConfig), t("update", "install"));
@@ -89,6 +112,8 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       will(returnValue(createMockBuildProcess("install1")));
       oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig2, myTaget);
       will(returnValue(createMockBuildProcess("install2")));
+
+      allowing(myVersion).supportInstallNoCache(); will(returnValue(false));
     }});
 
     doTest(t(myConfig, myConfig2), t("update1", "update2", "install1", "install2"));
@@ -111,6 +136,7 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       will(returnValue(createMockBuildProcess("install2")));
 
       allowing(myLogger).warning(with(any(String.class)));
+      allowing(myVersion).supportInstallNoCache(); will(returnValue(false));
     }});
 
     doTest(t(myConfig, myConfig2), t("update1", "update2", "install2"));
@@ -129,6 +155,8 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       will(returnValue(createMockBuildProcess("install1")));
       oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig2, myTaget);
       will(returnValue(createMockBuildProcess("install2")));
+
+      allowing(myVersion).supportInstallNoCache(); will(returnValue(false));
     }});
 
     doTest(t(myConfig, myConfig2), t("update", "install1", "install2"));
@@ -150,6 +178,7 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       will(returnValue(createMockBuildProcess("install2")));
 
       allowing(myLogger).warning(with(any(String.class)));
+      allowing(myVersion).supportInstallNoCache(); will(returnValue(false));
     }});
 
     doTest(t(myConfig, myConfig2), t("update", "install2"));

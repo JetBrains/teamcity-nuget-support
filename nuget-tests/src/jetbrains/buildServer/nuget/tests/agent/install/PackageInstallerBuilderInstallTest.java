@@ -17,8 +17,6 @@
 package jetbrains.buildServer.nuget.tests.agent.install;
 
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.nuget.agent.commands.NuGetVersion;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVerisonHolder;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.builders.PackagesInstallerBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
@@ -31,24 +29,10 @@ import org.testng.annotations.Test;
  *         Date: 18.06.12 21:02
  */
 public class PackageInstallerBuilderInstallTest extends PackageInstallerBuilderTestBase {
-  private NuGetVerisonHolder myHolder;
-  private NuGetVersion myVersion;
-
-  @Override
-  protected void setUp1() throws Exception {
-    super.setUp1();
-    myHolder = m.mock(NuGetVerisonHolder.class);
-    myVersion = m.mock(NuGetVersion.class);
-
-    m.checking(new Expectations(){{
-      allowing(myHolder).getNuGetVerion(); will(returnValue(myVersion));
-    }});
-  }
-
   @NotNull
   @Override
   protected PackagesInstallerAdapter createBuilder(@NotNull InstallStages stages) {
-    return new PackagesInstallerBuilder(myActionFactory, stages, myContext, myInstall, myHolder);
+    return new PackagesInstallerBuilder(myActionFactory, stages, myContext, myInstall, myVersionHolder);
   }
 
   @Test

@@ -17,12 +17,14 @@
 package jetbrains.buildServer.nuget.agent.runner.install.impl.builders;
 
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVerisonHolder;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
+import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -52,11 +54,21 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
   }
 
   public void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException {
-    myStages.getInstallStage().pushBuildProcess(myActionFactory.createInstall(
-            myContext,
-            myInstallParameters,
-            myVersionHolder.getNuGetVerion().supportInstallNoCache(),
-            config,
-            targetFolder));
+    myStages.getInstallStage().pushBuildProcess(
+            new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
+              @NotNull
+              public BuildProcess startImpl() throws RunBuildException {
+                return myActionFactory.createInstall(
+                        myContext,
+                        myInstallParameters,
+                        myVersionHolder.getNuGetVerion().supportInstallNoCache(),
+                        config,
+                        targetFolder);
+              }
+
+              public void finishedImpl() {
+              }
+            })
+    );
   }
 }

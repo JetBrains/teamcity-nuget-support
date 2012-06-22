@@ -75,13 +75,11 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
     final NuGetFetchParameters parameters = myParametersFactory.loadNuGetFetchParameters(context);
     final PackagesInstallParameters installParameters = myParametersFactory.loadInstallPackagesParameters(context, parameters);
     final PackagesUpdateParameters updateParameters = myParametersFactory.loadUpdatePackagesParameters(context, parameters);
-
     if (installParameters == null) {
       throw new RunBuildException("NuGet install packages must be enabled");
     }
 
     final NuGetVersionHolderImpl myVersion = new NuGetVersionHolderImpl();
-
     stages.getCheckVersionStage().pushBuildProcess(
             myActionFactory.createVersionCheckCommand(
                     context,
@@ -130,6 +128,7 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
               myActionFactory,
               stages,
               context,
+              myVersion,
               installParameters,
               updateParameters));
     }

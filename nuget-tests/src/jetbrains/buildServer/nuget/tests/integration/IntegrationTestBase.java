@@ -162,6 +162,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
     m.checking(new Expectations(){{
       allowing(myContext).getBuildParameters(); will(returnValue(myBuildParametersMap));
+      allowing(myBuild).getSharedBuildParameters(); will(returnValue(myBuildParametersMap));
       allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
 
       allowing(myContext).getBuild(); will(returnValue(myBuild));
