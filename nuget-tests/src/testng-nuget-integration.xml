@@ -2,6 +2,7 @@
 <suite name="nuget">
   <test name="nuget integration test">
     <classes>
+      <class name="jetbrains.buildServer.nuget.tests.integration.agent.VersionCommandIntegrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.agent.PackIntegrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.agent.InstallPackageIntegtatoinTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.agent.AuthInstallPackageIntegrationTest"/>
