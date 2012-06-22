@@ -29,4 +29,5 @@
 
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetWorkdirCalculatorImpl"/>
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetProcessCallbackImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetWorkdirCleaner"/>
 </beans>

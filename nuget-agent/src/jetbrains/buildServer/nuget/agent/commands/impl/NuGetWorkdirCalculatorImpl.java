@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.agent.commands.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -32,18 +33,40 @@ import java.io.*;
  */
 public class NuGetWorkdirCalculatorImpl implements NuGetWorkdirCalculator {
   private static final Logger LOG = Logger.getInstance(NuGetWorkdirCalculatorImpl.class.getName());
+  public static final String KEY = "teamcity.nuget.workdir.local";
+
+  @Nullable 
+  public File getNuGetWorkDir(@NotNull AgentRunningBuild build) {
+    //compatibility with older behavior
+    if ("true".equalsIgnoreCase(build.getSharedConfigParameters().get(KEY))) {
+      LOG.warn("System wide NuGet config will be used because config parameter '" + KEY + "' was set");
+      return null;
+    }
+
+    return new File(build.getAgentTempDirectory(), "TC.NuGet-" + build.getBuildId());
+  }
 
   @NotNull
   public File getNuGetWorkDir(@NotNull final BuildRunnerContext context,
                               @NotNull final File defaultDir) throws RunBuildException {
-    //compatibility with older behavior
-    if ("true".equalsIgnoreCase(context.getBuild().getSharedConfigParameters().get("teamcity.nuget.workdir.local"))) {
+    return getNuGetWorkDir(context.getBuild(), defaultDir);
+  }
+  
+  @NotNull 
+  private File getNuGetWorkDir(@NotNull final AgentRunningBuild build,
+                              @NotNull final File defaultDir) throws RunBuildException {
+    File workDir = getNuGetWorkDir(build);
+    if (workDir == null) {
+      
       return defaultDir;
     }
+    
+    updateNuGetConfig(build, workDir);
+    return workDir;
+  }
 
-    final File temp = context.getBuild().getAgentTempDirectory();
-    final File workDir = new File(temp, "TC.NuGet");
-
+  private File updateNuGetConfig(@NotNull final AgentRunningBuild build,
+                                 @NotNull final File workDir) throws RunBuildException {
     try {
       FileUtil.createDir(workDir);
     } catch (IOException e) {
@@ -54,7 +77,7 @@ public class NuGetWorkdirCalculatorImpl implements NuGetWorkdirCalculator {
     //TODO: may be we should not rewrite existing config here
     //TODO: if should check .nuget folder to reuse nuget.config from it.
     final File localNuGetConfig = new File(workDir, "NuGet.Config");
-    final File sharedNuGetConfig = getGlobalCongig(context);
+    final File sharedNuGetConfig = getGlobalCongig(build);
 
     if (!localNuGetConfig.isFile()) {
       try {
@@ -74,8 +97,8 @@ public class NuGetWorkdirCalculatorImpl implements NuGetWorkdirCalculator {
   }
 
   @Nullable
-  private File getGlobalCongig(@NotNull final BuildRunnerContext context) {
-    final String appdata = context.getBuildParameters().getEnvironmentVariables().get("APPDATA");
+  private File getGlobalCongig(@NotNull final AgentRunningBuild context) {
+    final String appdata = context.getSharedBuildParameters().getEnvironmentVariables().get("APPDATA");
     if (StringUtil.isEmptyOrSpaces(appdata)) return null;
     final File data = new File(appdata);
     if (!data.isDirectory()) return null;
