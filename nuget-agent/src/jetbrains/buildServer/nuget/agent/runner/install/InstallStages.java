@@ -28,6 +28,9 @@ public interface InstallStages {
   BuildProcessContinuation getLocateStage();
 
   @NotNull
+  BuildProcessContinuation getCheckVersionStage();
+
+  @NotNull
   BuildProcessContinuation getAuthenticateStage();
 
   @NotNull

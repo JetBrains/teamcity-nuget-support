@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class InstallStagesImpl implements InstallStages {
   private final BuildProcessContinuation myLocate;
+  private final BuildProcessContinuation myCheckVersion;
   private final BuildProcessContinuation myAuthenticate;
   private final BuildProcessContinuation myInstall;
   private final BuildProcessContinuation myUpdate;
@@ -36,6 +37,7 @@ public class InstallStagesImpl implements InstallStages {
   public InstallStagesImpl(@NotNull final BuildProcessContinuation host) {
     //order is significant
     myLocate = push(host);
+    myCheckVersion = push(host);
     myAuthenticate = push(host);
     myInstall = push(host);
     myUpdate = push(host);
@@ -52,6 +54,11 @@ public class InstallStagesImpl implements InstallStages {
   @NotNull
   public BuildProcessContinuation getLocateStage() {
     return myLocate;
+  }
+
+  @NotNull
+  public BuildProcessContinuation getCheckVersionStage() {
+    return myCheckVersion;
   }
 
   @NotNull

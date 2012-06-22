@@ -18,14 +18,18 @@ package jetbrains.buildServer.nuget.agent.runner.install;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
+import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
+import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVersionHolderImpl;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigBuildProcess;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigProcessFactory;
+import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
+import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.util.StringUtil;
@@ -74,13 +78,40 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
       throw new RunBuildException("NuGet install packages must be enabled");
     }
 
+    final NuGetVersionHolderImpl myVersion = new NuGetVersionHolderImpl();
+
+    stages.getCheckVersionStage().pushBuildProcess(
+            myActionFactory.createVersionCheckCommand(
+                    context,
+                    myVersion,
+                    parameters));
+
+
     if (requiresAuthentication(parameters)) {
       stages.getAuthenticateStage().pushBuildProcess(
-              myActionFactory.createAuthenticateFeeds(
-                      context,
-                      parameters.getNuGetPackageSources(),
-                      parameters)
-      );
+              new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
+                @NotNull
+                public BuildProcess startImpl() throws RunBuildException {
+                  if (myVersion.getNuGetVerion().supportAuth()) {
+                    return myActionFactory.createAuthenticateFeeds(
+                            context,
+                            parameters.getNuGetPackageSources(),
+                            parameters);
+                  } else {
+                    return new BuildProcessBase() {
+                      @NotNull
+                      @Override
+                      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+                        context.getBuild().getBuildLogger().warning("Current NuGet version does not support feed authentication parameters");
+                        return BuildFinishedStatus.FINISHED_SUCCESS;
+                      }
+                    };
+                  }
+                }
+
+                public void finishedImpl() {
+                }
+              }));
     }
 
     final LocateNuGetConfigBuildProcess locate = myFactory.createPrecess(context, parameters);
@@ -89,7 +120,8 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
             myActionFactory,
             stages.getInstallStage(),
             context,
-            installParameters));
+            installParameters,
+            myVersion));
 
     if (updateParameters != null) {
       locate.addInstallStageListener(new PackagesUpdateBuilder(

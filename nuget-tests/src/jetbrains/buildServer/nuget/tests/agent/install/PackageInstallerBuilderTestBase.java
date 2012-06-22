@@ -58,7 +58,7 @@ public abstract class PackageInstallerBuilderTestBase extends BuildProcessTestCa
 
   @BeforeMethod
   @Override
-  protected void setUp() throws Exception {
+  protected final void setUp() throws Exception {
     super.setUp();
 
     final File root = createTempDir();
@@ -78,12 +78,17 @@ public abstract class PackageInstallerBuilderTestBase extends BuildProcessTestCa
     myInstall = m.mock(PackagesInstallParameters.class);
     myUpdate = m.mock(PackagesUpdateParameters.class);
 
+    setUp1();
     myBuilder = createBuilder(stages);
 
     m.checking(new Expectations(){{
       allowing(myContext).getBuild(); will(returnValue(myBuild));
       allowing(myBuild).getBuildLogger(); will(returnValue(myLogger));
     }});
+  }
+
+  protected void setUp1() throws Exception {
+
   }
 
   @NotNull

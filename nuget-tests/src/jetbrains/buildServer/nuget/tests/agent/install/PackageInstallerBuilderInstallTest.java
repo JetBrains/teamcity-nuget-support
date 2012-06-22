@@ -17,6 +17,8 @@
 package jetbrains.buildServer.nuget.tests.agent.install;
 
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.nuget.agent.commands.NuGetVersion;
+import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVerisonHolder;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
@@ -29,17 +31,44 @@ import org.testng.annotations.Test;
  *         Date: 18.06.12 21:02
  */
 public class PackageInstallerBuilderInstallTest extends PackageInstallerBuilderTestBase {
+  private NuGetVerisonHolder myHolder;
+  private NuGetVersion myVersion;
+
+  @Override
+  protected void setUp1() throws Exception {
+    super.setUp1();
+    myHolder = m.mock(NuGetVerisonHolder.class);
+    myVersion = m.mock(NuGetVersion.class);
+
+    m.checking(new Expectations(){{
+      allowing(myHolder).getNuGetVerion(); will(returnValue(myVersion));
+    }});
+  }
+
   @NotNull
   @Override
   protected PackagesInstallerAdapter createBuilder(@NotNull InstallStages stages) {
-    return new PackagesInstallerBuilder(myActionFactory, stages.getInstallStage(), myContext, myInstall);
+    return new PackagesInstallerBuilder(myActionFactory, stages.getInstallStage(), myContext, myInstall, myHolder);
   }
-
 
   @Test
   public void test_install_no_update() throws RunBuildException {
     m.checking(new Expectations() {{
+      allowing(myVersion).supportInstallNoCache(); will(returnValue(false));
+
       oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
+      will(returnValue(createMockBuildProcess("b1")));
+    }});
+
+    doTest(t(myConfig), t("b1"));
+  }
+
+  @Test
+  public void test_install_no_update_noCacheSupport() throws RunBuildException {
+    m.checking(new Expectations() {{
+      allowing(myVersion).supportInstallNoCache(); will(returnValue(true));
+
+      oneOf(myActionFactory).createInstall(myContext, myInstall, true, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("b1")));
     }});
 
@@ -54,11 +83,10 @@ public class PackageInstallerBuilderInstallTest extends PackageInstallerBuilderT
       oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig2, myTaget);
       will(returnValue(createMockBuildProcess("b2")));
 
+      allowing(myVersion).supportInstallNoCache(); will(returnValue(false));
     }});
 
     doTest(t(myConfig, myConfig2), t("b1", "b2"));
   }
-
-
 
 }
