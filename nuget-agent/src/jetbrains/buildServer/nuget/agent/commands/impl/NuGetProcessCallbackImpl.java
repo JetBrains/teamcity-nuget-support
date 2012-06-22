@@ -33,9 +33,12 @@ import java.util.Map;
  */
 public class NuGetProcessCallbackImpl implements NuGetProcessCallback {
   private final CommandlineBuildProcessFactory myFactory;
+  private final NuGetWorkdirCalculator myCalc;
 
-  public NuGetProcessCallbackImpl(@NotNull final CommandlineBuildProcessFactory factory) {
+  public NuGetProcessCallbackImpl(@NotNull final CommandlineBuildProcessFactory factory,
+                                  @NotNull final NuGetWorkdirCalculator calc) {
     myFactory = factory;
+    myCalc = calc;
   }
 
   @NotNull
@@ -54,7 +57,7 @@ public class NuGetProcessCallbackImpl implements NuGetProcessCallback {
                 context,
                 program.getPath(),
                 _argz,
-                workingDir,
+                myCalc.getNuGetWorkDir(context, workingDir),
                 additionalEnvironment
         );
       }

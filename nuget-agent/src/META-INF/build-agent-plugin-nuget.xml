@@ -25,4 +25,6 @@
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.AgentNuGetTeamCityProvider"/>
+
+  <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetWorkdirCalculator"/>
 </beans>

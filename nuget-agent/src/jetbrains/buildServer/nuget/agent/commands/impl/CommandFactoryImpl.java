@@ -152,34 +152,6 @@ public class CommandFactoryImpl implements CommandFactory {
             factory);
   }
 
-  private <T> T executeNuGet(@NotNull final NuGetParameters nuget,
-                             @NotNull final Collection<PackageSource> sources,
-                             @NotNull final Collection<String> arguments,
-                             @NotNull final File workingDir,
-                             @NotNull final Callback<T> factory) throws RunBuildException {
-    return executeNuGet(nuget, sources, arguments, workingDir, Collections.<String,String>emptyMap(), factory);
-  }
-
-  private <T> T executeNuGet(@NotNull final NuGetParameters nuget,
-                             @NotNull final Collection<PackageSource> sources,
-                             @NotNull final Collection<String> arguments,
-                             @NotNull final File workingDir,
-                             @NotNull final Map<String,String> additionalEnvironment,
-                             @NotNull final Callback<T> factory) throws RunBuildException {
-    final List<String> argz = new ArrayList<String>(arguments);
-    for (PackageSource source : sources) {
-      argz.add("-Source");
-      argz.add(source.getSource());
-    }
-
-    return factory.createCommand(
-            nuget.getNuGetExeFile(),
-            workingDir,
-            argz,
-            additionalEnvironment
-    );
-  }
-
   @NotNull
   public <T> T createAuthorizeFeed(@NotNull final File authFile,
                                    @NotNull final NuGetParameters params,
@@ -230,5 +202,35 @@ public class CommandFactoryImpl implements CommandFactory {
             workdir,
             argz,
             Collections.<String, String>emptyMap());
+  }
+
+  @NotNull
+  private <T> T executeNuGet(@NotNull final NuGetParameters nuget,
+                             @NotNull final Collection<PackageSource> sources,
+                             @NotNull final Collection<String> arguments,
+                             @NotNull final File workingDir,
+                             @NotNull final Callback<T> factory) throws RunBuildException {
+    return executeNuGet(nuget, sources, arguments, workingDir, Collections.<String,String>emptyMap(), factory);
+  }
+
+  @NotNull
+  private <T> T executeNuGet(@NotNull final NuGetParameters nuget,
+                             @NotNull final Collection<PackageSource> sources,
+                             @NotNull final Collection<String> arguments,
+                             @NotNull final File workingDir,
+                             @NotNull final Map<String,String> additionalEnvironment,
+                             @NotNull final Callback<T> factory) throws RunBuildException {
+    final List<String> argz = new ArrayList<String>(arguments);
+    for (PackageSource source : sources) {
+      argz.add("-Source");
+      argz.add(source.getSource());
+    }
+
+    return factory.createCommand(
+            nuget.getNuGetExeFile(),
+            workingDir,
+            argz,
+            additionalEnvironment
+    );
   }
 }
