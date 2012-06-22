@@ -63,9 +63,9 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.SolutionPackagesScannerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.ResourcesConfigPackagesScannerTest"/>
 
-      <class name="jetbrains.buildServer.nuget.tests.agent.PackageInstallerBuilderUpdateTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.agent.PackageInstallerBuilderInstallTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.agent.PackageInstallerBuilderReportTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.install.PackageInstallerBuilderUpdateTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.install.PackageInstallerBuilderInstallTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.install.PackageInstallerBuilderReportTest"/>
     </classes>
   </test>
 

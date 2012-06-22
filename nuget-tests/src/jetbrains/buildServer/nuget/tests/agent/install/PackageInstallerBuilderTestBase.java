@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.agent;
+package jetbrains.buildServer.nuget.tests.agent.install;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
@@ -25,7 +25,7 @@ import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
-import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
+import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -39,7 +39,7 @@ import java.util.List;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 18.06.12 20:48
  */
-public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBase {
+public abstract class PackageInstallerBuilderTestBase extends BuildProcessTestCase {
   private List<BuildProcess> myProcessesList;
 
   protected Mockery m;
