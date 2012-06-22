@@ -20,7 +20,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.commands.NuGetVersion;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVerisonHolder;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
-import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerBuilder;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.builders.PackagesInstallerBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;

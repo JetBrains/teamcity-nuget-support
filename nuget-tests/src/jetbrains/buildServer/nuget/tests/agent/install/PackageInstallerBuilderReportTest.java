@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.agent.install;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
-import jetbrains.buildServer.nuget.agent.runner.install.PackagesReportBuilder;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.builders.PackagesReportBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;

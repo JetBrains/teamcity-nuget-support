@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.runner.install;
+package jetbrains.buildServer.nuget.agent.runner.install.impl.builders;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
