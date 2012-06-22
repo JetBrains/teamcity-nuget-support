@@ -65,6 +65,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected BuildParametersMap myBuildParametersMap;
   protected String cmd;
   protected NuGetTeamCityProvider myNuGetProvider;
+  protected File myAgentTemp;
+
 
   @NotNull
   protected String getCommandsOutput() {
@@ -131,6 +133,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     super.setUp();
     myCommandsOutput = new StringBuilder();
     myRoot = createTempDir();
+    myAgentTemp = createTempDir();
+
     m = new Mockery();
     myBuild = m.mock(AgentRunningBuild.class);
     myContext = m.mock(BuildRunnerContext.class);
@@ -149,12 +153,10 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       allowing(myContext).getBuildParameters(); will(returnValue(myBuildParametersMap));
       allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
 
-      allowing(myContext).getBuild();
-      will(returnValue(myBuild));
-      allowing(myBuild).getBuildLogger();
-      will(returnValue(myLogger));
-      allowing(myBuild).getCheckoutDirectory();
-      will(returnValue(myRoot));
+      allowing(myContext).getBuild(); will(returnValue(myBuild));
+      allowing(myBuild).getBuildLogger(); will(returnValue(myLogger));
+      allowing(myBuild).getCheckoutDirectory(); will(returnValue(myRoot));
+      allowing(myBuild).getAgentTempDirectory(); will(returnValue(myAgentTemp));
 
       allowing(myMockProcess).start();
       allowing(myMockProcess).waitFor();
