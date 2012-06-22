@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.agent.commands.impl;
 
 import jetbrains.buildServer.agent.plugins.beans.PluginDescriptor;
-import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.common.NuGetTeamCityProvider;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

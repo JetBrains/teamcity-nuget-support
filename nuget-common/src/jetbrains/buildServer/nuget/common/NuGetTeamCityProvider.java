@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.exec.impl;
+package jetbrains.buildServer.nuget.common;
 
-import jetbrains.buildServer.nuget.common.NuGetTeamCityProvider;
-import jetbrains.buildServer.plugins.bean.PluginInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 14.07.11 18:47
+ * Date: 14.07.11 18:49
  */
-public class ServerNuGetTeamCityProviderImpl implements NuGetTeamCityProvider {
-  private final PluginInfo myPluginInfo;
-
-  public ServerNuGetTeamCityProviderImpl(@NotNull final PluginInfo pluginInfo) {
-    myPluginInfo = pluginInfo;
-  }
-
+public interface NuGetTeamCityProvider {
   @NotNull
-  public File getNuGetRunnerPath() {
-    return new File(myPluginInfo.getPluginRoot(), "bin/JetBrains.TeamCity.NuGetRunner.exe");
-  }
+  File getNuGetRunnerPath();
 }

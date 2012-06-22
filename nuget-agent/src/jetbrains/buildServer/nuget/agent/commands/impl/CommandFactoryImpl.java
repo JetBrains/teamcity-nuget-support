@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.agent.commands.impl;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.parameters.*;
-import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.common.NuGetTeamCityProvider;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;

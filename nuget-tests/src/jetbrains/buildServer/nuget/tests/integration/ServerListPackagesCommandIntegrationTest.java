@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.TempFolderProvider;
+import jetbrains.buildServer.nuget.common.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;

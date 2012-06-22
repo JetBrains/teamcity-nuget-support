@@ -26,7 +26,7 @@ import jetbrains.buildServer.nuget.agent.commands.impl.NuGetProcessCallbackImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
-import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.common.NuGetTeamCityProvider;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;

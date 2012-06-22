@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.exec;
-
-import org.jetbrains.annotations.NotNull;
-
-import java.io.File;
+package jetbrains.buildServer.nuget.agent.commands.impl;
 
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 14.07.11 18:49
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 22.06.12 11:52
  */
-public interface NuGetTeamCityProvider {
-  @NotNull
-  File getNuGetRunnerPath();
+public class CredentialsNuGetActionFactoryImpl  {
 }
