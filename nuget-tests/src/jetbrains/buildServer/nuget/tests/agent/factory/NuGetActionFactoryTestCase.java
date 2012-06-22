@@ -22,7 +22,7 @@ import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetProcessCallbackImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetWorkdirCalculator;
+import jetbrains.buildServer.nuget.agent.commands.impl.NuGetWorkdirCalculatorImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
@@ -68,7 +68,7 @@ public class NuGetActionFactoryTestCase extends BuildProcessTestCase {
     myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
     PackageUsages pu = m.mock(PackageUsages.class);
     myProvider = m.mock(NuGetTeamCityProvider.class);
-    i = new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(myProcessFactory, new NuGetWorkdirCalculator()), pu, new CommandFactoryImpl(myProvider));
+    i = new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(myProcessFactory, new NuGetWorkdirCalculatorImpl()), pu, new CommandFactoryImpl(myProvider));
     ctx = m.mock(BuildRunnerContext.class);
     build = m.mock(AgentRunningBuild.class);
     nugetParams = m.mock(NuGetFetchParameters.class);

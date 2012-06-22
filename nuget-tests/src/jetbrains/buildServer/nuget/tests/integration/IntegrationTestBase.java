@@ -182,7 +182,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new SimplePackageInfoLoader()
     );
 
-    myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(executingFactory(), new NuGetWorkdirCalculator()), pu, new CommandFactoryImpl(myNuGetProvider)));
+    myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(executingFactory(), new NuGetWorkdirCalculatorImpl()), pu, new CommandFactoryImpl(myNuGetProvider)));
   }
 
   @NotNull
