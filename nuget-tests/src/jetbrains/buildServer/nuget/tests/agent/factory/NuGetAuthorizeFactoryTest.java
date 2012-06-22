@@ -59,6 +59,7 @@ public class NuGetAuthorizeFactoryTest extends NuGetActionFactoryTestCase {
               with((Matcher<Collection<String>>)new ListMatcher<String>(Arrays.asList(
                       equal(myNuGetPath.getPath()),
                       equal("TeamCity.AuthorizeFeed"),
+                      equal("-Request"),
                       new BaseMatcher<String>() {
                         public boolean matches(Object o) {
                           try {

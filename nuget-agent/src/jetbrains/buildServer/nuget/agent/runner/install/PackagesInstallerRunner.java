@@ -70,7 +70,6 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
     return false;
   }
 
-
   private void createStages(@NotNull final BuildRunnerContext context,
                             @NotNull final InstallStages stages) throws RunBuildException {
     final NuGetFetchParameters parameters = myParametersFactory.loadNuGetFetchParameters(context);
