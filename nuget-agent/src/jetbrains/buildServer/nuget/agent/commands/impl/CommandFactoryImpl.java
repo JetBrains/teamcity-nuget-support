@@ -46,6 +46,7 @@ public class CommandFactoryImpl implements CommandFactory {
     if (params.getExcludeVersion()) {
       argz.add("-ExcludeVersion");
     }
+    argz.add("-NoCache");
     argz.add("-OutputDirectory");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 
@@ -161,6 +162,7 @@ public class CommandFactoryImpl implements CommandFactory {
 
     argz.add(params.getNuGetExeFile().getPath());
     argz.add("TeamCity.AuthorizeFeed");
+    argz.add("-Request");
     argz.add(FileUtil.getCanonicalFile(authFile).getPath());
 
     return factory.createCommand(

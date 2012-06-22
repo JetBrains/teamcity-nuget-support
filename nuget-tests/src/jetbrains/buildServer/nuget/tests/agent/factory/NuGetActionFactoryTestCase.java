@@ -46,6 +46,7 @@ public class NuGetActionFactoryTestCase extends BuildProcessTestCase {
   protected NuGetFetchParameters nugetParams;
   protected BuildParametersMap myBuildParametersMap;
   protected NuGetTeamCityProvider myProvider;
+  protected NuGetVersionFactory myVersionFactory;
   protected File myCheckoutDir;
   protected File myWorkDir;
   protected File myNuGetPath;
@@ -67,6 +68,7 @@ public class NuGetActionFactoryTestCase extends BuildProcessTestCase {
     myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
     PackageUsages pu = m.mock(PackageUsages.class);
     myProvider = m.mock(NuGetTeamCityProvider.class);
+    myVersionFactory = m.mock(NuGetVersionFactory.class);
     final NuGetWorkdirCalculator calc = new NuGetWorkdirCalculator() {
       @NotNull
       public File getNuGetWorkDir(@NotNull BuildRunnerContext context, @NotNull File defaultDir) throws RunBuildException {
@@ -74,7 +76,7 @@ public class NuGetActionFactoryTestCase extends BuildProcessTestCase {
       }
     };
 
-    i = new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(myProcessFactory, calc), pu, new CommandFactoryImpl(myProvider));
+    i = new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(myProcessFactory, calc), pu, new CommandFactoryImpl(myProvider), myVersionFactory);
     ctx = m.mock(BuildRunnerContext.class);
     build = m.mock(AgentRunningBuild.class);
     nugetParams = m.mock(NuGetFetchParameters.class);

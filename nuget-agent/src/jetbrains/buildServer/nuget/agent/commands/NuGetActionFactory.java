@@ -59,7 +59,7 @@ public interface NuGetActionFactory {
 
   @NotNull
   BuildProcess createVersionCheckCommand(@NotNull BuildRunnerContext context,
-                                         @NotNull File versionFile,
+                                         @NotNull NuGetVersionCallback callback,
                                          @NotNull NuGetParameters params) throws RunBuildException;
 
   @NotNull

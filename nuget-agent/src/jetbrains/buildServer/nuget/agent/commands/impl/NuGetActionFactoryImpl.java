@@ -23,6 +23,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
+import jetbrains.buildServer.nuget.agent.commands.NuGetVersionCallback;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
@@ -49,13 +50,16 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   private final CommandFactory myCommandFactory;
   private final NuGetProcessCallback myFactory;
   private final PackageUsages myPackageUsages;
+  private final NuGetVersionFactory myVersionFactory;
 
   public NuGetActionFactoryImpl(@NotNull final NuGetProcessCallback factory,
                                 @NotNull final PackageUsages packageUsages,
-                                @NotNull final CommandFactory commandFactory) {
+                                @NotNull final CommandFactory commandFactory,
+                                @NotNull final NuGetVersionFactory versionFactory) {
     myFactory = factory;
     myPackageUsages = packageUsages;
     myCommandFactory = commandFactory;
+    myVersionFactory = versionFactory;
   }
 
   @NotNull
@@ -137,16 +141,25 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
 
   @NotNull
   public BuildProcess createVersionCheckCommand(@NotNull final BuildRunnerContext context,
-                                                @NotNull final File versionFile,
+                                                @NotNull final NuGetVersionCallback callback,
                                                 @NotNull final NuGetParameters params) throws RunBuildException {
     return  new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
+      private File myTempFile;
       @NotNull
       public BuildProcess startImpl() throws RunBuildException {
-        FileUtil.delete(versionFile);
-        return myCommandFactory.createVersionCheck(params, versionFile, context.getWorkingDirectory(), getCallback(context));
+        try {
+          myTempFile = FileUtil.createTempFile(context.getBuild().getAgentTempDirectory(), "nuget", "teamcity", true);
+        } catch (IOException e) {
+          LOG.warn("Failed to create temp file. " + e.getMessage(), e);
+          throw new RunBuildException("Failed to create temp file. " + e.getMessage());
+        }
+
+        FileUtil.delete(myTempFile);
+        return myCommandFactory.createVersionCheck(params, myTempFile, context.getWorkingDirectory(), getCallback(context));
       }
 
       public void finishedImpl() {
+        callback.onNuGetVersionCompleted(myVersionFactory.getFromVersionFile(myTempFile));
       }
     });
   }

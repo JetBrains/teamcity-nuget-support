@@ -21,6 +21,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
+import jetbrains.buildServer.nuget.agent.commands.NuGetVersionCallback;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
 import jetbrains.buildServer.util.FileUtil;
@@ -181,13 +182,13 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
 
   @NotNull
   public BuildProcess createVersionCheckCommand(@NotNull final BuildRunnerContext context,
-                                                @NotNull final File versionFile,
+                                                @NotNull final NuGetVersionCallback callback,
                                                 @NotNull final NuGetParameters params) throws RunBuildException {
-    return new DelegatingBuildProcess(new LoggingAction(context, versionFile, "version") {
+    return new DelegatingBuildProcess(new LoggingAction(context, params.getNuGetExeFile(), "version") {
       @NotNull
       @Override
       protected BuildProcess delegateToActualAction() throws RunBuildException {
-        return myActionFactory.createVersionCheckCommand(context, versionFile, params);
+        return myActionFactory.createVersionCheckCommand(context, callback, params);
       }
 
       @NotNull
