@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.agent.commands.impl;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.parameters.*;
+import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,11 @@ import java.util.*;
  * Date: 21.07.11 16:10
  */
 public class CommandFactoryImpl implements CommandFactory {
+  private NuGetTeamCityProvider myProvider;
+
+  public CommandFactoryImpl(@NotNull final NuGetTeamCityProvider provider) {
+    myProvider = provider;
+  }
 
   @NotNull
   public <T> T createInstall(@NotNull PackagesInstallParameters params, @NotNull File packagesConfig, @NotNull File targetFolder, @NotNull Callback<T> factory) throws RunBuildException {
@@ -71,6 +77,7 @@ public class CommandFactoryImpl implements CommandFactory {
     return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), factory);
   }
 
+  @NotNull
   public <T> T createPack(@NotNull final File specFile,
                           @NotNull final NuGetPackParameters params,
                           @NotNull final File workdir,
@@ -173,4 +180,21 @@ public class CommandFactoryImpl implements CommandFactory {
     );
   }
 
+  @NotNull
+  public <T> T createNuGetAuthorizeFeed(@NotNull final File authFile,
+                                        @NotNull final NuGetParameters params,
+                                        @NotNull final File workdir,
+                                        @NotNull final Callback<T> factory) throws RunBuildException {
+    final List<String> argz = new ArrayList<String>();
+
+    argz.add(params.getNuGetExeFile().getPath());
+    argz.add("TeamCity.AuthorizeFeed");
+    argz.add(FileUtil.getCanonicalFile(authFile).getPath());
+
+    return factory.createCommand(
+            myProvider.getNuGetRunnerPath(),
+            workdir,
+            argz,
+            Collections.<String, String>emptyMap());
+  }
 }

@@ -26,10 +26,12 @@ import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -49,7 +51,10 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
     myCommandFactory = commandFactory;
   }
 
-  private CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context) {
+  @NotNull
+  protected CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context,
+                                                              @NotNull final Collection<PackageSource> sources) {
+
     return new CommandFactory.Callback<BuildProcess>() {
       @NotNull
       public BuildProcess createCommand(@NotNull File program,
@@ -71,12 +76,21 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
     };
   }
 
+  private boolean hasAuthenticatedFeeds(@NotNull Collection<PackageSource> sources) {
+    for (PackageSource source : sources) {
+      if (StringUtil.isEmptyOrSpaces(source.getUserName())) continue;
+      if (StringUtil.isEmptyOrSpaces(source.getPassword())) continue;
+      return true;
+    }
+    return false;
+  }
+
   @NotNull
   public BuildProcess createInstall(@NotNull final BuildRunnerContext context,
                                     @NotNull final PackagesInstallParameters params,
                                     @NotNull final File packagesConfig,
                                     @NotNull final File targetFolder) throws RunBuildException {
-    return myCommandFactory.createInstall(params, packagesConfig, targetFolder, getCallback(context));
+    return myCommandFactory.createInstall(params, packagesConfig, targetFolder, getCallback(context, params.getNuGetParameters().getNuGetPackageSources()));
   }
 
 
@@ -85,7 +99,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                                    @NotNull final PackagesUpdateParameters params,
                                    @NotNull final File packagesConfig,
                                    @NotNull final File targetFolder) throws RunBuildException {
-    return myCommandFactory.createUpdate(params, packagesConfig, targetFolder, getCallback(context));
+    return myCommandFactory.createUpdate(params, packagesConfig, targetFolder, getCallback(context, params.getNuGetParameters().getNuGetPackageSources()));
   }
 
   @NotNull
@@ -119,7 +133,12 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   public BuildProcess createPush(@NotNull BuildRunnerContext context,
                                  @NotNull NuGetPublishParameters params,
                                  @NotNull File packagePath) throws RunBuildException {
-    return myCommandFactory.createPush(params, packagePath, getCallback(context));
+    final PackageSource source = params.getPublishSource();
+    final Collection<PackageSource> sources = source == null
+            ? Collections.<PackageSource>emptyList()
+            : Collections.singleton(source);
+
+    return myCommandFactory.createPush(params, packagePath, getCallback(context, sources));
   }
 
   @NotNull
@@ -130,6 +149,6 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
             specFile,
             params,
             context.getBuild().getCheckoutDirectory(),
-            getCallback(context));
+            getCallback(context, Collections.<PackageSource>emptyList()));
   }
 }

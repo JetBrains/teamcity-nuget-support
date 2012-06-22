@@ -27,6 +27,7 @@ import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -51,6 +52,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
   private File myTarget;
   private File myConfig;
   private BuildParametersMap myBuildParametersMap;
+  private NuGetTeamCityProvider myProvider;
 
 
   @BeforeMethod
@@ -60,7 +62,8 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
     m = new Mockery();
     myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
     PackageUsages pu = m.mock(PackageUsages.class);
-    i = new NuGetActionFactoryImpl(myProcessFactory, pu, new CommandFactoryImpl());
+    myProvider = m.mock(NuGetTeamCityProvider.class);
+    i = new NuGetActionFactoryImpl(myProcessFactory, pu, new CommandFactoryImpl(myProvider));
     ctx = m.mock(BuildRunnerContext.class);
     ps = m.mock(PackagesInstallParameters.class);
     nugetParams = m.mock(NuGetFetchParameters.class);

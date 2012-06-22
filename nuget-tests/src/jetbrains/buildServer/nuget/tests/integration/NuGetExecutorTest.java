@@ -20,7 +20,6 @@ package jetbrains.buildServer.nuget.tests.integration;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
-import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +37,7 @@ import java.util.Arrays;
  */
 public class NuGetExecutorTest extends IntegrationTestBase {
   private Mockery m;
-  private NuGetTeamCityProvider info;
+
   private NuGetExecutor exec;
   private SystemInfo mySystemInfo;
 
@@ -47,13 +46,10 @@ public class NuGetExecutorTest extends IntegrationTestBase {
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    info = m.mock(NuGetTeamCityProvider.class);
-    mySystemInfo = m.mock(SystemInfo.class);
-    exec = new NuGetExecutorImpl(info, mySystemInfo);
 
-    m.checking(new Expectations(){{
-      allowing(info).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
-    }});
+    mySystemInfo = m.mock(SystemInfo.class);
+    exec = new NuGetExecutorImpl(myNuGetProvider, mySystemInfo);
+
   }
 
   private void setIsWindows(final boolean isWindows) {

@@ -17,10 +17,7 @@
 package jetbrains.buildServer.nuget.agent.commands;
 
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.parameters.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -50,10 +47,17 @@ public interface CommandFactory {
                    @NotNull File packagePath,
                    @NotNull Callback<T> factory) throws RunBuildException;
 
+  @NotNull
   <T> T createPack(@NotNull File specFile,
                    @NotNull NuGetPackParameters params,
                    @NotNull File workdir,
                    @NotNull Callback<T> factory) throws RunBuildException;
+
+  @NotNull
+  <T> T createNuGetAuthorizeFeed(@NotNull File authFile,
+                                 @NotNull NuGetParameters params,
+                                 @NotNull File workdir,
+                                 @NotNull Callback<T> factory) throws RunBuildException;
 
   public interface Callback<T> {
     /**

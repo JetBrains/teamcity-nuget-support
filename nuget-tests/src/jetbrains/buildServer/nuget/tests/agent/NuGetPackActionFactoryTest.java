@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
 import org.jmock.Expectations;
@@ -59,8 +60,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
   private Collection<String> myProperties;
   private Collection<String> myExtra;
   private BuildParametersMap myBuildParametersMap;
-
-
+  private NuGetTeamCityProvider myProvider;
 
   @BeforeMethod
   @Override
@@ -69,7 +69,8 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
     m = new Mockery();
     myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
     PackageUsages pu = m.mock(PackageUsages.class);
-    i = new NuGetActionFactoryImpl(myProcessFactory, pu, new CommandFactoryImpl());
+    myProvider = m.mock(NuGetTeamCityProvider.class);
+    i = new NuGetActionFactoryImpl(myProcessFactory, pu, new CommandFactoryImpl(myProvider));
     ctx = m.mock(BuildRunnerContext.class);
     myPackParameters = m.mock(NuGetPackParameters.class);
     build = m.mock(AgentRunningBuild.class);

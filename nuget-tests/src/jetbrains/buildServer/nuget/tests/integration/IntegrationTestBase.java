@@ -35,6 +35,7 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.common.SimplePackageInfoLoader;
+import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -65,6 +66,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   private BuildProcess myMockProcess;
   protected BuildParametersMap myBuildParametersMap;
   protected String cmd;
+  protected NuGetTeamCityProvider myNuGetProvider;
 
   @NotNull
   protected String getCommandsOutput() {
@@ -141,6 +143,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myBuildParametersMap = m.mock(BuildParametersMap.class);
 
     cmd = System.getenv("ComSpec");
+    myNuGetProvider = m.mock(NuGetTeamCityProvider.class);
 
     final Map<String, String> configParameters = new TreeMap<String, String>();
 
@@ -171,6 +174,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
         }
       });
 
+      allowing(myNuGetProvider).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
     }});
 
     myCollector = new NuGetPackagesCollectorImpl();
@@ -180,7 +184,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new SimplePackageInfoLoader()
     );
 
-    myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(executingFactory(), pu, new CommandFactoryImpl()));
+    myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(executingFactory(), pu, new CommandFactoryImpl(myNuGetProvider)));
   }
 
   @NotNull
