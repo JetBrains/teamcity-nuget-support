@@ -19,13 +19,17 @@ package jetbrains.buildServer.nuget.tests.util;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
+import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.tests.LoggingTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,6 +37,44 @@ import java.util.List;
  * Date: 07.07.11 20:08
  */
 public class BuildProcessTestCase extends LoggingTestCase {
+  private Collection<String> myMockRunners;
+
+  @BeforeMethod
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
+    myMockRunners = new ArrayList<String>();
+  }
+
+  @NotNull
+  protected BuildProcess createMockBuildProcess(@NotNull final String name) {
+    return createMockBuildProcess(name, null);
+  }
+
+  @NotNull
+  protected BuildProcess createMockBuildProcess(@NotNull final String name, @Nullable final Runnable action) {
+    return new BuildProcessBase() {
+      @NotNull
+      @Override
+      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+        myMockRunners.add(name);
+        if (action != null) action.run();
+        return BuildFinishedStatus.FINISHED_SUCCESS;
+      }
+    };
+  }
+
+  protected static <T> T[] t(T...t) {
+    return t;
+  }
+
+  protected static <T> Collection<T> c(T...t) {
+    return Arrays.asList(t);
+  }
+
+  protected void assertExecutedMockProcesses(String... procs) {
+    Assert.assertEquals(Arrays.asList(procs), myMockRunners);
+  }
 
   @DataProvider(name = "buildFinishStatuses")
   public Object[][] buildStatuses() {

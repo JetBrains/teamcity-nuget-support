@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.agent;
+package jetbrains.buildServer.nuget.tests.mocks;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

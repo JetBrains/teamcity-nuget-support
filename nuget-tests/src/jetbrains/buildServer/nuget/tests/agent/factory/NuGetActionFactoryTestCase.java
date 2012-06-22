@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.agent;
+package jetbrains.buildServer.nuget.tests.agent.factory;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildParametersMap;
 import jetbrains.buildServer.agent.BuildRunnerContext;
@@ -28,6 +27,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.common.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -38,7 +38,7 @@ import java.io.File;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 22.06.12 12:01
  */
-public class NuGetActionFactoryTestCase extends BaseTestCase {
+public class NuGetActionFactoryTestCase extends BuildProcessTestCase {
   protected Mockery m;
   protected CommandlineBuildProcessFactory myProcessFactory;
   protected NuGetActionFactoryImpl i;
@@ -47,7 +47,11 @@ public class NuGetActionFactoryTestCase extends BaseTestCase {
   protected NuGetFetchParameters nugetParams;
   protected BuildParametersMap myBuildParametersMap;
   protected NuGetTeamCityProvider myProvider;
-  protected File myWorkingDir;
+  protected File myCheckoutDir;
+  protected File myWorkDir;
+  protected File myNuGetPath;
+  protected File myAgentTemp;
+  protected File myNuGetRunnerPath;
 
   @BeforeMethod
   @Override
@@ -55,8 +59,11 @@ public class NuGetActionFactoryTestCase extends BaseTestCase {
     super.setUp();
     m = new Mockery();
 
-    myWorkingDir = createTempDir();
-
+    myWorkDir = createTempDir();
+    myCheckoutDir = createTempDir();
+    myAgentTemp = createTempDir();
+    myNuGetPath = createTempFile();
+    myNuGetRunnerPath = createTempFile();
 
     myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
     PackageUsages pu = m.mock(PackageUsages.class);
@@ -68,9 +75,14 @@ public class NuGetActionFactoryTestCase extends BaseTestCase {
     myBuildParametersMap = m.mock(BuildParametersMap.class);
 
     m.checking(new Expectations(){{
+      allowing(nugetParams).getNuGetExeFile();  will(returnValue(myNuGetPath));
+      allowing(myProvider).getNuGetRunnerPath(); will(returnValue(myNuGetRunnerPath));
+
       allowing(ctx).getBuild(); will(returnValue(build));
       allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
-      allowing(build).getCheckoutDirectory(); will(returnValue(myWorkingDir));
+      allowing(build).getCheckoutDirectory(); will(returnValue(myCheckoutDir));
+      allowing(build).getAgentTempDirectory(); will(returnValue(myAgentTemp));
+      allowing(ctx).getWorkingDirectory(); will(returnValue(myWorkDir));
     }});
   }
 

@@ -30,7 +30,7 @@ import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.agent.PackageSourceImpl;
-import jetbrains.buildServer.nuget.tests.agent.StartsWithMatcher;
+import jetbrains.buildServer.nuget.tests.mocks.StartsWithMatcher;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;

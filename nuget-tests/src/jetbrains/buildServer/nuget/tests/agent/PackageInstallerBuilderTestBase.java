@@ -24,19 +24,15 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
-import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
-import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -44,7 +40,6 @@ import java.util.List;
  *         Date: 18.06.12 20:48
  */
 public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBase {
-  private List<String> myExecutedProcesses;
   private List<BuildProcess> myProcessesList;
 
   protected Mockery m;
@@ -75,7 +70,6 @@ public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBas
     final InstallStages stages = new InstallStagesImpl(cont("list", myProcessesList));
 
     m = new Mockery();
-    myExecutedProcesses = new ArrayList<String>();
     myActionFactory = m.mock(NuGetActionFactory.class);
     myContext = m.mock(BuildRunnerContext.class);
     myBuild = m.mock(AgentRunningBuild.class);
@@ -94,24 +88,6 @@ public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBas
 
   @NotNull
   protected abstract PackagesInstallerAdapter createBuilder(@NotNull InstallStages stages);
-
-  @NotNull
-  protected BuildProcess createMockBuildProcess(@NotNull final String name) {
-    return createMockBuildProcess(name, null);
-  }
-
-  @NotNull
-  protected BuildProcess createMockBuildProcess(@NotNull final String name, @Nullable final Runnable action) {
-    return new BuildProcessBase() {
-      @NotNull
-      @Override
-      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
-        myExecutedProcesses.add(name);
-        if (action != null) action.run();
-        return BuildFinishedStatus.FINISHED_SUCCESS;
-      }
-    };
-  }
 
   @NotNull
   private BuildProcessContinuation cont(@NotNull final String name, @NotNull final List<BuildProcess> proc) {
@@ -138,13 +114,7 @@ public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBas
       assertRunSuccessfully(update, BuildFinishedStatus.FINISHED_SUCCESS);
     }
 
-    Assert.assertEquals(Arrays.asList(procs), myExecutedProcesses);
-
+    assertExecutedMockProcesses(procs);
     m.assertIsSatisfied();
   }
-
-  protected static <T> T[] t(T...t) {
-    return t;
-  }
-
 }

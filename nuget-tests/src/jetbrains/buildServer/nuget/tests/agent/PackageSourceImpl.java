@@ -59,6 +59,25 @@ public class PackageSourceImpl implements PackageSource {
     return myPassword;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof PackageSourceImpl)) return false;
+
+    PackageSourceImpl that = (PackageSourceImpl) o;
+
+    if (myPassword != null ? !myPassword.equals(that.myPassword) : that.myPassword != null) return false;
+    if (!mySource.equals(that.mySource)) return false;
+    if (myUserName != null ? !myUserName.equals(that.myUserName) : that.myUserName != null) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return mySource.hashCode();
+  }
+
   @NotNull
   public static List<PackageSource> convert(@NotNull String... rawSources) {
     return convert(Arrays.asList(rawSources));

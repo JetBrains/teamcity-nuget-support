@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.agent;
+package jetbrains.buildServer.nuget.tests.agent.factory;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
+import jetbrains.buildServer.nuget.tests.agent.PackageSourceImpl;
+import jetbrains.buildServer.nuget.tests.agent.factory.NuGetActionFactoryTestCase;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.jetbrains.annotations.NotNull;

@@ -69,6 +69,18 @@
     </classes>
   </test>
 
+  <test name="agent action factory">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.agent.factory.NuGetInstallPackageActionFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.factory.NuGetUpdatePackageActionFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.factory.NuGetVersionActionFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.factory.NuGetPushActoinFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.factory.NuGetAuthorizeFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.factory.NuGetDeAuthorizeFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.factory.NuGetPackActionFactoryTest"/>
+    </classes>
+  </test>
+
   <test name="fast tests">
     <classes>
 
@@ -84,11 +96,7 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.LocateNuGetConfigBuildProcessTest"/>
 
 
-      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetInstallPackageActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.RepositoryPathResolverTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetUpdatePackageActionFactoryTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPushActoinFactoryTest"/>
-
       <class name="jetbrains.buildServer.nuget.tests.common.PackageDependenciesStoreTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.util.CompositeBuildProcessTest"/>
@@ -108,7 +116,7 @@
       <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.FeedGetMethodFactoryTest"/>
 
 
-      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackActionFactoryTest"/>
+
       <class name="jetbrains.buildServer.nuget.tests.agent.PackRunnerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackageUsagesTest"/>
 

@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.agent;
+package jetbrains.buildServer.nuget.tests.agent.factory;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.tests.agent.PackageSourceImpl;
+import jetbrains.buildServer.nuget.tests.agent.factory.NuGetActionFactoryTestCase;
 import org.jmock.Expectations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -52,15 +54,15 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
 
   @Test
   public void test_no_sources() throws RunBuildException, IOException {
-    final File nuget = createTempFile();
+
     m.checking(new Expectations(){{
       allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<PackageSource>emptyList()));
-      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
+
       allowing(ps).getExcludeVersion(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              nuget.getPath(),
+              myNuGetPath.getPath(),
               Arrays.asList("install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath()),
               myConfig.getParentFile(),
               Collections.singletonMap("EnableNuGetPackageRestore", "True")
@@ -73,15 +75,13 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
 
   @Test
   public void test_no_sources_excludeVersion() throws RunBuildException, IOException {
-    final File nuget = createTempFile();
     m.checking(new Expectations(){{
       allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<PackageSource>emptyList()));
-      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(true));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              nuget.getPath(),
+              myNuGetPath.getPath(),
               Arrays.asList("install", myConfig.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath()),
               myConfig.getParentFile(),
               Collections.singletonMap("EnableNuGetPackageRestore", "True")
@@ -94,15 +94,13 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
 
   @Test
   public void test_sources() throws RunBuildException, IOException {
-    final File nuget = createTempFile();
     m.checking(new Expectations(){{
       allowing(nugetParams).getNuGetPackageSources(); will(returnValue(PackageSourceImpl.convert("aaa", "bbb")));
-      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              nuget.getPath(),
+              myNuGetPath.getPath(),
               Arrays.asList("install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
               myConfig.getParentFile(),
               Collections.singletonMap("EnableNuGetPackageRestore", "True")
