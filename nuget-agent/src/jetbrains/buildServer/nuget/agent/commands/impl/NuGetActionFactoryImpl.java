@@ -25,14 +25,12 @@ import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
-import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -40,10 +38,10 @@ import java.util.Map;
  */
 public class NuGetActionFactoryImpl implements NuGetActionFactory {
   private final CommandFactory myCommandFactory;
-  private final CommandlineBuildProcessFactory myFactory;
+  private final NuGetProcessCallback myFactory;
   private final PackageUsages myPackageUsages;
 
-  public NuGetActionFactoryImpl(@NotNull final CommandlineBuildProcessFactory factory,
+  public NuGetActionFactoryImpl(@NotNull final NuGetProcessCallback factory,
                                 @NotNull final PackageUsages packageUsages,
                                 @NotNull final CommandFactory commandFactory) {
     myFactory = factory;
@@ -54,26 +52,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   @NotNull
   protected CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context,
                                                               @NotNull final Collection<PackageSource> sources) {
-
-    return new CommandFactory.Callback<BuildProcess>() {
-      @NotNull
-      public BuildProcess createCommand(@NotNull File program,
-                                        @NotNull File workingDir,
-                                        @NotNull Collection<String> _argz,
-                                        @NotNull Map<String, String> additionalEnvironment) throws RunBuildException {
-        if (!program.isFile()) {
-          throw new RunBuildException("Failed to find NuGet executable at: " + program);
-        }
-
-        return myFactory.executeCommandLine(
-                context,
-                program.getPath(),
-                _argz,
-                workingDir,
-                additionalEnvironment
-        );
-      }
-    };
+    return myFactory.getCallback(context, sources);
   }
 
   private boolean hasAuthenticatedFeeds(@NotNull Collection<PackageSource> sources) {

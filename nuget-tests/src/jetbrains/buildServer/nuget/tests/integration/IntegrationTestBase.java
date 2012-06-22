@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.LoggingNuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
+import jetbrains.buildServer.nuget.agent.commands.impl.NuGetProcessCallbackImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
@@ -184,7 +185,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new SimplePackageInfoLoader()
     );
 
-    myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(executingFactory(), pu, new CommandFactoryImpl(myNuGetProvider)));
+    myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(executingFactory()), pu, new CommandFactoryImpl(myNuGetProvider)));
   }
 
   @NotNull

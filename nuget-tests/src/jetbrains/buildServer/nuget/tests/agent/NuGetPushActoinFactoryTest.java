@@ -16,21 +16,12 @@
 
 package jetbrains.buildServer.nuget.tests.agent;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.BuildParametersMap;
-import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
-import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
-import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
-import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -42,36 +33,17 @@ import java.util.Map;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 21.07.11 16:46
  */
-public class NuGetPushActoinFactoryTest extends BaseTestCase {
-  private Mockery m;
-  private CommandlineBuildProcessFactory myProcessFactory;
-  private NuGetActionFactoryImpl i;
-  private BuildRunnerContext ctx;
-  private NuGetPublishParameters ps;
-  private File myFile;
-  private File myNuGet;
-  private BuildParametersMap myBuildParametersMap;
-  private NuGetTeamCityProvider myProvider;
+public class NuGetPushActoinFactoryTest extends NuGetActionFactoryTestCase {
+  protected NuGetPublishParameters ps;
+  protected File myFile;
+  protected File myNuGet;
 
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
-    myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
-    PackageUsages pu = m.mock(PackageUsages.class);
-    myProvider = m.mock(NuGetTeamCityProvider.class);
-    i = new NuGetActionFactoryImpl(myProcessFactory, pu, new CommandFactoryImpl(myProvider));
-    ctx = m.mock(BuildRunnerContext.class);
     ps = m.mock(NuGetPublishParameters.class);
-
-    myBuildParametersMap = m.mock(BuildParametersMap.class);
-
-    m.checking(new Expectations(){{
-      allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
-    }});
-
     myFile = createTempFile();
     myNuGet = createTempFile();
   }

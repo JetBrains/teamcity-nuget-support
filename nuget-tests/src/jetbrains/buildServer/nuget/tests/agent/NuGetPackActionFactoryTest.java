@@ -16,21 +16,11 @@
 
 package jetbrains.buildServer.nuget.tests.agent;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.AgentRunningBuild;
-import jetbrains.buildServer.agent.BuildParametersMap;
-import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
-import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
-import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
-import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -44,53 +34,36 @@ import java.util.Collections;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 23.08.11 16:23
  */
-public class NuGetPackActionFactoryTest extends BaseTestCase {
-  private Mockery m;
-  private CommandlineBuildProcessFactory myProcessFactory;
-  private NuGetActionFactoryImpl i;
-  private BuildRunnerContext ctx;
-  private AgentRunningBuild build;
+public class NuGetPackActionFactoryTest extends NuGetActionFactoryTestCase {
+
   private NuGetPackParameters myPackParameters;
   private File myFile;
   private File myNuGet;
   private File myRoot;
   private File myOut;
-  private File myWorkingDir;
+
   private Collection<String> myExcludes;
   private Collection<String> myProperties;
   private Collection<String> myExtra;
-  private BuildParametersMap myBuildParametersMap;
-  private NuGetTeamCityProvider myProvider;
+
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
-    myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
-    PackageUsages pu = m.mock(PackageUsages.class);
-    myProvider = m.mock(NuGetTeamCityProvider.class);
-    i = new NuGetActionFactoryImpl(myProcessFactory, pu, new CommandFactoryImpl(myProvider));
-    ctx = m.mock(BuildRunnerContext.class);
     myPackParameters = m.mock(NuGetPackParameters.class);
-    build = m.mock(AgentRunningBuild.class);
 
     myFile = createTempFile();
     myNuGet = createTempFile();
     myRoot = createTempDir();
     myOut = createTempDir();
-    myWorkingDir = createTempDir();
+
 
     myExcludes = new ArrayList<String>();
     myProperties = new ArrayList<String>();
     myExtra = new ArrayList<String>();
-    myBuildParametersMap = m.mock(BuildParametersMap.class);
 
     m.checking(new Expectations(){{
-      allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
-
-      allowing(ctx).getBuild(); will(returnValue(build));
-      allowing(build).getCheckoutDirectory(); will(returnValue(myWorkingDir));
       allowing(myPackParameters).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(myPackParameters).getBaseDirectory(); will(returnValue(myRoot));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(myOut));

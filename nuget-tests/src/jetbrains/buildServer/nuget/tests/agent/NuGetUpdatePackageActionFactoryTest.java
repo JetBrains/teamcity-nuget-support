@@ -16,20 +16,11 @@
 
 package jetbrains.buildServer.nuget.tests.agent;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.BuildParametersMap;
-import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
-import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
-import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
-import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
 import org.jmock.Expectations;
-import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -42,39 +33,24 @@ import java.util.Collections;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 10.07.11 14:29
  */
-public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
-  private Mockery m;
-  private CommandlineBuildProcessFactory myProcessFactory;
-  private NuGetActionFactoryImpl i;
-  private BuildRunnerContext ctx;
+public class NuGetUpdatePackageActionFactoryTest extends NuGetActionFactoryTestCase {
   private NuGetFetchParameters nugetParams;
   private PackagesUpdateParameters ps;
   private File myTarget;
   private File myConfig;
-  private BuildParametersMap myBuildParametersMap;
-  private NuGetTeamCityProvider myProvider;
 
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
-    myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
-    PackageUsages pu = m.mock(PackageUsages.class);
-    myProvider = m.mock(NuGetTeamCityProvider.class);
-    i = new NuGetActionFactoryImpl(myProcessFactory, pu, new CommandFactoryImpl(myProvider));
-    ctx = m.mock(BuildRunnerContext.class);
     ps = m.mock(PackagesUpdateParameters.class);
     nugetParams = m.mock(NuGetFetchParameters.class);
 
     myTarget = createTempDir();
     myConfig = createTempFile();
 
-    myBuildParametersMap = m.mock(BuildParametersMap.class);
-
     m.checking(new Expectations(){{
-      allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
       allowing(ps).getNuGetParameters(); will(returnValue(nugetParams));
     }});
   }
