@@ -36,8 +36,7 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
   protected PackagesInstallerAdapter createBuilder(@NotNull InstallStages stages) {
     return new PackagesUpdateBuilder(
             myActionFactory,
-            stages.getUpdateStage(),
-            stages.getPostUpdateStart(),
+            stages,
             myContext,
             myInstall,
             myUpdate

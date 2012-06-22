@@ -33,7 +33,7 @@ public class PackageInstallerBuilderReportTest extends PackageInstallerBuilderTe
   @NotNull
   @Override
   protected PackagesInstallerAdapter createBuilder(@NotNull InstallStages stages) {
-    return new PackagesReportBuilder(myActionFactory, stages.getReportStage(), myContext);
+    return new PackagesReportBuilder(myActionFactory, stages, myContext);
   }
 
 

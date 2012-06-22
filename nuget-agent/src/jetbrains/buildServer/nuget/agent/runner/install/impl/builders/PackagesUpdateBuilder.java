@@ -24,9 +24,9 @@ import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
-import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import org.jetbrains.annotations.NotNull;
@@ -42,21 +42,18 @@ import static jetbrains.buildServer.nuget.common.PackagesUpdateMode.FOR_EACH_PAC
  */
 public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
   private final NuGetActionFactory myActionFactory;
-  private final BuildProcessContinuation myUpdateStages;
-  private final BuildProcessContinuation myReInstallStages;
+  private final InstallStages myStages;
   private final BuildRunnerContext myContext;
   private final PackagesInstallParameters myInstallParameters;
   private final PackagesUpdateParameters myUpdateParameters;
 
   public PackagesUpdateBuilder(@NotNull final NuGetActionFactory actionFactory,
-                               @NotNull final BuildProcessContinuation updateStages,
-                               @NotNull final BuildProcessContinuation reInstallStages,
+                               @NotNull final InstallStages stages,
                                @NotNull final BuildRunnerContext context,
                                @NotNull final PackagesInstallParameters installParameters,
                                @Nullable final PackagesUpdateParameters updateParameters) {
+    myStages = stages;
     myContext = context;
-    myUpdateStages = updateStages;
-    myReInstallStages = reInstallStages;
     myInstallParameters = installParameters;
     myUpdateParameters = updateParameters;
     myActionFactory = actionFactory;
@@ -67,7 +64,7 @@ public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
 
     if (myUpdateParameters.getUpdateMode() != PackagesUpdateMode.FOR_SLN) return;
 
-    myUpdateStages.pushBuildProcess(
+    myStages.getUpdateStage().pushBuildProcess(
             myActionFactory.createUpdate(
                     myContext,
                     myUpdateParameters,
@@ -81,7 +78,7 @@ public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
     super.onPackagesConfigFound(config, targetFolder);
 
     if (myUpdateParameters.getUpdateMode() == FOR_EACH_PACKAGES_CONFIG) {
-      myUpdateStages.pushBuildProcess(
+      myStages.getUpdateStage().pushBuildProcess(
               myActionFactory.createUpdate(
                       myContext,
                       myUpdateParameters,
@@ -93,7 +90,7 @@ public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
 
     ///NOTE: tricks to workaround NuGet's cool feature
     ///NOTE: http://nuget.codeplex.com/workitem/2017
-    myReInstallStages.pushBuildProcess(
+    myStages.getPostUpdateStart().pushBuildProcess(
             new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
               @NotNull
               public BuildProcess startImpl() throws RunBuildException {

@@ -48,7 +48,7 @@ public class PackageInstallerBuilderInstallTest extends PackageInstallerBuilderT
   @NotNull
   @Override
   protected PackagesInstallerAdapter createBuilder(@NotNull InstallStages stages) {
-    return new PackagesInstallerBuilder(myActionFactory, stages.getInstallStage(), myContext, myInstall, myHolder);
+    return new PackagesInstallerBuilder(myActionFactory, stages, myContext, myInstall, myHolder);
   }
 
   @Test

@@ -121,7 +121,7 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
 
     locate.addInstallStageListener(new PackagesInstallerBuilder(
             myActionFactory,
-            stages.getInstallStage(),
+            stages,
             context,
             installParameters,
             myVersion));
@@ -129,8 +129,7 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
     if (updateParameters != null) {
       locate.addInstallStageListener(new PackagesUpdateBuilder(
               myActionFactory,
-              stages.getUpdateStage(),
-              stages.getPostUpdateStart(),
+              stages,
               context,
               installParameters,
               updateParameters));
@@ -138,8 +137,9 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
 
     locate.addInstallStageListener(new PackagesReportBuilder(
             myActionFactory,
-            stages.getReportStage(),
-            context));
+            stages,
+            context)
+    );
 
     stages.getLocateStage().pushBuildProcess(locate);
   }

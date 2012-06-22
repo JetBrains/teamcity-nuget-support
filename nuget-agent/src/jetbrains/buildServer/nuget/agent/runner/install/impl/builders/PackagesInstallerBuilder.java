@@ -21,8 +21,8 @@ import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVerisonHolder;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
-import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -33,14 +33,14 @@ import java.io.File;
  */
 public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
   private final NuGetActionFactory myActionFactory;
-  private final BuildProcessContinuation myStages;
+  private final InstallStages myStages;
   private final BuildRunnerContext myContext;
   private final NuGetVerisonHolder myVersionHolder;
 
   private final PackagesInstallParameters myInstallParameters;
 
   public PackagesInstallerBuilder(@NotNull final NuGetActionFactory actionFactory,
-                                  @NotNull final BuildProcessContinuation stages,
+                                  @NotNull final InstallStages stages,
                                   @NotNull final BuildRunnerContext context,
                                   @NotNull final PackagesInstallParameters installParameters,
                                   @NotNull final NuGetVerisonHolder versionHolder) {
@@ -52,7 +52,7 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
   }
 
   public void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException {
-    myStages.pushBuildProcess(myActionFactory.createInstall(
+    myStages.getInstallStage().pushBuildProcess(myActionFactory.createInstall(
             myContext,
             myInstallParameters,
             myVersionHolder.getNuGetVerion().supportInstallNoCache(),
