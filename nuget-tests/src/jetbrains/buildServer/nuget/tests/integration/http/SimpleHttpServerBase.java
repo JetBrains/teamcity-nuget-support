@@ -44,6 +44,7 @@ public abstract class SimpleHttpServerBase {
   public static final String STATUS_LINE_200 = "HTTP/1.0 200 Ok";
   public static final String STATUS_LINE_500 = "HTTP/1.0 500 Error";
   public static final String STATUS_LINE_404 = "HTTP/1.0 404 Not Found";
+  public static final String STATUS_LINE_401 = "HTTP/1.1 401 Authorization Required";
 
   private volatile boolean myStopped;
 
@@ -224,13 +225,23 @@ public abstract class SimpleHttpServerBase {
     myWaitAfterAccept = seconds;
   }
 
-  protected abstract Response getResponse(String httpHeader);
+  protected abstract Response getResponse(String httpHeader) throws IOException;
 
   @Nullable
   protected String getRequestPath(@NotNull final String request) {
     Matcher matcher = requestParser.matcher(request);
     if (matcher.matches()) {
       return matcher.group(1);
+    }
+    return null;
+  }
+
+  @Nullable
+  protected String getHeaderLine(@NotNull final String request, @NotNull final String header) {
+    for (String line : request.split("[\r\n]+")) {
+      if (line.startsWith(header)) {
+        return line.substring(header.length()).trim();
+      }
     }
     return null;
   }
