@@ -26,5 +26,6 @@
 
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.AgentNuGetTeamCityProvider"/>
 
-  <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetWorkdirCalculator"/>
+  <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetWorkdirCalculatorImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetProcessCallbackImpl"/>
 </beans>

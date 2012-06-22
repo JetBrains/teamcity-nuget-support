@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.agent.commands.impl;
 
+import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,12 +24,10 @@ import java.io.File;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 22.06.12 13:34
+ *         Date: 22.06.12 15:37
  */
-public class NuGetWorkdirCalculator {
+public interface NuGetWorkdirCalculator {
   @NotNull
-  public File getNuGetWorkDir(@NotNull final BuildRunnerContext context,
-                              @NotNull final File defaultDir) {
-    return defaultDir;
-  }
+  File getNuGetWorkDir(@NotNull BuildRunnerContext context,
+                       @NotNull File defaultDir) throws RunBuildException;
 }

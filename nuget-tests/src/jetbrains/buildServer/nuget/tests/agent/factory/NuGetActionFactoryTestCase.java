@@ -16,18 +16,17 @@
 
 package jetbrains.buildServer.nuget.tests.agent.factory;
 
+import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildParametersMap;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetProcessCallbackImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetWorkdirCalculatorImpl;
+import jetbrains.buildServer.nuget.agent.commands.impl.*;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.common.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -68,7 +67,14 @@ public class NuGetActionFactoryTestCase extends BuildProcessTestCase {
     myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
     PackageUsages pu = m.mock(PackageUsages.class);
     myProvider = m.mock(NuGetTeamCityProvider.class);
-    i = new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(myProcessFactory, new NuGetWorkdirCalculatorImpl()), pu, new CommandFactoryImpl(myProvider));
+    final NuGetWorkdirCalculator calc = new NuGetWorkdirCalculator() {
+      @NotNull
+      public File getNuGetWorkDir(@NotNull BuildRunnerContext context, @NotNull File defaultDir) throws RunBuildException {
+        return defaultDir;
+      }
+    };
+
+    i = new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(myProcessFactory, calc), pu, new CommandFactoryImpl(myProvider));
     ctx = m.mock(BuildRunnerContext.class);
     build = m.mock(AgentRunningBuild.class);
     nugetParams = m.mock(NuGetFetchParameters.class);
