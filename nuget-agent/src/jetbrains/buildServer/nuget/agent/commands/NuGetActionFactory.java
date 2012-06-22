@@ -43,16 +43,6 @@ public interface NuGetActionFactory {
                             @NotNull File targetFolder) throws RunBuildException;
 
   @NotNull
-  BuildProcess createUsageReport(@NotNull BuildRunnerContext context,
-                                 @NotNull File packagesConfig,
-                                 @NotNull File targetFolder) throws RunBuildException;
-
-  @NotNull
-  BuildProcess createCreatedPackagesReport(@NotNull BuildRunnerContext context,
-                                           @NotNull Collection<File> packageFiles) throws RunBuildException;
-
-
-  @NotNull
   BuildProcess createPush(@NotNull BuildRunnerContext context,
                           @NotNull NuGetPublishParameters params,
                           @NotNull File packagePath) throws RunBuildException;
@@ -61,4 +51,28 @@ public interface NuGetActionFactory {
   BuildProcess createPack(@NotNull BuildRunnerContext context,
                           @NotNull File specFile,
                           @NotNull NuGetPackParameters params) throws RunBuildException;
+
+  @NotNull
+  BuildProcess createAuthenticateFeeds(@NotNull BuildRunnerContext context,
+                                       @NotNull Collection<PackageSource> sources,
+                                       @NotNull NuGetParameters params) throws RunBuildException;
+
+  @NotNull
+  BuildProcess createVersionCheckCommand(@NotNull BuildRunnerContext context,
+                                         @NotNull File versionFile,
+                                         @NotNull NuGetParameters params) throws RunBuildException;
+
+  @NotNull
+  BuildProcess createDeAuthenticateFeeds(@NotNull BuildRunnerContext context,
+                                         @NotNull NuGetParameters params) throws RunBuildException;
+
+  @NotNull
+  BuildProcess createUsageReport(@NotNull BuildRunnerContext context,
+                                 @NotNull File packagesConfig,
+                                 @NotNull File targetFolder) throws RunBuildException;
+
+  @NotNull
+  BuildProcess createCreatedPackagesReport(@NotNull BuildRunnerContext context,
+                                           @NotNull Collection<File> packageFiles) throws RunBuildException;
+
 }

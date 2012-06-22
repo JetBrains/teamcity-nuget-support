@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -181,15 +181,49 @@ public class CommandFactoryImpl implements CommandFactory {
   }
 
   @NotNull
-  public <T> T createNuGetAuthorizeFeed(@NotNull final File authFile,
-                                        @NotNull final NuGetParameters params,
-                                        @NotNull final File workdir,
-                                        @NotNull final Callback<T> factory) throws RunBuildException {
+  public <T> T createAuthorizeFeed(@NotNull final File authFile,
+                                   @NotNull final NuGetParameters params,
+                                   @NotNull final File workdir,
+                                   @NotNull final Callback<T> factory) throws RunBuildException {
     final List<String> argz = new ArrayList<String>();
 
     argz.add(params.getNuGetExeFile().getPath());
     argz.add("TeamCity.AuthorizeFeed");
     argz.add(FileUtil.getCanonicalFile(authFile).getPath());
+
+    return factory.createCommand(
+            myProvider.getNuGetRunnerPath(),
+            workdir,
+            argz,
+            Collections.<String, String>emptyMap());
+  }
+
+  @NotNull
+  public <T> T createVersionCheck(@NotNull NuGetParameters params,
+                                  @NotNull File versoinFile,
+                                  @NotNull File workdir,
+                                  @NotNull Callback<T> factory) throws RunBuildException {
+    final List<String> argz = new ArrayList<String>();
+
+    argz.add(params.getNuGetExeFile().getPath());
+    argz.add("--TeamCity.NuGetVersion");
+    argz.add(FileUtil.getCanonicalFile(versoinFile).getPath());
+
+    return factory.createCommand(
+            myProvider.getNuGetRunnerPath(),
+            workdir,
+            argz,
+            Collections.<String, String>emptyMap());
+  }
+
+  @NotNull
+  public <T> T createDeAuthorizeFeed(@NotNull final NuGetParameters params,
+                                     @NotNull final File workdir,
+                                     @NotNull final Callback<T> factory) throws RunBuildException {
+    final List<String> argz = new ArrayList<String>();
+
+    argz.add(params.getNuGetExeFile().getPath());
+    argz.add("TeamCity.DeAuthorizeFeed");
 
     return factory.createCommand(
             myProvider.getNuGetRunnerPath(),

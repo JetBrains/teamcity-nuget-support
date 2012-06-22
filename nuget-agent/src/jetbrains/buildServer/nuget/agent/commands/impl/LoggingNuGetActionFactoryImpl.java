@@ -142,6 +142,62 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
             });
   }
 
+  @NotNull
+  public BuildProcess createAuthenticateFeeds(@NotNull final BuildRunnerContext context,
+                                              @NotNull final Collection<PackageSource> sources,
+                                              @NotNull final NuGetParameters params) throws RunBuildException {
+    return new DelegatingBuildProcess(new LoggingAction(context, params.getNuGetExeFile(), "authenticate") {
+      @NotNull
+      @Override
+      protected BuildProcess delegateToActualAction() throws RunBuildException {
+        return myActionFactory.createAuthenticateFeeds(context, sources, params);
+      }
+
+      @NotNull
+      @Override
+      protected String getBlockDescription(@NotNull String pathToLog) {
+        return "Register feeds access credentials";
+      }
+    });
+  }
+
+  @NotNull
+  public BuildProcess createDeAuthenticateFeeds(@NotNull final BuildRunnerContext context,
+                                                @NotNull final NuGetParameters params) throws RunBuildException {
+    return new DelegatingBuildProcess(new LoggingAction(context, params.getNuGetExeFile(), "authenticate") {
+      @NotNull
+      @Override
+      protected BuildProcess delegateToActualAction() throws RunBuildException {
+        return myActionFactory.createDeAuthenticateFeeds(context, params);
+      }
+
+      @NotNull
+      @Override
+      protected String getBlockDescription(@NotNull String pathToLog) {
+        return "Un-register feeds access credentials";
+      }
+    });
+  }
+
+  @NotNull
+  public BuildProcess createVersionCheckCommand(@NotNull final BuildRunnerContext context,
+                                                @NotNull final File versionFile,
+                                                @NotNull final NuGetParameters params) throws RunBuildException {
+    return new DelegatingBuildProcess(new LoggingAction(context, versionFile, "version") {
+      @NotNull
+      @Override
+      protected BuildProcess delegateToActualAction() throws RunBuildException {
+        return myActionFactory.createVersionCheckCommand(context, versionFile, params);
+      }
+
+      @NotNull
+      @Override
+      protected String getBlockDescription(@NotNull String pathToLog) {
+        return "Check version of specified NuGet.exe";
+      }
+    });
+  }
+
   private abstract class LoggingAction implements DelegatingBuildProcess.Action {
     private final BuildRunnerContext myContext;
     private final File myFileToLog;

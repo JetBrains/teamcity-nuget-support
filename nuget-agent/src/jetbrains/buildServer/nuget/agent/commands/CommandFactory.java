@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,21 @@ public interface CommandFactory {
                    @NotNull Callback<T> factory) throws RunBuildException;
 
   @NotNull
-  <T> T createNuGetAuthorizeFeed(@NotNull File authFile,
-                                 @NotNull NuGetParameters params,
-                                 @NotNull File workdir,
-                                 @NotNull Callback<T> factory) throws RunBuildException;
+  <T> T createAuthorizeFeed(@NotNull File authFile,
+                            @NotNull NuGetParameters params,
+                            @NotNull File workdir,
+                            @NotNull Callback<T> factory) throws RunBuildException;
+
+  @NotNull
+  <T> T createVersionCheck(@NotNull NuGetParameters params,
+                           @NotNull File versoinFile,
+                           @NotNull File workdir,
+                           @NotNull Callback<T> factory) throws RunBuildException;
+
+  @NotNull
+  <T> T createDeAuthorizeFeed(@NotNull NuGetParameters params,
+                              @NotNull File workdir,
+                              @NotNull Callback<T> factory) throws RunBuildException;
 
   public interface Callback<T> {
     /**
