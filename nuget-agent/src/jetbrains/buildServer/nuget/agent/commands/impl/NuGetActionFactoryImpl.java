@@ -70,9 +70,10 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   @NotNull
   public BuildProcess createInstall(@NotNull final BuildRunnerContext context,
                                     @NotNull final PackagesInstallParameters params,
+                                    final boolean noCache,
                                     @NotNull final File packagesConfig,
                                     @NotNull final File targetFolder) throws RunBuildException {
-    return myCommandFactory.createInstall(params, packagesConfig, targetFolder, getCallback(context));
+    return myCommandFactory.createInstall(params, noCache, packagesConfig, targetFolder, getCallback(context));
   }
 
 

@@ -101,6 +101,7 @@ public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
                   return myActionFactory.createInstall(
                           myContext,
                           myInstallParameters,
+                          false,
                           config,
                           targetFolder);
                 } else {

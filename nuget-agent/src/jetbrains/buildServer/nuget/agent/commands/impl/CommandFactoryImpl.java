@@ -39,14 +39,16 @@ public class CommandFactoryImpl implements CommandFactory {
   }
 
   @NotNull
-  public <T> T createInstall(@NotNull PackagesInstallParameters params, @NotNull File packagesConfig, @NotNull File targetFolder, @NotNull Callback<T> factory) throws RunBuildException {
+  public <T> T createInstall(@NotNull PackagesInstallParameters params, boolean noCache, @NotNull File packagesConfig, @NotNull File targetFolder, @NotNull Callback<T> factory) throws RunBuildException {
     final List<String> argz = new ArrayList<String>();
     argz.add("install");
     argz.add(FileUtil.getCanonicalFile(packagesConfig).getPath()); //path to package
     if (params.getExcludeVersion()) {
       argz.add("-ExcludeVersion");
     }
-    argz.add("-NoCache");
+    if (noCache) {
+      argz.add("-NoCache");
+    }
     argz.add("-OutputDirectory");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 

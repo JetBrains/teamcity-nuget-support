@@ -12,7 +12,6 @@
     </classes>
   </test>
 
-
   <test name="feed">
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.server.feed.server.PackageIndexTest"/>

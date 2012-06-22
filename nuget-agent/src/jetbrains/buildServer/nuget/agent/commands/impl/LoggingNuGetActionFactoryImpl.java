@@ -54,6 +54,7 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
   @NotNull
   public BuildProcess createInstall(@NotNull final BuildRunnerContext context,
                                     @NotNull final PackagesInstallParameters params,
+                                    final boolean noCache,
                                     @NotNull final File config,
                                     @NotNull final File targetFolder) {
     return new DelegatingBuildProcess(
@@ -64,6 +65,7 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
                 return myActionFactory.createInstall(
                         context,
                         params,
+                        noCache,
                         config,
                         targetFolder);
               }

@@ -53,7 +53,7 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       oneOf(myActionFactory).createUpdate(myContext, myUpdate, mySln, myTaget);
       will(returnValue(createMockBuildProcess("u1")));
 
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("i1")));
     }});
 
@@ -69,7 +69,7 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       oneOf(myActionFactory).createUpdate(myContext, myUpdate, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("update")));
 
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("install")));
     }});
 
@@ -86,9 +86,9 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       oneOf(myActionFactory).createUpdate(myContext, myUpdate, myConfig2, myTaget);
       will(returnValue(createMockBuildProcess("update2")));
 
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("install1")));
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig2, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig2, myTaget);
       will(returnValue(createMockBuildProcess("install2")));
     }});
 
@@ -105,10 +105,10 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       oneOf(myActionFactory).createUpdate(myContext, myUpdate, myConfig2, myTaget);
       will(returnValue(createMockBuildProcess("update2")));
 
-      never(myActionFactory).createInstall(myContext, myInstall, myConfig, myTaget);
+      never(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("install1")));
 
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig2, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig2, myTaget);
       will(returnValue(createMockBuildProcess("install2")));
 
       allowing(myLogger).warning(with(any(String.class)));
@@ -126,9 +126,9 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       oneOf(myActionFactory).createUpdate(myContext, myUpdate, mySln, myTaget);
       will(returnValue(createMockBuildProcess("update")));
 
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("install1")));
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig2, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig2, myTaget);
       will(returnValue(createMockBuildProcess("install2")));
     }});
 
@@ -144,10 +144,10 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       oneOf(myActionFactory).createUpdate(myContext, myUpdate, mySln, myTaget);
       will(returnValue(createMockBuildProcess("update", REMOVE_CONFIG_ACTION)));
 
-      never(myActionFactory).createInstall(myContext, myInstall, myConfig, myTaget);
+      never(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("install1")));
 
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig2, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig2, myTaget);
       will(returnValue(createMockBuildProcess("install2")));
 
       allowing(myLogger).warning(with(any(String.class)));

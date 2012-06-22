@@ -32,6 +32,7 @@ public interface CommandFactory {
 
   @NotNull
   <T> T createInstall(@NotNull PackagesInstallParameters params,
+                      boolean noCache,
                       @NotNull File packagesConfig,
                       @NotNull File targetFolder,
                       @NotNull Callback<T> factory) throws RunBuildException;

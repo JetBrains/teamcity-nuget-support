@@ -51,6 +51,7 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
     myStages.pushBuildProcess(myActionFactory.createInstall(
             myContext,
             myInstallParameters,
+            false,
             config,
             targetFolder));
   }

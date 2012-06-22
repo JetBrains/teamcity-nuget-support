@@ -39,7 +39,7 @@ public class PackageInstallerBuilderInstallTest extends PackageInstallerBuilderT
   @Test
   public void test_install_no_update() throws RunBuildException {
     m.checking(new Expectations() {{
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("b1")));
     }});
 
@@ -49,9 +49,9 @@ public class PackageInstallerBuilderInstallTest extends PackageInstallerBuilderT
   @Test
   public void test_install_no_update_may() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig, myTaget);
       will(returnValue(createMockBuildProcess("b1")));
-      oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig2, myTaget);
+      oneOf(myActionFactory).createInstall(myContext, myInstall, false, myConfig2, myTaget);
       will(returnValue(createMockBuildProcess("b2")));
 
     }});

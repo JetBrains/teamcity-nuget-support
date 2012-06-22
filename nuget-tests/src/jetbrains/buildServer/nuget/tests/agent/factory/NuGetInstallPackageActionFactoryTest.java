@@ -20,7 +20,6 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.tests.agent.PackageSourceImpl;
-import jetbrains.buildServer.nuget.tests.agent.factory.NuGetActionFactoryTestCase;
 import org.jmock.Expectations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -69,7 +68,7 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
       );
     }});
 
-    i.createInstall(ctx, ps, myConfig, myTarget);
+    i.createInstall(ctx, ps, false, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -88,7 +87,7 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
       );
     }});
 
-    i.createInstall(ctx, ps, myConfig, myTarget);
+    i.createInstall(ctx, ps, false, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -107,7 +106,7 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
       );
     }});
 
-    i.createInstall(ctx, ps, myConfig, myTarget);
+    i.createInstall(ctx, ps, false, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 }
