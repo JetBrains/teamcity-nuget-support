@@ -21,11 +21,14 @@ import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
-import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.*;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigProcessFactory;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.ResourcesConfigPackagesScanner;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionPackagesScanner;
+import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionWidePackagesConfigScanner;
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
@@ -33,6 +36,7 @@ import jetbrains.buildServer.nuget.tests.agent.PackageSourceImpl;
 import jetbrains.buildServer.nuget.tests.mocks.StartsWithMatcher;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.TestFor;
+import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
@@ -217,7 +221,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
 
-      allowing(myLogger).warning(with(new StartsWithMatcher("Packages.config file was removed by NuGet.exe update command")));
+      allowing(myLogger).warning(with((Matcher<String>)new StartsWithMatcher("Packages.config file was removed by NuGet.exe update command")));
     }});
 
     fetchPackages(new File(myRoot, "ClassLibrary1.sln"), PackageSourceImpl.convert(new File(myRoot, "feed").getPath()), false, true, nuget, null);
