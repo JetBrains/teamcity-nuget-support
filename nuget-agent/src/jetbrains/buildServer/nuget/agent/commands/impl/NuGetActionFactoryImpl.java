@@ -94,11 +94,11 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
             for (final PackageSource source : sources) {
               addContent((Content)new Element("feed"){{
                 setAttribute("url", source.getSource());
-                String userName = source.getUserName();
-                String password = source.getPassword();
+                final String userName = source.getUserName();
+                final String password = source.getPassword();
                 if (!StringUtil.isEmptyOrSpaces(userName) && !StringUtil.isEmptyOrSpaces(password)) {
                   setAttribute("user", userName);
-                  setAttribute("passworrd", password);
+                  setAttribute("password", password);
                 }
               }});
             }

@@ -18,13 +18,16 @@ package jetbrains.buildServer.nuget.tests.integration.agent;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
+import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.agent.PackageSourceImpl;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.http.HttpAuthServer;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jmock.Expectations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -52,6 +55,12 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   protected void setUp() throws Exception {
     super.setUp();
 
+    m.checking(new Expectations() {{
+      allowing(myLogger).activityStarted(with(equal("authenticate")), with(any(String.class)), with(any(String.class)));
+      allowing(myLogger).activityFinished(with(equal("authenticate")), with(any(String.class)));
+    }});
+
+
     myUser = "u-" + StringUtil.generateUniqueHash();
     myPassword = "p-" + StringUtil.generateUniqueHash();
     myIsAuthorized = new AtomicBoolean(false);
@@ -78,15 +87,38 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     myAuthSource = Arrays.<PackageSource>asList(new PackageSourceImpl(mySourceUrl, myUser, myPassword));
   }
 
+  @AfterMethod
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    myHttp.stop();
+  }
 
-  @Test(dataProvider = NUGET_VERSIONS)
+  @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_install(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
-
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, false, nuget, null);
-
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, false, nuget, null, null);
     Assert.assertTrue(myIsAuthorized.get(), "NuGet must authorize");
   }
 
+
+  @Test(dataProvider = NUGET_VERSIONS_20p)
+  public void test_auth_update(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+
+    m.checking(new Expectations() {{
+      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
+      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
+
+      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(false));
+      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
+    }});
+
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, true, nuget, null);
+
+    Assert.assertTrue(myIsAuthorized.get(), "NuGet must authorize");
+  }
 
 }

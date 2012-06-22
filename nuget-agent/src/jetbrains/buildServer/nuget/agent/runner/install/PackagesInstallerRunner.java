@@ -21,16 +21,14 @@ import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigBuildProcess;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigProcessFactory;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -51,10 +49,20 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
   public BuildProcess createBuildProcess(@NotNull AgentRunningBuild runningBuild,
                                          @NotNull final BuildRunnerContext context) throws RunBuildException {
     CompositeBuildProcessImpl process = new CompositeBuildProcessImpl();
-    InstallStages stages = new InstallStagesImpl(process);
+    final InstallStages stages = new InstallStagesImpl(process);
     createStages(context, stages);
     return process;
   }
+
+  private boolean requiresAuthentication(@NotNull NuGetFetchParameters fetch) {
+    for (PackageSource src : fetch.getNuGetPackageSources()) {
+      if (StringUtil.isEmptyOrSpaces(src.getUserName())) continue;
+      if (StringUtil.isEmptyOrSpaces(src.getPassword())) continue;
+      return true;
+    }
+    return false;
+  }
+
 
   private void createStages(@NotNull final BuildRunnerContext context,
                             @NotNull final InstallStages stages) throws RunBuildException {
@@ -64,6 +72,15 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
 
     if (installParameters == null) {
       throw new RunBuildException("NuGet install packages must be enabled");
+    }
+
+    if (requiresAuthentication(parameters)) {
+      stages.getAuthenticateStage().pushBuildProcess(
+              myActionFactory.createAuthenticateFeeds(
+                      context,
+                      parameters.getNuGetPackageSources(),
+                      parameters)
+      );
     }
 
     final LocateNuGetConfigBuildProcess locate = myFactory.createPrecess(context, parameters);

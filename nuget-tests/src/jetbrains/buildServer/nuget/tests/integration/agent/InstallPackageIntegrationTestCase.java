@@ -80,6 +80,15 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
                              final boolean update,
                              @NotNull final NuGet nuget,
                              @Nullable Collection<PackageInfo> detectedPackages) throws RunBuildException {
+    fetchPackages(sln, sources, excludeVersion, update, nuget, detectedPackages, BuildFinishedStatus.FINISHED_SUCCESS);
+  }
+  protected void fetchPackages(final File sln,
+                             final List<PackageSource> sources,
+                             final boolean excludeVersion,
+                             final boolean update,
+                             @NotNull final NuGet nuget,
+                             @Nullable Collection<PackageInfo> detectedPackages,
+                             @Nullable BuildFinishedStatus status) throws RunBuildException {
 
     m.checking(new Expectations() {{
       allowing(myParametersFactory).loadNuGetFetchParameters(myContext);
@@ -112,7 +121,7 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
     ).createBuildProcess(myBuild, myContext);
     ((NuGetPackagesCollectorImpl)myCollector).removeAllPackages();
 
-    assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
+    assertRunSuccessfully(proc, status);
 
     System.out.println(myCollector.getUsedPackages());
     if (detectedPackages != null) {

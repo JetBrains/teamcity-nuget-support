@@ -85,7 +85,7 @@ public class BuildProcessTestCase extends LoggingTestCase {
     return list.toArray(new Object[list.size()][]);
   }
 
-  protected void assertRunSuccessfully(@NotNull BuildProcess proc, @NotNull BuildFinishedStatus result) {
+  protected void assertRunSuccessfully(@NotNull BuildProcess proc, @Nullable BuildFinishedStatus result) {
     BuildFinishedStatus status = null;
     try {
       proc.start();
@@ -94,7 +94,10 @@ public class BuildProcessTestCase extends LoggingTestCase {
       Assert.fail("Failed with exception " + e);
     }
 
-    Assert.assertEquals(status, result);
+    Assert.assertNotNull(status);
+    if (result != null) {
+      Assert.assertEquals(status, result);
+    }
   }
 
   protected void assertRunException(@NotNull BuildProcess proc, @NotNull String message) {

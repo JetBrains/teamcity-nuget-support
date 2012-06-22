@@ -4,6 +4,7 @@
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.integration.agent.PackIntegrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.agent.InstallPackageIntegtatoinTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.agent.AuthInstallPackageIntegrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.NuGetExecutorTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.agent.PackagesPublishIntegrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.FeedReaderTest"/>

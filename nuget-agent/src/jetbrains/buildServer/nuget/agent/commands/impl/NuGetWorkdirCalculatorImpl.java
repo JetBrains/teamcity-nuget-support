@@ -55,19 +55,21 @@ public class NuGetWorkdirCalculatorImpl implements NuGetWorkdirCalculator {
     //TODO: if should check .nuget folder to reuse nuget.config from it.
     final File localNuGetConfig = new File(workDir, "NuGet.Config");
     final File sharedNuGetConfig = getGlobalCongig(context);
-    try {
-      if (sharedNuGetConfig != null) {
-        LOG.debug("Copy NuGet config from: " + sharedNuGetConfig + " to: " + localNuGetConfig);
-        FileUtil.copy(sharedNuGetConfig, localNuGetConfig);
-      } else {
-        LOG.debug("Create empty NuGet config at: " + localNuGetConfig);
-        saveUTForThrow(localNuGetConfig, "<?xml version=\"1.0\" encoding=\"utf-8\"?> <configuration/>");
-      }
-    } catch (IOException e) {
-      LOG.warn("Failed create file: " + localNuGetConfig +". " + e.getMessage(), e);
-      throw new RunBuildException("Failed create file: " + localNuGetConfig +". " + e.getMessage());
-    }
 
+    if (!localNuGetConfig.isFile()) {
+      try {
+        if (sharedNuGetConfig != null) {
+          LOG.debug("Copy NuGet config from: " + sharedNuGetConfig + " to: " + localNuGetConfig);
+          FileUtil.copy(sharedNuGetConfig, localNuGetConfig);
+        } else {
+          LOG.debug("Create empty NuGet config at: " + localNuGetConfig);
+          saveUTForThrow(localNuGetConfig, "<?xml version=\"1.0\" encoding=\"utf-8\"?> <configuration/>");
+        }
+      } catch (IOException e) {
+        LOG.warn("Failed create file: " + localNuGetConfig +". " + e.getMessage(), e);
+        throw new RunBuildException("Failed create file: " + localNuGetConfig +". " + e.getMessage());
+      }
+    }
     return workDir;
   }
 

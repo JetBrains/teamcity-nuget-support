@@ -54,6 +54,7 @@ import java.util.*;
 public class IntegrationTestBase extends BuildProcessTestCase {
   private StringBuilder myCommandsOutput;
   protected File myRoot;
+  protected File myWorkDir;
   protected Mockery m;
   protected AgentRunningBuild myBuild;
   protected BuildRunnerContext myContext;
@@ -142,6 +143,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     super.setUp();
     myCommandsOutput = new StringBuilder();
     myRoot = createTempDir();
+    myWorkDir = createTempDir();
     myAgentTemp = createTempDir();
 
     m = new Mockery();
@@ -166,6 +168,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       allowing(myBuild).getBuildLogger(); will(returnValue(myLogger));
       allowing(myBuild).getCheckoutDirectory(); will(returnValue(myRoot));
       allowing(myBuild).getAgentTempDirectory(); will(returnValue(myAgentTemp));
+      allowing(myContext).getWorkingDirectory(); will(returnValue(myWorkDir));
 
       allowing(myMockProcess).start();
       allowing(myMockProcess).waitFor();
