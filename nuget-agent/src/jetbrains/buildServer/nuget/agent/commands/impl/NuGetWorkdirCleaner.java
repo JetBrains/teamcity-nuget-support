@@ -24,6 +24,8 @@ import jetbrains.buildServer.util.EventDispatcher;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 22.06.12 20:27
@@ -39,7 +41,10 @@ public class NuGetWorkdirCleaner {
           return;
         }
 
-        FileUtil.delete(cal.getNuGetWorkDir(runningBuild));
+        File dir = cal.getNuGetWorkDir(runningBuild);
+        if (dir != null) {
+          FileUtil.delete(dir);
+        }
       }
 
       @Override
