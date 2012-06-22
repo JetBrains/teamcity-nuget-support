@@ -19,10 +19,7 @@ package jetbrains.buildServer.nuget.agent.commands.impl;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
-import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -30,6 +27,5 @@ import java.util.Collection;
  */
 public interface NuGetProcessCallback {
   @NotNull
-  CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context,
-                                                    @NotNull final Collection<PackageSource> sources);
+  CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context);
 }

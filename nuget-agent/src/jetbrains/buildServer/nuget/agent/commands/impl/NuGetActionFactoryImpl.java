@@ -59,9 +59,8 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
-  protected CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context,
-                                                              @NotNull final Collection<PackageSource> sources) {
-    return myFactory.getCallback(context, sources);
+  protected CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context) {
+    return myFactory.getCallback(context);
   }
 
   @NotNull
@@ -69,7 +68,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                                     @NotNull final PackagesInstallParameters params,
                                     @NotNull final File packagesConfig,
                                     @NotNull final File targetFolder) throws RunBuildException {
-    return myCommandFactory.createInstall(params, packagesConfig, targetFolder, getCallback(context, params.getNuGetParameters().getNuGetPackageSources()));
+    return myCommandFactory.createInstall(params, packagesConfig, targetFolder, getCallback(context));
   }
 
 
@@ -78,7 +77,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                                    @NotNull final PackagesUpdateParameters params,
                                    @NotNull final File packagesConfig,
                                    @NotNull final File targetFolder) throws RunBuildException {
-    return myCommandFactory.createUpdate(params, packagesConfig, targetFolder, getCallback(context, params.getNuGetParameters().getNuGetPackageSources()));
+    return myCommandFactory.createUpdate(params, packagesConfig, targetFolder, getCallback(context));
   }
 
   @NotNull
@@ -124,7 +123,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                 myTempFile,
                 params,
                 context.getWorkingDirectory(),
-                getCallback(context, sources)
+                getCallback(context)
                 );
       }
 
@@ -144,7 +143,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
       @NotNull
       public BuildProcess startImpl() throws RunBuildException {
         FileUtil.delete(versionFile);
-        return myCommandFactory.createVersionCheck(params, versionFile, context.getWorkingDirectory(), getCallback(context, Collections.<PackageSource>emptyList()));
+        return myCommandFactory.createVersionCheck(params, versionFile, context.getWorkingDirectory(), getCallback(context));
       }
 
       public void finishedImpl() {
@@ -154,7 +153,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
 
   @NotNull
   public BuildProcess createDeAuthenticateFeeds(@NotNull BuildRunnerContext context, @NotNull NuGetParameters params) throws RunBuildException {
-    return myCommandFactory.createDeAuthorizeFeed(params, context.getWorkingDirectory(), getCallback(context, Collections.<PackageSource>emptyList()));
+    return myCommandFactory.createDeAuthorizeFeed(params, context.getWorkingDirectory(), getCallback(context));
   }
 
   @NotNull
@@ -193,7 +192,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
             ? Collections.<PackageSource>emptyList()
             : Collections.singleton(source);
 
-    return myCommandFactory.createPush(params, packagePath, getCallback(context, sources));
+    return myCommandFactory.createPush(params, packagePath, getCallback(context));
   }
 
   @NotNull
@@ -204,6 +203,6 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
             specFile,
             params,
             context.getBuild().getCheckoutDirectory(),
-            getCallback(context, Collections.<PackageSource>emptyList()));
+            getCallback(context));
   }
 }

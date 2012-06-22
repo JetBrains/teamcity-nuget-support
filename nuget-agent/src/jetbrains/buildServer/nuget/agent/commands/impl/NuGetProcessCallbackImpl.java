@@ -20,7 +20,6 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
-import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,8 +39,7 @@ public class NuGetProcessCallbackImpl implements NuGetProcessCallback {
   }
 
   @NotNull
-  public CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context,
-                                                           @NotNull final Collection<PackageSource> sources) {
+  public CommandFactory.Callback<BuildProcess> getCallback(@NotNull final BuildRunnerContext context) {
     return new CommandFactory.Callback<BuildProcess>() {
       @NotNull
       public BuildProcess createCommand(@NotNull final File program,
