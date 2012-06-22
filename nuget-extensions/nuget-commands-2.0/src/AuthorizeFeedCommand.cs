@@ -24,7 +24,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       }
 
       var packageSources = from def in feeds.Feeds
-                           select new PackageSource(def.Url, "TeamCitySource-" + Guid.NewGuid().ToString(), true)
+                           select new PackageSource(def.Url, TeamCityAuthConstants.TeamCityFeedPrefix + Guid.NewGuid().ToString(), true)
                              {
                                UserName = def.UserName,
                                Password = def.Password
