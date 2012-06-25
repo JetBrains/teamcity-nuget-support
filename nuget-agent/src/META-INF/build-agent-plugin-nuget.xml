@@ -18,7 +18,7 @@
   </bean>
 
   <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackagesParametersFactoryImpl"/>
-
+  <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackageSourceParser"/>
 
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetVersionFactoryImpl"/>
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl"/>
