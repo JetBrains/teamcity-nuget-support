@@ -61,28 +61,34 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       @NotNull
       public Collection<PackageSource> getNuGetPackageSources() {
-        List<PackageSource> sources = new ArrayList<PackageSource>();
-        for (final String source : getMultilineParameter(context, NUGET_SOURCES)) {
-          sources.add(new PackageSource() {
-            @NotNull
-            public String getSource() {
-              return source;
-            }
-
-            @Nullable
-            public String getUserName() {
-              return null;
-            }
-
-            @Nullable
-            public String getPassword() {
-              return null;
-            }
-          });
-        }
-        return sources;
+        return parseNuGetSources(context, NUGET_SOURCES);
       }
     };
+  }
+
+  @NotNull
+  private Collection<PackageSource> parseNuGetSources(@NotNull final BuildRunnerContext context,
+                                                      @NotNull final String parameterName) {
+    List<PackageSource> sources = new ArrayList<PackageSource>();
+    for (final String source : getMultilineParameter(context, parameterName)) {
+      sources.add(new PackageSource() {
+        @NotNull
+        public String getSource() {
+          return source;
+        }
+
+        @Nullable
+        public String getUserName() {
+          return null;
+        }
+
+        @Nullable
+        public String getPassword() {
+          return null;
+        }
+      });
+    }
+    return sources;
   }
 
   private File getPathToNuGet(BuildRunnerContext context) throws RunBuildException {
@@ -238,29 +244,11 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   @NotNull
   public NuGetPublishParameters loadPublishParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
     return new NuGetPublishParameters() {
-      @Nullable
-      public PackageSource getPublishSource() throws RunBuildException {
-        final String source = getParameter(context, NUGET_PUBLISH_SOURCE);
-        return source == null || StringUtil.isEmptyOrSpaces(source) ? null : new PackageSource() {
-          @NotNull
-          public String getSource() {
-            return source;
-          }
-
-          public String getUserName() {
-            return null;
-          }
-
-          public String getPassword() {
-            return null;
-          }
-        };
-      }
-
       @NotNull
       public Collection<PackageSource> getNuGetPackageSources() throws RunBuildException{
-        final PackageSource source = getPublishSource();
-        return source == null ? Collections.<PackageSource>emptyList() : Arrays.asList(source);
+        Collection<PackageSource> sources = parseNuGetSources(context, NUGET_PUBLISH_SOURCE);
+        if (sources.size() > 1) throw new RunBuildException("Publish does not support more than one NuGet Feeds");
+        return sources;
       }
 
       @NotNull
