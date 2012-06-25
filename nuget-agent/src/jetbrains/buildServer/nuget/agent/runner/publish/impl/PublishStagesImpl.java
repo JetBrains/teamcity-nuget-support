@@ -14,20 +14,34 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.runner.publish;
+package jetbrains.buildServer.nuget.agent.runner.publish.impl;
 
-import jetbrains.buildServer.nuget.agent.runner.impl.NuGetRunnerStages;
+import jetbrains.buildServer.nuget.agent.runner.impl.NuGetRunnerStagesImpl;
+import jetbrains.buildServer.nuget.agent.runner.publish.PublishStages;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 25.06.12 16:27
+ *         Date: 25.06.12 16:28
  */
-public interface PackStages extends NuGetRunnerStages {
-  @NotNull
-  BuildProcessContinuation getLocateStage();
+public class PublishStagesImpl extends NuGetRunnerStagesImpl implements PublishStages {
+  private final BuildProcessContinuation myLocateStage;
+  private final BuildProcessContinuation myPublishStage;
+
+  public PublishStagesImpl(@NotNull BuildProcessContinuation host) {
+    super(host);
+    myLocateStage = push();
+    myPublishStage = push();
+  }
 
   @NotNull
-  BuildProcessContinuation getPublishStage();
+  public BuildProcessContinuation getLocateStage() {
+    return myLocateStage;
+  }
+
+  @NotNull
+  public BuildProcessContinuation getPublishStage() {
+    return myPublishStage;
+  }
 }

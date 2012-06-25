@@ -29,18 +29,18 @@ import java.io.File;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 25.06.12 16:46
  */
-public class PackRunnerStagesBuilder {
+public class PublishRunnerStagesBuilder {
   private final AuthStagesBuilder myAuthBuilder;
   private final NuGetActionFactory myActionFactory;
 
-  public PackRunnerStagesBuilder(@NotNull final AuthStagesBuilder authBuilder,
-                                 @NotNull final NuGetActionFactory actionFactory) {
+  public PublishRunnerStagesBuilder(@NotNull final AuthStagesBuilder authBuilder,
+                                    @NotNull final NuGetActionFactory actionFactory) {
     myAuthBuilder = authBuilder;
     myActionFactory = actionFactory;
   }
 
   public void createStages(@NotNull final BuildRunnerContext context,
-                           @NotNull final PackStages stages,
+                           @NotNull final PublishStages stages,
                            @NotNull final NuGetPublishParameters params) throws RunBuildException {
     myAuthBuilder.buildStages(stages, context, params);
 

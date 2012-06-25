@@ -24,7 +24,7 @@ import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
-import jetbrains.buildServer.nuget.agent.runner.publish.impl.PackStagesImpl;
+import jetbrains.buildServer.nuget.agent.runner.publish.impl.PublishStagesImpl;
 import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
@@ -36,9 +36,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PackagesPublishRunner extends NuGetRunnerBase {
   @NotNull
-  private final PackRunnerStagesBuilder myBuilder;
+  private final PublishRunnerStagesBuilder myBuilder;
 
-  public PackagesPublishRunner(@NotNull final PackRunnerStagesBuilder builder,
+  public PackagesPublishRunner(@NotNull final PublishRunnerStagesBuilder builder,
                                @NotNull final NuGetActionFactory actionFactory,
                                @NotNull final PackagesParametersFactory parametersFactory) {
     super(actionFactory, parametersFactory);
@@ -51,7 +51,7 @@ public class PackagesPublishRunner extends NuGetRunnerBase {
     final NuGetPublishParameters params = myParametersFactory.loadPublishParameters(context);
 
     final CompositeBuildProcess process = new CompositeBuildProcessImpl();
-    final PackStages stages = new PackStagesImpl(process);
+    final PublishStages stages = new PublishStagesImpl(process);
 
     myBuilder.createStages(context, stages, params);
     return process;
