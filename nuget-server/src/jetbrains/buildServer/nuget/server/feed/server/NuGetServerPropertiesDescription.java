@@ -27,6 +27,7 @@ public class NuGetServerPropertiesDescription extends AbstractParameterDescripti
   @Override
   public String describe(@NotNull String paramName) {
     if (NuGetServerConstants.FEED_REFERENCE.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed";
+    if (NuGetServerConstants.AUTH_FEED_REFERENCE.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed with HTTP basic auth";
     return null;
   }
 }

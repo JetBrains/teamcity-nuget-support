@@ -22,4 +22,5 @@ package jetbrains.buildServer.nuget.server.feed.server;
  */
 public class NuGetServerConstants {
   public static final String FEED_REFERENCE = "teamcity.nuget.feed.server";
+  public static final String AUTH_FEED_REFERENCE = "teamcity.nuget.auth.feed.server";
 }
