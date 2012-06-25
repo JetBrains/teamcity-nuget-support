@@ -143,12 +143,9 @@ public class CommandFactoryImpl implements CommandFactory {
       arguments.add("-CreateOnly");
     }
 
-    final PackageSource source = params.getPublishSource();
     return executeNuGet(
             params,
-            source == null
-                    ? Collections.<PackageSource>emptyList()
-                    : Arrays.asList(source),
+            params.getNuGetPackageSources(),
             arguments,
             packagePath.getParentFile(),
             Collections.singletonMap(apiKey, params.getApiKey()),

@@ -29,10 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
 
@@ -258,6 +255,12 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
             return null;
           }
         };
+      }
+
+      @NotNull
+      public Collection<PackageSource> getNuGetPackageSources() throws RunBuildException{
+        final PackageSource source = getPublishSource();
+        return source == null ? Collections.<PackageSource>emptyList() : Arrays.asList(source);
       }
 
       @NotNull

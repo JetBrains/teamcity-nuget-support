@@ -38,7 +38,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -209,11 +208,6 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   public BuildProcess createPush(@NotNull BuildRunnerContext context,
                                  @NotNull NuGetPublishParameters params,
                                  @NotNull File packagePath) throws RunBuildException {
-    final PackageSource source = params.getPublishSource();
-    final Collection<PackageSource> sources = source == null
-            ? Collections.<PackageSource>emptyList()
-            : Collections.singleton(source);
-
     return myCommandFactory.createPush(params, packagePath, getCallback(context));
   }
 

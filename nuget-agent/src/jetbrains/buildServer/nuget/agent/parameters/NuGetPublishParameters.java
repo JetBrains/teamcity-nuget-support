@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.agent.parameters;
 
 import jetbrains.buildServer.RunBuildException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -26,10 +25,7 @@ import java.util.Collection;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 21.07.11 15:56
  */
-public interface NuGetPublishParameters extends NuGetParameters {
-  @Nullable
-  PackageSource getPublishSource() throws RunBuildException;
-
+public interface NuGetPublishParameters extends NuGetFeedParameters {
   @NotNull
   String getApiKey() throws RunBuildException;
 
