@@ -17,12 +17,16 @@
 package jetbrains.buildServer.nuget.tests.integration.agent;
 
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildFinishedStatus;
+import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
+import jetbrains.buildServer.nuget.tests.Paths;
 import jetbrains.buildServer.nuget.tests.agent.PackageSourceImpl;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.http.HttpAuthServer;
 import jetbrains.buildServer.util.ArchiveUtil;
+import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -31,9 +35,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -65,12 +69,31 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     myPassword = "p-" + StringUtil.generateUniqueHash();
     myIsAuthorized = new AtomicBoolean(false);
 
-
     myHttp = new HttpAuthServer() {
       @Override
       protected Response getAuthorizedResponse(String request) throws IOException {
-        return createStreamResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found".getBytes("utf-8"));
+        final String path = getRequestPath(request);
+        if (path == null) return createStreamResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found".getBytes("utf-8"));
+        System.out.println("NuGet request path: " + path);
+
+        final Collection<String> xml = Arrays.asList("DataServiceVersion: 1.0;", "Content-Type: application/xml;charset=utf-8");
+        final Collection<String> atom = Arrays.asList("DataServiceVersion: 2.0;", "Content-Type: application/atom+xml;charset=utf-8");
+
+        if (path.endsWith("$metadata")) {
+          return createStringResponse(STATUS_LINE_200, xml, loadMockODataFiles("feed/mock/feed.metadata.xml"));
+        }
+
+        if (path.contains("nuget/Packages")) {
+          return createStringResponse(STATUS_LINE_200, atom, loadMockODataFiles("feed/mock/feed.packages.xml"));
+        }
+
+        if (path.contains("nuget")) {
+          return createStringResponse(STATUS_LINE_200, xml, loadMockODataFiles("feed/mock/feed.root.xml"));
+        }
+
+        return createStringResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found");
       }
+
 
       @Override
       protected boolean authorizeUser(@NotNull String loginPassword) {
@@ -83,8 +106,36 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     };
 
     myHttp.start();
-    mySourceUrl = "http://localhost:" + myHttp.getPort() + "/nuget";
+    mySourceUrl = "http://localhost:" + myHttp.getPort() + "/nuget/";
     myAuthSource = Arrays.<PackageSource>asList(new PackageSourceImpl(mySourceUrl, myUser, myPassword));
+  }
+
+  private String loadMockODataFiles(@NotNull String name) throws IOException {
+    String source = loadFileUTF8(name);
+    source = source.replace("http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/", mySourceUrl);
+    source = source.replaceAll("xml:base=\".*\"", "xml:base=\"" + mySourceUrl + "\"");
+    return source;
+  }
+
+  @NotNull
+  private String loadFileUTF8(@NotNull String name) throws IOException {
+    File file = Paths.getTestDataPath(name);
+    return loadFileUTF8(file);
+  }
+
+  private String loadFileUTF8(@NotNull File file) throws IOException {
+    final InputStream is = new BufferedInputStream(new FileInputStream(file));
+    try {
+      final Reader rdr = new InputStreamReader(is, "utf-8");
+      StringBuilder sb = new StringBuilder();
+      int ch;
+      while ((ch = rdr.read()) >= 0) {
+        sb.append((char) ch);
+      }
+      return sb.toString();
+    } finally {
+      FileUtil.close(is);
+    }
   }
 
   @AfterMethod
@@ -93,6 +144,28 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     super.tearDown();
     myHttp.stop();
   }
+
+  @Test(dataProvider = NUGET_VERSIONS_20p)
+  public void test_bare_commands(@NotNull final NuGet nuget) throws RunBuildException, IOException {
+    m.checking(new Expectations() {{
+      allowing(myNuGet).getNuGetExeFile();
+      will(returnValue(nuget.getPath()));
+    }});
+
+    File wd = myWorkdirCalculator.getNuGetWorkDir(myContext, myWorkDir);
+    BuildProcess auth = myActionFactory.createAuthenticateFeeds(myContext, myAuthSource, myNuGet);
+    BuildProcess list = myExecutor.executeCommandLine(myContext, nuget.getPath().getPath(), Arrays.asList("list", "-AllVersions"), wd, Collections.<String, String>emptyMap());
+
+    assertRunSuccessfully(auth, BuildFinishedStatus.FINISHED_SUCCESS);
+    File config = new File(wd, "NuGet.config");
+    Assert.assertTrue(config.isFile());
+    System.out.println("NuGet.Config: " + loadFileUTF8(config));
+
+    assertRunSuccessfully(list, BuildFinishedStatus.FINISHED_SUCCESS);
+    Assert.assertTrue(getCommandsOutput().contains("FineCollection 1.0.189"));
+    Assert.assertTrue(getCommandsOutput().contains("TestUtils 1.0.189"));
+  }
+
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_install(@NotNull final NuGet nuget) throws RunBuildException {

@@ -27,10 +27,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -120,7 +117,7 @@ public abstract class SimpleHttpServerBase {
       final InputStream is = new BufferedInputStream(connection.getInputStream());
       final OutputStream os = new BufferedOutputStream(connection.getOutputStream());
 
-      final PrintStream ps = new PrintStream(os);
+      final PrintStream ps = new PrintStream(os, false, "utf-8");
       final StringBuilder sb = new StringBuilder();
       while (true) {
         final int c = is.read();
@@ -250,9 +247,9 @@ public abstract class SimpleHttpServerBase {
     private final String myStatusLine;
     private final List<String> myHeaders;
 
-    public Response(final String statusLine, final List<String> headers) {
+    public Response(final String statusLine, final Collection<String> headers) {
       myStatusLine = statusLine;
-      myHeaders = headers;
+      myHeaders = new ArrayList<String>(headers);
     }
 
     public String getStatusLine() {
@@ -272,7 +269,7 @@ public abstract class SimpleHttpServerBase {
 
 
   public static Response createStringResponse(final String statusLine,
-                                              final List<String> headers,
+                                              final Collection<String> headers,
                                               final String content) {
     return new Response(statusLine, headers) {
       @Override
@@ -288,7 +285,7 @@ public abstract class SimpleHttpServerBase {
   }
 
   public static Response createStreamResponse(final String statusLine,
-                                              final List<String> headers,
+                                              final Collection<String> headers,
                                               final byte[] content) {
     return new Response(statusLine, headers) {
       @Override

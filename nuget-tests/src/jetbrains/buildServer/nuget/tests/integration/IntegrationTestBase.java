@@ -68,6 +68,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected String cmd;
   protected NuGetTeamCityProvider myNuGetProvider;
   protected File myAgentTemp;
+  protected CommandlineBuildProcessFactory myExecutor;
+  protected NuGetWorkdirCalculator myWorkdirCalculator;
 
 
   @NotNull
@@ -197,7 +199,9 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new SimplePackageInfoLoader()
     );
 
-    myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(executingFactory(), new NuGetWorkdirCalculatorImpl()), pu, new CommandFactoryImpl(myNuGetProvider), new NuGetVersionFactoryImpl()));
+    myExecutor = executingFactory();
+    myWorkdirCalculator = new NuGetWorkdirCalculatorImpl();
+    myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(new NuGetProcessCallbackImpl(myExecutor, myWorkdirCalculator), pu, new CommandFactoryImpl(myNuGetProvider), new NuGetVersionFactoryImpl()));
   }
 
   @NotNull
