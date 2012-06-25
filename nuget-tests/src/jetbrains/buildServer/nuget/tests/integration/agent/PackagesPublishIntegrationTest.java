@@ -23,6 +23,7 @@ import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
+import jetbrains.buildServer.nuget.agent.runner.impl.AuthStagesBuilder;
 import jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
@@ -114,7 +115,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
       allowing(myParametersFactory).loadPublishParameters(myContext);will(returnValue(myPublishParameters));
     }});
 
-    final PackagesPublishRunner runner = new PackagesPublishRunner(myActionFactory, myParametersFactory);
+    final PackagesPublishRunner runner = new PackagesPublishRunner(new AuthStagesBuilder(myActionFactory), myActionFactory, myParametersFactory);
 
     final BuildProcess proc = runner.createBuildProcess(myBuild, myContext);
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);

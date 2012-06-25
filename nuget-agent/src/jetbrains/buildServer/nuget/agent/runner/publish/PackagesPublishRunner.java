@@ -24,6 +24,8 @@ import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
+import jetbrains.buildServer.nuget.agent.runner.impl.AuthStagesBuilder;
+import jetbrains.buildServer.nuget.agent.runner.publish.impl.PackStagesImpl;
 import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
@@ -36,26 +38,39 @@ import java.io.File;
  * Date: 21.07.11 15:15
  */
 public class PackagesPublishRunner extends NuGetRunnerBase {
-  public PackagesPublishRunner(@NotNull final NuGetActionFactory actionFactory,
+  private final AuthStagesBuilder myAuthBuilder;
+
+  public PackagesPublishRunner(@NotNull final AuthStagesBuilder authBuilder,
+                               @NotNull final NuGetActionFactory actionFactory,
                                @NotNull final PackagesParametersFactory parametersFactory) {
     super(actionFactory, parametersFactory);
+    myAuthBuilder = authBuilder;
   }
 
   @NotNull
   public BuildProcess createBuildProcess(@NotNull final AgentRunningBuild runningBuild,
                                          @NotNull final BuildRunnerContext context) throws RunBuildException {
-    final CompositeBuildProcess process = new CompositeBuildProcessImpl();
     final NuGetPublishParameters params = myParametersFactory.loadPublishParameters(context);
 
-    process.pushBuildProcess(new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcess.Callback() {
+    final CompositeBuildProcess process = new CompositeBuildProcessImpl();
+    final PackStages stages = new PackStagesImpl(process);
+
+    createStages(context, stages, params);
+    return process;
+  }
+
+  private void createStages(@NotNull final BuildRunnerContext context,
+                            @NotNull final PackStages stages,
+                            @NotNull final NuGetPublishParameters params) throws RunBuildException {
+    myAuthBuilder.buildStages(stages, context, params);
+
+    stages.getLocateStage().pushBuildProcess(new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcess.Callback() {
       public void fileFound(@NotNull File file) throws RunBuildException {
-        process.pushBuildProcess(
+        stages.getPublishStage().pushBuildProcess(
                 myActionFactory.createPush(context, params, file)
         );
       }
     }));
-
-    return process;
   }
 
   @NotNull
