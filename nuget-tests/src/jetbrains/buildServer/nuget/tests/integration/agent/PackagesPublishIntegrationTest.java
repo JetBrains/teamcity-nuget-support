@@ -55,6 +55,8 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     m.checking(new Expectations(){{
       allowing(myLogger).activityStarted(with(equal("push")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("push")), with(any(String.class)));
+      allowing(myLogger).activityStarted(with(equal("version")), with(any(String.class)), with(any(String.class)));
+      allowing(myLogger).activityFinished(with(equal("version")), with(any(String.class)));
     }});
   }
 
