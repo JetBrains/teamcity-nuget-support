@@ -206,6 +206,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
     };
   }
 
+  @Nullable
   public PackagesUpdateParameters loadUpdatePackagesParameters(@NotNull final BuildRunnerContext context,
                                                                @NotNull final NuGetFetchParameters nuget) throws RunBuildException {
     if (!getBoolean(context, NUGET_UPDATE_PACKAGES)) return null;
