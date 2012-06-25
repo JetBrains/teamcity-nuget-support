@@ -73,7 +73,7 @@ public class BuildProcessTestCase extends LoggingTestCase {
   }
 
   protected void assertExecutedMockProcesses(String... procs) {
-    Assert.assertEquals(Arrays.asList(procs), myMockRunners);
+    Assert.assertEquals(Arrays.asList(procs), myMockRunners, myMockRunners.toString());
   }
 
   @DataProvider(name = "buildFinishStatuses")

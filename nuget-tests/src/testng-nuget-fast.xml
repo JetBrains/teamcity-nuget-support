@@ -65,6 +65,8 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.install.PackageInstallerBuilderUpdateTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.install.PackageInstallerBuilderInstallTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.install.PackageInstallerBuilderReportTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.agent.install.InstallRunnerTest"/>
     </classes>
   </test>
 
