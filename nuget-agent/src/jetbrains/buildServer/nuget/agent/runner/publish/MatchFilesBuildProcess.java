@@ -16,21 +16,13 @@
 
 package jetbrains.buildServer.nuget.agent.runner.publish;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.util.MatchFilesBuildProcessBase;
-import jetbrains.buildServer.nuget.agent.util.fsScanner.DirectoryScanner;
-import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -56,6 +48,5 @@ public class MatchFilesBuildProcess extends MatchFilesBuildProcessBase {
   @Override
   protected Collection<String> getFiles() throws RunBuildException {
     return myParameters.getFiles();
-
   }
 }
