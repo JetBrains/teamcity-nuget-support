@@ -17,7 +17,9 @@
 package jetbrains.buildServer.nuget.agent.parameters.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.BuildAuthUtil;
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.agent.BundledTool;
 import jetbrains.buildServer.agent.BundledToolsRegistry;
@@ -29,9 +31,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
+import static jetbrains.buildServer.nuget.server.feed.server.NuGetServerConstants.AUTH_FEED_REFERENCE;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -64,9 +70,39 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       @NotNull
       public Collection<PackageSource> getNuGetPackageSources() {
-        return mySourceParser.parseSources(getMultilineParameter(context, NUGET_SOURCES));
+        return parsePackageSources(context, NUGET_SOURCES);
       }
     };
+  }
+
+  @NotNull
+  private Collection<PackageSource> parsePackageSources(@NotNull final BuildRunnerContext context,
+                                                        @NotNull final String nugetSources) {
+    final AgentRunningBuild build = context.getBuild();
+    final Collection<PackageSource> sources = new ArrayList<PackageSource>();
+    for (final PackageSource source : mySourceParser.parseSources(getMultilineParameter(context, nugetSources))) {
+      //add wellknown password for TeamCity-provided feed.
+      if (source.getSource().equals(build.getSharedConfigParameters().get(AUTH_FEED_REFERENCE))) {
+        sources.add(new PackageSource() {
+          @NotNull
+          public String getSource() {
+            return source.getSource();
+          }
+
+          public String getUserName() {
+            return BuildAuthUtil.makeUserId(build.getBuildId());
+          }
+
+          public String getPassword() {
+            return build.getAccessCode();
+          }
+        });
+      } else {
+        sources.add(source);
+      }
+    }
+
+    return sources;
   }
 
   private File getPathToNuGet(BuildRunnerContext context) throws RunBuildException {
@@ -224,7 +260,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
     return new NuGetPublishParameters() {
       @NotNull
       public Collection<PackageSource> getNuGetPackageSources() throws RunBuildException{
-        Collection<PackageSource> sources = mySourceParser.parseSources(getMultilineParameter(context, NUGET_PUBLISH_SOURCE));
+        Collection<PackageSource> sources = parsePackageSources(context, NUGET_PUBLISH_SOURCE);
         if (sources.size() > 1) throw new RunBuildException("Publish does not support more than one NuGet Feeds");
         return sources;
       }
