@@ -31,6 +31,7 @@ import jetbrains.buildServer.util.FileUtil;
 import junit.framework.Assert;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -513,7 +514,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
 
       allowing(myLogger).error(with(any(String.class)));
 
-      oneOf(myCleaner).cleanFolder(with(equal(temp)), with(new BaseMatcher<SmartDirectoryCleanerCallback>() {
+      oneOf(myCleaner).cleanFolder(with(equal(temp)), with((Matcher<SmartDirectoryCleanerCallback>)new BaseMatcher<SmartDirectoryCleanerCallback>() {
         public boolean matches(Object o) {
           SmartDirectoryCleanerCallback cb = (SmartDirectoryCleanerCallback) o;
           cb.logFailedToCleanFile(temp);
