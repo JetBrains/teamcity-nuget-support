@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 22.06.12 19:55
  */
-public interface NuGetVerisonHolder {
+public interface NuGetVersionHolder {
   @NotNull
   NuGetVersion getNuGetVerion();
 }

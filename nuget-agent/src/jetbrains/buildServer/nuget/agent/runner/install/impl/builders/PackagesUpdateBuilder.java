@@ -22,7 +22,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVerisonHolder;
+import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVersionHolder;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
@@ -45,14 +45,14 @@ public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
   private final NuGetActionFactory myActionFactory;
   private final InstallStages myStages;
   private final BuildRunnerContext myContext;
-  private final NuGetVerisonHolder myVersionHolder;
+  private final NuGetVersionHolder myVersionHolder;
   private final PackagesInstallParameters myInstallParameters;
   private final PackagesUpdateParameters myUpdateParameters;
 
   public PackagesUpdateBuilder(@NotNull final NuGetActionFactory actionFactory,
                                @NotNull final InstallStages stages,
                                @NotNull final BuildRunnerContext context,
-                               @NotNull final NuGetVerisonHolder versionHolder,
+                               @NotNull final NuGetVersionHolder versionHolder,
                                @NotNull final PackagesInstallParameters installParameters,
                                @Nullable final PackagesUpdateParameters updateParameters) {
     myStages = stages;

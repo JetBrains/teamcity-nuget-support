@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 22.06.12 19:56
  */
-public class NuGetVersionHolderImpl implements NuGetVerisonHolder, NuGetVersionCallback {
+public class NuGetVersionHolderImpl implements NuGetVersionHolder, NuGetVersionCallback {
   private final AtomicReference<NuGetVersion> myVersion = new AtomicReference<NuGetVersion>();
   @NotNull
   public NuGetVersion getNuGetVerion() {

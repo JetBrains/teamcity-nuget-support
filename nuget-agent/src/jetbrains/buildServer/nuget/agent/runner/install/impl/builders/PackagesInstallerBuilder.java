@@ -20,7 +20,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVerisonHolder;
+import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVersionHolder;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
@@ -37,7 +37,7 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
   private final NuGetActionFactory myActionFactory;
   private final InstallStages myStages;
   private final BuildRunnerContext myContext;
-  private final NuGetVerisonHolder myVersionHolder;
+  private final NuGetVersionHolder myVersionHolder;
 
   private final PackagesInstallParameters myInstallParameters;
 
@@ -45,7 +45,7 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
                                   @NotNull final InstallStages stages,
                                   @NotNull final BuildRunnerContext context,
                                   @NotNull final PackagesInstallParameters installParameters,
-                                  @NotNull final NuGetVerisonHolder versionHolder) {
+                                  @NotNull final NuGetVersionHolder versionHolder) {
     myStages = stages;
     myContext = context;
     myInstallParameters = installParameters;
