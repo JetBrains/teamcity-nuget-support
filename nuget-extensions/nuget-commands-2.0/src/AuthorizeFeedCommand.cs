@@ -17,21 +17,31 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     protected override void ExecuteCommandImpl()
     {
       var feeds = XmlSerialization.LoadRequests<AuthenticatedFeedsList>(Request);
-
       foreach (var feed in feeds.Feeds)
       {
-        System.Console.Out.WriteLine("Fetched feed data for: {0}", feed.Url);
+        Console.WriteLine("Fetched feed data for: {0}, User={1}, Password={2}", feed.Url, feed.UserName ?? "<null>", feed.Password == null ? "<null>" : "****");
       }
 
-      var packageSources = from def in feeds.Feeds
-                           select new PackageSource(def.Url, TeamCityAuthConstants.TeamCityFeedPrefix + Guid.NewGuid().ToString(), true)
-                             {
-                               UserName = def.UserName,
-                               Password = def.Password
-                             };
-
       //Replace all NuGet sources with our sources.
-      Sources.SavePackageSources(packageSources.ToArray());
+      Sources.SavePackageSources(
+        feeds.Feeds.SelectMany(
+          def =>
+          new[]
+            {
+              new PackageSource(def.Url + '/',
+                                TeamCityAuthConstants.TeamCityFeedPrefix + Guid.NewGuid().ToString(), true),
+              new PackageSource(def.Url + "/$metadata",
+                                TeamCityAuthConstants.TeamCityFeedPrefix + Guid.NewGuid().ToString(), false),
+            }
+            .Select(x =>
+              {
+                x.UserName = def.UserName;
+                x.Password = def.Password;
+                return x;
+              })
+          )
+          .ToArray()
+        );
     }
   }
 }

@@ -13,8 +13,15 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
   [Serializable, XmlRoot("feed")]
   public class AuthenticatedFeed
   {
+    private string myUrl;
+
     [XmlAttribute("url")]
-    public string Url { get; set; }
+    public string Url
+    {
+      get { return myUrl == null ? null : myUrl.TrimEnd('/'); }
+      set { myUrl = value; }
+    }
+
     [XmlAttribute("user")]
     public string UserName { get; set; }
     [XmlAttribute("password")]
