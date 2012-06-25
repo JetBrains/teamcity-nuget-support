@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.runner.install;
+package jetbrains.buildServer.nuget.agent.runner.impl;
 
-import jetbrains.buildServer.nuget.agent.runner.impl.NuGetRunnerStages;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 18.07.11 23:36
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 25.06.12 15:58
+ *
+ * Represent basic stages that are applicable to
+ * feed authentication aware NuGet feed.
  */
-public interface InstallStages extends NuGetRunnerStages {
+public interface NuGetRunnerStages {
   @NotNull
-  BuildProcessContinuation getLocateStage();
+  BuildProcessContinuation getCheckVersionStage();
 
   @NotNull
-  BuildProcessContinuation getInstallStage();
-
-  @NotNull
-  BuildProcessContinuation getUpdateStage();
-
-  @NotNull
-  BuildProcessContinuation getPostUpdateStart();
-
-  @NotNull
-  BuildProcessContinuation getReportStage();
+  BuildProcessContinuation getAuthenticateStage();
 }

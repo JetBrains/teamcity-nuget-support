@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.agent.runner.install.impl;
 
+import jetbrains.buildServer.nuget.agent.runner.impl.NuGetRunnerStagesImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
@@ -25,20 +26,17 @@ import org.jetbrains.annotations.NotNull;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 18.07.11 23:40
  */
-public class InstallStagesImpl implements InstallStages {
+public class InstallStagesImpl extends NuGetRunnerStagesImpl implements InstallStages {
   private final BuildProcessContinuation myLocate;
-  private final BuildProcessContinuation myCheckVersion;
-  private final BuildProcessContinuation myAuthenticate;
   private final BuildProcessContinuation myInstall;
   private final BuildProcessContinuation myUpdate;
   private final BuildProcessContinuation myPostInstall;
   private final BuildProcessContinuation myReport;
 
   public InstallStagesImpl(@NotNull final BuildProcessContinuation host) {
+    super(host);
     //order is significant
     myLocate = push(host);
-    myCheckVersion = push(host);
-    myAuthenticate = push(host);
     myInstall = push(host);
     myUpdate = push(host);
     myPostInstall = push(host);
@@ -54,16 +52,6 @@ public class InstallStagesImpl implements InstallStages {
   @NotNull
   public BuildProcessContinuation getLocateStage() {
     return myLocate;
-  }
-
-  @NotNull
-  public BuildProcessContinuation getCheckVersionStage() {
-    return myCheckVersion;
-  }
-
-  @NotNull
-  public BuildProcessContinuation getAuthenticateStage() {
-    return myAuthenticate;
   }
 
   @NotNull

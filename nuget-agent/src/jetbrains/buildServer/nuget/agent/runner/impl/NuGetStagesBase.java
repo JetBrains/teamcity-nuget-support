@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.runner.install;
+package jetbrains.buildServer.nuget.agent.runner.impl;
 
-import jetbrains.buildServer.nuget.agent.runner.impl.NuGetRunnerStages;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
+import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 18.07.11 23:36
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 25.06.12 16:01
  */
-public interface InstallStages extends NuGetRunnerStages {
-  @NotNull
-  BuildProcessContinuation getLocateStage();
+public class NuGetStagesBase {
+  private final BuildProcessContinuation myHost;
+
+  public NuGetStagesBase(@NotNull BuildProcessContinuation host) {
+    myHost = host;
+  }
 
   @NotNull
-  BuildProcessContinuation getInstallStage();
+  protected BuildProcessContinuation push() {
+    CompositeBuildProcessImpl child = new CompositeBuildProcessImpl();
+    myHost.pushBuildProcess(child);
+    return child;
+  }
 
-  @NotNull
-  BuildProcessContinuation getUpdateStage();
-
-  @NotNull
-  BuildProcessContinuation getPostUpdateStart();
-
-  @NotNull
-  BuildProcessContinuation getReportStage();
 }
