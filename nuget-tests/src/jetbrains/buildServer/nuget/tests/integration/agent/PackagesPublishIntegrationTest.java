@@ -36,6 +36,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -107,7 +108,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
       allowing(myPublishParameters).getFiles(); will(returnValue(Arrays.asList(pkg.getPath())));
       allowing(myPublishParameters).getCreateOnly(); will(returnValue(true));
       allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
-      allowing(myPublishParameters).getPublishSource(); will(returnValue(null));
+      allowing(myPublishParameters).getNuGetPackageSources(); will(returnValue(Collections.emptyList()));
       allowing(myPublishParameters).getApiKey(); will(returnValue(getQ()));
 
       allowing(myParametersFactory).loadPublishParameters(myContext);will(returnValue(myPublishParameters));

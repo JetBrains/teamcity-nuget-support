@@ -19,7 +19,6 @@ package jetbrains.buildServer.nuget.tests.agent.factory;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.tests.agent.PackageSourceImpl;
-import jetbrains.buildServer.nuget.tests.agent.factory.NuGetActionFactoryTestCase;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +27,8 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -102,7 +103,7 @@ public class NuGetPushActoinFactoryTest extends NuGetActionFactoryTestCase {
     m.checking(new Expectations(){{
       allowing(ps).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
-      allowing(ps).getPublishSource(); will(returnValue(new PackageSourceImpl("push-feed")));
+      allowing(ps).getNuGetPackageSources(); will(returnValue(Arrays.asList(new PackageSourceImpl("push-feed"))));
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
@@ -122,7 +123,7 @@ public class NuGetPushActoinFactoryTest extends NuGetActionFactoryTestCase {
     m.checking(new Expectations(){{
       allowing(ps).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
-      allowing(ps).getPublishSource(); will(returnValue(null));
+      allowing(ps).getNuGetPackageSources(); will(returnValue(Collections.emptyList()));
       allowing(ps).getCreateOnly(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
@@ -142,7 +143,7 @@ public class NuGetPushActoinFactoryTest extends NuGetActionFactoryTestCase {
     m.checking(new Expectations(){{
       allowing(ps).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
-      allowing(ps).getPublishSource(); will(returnValue(new PackageSourceImpl("push-feed")));
+      allowing(ps).getNuGetPackageSources(); will(returnValue(Arrays.asList(new PackageSourceImpl("push-feed"))));
       allowing(ps).getCreateOnly(); will(returnValue(true));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),

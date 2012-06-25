@@ -20,7 +20,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.commands.NuGetVersion;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVerisonHolder;
+import jetbrains.buildServer.nuget.agent.commands.impl.NuGetVersionHolder;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
@@ -56,7 +56,7 @@ public abstract class PackageInstallerBuilderTestBase extends BuildProcessTestCa
   protected File mySln;
   protected File myConfig;
   protected File myConfig2;
-  protected  NuGetVerisonHolder myVersionHolder;
+  protected NuGetVersionHolder myVersionHolder;
   protected  NuGetVersion myVersion;
 
 
@@ -83,7 +83,7 @@ public abstract class PackageInstallerBuilderTestBase extends BuildProcessTestCa
     myInstall = m.mock(PackagesInstallParameters.class);
     myUpdate = m.mock(PackagesUpdateParameters.class);
 
-    myVersionHolder = m.mock(NuGetVerisonHolder.class);
+    myVersionHolder = m.mock(NuGetVersionHolder.class);
     myVersion = m.mock(NuGetVersion.class);
 
     setUp1();

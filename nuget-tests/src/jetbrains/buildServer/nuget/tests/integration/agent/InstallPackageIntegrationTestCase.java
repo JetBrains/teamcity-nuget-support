@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollecto
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.runner.impl.AuthStagesBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallRunnerStagesBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
@@ -115,6 +116,7 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
             myActionFactory,
             myParametersFactory,
             new InstallRunnerStagesBuilder(
+                    new AuthStagesBuilder(myActionFactory),
                     myActionFactory,
                     new LocateNuGetConfigProcessFactory(
                             new RepositoryPathResolverImpl(),
