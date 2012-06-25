@@ -97,6 +97,7 @@ public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
     myStages.getPostUpdateStart().pushBuildProcess(
             new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
               @NotNull
+              @Override
               public BuildProcess startImpl() throws RunBuildException {
                 if (config.isFile()) {
                   return myActionFactory.createInstall(
@@ -116,9 +117,6 @@ public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
                     }
                   };
                 }
-              }
-
-              public void finishedImpl() {
               }
             }));
   }

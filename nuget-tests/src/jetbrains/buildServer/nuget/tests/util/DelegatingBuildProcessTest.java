@@ -170,8 +170,9 @@ public class DelegatingBuildProcessTest extends BuildProcessTestCase {
    * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
    * Date: 07.07.11 20:30
    */
-  private abstract class LoggingActionBase implements DelegatingBuildProcess.Action {
+  private abstract class LoggingActionBase extends DelegatingBuildProcess.Action {
     @NotNull
+    @Override
     public BuildProcess startImpl() throws RunBuildException {
       log("start-impl");
       return createSub();
@@ -179,6 +180,7 @@ public class DelegatingBuildProcessTest extends BuildProcessTestCase {
 
     protected abstract RecordingBuildProcess createSub();
 
+    @Override
     public void finishedImpl() {
       log("finish-impl");
     }

@@ -102,6 +102,7 @@ public class InstallRunnerStagesBuilder {
                                                    @NotNull final NuGetVersionHolderImpl myVersion) {
     return new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
       @NotNull
+      @Override
       public BuildProcess startImpl() throws RunBuildException {
         if (myVersion.getNuGetVerion().supportAuth()) {
           return myActionFactory.createAuthenticateFeeds(
@@ -118,9 +119,6 @@ public class InstallRunnerStagesBuilder {
             }
           };
         }
-      }
-
-      public void finishedImpl() {
       }
     });
   }

@@ -58,9 +58,11 @@ public class DelegatingBuildProcess extends BuildProcessBase {
     }
   }
 
-  public static interface Action {
+  public static abstract class  Action {
     @NotNull
-    BuildProcess startImpl() throws RunBuildException;
-    void finishedImpl();
+    public abstract BuildProcess startImpl() throws RunBuildException;
+
+    public void finishedImpl() {
+    }
   }
 }

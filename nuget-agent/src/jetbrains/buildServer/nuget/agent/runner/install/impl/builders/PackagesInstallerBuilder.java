@@ -57,6 +57,7 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
     myStages.getInstallStage().pushBuildProcess(
             new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
               @NotNull
+              @Override
               public BuildProcess startImpl() throws RunBuildException {
                 return myActionFactory.createInstall(
                         myContext,
@@ -64,9 +65,6 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
                         myVersionHolder.getNuGetVerion().supportInstallNoCache(),
                         config,
                         targetFolder);
-              }
-
-              public void finishedImpl() {
               }
             })
     );

@@ -201,7 +201,7 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
     });
   }
 
-  private abstract class LoggingAction implements DelegatingBuildProcess.Action {
+  private abstract class LoggingAction extends DelegatingBuildProcess.Action {
     private final BuildRunnerContext myContext;
     private final File myFileToLog;
     private final String myBlockName;
@@ -219,8 +219,8 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
     @NotNull
     protected abstract String getBlockDescription(@NotNull String pathToLog);
 
-
     @NotNull
+    @Override
     public BuildProcess startImpl() throws RunBuildException {
       String pathToLog = FileUtil.getRelativePath(myContext.getBuild().getCheckoutDirectory(), myFileToLog);
       if (pathToLog == null) pathToLog = myFileToLog.getPath();
@@ -235,6 +235,7 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
       return myContext.getBuild().getBuildLogger();
     }
 
+    @Override
     public void finishedImpl() {
       getLogger().activityFinished(myBlockName, "nuget");
     }

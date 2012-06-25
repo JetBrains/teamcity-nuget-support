@@ -93,8 +93,8 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
     return new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
       private File myTempFile;
       @NotNull
-      public BuildProcess startImpl() throws RunBuildException {
-        final Element root = new Element("teamcity-feeds-list") {{
+      private Element generateXmlParameter() {
+        return new Element("teamcity-feeds-list") {{
           addContent((Content)new Element("feeds") {{
             for (final PackageSource source : sources) {
               addContent((Content)new Element("feed"){{
@@ -109,7 +109,12 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
             }
           }});
         }};
+      }
 
+      @NotNull
+      @Override
+      public BuildProcess startImpl() throws RunBuildException {
+        final Element root = generateXmlParameter();
         try {
           myTempFile = FileUtil.createTempFile(context.getBuild().getAgentTempDirectory(), "nuget", "teamcity", true);
         } catch (IOException e) {
@@ -132,6 +137,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                 );
       }
 
+      @Override
       public void finishedImpl() {
         if (myTempFile != null) {
           FileUtil.delete(myTempFile);
@@ -144,9 +150,10 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   public BuildProcess createVersionCheckCommand(@NotNull final BuildRunnerContext context,
                                                 @NotNull final NuGetVersionCallback callback,
                                                 @NotNull final NuGetParameters params) throws RunBuildException {
-    return  new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
+    return new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
       private File myTempFile;
       @NotNull
+      @Override
       public BuildProcess startImpl() throws RunBuildException {
         try {
           myTempFile = FileUtil.createTempFile(context.getBuild().getAgentTempDirectory(), "nuget", "teamcity", true);
@@ -159,6 +166,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
         return myCommandFactory.createVersionCheck(params, myTempFile, context.getWorkingDirectory(), getCallback(context));
       }
 
+      @Override
       public void finishedImpl() {
         callback.onNuGetVersionCompleted(myVersionFactory.getFromVersionFile(myTempFile));
       }
