@@ -59,9 +59,6 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
     final NuGetFetchParameters parameters = myParametersFactory.loadNuGetFetchParameters(context);
     final PackagesInstallParameters installParameters = myParametersFactory.loadInstallPackagesParameters(context, parameters);
     final PackagesUpdateParameters updateParameters = myParametersFactory.loadUpdatePackagesParameters(context, parameters);
-    if (installParameters == null) {
-      throw new RunBuildException("NuGet install packages must be enabled");
-    }
 
     myFactory.buildStages(stages, context, parameters, installParameters, updateParameters);
   }

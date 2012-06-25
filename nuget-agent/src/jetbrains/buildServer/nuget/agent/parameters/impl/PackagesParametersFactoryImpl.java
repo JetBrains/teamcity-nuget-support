@@ -191,6 +191,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   }
 
 
+  @NotNull
   public PackagesInstallParameters loadInstallPackagesParameters(@NotNull final BuildRunnerContext context,
                                                                  @NotNull final NuGetFetchParameters nuget) throws RunBuildException {
     return new PackagesInstallParameters() {
