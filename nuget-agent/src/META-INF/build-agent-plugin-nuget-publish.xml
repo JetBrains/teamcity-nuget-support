@@ -6,5 +6,6 @@
        default-autowire="constructor">
 
   <bean class="jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner"/>
+  <bean class="jetbrains.buildServer.nuget.agent.runner.publish.PackRunnerStagesBuilder"/>
 
 </beans>
