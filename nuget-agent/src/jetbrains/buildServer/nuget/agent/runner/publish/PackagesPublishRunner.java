@@ -53,7 +53,7 @@ public class PackagesPublishRunner extends NuGetRunnerBase {
     final CompositeBuildProcess process = new CompositeBuildProcessImpl();
     final PublishStages stages = new PublishStagesImpl(process);
 
-    myBuilder.createStages(context, stages, params);
+    myBuilder.buildStages(context, stages, params);
     return process;
   }
 

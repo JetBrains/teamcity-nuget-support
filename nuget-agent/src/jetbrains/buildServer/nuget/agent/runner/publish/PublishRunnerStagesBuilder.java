@@ -39,9 +39,9 @@ public class PublishRunnerStagesBuilder {
     myActionFactory = actionFactory;
   }
 
-  public void createStages(@NotNull final BuildRunnerContext context,
-                           @NotNull final PublishStages stages,
-                           @NotNull final NuGetPublishParameters params) throws RunBuildException {
+  public void buildStages(@NotNull final BuildRunnerContext context,
+                          @NotNull final PublishStages stages,
+                          @NotNull final NuGetPublishParameters params) throws RunBuildException {
     myAuthBuilder.buildStages(stages, context, params);
 
     stages.getLocateStage().pushBuildProcess(new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcess.Callback() {

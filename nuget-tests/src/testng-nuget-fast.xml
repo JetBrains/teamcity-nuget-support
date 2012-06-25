@@ -86,6 +86,7 @@
     <classes>
 
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetVersionFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.publish.PublishRunnerTest"/>
 
       <!-- misc -->
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest"/>
