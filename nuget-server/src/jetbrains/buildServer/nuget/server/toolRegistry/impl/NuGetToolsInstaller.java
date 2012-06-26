@@ -106,7 +106,7 @@ public class NuGetToolsInstaller {
       final PackageInfo info = tool.getInfo();
 
       LOG.debug("Failed to download package " + tool + " to " + file + ". " + e.getMessage(), e);
-      throw new ToolException("Failed to download package " + info.getId() + " " + info.getVersion() + file + ". " + e.getMessage());
+      throw new ToolException("Failed to download package " + info.getId() + " " + info.getVersion() + ". " + e.getMessage());
     }
   }
 

@@ -17,3 +17,7 @@
 div.nugetInstallFormDialog {
   width: 50em;
 }
+
+div.nugetInstallFormDialog .runnerFormTable th {
+  width: 6em;
+}

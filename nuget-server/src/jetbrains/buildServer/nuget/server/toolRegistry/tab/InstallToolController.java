@@ -138,7 +138,7 @@ public class InstallToolController extends BaseFormXmlController {
         myToolsManager.removeTool(toolId);
       }
     } catch (ToolException e) {
-      ae.addError("toolId", "Failed to install package: " + e.getMessage());
+      ae.addError("toolId", e.getMessage());
     }
   }
 }
