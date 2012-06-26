@@ -42,7 +42,7 @@
     </tr>
 
     <tr id="nugetUploadRow">
-      <th><label for="nugetUploadControl">Upload<l:star/>:</label></th>
+      <th><label for="nugetUploadControl">Upload:<l:star/></label></th>
       <td>
         <forms:file name="nugetUploadControl"/>
         <span class="smallNote">
@@ -74,7 +74,7 @@
         <span class="smallNote">
           Select one of the following NuGet versions.
           <br />
-          Installed NuGet will be distibuted to all build agents.
+          Installed NuGet will be distributed to all build agents.
         </span>
         <span class="error" id="error_toolId"></span>
       </td>

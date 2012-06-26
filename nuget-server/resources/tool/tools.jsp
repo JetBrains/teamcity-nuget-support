@@ -72,7 +72,7 @@
 <c:set var="actualInstallerUrl"><c:url value="${installerUrl}"/></c:set>
 <bs:modalDialog
         formId="nugetInstallForm"
-        title="Download NuGet"
+        title="Add NuGet"
         action="${actualInstallerUrl}"
         closeCommand="BS.NuGet.Tools.InstallPopup.close();"
         saveCommand="BS.NuGet.Tools.InstallPopup.save();">
