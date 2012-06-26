@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
@@ -63,7 +64,6 @@ public class NuGetToolsInstaller {
     final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolName);
     validatePackage(toolFile);
     publishDownloadedPackage(dest, toolFile);
-    myWatcher.checkNow();
   }
 
   public void installNuGet(@NotNull final String packageId) throws ToolException {
@@ -82,7 +82,6 @@ public class NuGetToolsInstaller {
     downloadPackage(tool, tmp);
     validatePackage(tmp);
     publishDownloadedPackage(dest, tmp);
-    myWatcher.checkNow();
   }
 
   @NotNull
@@ -100,12 +99,14 @@ public class NuGetToolsInstaller {
 
   private void downloadPackage(@NotNull final FeedPackage tool,
                                @NotNull final File file) throws ToolException {
+    FileUtil.delete(file);
     try {
       myClient.downloadPackage(tool, file);
     } catch (Exception e) {
-      String msg = "Failed to download package " + tool + " to " + file + ". " + e.getMessage();
-      LOG.debug(msg, e);
-      throw new ToolException(msg);
+      final PackageInfo info = tool.getInfo();
+
+      LOG.debug("Failed to download package " + tool + " to " + file + ". " + e.getMessage(), e);
+      throw new ToolException("Failed to download package " + info.getId() + " " + info.getVersion() + file + ". " + e.getMessage());
     }
   }
 
@@ -118,10 +119,11 @@ public class NuGetToolsInstaller {
       FileUtil.copy(tmp, dest);
       FileUtil.delete(tmp);
     } catch (IOException e) {
-      String msg = "Failed to copy downloaded package from " + tmp + " to " + dest + ". " + e.getMessage();
-      LOG.debug(msg, e);
-      throw new ToolException(msg);
+      LOG.debug("Failed to copy downloaded package from " + tmp + " to " + dest + ". " + e.getMessage(), e);
+      throw new ToolException("Failed to copy downloaded package. " + e.getMessage());
     }
+
+    myWatcher.checkNow();
   }
 
   public void validatePackage(@NotNull final File pkg) throws ToolException {
@@ -132,7 +134,9 @@ public class NuGetToolsInstaller {
         throw new ToolException("NuGet package must contain " + NUGET_TOOL_REL_PATH + " file");
       }
     } catch (IOException e) {
-      throw new ToolException("Failed to open NuGet package. " + e.getMessage());
+      String msg = "Failed to read NuGet package file. " + e.getMessage();
+      LOG.warn(msg, e);
+      throw new ToolException(msg);
     } finally {
       if (file != null) {
         try {
