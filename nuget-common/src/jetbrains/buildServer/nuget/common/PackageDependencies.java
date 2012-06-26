@@ -30,15 +30,17 @@ import java.util.TreeSet;
 public class PackageDependencies {
   private final Collection<PackageInfo> myUsedPackages;
   private final Collection<PackageInfo> myCreatedPackages;
+  private final Collection<SourcePackageInfo> myPublishedPackages;
 
-  public PackageDependencies(@NotNull final Collection<PackageInfo> usedPackages,
-                             @NotNull final Collection<PackageInfo> createdPackages) {
+  public PackageDependencies(@NotNull final Collection<? extends PackageInfo> usedPackages,
+                             @NotNull final Collection<? extends PackageInfo> createdPackages,
+                             @NotNull final Collection<? extends SourcePackageInfo> publishedPackages) {
     myUsedPackages = Collections.unmodifiableCollection(new TreeSet<PackageInfo>(usedPackages));
     myCreatedPackages = Collections.unmodifiableCollection(new TreeSet<PackageInfo>(createdPackages));
+    myPublishedPackages = Collections.unmodifiableCollection(new TreeSet<SourcePackageInfo>(publishedPackages));
   }
 
   /**
-   *
    * @return sorted list of packages that were used in project
    */
   @NotNull
@@ -47,7 +49,6 @@ public class PackageDependencies {
   }
 
   /**
-   *
    * @return sorted list of packages that were used in project
    */
   @NotNull
@@ -55,11 +56,20 @@ public class PackageDependencies {
     return myCreatedPackages;
   }
 
+  /**
+   * @return sorted list of packages that were published from a build
+   */
+  @NotNull
+  public Collection<SourcePackageInfo> getPublishedPackages() {
+    return myPublishedPackages;
+  }
+
   @Override
   public String toString() {
     return "PackageDependencies{" +
             "myUsedPackaged=" + myUsedPackages +
             ", myCreatedPackages=" + myCreatedPackages +
+            ", myPublishedPackages=" + myPublishedPackages +
             '}';
   }
 }

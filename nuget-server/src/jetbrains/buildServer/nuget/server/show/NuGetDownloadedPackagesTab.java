@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
 import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.common.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -108,6 +109,9 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
         FileUtil.close(inputStream);
       }
     }
-    return new PackageDependencies(Collections.<PackageInfo>emptyList(), Collections.<PackageInfo>emptyList());
+    return new PackageDependencies(
+            Collections.<PackageInfo>emptyList(),
+            Collections.<PackageInfo>emptyList(),
+            Collections.<SourcePackageInfo>emptyList());
   }
 }

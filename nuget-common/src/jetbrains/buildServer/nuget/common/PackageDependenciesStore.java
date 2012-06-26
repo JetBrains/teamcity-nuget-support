@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.common;
 
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.Content;
 import org.jdom.Document;
@@ -38,9 +39,11 @@ import java.util.List;
 public class PackageDependenciesStore {
   private static final String USED_PACKAGES_ELEMENT = "packages";
   private static final String CREATED_PACKAGES_ELEMENT = "created";
+  private static final String PUBLISHED_PACKAGES_ELEMENT = "published";
   private static final String PACKAGE_ELEMENT = "package";
   private static final String PACKAGE_ID = "id";
   private static final String PACKAGE_VERSION = "version";
+  private static final String PACKAGE_SOURCE = "source";
 
   @NotNull
   public PackageDependencies load(@NotNull final InputStream is) throws IOException {
@@ -48,15 +51,19 @@ public class PackageDependenciesStore {
     try {
       element = FileUtil.parseDocument(is, false);
     } catch (final JDOMException e) {
-      throw new IOException("Failed to parse stream." + e.getMessage()){{initCause(e);}};
+      throw new IOException("Failed to parse stream." + e.getMessage()) {{
+        initCause(e);
+      }};
     }
 
     return new PackageDependencies(
             readPackagesList(element.getChild(USED_PACKAGES_ELEMENT)),
-            readPackagesList(element.getChild(CREATED_PACKAGES_ELEMENT))
+            readPackagesList(element.getChild(CREATED_PACKAGES_ELEMENT)),
+            readPackagesSourceList(element.getChild(PUBLISHED_PACKAGES_ELEMENT))
     );
   }
 
+  @NotNull
   private List<PackageInfo> readPackagesList(@Nullable final Element packagesElement) {
     if (packagesElement == null) return Collections.emptyList();
 
@@ -86,6 +93,41 @@ public class PackageDependenciesStore {
     root.addContent((Content) container);
   }
 
+  @NotNull
+  private List<SourcePackageInfo> readPackagesSourceList(@Nullable final Element packagesElement) {
+    if (packagesElement == null) return Collections.emptyList();
+
+    final List<SourcePackageInfo> infos = new ArrayList<SourcePackageInfo>();
+    for (Object pkg : packagesElement.getChildren(PACKAGE_ELEMENT)) {
+      Element el = (Element) pkg;
+      final String id = el.getAttributeValue(PACKAGE_ID);
+      final String version = el.getAttributeValue(PACKAGE_VERSION);
+      final String source = el.getAttributeValue(PACKAGE_SOURCE);
+      if (id != null && version != null) {
+        infos.add(new SourcePackageInfo(new PackageInfo(id, version), source));
+      }
+    }
+
+    return infos;
+  }
+
+  private void savePackageSourceList(@NotNull final Collection<SourcePackageInfo> usedPackages,
+                                     @NotNull final Element root,
+                                     @NotNull final String containerName) {
+    final Element container = new Element(containerName);
+    for (SourcePackageInfo info : usedPackages) {
+      final Element pkg = new Element(PACKAGE_ELEMENT);
+      pkg.setAttribute(PACKAGE_ID, info.getPackageInfo().getId());
+      pkg.setAttribute(PACKAGE_VERSION, info.getPackageInfo().getVersion());
+      if (!StringUtil.isEmptyOrSpaces(info.getSource())) {
+        pkg.setAttribute(PACKAGE_SOURCE, info.getSource());
+      }
+      container.addContent((Content) pkg);
+    }
+    root.addContent((Content) container);
+  }
+
+  @NotNull
   public PackageDependencies load(@NotNull final File file) throws IOException {
     return load(new BufferedInputStream(new FileInputStream(file)));
   }
@@ -96,6 +138,7 @@ public class PackageDependenciesStore {
 
     savePackagesList(deps.getUsedPackages(), root, USED_PACKAGES_ELEMENT);
     savePackagesList(deps.getCreatedPackages(), root, CREATED_PACKAGES_ELEMENT);
+    savePackageSourceList(deps.getPublishedPackages(), root, PUBLISHED_PACKAGES_ELEMENT);
 
     final Document doc = new Document(root);
     final OutputStream os = new BufferedOutputStream(new FileOutputStream(file));

@@ -20,6 +20,8 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
 import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.common.SourcePackageInfo;
+import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -48,7 +50,7 @@ public class PackageDependenciesStoreTest extends BaseTestCase {
   public void test_load_v_0_5() throws IOException {
     File temp = createTempFile(V_0_5_DEPENDENCIES);
 
-    PackageDependencies deps = new PackageDependencies(Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")), Collections.<PackageInfo>emptyList());
+    PackageDependencies deps = new PackageDependencies(Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")), Collections.<PackageInfo>emptyList(), Collections.<SourcePackageInfo>emptyList());
 
     PackageDependencies load = myStore.load(temp);
     assertEquals(deps, load);
@@ -58,7 +60,20 @@ public class PackageDependenciesStoreTest extends BaseTestCase {
   public void test_load_v_0_8() throws IOException {
     File temp = createTempFile(V_0_8_DEPENDENCIES);
 
-    PackageDependencies deps = new PackageDependencies(Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")), Arrays.asList(new PackageInfo("qid1", "qv1"), new PackageInfo("qid2", "qv2")));
+    PackageDependencies deps = new PackageDependencies(Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")), Arrays.asList(new PackageInfo("qid1", "qv1"), new PackageInfo("qid2", "qv2")), Collections.<SourcePackageInfo>emptyList());
+    PackageDependencies load = myStore.load(temp);
+    assertEquals(deps, load);
+  }
+
+  @Test
+  public void test_load_v_0_8_2() throws IOException {
+    File temp = createTempFile(V_0_8_DEPENDENCIES2);
+
+    PackageDependencies deps = new PackageDependencies(
+            Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")),
+            Arrays.asList(new PackageInfo("qid1", "qv1"), new PackageInfo("qid2", "qv2")),
+            Arrays.asList(new SourcePackageInfo(new PackageInfo("qid1", "qv1"), "XtZ"), new SourcePackageInfo(new PackageInfo("qid2", "qv2"), null)));
+
     PackageDependencies load = myStore.load(temp);
     assertEquals(deps, load);
   }
@@ -72,7 +87,7 @@ public class PackageDependenciesStoreTest extends BaseTestCase {
             "  </created>\n" +
             "</nuget-dependencies>");
 
-    PackageDependencies deps = new PackageDependencies(Collections.<PackageInfo>emptyList(), Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")));
+    PackageDependencies deps = new PackageDependencies(Collections.<PackageInfo>emptyList(), Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")), Collections.<SourcePackageInfo>emptyList());
     PackageDependencies load = myStore.load(temp);
     assertEquals(deps, load);
   }
@@ -86,7 +101,7 @@ public class PackageDependenciesStoreTest extends BaseTestCase {
             "  </packages>\n" +
             "</nuget-dependencies>");
 
-    PackageDependencies deps = new PackageDependencies(Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")), Collections.<PackageInfo>emptyList());
+    PackageDependencies deps = new PackageDependencies(Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2")), Collections.<PackageInfo>emptyList(), Collections.<SourcePackageInfo>emptyList());
     PackageDependencies load = myStore.load(temp);
     assertEquals(deps, load);
   }
@@ -95,7 +110,7 @@ public class PackageDependenciesStoreTest extends BaseTestCase {
   public void test_load_empty() throws IOException {
     File temp = createTempFile("<nuget-dependencies>\n" + "</nuget-dependencies>");
 
-    PackageDependencies deps = new PackageDependencies(Collections.<PackageInfo>emptyList(), Collections.<PackageInfo>emptyList());
+    PackageDependencies deps = new PackageDependencies(Collections.<PackageInfo>emptyList(), Collections.<PackageInfo>emptyList(), Collections.<SourcePackageInfo>emptyList());
     PackageDependencies load = myStore.load(temp);
     assertEquals(deps, load);
   }
@@ -107,7 +122,7 @@ public class PackageDependenciesStoreTest extends BaseTestCase {
     List<PackageInfo> usedPackages = Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2"));
     List<PackageInfo> createdPackages = Arrays.asList(new PackageInfo("qid1", "qv1"), new PackageInfo("qid2", "qv2"));
 
-    PackageDependencies deps = new PackageDependencies(usedPackages, createdPackages);
+    PackageDependencies deps = new PackageDependencies(usedPackages, createdPackages, Collections.<SourcePackageInfo>emptyList());
     myStore.save(deps, tmp);
 
     dumpFile(tmp);
@@ -116,9 +131,27 @@ public class PackageDependenciesStoreTest extends BaseTestCase {
     assertEquals(deps, load);
   }
 
-  private void assertEquals(PackageDependencies deps, PackageDependencies load) {
+  @Test
+  public void test_saveLoad_2() throws IOException {
+    final File tmp = createTempFile();
+
+    List<PackageInfo> usedPackages = Arrays.asList(new PackageInfo("id1", "v1"), new PackageInfo("id2", "v2"));
+    List<PackageInfo> createdPackages = Arrays.asList(new PackageInfo("qid1", "qv1"), new PackageInfo("qid2", "qv2"));
+    List<SourcePackageInfo> publishedPackages = Arrays.asList(new SourcePackageInfo(new PackageInfo("qid1", "qv1"), "XtZ"), new SourcePackageInfo(new PackageInfo("qid2", "qv2"), null));
+
+    PackageDependencies deps = new PackageDependencies(usedPackages, createdPackages, publishedPackages);
+    myStore.save(deps, tmp);
+
+    dumpFile(tmp);
+
+    PackageDependencies load = myStore.load(tmp);
+    assertEquals(deps, load);
+  }
+
+  private void assertEquals(@NotNull PackageDependencies deps, @NotNull PackageDependencies load) {
     Assert.assertEquals(new TreeSet<PackageInfo>(load.getUsedPackages()), new TreeSet<PackageInfo>(deps.getUsedPackages()));
     Assert.assertEquals(new TreeSet<PackageInfo>(load.getCreatedPackages()), new TreeSet<PackageInfo>(deps.getCreatedPackages()));
+    Assert.assertEquals(new TreeSet<SourcePackageInfo>(load.getPublishedPackages()), new TreeSet<SourcePackageInfo>(deps.getPublishedPackages()));
   }
 
   private static final String V_0_5_DEPENDENCIES =
@@ -144,4 +177,20 @@ public class PackageDependenciesStoreTest extends BaseTestCase {
                   "    <package id=\"qid2\" version=\"qv2\" />\n" +
                   "  </created>\n" +
                   "</nuget-dependencies>";
+
+  private static final String V_0_8_DEPENDENCIES2 =
+          "<nuget-dependencies>\n" +
+                  "  <packages>\n" +
+                  "    <package id=\"id1\" version=\"v1\" />\n" +
+                  "    <package id=\"id2\" version=\"v2\" />\n" +
+                  "  </packages>\n" +
+                  "  <created>\n" +
+                  "    <package id=\"qid1\" version=\"qv1\" />\n" +
+                  "    <package id=\"qid2\" version=\"qv2\" />\n" +
+                  "  </created>\n" +
+                  "  <published>\n" +
+                  "    <package id=\"qid1\" version=\"qv1\" source=\"XtZ\" />\n" +
+                  "    <package id=\"qid2\" version=\"qv2\" />\n" +
+                  "  </published>\n" +
+                  "</nuget-dependencies>\n";
 }
