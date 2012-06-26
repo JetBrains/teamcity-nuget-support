@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.common.SimplePackageInfoLoader;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,6 +69,15 @@ public class PackageUsagesImpl implements PackageUsages {
       } catch (PackageLoadException e) {
         LOG.warn("Failed to parse create NuGet package: " + file);
       }
+    }
+  }
+
+  public void reportPublishedPackage(@NotNull final File packageFile, @Nullable String source) {
+    try {
+      PackageInfo info = myLoader.loadPackageInfo(packageFile);
+      myCollector.addPublishedPackage(info.getId(), info.getVersion(), source);
+    } catch (PackageLoadException e) {
+      LOG.warn("Failed to parse create NuGet package: " + packageFile);
     }
   }
 }

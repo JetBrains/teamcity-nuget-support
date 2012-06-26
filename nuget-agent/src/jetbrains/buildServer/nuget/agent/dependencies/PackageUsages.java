@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.agent.dependencies;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Collection;
@@ -28,4 +29,5 @@ import java.util.Collection;
 public interface PackageUsages {
   void reportInstalledPackages(@NotNull File packagesConfig);
   void reportCreatedPackages(@NotNull Collection<File> packageFiles);
+  void reportPublishedPackage(@NotNull final File packageFile, @Nullable String source);
 }
