@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AuthInstallPackageIntegrationTest extends InstallPackageIntegrationTestCase {
   private HttpAuthServer myHttp;
   private String mySourceUrl;
+  private String myDownloadUrl;
   private String myUser;
   private String myPassword;
   private AtomicBoolean myIsAuthorized;
@@ -83,12 +84,20 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
           return createStringResponse(STATUS_LINE_200, xml, loadMockODataFiles("feed/mock/feed.metadata.xml"));
         }
 
+        if (path.contains("nuget/Packages()") && path.contains("?$filter=")) {
+          return createStringResponse(STATUS_LINE_200, atom, loadMockODataFiles("feed/mock/feed.package.xml"));
+        }
+
         if (path.contains("nuget/Packages")) {
           return createStringResponse(STATUS_LINE_200, atom, loadMockODataFiles("feed/mock/feed.packages.xml"));
         }
 
         if (path.contains("nuget")) {
           return createStringResponse(STATUS_LINE_200, xml, loadMockODataFiles("feed/mock/feed.root.xml"));
+        }
+
+        if (path.contains("FineCollection.1.0.189.152.nupkg")) {
+          return getFileResponse(getTestDataPath("feed/mock/FineCollection.1.0.189.152.nupkg"), Arrays.asList("Content-Type: application/zip"));
         }
 
         return createStringResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found");
@@ -107,12 +116,14 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
 
     myHttp.start();
     mySourceUrl = "http://localhost:" + myHttp.getPort() + "/nuget/";
+    myDownloadUrl = "http://localhost:" + myHttp.getPort() + "/download/";
     myAuthSource = Arrays.<PackageSource>asList(new PackageSourceImpl(mySourceUrl, myUser, myPassword));
   }
 
   private String loadMockODataFiles(@NotNull String name) throws IOException {
     String source = loadFileUTF8(name);
     source = source.replace("http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/", mySourceUrl);
+    source = source.replace("http://buildserver.labs.intellij.net/httpAuth/repository/download/", myDownloadUrl);
     source = source.replaceAll("xml:base=\".*\"", "xml:base=\"" + mySourceUrl + "\"");
     return source;
   }
@@ -146,7 +157,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   }
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
-  public void test_bare_commands(@NotNull final NuGet nuget) throws RunBuildException, IOException {
+  public void test_bare_commands_list(@NotNull final NuGet nuget) throws RunBuildException, IOException {
     m.checking(new Expectations() {{
       allowing(myNuGet).getNuGetExeFile();
       will(returnValue(nuget.getPath()));
@@ -155,6 +166,27 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     File wd = myWorkdirCalculator.getNuGetWorkDir(myContext, myWorkDir);
     BuildProcess auth = myActionFactory.createAuthenticateFeeds(myContext, myAuthSource, myNuGet);
     BuildProcess list = myExecutor.executeCommandLine(myContext, nuget.getPath().getPath(), Arrays.asList("list", "-AllVersions"), wd, Collections.<String, String>emptyMap());
+
+    assertRunSuccessfully(auth, BuildFinishedStatus.FINISHED_SUCCESS);
+    File config = new File(wd, "NuGet.config");
+    Assert.assertTrue(config.isFile());
+    System.out.println("NuGet.Config: " + loadFileUTF8(config));
+
+    assertRunSuccessfully(list, BuildFinishedStatus.FINISHED_SUCCESS);
+    Assert.assertTrue(getCommandsOutput().contains("FineCollection 1.0.189"));
+    Assert.assertTrue(getCommandsOutput().contains("TestUtils 1.0.189"));
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS_20p)
+  public void test_bare_commands_install(@NotNull final NuGet nuget) throws RunBuildException, IOException {
+    m.checking(new Expectations() {{
+      allowing(myNuGet).getNuGetExeFile();
+      will(returnValue(nuget.getPath()));
+    }});
+
+    File wd = myWorkdirCalculator.getNuGetWorkDir(myContext, myWorkDir);
+    BuildProcess auth = myActionFactory.createAuthenticateFeeds(myContext, myAuthSource, myNuGet);
+    BuildProcess list = myExecutor.executeCommandLine(myContext, nuget.getPath().getPath(), Arrays.asList("install", "FineCollection"), wd, Collections.<String, String>emptyMap());
 
     assertRunSuccessfully(auth, BuildFinishedStatus.FINISHED_SUCCESS);
     File config = new File(wd, "NuGet.config");
