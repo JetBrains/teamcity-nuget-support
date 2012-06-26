@@ -22,26 +22,25 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         Console.WriteLine("Fetched feed data for: {0}, User={1}, Password={2}", feed.Url, feed.UserName ?? "<null>", feed.Password == null ? "<null>" : "****");
       }
 
-      //Replace all NuGet sources with our sources.
-      Sources.SavePackageSources(
-        feeds.Feeds.SelectMany(
-          def =>
-          new[]
-            {
-              new PackageSource(def.Url + '/',
-                                TeamCityAuthConstants.TeamCityFeedPrefix + Guid.NewGuid().ToString(), true),
-              new PackageSource(def.Url + "/$metadata",
-                                TeamCityAuthConstants.TeamCityFeedPrefix + Guid.NewGuid().ToString(), false),
-            }
-            .Select(x =>
-              {
-                x.UserName = def.UserName;
-                x.Password = def.Password;
-                return x;
-              })
-          )
-          .ToArray()
-        );
+      Func<Credentials, string, bool, PackageSource> create =
+        (def, url, enabled) => new PackageSource(url, TeamCityAuthConstants.TeamCityFeedPrefix + Guid.NewGuid().ToString(), enabled)
+          {
+            UserName = def.UserName,
+            Password = def.Password
+          };
+
+    //Replace all NuGet sources with our sources.
+      var feedsToAdd = feeds.Feeds.SelectMany(def => new[]
+        {
+          create(def, def.Url + '/', true),
+          create(def, def.Url + "/$metadata", false),
+        })
+        .Union(
+          feeds.Credentials.Select(def => create(def, def.Url, false))
+        )
+        .ToArray();
+
+      Sources.SavePackageSources(feedsToAdd);
     }
   }
 }
