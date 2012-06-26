@@ -49,9 +49,10 @@ public class PackagesPublishRunner extends NuGetRunnerBase {
 
     process.pushBuildProcess(new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcess.Callback() {
       public void fileFound(@NotNull File file) throws RunBuildException {
-        process.pushBuildProcess(
-                myActionFactory.createPush(context, params, file)
-        );
+        final CompositeBuildProcess composite = new CompositeBuildProcessImpl();
+        composite.pushBuildProcess(myActionFactory.createPush(context, params, file));
+        composite.pushBuildProcess(myActionFactory.createPublishedPackageReport(context, params, file));
+        process.pushBuildProcess(composite);
       }
     }));
 

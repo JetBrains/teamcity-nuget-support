@@ -116,6 +116,20 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
+  public BuildProcess createPublishedPackageReport(@NotNull final BuildRunnerContext context,
+                                                   @NotNull final NuGetPublishParameters params,
+                                                   @NotNull final File packageFile) throws RunBuildException {
+    return new BuildProcessBase() {
+      @NotNull
+      @Override
+      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+        myPackageUsages.reportPublishedPackage(packageFile, params.getPublishSource());
+        return BuildFinishedStatus.FINISHED_SUCCESS;
+      }
+    };
+  }
+
+  @NotNull
   public BuildProcess createPush(@NotNull BuildRunnerContext context,
                                  @NotNull NuGetPublishParameters params,
                                  @NotNull File packagePath) throws RunBuildException {
