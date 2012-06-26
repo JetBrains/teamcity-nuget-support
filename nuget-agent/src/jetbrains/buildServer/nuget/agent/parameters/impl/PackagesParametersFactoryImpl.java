@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static jetbrains.buildServer.agent.AgentRuntimeProperties.TEAMCITY_SERVER_URL;
 import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
 import static jetbrains.buildServer.nuget.server.feed.server.NuGetServerConstants.AUTH_FEED_REFERENCE;
 
@@ -87,6 +88,20 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
           @NotNull
           public String getSource() {
             return source.getSource();
+          }
+
+          public String getUserName() {
+            return BuildAuthUtil.makeUserId(build.getBuildId());
+          }
+
+          public String getPassword() {
+            return build.getAccessCode();
+          }
+        });
+        sources.add(new AuthenticationSource() {
+          @NotNull
+          public String getSource() {
+            return context.getConfigParameters().get(TEAMCITY_SERVER_URL);
           }
 
           public String getUserName() {

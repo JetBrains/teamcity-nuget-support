@@ -22,6 +22,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.Paths;
+import jetbrains.buildServer.nuget.tests.agent.AuthenticationSourceImpl;
 import jetbrains.buildServer.nuget.tests.agent.PackageSourceImpl;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.http.HttpAuthServer;
@@ -117,7 +118,11 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     myHttp.start();
     mySourceUrl = "http://localhost:" + myHttp.getPort() + "/nuget/";
     myDownloadUrl = "http://localhost:" + myHttp.getPort() + "/download/";
-    myAuthSource = Arrays.<PackageSource>asList(new PackageSourceImpl(mySourceUrl, myUser, myPassword));
+    myAuthSource = Arrays.<PackageSource>asList(
+            new PackageSourceImpl(mySourceUrl, myUser, myPassword),
+            new AuthenticationSourceImpl(myDownloadUrl, myUser, myPassword),
+            new AuthenticationSourceImpl("http://localhost:" + myHttp.getPort() + "/", myUser, myPassword)
+    );
   }
 
   private String loadMockODataFiles(@NotNull String name) throws IOException {
@@ -184,9 +189,10 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
       will(returnValue(nuget.getPath()));
     }});
 
-    File wd = myWorkdirCalculator.getNuGetWorkDir(myContext, myWorkDir);
+    final File wd = myWorkdirCalculator.getNuGetWorkDir(myContext, myWorkDir);
+    final File dest = createTempDir();
     BuildProcess auth = myActionFactory.createAuthenticateFeeds(myContext, myAuthSource, myNuGet);
-    BuildProcess list = myExecutor.executeCommandLine(myContext, nuget.getPath().getPath(), Arrays.asList("install", "FineCollection"), wd, Collections.<String, String>emptyMap());
+    BuildProcess list = myExecutor.executeCommandLine(myContext, nuget.getPath().getPath(), Arrays.asList("install", "FineCollection", "-OutputDirectory", dest.getPath()), wd, Collections.<String, String>emptyMap());
 
     assertRunSuccessfully(auth, BuildFinishedStatus.FINISHED_SUCCESS);
     File config = new File(wd, "NuGet.config");
@@ -194,8 +200,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     System.out.println("NuGet.Config: " + loadFileUTF8(config));
 
     assertRunSuccessfully(list, BuildFinishedStatus.FINISHED_SUCCESS);
-    Assert.assertTrue(getCommandsOutput().contains("FineCollection 1.0.189"));
-    Assert.assertTrue(getCommandsOutput().contains("TestUtils 1.0.189"));
+    Assert.assertTrue(listFilesOrDie(dest).length > 0);
   }
 
 

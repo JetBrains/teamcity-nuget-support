@@ -37,6 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -91,22 +92,38 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
 
     return new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
       private File myTempFile;
+
+      private Content generateFeeds(@NotNull final Collection<? extends PackageSource> feeds, @NotNull final String name) {
+        return new Element(name) {{
+          for (final PackageSource source : feeds) {
+            addContent((Content)new Element("feed"){{
+              setAttribute("url", source.getSource());
+              final String userName = source.getUserName();
+              final String password = source.getPassword();
+              if (!StringUtil.isEmptyOrSpaces(userName) && !StringUtil.isEmptyOrSpaces(password)) {
+                setAttribute("user", userName);
+                setAttribute("password", password);
+              }
+            }});
+          }
+        }};
+      }
       @NotNull
       private Element generateXmlParameter() {
+        final Collection<PackageSource> enabled = new ArrayList<PackageSource>();
+        final Collection<AuthenticationSource> auth = new ArrayList<AuthenticationSource>();
+        for (PackageSource source : sources) {
+          if (source instanceof AuthenticationSource) {
+            auth.add((AuthenticationSource) source);
+          }
+          else {
+            enabled.add(source);
+          }
+        }
+
         return new Element("teamcity-feeds-list") {{
-          addContent((Content)new Element("feeds") {{
-            for (final PackageSource source : sources) {
-              addContent((Content)new Element("feed"){{
-                setAttribute("url", source.getSource());
-                final String userName = source.getUserName();
-                final String password = source.getPassword();
-                if (!StringUtil.isEmptyOrSpaces(userName) && !StringUtil.isEmptyOrSpaces(password)) {
-                  setAttribute("user", userName);
-                  setAttribute("password", password);
-                }
-              }});
-            }
-          }});
+          addContent(generateFeeds(enabled, "feeds"));
+          addContent(generateFeeds(auth, "credentials"));
         }};
       }
 
