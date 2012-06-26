@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.agent.dependencies.impl;
 
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.common.SourcePackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,6 +31,7 @@ import java.util.TreeSet;
 public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
   private final TreeSet<PackageInfo> myUsedPackages = new TreeSet<PackageInfo>();
   private final TreeSet<PackageInfo> myCreatedPackages = new TreeSet<PackageInfo>();
+  private final TreeSet<SourcePackageInfo> myPublishedPackages = new TreeSet<SourcePackageInfo>();
 
 
   public void addDependenyPackage(@NotNull String packageId, @NotNull String version, @Nullable String allowedVersions) {
@@ -40,9 +42,13 @@ public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
     myCreatedPackages.add(new PackageInfo(packageId, version));
   }
 
+  public void addPublishedPackage(@NotNull String packageId, @NotNull String version, @Nullable String source) {
+    myPublishedPackages.add(new SourcePackageInfo(new PackageInfo(packageId, version), source));
+  }
+
   @NotNull
   public PackageDependencies getUsedPackages() {
-    return new PackageDependencies(myUsedPackages, myCreatedPackages);
+    return new PackageDependencies(myUsedPackages, myCreatedPackages, myPublishedPackages);
   }
 
   public void removeAllPackages() {

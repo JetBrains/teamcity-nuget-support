@@ -44,6 +44,15 @@ public interface NuGetPackagesCollector {
   void addCreatedPackage(@NotNull String packageId,
                          @NotNull String version);
 
+
+  /**
+   * Adds published package
+   * @param packageId package id
+   * @param version version
+   * @param source source
+   */
+  void addPublishedPackage(@NotNull String packageId, @NotNull String version, @Nullable String source);
+
   /**
    * @return sorted list of packages that were registered
    */

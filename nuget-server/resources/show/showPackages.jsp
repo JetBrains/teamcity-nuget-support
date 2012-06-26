@@ -83,3 +83,29 @@ This build created ${numberOfUsedPackages} NuGet package<bs:s val="${numberOfCre
   </table>
 </c:if>
 
+<c:set var="numberOfPublishedPackages" value="${fn:length(packages.publishedPackages)}" />
+<c:if test="${numberOfPublishedPackages gt 0}">
+  <h3>Published to External NuGet Feeds</h3>
+  TeamCity detected and added ${numberOfPublishedPackages} NuGet package<bs:s val="${numberOfPublishedPackages}"/> to the feed.
+  <table class="settings" style="width:50em">
+    <thead>
+    <tr>
+      <th class="name">Package Name</th>
+      <th class="value">Package Version</th>
+      <th class="value">Package Source</th>
+    </tr>
+    </thead>
+    <c:forEach var="it" items="${packages.publishedPackages}">
+      <tr>
+        <td class="name"><c:out value="${it.packageInfo.id}"/></td>
+        <td class="value"><c:out value="${it.packageInfo.version}"/></td>
+        <td class="value">
+          <c:choose>
+            <c:when test="${not empty it.source}"><c:out value="${it.source}"/></c:when>
+            <c:otherwise><em>default</em></c:otherwise>
+          </c:choose>
+      </tr>
+    </c:forEach>
+  </table>
+</c:if>
+

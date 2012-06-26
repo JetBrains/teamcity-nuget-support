@@ -52,6 +52,11 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
+  public BuildProcess createPublishedPackageReport(@NotNull BuildRunnerContext context, @NotNull NuGetPublishParameters params, @NotNull File packageFile) throws RunBuildException {
+    return myActionFactory.createPublishedPackageReport(context, params, packageFile);
+  }
+
+  @NotNull
   public BuildProcess createInstall(@NotNull final BuildRunnerContext context,
                                     @NotNull final PackagesInstallParameters params,
                                     final boolean noCache,

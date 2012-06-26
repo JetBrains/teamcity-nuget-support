@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,6 +117,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
       allowing(myParametersFactory).loadPublishParameters(myContext);will(returnValue(myPublishParameters));
     }});
+
 
     final PackagesPublishRunner runner = new PackagesPublishRunner(new PublishRunnerStagesBuilder(new AuthStagesBuilder(myActionFactory), myActionFactory), myActionFactory, myParametersFactory);
     final BuildProcess proc = runner.createBuildProcess(myBuild, myContext);
