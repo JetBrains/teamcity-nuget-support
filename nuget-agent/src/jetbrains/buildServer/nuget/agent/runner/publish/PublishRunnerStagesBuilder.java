@@ -21,6 +21,8 @@ import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.runner.impl.AuthStagesBuilder;
+import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
+import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -46,9 +48,10 @@ public class PublishRunnerStagesBuilder {
 
     stages.getLocateStage().pushBuildProcess(new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcess.Callback() {
       public void fileFound(@NotNull File file) throws RunBuildException {
-        stages.getPublishStage().pushBuildProcess(
-                myActionFactory.createPush(context, params, file)
-        );
+        final CompositeBuildProcess composite = new CompositeBuildProcessImpl();
+        composite.pushBuildProcess(myActionFactory.createPush(context, params, file));
+        composite.pushBuildProcess(myActionFactory.createPublishedPackageReport(context, params, file));
+        stages.getPublishStage().pushBuildProcess(composite);
       }
     }));
   }

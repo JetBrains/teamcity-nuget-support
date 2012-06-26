@@ -34,6 +34,7 @@ import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -209,10 +210,19 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
                                                    @NotNull final NuGetPublishParameters params,
                                                    @NotNull final File packageFile) throws RunBuildException {
     return new BuildProcessBase() {
+      @Nullable
+      private String getPublishSource() throws RunBuildException {
+        //noinspection LoopStatementThatDoesntLoop
+        for (PackageSource source : params.getNuGetPackageSources()) {
+          return source.getSource();
+        }
+        return null;
+      }
+
       @NotNull
       @Override
       protected BuildFinishedStatus waitForImpl() throws RunBuildException {
-        myPackageUsages.reportPublishedPackage(packageFile, params.getPublishSource());
+        myPackageUsages.reportPublishedPackage(packageFile, getPublishSource());
         return BuildFinishedStatus.FINISHED_SUCCESS;
       }
     };

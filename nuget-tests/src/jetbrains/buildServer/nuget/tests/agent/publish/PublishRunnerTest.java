@@ -105,6 +105,13 @@ public class PublishRunnerTest extends BuildProcessTestCase {
           return createMockBuildProcess("version");
         }
       }));
+
+      allowing(myActionFactory).createPublishedPackageReport(
+              with(equal(myContext)),
+              with(equal(myParameters)),
+              with(any(File.class))
+      );
+      will(returnValue(createMockBuildProcess("publish")));
     }});
   }
 
@@ -118,7 +125,7 @@ public class PublishRunnerTest extends BuildProcessTestCase {
     CompositeBuildProcess bp = basicTest(nupkg, packages, sources);
 
     assertRunSuccessfully(bp, BuildFinishedStatus.FINISHED_SUCCESS);
-    assertExecutedMockProcesses("version", "push");
+    assertExecutedMockProcesses("version", "push", "publish");
   }
 
   @Test
@@ -137,7 +144,7 @@ public class PublishRunnerTest extends BuildProcessTestCase {
 
     CompositeBuildProcess bp = basicTest(nupkg, packages, sources);
     assertRunSuccessfully(bp, BuildFinishedStatus.FINISHED_SUCCESS);
-    assertExecutedMockProcesses("version", "auth", "push");
+    assertExecutedMockProcesses("version", "auth", "push", "publish");
   }
 
 
@@ -158,7 +165,7 @@ public class PublishRunnerTest extends BuildProcessTestCase {
 
     CompositeBuildProcess bp = basicTest(nupkg, packages, sources);
     assertRunSuccessfully(bp, BuildFinishedStatus.FINISHED_SUCCESS);
-    assertExecutedMockProcesses("version", "push");
+    assertExecutedMockProcesses("version", "push", "publish");
   }
 
   private CompositeBuildProcess basicTest(final File nupkg,
