@@ -5,64 +5,53 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{8FA969EA-85C0-464E-9745-66B9820121A9}</ProjectGuid>
+    <ProjectGuid>{FE16A93E-9015-4077-9179-F593E53F20EE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JetBrains.TeamCity.NuGet.ExtendedCommands</RootNamespace>
-    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands</AssemblyName>
+    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\plugins4\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\plugins4\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NuGet">
       <HintPath>..\lib\nuget\1.4\NuGet.exe</HintPath>
-      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\shared\src\Annotations.cs">
-      <Link>src\Shared\Annotations.cs</Link>
-    </Compile>
-    <Compile Include="..\shared\src\AssemblyHelper.cs">
-      <Link>src\Shared\AssemblyHelper.cs</Link>
-    </Compile>
-    <Compile Include="src\AssemblyResolver.cs" />
-    <Compile Include="src\CommandBase.cs" />
-    <Compile Include="src\ListCommandBase.cs" />
+    <Compile Include="src\Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\NuGetTeamCityListPackagesCommand.cs" />
-    <Compile Include="src\NuGetTeamCityPingCommand.cs" />
-    <Compile Include="src\PackageExtensions2.cs" />
-    <Compile Include="src\PackageFetchOption.cs" />
-    <Compile Include="src\QueryBuilder.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\nuget-commands\nuget-commands.csproj">
+      <Project>{8FA969EA-85C0-464E-9745-66B9820121A9}</Project>
+      <Name>nuget-commands</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
