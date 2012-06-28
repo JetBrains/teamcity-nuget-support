@@ -21,11 +21,18 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       var enuLeft = left.GetEnumerator();
       var enuRight = right.GetEnumerator();
 
-      while (enuLeft.MoveNext() && enuRight.MoveNext())
-        yield return zip(enuLeft.Current, enuRight.Current);
+      bool hasLeft;
+      bool hasRight;
+      do
+      {
+        hasLeft = enuLeft.MoveNext();
+        hasRight = enuRight.MoveNext();
 
-      while (enuLeft.MoveNext()) yield return enuLeft.Current;
-      while (enuRight.MoveNext()) yield return enuRight.Current;
+        if (hasLeft && hasRight) yield return zip(enuLeft.Current, enuRight.Current);
+        else if (hasLeft) yield return enuLeft.Current;
+        else if (hasRight) yield return enuRight.Current;
+
+      } while (hasLeft || hasRight);
     }
 
     protected IEnumerable<IPackage> GetAllPackages(string source, IEnumerable<string> ids)
@@ -37,8 +44,8 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       var expressions = ids.Distinct().Select(id => Expression.Equal(Expression.Property(param, "Id"), Expression.Constant(id))).ToList();
       while (expressions.Count > 1)
       {
-        var left = expressions.Where((x, i) => i%2 == 0);
-        var right = expressions.Where((x, i) => i%2 == 1);
+        var left = expressions.Where((x, i) => i%2 == 0).ToList();
+        var right = expressions.Where((x, i) => i%2 == 1).ToList();
         expressions = ZipEx(left, right, Expression.Or).ToList();
       }
 
