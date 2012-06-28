@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.TempFolderProvider;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
@@ -25,13 +26,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
+import java.io.File;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -42,9 +42,14 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
 
   @BeforeMethod
   @Override
-  protected void setUp() throws Exception {
+  public void setUp() throws Exception {
     super.setUp();
 
+    myCommand = createMockCommand(createTempDir());
+  }
+
+  @NotNull
+  public static ListPackagesCommand createMockCommand(@NotNull final File tempDir) {
     Mockery m = new Mockery();
     final SystemInfo info = m.mock(SystemInfo.class);
     final NuGetTeamCityProvider prov = m.mock(NuGetTeamCityProvider.class);
@@ -55,10 +60,16 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
 
 
       allowing(prov).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
-      allowing(temp).getTempDirectory(); will(returnValue(createTempDir()));
+      allowing(temp).getTempDirectory(); will(returnValue(tempDir));
     }});
 
-    myCommand = new ListPackagesCommandImpl(new NuGetExecutorImpl(prov, info), temp);
+    return new ListPackagesCommandImpl(new NuGetExecutorImpl(prov, info), temp);
+  }
+
+  @AfterMethod
+  @Override
+  public void tearDown() throws Exception {
+    super.tearDown();
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
@@ -88,5 +99,49 @@ public class ServerListPackagesCommandIntegrationTest extends IntegrationTestBas
     Assert.assertTrue(nAll.size() == 1, new ArrayList<SourcePackageInfo>(nAll).toString());
     Assert.assertTrue(nYouTrack.size() == 1, new ArrayList<SourcePackageInfo>(nYouTrack).toString());
     Assert.assertTrue(nFilter.size() > 0, new ArrayList<SourcePackageInfo>(nFilter).toString());
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x2(@NotNull final NuGet nuget) throws NuGetExecutionException {
+    doTriggerTest(nuget, FeedConstants.NUGET_FEED_V2, "NUnit", "EasyHttp");
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x3(@NotNull final NuGet nuget) throws NuGetExecutionException {
+    doTriggerTest(nuget, FeedConstants.NUGET_FEED_V2, "NUnit", "YouTrackSharp", "EASYHTTP");
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x4(@NotNull final NuGet nuget) throws NuGetExecutionException {
+    doTriggerTest(nuget, FeedConstants.NUGET_FEED_V2, "NUnit", "EasyHttp", "Elmah", "jquery");
+  }
+
+  protected void doTriggerTest(@NotNull final NuGet nuget, @NotNull String feed, @NotNull String... packageNames) throws NuGetExecutionException {
+    doTriggerTest(myCommand, nuget, feed, packageNames);
+  }
+
+  public static void doTriggerTest(@NotNull ListPackagesCommand myCommand,
+                               @NotNull final NuGet nuget,
+                               @NotNull String feed,
+                               @NotNull String... packageNames) throws NuGetExecutionException {
+
+    final List<SourcePackageReference> allRefs = new ArrayList<SourcePackageReference>();
+    for (String s : packageNames) {
+      allRefs.add(new SourcePackageReference(feed, s, null));
+    }
+
+    final Map<SourcePackageReference,Collection<SourcePackageInfo>> m1 = myCommand.checkForChanges(nuget.getPath(), allRefs);
+
+    System.out.println("result: " + m1);
+    for (SourcePackageReference allRef : allRefs) {
+      Collection<SourcePackageInfo> i = m1.get(allRef);
+      Assert.assertNotNull(i);
+      Assert.assertTrue(i.size() == 1, "should return version for " + allRef);
+    }
+    Assert.assertEquals(m1.size(), packageNames.length);
+
+    for (Collection<SourcePackageInfo> infos : m1.values()) {
+      Assert.assertTrue(infos.size() == 1);
+    }
   }
 }
