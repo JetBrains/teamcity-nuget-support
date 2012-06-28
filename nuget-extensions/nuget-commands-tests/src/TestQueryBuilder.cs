@@ -18,28 +18,28 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     public void TestIdFilter_1()
     {
       var exp = QueryBuilder.GeneratePackageIdFilter(new[] {"a"}, Expression.Parameter(typeof (IPackageMetadata), "p"));
-      Assert.AreEqual(exp.ToString(), "(p.Id == \"a\")");
+      Assert.AreEqual(exp.ToString(), "(p.Id.ToLower() == \"a\")");
     }
 
     [Test]
     public void TestIdFilter_2()
     {
       var exp = QueryBuilder.GeneratePackageIdFilter(new[] {"a", "b"}, Expression.Parameter(typeof (IPackageMetadata), "p"));
-      Assert.AreEqual(exp.ToString(), "((p.Id == \"a\") Or (p.Id == \"b\"))");
+      Assert.AreEqual(exp.ToString(), "((p.Id.ToLower() == \"a\") Or (p.Id.ToLower() == \"b\"))");
     }
 
     [Test]
     public void TestIdFilter_3()
     {
       var exp = QueryBuilder.GeneratePackageIdFilter(new[] { "a", "b", "c" }, Expression.Parameter(typeof(IPackageMetadata), "p"));
-      Assert.AreEqual(exp.ToString(), "(((p.Id == \"a\") Or (p.Id == \"b\")) Or (p.Id == \"c\"))");
+      Assert.AreEqual(exp.ToString(), "(((p.Id.ToLower() == \"a\") Or (p.Id.ToLower() == \"b\")) Or (p.Id.ToLower() == \"c\"))");
     }
 
     [Test]
     public void TestIdFilter_4()
     {
       var exp = QueryBuilder.GeneratePackageIdFilter(new[] { "a", "b", "c", "d" }, Expression.Parameter(typeof(IPackageMetadata), "p"));
-      Assert.AreEqual(exp.ToString(), "(((p.Id == \"a\") Or (p.Id == \"b\")) Or ((p.Id == \"c\") Or (p.Id == \"d\")))");
+      Assert.AreEqual(exp.ToString(), "(((p.Id.ToLower() == \"a\") Or (p.Id.ToLower() == \"b\")) Or ((p.Id.ToLower() == \"c\") Or (p.Id.ToLower() == \"d\")))");
     }
   }
 }

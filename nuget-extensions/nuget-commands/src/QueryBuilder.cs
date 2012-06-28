@@ -37,10 +37,11 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [NotNull]
     public static Expression GeneratePackageIdFilter(IEnumerable<string> ids, ParameterExpression param)
     {
+      var toLower = typeof (string).GetMethod("ToLower", new Type[0]);
       var pi = typeof(IPackageMetadata).GetProperty("Id");
       var expressions = ids
         .Distinct()
-        .Select(id => Expression.Equal(Expression.Property(param, pi), Expression.Constant(id)))
+        .Select(id => Expression.Equal(Expression.Call(Expression.Property(param, pi), toLower), Expression.Constant(id.ToLower())))
         .ToList();
 
       while (expressions.Count > 1)
