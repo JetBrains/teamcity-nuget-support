@@ -35,7 +35,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     }
 
     [NotNull]
-    private static Expression GeneratePackageIdFilter(IEnumerable<string> ids, ParameterExpression param)
+    public static Expression GeneratePackageIdFilter(IEnumerable<string> ids, ParameterExpression param)
     {
       var pi = typeof(IPackageMetadata).GetProperty("Id");
       var expressions = ids
@@ -61,11 +61,18 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       var enuLeft = left.GetEnumerator();
       var enuRight = right.GetEnumerator();
 
-      while (enuLeft.MoveNext() && enuRight.MoveNext())
-        yield return zip(enuLeft.Current, enuRight.Current);
+      bool hasLeft;
+      bool hasRight;
+      do
+      {
+        hasLeft = enuLeft.MoveNext();
+        hasRight = enuRight.MoveNext();
 
-      while (enuLeft.MoveNext()) yield return enuLeft.Current;
-      while (enuRight.MoveNext()) yield return enuRight.Current;
+        if (hasLeft && hasRight) yield return zip(enuLeft.Current, enuRight.Current);
+        else if (hasLeft) yield return enuLeft.Current;
+        else if (hasRight) yield return enuRight.Current;
+
+      } while (hasLeft || hasRight);
     }
   }
 }
