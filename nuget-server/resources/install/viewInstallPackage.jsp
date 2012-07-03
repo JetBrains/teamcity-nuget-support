@@ -19,6 +19,7 @@
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.runner.install.InstallBean" scope="request"/>
+<jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
 
 <div class="parameter">
   Path to NuGet.exe: <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetPathKey}&class=longField&view=1"/>
@@ -38,6 +39,18 @@
   Update packages:
   <strong>
     <props:displayCheckboxValue name="${ib.updatePackagesKey}"/>
+  </strong>
+</div>
+<div class="parameter">
+  Update mode:
+  <strong>
+    <c:forEach var="i" items="${propertiesBean.properties[ib.updateModeKey]}">
+      <c:choose>
+        <c:when test="${i eq ib.updatePerConfigValue}">Update via packages.config file</c:when>
+        <c:when test="${i eq ib.updatePerSolutionValue}">Update via solution file</c:when>
+        <c:otherwise>Update via solution file</c:otherwise>
+      </c:choose>
+    </c:forEach>
   </strong>
 </div>
 <div class="parameter">

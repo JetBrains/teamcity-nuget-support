@@ -57,43 +57,53 @@
     </td>
   </tr>
   <tr>
-    <th>Options:</th>
+    <th>Install Options:</th>
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       Exclude version from package folder names
       <span class="smallNote">Makes NuGet exclude package version from package folders.
                               Equivalent to -ExcludeVersion NuGet.exe commandline argument</span>
-
+    </td>
+  </tr>
+</l:settingsGroup>
+<l:settingsGroup title="Update">
+  <tr>
+    <th>Update Packages:</th>
+    <td>
       <props:checkboxProperty name="${ib.updatePackagesKey}"/>
       Update packages with help of NuGet update command
       <span class="smallNote">Uses NuGet update command to update all packages under solution.
                               Package versions and constraints are taken from
                               packages.config files</span>
-
-      <div style="margin-left: 2em;">
-        <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
-        Include pre-release packages.
-        <span class="smallNote">Equivalent to -Prerelease NuGet option</span>
-      </div>
-
-      <div style="margin-left: 2em;">
-        <props:checkboxProperty name="${ib.updatePackagesSafeKey}"/>
-        Perform safe update.
-        <span class="smallNote">Equivalent to -Safe NuGet option</span>
-      </div>
     </td>
   </tr>
-
-  <script type="text/javascript">
-    (function() {
-    var handler = function() {
-      var dis = !$('${ib.updatePackagesKey}').checked;
-      $('${ib.updatePackagesSafeKey}').disabled = dis;
-      $('${ib.updatePackagesPrerelease}').disabled = dis;
-    };
-    Event.observe($('${ib.updatePackagesKey}'), 'change', handler);
-    handler();
-    })();
-  </script>
-
+  <tr>
+    <th>Update Mode:</th>
+    <td>
+      <props:selectProperty name="${ib.updateModeKey}" style="longField">
+        <props:option value="${ib.updatePerSolutionValue}">Update via solution file</props:option>
+        <props:option value="${ib.updatePerConfigValue}">Update via packages.config file</props:option>
+      </props:selectProperty>
+      <span class="smallNote">
+        NuGet.exe provides two ways of packages update. The first one is implemented via one call to
+        <em>NuGet.exe update SolutionFile.sln</em>, the other one is implemented by calls to
+        <em>NuGet.exe update Packages.Config</em> for each Packages.Config file under solution.
+      </span>
+    </td>
+  </tr>
+  <tr>
+    <th rowspan="2">Update Options:</th>
+    <td>
+      <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
+      Include pre-release packages.
+      <span class="smallNote">Equivalent to -Prerelease NuGet option</span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <props:checkboxProperty name="${ib.updatePackagesSafeKey}"/>
+      Perform safe update.
+      <span class="smallNote">Equivalent to -Safe NuGet option</span>
+    </td>
+  </tr>
 </l:settingsGroup>
