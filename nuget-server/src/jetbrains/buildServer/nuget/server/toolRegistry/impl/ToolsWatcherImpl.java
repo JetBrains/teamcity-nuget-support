@@ -20,7 +20,9 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FilesWatcher;
 import jetbrains.buildServer.nuget.server.ToolPaths;
+import jetbrains.buildServer.serverSide.executors.ExecutorServices;
 import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.ExceptionUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,13 +40,20 @@ public class ToolsWatcherImpl implements ToolsWatcher {
   private final ToolPacker myPacker;
   private final ToolUnpacker myUnpacker;
   private final FilesWatcher myWatcher;
+  private final PluginNaming myNaming;
+  private final ExecutorServices myExecutors;
 
   public ToolsWatcherImpl(@NotNull final ToolPaths paths,
+                          @NotNull final PluginNaming naming,
                           @NotNull final ToolPacker packer,
-                          @NotNull final ToolUnpacker unpacker) {
+                          @NotNull final ToolUnpacker unpacker,
+                          @NotNull final ExecutorServices executors) {
     myPaths = paths;
     myPacker = packer;
     myUnpacker = unpacker;
+    myNaming = naming;
+    myExecutors = executors;
+
     myWatcher = new FilesWatcher(new FilesWatcher.WatchedFilesProvider() {
       public File[] getWatchedFiles() {
         return myPaths.getNuGetToolsPackages().listFiles();
@@ -77,46 +86,41 @@ public class ToolsWatcherImpl implements ToolsWatcher {
     myWatcher.checkForModifications();
   }
 
-  private void onFilesChanged(List<File> modified, List<File> added, List<File> removed) {
+  public void updatePackage(@NotNull final InstalledTool nupkg) {
+    myExecutors.getNormalExecutorService().submit(ExceptionUtil.catchAll("update installed package", new Runnable() {
+      public void run() {
+        synchronized (ToolsWatcherImpl.this) {
+          installPackage(nupkg);
+        }
+      }
+    }));
+  }
+
+  private synchronized void onFilesChanged(List<File> modified, List<File> added, List<File> removed) {
     for (File file : CollectionsUtil.join(modified, removed)) {
-      removePackage(file, getAgentFile(file), getUnpackedFolder(file));
+      removePackage(new InstalledTool(myNaming, file));
     }
 
     for (File file : CollectionsUtil.join(modified, added)) {
-      installPackage(file, getAgentFile(file), getUnpackedFolder(file));
+      installPackage(new InstalledTool(myNaming, file));
     }
   }
 
-  private void installPackage(@NotNull final File file, File agentFile, File unpackedFolder) {
+  private void installPackage(@NotNull final InstalledTool file) {
     try {
-      FileUtil.createParentDirs(agentFile);
-      FileUtil.createDir(unpackedFolder);
+      file.removeUnpackedFiles();
 
-      myUnpacker.extractPackage(file, unpackedFolder);
-      myPacker.packTool(agentFile, unpackedFolder);
+      FileUtil.createParentDirs(file.getAgentPluginFile());
+      FileUtil.createDir(file.getUnpackFolder());
+      myUnpacker.extractPackage(file.getPackageFile(), file.getUnpackFolder());
+      myPacker.packTool(file.getAgentPluginFile(), file.getUnpackFolder());
     } catch (Throwable t) {
       LOG.warn("Failed to unpack nuget commandline: " + file);
-      FileUtil.delete(unpackedFolder);
-      FileUtil.delete(agentFile);
+      file.removeUnpackedFiles();
     }
   }
 
-  private void removePackage(@NotNull final File file, File agentFile, File unpackedFolder) {
-    LOG.info("Removing NuGet package: " + file.getName());
-    FileUtil.delete(file);
-    FileUtil.delete(agentFile);
-    FileUtil.delete(unpackedFolder);
-  }
-
-  @NotNull
-  private File getUnpackedFolder(@NotNull final File packages) {
-    //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getNuGetToolsPath(), packages.getName());
-  }
-
-  @NotNull
-  private File getAgentFile(@NotNull final File packages) {
-    //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getNuGetToolsAgentPluginsPath(), packages.getName() + ".zip");
+  private void removePackage(@NotNull final InstalledTool file) {
+    file.delete();
   }
 }

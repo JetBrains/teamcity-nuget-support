@@ -17,10 +17,8 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
-import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -39,6 +38,7 @@ public class ToolsRegistry {
   private final ToolPaths myPaths;
   private final PluginNaming myNaming;
   private final ToolsWatcher myWatcher;
+  private final Set<File> myPackageErrors = new CopyOnWriteArraySet<File>();
 
   public ToolsRegistry(@NotNull final ToolPaths paths,
                        @NotNull final PluginNaming naming,
@@ -64,6 +64,12 @@ public class ToolsRegistry {
     return null;
   }
 
+  private void handlePackageError(@NotNull InstalledTool tool, @NotNull String error) {
+    if (!myPackageErrors.add(tool.getPackageFile())) return;
+    LOG.warn(error);
+    myWatcher.updatePackage(tool);
+  }
+
   private Collection<InstalledTool> getToolsInternal() {
     final File[] tools = myPaths.getNuGetToolsPackages().listFiles(IS_PACKAGE);
     if (tools == null) return Collections.emptyList();
@@ -72,48 +78,20 @@ public class ToolsRegistry {
     for (final File path : tools) {
       final InstalledTool e = new InstalledTool(myNaming, path);
       if (!e.getPath().isFile()) {
-        LOG.warn("NuGet.exe is not found at " + e);
+        handlePackageError(e, "NuGet.exe is not found at " + e);
         continue;
       }
 
       if (!e.getAgentPluginFile().isFile()) {
-        LOG.warn("NuGet tool is not packed for agent. " + e);
+        handlePackageError(e, "NuGet tool is not packed for agent. " + e);
         continue;
       }
+
+      myPackageErrors.remove(e.getPackageFile());
       result.add(e);
     }
 
-    Collections.sort(result, new Comparator<InstalledTool>() {
-      private int parse(String s) {
-        try {
-          s = s.trim();
-          return Integer.parseInt(s);
-        } catch (Throwable t) {
-          return -1;
-        }
-      }
-
-      public int compare(InstalledTool o1, InstalledTool o2) {
-        final String[] version1 = o1.getVersion().split("\\.");
-        final String[] version2 = o2.getVersion().split("\\.");
-
-        for(int j = 0, jmax = Math.min(version1.length, version2.length); j < jmax; j++) {
-          int v1 = parse(version1[j]);
-          int v2 = parse(version2[j]);
-          if (v1 < v2) return -1;
-          if (v1 > v2) return 1;
-
-          int i;
-          if (v1 == -1 && v2 == -1 && (i = version1[j].compareToIgnoreCase(version2[j]))!= 0) {
-            return i;
-          }
-        }
-
-        if (version1.length > version2.length) return -1;
-        return 1;
-      }
-    });
-
+    Collections.sort(result, COMPATATOR);
     return result;
   }
 
@@ -127,51 +105,40 @@ public class ToolsRegistry {
     myWatcher.checkNow();
   }
 
-  private static class InstalledTool implements NuGetInstalledTool {
-    private final PluginNaming myNaming;
-    private final File myPath;
-
-    public InstalledTool(PluginNaming naming, @NotNull final File path) {
-      myNaming = naming;
-      myPath = path;
-    }
-
-    @NotNull
-    public File getPath() {
-      return FileUtil.getCanonicalFile(new File(myNaming.getUnpackedFolder(myPath), PackagesConstants.NUGET_TOOL_REL_PATH));
-    }
-
-    @NotNull
-    public File getAgentPluginFile() {
-      return FileUtil.getCanonicalFile(myNaming.getAgentFile(myPath));
-    }
-
-    public void delete() {
-      FileUtil.delete(myPath);
-    }
-
-    @NotNull
-    public String getId() {
-      return myPath.getName();
-    }
-
-    @NotNull
-    public String getVersion() {
-      return myNaming.getVersion(myPath);
-    }
-
-    @Override
-    public String toString() {
-      return "InstalledTool{version=" + getVersion() +
-              ", myPath=" + myPath +
-              '}';
-    }
-  }
-
   private final FileFilter IS_PACKAGE = new FileFilter() {
     public boolean accept(File pathname) {
       return pathname.isFile() && pathname.getName().endsWith(".nupkg");
     }
   };
 
+  private final Comparator<InstalledTool> COMPATATOR = new Comparator<InstalledTool>() {
+    private int parse(String s) {
+      try {
+        s = s.trim();
+        return Integer.parseInt(s);
+      } catch (Throwable t) {
+        return -1;
+      }
+    }
+
+    public int compare(InstalledTool o1, InstalledTool o2) {
+      final String[] version1 = o1.getVersion().split("\\.");
+      final String[] version2 = o2.getVersion().split("\\.");
+
+      for (int j = 0, jmax = Math.min(version1.length, version2.length); j < jmax; j++) {
+        int v1 = parse(version1[j]);
+        int v2 = parse(version2[j]);
+        if (v1 < v2) return -1;
+        if (v1 > v2) return 1;
+
+        int i;
+        if (v1 == -1 && v2 == -1 && (i = version1[j].compareToIgnoreCase(version2[j])) != 0) {
+          return i;
+        }
+      }
+
+      if (version1.length > version2.length) return -1;
+      return 1;
+    }
+  };
 }

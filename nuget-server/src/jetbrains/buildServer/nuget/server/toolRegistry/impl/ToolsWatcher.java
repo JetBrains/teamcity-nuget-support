@@ -16,10 +16,14 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 30.09.11 17:10
  */
 public interface ToolsWatcher {
   void checkNow();
+
+  void updatePackage(@NotNull final InstalledTool nupkg);
 }
