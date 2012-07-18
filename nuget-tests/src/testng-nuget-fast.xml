@@ -42,6 +42,7 @@
   <test name="trigger">
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageSourceCheckerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.NuGetSourceCheckerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckEntryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.CheckRequestModeFactoryTest"/>

@@ -96,12 +96,12 @@ public class NuGetSourceCheckerImpl implements NuGetSourceChecker {
     private final String myErrorText;
 
     private CacheResult(@Nullable String errorText) {
-      myExpireTime = myTimeService.now() + mySettings.getPackageSourceAvailabilityCheckInterval();
+      myExpireTime = myTimeService.now();
       myErrorText = errorText;
     }
 
     public boolean isExpired() {
-      return myTimeService.now() > myExpireTime;
+      return myTimeService.now() > myExpireTime + mySettings.getPackageSourceAvailabilityCheckInterval();
     }
 
     @Nullable

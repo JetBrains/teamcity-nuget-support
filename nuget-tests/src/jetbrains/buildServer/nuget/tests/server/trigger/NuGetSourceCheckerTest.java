@@ -16,27 +16,28 @@
 
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
-import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
-import jetbrains.buildServer.nuget.server.trigger.impl.source.PackageSourceChecker;
-import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceCheckerImpl;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings;
+import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceCheckerImpl;
+import jetbrains.buildServer.nuget.server.trigger.impl.source.PackageSourceChecker;
 import jetbrains.buildServer.util.TimeService;
-import org.jmock.Expectations;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.CustomAction;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 18.07.12 17:25
  */
-public class NuGetSourceCheckerTest extends BaseTestCase {
-  private Mockery m;
+public class NuGetSourceCheckerTest extends TriggerTestBase {
   private TimeService myTimeService;
   private PackageCheckerSettings mySettings;
   private PackageSourceChecker myCheckerImpl;
@@ -62,12 +63,19 @@ public class NuGetSourceCheckerTest extends BaseTestCase {
         }
       });
 
-      allowing(myTimeService).now(); will(returnValue(new CustomAction("ret") {
+      allowing(myTimeService).now(); will(new CustomAction("ret") {
         public Object invoke(Invocation invocation) throws Throwable {
           return myTime;
         }
-      }));
+      });
     }});
+  }
+
+  @AfterMethod
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    m.assertIsSatisfied();
   }
 
   @Test
@@ -75,6 +83,77 @@ public class NuGetSourceCheckerTest extends BaseTestCase {
     myChecker.getAccessiblePackages(Collections.<CheckablePackage>emptyList());
   }
 
+  @Test
+  public void test_same_sources() {
+    m.checking(new Expectations(){{
+      oneOf(myCheckerImpl).checkSource("foo"); will(returnValue(null));
+    }});
+    myChecker.getAccessiblePackages(Arrays.asList(cp("foo", "a"), cp("foo", "b")));
+  }
 
+  @Test
+  public void test_same_sources_cache_flushed() {
+    m.checking(new Expectations(){{
+      oneOf(myCheckerImpl).checkSource("foo"); will(returnValue(null));
+      oneOf(myCheckerImpl).checkSource("foo"); will(returnValue(null));
+    }});
+    myChecker.getAccessiblePackages(Arrays.asList(cp("foo", "a")));
+    myTime += 1000;
+    myChecker.getAccessiblePackages(Arrays.asList(cp("foo", "b")));
+  }
 
+  @Test
+  public void test_same_sources_cache_used() {
+    m.checking(new Expectations(){{
+      oneOf(myCheckerImpl).checkSource("foo"); will(returnValue(null));
+    }});
+    myChecker.getAccessiblePackages(Arrays.asList(cp("foo", "a")));
+    myTime += 10;
+    myChecker.getAccessiblePackages(Arrays.asList(cp("foo", "b")));
+  }
+
+  @Test
+  public void test_same_sources_cache_filtered() {
+    final CheckablePackage cp = cp("foo", "a");
+    m.checking(new Expectations(){{
+      oneOf(myCheckerImpl).checkSource("foo"); will(returnValue("some error"));
+      oneOf(cp).setResult(with(failed("some error")));
+    }});
+
+    myChecker.getAccessiblePackages(Arrays.asList(cp));
+  }
+
+  @Test
+  public void test_same_sources_cache_filtered2() {
+    final CheckablePackage cp = cp("foo", "a");
+    m.checking(new Expectations(){{
+      oneOf(myCheckerImpl).checkSource("foo"); will(returnValue("some error"));
+      exactly(3).of(cp).setResult(with(failed("some error")));
+    }});
+
+    myChecker.getAccessiblePackages(Arrays.asList(cp));
+    myChecker.getAccessiblePackages(Arrays.asList(cp));
+    myChecker.getAccessiblePackages(Arrays.asList(cp));
+  }
+
+  @Test
+  public void test_same_sources_cache_exception() {
+    final CheckablePackage cp = cp("foo", "a");
+    m.checking(new Expectations(){{
+      oneOf(myCheckerImpl).checkSource("foo"); will(throwException(new Exception("failure")));
+      exactly(3).of(cp).setResult(with(failed("java.lang.Exception")));
+    }});
+
+    myChecker.getAccessiblePackages(Arrays.asList(cp));
+    myChecker.getAccessiblePackages(Arrays.asList(cp));
+    myChecker.getAccessiblePackages(Arrays.asList(cp));
+  }
+
+  private CheckablePackage cp(@NotNull final String source, @NotNull final String id) {
+    final CheckablePackage cpp = m.mock(CheckablePackage.class, "cp-" + id + "@" + source);
+    m.checking(new Expectations(){{
+      allowing(cpp).getPackage(); will(returnValue(new SourcePackageReference(source, id, null)));
+    }});
+    return cpp;
+  }
 }
