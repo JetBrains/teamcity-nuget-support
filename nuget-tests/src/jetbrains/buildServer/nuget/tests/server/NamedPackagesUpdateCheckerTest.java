@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import jetbrains.buildServer.nuget.server.trigger.PackagesHashCalculator;
 import jetbrains.buildServer.nuget.server.trigger.TriggerConstants;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
-import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import junit.framework.Assert;
 import org.hamcrest.BaseMatcher;
@@ -83,7 +82,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     final SystemInfo si = m.mock(SystemInfo.class);
 
     checker = new NamedPackagesUpdateChecker(chk, new TriggerRequestFactory(new CheckRequestModeFactory(si), manager, new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()), myRootUrlHolder), new PackagesHashCalculator());
-    nugetFakePath = Paths.getNuGetRunnerPath();
+    nugetFakePath = createTempFile();
     final String path = nugetFakePath.getPath();
 
     m.checking(new Expectations(){{
