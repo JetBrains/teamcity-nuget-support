@@ -17,13 +17,11 @@
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.util.RecentEntriesCache;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -36,12 +34,15 @@ public class NuGetSourceCheckerImpl implements NuGetSourceChecker {
   private static final Logger LOG = Logger.getInstance(NuGetSourceCheckerImpl.class.getName());
   private final TimeService myTimeService;
   private final PackageCheckerSettings mySettings;
+  private final NuGetNetworkSourceChecker myChecker;
   private final RecentEntriesCache<String, CacheResult> myCache = new RecentEntriesCache<String, CacheResult>(500);
 
   public NuGetSourceCheckerImpl(@NotNull TimeService timeService,
-                                @NotNull PackageCheckerSettings settings) {
+                                @NotNull PackageCheckerSettings settings,
+                                @NotNull NuGetNetworkSourceChecker checker) {
     myTimeService = timeService;
     mySettings = settings;
+    myChecker = checker;
   }
 
   @NotNull
@@ -81,19 +82,11 @@ public class NuGetSourceCheckerImpl implements NuGetSourceChecker {
     @NotNull
     public CacheResult fun(@NotNull String key) {
       try {
-        final File root = new File(key);
-        if (!root.isDirectory()) {
-          return new CacheResult("Package feed does not exists or inaccessible");
-        }
-        File[] files = root.listFiles(FeedConstants.PACKAGE_FILE_FILTER);
-        if (files == null || files.length == 0) {
-          return new CacheResult("Package feed is empty or inaccessible");
-        }
+        return new CacheResult(myChecker.checkSource(key));
       } catch (final Throwable e) {
         LOG.warn("Failed to connect to " + key + ". " + e.getMessage(), e);
         return new CacheResult("Package feed is empty or inaccessible. " + e.getMessage());
       }
-      return new CacheResult(null);
     }
   };
 
