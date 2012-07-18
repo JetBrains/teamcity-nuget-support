@@ -34,6 +34,8 @@ public interface PackageCheckerSettings {
 
   long getMaxSleepInterval();
 
+  long getPackageSourceAvailabilityCheckInterval();
+
   int getCheckerThreads();
 
   boolean allowBulkMode(@NotNull PackageCheckRequest request);

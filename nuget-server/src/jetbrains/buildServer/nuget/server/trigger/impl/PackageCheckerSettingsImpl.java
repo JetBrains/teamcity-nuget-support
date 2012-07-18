@@ -49,6 +49,10 @@ public class PackageCheckerSettingsImpl implements PackageCheckerSettings {
     return Math.min(3 * getPackageCheckInterval() / 2, getTriggerPollInterval() / 2);
   }
 
+  public long getPackageSourceAvailabilityCheckInterval() {
+    return TeamCityProperties.getLong("teamcity.nuget.source.checker.cache.time", 3 * getPackageCheckInterval());
+  }
+
   public int getCheckerThreads() {
     return TeamCityProperties.getInteger("teamcity.nuget.trigger.pool", 4);
   }
