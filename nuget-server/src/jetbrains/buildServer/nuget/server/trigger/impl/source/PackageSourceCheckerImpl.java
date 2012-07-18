@@ -26,8 +26,8 @@ import java.io.File;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 18.07.12 17:30
  */
-public class NuGetNetworkSourceCheckerImpl implements NuGetNetworkSourceChecker {
-  private static final Logger LOG = Logger.getInstance(NuGetNetworkSourceCheckerImpl.class.getName());
+public class PackageSourceCheckerImpl implements PackageSourceChecker {
+  private static final Logger LOG = Logger.getInstance(PackageSourceCheckerImpl.class.getName());
 
   @Nullable
   public String checkSource(@Nullable final String source) {

@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
-import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetNetworkSourceChecker;
+import jetbrains.buildServer.nuget.server.trigger.impl.source.PackageSourceChecker;
 import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceCheckerImpl;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings;
 import jetbrains.buildServer.util.TimeService;
@@ -39,7 +39,7 @@ public class NuGetSourceCheckerTest extends BaseTestCase {
   private Mockery m;
   private TimeService myTimeService;
   private PackageCheckerSettings mySettings;
-  private NuGetNetworkSourceChecker myCheckerImpl;
+  private PackageSourceChecker myCheckerImpl;
   private NuGetSourceCheckerImpl myChecker;
 
   private long myTime = 1;
@@ -52,7 +52,7 @@ public class NuGetSourceCheckerTest extends BaseTestCase {
     m = new Mockery();
     mySettings = m.mock(PackageCheckerSettings.class);
     myTimeService = m.mock(TimeService.class);
-    myCheckerImpl = m.mock(NuGetNetworkSourceChecker.class);
+    myCheckerImpl = m.mock(PackageSourceChecker.class);
     myChecker = new NuGetSourceCheckerImpl(myTimeService, mySettings, myCheckerImpl);
 
     m.checking(new Expectations(){{

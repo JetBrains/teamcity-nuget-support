@@ -37,12 +37,12 @@ public class NuGetSourceCheckerImpl implements NuGetSourceChecker {
   private static final Logger LOG = Logger.getInstance(NuGetSourceCheckerImpl.class.getName());
   private final TimeService myTimeService;
   private final PackageCheckerSettings mySettings;
-  private final NuGetNetworkSourceChecker myChecker;
+  private final PackageSourceChecker myChecker;
   private final RecentEntriesCache<String, CacheResult> myCache = new RecentEntriesCache<String, CacheResult>(500);
 
   public NuGetSourceCheckerImpl(@NotNull TimeService timeService,
                                 @NotNull PackageCheckerSettings settings,
-                                @NotNull NuGetNetworkSourceChecker checker) {
+                                @NotNull PackageSourceChecker checker) {
     myTimeService = timeService;
     mySettings = settings;
     myChecker = checker;
