@@ -9,6 +9,7 @@
   <bean class="jetbrains.buildServer.nuget.server.trigger.PackagesHashCalculator"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.NuGetSimpleTrigger"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesManagerImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.NuGetSourceCheckerImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesCheckerThread">
     <constructor-arg>
       <list>

@@ -35,12 +35,15 @@ public class PackageChangesCheckerThread {
   private final ScheduledExecutorService myExecutor;
   private final PackageCheckQueue myHolder;
   private final Collection<PackageChecker> myCheckers;
+  private final NuGetSourceChecker myPreChecker;
 
   public PackageChangesCheckerThread(@NotNull final PackageCheckQueue holder,
                                      @NotNull final PackageCheckerSettings settings,
-                                     @NotNull final Collection<PackageChecker> checkers) {
+                                     @NotNull final Collection<PackageChecker> checkers,
+                                     @NotNull final NuGetSourceChecker preChecker) {
     myHolder = holder;
     myCheckers = checkers;
+    myPreChecker = preChecker;
     myExecutor = Executors.newScheduledThreadPool(settings.getCheckerThreads(), new NamedDeamonThreadFactory("NuGet Packages Version Checker"));
   }
 
@@ -54,6 +57,6 @@ public class PackageChangesCheckerThread {
   }
 
   public void startPackagesCheck() {
-    new PackageChangesCheckerThreadTask(myHolder, myExecutor, myCheckers).postCheckTask();
+    new PackageChangesCheckerThreadTask(myHolder, myExecutor, myCheckers, myPreChecker).postCheckTask();
   }
 }
