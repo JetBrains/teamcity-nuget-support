@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -55,7 +56,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
 
   private void visitArtifacts(@NotNull final BuildArtifact artifact, @NotNull final List<BuildArtifact> packages) {
     if (!artifact.isDirectory()) {
-      if (artifact.getName().endsWith(".nupkg")) {
+      if (FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(artifact.getName())) {
         packages.add(artifact);
       }
       return;

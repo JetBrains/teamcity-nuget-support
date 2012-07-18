@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
@@ -57,7 +58,7 @@ public class NuGetToolsInstaller {
                            @NotNull final File toolFile) throws ToolException {
     LOG.info("Start installing package " + toolName + " from file: " + toolFile);
 
-    if (!toolName.toLowerCase().endsWith(".nupkg".toLowerCase())) {
+    if (!FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(toolName)) {
       throw new ToolException("NuGet package file must have extension .nupkg");
     }
 
@@ -87,7 +88,7 @@ public class NuGetToolsInstaller {
   @NotNull
   private File createTempFile(@NotNull final String name) throws ToolException {
     try {
-      File tempFile = File.createTempFile(name, ".nupkg");
+      File tempFile = File.createTempFile(name, FeedConstants.NUGET_EXTENSION);
       FileUtil.createParentDirs(tempFile);
       return tempFile;
     } catch (IOException e) {

@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.util.StringUtil;
@@ -24,7 +25,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -71,7 +71,7 @@ public class ToolsRegistry {
   }
 
   private Collection<InstalledTool> getToolsInternal() {
-    final File[] tools = myPaths.getNuGetToolsPackages().listFiles(IS_PACKAGE);
+    final File[] tools = myPaths.getNuGetToolsPackages().listFiles(FeedConstants.PACKAGE_FILE_FILTER);
     if (tools == null) return Collections.emptyList();
 
     final List<InstalledTool> result = new ArrayList<InstalledTool>();
@@ -104,12 +104,6 @@ public class ToolsRegistry {
     }
     myWatcher.checkNow();
   }
-
-  private final FileFilter IS_PACKAGE = new FileFilter() {
-    public boolean accept(File pathname) {
-      return pathname.isFile() && pathname.getName().endsWith(".nupkg");
-    }
-  };
 
   private final Comparator<InstalledTool> COMPATATOR = new Comparator<InstalledTool>() {
     private int parse(String s) {

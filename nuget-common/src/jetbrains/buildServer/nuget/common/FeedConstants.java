@@ -16,6 +16,12 @@
 
 package jetbrains.buildServer.nuget.common;
 
+import jetbrains.buildServer.util.filters.Filter;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.FileFilter;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 11.08.11 16:04
@@ -28,4 +34,18 @@ public class FeedConstants {
 
   public static final String NUGET_COMMANDLINE = "NuGet.CommandLine";
   public static final String NUGET_EXTENSION = ".nupkg";
+
+
+  public static final FileFilter PACKAGE_FILE_FILTER = new FileFilter() {
+    public boolean accept(File pathname) {
+      return pathname.isFile() && PACKAGE_FILE_NAME_FILTER.accept(pathname.getName());
+    }
+  };
+
+  public static final Filter<String> PACKAGE_FILE_NAME_FILTER = new Filter<String>() {
+    public boolean accept(@NotNull String data) {
+      return data.toLowerCase().endsWith(FeedConstants.NUGET_EXTENSION.toLowerCase());
+    }
+  };
+
 }
