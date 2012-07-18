@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
+import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceChecker;
 import jetbrains.buildServer.util.TimeService;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

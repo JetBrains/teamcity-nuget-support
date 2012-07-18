@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.trigger.impl;
+package jetbrains.buildServer.nuget.server.trigger.impl.source;
 
+import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

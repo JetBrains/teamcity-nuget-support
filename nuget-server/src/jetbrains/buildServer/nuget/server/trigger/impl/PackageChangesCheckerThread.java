@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceChecker;
 import jetbrains.buildServer.util.NamedDeamonThreadFactory;
 import org.jetbrains.annotations.NotNull;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.trigger.impl;
+package jetbrains.buildServer.nuget.server.trigger.impl.source;
 
 import org.jetbrains.annotations.Nullable;
 

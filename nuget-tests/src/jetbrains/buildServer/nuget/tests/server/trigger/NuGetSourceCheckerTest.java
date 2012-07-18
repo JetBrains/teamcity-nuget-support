@@ -18,8 +18,8 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
-import jetbrains.buildServer.nuget.server.trigger.impl.NuGetNetworkSourceChecker;
-import jetbrains.buildServer.nuget.server.trigger.impl.NuGetSourceCheckerImpl;
+import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetNetworkSourceChecker;
+import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceCheckerImpl;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings;
 import jetbrains.buildServer.util.TimeService;
 import org.jmock.Expectations;
