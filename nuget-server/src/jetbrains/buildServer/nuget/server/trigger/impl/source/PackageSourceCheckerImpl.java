@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.trigger.impl.source;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -30,10 +31,9 @@ public class PackageSourceCheckerImpl implements PackageSourceChecker {
   private static final Logger LOG = Logger.getInstance(PackageSourceCheckerImpl.class.getName());
 
   @Nullable
-  public String checkSource(@Nullable final String source) {
-    if (source == null || (!source.startsWith("\\\\") && !source.startsWith("file:\\\\"))) {
-      return null;
-    }
+  public String checkSource(@NotNull final String source) {
+    //skip this as NuGet used to report errors for the case
+    if (source.startsWith("http://") || source.startsWith("https://")) return null;
 
     try {
       final File root = new File(source);

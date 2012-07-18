@@ -63,9 +63,7 @@ public class NuGetSourceCheckerImpl implements NuGetSourceChecker {
   @Nullable
   private CheckablePackage checkPackageSource(@NotNull CheckablePackage pkg) {
     final String source = pkg.getPackage().getSource();
-    if (source == null || (!source.startsWith("\\\\") && !source.startsWith("file:\\\\"))) {
-      return pkg;
-    }
+    if (source == null) return pkg;
 
     CacheResult result = myCache.lookupOrCompute(source, COMPUTE_CACHE);
     if (result.isExpired()) {

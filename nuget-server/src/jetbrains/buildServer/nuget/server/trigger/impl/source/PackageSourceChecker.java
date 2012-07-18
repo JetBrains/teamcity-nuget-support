@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl.source;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -30,5 +31,5 @@ public interface PackageSourceChecker {
    * @return null or error text
    */
   @Nullable
-  String checkSource(@Nullable String source);
+  String checkSource(@NotNull String source);
 }
