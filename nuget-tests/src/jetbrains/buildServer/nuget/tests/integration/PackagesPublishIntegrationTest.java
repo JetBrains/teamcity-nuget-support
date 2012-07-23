@@ -25,6 +25,7 @@ import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner;
 import jetbrains.buildServer.util.FileUtil;
+import org.hamcrest.text.StringContains;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.testng.Assert;
@@ -33,7 +34,8 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -51,6 +53,21 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
       allowing(myLogger).activityStarted(with(equal("push")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("push")), with(any(String.class)));
     }});
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS_18p)
+  public void test_publish_wrong_files(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+
+    m.checking(new Expectations(){{
+      oneOf(myLogger).warning(with(new StringContains(".zpoo")));
+    }});
+
+    final File home = createTempDir();
+    final File pkg1 = new File(home, "a.b.c.4.3.zpoo"){{createNewFile(); }};
+    final BuildProcess p = callPublishRunnerEx(nuget, pkg1);
+    assertRunSuccessfully(p, BuildFinishedStatus.FINISHED_FAILED);
+
+    m.assertIsSatisfied();
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
@@ -99,10 +116,13 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     return pkg;
   }
 
-  private void callPublishRunner(@NotNull final NuGet nuget, @NotNull final File pkg) throws RunBuildException {
-
+  private BuildProcess callPublishRunnerEx(final NuGet nuget, final File... pkg) throws RunBuildException {
+    final List<String> files = new ArrayList<String>();
+    for (File p : pkg) {
+      files.add(p.getPath());
+    }
     m.checking(new Expectations(){{
-      allowing(myPublishParameters).getFiles(); will(returnValue(Arrays.asList(pkg.getPath())));
+      allowing(myPublishParameters).getFiles(); will(returnValue(files));
       allowing(myPublishParameters).getCreateOnly(); will(returnValue(true));
       allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
       allowing(myPublishParameters).getPublishSource(); will(returnValue(null));
@@ -112,9 +132,14 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     }});
 
     final PackagesPublishRunner runner = new PackagesPublishRunner(myActionFactory, myParametersFactory);
-    final BuildProcess proc = runner.createBuildProcess(myBuild, myContext);
+    return runner.createBuildProcess(myBuild, myContext);
+  }
+
+  private void callPublishRunner(@NotNull final NuGet nuget, @NotNull final File pkg) throws RunBuildException {
+    final BuildProcess proc = callPublishRunnerEx(nuget, pkg);
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
   }
+
 
   private String getQ() {
     final int i1 = 88001628;
