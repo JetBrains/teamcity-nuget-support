@@ -95,6 +95,10 @@
   $j(document).ready(function() {
     //move vcs-tree icon to the left from textarea, after completion icon
     var img = $('vcsTreeControl_${ib.nuGetPublishFilesKey}');
+    if (!img) {
+      //there is no icon when no vcs roots configured
+      return;
+    }
     img.remove();
     img.style.position = 'absolute';
 
