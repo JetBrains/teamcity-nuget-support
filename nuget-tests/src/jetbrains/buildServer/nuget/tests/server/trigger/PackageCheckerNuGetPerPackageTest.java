@@ -41,7 +41,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
 
   @Override
   protected PackageCheckerNuGetPerPackage createChecker() {
-    return new PackageCheckerNuGetPerPackage(myCommand, myCalculator, mySettings);
+    return new PackageCheckerNuGetPerPackage(myCommand, mySettings);
   }
 
   @Test
@@ -53,6 +53,11 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
     Assert.assertTrue(myChecker.accept(new PackageCheckRequest(nugetMode(), ref())));
 
     m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_available_01x() throws IOException {
+    Assert.assertFalse(myChecker.accept(new PackageCheckRequest(javaMode(), ref())));
   }
 
   @Test

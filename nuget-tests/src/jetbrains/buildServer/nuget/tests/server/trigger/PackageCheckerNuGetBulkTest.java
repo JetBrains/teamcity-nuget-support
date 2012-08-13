@@ -41,7 +41,7 @@ import java.util.*;
 public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageCheckerNuGetBulk> {
   @Override
   protected PackageCheckerNuGetBulk createChecker() {
-    return new PackageCheckerNuGetBulk(myCommand, myCalculator, mySettings);
+    return new PackageCheckerNuGetBulk(myCommand, mySettings);
   }
 
   @BeforeMethod
@@ -60,6 +60,11 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
       will(returnValue(false));
     }});
     Assert.assertFalse(myChecker.accept(new PackageCheckRequest(nugetMode(), ref())));
+  }
+
+  @Test
+  public void test_available_01x() throws IOException {
+    Assert.assertFalse(myChecker.accept(new PackageCheckRequest(javaMode(), ref())));
   }
 
   @Test

@@ -33,10 +33,6 @@ public interface NuGetToolManager {
   @NotNull
   Collection<? extends NuGetInstalledTool> getInstalledTools();
 
-
-  @Nullable
-  NuGetInstalledTool getLatestNuGetTool();
-
   /**
    * @return list of tools that are installing now
    */

@@ -50,14 +50,6 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     return myInstalled.getTools();
   }
 
-  public NuGetInstalledTool getLatestNuGetTool() {
-    NuGetInstalledTool tool = null;
-    for (NuGetInstalledTool t : getInstalledTools()) {
-      tool = t;
-    }
-    return tool;
-  }
-
   @NotNull
   public Collection<NuGetInstallingTool> getInstallingTool() {
     return Collections.emptyList();

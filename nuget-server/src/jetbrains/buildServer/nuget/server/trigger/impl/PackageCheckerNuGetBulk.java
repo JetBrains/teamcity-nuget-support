@@ -39,15 +39,13 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
   private final PackageCheckerSettings mySettings;
 
   public PackageCheckerNuGetBulk(@NotNull final ListPackagesCommand command,
-                                 @NotNull final NuGetPathCalculator toolManager,
                                  @NotNull final PackageCheckerSettings settings) {
-    super(toolManager);
     myCommand = command;
     mySettings = settings;
   }
 
   public boolean accept(@NotNull PackageCheckRequest request) {
-    return mySettings.allowBulkMode(request) && super.accept(request);
+    return super.accept(request) && mySettings.allowBulkMode(request);
   }
 
   public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> data) {

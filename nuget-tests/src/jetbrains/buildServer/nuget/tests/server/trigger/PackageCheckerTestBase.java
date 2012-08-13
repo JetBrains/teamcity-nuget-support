@@ -17,8 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
-import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestMode;
-import jetbrains.buildServer.nuget.server.trigger.impl.NuGetPathCalculator;
+import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageChecker;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings;
 import org.jmock.Mockery;
@@ -26,7 +25,6 @@ import org.jmock.api.Invocation;
 import org.jmock.lib.action.CustomAction;
 import org.testng.annotations.BeforeMethod;
 
-import java.io.File;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -34,8 +32,8 @@ import java.util.concurrent.ExecutorService;
  *         Date: 04.10.11 21:07
  */
 public abstract class PackageCheckerTestBase<T extends PackageChecker> extends TriggerTestBase {
+  protected NuGetFeedReader myReader;
   protected ListPackagesCommand myCommand;
-  protected NuGetPathCalculator myCalculator;
   protected PackageCheckerSettings mySettings;
   protected ExecutorService myExecutor;
 
@@ -47,13 +45,12 @@ public abstract class PackageCheckerTestBase<T extends PackageChecker> extends T
     super.setUp();
     m = new Mockery();
     myCommand = m.mock(ListPackagesCommand.class);
-    myCalculator = m.mock(NuGetPathCalculator.class);
     mySettings = m.mock(PackageCheckerSettings.class);
     myExecutor = m.mock(ExecutorService.class);
+    myReader = m.mock(NuGetFeedReader.class);
     myChecker = createChecker();
 
     m.checking(new Expectations(){{
-      allowing(myCalculator).getNuGetPath(with(any(CheckRequestMode.class))); will(returnValue(new File("aaa")));
       allowing(myExecutor).submit(with(any(Runnable.class))); will(new CustomAction("Execute task in same thread") {
         public Object invoke(Invocation invocation) throws Throwable {
           Runnable action = (Runnable) invocation.getParameter(0);
@@ -65,6 +62,4 @@ public abstract class PackageCheckerTestBase<T extends PackageChecker> extends T
   }
 
   protected abstract T createChecker();
-
-
 }

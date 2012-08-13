@@ -42,15 +42,13 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
   private final PackageCheckerSettings mySettings;
 
   public PackageCheckerNuGetPerPackage(@NotNull final ListPackagesCommand command,
-                                       @NotNull final NuGetPathCalculator toolManager,
-                                       @NotNull PackageCheckerSettings settings) {
-    super(toolManager);
+                                       @NotNull final PackageCheckerSettings settings) {
     myCommand = command;
     mySettings = settings;
   }
 
   public boolean accept(@NotNull PackageCheckRequest request) {
-    return !mySettings.allowBulkMode(request) && super.accept(request);
+    return super.accept(request) && !mySettings.allowBulkMode(request);
   }
 
   public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> data) {

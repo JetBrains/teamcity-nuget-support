@@ -49,6 +49,7 @@
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesCheckerThreadTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetBulkTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetPerPackageTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerTeamCityTest"/>
     </classes>
   </test>
 

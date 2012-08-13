@@ -25,7 +25,6 @@
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettingsImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.source.PackageSourceCheckerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.NuGetPathCalculatorImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.trigger.NuGetTriggerController"/>
 

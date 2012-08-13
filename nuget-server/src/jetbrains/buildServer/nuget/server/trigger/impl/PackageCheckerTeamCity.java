@@ -25,7 +25,6 @@ import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.util.ExceptionUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ExecutorService;
@@ -44,19 +43,10 @@ public class PackageCheckerTeamCity implements PackageChecker {
   }
 
   public boolean accept(@NotNull PackageCheckRequest request) {
-    if (!(request.getMode() instanceof CheckRequestModeTeamCity)) return false;
-    String uri = getUri(request.getPackage());
-    try {
-      new URI(uri);
-    } catch (Throwable t) {
-      return false;
-    }
-
-    return true;
+    return request.getMode() instanceof CheckRequestModeTeamCity;
   }
 
-  @NotNull
-  private String getUri(@NotNull SourcePackageReference request) {
+  private String getUri(@NotNull final SourcePackageReference request) {
     String uri = request.getSource();
     if (uri == null) uri = FeedConstants.MS_REF_FEED_V2;
     return uri;
@@ -66,10 +56,26 @@ public class PackageCheckerTeamCity implements PackageChecker {
     for (final CheckablePackage entry : entries) {
       entry.setExecuting();
       executor.submit(ExceptionUtil.catchAll("Check update of NuGet package " + entry.getPackage().getPackageId(), new Runnable() {
+        @NotNull
+
+        private boolean isNetworkSource(@NotNull String uri) {
+          uri = uri.toLowerCase().trim();
+          return uri.startsWith("http://") || uri.startsWith("https://");
+        }
+
         public void run() {
           final String packageId = entry.getPackage().getPackageId();
           try {
-            final Collection<FeedPackage> packages = myReader.queryPackageVersions(getUri(entry.getPackage()), packageId);
+            final String uri = getUri(entry.getPackage());
+
+            if (!isNetworkSource(uri)) {
+              entry.setResult(CheckResult.failed("Current environment does not allow to start NuGet.exe processes, " +
+                      "TeamCity provided emulation supports only HTTP or HTTPS NuGet package feed URLs, " +
+                      "but was: " + uri));
+              return;
+            }
+
+            final Collection<FeedPackage> packages = myReader.queryPackageVersions(uri, packageId);
             final Collection<SourcePackageInfo> infos = new ArrayList<SourcePackageInfo>();
             for (FeedPackage aPackage : packages) {
               infos.add(new SourcePackageInfo(entry.getPackage().getSource(), packageId, aPackage.getInfo().getVersion()));
