@@ -3,8 +3,9 @@
                  xsi:noNamespaceSchemaLocation="urn:shemas-jetbrains-com:teamcity-plugin-v1-xml">
   <info>
     <name>nuget</name>
-    <display-name>Provides support for NuGet package manager</display-name>
+    <display-name>NuGet Support</display-name>
     <version>@Plugin_Version@</version>
+    <description>NuGet package manager integration and feed</description>
     <vendor>
       <name>@Plugin_Vendor@</name>
       <url>@Plugin_Vendor_Url@</url>
