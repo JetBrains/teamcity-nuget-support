@@ -90,10 +90,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test, TestCaseSource(typeof(Files), "NuGetVersions18p")]
     public void TestCommand_TeamListPublic_Web_Prerelease(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p2("EntityFramework", includePrerelease: true)));
-      Assert.True(doc.OuterXml.Contains("version=\"5.0.0-rc"));
+      var doc = DoTestWithSpec(version, Serialize(p2("CassiniDev", includePrerelease: true)));
+      Assert.True(doc.OuterXml.Contains("version=\"5.0.2-"));
 
-      Assert.IsTrue(PackagesCount(doc, "EntityFramework") == 1);
+      Assert.IsTrue(PackagesCount(doc, "CassiniDev") == 1);
     }
 
   }
