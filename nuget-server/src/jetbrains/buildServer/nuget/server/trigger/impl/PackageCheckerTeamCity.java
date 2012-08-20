@@ -46,35 +46,34 @@ public class PackageCheckerTeamCity implements PackageChecker {
     return request.getMode() instanceof CheckRequestModeTeamCity;
   }
 
-  private String getUri(@NotNull final SourcePackageReference request) {
-    String uri = request.getSource();
-    if (uri == null) uri = FeedConstants.MS_REF_FEED_V2;
-    return uri;
-  }
-
   public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> entries) {
     for (final CheckablePackage entry : entries) {
       entry.setExecuting();
       executor.submit(ExceptionUtil.catchAll("Check update of NuGet package " + entry.getPackage().getPackageId(), new Runnable() {
-        @NotNull
-
         private boolean isNetworkSource(@NotNull String uri) {
           uri = uri.toLowerCase().trim();
           return uri.startsWith("http://") || uri.startsWith("https://");
         }
 
+        @NotNull
+        private String getUri(@NotNull final SourcePackageReference request) {
+          String uri = request.getSource();
+          if (uri == null) uri = FeedConstants.MS_REF_FEED_V2;
+          return uri;
+        }
+
         public void run() {
           final String packageId = entry.getPackage().getPackageId();
+          final String uri = getUri(entry.getPackage());
+
+          if (!isNetworkSource(uri)) {
+            entry.setResult(CheckResult.failed("Current environment does not allow to start NuGet.exe processes, " +
+                    "TeamCity provided emulation supports only HTTP or HTTPS NuGet package feed URLs, " +
+                    "but was: " + uri));
+            return;
+          }
+
           try {
-            final String uri = getUri(entry.getPackage());
-
-            if (!isNetworkSource(uri)) {
-              entry.setResult(CheckResult.failed("Current environment does not allow to start NuGet.exe processes, " +
-                      "TeamCity provided emulation supports only HTTP or HTTPS NuGet package feed URLs, " +
-                      "but was: " + uri));
-              return;
-            }
-
             final Collection<FeedPackage> packages = myReader.queryPackageVersions(uri, packageId);
             final Collection<SourcePackageInfo> infos = new ArrayList<SourcePackageInfo>();
             for (FeedPackage aPackage : packages) {
@@ -87,8 +86,9 @@ public class PackageCheckerTeamCity implements PackageChecker {
               entry.setResult(CheckResult.fromResult(infos));
             }
           } catch (Throwable e) {
-            LOG.warn("Failed to check changes of " + packageId + ". " + e.getMessage(), e);
-            entry.setResult(CheckResult.failed(e.getMessage()));
+            final String msg = "Failed to check changes of " + packageId + ". " + e.getMessage();
+            LOG.warn(msg, e);
+            entry.setResult(CheckResult.failed(msg));
           }
         }
       }));

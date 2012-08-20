@@ -20,6 +20,7 @@ import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerTeamCity;
+import jetbrains.buildServer.util.TestFor;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -102,6 +103,27 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setResult(with(failed("not found")));
 
       oneOf(myReader).queryPackageVersions("http://foo.bar", "foo.bar"); will(returnValue(Collections.emptyList()));
+    }});
+
+    myChecker.update(myExecutor, Arrays.asList(task));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-23193")
+  public void test_http_failed() throws IOException {
+    final SourcePackageReference ref = new SourcePackageReference("http://foo.bar", "foo.bar", null);
+
+    final CheckablePackage task = m.mock(CheckablePackage.class);
+    m.checking(new Expectations(){{
+      allowing(task).getPackage(); will(returnValue(ref));
+      allowing(task).getMode(); will(returnValue(javaMode()));
+
+      oneOf(task).setExecuting();
+      oneOf(task).setResult(with(failed("foo.bar", "Failed. Error")));
+
+      oneOf(myReader).queryPackageVersions("http://foo.bar", "foo.bar"); will(throwException(new IOException("Failed. Error")));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));

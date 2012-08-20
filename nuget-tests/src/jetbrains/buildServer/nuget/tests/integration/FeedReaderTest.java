@@ -195,4 +195,30 @@ public class FeedReaderTest extends BaseTestCase {
       server.stop();
     }
   }
+
+  @Test
+  @TestFor(issues = "TW-23193")
+  public void test_proxy_reply() throws Exception {
+    final SimpleHttpServerBase server = new SimpleHttpServerBase(){
+      @Override
+      protected Response getResponse(String s) {
+        if (s.startsWith("GET /aaa")) {
+          return createStringResponse(STATUS_LINE_200, Arrays.asList("Encoding: utf-8", "Content-Type: text/html"), "this is not a nuget server. It looks your corporate proxt banned our lively NuGet feed. Don't let Xml parser > to parse < < <  this");
+        }
+        return null;
+      }
+    };
+
+    try {
+      server.start();
+      try {
+        myReader.queryPackageVersions("http://localhost:" + server.getPort() + "/aaa", "NuGet");
+        Assert.fail();
+      } catch (IOException e) {
+        Assert.assertTrue(e.getMessage().contains("Failed to parse output from NuGet feed. Check feed url:"));
+      }
+    } finally {
+      server.stop();
+    }
+  }
 }
