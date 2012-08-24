@@ -45,7 +45,7 @@ This build used and downlaoded ${numberOfUsedPackages} NuGet package<bs:s val="$
 
 <c:set var="numberOfCreatedPackages" value="${fn:length(packages.createdPackages)}" />
 <h3>Created Packages</h3>
-This build created ${numberOfUsedPackages} NuGet package<bs:s val="${numberOfCreatedPackages}"/>.
+This build created ${numberOfCreatedPackages} NuGet package<bs:s val="${numberOfCreatedPackages}"/>.
 <c:if test="${numberOfCreatedPackages gt 0}">
   <table class="settings" style="width:50em">
     <thead>
