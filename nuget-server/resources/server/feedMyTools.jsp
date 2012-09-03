@@ -22,7 +22,6 @@
 <c:set var="nugetPrivatePath"><c:url value="${nugetPrivateUrl}"/></c:set>
 <c:set var="nugetPublicPath"><c:url value="${nugetPublicUrl}"/></c:set>
 
-<div class="divider"></div>
 <p class="toolTitle" style="background: url('<c:url value="${imagesUrl}/nuget.png"/>') no-repeat">NuGet Feeds</p>
 
 <a showdiscardchangesmessage="false"
