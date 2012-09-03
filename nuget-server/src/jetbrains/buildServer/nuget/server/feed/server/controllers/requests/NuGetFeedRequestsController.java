@@ -57,7 +57,7 @@ public class NuGetFeedRequestsController extends BaseController {
   }
 
   @Override
-  protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  protected ModelAndView doHandle(@NotNull final HttpServletRequest request, @NotNull final HttpServletResponse response) throws Exception {
     response.setContentType("text/plain");
     response.setCharacterEncoding("utf-8");
     final PrintWriter writer = response.getWriter();
