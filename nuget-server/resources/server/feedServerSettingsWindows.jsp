@@ -109,17 +109,13 @@
     (function() {
       var contextPath = '<bs:forJs><c:url value="/"/></bs:forJs>';
       var webUrl = "" + window.location;
-
-      var pathString = webUrl.indexOf(contextPath);
-      webUrl = webUrl.substring(0, pathString + contextPath.length - 1);
-
       var serverUrl = '<bs:forJs>${actualServerUrl}</bs:forJs>';
 
       $j("#nugetFeedActual").text(webUrl);
       $j("#nugetFeedServer").text(serverUrl);
 
       var areSettingsValid = !! (webUrl.indexOf(serverUrl) == 0);
-      //(areSettingsValid ? BS.Util.hide : BS.Util.show)('nugetFeedError');
+      (areSettingsValid ? BS.Util.hide : BS.Util.show)('nugetFeedError');
     })();
   </script>
 
