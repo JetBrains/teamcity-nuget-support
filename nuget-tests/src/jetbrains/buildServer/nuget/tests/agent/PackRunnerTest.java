@@ -208,6 +208,48 @@ public class PackRunnerTest extends BuildProcessTestCase {
       });
       oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
       oneOf(myPublisher).addNewArtifactsPath(bar + " => .\r\n" + foo + " => .\r\n");
+
+      allowing(myBuild).isPersonal(); will(returnValue(false));
+    }});
+
+    final PackRunner runner = createRunner();
+    final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
+    assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    assertReportedFiles(foo, bar);
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_packRunner_outputDirectory_notCleaned_artifacts_change_personal() throws RunBuildException, IOException {
+    final File spec = createTempFile();
+    final File outputDir = createTempDir();
+
+    final File bar = new File(outputDir, "bar.nupkg");
+    final File foo = new File(outputDir, "foo.nupkg");
+
+    FileUtil.writeFile(foo, "zzz");
+    m.checking(new Expectations(){{
+      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
+      allowing(myPackParameters).getOutputDirectory();
+      will(returnValue(outputDir));
+      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
+      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(true));
+      oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
+
+      oneOf(myProc).start(); will(new CustomAction("create/update fake package") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          FileUtil.writeFile(bar, "zUUz");
+          FileUtil.writeFile(foo, "zsssUUz");
+          return null;
+        }
+      });
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+      oneOf(myPublisher).addNewArtifactsPath(bar + " => .\r\n" + foo + " => .\r\n");
+
+      allowing(myBuild).isPersonal(); will(returnValue(true));
+
+      oneOf(myLogger).warning("Packages from personal builds are not published to TeamCity NuGet Feed");
     }});
 
     final PackRunner runner = createRunner();

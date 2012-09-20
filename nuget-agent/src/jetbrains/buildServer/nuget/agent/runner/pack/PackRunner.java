@@ -137,6 +137,9 @@ public class PackRunner extends NuGetRunnerBase {
           runningBuild.getBuildLogger().warning("No new package files were created. Nothing to publish as artifacs.");
         } else {
           runningBuild.getBuildLogger().message("Uploading created packages to build artifacts: " + filesList(createdPackages));
+          if (runningBuild.isPersonal()) {
+            runningBuild.getBuildLogger().warning("Packages from personal builds are not published to TeamCity NuGet Feed");
+          }
           final StringBuilder sb = new StringBuilder();
           for (File file : createdPackages) {
             sb.append(file.getPath()).append(" => .").append("\r\n");
