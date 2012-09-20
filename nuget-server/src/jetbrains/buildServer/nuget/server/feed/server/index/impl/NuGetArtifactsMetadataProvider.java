@@ -74,6 +74,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
     visitArtifacts(build.getArtifacts(BuildArtifactsViewMode.VIEW_ALL).getRootArtifact(), packages);
 
     for (BuildArtifact aPackage : packages) {
+      LOG.info("Indexing NuGet Package from artifact " + aPackage.getRelativePath() + " of build " + LogUtil.describe(build));
       try {
         Date finishDate = build.getFinishDate();
         if (finishDate == null) finishDate = new Date();
