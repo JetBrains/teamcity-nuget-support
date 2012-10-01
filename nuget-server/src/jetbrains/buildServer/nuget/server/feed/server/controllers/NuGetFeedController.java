@@ -53,7 +53,6 @@ public class NuGetFeedController extends BaseController {
     myNuGetPath = settings.getNuGetFeedControllerPath();
 
     web.registerController(myNuGetPath + "/**", this);
-    web.registerController(myNuGetPath, this);
   }
 
 
