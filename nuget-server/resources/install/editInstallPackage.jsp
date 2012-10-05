@@ -64,6 +64,11 @@
       <span class="smallNote">Makes NuGet exclude package version from package folders.
                               Equivalent to -ExcludeVersion NuGet.exe commandline argument</span>
     </td>
+    <td>
+      <props:checkboxProperty name="${lib.noCacheKey}"/>
+      Disable looking up packages from local machine cache.
+      <span class="smallNote">Equivalent to -NoCache NuGet.exe commanline argument</span>
+    </td>
   </tr>
 </l:settingsGroup>
 <l:settingsGroup title="Update">

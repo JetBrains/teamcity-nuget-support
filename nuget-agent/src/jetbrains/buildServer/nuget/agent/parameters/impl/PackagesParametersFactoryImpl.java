@@ -70,6 +70,10 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       public boolean getExcludeVersion() {
         return getBoolean(context, NUGET_EXCLUDE_VERSION);
       }
+
+      public boolean getNoCache() {
+        return  getBoolean(context, NUGET_NO_CACHE);
+      }
     };
   }
 
@@ -186,6 +190,10 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       public boolean getExcludeVersion() {
         return getBoolean(context, NUGET_EXCLUDE_VERSION);
+      }
+
+      public boolean getNoCache(){
+        return getBoolean(context, NUGET_NO_CACHE);
       }
     };
   }

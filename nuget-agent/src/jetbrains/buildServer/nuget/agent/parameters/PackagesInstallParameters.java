@@ -27,4 +27,5 @@ public interface PackagesInstallParameters extends NuGetFetchParametersHolder {
    *         numbers in directory names
    */
   boolean getExcludeVersion();
+  boolean getNoCache();
 }
