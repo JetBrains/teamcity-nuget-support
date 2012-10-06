@@ -40,6 +40,9 @@ public class CommandFactoryImpl implements CommandFactory {
     if (params.getExcludeVersion()) {
       argz.add("-ExcludeVersion");
     }
+    if (params.getNoCache()) {
+      argz.add("-NoCache");
+    }
     argz.add("-OutputDirectory");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 
