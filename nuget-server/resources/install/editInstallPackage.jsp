@@ -67,7 +67,7 @@
   </tr>
   <tr>
     <td>
-      <props:checkboxProperty name="${lib.noCacheKey}"/>
+      <props:checkboxProperty name="${ib.noCacheKey}"/>
       Disable looking up packages from local machine cache
       <span class="smallNote">Equivalent to -NoCache NuGet.exe commanline argument</span>
     </td>
