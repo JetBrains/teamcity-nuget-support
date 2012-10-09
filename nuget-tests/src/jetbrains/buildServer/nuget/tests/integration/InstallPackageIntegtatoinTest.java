@@ -74,7 +74,28 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
   public void test_01_online_sources(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, nuget,
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213"),
+                    new PackageInfo("Ninject", "2.2.1.4"))
+    );
+
+    String packages = "packages";
+    List<File> packageses = listFiles(packages);
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(4, packageses.size());
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS_17p)
+  public void test_01_online_sources_no_cache(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, false, nuget,
             Arrays.asList(
                     new PackageInfo("Machine.Specifications", "0.4.13.0"),
                     new PackageInfo("NUnit", "2.5.7.10213"),
@@ -105,7 +126,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, true, nuget, null);
 
 
     List<File> packageses = listFiles("packages");
@@ -132,7 +153,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, true, nuget, null);
 
 
     List<File> packageses = listFiles("packages");
@@ -159,7 +180,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, nuget, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, true, nuget, null);
 
 
     List<File> packageses = listFiles("packages");
@@ -187,7 +208,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
-    fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, true, nuget,
+    fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, false, true, nuget,
             Arrays.asList(
                     new PackageInfo("Jonnyz.Package", "3.0.4001-beta"),
                     new PackageInfo("Elmah", "1.2")));
@@ -218,14 +239,14 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       allowing(myLogger).warning(with(new StartsWithMatcher("Packages.config file was removed by NuGet.exe update command")));
     }});
 
-    fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, true, nuget, null);
+    fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, false, true, nuget, null);
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_ecludeVersion(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true, false, nuget,
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true, false, false, nuget,
             Arrays.asList(
                     new PackageInfo("Machine.Specifications", "0.4.13.0"),
                     new PackageInfo("NUnit", "2.5.7.10213"),
@@ -246,7 +267,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
     File sourcesDir = new File(myRoot, "js");
     ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01-sources.zip"), "", sourcesDir);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false, false, nuget, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Arrays.asList("file:///" + sourcesDir.getPath()), false, false, false, nuget, null);
 
     List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
@@ -261,7 +282,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
   public void test_02_NuGetConfig_anoterPackagesPath(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-02.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "ConsoleApplication1/ConsoleApplication1.sln"), Collections.<String>emptyList(), true, false, nuget,
+    fetchPackages(new File(myRoot, "ConsoleApplication1/ConsoleApplication1.sln"), Collections.<String>emptyList(), true, false, false, nuget,
             Arrays.asList(
                     new PackageInfo("Castle.Core", "3.0.0.3001"),
                     new PackageInfo("NUnit", "2.5.10.11092"),
@@ -286,7 +307,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
 
     fetchPackages(
             new File(myRoot, "nuget-nopackages/ConsoleApplication1.sln"),
-            Collections.<String>emptyList(), true, false, nuget,
+            Collections.<String>emptyList(), true, false, false, nuget,
             Arrays.asList(
                     new PackageInfo("Castle.Core", "3.0.0.3001"),
                     new PackageInfo("NUnit", "2.5.10.11092"),
@@ -310,7 +331,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
   public void test_solution_wide_online_sources(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-shared-packages.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "ConsoleApplication1.sln"), Collections.<String>emptyList(), false, false, nuget,
+    fetchPackages(new File(myRoot, "ConsoleApplication1.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
                     new PackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
                     new PackageInfo("NUnit", "2.5.10.11092"),
@@ -334,7 +355,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
   public void test_solution_scanner(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-web-noRepository.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "ClassLibrary1/ClassLibrary1.sln"), Collections.<String>emptyList(), false, false, nuget,
+    fetchPackages(new File(myRoot, "ClassLibrary1/ClassLibrary1.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
                     new PackageInfo("Ninject", "3.0.1.10"),
                     new PackageInfo("elmah", "1.2.2"),
@@ -354,6 +375,7 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
   private void fetchPackages(final File sln,
                              final List<String> sources,
                              final boolean excludeVersion,
+                             final boolean noCache,
                              final boolean update,
                              @NotNull final NuGet nuget,
                              @Nullable Collection<PackageInfo> detectedPackages) throws RunBuildException {
@@ -372,6 +394,8 @@ public class InstallPackageIntegtatoinTest extends IntegrationTestBase {
       will(returnValue(sources));
       allowing(myInstall).getExcludeVersion();
       will(returnValue(excludeVersion));
+      allowing(myInstall).getNoCache();
+      will(returnValue(noCache));
       allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myNuGet);
       will(returnValue(update ? myUpdate : null));
     }});
