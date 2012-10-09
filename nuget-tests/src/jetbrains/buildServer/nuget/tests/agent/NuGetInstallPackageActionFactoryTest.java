@@ -82,11 +82,34 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
       allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
       allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(false));
+      allowing(ps).getNoCache(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
               Arrays.asList("install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath()),
+              myConfig.getParentFile(),
+              Collections.singletonMap("EnableNuGetPackageRestore", "True")
+      );
+    }});
+
+    i.createInstall(ctx, ps, myConfig, myTarget);
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_no_sources_no_cache() throws RunBuildException, IOException {
+    final File nuget = createTempFile();
+    m.checking(new Expectations(){{
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(ps).getExcludeVersion(); will(returnValue(false));
+      allowing(ps).getNoCache(); will(returnValue(true));
+
+      oneOf(myProcessFactory).executeCommandLine(
+              ctx,
+              nuget.getPath(),
+              Arrays.asList("install", myConfig.getPath(), "-NoCache", "-OutputDirectory", myTarget.getPath()),
               myConfig.getParentFile(),
               Collections.singletonMap("EnableNuGetPackageRestore", "True")
       );
@@ -103,6 +126,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
       allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
       allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(true));
+      allowing(ps).getNoCache(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
@@ -124,6 +148,7 @@ public class NuGetInstallPackageActionFactoryTest extends BaseTestCase {
       allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
       allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(false));
+      allowing(ps).getNoCache(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
