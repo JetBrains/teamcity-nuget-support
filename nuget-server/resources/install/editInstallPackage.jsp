@@ -57,12 +57,19 @@
     </td>
   </tr>
   <tr>
-    <th>Install Options:</th>
+    <th rowspan="2">Install Options:</th>
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       Exclude version from package folder names
       <span class="smallNote">Makes NuGet exclude package version from package folders.
                               Equivalent to -ExcludeVersion NuGet.exe commandline argument</span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <props:checkboxProperty name="${ib.noCacheKey}"/>
+      Disable looking up packages from local machine cache
+      <span class="smallNote">Equivalent to -NoCache NuGet.exe commanline argument</span>
     </td>
   </tr>
 </l:settingsGroup>
