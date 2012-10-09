@@ -36,6 +36,12 @@
   Exclude Version: <strong><props:displayCheckboxValue name="${ib.excludeVersionKey}"/></strong>
 </div>
 <div class="parameter">
+  Do not use Cache:
+  <strong>
+    <props:displayCheckboxValue name="${ib.noCacheKey}"/>
+  </strong>
+</div>
+<div class="parameter">
   Update packages:
   <strong>
     <props:displayCheckboxValue name="${ib.updatePackagesKey}"/>
@@ -60,7 +66,7 @@
   </strong>
 </div>
 <div class="parameter">
-  Include PreRelease packages
+  Include PreRelease packages:
   <strong>
     <props:displayCheckboxValue name="${ib.updatePackagesPrerelease}"/>
   </strong>
