@@ -36,9 +36,9 @@
   Exclude Version: <strong><props:displayCheckboxValue name="${ib.excludeVersionKey}"/></strong>
 </div>
 <div class="parameter">
-  Do not use Cache:
+  Use local machine packages cache:
   <strong>
-    <props:displayCheckboxValue name="${ib.noCacheKey}"/>
+    <props:displayCheckboxValue name="${not ib.noCacheKey}"/>
   </strong>
 </div>
 <div class="parameter">
