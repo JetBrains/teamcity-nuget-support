@@ -31,7 +31,7 @@
 </div>
 
 <div class="parameter">
-  Version: <strong><props:displayValue name="${ib.packVersion}"/></strong>
+  Version: <strong><props:displayValue name="${ib.packVersion}" emptyValue="Use default"/></strong>
 </div>
 
 <div class="parameter">
