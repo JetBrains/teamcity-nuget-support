@@ -59,7 +59,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
       if (packageToData.Count == 0) return;
       var data = GetAllPackages(source, fetchOptions, packageToData.Keys);
-      int count = 0;
+      var count = 0;
+      if (data != null)
+      {
       foreach (var p in data)
       {
         count++;
@@ -71,6 +73,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
           if (!r.VersionChecker(p)) continue;
           r.AddEntry(new NuGetPackageEntry {Version = p.VersionString()});
         }
+      }
       }
 
       System.Console.Out.WriteLine("Scanned {0} packages for feed {1}", count, source);
