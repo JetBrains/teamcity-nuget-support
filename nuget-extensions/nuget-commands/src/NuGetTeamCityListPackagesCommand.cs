@@ -55,25 +55,25 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     {
       var packageToData = package
         .GroupBy(x => x.Id, Id, PACKAGE_ID_COMPARER)
-        .ToDictionary(x=>x.Key, Id, PACKAGE_ID_COMPARER);
+        .ToDictionary(x => x.Key, Id, PACKAGE_ID_COMPARER);
 
       if (packageToData.Count == 0) return;
       var data = GetAllPackages(source, fetchOptions, packageToData.Keys);
       var count = 0;
       if (data != null)
       {
-      foreach (var p in data)
-      {
-        count++;
-        IGrouping<string, NuGetPackage> res;
-        if (!packageToData.TryGetValue(p.Id, out res)) continue;
-
-        foreach (var r in res)
+        foreach (var p in data)
         {
-          if (!r.VersionChecker(p)) continue;
-          r.AddEntry(new NuGetPackageEntry {Version = p.VersionString()});
+          count++;
+          IGrouping<string, NuGetPackage> res;
+          if (!packageToData.TryGetValue(p.Id, out res)) continue;
+
+          foreach (var r in res)
+          {
+            if (!r.VersionChecker(p)) continue;
+            r.AddEntry(new NuGetPackageEntry {Version = p.VersionString()});
+          }
         }
-      }
       }
 
       System.Console.Out.WriteLine("Scanned {0} packages for feed {1}", count, source);
