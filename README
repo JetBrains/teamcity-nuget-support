@@ -1,13 +1,16 @@
 This is NuGet Support TeamCity plugin, mainly NuGet support for TeamCity.
 
-This plugin will be compatible with TeamCity 7.0 and newer.
+This plugin will be compatible with TeamCity 7.1 and newer.
 
 As we fully migrated to java-based feed, there will be no .NET Feed implementation.
 
 ==== NOTE ======
 This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 6.5. Use v0.5-bugfix branch instead.
-This is a closed branch. Consider v0.8 for 7.0 compatible builds. Only bugfixes to be added
+This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 7.0. Use v0.7 branch instead.
 ================
+
+Builds of this plugin are found here:
+http://teamcity.jetbrains.com/viewType.html?buildTypeId=bt375
 
 For more details, see 
 http://confluence.jetbrains.net/display/TW/NuGet+support
