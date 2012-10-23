@@ -47,7 +47,15 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
                                 new { Data = request.Where(x => x.VersionSpec != null).ToArray(), FetchOption = PackageFetchOption.IncludeAll }
                               })
       {
-        ProcessPackages(source, req.FetchOption, req.Data);
+        try
+        {
+          ProcessPackages(source, req.FetchOption, req.Data);
+        }
+        catch (Exception e)
+        {
+          System.Console.Out.WriteLine("Failed to check package sources information for URI {0}. {1}", source, e.Message);
+          System.Console.Out.WriteLine(e);
+        }
       }
     }
 
@@ -58,21 +66,17 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         .ToDictionary(x => x.Key, Id, PACKAGE_ID_COMPARER);
 
       if (packageToData.Count == 0) return;
-      var data = GetAllPackages(source, fetchOptions, packageToData.Keys);
       var count = 0;
-      if (data != null)
+      foreach (var p in GetAllPackages(source, fetchOptions, packageToData.Keys))
       {
-        foreach (var p in data)
-        {
-          count++;
-          IGrouping<string, NuGetPackage> res;
-          if (!packageToData.TryGetValue(p.Id, out res)) continue;
+        count++;
+        IGrouping<string, NuGetPackage> res;
+        if (!packageToData.TryGetValue(p.Id, out res)) continue;
 
-          foreach (var r in res)
-          {
-            if (!r.VersionChecker(p)) continue;
-            r.AddEntry(new NuGetPackageEntry {Version = p.VersionString()});
-          }
+        foreach (var r in res)
+        {
+          if (!r.VersionChecker(p)) continue;
+          r.AddEntry(new NuGetPackageEntry {Version = p.VersionString()});
         }
       }
 

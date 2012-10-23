@@ -77,6 +77,20 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.True(doc.Contains("version=\"1.1.1"));      
     }
 
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
+    public void TestCommand_TeamListPublic_Local_URI(NuGetVersion version)
+    {
+      var doc = DoTestWithSpec(version, Serialize(p(Files.GetLocalFeedURI(version), "Web"))).OuterXml;
+      Assert.True(doc.Contains("version=\"2.2.2"));
+      Assert.True(doc.Contains("version=\"1.1.1"));      
+    }
+
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
+    public void TestCommand_TeamListPublic_Local_Unresolved(NuGetVersion version)
+    {
+      DoTestWithSpec(version, Serialize(p("%some%type_here", "Web")));
+    }
+
     [Test, TestCaseSource(typeof(Files), "NuGetVersions18p")]
     public void TestCommand_TeamListPublic_Local_Prerelease(NuGetVersion version)
     {
