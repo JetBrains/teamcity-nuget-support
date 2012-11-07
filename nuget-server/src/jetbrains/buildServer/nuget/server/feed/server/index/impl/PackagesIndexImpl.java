@@ -59,12 +59,7 @@ public class PackagesIndexImpl implements PackagesIndex {
   }
 
   private Iterator<BuildMetadataEntry> getBuildEntries(long buildId) {
-    try {
-      return myStorage.getBuildEntry(buildId, NUGET_PROVIDER_ID);
-    } catch (Error e) {
-      //workaround for TeamCity 7.0
-      return Collections.<BuildMetadataEntry>emptyList().iterator();
-    }
+    return myStorage.getBuildEntry(buildId, NUGET_PROVIDER_ID);
   }
 
   @NotNull

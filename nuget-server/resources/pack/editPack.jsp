@@ -58,10 +58,10 @@
   </tr>
 
   <tr>
-    <th><label for="${ib.packVersion}">Version</label><l:star/>:</th>
+    <th><label for="${ib.packVersion}">Version</label>:</th>
     <td>
       <props:textProperty name="${ib.packVersion}" className="longField"/>
-      <span class="smallNote">Specify version for package to create</span>
+      <span class="smallNote">Specify version for package to create (recommended) or leave it blank to let NuGet decide</span>
       <span id="error_${ib.packVersion}" class="error"></span>
     </td>
   </tr>

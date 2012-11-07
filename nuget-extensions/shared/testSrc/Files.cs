@@ -23,6 +23,11 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourCachedNuGet_CI_2_1 = new Lazy<string>(() => FetchLatestNuGetPackage("bt36"));
     private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline); 
 
+    public static string GetLocalFeedURI(NuGetVersion version)
+    {
+      return new Uri(GetLocalFeed(version)).ToString();
+    }
+
     public static string GetLocalFeed(NuGetVersion version)
     {
       return version.Is_1_4() ? ourLocalFeed_1_4.Value : ourLocalFeed.Value;

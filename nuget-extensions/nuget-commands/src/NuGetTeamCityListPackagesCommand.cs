@@ -47,7 +47,15 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
                                 new { Data = request.Where(x => x.VersionSpec != null).ToArray(), FetchOption = PackageFetchOption.IncludeAll }
                               })
       {
-        ProcessPackages(source, req.FetchOption, req.Data);
+        try
+        {
+          ProcessPackages(source, req.FetchOption, req.Data);
+        }
+        catch (Exception e)
+        {
+          System.Console.Out.WriteLine("Failed to check package sources information for URI {0}. {1}", source, e.Message);
+          System.Console.Out.WriteLine(e);
+        }
       }
     }
 
@@ -55,12 +63,11 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     {
       var packageToData = package
         .GroupBy(x => x.Id, Id, PACKAGE_ID_COMPARER)
-        .ToDictionary(x=>x.Key, Id, PACKAGE_ID_COMPARER);
+        .ToDictionary(x => x.Key, Id, PACKAGE_ID_COMPARER);
 
       if (packageToData.Count == 0) return;
-      var data = GetAllPackages(source, fetchOptions, packageToData.Keys);
-      int count = 0;
-      foreach (var p in data)
+      var count = 0;
+      foreach (var p in GetAllPackages(source, fetchOptions, packageToData.Keys))
       {
         count++;
         IGrouping<string, NuGetPackage> res;
