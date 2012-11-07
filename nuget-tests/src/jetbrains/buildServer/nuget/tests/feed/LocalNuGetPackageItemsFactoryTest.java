@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -121,6 +122,20 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
                     "RequireLicenseAcceptance = true\n" +
                     "Tags = Ninject ioc di web mvc3\n" +
                     "Version = 2.2.2.0");
+  }
+
+
+  @Test
+  @TestFor(issues = "TW-21975")
+  public void test_dependencies_20() throws InvocationTargetException, IllegalAccessException, PackageLoadException, IOException {
+    final File pkg = Paths.getTestDataPath("packages/PackageWithPlatformDependencies.3.0.0.nupkg");
+    Assert.assertTrue(pkg.isFile());
+
+    final Map<String, String> aPackage = myFactory.loadPackage(artifact(pkg), new Date());
+
+    String deps = aPackage.get("Dependencies");
+    Assert.assertNotNull(deps);
+    Assert.assertEquals(deps, "Ninject:[2.2.0.0, 2.3.0.0)|WebActivator:1.4|jQuery:1.2.4:net40|WebActivator:1.3.4:net40|RouteMagic:1.1.0|Microsoft.Net.Http:2.0.20710.0:net40-client|Endjeeeeore:3.0.0.0:net40-client|Endjtttttmposition:3.0.0.0:net40-client|Entttre:3.0.0.0:net40-full|Endjittttosition:3.0.0.0:net40-full|Endeeeeore:3.0.0.0:Net45|Endjttre:3.0.0.0:portable-windows8+net45|EnqqqweCore:3.0.0.0:WinRT45|Endjbcvbcvore:3.0.0.0:WP8");
   }
 
 }
