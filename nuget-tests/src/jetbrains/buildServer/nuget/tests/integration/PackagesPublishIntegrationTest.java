@@ -53,7 +53,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     }});
   }
 
-  @Test(dataProvider = NUGET_VERSIONS)
+  @Test(dataProvider = NUGET_VERSIONS, dependsOnGroups = "this test will publish a package to preview nuget repo")
   public void test_publish_packages(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     final File pkg = preparePackage(nuget);
     callPublishRunner(nuget, pkg);
@@ -105,7 +105,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
       allowing(myPublishParameters).getFiles(); will(returnValue(Arrays.asList(pkg.getPath())));
       allowing(myPublishParameters).getCreateOnly(); will(returnValue(true));
       allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
-      allowing(myPublishParameters).getPublishSource(); will(returnValue(null));
+      allowing(myPublishParameters).getPublishSource(); will(returnValue("http://preview.nuget.org/api/v2"));
       allowing(myPublishParameters).getApiKey(); will(returnValue(getQ()));
 
       allowing(myParametersFactory).loadPublishParameters(myContext);will(returnValue(myPublishParameters));
