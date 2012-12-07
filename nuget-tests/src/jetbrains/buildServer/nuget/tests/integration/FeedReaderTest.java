@@ -63,7 +63,7 @@ public class FeedReaderTest extends BaseTestCase {
     myClient.dispose();
   }
 
-  @Test
+  @Test(enabled = false)
   @TestFor(issues = "TW-21048")
   public void testFollowsNext() throws IOException {
     Collection<FeedPackage> packages = myReader.queryPackageVersions(FeedConstants.NUGET_FEED_V2, "jonnyzzz.nuget.teamcity.testPackage");
