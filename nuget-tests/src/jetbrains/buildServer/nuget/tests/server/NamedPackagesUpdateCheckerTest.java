@@ -277,6 +277,11 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
       will(returnValue(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList())));
+
+
+      oneOf(store).getValue("hash"); will(returnValue("v2aaa"));
+      oneOf(store).putValue("hash", "v2");
+      oneOf(store).flush();
     }});
 
     try {
@@ -286,6 +291,40 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
     }
 
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-24575")
+  public void test_should_trigger_none_to_one() {
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList())));
+
+      oneOf(store).getValue("hash"); will(returnValue(null));
+      oneOf(store).putValue("hash", "v2");
+      oneOf(store).flush();
+    }});
+
+    try {
+      checker.checkChanges(desr, store);
+      Assert.fail("Exception is expected");
+    } catch (BuildTriggerException e) {
+      Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
+    }
+
+    m.assertIsSatisfied();
+    m.checking(new Expectations() {{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+
+
+      oneOf(store).getValue("hash"); will(returnValue("v2"));
+      oneOf(store).putValue("hash", "v2|s:src|p:pkg|v:5.6.87");
+      oneOf(store).flush();
+    }});
+
+    Assert.assertNotNull(checker.checkChanges(desr, store));
     m.assertIsSatisfied();
   }
 

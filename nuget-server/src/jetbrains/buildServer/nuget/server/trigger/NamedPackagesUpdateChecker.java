@@ -66,11 +66,6 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       throw new BuildTriggerException("Failed to check for package versions. " + error);
     }
 
-    if (result.getInfos().isEmpty()) {
-      throw new BuildTriggerException("Failed to check for package versions. Package " + checkRequest.getPackage().getPackageId() + " was not found in the feed");
-    }
-
-
     @NotNull  final String newHash = myCalculator.serializeHashcode(result.getInfos());
     @Nullable final String oldHash = storage.getValue(KEY);
 
@@ -83,6 +78,12 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     if (!newHash.equals(oldHash)) {
       storage.putValue(KEY, newHash);
       storage.flush();
+    }
+
+    //empty feed is error, not a trigger event,
+    //still, we update trigger state for that
+    if (result.getInfos().isEmpty()) {
+      throw new BuildTriggerException("Failed to check for package versions. Package " + checkRequest.getPackage().getPackageId() + " was not found in the feed");
     }
 
     if (myCalculator.isUpgradeRequired(oldHash, newHash)) {
