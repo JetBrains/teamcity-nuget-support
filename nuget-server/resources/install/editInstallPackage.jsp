@@ -13,7 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
-
+<%@ include file="/include.jsp"%>
 <%@ taglib prefix="forms" tagdir="/WEB-INF/tags/forms" %>
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
@@ -52,6 +52,7 @@
     <th>Path to solution file:</th>
     <td>
       <props:textProperty name="${ib.solutionPathKey}" className="longField"/>
+      <bs:vcsTree fieldId="${ib.solutionPathKey}"/>
       <span class="smallNote">Specify path to Visual Studio solution file (.sln)</span>
       <span class="error" id="error_${ib.solutionPathKey}"></span>
     </td>
@@ -60,7 +61,7 @@
     <th rowspan="2">Install Options:</th>
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
-      Exclude version from package folder names
+      <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
       <span class="smallNote">Makes NuGet exclude package version from package folders.
                               Equivalent to -ExcludeVersion NuGet.exe commandline argument</span>
     </td>
@@ -68,7 +69,7 @@
   <tr>
     <td>
       <props:checkboxProperty name="${ib.noCacheKey}"/>
-      Disable looking up packages from local machine cache
+      <label for="${ib.noCacheKey}">Disable looking up packages from local machine cache</label>
       <span class="smallNote">Equivalent to -NoCache NuGet.exe commanline argument</span>
     </td>
   </tr>
@@ -78,13 +79,13 @@
     <th>Update Packages:</th>
     <td>
       <props:checkboxProperty name="${ib.updatePackagesKey}"/>
-      Update packages with help of NuGet update command
+      <label for="${ib.updatePackagesKey}">Update packages with help of NuGet update command</label>
       <span class="smallNote">Uses NuGet update command to update all packages under solution.
                               Package versions and constraints are taken from
                               packages.config files</span>
     </td>
   </tr>
-  <tr>
+  <tr id="nugetUpdateModeSection">
     <th>Update Mode:</th>
     <td>
       <props:selectProperty name="${ib.updateModeKey}" style="longField">
@@ -102,14 +103,14 @@
     <th rowspan="2">Update Options:</th>
     <td>
       <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
-      Include pre-release packages.
+      <label for="${ib.updatePackagesPrerelease}">Include pre-release packages</label>
       <span class="smallNote">Equivalent to -Prerelease NuGet option</span>
     </td>
   </tr>
   <tr>
     <td>
       <props:checkboxProperty name="${ib.updatePackagesSafeKey}"/>
-      Perform safe update.
+      <label for="${ib.updatePackagesSafeKey}">Perform safe update</label>
       <span class="smallNote">Equivalent to -Safe NuGet option</span>
     </td>
   </tr>

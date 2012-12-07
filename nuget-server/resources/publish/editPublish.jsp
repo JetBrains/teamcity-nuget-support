@@ -84,9 +84,9 @@
     <th>Options:</th>
     <td>
       <props:checkboxProperty name="${ib.nuGetPublishCreateOnlyKey}"/>
-      Only upload package but do not publish it to feed.
+      <label for="${ib.nuGetPublishCreateOnlyKey}">Only upload package but do not publish it to feed</label>
       <span class="smallNote">
-        Specifies if the package should be created and uploaded to the server but not published to the server.
+        Specifies if the package should be created and uploaded to the server but not published to the server
       </span>
     </td>
   </tr>
