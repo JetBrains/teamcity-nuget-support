@@ -122,7 +122,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
       allowing(task).getMode(); will(returnValue(nugetMode()));
 
       oneOf(task).setExecuting();
-      oneOf(task).setResult(with(failed("Package", ref.getPackageId())));
+      oneOf(task).setResult(with(empty()));
 
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(returnValue(Collections.singletonMap(ref,result)));
     }});

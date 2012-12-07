@@ -110,7 +110,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
     final SourcePackageReference ref = ref();
     final Collection<SourcePackageInfo> aaa = Collections.emptyList();
     final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.singletonMap(ref, aaa);
-    final CheckablePackage task = checkablePackage("aqqq", ref, failed("Package", ref.getPackageId()));
+    final CheckablePackage task = checkablePackage("aqqq", ref, empty());
     m.checking(new Expectations(){{
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(returnValue(result));
     }});

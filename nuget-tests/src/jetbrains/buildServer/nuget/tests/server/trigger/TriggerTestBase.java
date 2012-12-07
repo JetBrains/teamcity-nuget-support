@@ -65,7 +65,21 @@ public class TriggerTestBase extends BaseTestCase {
       }
 
       public void describeTo(Description description) {
-        description.appendText("Failed, containing").appendValueList("", "", "", contains);
+        description.appendText("Failed, containing: ").appendValueList("", "", "", contains);
+      }
+    };
+  }
+
+  protected Matcher<CheckResult> empty() {
+    return new BaseMatcher<CheckResult>() {
+      public boolean matches(Object o) {
+        CheckResult r = (CheckResult) o;
+        final String err = r.getError();
+        return err == null && r.getInfos().isEmpty();
+      }
+
+      public void describeTo(Description description) {
+        description.appendText("empty");
       }
     };
   }

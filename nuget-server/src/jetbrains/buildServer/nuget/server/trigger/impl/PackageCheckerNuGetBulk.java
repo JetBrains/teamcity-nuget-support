@@ -109,7 +109,7 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
           for (CheckablePackage entry : map.values()) {
             final String msg = "Package " + entry.getPackage().getPackageId() + " was not found in the feed";
             LOG.warn(msg + ": " + entry.getPackage());
-            entry.setResult(CheckResult.failed(msg));
+            entry.setResult(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList()));
           }
 
         } catch (Throwable t) {

@@ -80,11 +80,7 @@ public class PackageCheckerTeamCity implements PackageChecker {
               infos.add(new SourcePackageInfo(entry.getPackage().getSource(), packageId, aPackage.getInfo().getVersion()));
             }
 
-            if (infos.isEmpty()) {
-              entry.setResult(CheckResult.failed("Package " + packageId + " was not found in the feed"));
-            } else {
-              entry.setResult(CheckResult.fromResult(infos));
-            }
+            entry.setResult(CheckResult.fromResult(infos));
           } catch (Throwable e) {
             final String msg = "Failed to check changes of " + packageId + ". " + e.getMessage();
             LOG.warn(msg, e);

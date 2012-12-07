@@ -66,6 +66,11 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       throw new BuildTriggerException("Failed to check for package versions. " + error);
     }
 
+    if (result.getInfos().isEmpty()) {
+      throw new BuildTriggerException("Failed to check for package versions. Package " + checkRequest.getPackage().getPackageId() + " was not found in the feed");
+    }
+
+
     @NotNull  final String newHash = myCalculator.serializeHashcode(result.getInfos());
     @Nullable final String oldHash = storage.getValue(KEY);
 

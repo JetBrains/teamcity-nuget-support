@@ -34,7 +34,7 @@ public class CheckResult {
   @Nullable private final String myError;
 
   private CheckResult(@Nullable final Collection<SourcePackageInfo> infos,
-                      @Nullable String error) {
+                      @Nullable final String error) {
     myInfos = infos;
     myError = error;
   }
@@ -46,9 +46,6 @@ public class CheckResult {
 
   @NotNull
   public static CheckResult fromResult(@NotNull final Collection<SourcePackageInfo> infos) {
-    if (infos.isEmpty()) {
-      return failed("Package was not found in the feed");
-    }
     return new CheckResult(new ArrayList<SourcePackageInfo>(infos), null);
   }
 
@@ -86,7 +83,8 @@ public class CheckResult {
   @Override
   public String toString() {
     if (myError != null || myInfos == null) return "CheckResult{ " + myError + " }";
-    else return "CheckResult{ " + StringUtil.join(myInfos, TO_STRING, ", ");
+    if (myInfos.isEmpty()) return "CheckResult{ [] }";
+    else return "CheckResult{ " + StringUtil.join(myInfos, TO_STRING, ", " + "}");
   }
 
   private static final Function<SourcePackageInfo, String> TO_STRING = new Function<SourcePackageInfo, String>() {

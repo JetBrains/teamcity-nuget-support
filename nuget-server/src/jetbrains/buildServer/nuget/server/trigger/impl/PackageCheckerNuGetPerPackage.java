@@ -68,11 +68,8 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
               final SourcePackageReference pkg = packageCheckEntry.getPackage();
               Map<SourcePackageReference, Collection<SourcePackageInfo>> map = myCommand.checkForChanges(nugetPath, Collections.singleton(pkg));
               Collection<SourcePackageInfo> infos = map.get(pkg);
-              if (infos == null || infos.isEmpty()) {
-                packageCheckEntry.setResult(CheckResult.failed("Package " + pkg.getPackageId() + " was not found in the feed"));
-              } else {
-                packageCheckEntry.setResult(CheckResult.fromResult(infos));
-              }
+              if (infos == null) infos = Collections.emptyList();
+              packageCheckEntry.setResult(CheckResult.fromResult(infos));
             } catch (Throwable t) {
               LOG.warn("Failed to check changes of " + packageId + ". " + t.getMessage(), t);
               packageCheckEntry.setResult(CheckResult.failed(t.getMessage()));

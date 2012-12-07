@@ -100,7 +100,7 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       allowing(task).getMode(); will(returnValue(javaMode()));
 
       oneOf(task).setExecuting();
-      oneOf(task).setResult(with(failed("not found")));
+      oneOf(task).setResult(with(empty()));
 
       oneOf(myReader).queryPackageVersions("http://foo.bar", "foo.bar"); will(returnValue(Collections.emptyList()));
     }});

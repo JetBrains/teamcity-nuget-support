@@ -30,6 +30,7 @@ import jetbrains.buildServer.nuget.server.trigger.TriggerConstants;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
+import jetbrains.buildServer.util.TestFor;
 import junit.framework.Assert;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -44,6 +45,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -265,6 +267,42 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     Assert.assertNotNull(checker.checkChanges(desr, store));
     Assert.assertNull(checker.checkChanges(desr, store));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-24575")
+  public void test_should_throw_error_if_no_packages_found() {
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList())));
+    }});
+
+    try {
+      checker.checkChanges(desr, store);
+      Assert.fail("Exception is expected");
+    } catch (BuildTriggerException e) {
+      Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
+    }
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-24575")
+  public void test_should_throw_error_if_check_result() {
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.failed("something5555")));
+    }});
+
+    try {
+      checker.checkChanges(desr, store);
+      Assert.fail("Exception is expected");
+    } catch (BuildTriggerException e) {
+      Assert.assertTrue(e.getMessage().contains("something5555"));
+    }
 
     m.assertIsSatisfied();
   }
