@@ -19,10 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.tools;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -69,7 +66,7 @@ public class ToolsRegistryTest extends BaseTestCase {
       allowing(path).getNuGetToolsAgentPluginsPath(); will(returnValue(myAgentHome));
     }});
     myNaming = new PluginNaming(path);
-    myRegistry = new ToolsRegistry(path, myNaming, myWatcher);
+    myRegistry = new ToolsRegistryImpl(path, myNaming, myWatcher);
   }
 
 

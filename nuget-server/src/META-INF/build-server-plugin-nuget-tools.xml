@@ -12,8 +12,9 @@
 
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsStateImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolManagerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstallerImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolDownloaderImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistryImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPacker"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolUnpacker"/>
   <bean class="jetbrains.buildServer.nuget.server.impl.ToolPathsImpl"/>

@@ -36,13 +36,16 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   private final AvailableToolsState myAvailables;
   private final NuGetToolsInstaller myInstaller;
+  private final NuGetToolDownloader myDownloader;
   private final ToolsRegistry myInstalled;
 
   public NuGetToolManagerImpl(@NotNull final AvailableToolsState availables,
                               @NotNull final NuGetToolsInstaller installer,
+                              @NotNull final NuGetToolDownloader downloader,
                               @NotNull final ToolsRegistry installed) {
     myAvailables = availables;
     myInstaller = installer;
+    myDownloader = downloader;
     myInstalled = installed;
   }
 
@@ -75,7 +78,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   public void installTool(@NotNull String toolId) throws ToolException {
-    myInstaller.installNuGet(toolId);
+    myDownloader.installNuGet(toolId);
   }
 
   public void installTool(@NotNull String toolName, @NotNull File toolFile) throws ToolException {
