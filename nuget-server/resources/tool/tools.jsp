@@ -62,8 +62,11 @@
     </table>
   </c:if>
   <div style="margin-top: 1em;">
-    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.show()">
-      Add NuGet
+    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.showDonwload()">
+      Fetch NuGet
+    </forms:addButton>
+    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.showUpload()">
+      Upload NuGet
     </forms:addButton>
   </div>
 </bs:refreshable>
@@ -72,7 +75,7 @@
 <c:set var="actualInstallerUrl"><c:url value="${installerUrl}"/></c:set>
 <bs:modalDialog
         formId="nugetInstallForm"
-        title="Add NuGet"
+        title="TBD"
         action="${actualInstallerUrl}"
         closeCommand="BS.NuGet.Tools.InstallPopup.close();"
         saveCommand="BS.NuGet.Tools.InstallPopup.save();">
@@ -89,7 +92,7 @@
   <div class="popupSaveButtonsBlock">
     <forms:cancel onclick="BS.NuGet.Tools.InstallPopup.closeToolsDialog();"/>
     <forms:submit id="installNuGetApplyButton" label="Add"/>
-    <input type="button" class="btn cancel" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" value="Refresh"/>
+    <input id="installNuGetRefreshButton" type="button" class="btn cancel" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" value="Refresh"/>
     <forms:saving id="installNuGetApplyProgress"/>
     <div class="clr"></div>
   </div>

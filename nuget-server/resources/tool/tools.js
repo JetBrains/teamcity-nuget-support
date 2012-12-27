@@ -51,12 +51,22 @@ BS.NuGet.Tools = {
       $('installNuGetApplyButton').disabled = 'disabled';
     },
 
-    refreshForm : function(fresh) {
+    refreshForm : function(fresh, uploadOnly) {
       var that = this;
       this.disableSubmit();
       BS.Util.hide($('nugetInstallFormResresh'));
       BS.Util.show($('nugetInstallFormLoading'));
-      $('nugetInstallFormResresh').refresh(null, fresh ? "fresh=1": "", function() {
+
+      var refreshParams = "";
+      if (fresh) {
+        refreshParams += "fresh=1";
+      }
+
+      if (uploadOnly) {
+        refreshParams += (refreshParams.length > 0 ? "&" : "") + "uploadOnly=1"
+      }
+
+      $('nugetInstallFormResresh').refresh(null, refreshParams, function() {
         BS.Util.hide($('nugetInstallFormLoading'));
         BS.Util.show($('nugetInstallFormResresh'));
         that.showCentered();
@@ -65,9 +75,21 @@ BS.NuGet.Tools = {
       return false;
     },
 
-    show : function() {
+    showDonwload : function() {
+      BS.Util.reenableForm(this.formElement());
+      $("nugetInstallFormTitle").innerHTML = "Add NuGet";
+      BS.Util.show($("installNuGetRefreshButton"));
       this.showCentered();
-      this.refreshForm(false);
+      this.refreshForm(false, false);
+      return false;
+    },
+
+    showUpload : function() {
+      BS.Util.reenableForm(this.formElement());
+      $("nugetInstallFormTitle").innerHTML = "Upload NuGet";
+      BS.Util.hide($("installNuGetRefreshButton"));
+      this.showCentered();
+      this.refreshForm(false, true);
       return false;
     },
 
@@ -79,23 +101,20 @@ BS.NuGet.Tools = {
     },
 
     save : function() {
-      try {
       BS.Util.show($('installNuGetApplyProgress'));
       BS.MultipartFormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
         onCompleteSave: function(form, responseXML, err) {
           var wereErrors = BS.XMLResponse.processErrors(responseXML, {}, form.propertiesErrorsHandler);
           BS.ErrorsAwareListener.onCompleteSave(form, responseXML, err);
 
+          BS.Util.reenableForm(form.formElement());
           BS.Util.hide($('installNuGetApplyProgress'));
           if (!wereErrors) {
             BS.NuGet.Tools.refreshPackagesList();
             form.close();
-          } else {
-            BS.Util.reenableForm(form.formElement());
           }
         }
       }));
-      } catch (e) {alert(e);}
       return false;
     }
   }))

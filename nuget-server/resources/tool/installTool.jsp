@@ -17,6 +17,8 @@
 <jsp:useBean id="installTools" type="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstallToolBean" scope="request"/>
 
 <div id="nugetInstallFormResreshInner">
+  <input type="hidden" name="whatToDo" value="${installTools.whatToDo}" />
+
   <table class="runnerFormTable">
     <tr>
       <td colspan="2">
@@ -26,30 +28,12 @@
     <tr>
       <th><label for="toolId">NuGet:<l:star/></label></th>
       <td>
-        <input type="hidden" name="whatToDo" value="install" />
         <forms:select name="toolId" style="width:15em;">
           <forms:option value="">-- Please choose version --</forms:option>
-          <optgroup label="Public NuGet.CommandLine">
-            <c:forEach var="t" items="${installTools.tools}">
-              <forms:option value="${t.id}"><c:out value="${t.version}"/></forms:option>
-            </c:forEach>
-          </optgroup>
-          <optgroup label="Other">
-            <forms:option value="custom">Upload</forms:option>
-          </optgroup>
+          <c:forEach var="t" items="${installTools.tools}">
+            <forms:option value="${t.id}"><c:out value="${t.version}"/></forms:option>
+          </c:forEach>
         </forms:select>
-      </td>
-    </tr>
-
-    <tr id="nugetUploadRow">
-      <th><label for="nugetUploadControl">Upload:<l:star/></label></th>
-      <td>
-        <forms:file name="nugetUploadControl"/>
-        <span class="smallNote">
-          Specify path to NuGet package with <em>tools/NuGet.exe</em> inside.
-          <br />
-          Check for <strong>NuGet.CommandLine</strong> package at <a href="http://nuget.org" target="_blank">NuGet.org</a>
-        </span>
       </td>
     </tr>
     <tr>
@@ -80,20 +64,4 @@
       </td>
     </tr>
   </table>
-
-  <script type="text/javascript">
-    (function() {
-      var updateUploadRow = function() {
-        if ($j('#toolId').val() == 'custom') {
-          BS.Util.show($('nugetUploadRow'));
-        } else {
-          BS.Util.hide($('nugetUploadRow'));
-        }
-      };
-
-      $j('#toolId').change(updateUploadRow);
-      updateUploadRow();
-    })();
-  </script>
-
 </div>

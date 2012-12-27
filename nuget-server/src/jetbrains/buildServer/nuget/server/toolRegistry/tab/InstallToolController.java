@@ -42,6 +42,9 @@ import java.util.HashMap;
  */
 public class InstallToolController extends BaseFormXmlController {
   private static final Logger LOG = Logger.getInstance(InstallToolController.class.getName());
+  public static final String INSTALL = "install";
+  public static final String UPLOAD = "custom";
+  public static final String REMOVE = "remove";
 
   private final String myPath;
   private final NuGetToolManager myToolsManager;
@@ -71,22 +74,27 @@ public class InstallToolController extends BaseFormXmlController {
 
   protected ModelAndView doGet(@NotNull final HttpServletRequest request,
                               @NotNull final HttpServletResponse response) {
-    final InstallToolBean bean = new InstallToolBean();
-    final ToolsPolicy pol =
-            StringUtil.isEmptyOrSpaces(request.getParameter("fresh"))
-                    ? ToolsPolicy.ReturnCached
-                    : ToolsPolicy.FetchNew;
+    final InstallToolBean bean;
 
-    try {
-      bean.setTools(myToolsManager.getAvailableTools(pol));
-    } catch (Exception e) {
-      bean.setErrorText(e.getMessage());
-      LOG.warn("Failed to fetch NuGet.Commandline package versions. " + e.getMessage(), e);
+    if (!StringUtil.isEmptyOrSpaces(request.getParameter("uploadOnly"))) {
+      bean = new InstallToolBean(UPLOAD);
+    } else {
+      bean = new InstallToolBean(INSTALL);
+      final ToolsPolicy pol =
+              StringUtil.isEmptyOrSpaces(request.getParameter("fresh"))
+                      ? ToolsPolicy.ReturnCached
+                      : ToolsPolicy.FetchNew;
+
+      try {
+        bean.setTools(myToolsManager.getAvailableTools(pol));
+      } catch (Exception e) {
+        bean.setErrorText(e.getMessage());
+        LOG.warn("Failed to fetch NuGet.Commandline package versions. " + e.getMessage(), e);
+      }
     }
 
-    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/installTool.jsp"));
-    mv.getModelMap().put("propertiesBean", new BasePropertiesBean(new HashMap<String, String>()));
-
+    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath(bean.getView()));
+    mv.getModel().put("propertiesBean", new BasePropertiesBean(new HashMap<String, String>()));
     mv.getModel().put("installTools", bean);
     return mv;
   }
@@ -113,28 +121,30 @@ public class InstallToolController extends BaseFormXmlController {
 
     final String whatToDo = request.getParameter("whatToDo");
     try {
-      if ("install".equals(whatToDo)) {
-        if ("custom".equals(toolId)) {
-          LOG.debug("Processing NuGet commandline upload.");
-
-          final String file = request.getParameter("nugetUploadControl");
-          if (file == null) {
-            throw new ToolException("No file was uploaded.");
-          }
-          final File tempFile = new File(file);
-
-          try {
-            myToolsManager.installTool(tempFile.getName(), tempFile);
-          } finally {
-            FileUtil.delete(tempFile);
-          }
-        } else {
-          myToolsManager.installTool(toolId);
-        }
+      if (INSTALL.equals(whatToDo)) {
+        myToolsManager.installTool(toolId);
         return;
       }
 
-      if ("remove".equals(whatToDo)) {
+      if (UPLOAD.equals(toolId)) {
+        LOG.debug("Processing NuGet commandline upload.");
+
+        final String file = request.getParameter("nugetUploadControl");
+        if (file == null) {
+          throw new ToolException("No file was uploaded.");
+        }
+        final File tempFile = new File(file);
+
+        try {
+          myToolsManager.installTool(tempFile.getName(), tempFile);
+        } finally {
+          FileUtil.delete(tempFile);
+        }
+
+        return;
+      }
+
+      if (REMOVE.equals(whatToDo)) {
         myToolsManager.removeTool(toolId);
       }
     } catch (ToolException e) {
