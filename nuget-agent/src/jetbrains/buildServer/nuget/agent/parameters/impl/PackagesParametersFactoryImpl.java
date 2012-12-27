@@ -66,14 +66,6 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       public Collection<String> getNuGetPackageSources() {
         return getMultilineParameter(context, NUGET_SOURCES);
       }
-
-      public boolean getExcludeVersion() {
-        return getBoolean(context, NUGET_EXCLUDE_VERSION);
-      }
-
-      public boolean getNoCache() {
-        return  getBoolean(context, NUGET_NO_CACHE);
-      }
     };
   }
 
