@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.common.NuGetTools;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -88,7 +89,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   @Nullable
   public String getNuGetPath(@Nullable final String path) {
     if (path == null || StringUtil.isEmptyOrSpaces(path)) return path;
-    if (!path.startsWith("?")) {
+    if (!path.startsWith(NuGetTools.TOOL_REFERENCE_PREFIX)) {
       return path;
     }
     final String id = path.substring(1);

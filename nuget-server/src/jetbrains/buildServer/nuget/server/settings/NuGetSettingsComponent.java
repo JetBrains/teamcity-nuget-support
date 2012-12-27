@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public enum NuGetSettingsComponent {
   SERVER("server"),
+  NUGET("nuget"),
   ;
 
   private final String myId;

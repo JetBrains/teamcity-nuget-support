@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.ui;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.BasePropertiesBean;
+import jetbrains.buildServer.nuget.common.NuGetTools;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.util.StringUtil;
@@ -92,7 +93,7 @@ public class ToolSelectorController extends BaseController {
 
   @Nullable
   private ToolInfo ensureVersion(@NotNull final String version, @NotNull Collection<ToolInfo> actionInfos) {
-    if (!version.startsWith("?")) return null;
+    if (!version.startsWith(NuGetTools.TOOL_REFERENCE_PREFIX)) return null;
     for (ToolInfo actionInfo : actionInfos) {
       if (actionInfo.getId().equals(version)) return actionInfo;
     }
