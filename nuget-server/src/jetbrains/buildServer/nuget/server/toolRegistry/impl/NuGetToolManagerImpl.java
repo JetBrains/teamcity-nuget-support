@@ -16,9 +16,12 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -32,26 +35,43 @@ import java.util.*;
  * Date: 11.08.11 1:07
  */
 public class NuGetToolManagerImpl implements NuGetToolManager {
-  private static final Logger LOG = Logger.getInstance(NuGetToolManagerImpl.class.getName());
+  private static final String DEFAULT_NUGET_KEY = "default-nuget";
 
   private final AvailableToolsState myAvailables;
   private final NuGetToolsInstaller myInstaller;
   private final NuGetToolDownloader myDownloader;
   private final ToolsRegistry myInstalled;
+  private final NuGetSettingsManager mySettings;
 
   public NuGetToolManagerImpl(@NotNull final AvailableToolsState availables,
                               @NotNull final NuGetToolsInstaller installer,
                               @NotNull final NuGetToolDownloader downloader,
-                              @NotNull final ToolsRegistry installed) {
+                              @NotNull final ToolsRegistry installed,
+                              @NotNull final NuGetSettingsManager settings) {
     myAvailables = availables;
     myInstaller = installer;
     myDownloader = downloader;
     myInstalled = installed;
+    mySettings = settings;
   }
 
   @NotNull
   public Collection<? extends NuGetInstalledTool> getInstalledTools() {
-    return myInstalled.getTools();
+    final String defaultToolId = getDefaultToolId();
+    final Collection<? extends NuGetInstalledTool> tools = myInstalled.getTools();
+    if (defaultToolId == null || StringUtil.isEmptyOrSpaces(defaultToolId)) {
+      return tools;
+    }
+
+    final List<NuGetInstalledTool> toolsCopy = new ArrayList<NuGetInstalledTool>();
+    for (NuGetInstalledTool tool : tools) {
+      if (tool.getId().equals(defaultToolId)) {
+        toolsCopy.add(new DefaultTool(tool));
+      } else {
+        toolsCopy.add(tool);
+      }
+    }
+    return toolsCopy;
   }
 
   @NotNull
@@ -99,5 +119,31 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
       return nuGetPath.getPath();
     }
     throw new RuntimeException("Failed to find " + FeedConstants.NUGET_COMMANDLINE + " version " + id);
+  }
+
+  @Nullable
+  public NuGetInstalledTool getDefaultTool() {
+    for (NuGetInstalledTool tool : getInstalledTools()) {
+      if (tool.isDefault()) return tool;
+    }
+    return null;
+  }
+
+  public void setDefaultTool(@NotNull final String toolId) {
+    mySettings.writeSettings(NuGetSettingsComponent.NUGET, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
+      public Object executeAction(@NotNull NuGetSettingsWriter action) {
+        action.setStringParameter(DEFAULT_NUGET_KEY, toolId);
+        return null;
+      }
+    });
+  }
+
+  @Nullable
+  public String getDefaultToolId() {
+    return mySettings.readSettings(NuGetSettingsComponent.NUGET, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
+      public String executeAction(@NotNull NuGetSettingsReader action) {
+        return action.getStringParameter(DEFAULT_NUGET_KEY);
+      }
+    });
   }
 }

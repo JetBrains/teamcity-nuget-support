@@ -27,4 +27,10 @@ import java.io.File;
 public interface NuGetInstalledTool extends NuGetTool {
   @NotNull
   File getPath();
+
+  /**
+   * @return true if this tool was selected as default
+   * @since v0.9
+   */
+  boolean isDefault();
 }

@@ -39,6 +39,10 @@ public class InstalledTool implements NuGetInstalledTool {
     myPath = path;
   }
 
+  public boolean isDefault() {
+    return false;
+  }
+
   @NotNull
   public File getPath() {
     return new File(getUnpackFolder(), PackagesConstants.NUGET_TOOL_REL_PATH);

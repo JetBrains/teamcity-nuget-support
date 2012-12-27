@@ -77,4 +77,26 @@ public interface NuGetToolManager {
    */
   @Nullable
   String getNuGetPath(@Nullable String path);
+
+
+  /**
+   * Sets tool as default NuGet tool
+   * @param toolId tool
+   * @since v0.9
+   */
+  void setDefaultTool(@NotNull final String toolId);
+
+  /**
+   * @return default tool if exists, null otherwise
+   * @since v0.9
+   */
+  @Nullable
+  NuGetInstalledTool getDefaultTool();
+
+  /**
+   * @return default tool id, without respect to if it was removed
+   * @since v0.9
+   */
+  @Nullable
+  String getDefaultToolId();
 }
