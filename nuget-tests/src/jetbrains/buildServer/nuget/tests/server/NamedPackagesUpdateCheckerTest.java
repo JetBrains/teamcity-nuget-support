@@ -31,7 +31,6 @@ import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.util.TestFor;
-import junit.framework.Assert;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -40,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.CustomAction;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -291,6 +291,22 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
     }
 
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-24575")
+  public void test_should_trigger_zero_to_one() {
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+
+      oneOf(store).getValue("hash"); will(returnValue("v2"));
+      oneOf(store).putValue("hash", "v2|s:src|p:pkg|v:5.6.87");
+      oneOf(store).flush();
+    }});
+
+    Assert.assertNotNull(checker.checkChanges(desr, store));
     m.assertIsSatisfied();
   }
 
