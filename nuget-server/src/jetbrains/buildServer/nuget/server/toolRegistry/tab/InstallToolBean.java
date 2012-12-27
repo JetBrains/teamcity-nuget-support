@@ -28,11 +28,11 @@ import java.util.Collection;
  *         Date: 14.06.12 14:02
  */
 public class InstallToolBean {
-  private final String myWhatToDo;
+  private final WhatToDo myWhatToDo;
   private String myErrorText = null;
   private final Collection<NuGetTool> myTools = new ArrayList<NuGetTool>();
 
-  public InstallToolBean(@NotNull String whatToDo) {
+  public InstallToolBean(@NotNull WhatToDo whatToDo) {
     myWhatToDo = whatToDo;
   }
 
@@ -61,19 +61,16 @@ public class InstallToolBean {
 
   @NotNull
   public String getWhatToDo() {
-    return myWhatToDo;
+    return myWhatToDo.getName();
   }
 
   @NotNull
   public String getView() {
-    if (getWhatToDo().equals(InstallToolController.INSTALL)) {
-      return "tool/installTool.jsp";
+    switch (myWhatToDo) {
+      case INSTALL: return "tool/installTool.jsp";
+      case UPLOAD: return "tool/uploadTool.jsp";
+      default:
+        throw new RuntimeException("Unexpected action: " + getWhatToDo());
     }
-
-    if (getWhatToDo().equals(InstallToolController.UPLOAD)) {
-      return "tool/uploadTool.jsp";
-    }
-
-    throw new RuntimeException("Unexpected action: " + getWhatToDo());
   }
 }

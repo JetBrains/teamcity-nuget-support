@@ -36,15 +36,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.HashMap;
 
+import static jetbrains.buildServer.nuget.server.toolRegistry.tab.WhatToDo.INSTALL;
+import static jetbrains.buildServer.nuget.server.toolRegistry.tab.WhatToDo.UPLOAD;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 11.08.11 12:12
  */
 public class InstallToolController extends BaseFormXmlController {
   private static final Logger LOG = Logger.getInstance(InstallToolController.class.getName());
-  public static final String INSTALL = "install";
-  public static final String UPLOAD = "custom";
-  public static final String REMOVE = "remove";
 
   private final String myPath;
   private final NuGetToolManager myToolsManager;
@@ -119,33 +119,36 @@ public class InstallToolController extends BaseFormXmlController {
       return;
     }
 
-    final String whatToDo = request.getParameter("whatToDo");
+    final WhatToDo whatToDo = WhatToDo.fromString(request.getParameter("whatToDo"));
+    if (whatToDo == null)  {
+      ae.addError("whatToDo", "Unknown action");
+      return;
+    }
+
     try {
-      if (INSTALL.equals(whatToDo)) {
-        myToolsManager.installTool(toolId);
-        return;
-      }
+      switch (whatToDo) {
+        case INSTALL:
+          myToolsManager.installTool(toolId);
+          return;
 
-      if (UPLOAD.equals(toolId)) {
-        LOG.debug("Processing NuGet commandline upload.");
+        case UPLOAD:
+          LOG.debug("Processing NuGet commandline upload.");
 
-        final String file = request.getParameter("nugetUploadControl");
-        if (file == null) {
-          throw new ToolException("No file was uploaded.");
-        }
-        final File tempFile = new File(file);
+          final String file = request.getParameter("nugetUploadControl");
+          if (file == null) {
+            throw new ToolException("No file was uploaded.");
+          }
+          final File tempFile = new File(file);
 
-        try {
-          myToolsManager.installTool(tempFile.getName(), tempFile);
-        } finally {
-          FileUtil.delete(tempFile);
-        }
+          try {
+            myToolsManager.installTool(tempFile.getName(), tempFile);
+          } finally {
+            FileUtil.delete(tempFile);
+          }
+          return;
 
-        return;
-      }
-
-      if (REMOVE.equals(whatToDo)) {
-        myToolsManager.removeTool(toolId);
+        case REMOVE:
+          myToolsManager.removeTool(toolId);
       }
     } catch (ToolException e) {
       ae.addError("toolId", e.getMessage());
