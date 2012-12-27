@@ -89,10 +89,8 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   @Nullable
   public String getNuGetPath(@Nullable final String path) {
     if (path == null || StringUtil.isEmptyOrSpaces(path)) return path;
-    if (!path.startsWith(NuGetTools.TOOL_REFERENCE_PREFIX)) {
-      return path;
-    }
-    final String id = path.substring(1);
+    final String id = NuGetTools.getReferredToolId(path);
+    if (id == null) return path;
     final File nuGetPath = myInstalled.getNuGetPath(id);
     if (nuGetPath != null) {
       return nuGetPath.getPath();

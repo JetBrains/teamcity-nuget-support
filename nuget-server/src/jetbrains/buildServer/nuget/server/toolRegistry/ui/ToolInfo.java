@@ -29,7 +29,7 @@ public class ToolInfo {
   private final String myVersion;
 
   public ToolInfo(@NotNull final NuGetInstalledTool tool) {
-    this(NuGetTools.TOOL_REFERENCE_PREFIX + tool.getId(), tool.getVersion());
+    this(NuGetTools.getToolReference(tool.getId()), tool.getVersion());
   }
 
   public ToolInfo(@NotNull final String id,

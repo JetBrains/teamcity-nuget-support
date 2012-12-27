@@ -93,7 +93,7 @@ public class ToolSelectorController extends BaseController {
 
   @Nullable
   private ToolInfo ensureVersion(@NotNull final String version, @NotNull Collection<ToolInfo> actionInfos) {
-    if (!version.startsWith(NuGetTools.TOOL_REFERENCE_PREFIX)) return null;
+    if (!NuGetTools.isToolReference(version)) return null;
     for (ToolInfo actionInfo : actionInfos) {
       if (actionInfo.getId().equals(version)) return actionInfo;
     }
