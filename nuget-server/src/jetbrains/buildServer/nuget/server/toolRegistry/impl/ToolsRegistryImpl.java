@@ -19,7 +19,6 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.ToolPaths;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -49,16 +48,23 @@ public class ToolsRegistryImpl implements ToolsRegistry {
   }
 
   @NotNull
-  public Collection<? extends NuGetInstalledTool> getTools() {
+  public Collection<? extends InstalledTool> getTools() {
     return getToolsInternal();
   }
 
   @Nullable
-  public File getNuGetPath(@NotNull String path) {
-    if (StringUtil.isEmptyOrSpaces(path)) return null;
-    for (NuGetInstalledTool tool : getToolsInternal()) {
-      if (tool.getId().equals(path)) {
-        return tool.getPath();
+  public File getNuGetPath(@Nullable String id) {
+    InstalledTool tool = findTool(id);
+    if (tool != null) return tool.getPath();
+    return null;
+  }
+
+  @Nullable
+  public InstalledTool findTool(@Nullable String id) {
+    if (id == null || StringUtil.isEmptyOrSpaces(id)) return null;
+    for (InstalledTool tool : getToolsInternal()) {
+      if (tool.getId().equals(id)) {
+        return tool;
       }
     }
     return null;

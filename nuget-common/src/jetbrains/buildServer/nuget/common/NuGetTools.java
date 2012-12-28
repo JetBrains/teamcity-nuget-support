@@ -3,6 +3,9 @@ package jetbrains.buildServer.nuget.common;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_COMMANDLINE;
+import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
+
 /**
  * Created 27.12.12 15:46
  *
@@ -11,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NuGetTools {
   private static final String TOOL_REFERENCE_PREFIX = "?";
+  public static final String TOOL_DEFAULT_NAME = NUGET_COMMANDLINE + ".DEFAULT" + NUGET_EXTENSION;
 
   @NotNull
   public static String getToolReference(@NotNull final String id) {
