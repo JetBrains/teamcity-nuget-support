@@ -96,7 +96,9 @@ public class ToolsWatcherImpl implements ToolsWatcher {
     }));
   }
 
-  private synchronized void onFilesChanged(List<File> modified, List<File> added, List<File> removed) {
+  private synchronized void onFilesChanged(@NotNull final List<File> modified,
+                                           @NotNull final List<File> added,
+                                           @NotNull final List<File> removed) {
     for (File file : CollectionsUtil.join(modified, removed)) {
       removePackage(new InstalledTool(myNaming, file));
     }
