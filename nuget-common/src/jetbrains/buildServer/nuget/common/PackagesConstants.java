@@ -28,6 +28,8 @@ public interface PackagesConstants {
   public static final String PUBLISH_RUN_TYPE = "jb.nuget.publish"; //run-type could never exceed 30 chars
   public static final String PACK_RUN_TYPE = "jb.nuget.pack"; //run-type could never exceed 30 chars
 
+  public static final String[] ALL_NUGET_RUN_TYPES = {INSTALL_RUN_TYPE, PUBLISH_RUN_TYPE, PACK_RUN_TYPE};
+
   public static final String NUGET_PATH = "nuget.path";
   public static final String NUGET_SOURCES = "nuget.sources";
   public static final String NUGET_EXCLUDE_VERSION = "nuget.excludeVersion";

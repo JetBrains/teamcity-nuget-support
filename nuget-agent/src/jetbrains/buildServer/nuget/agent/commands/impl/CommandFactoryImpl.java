@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.agent.commands.impl;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.parameters.*;
+import jetbrains.buildServer.nuget.agent.runner.EnabledPackagesOptionSetter;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +48,7 @@ public class CommandFactoryImpl implements CommandFactory {
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 
     final NuGetFetchParameters nuget = params.getNuGetParameters();
-    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), Collections.singletonMap("EnableNuGetPackageRestore", "True"), factory);
+    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), Collections.singletonMap(EnabledPackagesOptionSetter.ENABLE_NUGET_PACKAGE_RESTORE, "True"), factory);
   }
 
   @NotNull
