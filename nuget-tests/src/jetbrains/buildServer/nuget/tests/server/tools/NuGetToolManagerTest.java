@@ -53,7 +53,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
             myInstaller,
             myDownloader,
             myToolsRegistry,
-            new NuGetSettingsManagerImpl()
+            new NuGetToolsSettings(new NuGetSettingsManagerImpl())
             );
   }
 

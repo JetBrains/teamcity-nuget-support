@@ -11,6 +11,7 @@
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstallToolController"/>
 
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsStateImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsSettings"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolManagerImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstallerImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolDownloaderImpl"/>

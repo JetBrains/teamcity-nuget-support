@@ -18,10 +18,6 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.NuGetTools;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
-import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -35,19 +31,17 @@ import java.util.*;
  * Date: 11.08.11 1:07
  */
 public class NuGetToolManagerImpl implements NuGetToolManager {
-  private static final String DEFAULT_NUGET_KEY = "default-nuget";
-
   private final AvailableToolsState myAvailables;
   private final NuGetToolsInstaller myInstaller;
   private final NuGetToolDownloader myDownloader;
   private final ToolsRegistry myInstalled;
-  private final NuGetSettingsManager mySettings;
+  private final NuGetToolsSettings mySettings;
 
   public NuGetToolManagerImpl(@NotNull final AvailableToolsState availables,
                               @NotNull final NuGetToolsInstaller installer,
                               @NotNull final NuGetToolDownloader downloader,
                               @NotNull final ToolsRegistry installed,
-                              @NotNull final NuGetSettingsManager settings) {
+                              @NotNull final NuGetToolsSettings settings) {
     myAvailables = availables;
     myInstaller = installer;
     myDownloader = downloader;
@@ -125,20 +119,11 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   public void setDefaultTool(@NotNull final String toolId) {
-    mySettings.writeSettings(NuGetSettingsComponent.NUGET, new NuGetSettingsManager.Func<NuGetSettingsWriter, Object>() {
-      public Object executeAction(@NotNull NuGetSettingsWriter action) {
-        action.setStringParameter(DEFAULT_NUGET_KEY, toolId);
-        return null;
-      }
-    });
+    mySettings.setDefaultTool(toolId);
   }
 
   @Nullable
   public String getDefaultToolId() {
-    return mySettings.readSettings(NuGetSettingsComponent.NUGET, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
-      public String executeAction(@NotNull NuGetSettingsReader action) {
-        return action.getStringParameter(DEFAULT_NUGET_KEY);
-      }
-    });
+    return mySettings.getDefaultToolId();
   }
 }
