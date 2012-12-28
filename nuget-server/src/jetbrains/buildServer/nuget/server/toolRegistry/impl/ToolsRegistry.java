@@ -1,6 +1,5 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,10 +13,13 @@ import java.util.Collection;
  */
 public interface ToolsRegistry {
   @NotNull
-  Collection<? extends NuGetInstalledTool> getTools();
+  Collection<? extends InstalledTool> getTools();
 
   @Nullable
-  File getNuGetPath(@NotNull String path);
+  File getNuGetPath(@Nullable String toolId);
+
+  @Nullable
+  InstalledTool findTool(@Nullable String toolId);
 
   void removeTool(@NotNull String toolId);
 }
