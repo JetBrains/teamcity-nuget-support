@@ -35,30 +35,28 @@
 </p>
 
   <c:if test="${not (installedPluginsCount eq 0)}">
-      <table class="settings" cellpadding="0" cellspacing="0" style="width: 50%;">
+      <table class="settings" cellpadding="0" cellspacing="0" style="width: 70%">
         <thead>
         <tr>
-          <th class="name" colspan="3">NuGet Version</th>
+          <th class="name" colspan="3" style="padding: 0.5em 1em">NuGet Version</th>
         </tr>
         </thead>
         <tbody>
           <c:forEach var="tool" items="${tools}">
             <tr>
-              <td class="name">
+              <td style="<c:if test="${tool.defaultTool}">font-weight: bold;</c:if> ">
                 <c:out value="${tool.version}"/>
                 <c:if test="${tool.defaultTool}">
-                  <div style="float:right">
-                    <strong> (default)</strong>
-                  </div>
+                    <em> (default)</em>
                 </c:if>
               </td>
               <td class="value edit" style="width: 4%;">
                 <c:if test="${not tool.defaultTool}">
-                  <a href="#" onclick="BS.NuGet.Tools.makeDefaultTool('<bs:forJs>${tool.id}</bs:forJs>');">Default</a>
+                  <a href="#" onclick="BS.NuGet.Tools.makeDefaultTool('<bs:forJs>${tool.id}</bs:forJs>');">make&nbsp;default</a>
                 </c:if>
               </td>
               <td class="value edit" style="width: 4%;">
-                <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
+                <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">remove</a>
               </td>
             </tr>
           </c:forEach>
