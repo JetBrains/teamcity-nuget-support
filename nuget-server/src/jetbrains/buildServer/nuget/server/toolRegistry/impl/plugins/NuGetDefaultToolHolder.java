@@ -3,6 +3,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.plugins;
 import jetbrains.buildServer.nuget.common.NuGetTools;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsSettings;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry;
 import jetbrains.buildServer.serverSide.impl.agent.AgentPluginsProvider;
 import org.jetbrains.annotations.NotNull;
@@ -18,19 +19,26 @@ import java.util.Map;
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
 public class NuGetDefaultToolHolder implements AgentPluginsProvider{
-  public static final String NAME = NuGetTools.TOOL_DEFAULT_NAME + ".zip";
   private final NuGetToolsSettings mySettings;
   private final ToolsRegistry myRegistry;
+  private final PluginNaming myNaming;
 
   public NuGetDefaultToolHolder(@NotNull NuGetToolsSettings settings,
-                                @NotNull ToolsRegistry registry) {
+                                @NotNull ToolsRegistry registry,
+                                @NotNull PluginNaming naming) {
     mySettings = settings;
     myRegistry = registry;
+    myNaming = naming;
+  }
+
+  @NotNull
+  private String getPluginName() {
+    return myNaming.getAgentFileName(NuGetTools.getDefaultToolId());
   }
 
   @Nullable
   public File getPluginFile(@NotNull String s) {
-    if (!NAME.equals(s)) return null;
+    if (!getPluginName().equals(s)) return null;
     return getAgentPluginFile();
   }
 
@@ -44,7 +52,7 @@ public class NuGetDefaultToolHolder implements AgentPluginsProvider{
   @NotNull
   public Map<String, File> getPlugins() {
     final File tool = getAgentPluginFile();
-    if (tool != null) return Collections.singletonMap(NAME, tool);
+    if (tool != null) return Collections.singletonMap(getPluginName(), tool);
     return Collections.emptyMap();
   }
 }

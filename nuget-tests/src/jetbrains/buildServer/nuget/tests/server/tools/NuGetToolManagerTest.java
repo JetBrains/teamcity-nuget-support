@@ -1,6 +1,7 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.common.NuGetTools;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.impl.ToolPathsImpl;
@@ -104,6 +105,43 @@ public class NuGetToolManagerTest extends BaseTestCase {
     }});
 
     Assert.assertEquals(myToolManager.getNuGetPath("?aaa"), "some-path");
+  }
+
+  @Test
+  public void test_nuget_resolves_default_tool() {
+    myToolManager.setDefaultTool("aaa");
+
+    m.checking(new Expectations(){{
+      allowing(myToolsRegistry).getNuGetPath("aaa"); will(returnValue(new File("some-path")));
+    }});
+
+    Assert.assertEquals(myToolManager.getNuGetPath(NuGetTools.getDefaultToolPath()), "some-path");
+  }
+
+  @Test(expectedExceptions = RuntimeException.class)
+  public void test_nuget_resolves_default_tool_not_found() {
+    myToolManager.setDefaultTool("bbb");
+
+    m.checking(new Expectations(){{
+      allowing(myToolsRegistry).getNuGetPath("bbb"); will(returnValue(null));
+    }});
+
+    myToolManager.getNuGetPath(NuGetTools.getDefaultToolPath());
+  }
+
+  @Test
+  public void test_nuget_manager_should_not_return_default_tool_id() {
+    myToolManager.setDefaultTool("aaa");
+    final NuGetInstalledTool it = m.mock(NuGetInstalledTool.class);
+    m.checking(new Expectations(){{
+      allowing(it).getId(); will(returnValue("aaa"));
+      allowing(myToolsRegistry).getTools(); will(returnValue(Arrays.asList(it)));
+    }});
+
+    final String defaultId = NuGetTools.getDefaultToolPath();
+    for (NuGetInstalledTool tool : myToolManager.getInstalledTools()) {
+      Assert.assertFalse(tool.getId().equals(defaultId));
+    }
   }
 
 }

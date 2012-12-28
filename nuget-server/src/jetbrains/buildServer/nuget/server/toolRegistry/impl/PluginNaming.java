@@ -48,7 +48,12 @@ public class PluginNaming {
   @NotNull
   public File getAgentFile(@NotNull final File packageFile) {
     //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getNuGetToolsAgentPluginsPath(), packageFile.getName() + ".zip");
+    return new File(myPaths.getNuGetToolsAgentPluginsPath(), getAgentFileName(packageFile.getName()));
+  }
+
+  @NotNull
+  public String getAgentFileName(@NotNull final String packageName) {
+    return packageName + ".zip";
   }
 
   @NotNull

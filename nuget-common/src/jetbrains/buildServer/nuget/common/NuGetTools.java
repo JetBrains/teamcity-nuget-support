@@ -14,24 +14,38 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
  */
 public class NuGetTools {
   private static final String TOOL_REFERENCE_PREFIX = "?";
-  public static final String TOOL_DEFAULT_NAME = NUGET_COMMANDLINE + ".DEFAULT" + NUGET_EXTENSION;
+  private static final String TOOL_DEFAULT_NAME = NUGET_COMMANDLINE + ".DEFAULT" + NUGET_EXTENSION;
 
   @NotNull
   public static String getToolReference(@NotNull final String id) {
     return TOOL_REFERENCE_PREFIX + id;
   }
 
-  public static boolean isToolReference(@Nullable final String id) {
-    return id != null && id.startsWith(TOOL_REFERENCE_PREFIX);
+  public static boolean isToolReference(@Nullable final String toolPath) {
+    return toolPath != null && toolPath.startsWith(TOOL_REFERENCE_PREFIX);
   }
 
   @Nullable
-  public static String getReferredToolId(@Nullable final String id) {
-    if (id == null || id.length() == 0) return null;
+  public static String getReferredToolId(@Nullable final String toolPath) {
+    if (toolPath == null || toolPath.length() == 0) return null;
 
-    if (isToolReference(id)) {
-      return id.substring(TOOL_REFERENCE_PREFIX.length());
+    if (isToolReference(toolPath)) {
+      return toolPath.substring(TOOL_REFERENCE_PREFIX.length());
     }
     return null;
+  }
+
+  public static boolean isDefaultToolPath(@Nullable String toolPath) {
+    return getDefaultToolPath().equals(toolPath);
+  }
+
+  @NotNull
+  public static String getDefaultToolId() {
+    return TOOL_DEFAULT_NAME;
+  }
+
+  @NotNull
+  public static String getDefaultToolPath() {
+    return getToolReference(getDefaultToolId());
   }
 }

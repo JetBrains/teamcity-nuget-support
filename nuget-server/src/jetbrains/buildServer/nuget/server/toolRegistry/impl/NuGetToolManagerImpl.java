@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
-import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.NuGetTools;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.util.StringUtil;
@@ -25,6 +24,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
+
+import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_COMMANDLINE;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -101,13 +102,28 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   @Nullable
   public String getNuGetPath(@Nullable final String path) {
     if (path == null || StringUtil.isEmptyOrSpaces(path)) return path;
+
+    if (NuGetTools.isDefaultToolPath(path)) {
+      final String id = getDefaultToolId();
+      if (id == null || StringUtil.isEmptyOrSpaces(id)) {
+        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE + ". No default version is set");
+      }
+
+      final String ref = NuGetTools.getToolReference(id);
+      if (NuGetTools.isDefaultToolPath(ref)) {
+        throw new RuntimeException("Unexpected default NuGet version. Please review NuGet Tools section");
+      }
+
+      return getNuGetPath(ref);
+    }
+
     final String id = NuGetTools.getReferredToolId(path);
     if (id == null) return path;
     final File nuGetPath = myInstalled.getNuGetPath(id);
     if (nuGetPath != null) {
       return nuGetPath.getPath();
     }
-    throw new RuntimeException("Failed to find " + FeedConstants.NUGET_COMMANDLINE + " version " + id);
+    throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " version " + id);
   }
 
   @Nullable
