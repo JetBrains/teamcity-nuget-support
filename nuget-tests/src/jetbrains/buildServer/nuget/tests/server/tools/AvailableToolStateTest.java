@@ -21,7 +21,7 @@ import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsStateImpl;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableToolsStateImpl;
 import jetbrains.buildServer.util.TimeService;
 import junit.framework.Assert;
 import org.jmock.Expectations;

@@ -8,6 +8,7 @@ import jetbrains.buildServer.nuget.server.impl.ToolPathsImpl;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolManagerImpl;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import junit.framework.Assert;
 import org.jmock.Expectations;

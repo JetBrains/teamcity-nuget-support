@@ -10,12 +10,12 @@
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstalledToolsController"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstallToolController"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsStateImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableToolsStateImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsSettings"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolManagerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstallerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolDownloaderImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistryImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolManagerImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolsInstallerImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolDownloaderImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.ToolsRegistryImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPacker"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolUnpacker"/>
   <bean class="jetbrains.buildServer.nuget.server.impl.ToolPathsImpl"/>
@@ -30,5 +30,5 @@
     </constructor-arg>
   </bean>
 
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcherImpl" init-method="start" destroy-method="dispose"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.ToolsWatcherImpl" init-method="start" destroy-method="dispose"/>
 </beans>
