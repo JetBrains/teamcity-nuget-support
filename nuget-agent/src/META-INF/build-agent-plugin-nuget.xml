@@ -23,4 +23,7 @@
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl"/>
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser" />
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl"/>
+
+
+  <bean class="jetbrains.buildServer.nuget.agent.runner.EnabledPackagesOptionSetter"/>
 </beans>
