@@ -105,6 +105,19 @@ public class ToolSelectorController extends BaseController {
   @NotNull
   private Collection<ToolInfo> getTools() {
     final ArrayList<ToolInfo> result = new ArrayList<ToolInfo>();
+
+    final NuGetInstalledTool defaultTool = myToolManager.getDefaultTool();
+    final String defaultToolName;
+    if (defaultTool != null) {
+      defaultToolName = "default (" + defaultTool.getVersion() + ")";
+    } else {
+      defaultToolName = "default (not yet selected)";
+    }
+
+    result.add(new ToolInfo(
+            NuGetTools.getDefaultToolPath(),
+            defaultToolName));
+
     for (NuGetInstalledTool nuGetInstalledTool : myToolManager.getInstalledTools()) {
       result.add(new ToolInfo(nuGetInstalledTool));
     }
