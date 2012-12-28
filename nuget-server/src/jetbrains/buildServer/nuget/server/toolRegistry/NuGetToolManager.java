@@ -34,12 +34,6 @@ public interface NuGetToolManager {
   Collection<? extends NuGetInstalledTool> getInstalledTools();
 
   /**
-   * @return list of tools that are installing now
-   */
-  @NotNull
-  Collection<NuGetInstallingTool> getInstallingTool();
-
-  /**
    * @param policy kind of packages to return
    * @return fetches the full list of available and supported nuget tools
    * @throws FetchException on fetch error if it was called

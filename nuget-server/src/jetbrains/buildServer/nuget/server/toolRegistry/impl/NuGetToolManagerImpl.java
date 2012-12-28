@@ -75,11 +75,6 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   @NotNull
-  public Collection<NuGetInstallingTool> getInstallingTool() {
-    return Collections.emptyList();
-  }
-
-  @NotNull
   public Collection<? extends NuGetTool> getAvailableTools(@NotNull ToolsPolicy policy) throws FetchException {
     final Set<String> installed = new HashSet<String>();
     for (NuGetInstalledTool tool : getInstalledTools()) {

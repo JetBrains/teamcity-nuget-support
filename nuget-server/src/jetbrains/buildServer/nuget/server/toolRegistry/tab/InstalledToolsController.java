@@ -21,7 +21,6 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.settings.SettingsSection;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstallingTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
@@ -94,7 +93,8 @@ public class InstalledToolsController extends BaseController implements Settings
   }
 
   @Override
-  protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
+                                  @NotNull final HttpServletResponse response) throws Exception {
     ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/tools.jsp"));
     mv.getModelMap().put("tools", getModel());
     mv.getModelMap().put("installerUrl", myInstaller.getPath());
@@ -103,27 +103,7 @@ public class InstalledToolsController extends BaseController implements Settings
   }
 
   @NotNull
-  private Collection<LocalTool> getModel() {
-    final List<LocalTool> tools = new ArrayList<LocalTool>();
-
-    for (NuGetInstalledTool tool : myToolsManager.getInstalledTools()) {
-      tools.add(new LocalTool(
-              tool.getId(),
-              tool.getVersion(),
-              LocalToolState.INSTALLED, 
-              Collections.<String>emptyList()
-      ));
-    }
-
-    for (NuGetInstallingTool tool : myToolsManager.getInstallingTool()) {
-      tools.add(new LocalTool(
-              tool.getId(),
-              tool.getVersion(),
-              LocalToolState.INSTALLING,
-              tool.getInstallMessages()
-      ));
-    }
-
-    return tools;
+  private Collection<NuGetInstalledTool> getModel() {
+    return new ArrayList<NuGetInstalledTool>(myToolsManager.getInstalledTools());
   }
 }

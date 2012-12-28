@@ -15,7 +15,7 @@
   --%>
 
 <%@ include file="/include-internal.jsp" %>
-<jsp:useBean id="tools" type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.tab.LocalTool>" scope="request"/>
+<jsp:useBean id="tools" type="java.util.Collection< jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool >" scope="request"/>
 <jsp:useBean id="installerUrl" type="java.lang.String" scope="request"/>
 <jsp:useBean id="updateUrl" type="java.lang.String" scope="request"/>
 
@@ -46,15 +46,7 @@
             <tr>
               <td class="name"><c:out value="${tool.version}"/></td>
               <td class="value edit" style="width: 4%;">
-                <c:choose>
-                  <c:when test="${tool.state.installed}">
-                    <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
-                  </c:when>
-                  <c:when test="${tool.state.installing}">
-                    <bs:commentIcon text="Messages"/>
-                    Installing...
-                  </c:when>
-                </c:choose>
+                <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
               </td>
             </tr>
           </c:forEach>
