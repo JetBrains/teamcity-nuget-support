@@ -34,6 +34,7 @@
   </c:forEach>
 </div>
 <div class="clr"></div>
+<div style="padding-bottom: 1em"></div>
 
 <script type="text/javascript">
   <c:url var="baseUrl" value="/admin/admin.html?item=nugetServerSettingsTab"/>

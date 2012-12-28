@@ -96,9 +96,11 @@ public class InstalledToolsController extends BaseController implements Settings
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
     ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/tools.jsp"));
-    mv.getModelMap().put("tools", getModel());
-    mv.getModelMap().put("installerUrl", myInstaller.getPath());
-    mv.getModelMap().put("updateUrl", this.getPath());
+    mv.getModel().put("tools", getModel());
+    mv.getModel().put("installerUrl", myInstaller.getPath());
+    mv.getModel().put("updateUrl", this.getPath());
+    mv.getModel().put("hasDefaultSelected", myToolsManager.getDefaultTool() != null);
+
     return mv;
   }
 

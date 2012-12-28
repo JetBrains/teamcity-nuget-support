@@ -32,7 +32,7 @@
 <c:set var="nugetSettingsPostFullUrl"><c:url value="${nugetSettingsPostUrl}"/></c:set>
 
 <bs:refreshable containerId="nugetEnableDisable" pageUrl="${nugetStatusRefreshFullUrl}">
-  <div style="padding-top:1em;" data-url="${nugetSettingsPostFullUrl}">
+  <div data-url="${nugetSettingsPostFullUrl}">
     NuGet Server<bs:help file="NuGet"/> is
     <c:choose>
       <c:when test="${serverEnabled}">

@@ -16,6 +16,7 @@
 
 <%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="tools" type="java.util.Collection< jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool >" scope="request"/>
+<jsp:useBean id="hasDefaultSelected" type="java.lang.Boolean" scope="request"/>
 <jsp:useBean id="installerUrl" type="java.lang.String" scope="request"/>
 <jsp:useBean id="updateUrl" type="java.lang.String" scope="request"/>
 
@@ -25,14 +26,18 @@
 
 <bs:linkScript>/js/bs/multipart.js</bs:linkScript>
 
-<p style="width: 40em;">
+<c:if test="${not hasDefaultSelected}">
+  <div class="attentionComment">No default is NuGet specified. Please specify default NuGet version by clicking on 'make default' link</div>
+</c:if>
+
+<div>
   Listed NuGet versions are automatically distributed to all build agents and can be used in NuGet-related runners.
-</p>
-<p>
+</div>
+<div>
   There <bs:are_is val="${installedPluginsCount}"/>
   <strong><c:out value="${installedPluginsCount}"/></strong>
   NuGet<bs:s val="${installedPluginsCount}"/> installed.
-</p>
+</div>
 
   <c:if test="${not (installedPluginsCount eq 0)}">
     <table class="settings" cellpadding="0" cellspacing="0" style="width: 70%">
