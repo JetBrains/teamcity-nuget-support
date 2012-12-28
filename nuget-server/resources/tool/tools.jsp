@@ -35,32 +35,33 @@
 </p>
 
   <c:if test="${not (installedPluginsCount eq 0)}">
-      <table class="settings" cellpadding="0" cellspacing="0" style="width: 70%">
-        <thead>
+    <table class="settings" cellpadding="0" cellspacing="0" style="width: 70%">
+      <thead>
+      <tr>
+        <th class="name" colspan="3" style="padding: 0.5em 1em">NuGet Version</th>
+      </tr>
+      </thead>
+      <tbody>
+      <c:forEach var="tool" items="${tools}">
         <tr>
-          <th class="name" colspan="3" style="padding: 0.5em 1em">NuGet Version</th>
+          <td style="
+          <c:if test="${tool.defaultTool}">font-weight: bold;</c:if> ">
+            <c:out value="${tool.version}"/>
+            <c:if test="${tool.defaultTool}">
+              <em> (default)</em>
+            </c:if>
+          </td>
+          <td class="value edit" style="width: 4%;">
+            <c:if test="${not tool.defaultTool}">
+              <a href="#" onclick="BS.NuGet.Tools.makeDefaultTool('<bs:forJs>${tool.id}</bs:forJs>');">make&nbsp;default</a>
+            </c:if>
+          </td>
+          <td class="value edit" style="width: 4%;">
+            <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">remove</a>
+          </td>
         </tr>
-        </thead>
-        <tbody>
-          <c:forEach var="tool" items="${tools}">
-            <tr>
-              <td style="<c:if test="${tool.defaultTool}">font-weight: bold;</c:if> ">
-                <c:out value="${tool.version}"/>
-                <c:if test="${tool.defaultTool}">
-                    <em> (default)</em>
-                </c:if>
-              </td>
-              <td class="value edit" style="width: 4%;">
-                <c:if test="${not tool.defaultTool}">
-                  <a href="#" onclick="BS.NuGet.Tools.makeDefaultTool('<bs:forJs>${tool.id}</bs:forJs>');">make&nbsp;default</a>
-                </c:if>
-              </td>
-              <td class="value edit" style="width: 4%;">
-                <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">remove</a>
-              </td>
-            </tr>
-          </c:forEach>
-        </tbody>
+      </c:forEach>
+      </tbody>
     </table>
   </c:if>
   <div style="margin-top: 1em;">
