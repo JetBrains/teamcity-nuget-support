@@ -11,7 +11,8 @@ import java.io.File;
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
 public interface NuGetToolsInstaller {
-  void installNuGet(@NotNull String toolName, @NotNull File toolFile) throws ToolException;
+  @NotNull
+  String installNuGet(@NotNull String toolName, @NotNull File toolFile) throws ToolException;
 
   void validatePackage(@NotNull File packageFile) throws ToolException;
 }

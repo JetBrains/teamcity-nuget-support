@@ -94,7 +94,7 @@ public class ToolsRegistryTest extends BaseTestCase {
     File pkg = file(myPackagesHome, name + ".nupkg");
     file(myAgentHome, name + ".nupkg.zip");
     file(myToolsHome, name + ".nupkg/tools/nuget.exe");
-    return new InstalledTool(myNaming, pkg);
+    return new InstalledToolImpl(myNaming, pkg);
   }
 
   @Test
@@ -112,7 +112,7 @@ public class ToolsRegistryTest extends BaseTestCase {
   @Test
   public void test_package_with_error() {
     m.checking(new Expectations(){{
-      oneOf(myWatcher).updatePackage(with(any(InstalledTool.class)));
+      oneOf(myWatcher).updatePackage(with(any(InstalledToolImpl.class)));
     }});
 
     InstalledTool nupkg = nupkg("NuGet.CommandLine.1.2.3.4");

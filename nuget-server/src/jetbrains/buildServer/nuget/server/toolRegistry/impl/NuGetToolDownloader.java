@@ -9,5 +9,6 @@ import org.jetbrains.annotations.NotNull;
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
 public interface NuGetToolDownloader {
-  void installNuGet(@NotNull String packageId) throws ToolException;
+  @NotNull
+  String installNuGet(@NotNull String packageId) throws ToolException;
 }

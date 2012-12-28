@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
@@ -128,7 +129,9 @@ public class InstallToolController extends BaseFormXmlController {
     try {
       switch (whatToDo) {
         case INSTALL:
-          myToolsManager.installTool(toolId);
+          final NuGetTool downloadedTool = myToolsManager.downloadTool(toolId);
+          updateDefault(request, downloadedTool);
+
           return;
 
         case DEFAULT:
@@ -145,7 +148,8 @@ public class InstallToolController extends BaseFormXmlController {
           final File tempFile = new File(file);
 
           try {
-            myToolsManager.installTool(tempFile.getName(), tempFile);
+            final NuGetTool uploadedTool = myToolsManager.installTool(tempFile.getName(), tempFile);
+            updateDefault(request, uploadedTool);
           } finally {
             FileUtil.delete(tempFile);
           }
@@ -157,5 +161,11 @@ public class InstallToolController extends BaseFormXmlController {
     } catch (ToolException e) {
       ae.addError("toolId", e.getMessage());
     }
+  }
+
+  private void updateDefault(@NotNull HttpServletRequest request,
+                             @NotNull NuGetTool tool) {
+    if (StringUtil.isEmptyOrSpaces(request.getParameter("setAsDefault"))) return;
+    myToolsManager.setDefaultTool(tool.getId());
   }
 }

@@ -45,8 +45,10 @@ public interface NuGetToolManager {
    * Downloads and installs nuget tools for both server and agent
    * @param toolId tool id for tool to install
    * @throws ToolException on tool installation error
+   * @return installed NuGet tool
    */
-  void installTool(@NotNull String toolId) throws ToolException;
+  @NotNull
+  NuGetTool downloadTool(@NotNull String toolId) throws ToolException;
 
 
   /**
@@ -54,8 +56,10 @@ public interface NuGetToolManager {
    * @param toolName name of the NuGet Commandline package. Expected to be informat NuGet.CommandLine.x.y.z*.nupkg
    * @param toolFile path to Tool file to be copied as the result of install
    * @throws ToolException in case file is wrong
+   * @return installed NuGet tool
    */
-  void installTool(@NotNull final String toolName, @NotNull File toolFile) throws ToolException;
+  @NotNull
+  NuGetTool installTool(@NotNull final String toolName, @NotNull File toolFile) throws ToolException;
 
   /**
    * Removes tool from server and build agents

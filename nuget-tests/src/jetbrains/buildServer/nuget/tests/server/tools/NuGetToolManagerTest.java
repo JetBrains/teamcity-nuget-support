@@ -7,6 +7,7 @@ import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.impl.ToolPathsImpl;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolManagerImpl;
 import jetbrains.buildServer.serverSide.ServerPaths;
@@ -19,7 +20,6 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Created 27.12.12 18:34
@@ -60,9 +60,33 @@ public class NuGetToolManagerTest extends BaseTestCase {
   }
 
   @Test
+  public void test_updload_tool() throws ToolException {
+    final InstalledTool it = m.mock(InstalledTool.class);
+
+    m.checking(new Expectations(){{
+      oneOf(myInstaller).installNuGet("aaa", new File("foo")); will(returnValue("zzz"));
+      oneOf(myToolsRegistry).findTool("zzz"); will(returnValue(it));
+    }});
+
+    Assert.assertSame(it, myToolManager.installTool("aaa", new File("foo")));
+  }
+
+  @Test
+  public void test_install_tool() throws ToolException {
+    final InstalledTool it = m.mock(InstalledTool.class);
+
+    m.checking(new Expectations(){{
+      oneOf(myDownloader).installNuGet("aaa"); will(returnValue("zzz"));
+      oneOf(myToolsRegistry).findTool("zzz"); will(returnValue(it));
+    }});
+
+    Assert.assertSame(it, myToolManager.downloadTool("aaa"));
+  }
+
+  @Test
   public void test_default_tool_null() {
     m.checking(new Expectations(){{
-      allowing(myToolsRegistry).getTools(); will(returnValue(Collections.emptyList()));
+      allowing(myToolsRegistry).findTool(null); will(returnValue(null));
     }});
     Assert.assertNull(myToolManager.getDefaultTool());
   }
@@ -70,12 +94,12 @@ public class NuGetToolManagerTest extends BaseTestCase {
   @Test
   public void test_default_tool_2() {
     myToolManager.setDefaultTool("aaa");
-    final NuGetInstalledTool it = m.mock(NuGetInstalledTool.class);
+    final InstalledTool it = m.mock(InstalledTool.class);
     m.checking(new Expectations(){{
       allowing(it).getId(); will(returnValue("aaa"));
       allowing(it).getPath(); will(returnValue(new File("some-path")));
       allowing(it).getVersion(); will(returnValue("42.333.667"));
-      allowing(myToolsRegistry).getTools(); will(returnValue(Arrays.asList(it)));
+      allowing(myToolsRegistry).findTool("aaa"); will(returnValue(it));
     }});
 
     NuGetInstalledTool ret = myToolManager.getDefaultTool();
@@ -84,6 +108,18 @@ public class NuGetToolManagerTest extends BaseTestCase {
     Assert.assertEquals(it.getId(), ret.getId());
     Assert.assertEquals(it.getPath(), ret.getPath());
     Assert.assertEquals(it.getVersion(), ret.getVersion());
+  }
+
+  @Test
+  public void test_default_tool_3() {
+    myToolManager.setDefaultTool("aaa");
+
+    m.checking(new Expectations(){{
+      allowing(myToolsRegistry).findTool("aaa"); will(returnValue(null));
+    }});
+
+    NuGetInstalledTool ret = myToolManager.getDefaultTool();
+    Assert.assertNull(ret);
   }
 
   @Test
@@ -101,8 +137,10 @@ public class NuGetToolManagerTest extends BaseTestCase {
 
   @Test
   public void test_nuget_path_preset() throws IOException {
+    final InstalledTool it = m.mock(InstalledTool.class);
     m.checking(new Expectations(){{
-      allowing(myToolsRegistry).getNuGetPath("aaa"); will(returnValue(new File("some-path")));
+      allowing(it).getPath(); will(returnValue(new File("some-path")));
+      allowing(myToolsRegistry).findTool("aaa"); will(returnValue(it));
     }});
 
     Assert.assertEquals(myToolManager.getNuGetPath("?aaa"), "some-path");
@@ -112,8 +150,10 @@ public class NuGetToolManagerTest extends BaseTestCase {
   public void test_nuget_resolves_default_tool() {
     myToolManager.setDefaultTool("aaa");
 
+    final InstalledTool it = m.mock(InstalledTool.class);
     m.checking(new Expectations(){{
-      allowing(myToolsRegistry).getNuGetPath("aaa"); will(returnValue(new File("some-path")));
+      allowing(it).getPath(); will(returnValue(new File("some-path")));
+      allowing(myToolsRegistry).findTool("aaa"); will(returnValue(it));
     }});
 
     Assert.assertEquals(myToolManager.getNuGetPath(NuGetTools.getDefaultToolPath()), "some-path");
@@ -124,7 +164,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
     myToolManager.setDefaultTool("bbb");
 
     m.checking(new Expectations(){{
-      allowing(myToolsRegistry).getNuGetPath("bbb"); will(returnValue(null));
+      allowing(myToolsRegistry).findTool("bbb"); will(returnValue(null));
     }});
 
     myToolManager.getNuGetPath(NuGetTools.getDefaultToolPath());

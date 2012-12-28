@@ -35,7 +35,8 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
     myInstaller = installer;
   }
 
-  public void installNuGet(@NotNull final String packageId) throws ToolException {
+  @NotNull
+  public String installNuGet(@NotNull final String packageId) throws ToolException {
     LOG.info("Start installing package " + packageId);
 
     final FeedPackage tool = myState.findTool(packageId);
@@ -47,7 +48,7 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
     final String key = tool.getInfo().getId() + "." + tool.getInfo().getVersion();
     final File tmp = createTempFile(key);
     downloadPackage(tool, tmp);
-    myInstaller.installNuGet(key + NUGET_EXTENSION, tmp);
+    return myInstaller.installNuGet(key + NUGET_EXTENSION, tmp);
   }
 
   @NotNull

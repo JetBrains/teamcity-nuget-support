@@ -17,7 +17,6 @@
 <jsp:useBean id="installTools" type="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstallToolBean" scope="request"/>
 
 <div id="nugetInstallFormResreshInner">
-  <input type="hidden" name="whatToDo" value="${installTools.whatToDo}" />
   <input type="hidden" name="toolId" value="custom" />
 
   <table class="runnerFormTable">
@@ -38,6 +37,7 @@
         <span class="error" id="error_toolId"></span>
       </td>
     </tr>
+    <jsp:include page="toolOptions.jsp"/>
   </table>
 
 </div>

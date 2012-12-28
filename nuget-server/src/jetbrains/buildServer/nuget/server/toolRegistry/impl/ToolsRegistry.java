@@ -3,7 +3,6 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.Collection;
 
 /**
@@ -14,9 +13,6 @@ import java.util.Collection;
 public interface ToolsRegistry {
   @NotNull
   Collection<? extends InstalledTool> getTools();
-
-  @Nullable
-  File getNuGetPath(@Nullable String toolId);
 
   @Nullable
   InstalledTool findTool(@Nullable String toolId);

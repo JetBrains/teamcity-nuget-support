@@ -47,8 +47,9 @@ public class NuGetToolsInstallerImpl implements NuGetToolsInstaller {
     myWatcher = watcher;
   }
 
-  public void installNuGet(@NotNull final String toolName,
-                           @NotNull final File toolFile) throws ToolException {
+  @NotNull
+  public String installNuGet(@NotNull final String toolName,
+                             @NotNull final File toolFile) throws ToolException {
     LOG.info("Start installing package " + toolName + " from file: " + toolFile);
 
     if (!FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(toolName)) {
@@ -58,8 +59,8 @@ public class NuGetToolsInstallerImpl implements NuGetToolsInstaller {
     final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolName);
     validatePackage(toolFile);
     publishDownloadedPackage(dest, toolFile);
+    return toolName;
   }
-
 
   private void publishDownloadedPackage(@NotNull final File dest, @NotNull final File tmp) throws ToolException {
     if (dest.isFile()) {

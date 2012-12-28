@@ -19,10 +19,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.ToolPaths;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,13 +54,6 @@ public class ToolsRegistryImpl implements ToolsRegistry {
   }
 
   @Nullable
-  public File getNuGetPath(@Nullable String id) {
-    InstalledTool tool = findTool(id);
-    if (tool != null) return tool.getPath();
-    return null;
-  }
-
-  @Nullable
   public InstalledTool findTool(@Nullable String id) {
     if (id == null || StringUtil.isEmptyOrSpaces(id)) return null;
     for (InstalledTool tool : getToolsInternal()) {
@@ -80,13 +70,14 @@ public class ToolsRegistryImpl implements ToolsRegistry {
     myWatcher.updatePackage(tool);
   }
 
+  @NotNull
   private Collection<InstalledTool> getToolsInternal() {
     final File[] tools = myPaths.getNuGetToolsPackages().listFiles(FeedConstants.PACKAGE_FILE_FILTER);
     if (tools == null) return Collections.emptyList();
 
     final List<InstalledTool> result = new ArrayList<InstalledTool>();
     for (final File path : tools) {
-      final InstalledTool e = new InstalledTool(myNaming, path);
+      final InstalledTool e = new InstalledToolImpl(myNaming, path);
       if (!e.getPath().isFile()) {
         handlePackageError(e, "NuGet.exe is not found at " + e);
         continue;

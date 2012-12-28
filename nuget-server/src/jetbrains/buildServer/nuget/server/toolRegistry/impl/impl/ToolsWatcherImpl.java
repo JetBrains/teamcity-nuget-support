@@ -101,11 +101,11 @@ public class ToolsWatcherImpl implements ToolsWatcher {
                                            @NotNull final List<File> added,
                                            @NotNull final List<File> removed) {
     for (File file : CollectionsUtil.join(modified, removed)) {
-      removePackage(new InstalledTool(myNaming, file));
+      removePackage(new InstalledToolImpl(myNaming, file));
     }
 
     for (File file : CollectionsUtil.join(modified, added)) {
-      installPackage(new InstalledTool(myNaming, file));
+      installPackage(new InstalledToolImpl(myNaming, file));
     }
   }
 

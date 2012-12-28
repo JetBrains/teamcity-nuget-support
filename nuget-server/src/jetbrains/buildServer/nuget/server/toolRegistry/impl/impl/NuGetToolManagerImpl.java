@@ -88,12 +88,28 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     return available;
   }
 
-  public void installTool(@NotNull String toolId) throws ToolException {
-    myDownloader.installNuGet(toolId);
+  @NotNull
+  public NuGetTool downloadTool(@NotNull String toolId) throws ToolException {
+    return findInstalledTool(myDownloader.installNuGet(toolId));
   }
 
-  public void installTool(@NotNull String toolName, @NotNull File toolFile) throws ToolException {
-    myInstaller.installNuGet(toolName, toolFile);
+  @NotNull
+  public NuGetTool installTool(@NotNull String toolName, @NotNull File toolFile) throws ToolException {
+    return findInstalledTool(myInstaller.installNuGet(toolName, toolFile));
+  }
+
+  @NotNull
+  private InstalledTool findInstalledTool(@NotNull final String toolId) throws ToolException {
+    final InstalledTool tool = findTool(toolId);
+    if (tool == null) {
+      throw new ToolException("Failed to find installed tool " + toolId);
+    }
+    return tool;
+  }
+
+  @Nullable
+  private InstalledTool findTool(@Nullable final String toolId) {
+    return myInstalled.findTool(toolId);
   }
 
   public void removeTool(@NotNull String toolId) {
@@ -111,28 +127,27 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
       }
 
       final String ref = NuGetTools.getToolReference(id);
-      final File nuGetPath = myInstalled.getNuGetPath(id);
+      final InstalledTool nuGetPath = findTool(id);
       if (nuGetPath == null) {
         throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified version " + ref + " was not found");
       }
-      return nuGetPath.getPath();
+      return nuGetPath.getPath().getPath();
     }
 
     final String id = NuGetTools.getReferredToolId(path);
     if (id == null) return path;
-    final File nuGetPath = myInstalled.getNuGetPath(id);
+    final InstalledTool nuGetPath = findTool(id);
     if (nuGetPath != null) {
-      return nuGetPath.getPath();
+      return nuGetPath.getPath().getPath();
     }
     throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " version " + id);
   }
 
   @Nullable
   public NuGetInstalledTool getDefaultTool() {
-    for (NuGetInstalledTool tool : getInstalledTools()) {
-      if (tool.isDefaultTool()) return tool;
-    }
-    return null;
+    InstalledTool tool = findTool(getDefaultToolId());
+    if (tool == null) return null;
+    return new DefaultTool(tool);
   }
 
   public void setDefaultTool(@NotNull final String toolId) {
