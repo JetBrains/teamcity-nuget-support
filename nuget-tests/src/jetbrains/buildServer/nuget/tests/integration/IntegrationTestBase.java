@@ -85,6 +85,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new Object[] { NuGet.NuGet_1_7},
             new Object[] { NuGet.NuGet_1_8},
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 
@@ -95,6 +97,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new Object[] { NuGet.NuGet_1_7},
             new Object[] { NuGet.NuGet_1_8},
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 
@@ -105,6 +109,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new Object[] { NuGet.NuGet_1_7},
             new Object[] { NuGet.NuGet_1_8},
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 
@@ -114,6 +120,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new Object[] { NuGet.NuGet_1_7},
             new Object[] { NuGet.NuGet_1_8},
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 
@@ -122,6 +130,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     return new Object[][]{
             new Object[] { NuGet.NuGet_1_8},
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 
