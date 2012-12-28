@@ -78,7 +78,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
 
     NuGetInstalledTool ret = myToolManager.getDefaultTool();
     Assert.assertNotNull(ret);
-    Assert.assertTrue(ret.isDefault());
+    Assert.assertTrue(ret.isDefaultTool());
     Assert.assertEquals(it.getId(), ret.getId());
     Assert.assertEquals(it.getPath(), ret.getPath());
     Assert.assertEquals(it.getVersion(), ret.getVersion());

@@ -131,6 +131,10 @@ public class InstallToolController extends BaseFormXmlController {
           myToolsManager.installTool(toolId);
           return;
 
+        case DEFAULT:
+          myToolsManager.setDefaultTool(toolId);
+          return;
+
         case UPLOAD:
           LOG.debug("Processing NuGet commandline upload.");
 

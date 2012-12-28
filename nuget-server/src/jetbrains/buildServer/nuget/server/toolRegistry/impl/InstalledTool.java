@@ -39,7 +39,7 @@ public class InstalledTool implements NuGetInstalledTool {
     myPath = path;
   }
 
-  public boolean isDefault() {
+  public boolean isDefaultTool() {
     return false;
   }
 

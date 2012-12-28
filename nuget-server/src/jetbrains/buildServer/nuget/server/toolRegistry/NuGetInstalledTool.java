@@ -32,5 +32,5 @@ public interface NuGetInstalledTool extends NuGetTool {
    * @return true if this tool was selected as default
    * @since v0.9
    */
-  boolean isDefault();
+  boolean isDefaultTool();
 }

@@ -119,7 +119,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   @Nullable
   public NuGetInstalledTool getDefaultTool() {
     for (NuGetInstalledTool tool : getInstalledTools()) {
-      if (tool.isDefault()) return tool;
+      if (tool.isDefaultTool()) return tool;
     }
     return null;
   }

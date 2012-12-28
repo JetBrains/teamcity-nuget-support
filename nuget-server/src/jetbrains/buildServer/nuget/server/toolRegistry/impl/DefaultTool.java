@@ -22,7 +22,7 @@ public class DefaultTool implements NuGetInstalledTool {
     return myTool.getPath();
   }
 
-  public boolean isDefault() {
+  public boolean isDefaultTool() {
     return true;
   }
 

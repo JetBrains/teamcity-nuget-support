@@ -38,13 +38,25 @@
       <table class="settings" cellpadding="0" cellspacing="0" style="width: 50%;">
         <thead>
         <tr>
-          <th class="name" colspan="2">NuGet Version</th>
+          <th class="name" colspan="3">NuGet Version</th>
         </tr>
         </thead>
         <tbody>
           <c:forEach var="tool" items="${tools}">
             <tr>
-              <td class="name"><c:out value="${tool.version}"/></td>
+              <td class="name">
+                <c:out value="${tool.version}"/>
+                <c:if test="${tool.defaultTool}">
+                  <div style="float:right">
+                    <strong> (default)</strong>
+                  </div>
+                </c:if>
+              </td>
+              <td class="value edit" style="width: 4%;">
+                <c:if test="${not tool.defaultTool}">
+                  <a href="#" onclick="BS.NuGet.Tools.makeDefaultTool('<bs:forJs>${tool.id}</bs:forJs>');">Default</a>
+                </c:if>
+              </td>
               <td class="value edit" style="width: 4%;">
                 <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
               </td>

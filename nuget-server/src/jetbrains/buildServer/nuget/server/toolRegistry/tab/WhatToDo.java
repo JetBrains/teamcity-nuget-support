@@ -12,6 +12,7 @@ public enum WhatToDo {
   INSTALL("install"),
   UPLOAD("custom"),
   REMOVE("remove"),
+  DEFAULT("default"),
   ;
   private final String myName;
 

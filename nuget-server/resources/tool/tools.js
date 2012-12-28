@@ -38,6 +38,19 @@ BS.NuGet.Tools = {
     })
   },
 
+  makeDefaultTool : function(toolId) {
+    BS.ajaxRequest(this.installUrl, {
+      parameters : {
+        whatToDo : "default",
+        toolId : toolId
+      },
+
+      onComplete: function() {
+        BS.NuGet.Tools.refreshPackagesList();
+      }
+    })
+  },
+
   InstallPopup : OO.extend(BS.PluginPropertiesForm, OO.extend(BS.AbstractModalDialog, {
     getContainer : function() {
       return $('nugetInstallFormDialog');
