@@ -107,15 +107,15 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     if (NuGetTools.isDefaultToolPath(path)) {
       final String id = getDefaultToolId();
       if (id == null || StringUtil.isEmptyOrSpaces(id)) {
-        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE + ". No default version is set");
+        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE + ". No default version was set");
       }
 
       final String ref = NuGetTools.getToolReference(id);
-      if (NuGetTools.isDefaultToolPath(ref)) {
-        throw new RuntimeException("Unexpected default NuGet version. Please review NuGet Tools section");
+      final File nuGetPath = myInstalled.getNuGetPath(id);
+      if (nuGetPath == null) {
+        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified version " + ref + " was not found");
       }
-
-      return getNuGetPath(ref);
+      return nuGetPath.getPath();
     }
 
     final String id = NuGetTools.getReferredToolId(path);
