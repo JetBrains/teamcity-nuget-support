@@ -6,7 +6,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
   public class NuGetFeedAuthenticationTest : NuGetFeedAuthenticationTestCase
   {
     [TestCase(NuGetVersion.NuGet_2_0)]
-    [TestCase(NuGetVersion.NuGet_2_1_CI)]
+    [TestCase(NuGetVersion.NuGet_2_1)]
+    [TestCase(NuGetVersion.NuGet_2_2)]
     [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
     [TestCase(NuGetVersion.NuGet_Latest_CI)]
     public void TestSetUrl(NuGetVersion version)

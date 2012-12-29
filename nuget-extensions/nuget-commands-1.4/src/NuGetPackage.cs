@@ -12,7 +12,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
   public class NuGetPackage
   {
     [XmlIgnore]
-    private readonly Lazy<Func<IPackage, bool>> myVersionSpec;    
+    private readonly Lazy<Func<IPackage, bool>> myVersionSpec;
     [XmlIgnore]
     private readonly List<NuGetPackageEntry> myEntries = new List<NuGetPackageEntry>();
 
@@ -20,20 +20,20 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     {
       myVersionSpec = new Lazy<Func<IPackage, bool>>(
         () =>
+        {
+          try
           {
-            try
-            {
-              var spec = VersionSpec;
-              if (string.IsNullOrWhiteSpace(spec)) return True;
-              var pSpec = VersionUtility.ParseVersionSpec(spec);
-              return xx => Enumerable.Any(new[] {xx}.FindByVersion(pSpec));
-            }
-            catch(Exception e)
-            {
-              Console.Out.WriteLine("Error: " + e);
-              return True;
-            }
-          });
+            var spec = VersionSpec;
+            if (string.IsNullOrWhiteSpace(spec)) return True;
+            var pSpec = VersionUtility.ParseVersionSpec(spec);
+            return xx => Enumerable.Any(new[] { xx }.FindByVersion(pSpec));
+          }
+          catch (Exception e)
+          {
+            Console.Out.WriteLine("Error: " + e);
+            return True;
+          }
+        });
     }
 
     [XmlAttribute("include-prerelease")]
@@ -81,7 +81,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     }
 
     public void AddEntry(NuGetPackageEntry entry)
-    {      
+    {
       myEntries.Add(entry);
     }
 
