@@ -44,7 +44,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
           File.Copy(Files.GetNuGetExe(version), destNuGet);
           File.Copy(Files.NuGetRunnerExe, destRunner);
-          const string ext = "JetBrains.TeamCity.NuGet.ExtendedCommands.dll";
+          const string ext = "JetBrains.TeamCity.NuGet.ExtendedCommands.1.4.dll";
           Directory.CreateDirectory(Path.Combine(home, "plugins-1.4"));
           File.Copy(Path.Combine(Files.NuGetRunnerExe, "../plugins-1.4/" + ext), Path.Combine(home, "plugins-1.4/" + ext));
 
