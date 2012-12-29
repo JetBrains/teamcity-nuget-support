@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright 2000-2011 JetBrains s.r.o.
+  ~ Copyright 2000-2012 JetBrains s.r.o.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 <c:set var="nugetPrivatePath"><c:url value="${nugetPrivateUrl}"/></c:set>
 <c:set var="nugetPublicPath"><c:url value="${nugetPublicUrl}"/></c:set>
 
-<div class="divider"></div>
 <p class="toolTitle" style="background: url('<c:url value="${imagesUrl}/nuget.png"/>') no-repeat">NuGet Feeds</p>
 
 <a showdiscardchangesmessage="false"

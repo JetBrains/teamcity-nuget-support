@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,6 @@ import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGetBulk;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +41,7 @@ import java.util.*;
 public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageCheckerNuGetBulk> {
   @Override
   protected PackageCheckerNuGetBulk createChecker() {
-    return new PackageCheckerNuGetBulk(myCommand, myCalculator, mySettings);
+    return new PackageCheckerNuGetBulk(myCommand, mySettings);
   }
 
   @BeforeMethod
@@ -62,6 +60,11 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
       will(returnValue(false));
     }});
     Assert.assertFalse(myChecker.accept(new PackageCheckRequest(nugetMode(), ref())));
+  }
+
+  @Test
+  public void test_available_01x() throws IOException {
+    Assert.assertFalse(myChecker.accept(new PackageCheckRequest(javaMode(), ref())));
   }
 
   @Test
@@ -93,7 +96,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
     final SourcePackageReference ref = ref();
     final Collection<SourcePackageInfo> aaa = Arrays.asList(ref.toInfo("aaa"));
     final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.singletonMap(ref, aaa);
-    final CheckablePackage task = checkablePackage("aqqq", ref, CheckResult.fromResult(aaa));
+    final CheckablePackage task = checkablePackage("aqqq", ref, equal(CheckResult.fromResult(aaa)));
     m.checking(new Expectations(){{
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(returnValue(result));
     }});
@@ -107,7 +110,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
     final SourcePackageReference ref = ref();
     final Collection<SourcePackageInfo> aaa = Collections.emptyList();
     final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.singletonMap(ref, aaa);
-    final CheckablePackage task = checkablePackage("aqqq", ref, CheckResult.failed("Package was not found in the feed"));
+    final CheckablePackage task = checkablePackage("aqqq", ref, empty());
     m.checking(new Expectations(){{
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(returnValue(result));
     }});
@@ -164,50 +167,10 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(throwException(new NuGetExecutionException("aaa")));
     }});
 
-    final CheckablePackage task = checkablePackage("aaa", ref, CheckResult.failed("aaa"));
+    final CheckablePackage task = checkablePackage("aaa", ref, failed("aaa"));
     myChecker.update(myExecutor, Arrays.asList(task));
 
     m.assertIsSatisfied();
-  }
-
-  private class Expectations extends org.jmock.Expectations {
-    public <T> Matcher<Collection<T>> sz(Class<T> clazz, final int sz) {
-      return new BaseMatcher<Collection<T>>() {
-        public boolean matches(Object o) {
-          Collection c = (Collection) o;
-          return c.size() <= sz;
-        }
-
-        public void describeTo(Description description) {
-          description.appendText("Collection size == ").appendValue(sz);
-        }
-      };
-    }
-
-    public Matcher<Collection<SourcePackageReference>> col(final SourcePackageReference... args) {
-      return col(Arrays.asList(args));
-    }
-
-    public Matcher<Collection<SourcePackageReference>> col(final List<SourcePackageReference> _args) {
-      final List<SourcePackageReference> args = new ArrayList<SourcePackageReference>(_args);
-      return new BaseMatcher<Collection<SourcePackageReference>>() {
-        public boolean matches(Object o) {
-          @SuppressWarnings("unchecked")
-          final List<SourcePackageReference> c = new ArrayList<SourcePackageReference>((Collection<SourcePackageReference>) o);
-          if (c.size() != args.size()) return false;
-
-          for (int i = 0; i < args.size(); i++) {
-            SourcePackageReference arg = args.get(i);
-            if (!arg.equals(c.get(i))) return false;
-          }
-          return true;
-        }
-
-        public void describeTo(Description description) {
-          description.appendValue(args);
-        }
-      };
-    }
   }
 
   @NotNull
@@ -219,7 +182,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   @NotNull
   private CheckablePackage checkablePackage(@NotNull final String name,
                                             @NotNull final SourcePackageReference ref,
-                                            @Nullable final CheckResult result) {
+                                            @Nullable final Matcher<CheckResult> result) {
     final CheckablePackage cp = m.mock(CheckablePackage.class, name);
     m.checking(new Expectations(){{
       allowing(cp).getPackage(); will(returnValue(ref));
@@ -229,7 +192,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
       if (result == null) {
         oneOf(cp).setResult(with(any(CheckResult.class)));
       } else {
-        oneOf(cp).setResult(with(equal(result)));
+        oneOf(cp).setResult(with(result));
       }
     }});
     return cp;

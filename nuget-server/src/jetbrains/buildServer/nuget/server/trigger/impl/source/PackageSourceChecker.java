@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry.impl;
+package jetbrains.buildServer.nuget.server.trigger.impl.source;
 
-import jetbrains.buildServer.nuget.server.ToolPaths;
-import jetbrains.buildServer.serverSide.impl.agent.AgentPluginsHolder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 16.08.11 15:21
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ *         Date: 18.07.12 17:31
+ * @since 7.1
  */
-public class AgentToolsRegistrar {
-  public AgentToolsRegistrar(@NotNull final AgentPluginsHolder holder,
-                             @NotNull final ToolPaths paths) {
-    holder.addAgentPlugins(new NuGetAgentToolHolder(paths));
-  }
+public interface PackageSourceChecker {
+  /**
+   * Checks NuGet source to be a valid network share path with list access
+   * @param source source
+   * @return null or error text
+   */
+  @Nullable
+  String checkSource(@NotNull String source);
 }

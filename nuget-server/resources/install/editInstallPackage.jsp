@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright 2000-2011 JetBrains s.r.o.
+  ~ Copyright 2000-2012 JetBrains s.r.o.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
-
+<%@ include file="/include.jsp"%>
 <%@ taglib prefix="forms" tagdir="/WEB-INF/tags/forms" %>
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
@@ -52,48 +52,66 @@
     <th>Path to solution file:</th>
     <td>
       <props:textProperty name="${ib.solutionPathKey}" className="longField"/>
+      <bs:vcsTree fieldId="${ib.solutionPathKey}"/>
       <span class="smallNote">Specify path to Visual Studio solution file (.sln)</span>
       <span class="error" id="error_${ib.solutionPathKey}"></span>
     </td>
   </tr>
   <tr>
-    <th>Options:</th>
+    <th rowspan="2">Install Options:</th>
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
-      Exclude version from package folder names
+      <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
       <span class="smallNote">Makes NuGet exclude package version from package folders.
                               Equivalent to -ExcludeVersion NuGet.exe commandline argument</span>
-
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <props:checkboxProperty name="${ib.noCacheKey}"/>
+      <label for="${ib.noCacheKey}">Disable looking up packages from local machine cache</label>
+      <span class="smallNote">Equivalent to -NoCache NuGet.exe commanline argument</span>
+    </td>
+  </tr>
+</l:settingsGroup>
+<l:settingsGroup title="Update">
+  <tr>
+    <th>Update Packages:</th>
+    <td>
       <props:checkboxProperty name="${ib.updatePackagesKey}"/>
-      Update packages with help of NuGet update command
+      <label for="${ib.updatePackagesKey}">Update packages with help of NuGet update command</label>
       <span class="smallNote">Uses NuGet update command to update all packages under solution.
                               Package versions and constraints are taken from
                               packages.config files</span>
-
-      <div style="margin-left: 2em;">
-        <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
-        Include pre-release packages.
-        <span class="smallNote">Equivalent to -Prerelease NuGet option</span>
-      </div>
-
-      <div style="margin-left: 2em;">
-        <props:checkboxProperty name="${ib.updatePackagesSafeKey}"/>
-        Perform safe update.
-        <span class="smallNote">Equivalent to -Safe NuGet option</span>
-      </div>
     </td>
   </tr>
-
-  <script type="text/javascript">
-    (function() {
-    var handler = function() {
-      var dis = !$('${ib.updatePackagesKey}').checked;
-      $('${ib.updatePackagesSafeKey}').disabled = dis;
-      $('${ib.updatePackagesPrerelease}').disabled = dis;
-    };
-    Event.observe($('${ib.updatePackagesKey}'), 'change', handler);
-    handler();
-    })();
-  </script>
-
+  <tr id="nugetUpdateModeSection">
+    <th>Update Mode:</th>
+    <td>
+      <props:selectProperty name="${ib.updateModeKey}" style="longField">
+        <props:option value="${ib.updatePerSolutionValue}">Update via solution file</props:option>
+        <props:option value="${ib.updatePerConfigValue}">Update via packages.config file</props:option>
+      </props:selectProperty>
+      <span class="smallNote">
+        NuGet.exe provides two ways of packages update. The first one is implemented via one call to
+        <em>NuGet.exe update SolutionFile.sln</em>, the other one is implemented by calls to
+        <em>NuGet.exe update Packages.Config</em> for each Packages.Config file under solution.
+      </span>
+    </td>
+  </tr>
+  <tr>
+    <th rowspan="2">Update Options:</th>
+    <td>
+      <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
+      <label for="${ib.updatePackagesPrerelease}">Include pre-release packages</label>
+      <span class="smallNote">Equivalent to -Prerelease NuGet option</span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <props:checkboxProperty name="${ib.updatePackagesSafeKey}"/>
+      <label for="${ib.updatePackagesSafeKey}">Perform safe update</label>
+      <span class="smallNote">Equivalent to -Safe NuGet option</span>
+    </td>
+  </tr>
 </l:settingsGroup>

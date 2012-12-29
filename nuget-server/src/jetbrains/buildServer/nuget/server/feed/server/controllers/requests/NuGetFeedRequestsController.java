@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class NuGetFeedRequestsController extends BaseController {
   }
 
   @Override
-  protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  protected ModelAndView doHandle(@NotNull final HttpServletRequest request, @NotNull final HttpServletResponse response) throws Exception {
     response.setContentType("text/plain");
     response.setCharacterEncoding("utf-8");
     final PrintWriter writer = response.getWriter();

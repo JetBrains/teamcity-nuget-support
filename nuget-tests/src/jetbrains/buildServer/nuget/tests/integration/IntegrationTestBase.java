@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new Object[] { NuGet.NuGet_1_7},
             new Object[] { NuGet.NuGet_1_8},
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 
@@ -102,6 +104,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new Object[] { NuGet.NuGet_1_7},
             new Object[] { NuGet.NuGet_1_8},
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 
@@ -112,6 +116,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new Object[] { NuGet.NuGet_1_7},
             new Object[] { NuGet.NuGet_1_8},
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 
@@ -121,6 +127,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new Object[] { NuGet.NuGet_1_7},
             new Object[] { NuGet.NuGet_1_8},
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 
@@ -129,6 +137,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     return new Object[][]{
             new Object[] { NuGet.NuGet_1_8},
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 

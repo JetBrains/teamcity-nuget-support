@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.buildTriggers.*;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings;
+import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.util.StringUtil;
@@ -75,6 +76,20 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
   @Override
   public BuildTriggeringPolicy getBuildTriggeringPolicy() {
     return new PolledBuildTrigger() {
+
+      @Override
+      public void triggerActivated(@NotNull PolledTriggerContext context) throws BuildTriggerException {
+        super.triggerActivated(context);
+        final CustomDataStorage storage = context.getCustomDataStorage();
+        final Map<String, String> values = storage.getValues();
+        if (values == null || values.isEmpty()) return;
+
+        //fully reset trigger state in reactivation
+        for (String key : values.keySet()) {
+          storage.putValue(key, null);
+        }
+        storage.flush();
+      }
 
       @Override
       public int getPollInterval(@NotNull PolledTriggerContext context) {

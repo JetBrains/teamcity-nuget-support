@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ public class InstallBean {
   public String getNuGetSourcesKey() { return PackagesConstants.NUGET_SOURCES; }
   public String getSolutionPathKey() { return PackagesConstants.SLN_PATH; }
   public String getExcludeVersionKey() { return PackagesConstants.NUGET_EXCLUDE_VERSION;}
+  public String getNoCacheKey() { return PackagesConstants.NUGET_NO_CACHE; }
   public String getUpdatePackagesKey() { return PackagesConstants.NUGET_UPDATE_PACKAGES;}
   public String getUpdatePackagesSafeKey() { return PackagesConstants.NUGET_UPDATE_PACKAGES_SAFE;}
   public String getUpdatePackagesPrerelease() { return PackagesConstants.NUGET_UPDATE_PACKAGES_PRERELEASE;}

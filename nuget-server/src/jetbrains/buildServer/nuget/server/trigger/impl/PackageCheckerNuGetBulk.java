@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,15 +39,13 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
   private final PackageCheckerSettings mySettings;
 
   public PackageCheckerNuGetBulk(@NotNull final ListPackagesCommand command,
-                                 @NotNull final NuGetPathCalculator toolManager,
                                  @NotNull final PackageCheckerSettings settings) {
-    super(toolManager);
     myCommand = command;
     mySettings = settings;
   }
 
   public boolean accept(@NotNull PackageCheckRequest request) {
-    return mySettings.allowBulkMode(request) && super.accept(request);
+    return super.accept(request) && mySettings.allowBulkMode(request);
   }
 
   public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> data) {
@@ -109,8 +107,9 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
           }
 
           for (CheckablePackage entry : map.values()) {
-            LOG.warn("Package was not found in the feed: " + entry.getPackage());
-            entry.setResult(CheckResult.failed("Package was not found in the feed"));
+            final String msg = "Package " + entry.getPackage().getPackageId() + " was not found in the feed";
+            LOG.warn(msg + ": " + entry.getPackage());
+            entry.setResult(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList()));
           }
 
         } catch (Throwable t) {

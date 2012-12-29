@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright 2000-2011 JetBrains s.r.o.
+  ~ Copyright 2000-2012 JetBrains s.r.o.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="bs" tagdir="/WEB-INF/tags" %>
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.runner.pack.PackBean" scope="request"/>
 
 <l:settingsGroup title="NuGet settings">
@@ -29,21 +30,38 @@
   </tr>
 </l:settingsGroup>
 
+<script type="text/javascript">
+  appendSpecificationFile = function(specFile) {
+    var textarea = $j(BS.Util.escapeId('${ib.packSpecFile}'));
+    var val = textarea.text();
+    if (val.length > 0) {
+      var lines = val.split("\n");
+      lines.push(specFile);
+      textarea.text(lines.join("\n"));
+    } else {
+      textarea.text(specFile);
+    }
+  };
+</script>
 <l:settingsGroup title="Package parameters">
   <tr>
     <th><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
     <td>
       <props:multilineProperty name="${ib.packSpecFile}" linkTitle="Specification or project files" cols="60" rows="5" expanded="${true}"/>
+      <bs:vcsTree callback="appendSpecificationFile" treeId="${ib.packSpecFile}"/>
+      <script type="text/javascript">
+        BS.Util.hide($('vcsTreeControl_${ib.packSpecFile}'));
+      </script>
       <span class="smallNote">Specify paths to .nuspec files and/or to Visual Studio project files (i.e. .csproj or .vbproj). MSBuild-style wildcards are supported</span>
       <span id="error_${ib.packSpecFile}" class="error"></span>
     </td>
   </tr>
 
   <tr>
-    <th><label for="${ib.packVersion}">Version</label><l:star/>:</th>
+    <th><label for="${ib.packVersion}">Version</label>:</th>
     <td>
       <props:textProperty name="${ib.packVersion}" className="longField"/>
-      <span class="smallNote">Specify version for package to create</span>
+      <span class="smallNote">Specify version for package to create (recommended) or leave it blank to let NuGet decide</span>
       <span id="error_${ib.packVersion}" class="error"></span>
     </td>
   </tr>
@@ -52,6 +70,7 @@
     <th><label for="${ib.packBaseDirectory}">Base Directory</label>:</th>
     <td>
       <props:textProperty name="${ib.packBaseDirectory}" className="longField"/>
+      <bs:vcsTree fieldId="${ib.packBaseDirectory}" treeId="${ib.packBaseDirectory}"/>
       <span class="smallNote">Base directory for packing. Leave blank to use build checkout directory</span>
       <span id="error_${ib.packBaseDirectory}" class="error"></span>
     </td>
@@ -127,4 +146,28 @@
   </tr>
 
 </l:settingsGroup>
+<script type="text/javascript">
+  $j(document).ready(function() {
+    //move vcs-tree icon to the left from textarea, after completion icon
+    var img = $('vcsTreeControl_${ib.packSpecFile}');
+    if (!img) {
+      //there is no icon when no vcs roots configured
+      return;
+    }
+    img.remove();
+    img.style.position = 'absolute';
 
+    var textarea = $('${ib.packSpecFile}');
+    var dim = textarea.getDimensions(),
+        layout = textarea.getLayout();
+
+    var xshift = dim.width + 20; // Put next to the completion icon
+    var pos = textarea.positionedOffset();
+
+    textarea.parentNode.appendChild(img);
+    var x = pos[0] + xshift + layout.get('margin-left');
+    var y = pos[1] + 3 + layout.get('margin-top');
+    BS.Util.show(img);
+    BS.Util.place(img, x, y);
+  });
+</script>

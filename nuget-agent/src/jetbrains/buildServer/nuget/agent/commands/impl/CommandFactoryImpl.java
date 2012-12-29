@@ -20,6 +20,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.common.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.agent.runner.EnabledPackagesOptionSetter;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -46,14 +47,16 @@ public class CommandFactoryImpl implements CommandFactory {
     if (params.getExcludeVersion()) {
       argz.add("-ExcludeVersion");
     }
-    if (noCache) {
+
+    //TODO 0.9 noCache parameter
+    if (noCache && params.getNoCache()) {
       argz.add("-NoCache");
     }
     argz.add("-OutputDirectory");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 
     final NuGetFetchParameters nuget = params.getNuGetParameters();
-    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), Collections.singletonMap("EnableNuGetPackageRestore", "True"), factory);
+    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), Collections.singletonMap(EnabledPackagesOptionSetter.ENABLE_NUGET_PACKAGE_RESTORE, "True"), factory);
   }
 
   @NotNull

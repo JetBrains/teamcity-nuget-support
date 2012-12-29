@@ -29,6 +29,7 @@ import jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.util.FileUtil;
+import org.hamcrest.text.StringContains;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.testng.Assert;
@@ -39,6 +40,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -60,7 +63,22 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     }});
   }
 
-  @Test(dataProvider = NUGET_VERSIONS)
+  @Test(dataProvider = NUGET_VERSIONS_18p)
+  public void test_publish_wrong_files(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+
+    m.checking(new Expectations(){{
+      oneOf(myLogger).warning(with(new StringContains(".zpoo")));
+    }});
+
+    final File home = createTempDir();
+    final File pkg1 = new File(home, "a.b.c.4.3.zpoo"){{createNewFile(); }};
+    final BuildProcess p = callPublishRunnerEx(nuget, pkg1);
+    assertRunSuccessfully(p, BuildFinishedStatus.FINISHED_FAILED);
+
+    m.assertIsSatisfied();
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS, dependsOnGroups = "this test will publish a package to preview nuget repo")
   public void test_publish_packages(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     final File pkg = preparePackage(nuget);
     callPublishRunner(nuget, pkg);
@@ -106,29 +124,29 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     return pkg;
   }
 
-  private void callPublishRunner(@NotNull final NuGet nuget, @NotNull final File pkg) throws RunBuildException {
-
+  private BuildProcess callPublishRunnerEx(final NuGet nuget, final File... pkg) throws RunBuildException {
+    final List<String> files = new ArrayList<String>();
+    for (File p : pkg) {
+      files.add(p.getPath());
+    }
     m.checking(new Expectations(){{
-      allowing(myPublishParameters).getFiles(); will(returnValue(Arrays.asList(pkg.getPath())));
+      allowing(myPublishParameters).getFiles(); will(returnValue(files));
       allowing(myPublishParameters).getCreateOnly(); will(returnValue(true));
       allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
+      //TODO 0.9 resoulve
       allowing(myPublishParameters).getNuGetPackageSources(); will(returnValue(Collections.emptyList()));
-      allowing(myPublishParameters).getApiKey(); will(returnValue(getQ()));
+      allowing(myPublishParameters).getPublishSource(); will(returnValue("http://preview.nuget.org/api/v2"));
 
+      allowing(myPublishParameters).getApiKey(); will(returnValue(getQ()));
       allowing(myParametersFactory).loadPublishParameters(myContext);will(returnValue(myPublishParameters));
     }});
 
 
     final PackagesPublishRunner runner = new PackagesPublishRunner(new PublishRunnerStagesBuilder(new AuthStagesBuilder(myActionFactory), myActionFactory), myActionFactory, myParametersFactory);
     final BuildProcess proc = runner.createBuildProcess(myBuild, myContext);
-    assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
+
+    final PackagesPublishRunner runner = new PackagesPublishRunner(myActionFactory, myParametersFactory);
+    return runner.createBuildProcess(myBuild, myContext);
   }
 
-  private String getQ() {
-    final int i1 = 88001628;
-    final int universe = 42;
-    final int num = 4015;
-    final String nuget = 91 + "be" + "-" + num + "cf638bcf";
-    return (i1 + "-" + "cb" + universe + "-" + 4 + "c") + 35 + "-" + nuget;
-  }
 }

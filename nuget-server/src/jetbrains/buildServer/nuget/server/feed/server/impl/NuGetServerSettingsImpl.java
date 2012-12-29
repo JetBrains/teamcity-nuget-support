@@ -46,11 +46,11 @@ public class NuGetServerSettingsImpl implements NuGetServerSettings {
 
   @NotNull
   public String getNuGetHttpAuthFeedControllerPath() {
-    return join(WebUtil.HTTP_AUTH_PREFIX, getNuGetFeedControllerPath());
+    return join(WebUtil.HTTP_AUTH_PREFIX, getNuGetFeedControllerPath() + "/");
   }
 
   @NotNull
   public String getNuGetGuestAuthFeedControllerPath() {
-    return join(WebUtil.GUEST_AUTH_PREFIX, getNuGetFeedControllerPath());
+    return join(WebUtil.GUEST_AUTH_PREFIX, getNuGetFeedControllerPath() + "/");
   }
 }

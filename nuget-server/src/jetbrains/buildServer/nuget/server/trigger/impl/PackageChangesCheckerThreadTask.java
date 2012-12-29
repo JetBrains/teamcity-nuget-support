@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceChecker;
 import jetbrains.buildServer.util.ExceptionUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,28 +34,35 @@ public class PackageChangesCheckerThreadTask {
   private final PackageCheckQueue myHolder;
   private final ScheduledExecutorService myExecutor;
   private final Collection<PackageChecker> myCheckers;
+  private final NuGetSourceChecker myPreCheckers;
 
   public PackageChangesCheckerThreadTask(@NotNull final PackageCheckQueue holder,
                                          @NotNull final ScheduledExecutorService executor,
-                                         @NotNull final Collection<PackageChecker> checkers) {
+                                         @NotNull final Collection<PackageChecker> checkers,
+                                         @NotNull final NuGetSourceChecker preCheckers) {
     myHolder = holder;
     myExecutor = executor;
     myCheckers = checkers;
+    myPreCheckers = preCheckers;
   }
 
   public void checkForUpdates() {
     if (myExecutor.isShutdown()) return;
 
+    final Collection<PackageCheckEntry> allItems = myHolder.getItemsToCheckNow();
     for (final PackageChecker checker : myCheckers) {
-      final List<CheckablePackage> items = getMatchedItems(checker, myHolder.getItemsToCheckNow());
+      final List<CheckablePackage> items = getMatchedItems(checker, allItems);
       if (myExecutor.isShutdown()) return;
-      if (items.size() > 0) {
-        checker.update(myExecutor, items);
-      }
-    }
 
-    myHolder.cleaupObsolete();
-    postCheckTask();
+      if (items.isEmpty()) continue;
+      myExecutor.submit(ExceptionUtil.catchAll("filter accessible sources", new Runnable() {
+        public void run() {
+          final Collection<CheckablePackage> accessible = myPreCheckers.getAccessiblePackages(items);
+          if (accessible.isEmpty()) return;
+          checker.update(myExecutor, accessible);
+        }
+      }));
+    }
   }
 
   public void postCheckTask() {
@@ -68,7 +76,11 @@ public class PackageChangesCheckerThreadTask {
             "NuGet Trigger update scheduler",
             new Runnable() {
               public void run() {
+                if (myExecutor.isShutdown()) return;
                 PackageChangesCheckerThreadTask.this.checkForUpdates();
+                if (myExecutor.isShutdown()) return;
+                myHolder.cleaupObsolete();
+                postCheckTask();
               }
             });
   }

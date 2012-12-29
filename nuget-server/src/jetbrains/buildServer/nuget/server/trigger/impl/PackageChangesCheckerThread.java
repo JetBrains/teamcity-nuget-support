@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceChecker;
 import jetbrains.buildServer.util.NamedDeamonThreadFactory;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,12 +36,15 @@ public class PackageChangesCheckerThread {
   private final ScheduledExecutorService myExecutor;
   private final PackageCheckQueue myHolder;
   private final Collection<PackageChecker> myCheckers;
+  private final NuGetSourceChecker myPreChecker;
 
   public PackageChangesCheckerThread(@NotNull final PackageCheckQueue holder,
                                      @NotNull final PackageCheckerSettings settings,
-                                     @NotNull final Collection<PackageChecker> checkers) {
+                                     @NotNull final Collection<PackageChecker> checkers,
+                                     @NotNull final NuGetSourceChecker preChecker) {
     myHolder = holder;
     myCheckers = checkers;
+    myPreChecker = preChecker;
     myExecutor = Executors.newScheduledThreadPool(settings.getCheckerThreads(), new NamedDeamonThreadFactory("NuGet Packages Version Checker"));
   }
 
@@ -54,6 +58,6 @@ public class PackageChangesCheckerThread {
   }
 
   public void startPackagesCheck() {
-    new PackageChangesCheckerThreadTask(myHolder, myExecutor, myCheckers).postCheckTask();
+    new PackageChangesCheckerThreadTask(myHolder, myExecutor, myCheckers, myPreChecker).postCheckTask();
   }
 }

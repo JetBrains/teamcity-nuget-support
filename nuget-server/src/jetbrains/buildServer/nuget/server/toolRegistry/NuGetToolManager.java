@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,16 +33,6 @@ public interface NuGetToolManager {
   @NotNull
   Collection<? extends NuGetInstalledTool> getInstalledTools();
 
-
-  @Nullable
-  NuGetInstalledTool getLatestNuGetTool();
-
-  /**
-   * @return list of tools that are installing now
-   */
-  @NotNull
-  Collection<NuGetInstallingTool> getInstallingTool();
-
   /**
    * @param policy kind of packages to return
    * @return fetches the full list of available and supported nuget tools
@@ -55,8 +45,10 @@ public interface NuGetToolManager {
    * Downloads and installs nuget tools for both server and agent
    * @param toolId tool id for tool to install
    * @throws ToolException on tool installation error
+   * @return installed NuGet tool
    */
-  void installTool(@NotNull String toolId) throws ToolException;
+  @NotNull
+  NuGetTool downloadTool(@NotNull String toolId) throws ToolException;
 
 
   /**
@@ -64,8 +56,10 @@ public interface NuGetToolManager {
    * @param toolName name of the NuGet Commandline package. Expected to be informat NuGet.CommandLine.x.y.z*.nupkg
    * @param toolFile path to Tool file to be copied as the result of install
    * @throws ToolException in case file is wrong
+   * @return installed NuGet tool
    */
-  void installTool(@NotNull final String toolName, @NotNull File toolFile) throws ToolException;
+  @NotNull
+  NuGetTool installTool(@NotNull final String toolName, @NotNull File toolFile) throws ToolException;
 
   /**
    * Removes tool from server and build agents
@@ -81,4 +75,26 @@ public interface NuGetToolManager {
    */
   @Nullable
   String getNuGetPath(@Nullable String path);
+
+
+  /**
+   * Sets tool as default NuGet tool
+   * @param toolId tool
+   * @since v0.9
+   */
+  void setDefaultTool(@NotNull final String toolId);
+
+  /**
+   * @return default tool if exists, null otherwise
+   * @since v0.9
+   */
+  @Nullable
+  NuGetInstalledTool getDefaultTool();
+
+  /**
+   * @return default tool id, without respect to if it was removed
+   * @since v0.9
+   */
+  @Nullable
+  String getDefaultToolId();
 }

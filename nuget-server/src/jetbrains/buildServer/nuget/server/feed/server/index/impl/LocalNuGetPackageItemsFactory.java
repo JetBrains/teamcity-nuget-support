@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
+import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.nuget.common.PackageInfoLoaderBase;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -24,6 +25,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -85,18 +87,33 @@ public class LocalNuGetPackageItemsFactory extends PackageInfoLoaderBase {
                 return map;
               }
 
+              @NotNull
               private String parseDependencies(@NotNull final Element root) {
                 final Element metadata = getChild(root, "metadata");
                 final Element dependencies = getChild(metadata, "dependencies");
+                if (dependencies == null) return "";
                 final StringBuilder sb = new StringBuilder();
-                for (Object _dependency : getChildren(dependencies, "dependency")) {
-                  Element dep = (Element) _dependency;
+                processDependencies(dependencies, null, sb);
+
+                for (Element group : getChildren(dependencies, "group")) {
+                  processDependencies(group, group.getAttributeValue("targetFramework"), sb);
+                }
+
+                return sb.toString();
+              }
+
+              private void processDependencies(@NotNull final Element dependencies,
+                                               @Nullable final String platform,
+                                               @NotNull final StringBuilder sb) {
+                for (Element dep : getChildren(dependencies, "dependency")) {
                   final String id = dep.getAttributeValue("id");
                   final String versionConstraint = dep.getAttributeValue("version");
                   if (sb.length() != 0) sb.append("|");
                   sb.append(id).append(":").append(versionConstraint);
+                  if (!StringUtil.isEmptyOrSpaces(platform)) {
+                    sb.append(":").append(platform);
+                  }
                 }
-                return sb.toString();
               }
 
               @NotNull

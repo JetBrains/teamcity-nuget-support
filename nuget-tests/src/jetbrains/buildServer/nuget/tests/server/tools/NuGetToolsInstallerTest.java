@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolDownloaderImpl;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolsInstallerImpl;
 import jetbrains.buildServer.nuget.tests.Strings;
 import jetbrains.buildServer.util.FileUtil;
 import junit.framework.Assert;
@@ -45,6 +45,7 @@ import java.io.IOException;
  */
 public class NuGetToolsInstallerTest extends BaseTestCase {
   private NuGetToolsInstaller myInstaller;
+  private NuGetToolDownloader myDownloader;
   private ToolPaths myPaths;
   private ToolsWatcher myWatcher;
   private NuGetFeedReader myFeed;
@@ -62,11 +63,14 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
     myState = m.mock(AvailableToolsState.class);
     myWatcher = m.mock(ToolsWatcher.class);
 
-    myInstaller = new NuGetToolsInstaller(
+    myInstaller = new NuGetToolsInstallerImpl(
             myPaths,
+            myWatcher);
+    myDownloader = new NuGetToolDownloaderImpl(
             myFeed,
             myState,
-            myWatcher);
+            myInstaller
+    );
 
     m.checking(new Expectations(){{
       allowing(myPaths).getNuGetToolsPath(); will(returnValue(createTempDir()));
@@ -124,7 +128,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
       });
     }});
 
-    myInstaller.installNuGet("packageId");
+    myDownloader.installNuGet("packageId");
     Assert.assertTrue(new File(myPaths.getNuGetToolsPackages(), "pkd.1.2.3.4.nupkg").isFile());
     m.assertIsSatisfied();
   }
@@ -145,7 +149,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
       });
     }});
 
-    myInstaller.installNuGet("packageId");
+    myDownloader.installNuGet("packageId");
   }
 
   @Test(expectedExceptions = ToolException.class)
@@ -157,7 +161,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
       oneOf(myFeed).downloadPackage(with(equal(fp)), with(any(File.class))); will(throwException(new IOException("oops")));
     }});
 
-    myInstaller.installNuGet("packageId");
+    myDownloader.installNuGet("packageId");
   }
 
   @Test(expectedExceptions = ToolException.class)
@@ -167,6 +171,6 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
       oneOf(myState).findTool("packageId"); will(returnValue(null));
     }});
 
-    myInstaller.installNuGet("packageId");
+    myDownloader.installNuGet("packageId");
   }
 }

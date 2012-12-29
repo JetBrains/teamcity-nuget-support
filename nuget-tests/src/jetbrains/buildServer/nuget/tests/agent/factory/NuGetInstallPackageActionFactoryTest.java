@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
       allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<PackageSource>emptyList()));
 
       allowing(ps).getExcludeVersion(); will(returnValue(false));
+      allowing(ps).getNoCache(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
@@ -73,10 +74,33 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
   }
 
   @Test
+  public void test_no_sources_no_cache() throws RunBuildException, IOException {
+    final File nuget = createTempFile();
+    m.checking(new Expectations(){{
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(ps).getExcludeVersion(); will(returnValue(false));
+      allowing(ps).getNoCache(); will(returnValue(true));
+
+      oneOf(myProcessFactory).executeCommandLine(
+              ctx,
+              nuget.getPath(),
+              Arrays.asList("install", myConfig.getPath(), "-NoCache", "-OutputDirectory", myTarget.getPath()),
+              myConfig.getParentFile(),
+              Collections.singletonMap("EnableNuGetPackageRestore", "True")
+      );
+    }});
+
+    i.createInstall(ctx, ps, myConfig, myTarget);
+    m.assertIsSatisfied();
+  }
+
+  @Test
   public void test_no_sources_excludeVersion() throws RunBuildException, IOException {
     m.checking(new Expectations(){{
       allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<PackageSource>emptyList()));
       allowing(ps).getExcludeVersion(); will(returnValue(true));
+      allowing(ps).getNoCache(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
@@ -96,6 +120,7 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
     m.checking(new Expectations(){{
       allowing(nugetParams).getNuGetPackageSources(); will(returnValue(PackageSourceImpl.convert("aaa", "bbb")));
       allowing(ps).getExcludeVersion(); will(returnValue(false));
+      allowing(ps).getNoCache(); will(returnValue(false));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,

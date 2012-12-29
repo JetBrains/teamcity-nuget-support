@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,7 +188,7 @@ public class NuGetSettingsManagerPersitedTest extends NuGetSettingsManagerTest {
   }
 
   @Test
-  public void testFileWatcherReload_event() throws IOException {
+  public void testFileWatcherReload_event() throws IOException, InterruptedException {
     testReadWrite();
     File tmp = createTempFile();
     FileUtil.copy(myFile, tmp);
@@ -198,7 +198,7 @@ public class NuGetSettingsManagerPersitedTest extends NuGetSettingsManagerTest {
     recreateSettings();
     final AtomicBoolean componentReloadCalled = new AtomicBoolean();
     final AtomicBoolean reloadCalled = new AtomicBoolean();
-    mySettings.addListener(new NuGetSettingsEventAdapter(){
+    mySettings.addListener(new NuGetSettingsEventAdapter() {
       @Override
       public void settingsChanged(@NotNull NuGetSettingsComponent component) {
         componentReloadCalled.set(true);
@@ -209,7 +209,6 @@ public class NuGetSettingsManagerPersitedTest extends NuGetSettingsManagerTest {
         reloadCalled.set(true);
       }
     });
-    myWatcher.setWatchInterval(10);
 
     mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Object>() {
       public Object executeAction(@NotNull NuGetSettingsReader action) {
@@ -218,6 +217,7 @@ public class NuGetSettingsManagerPersitedTest extends NuGetSettingsManagerTest {
       }
     });
 
+    Thread.sleep(300);
     FileUtil.copy(tmp, myFile);
 
     new WaitForAssert(){

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,12 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     if (!newHash.equals(oldHash)) {
       storage.putValue(KEY, newHash);
       storage.flush();
+    }
+
+    //empty feed is error, not a trigger event,
+    //still, we update trigger state for that
+    if (result.getInfos().isEmpty()) {
+      throw new BuildTriggerException("Failed to check for package versions. Package " + checkRequest.getPackage().getPackageId() + " was not found in the feed");
     }
 
     if (myCalculator.isUpgradeRequired(oldHash, newHash)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,15 @@ import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGetPerPackage;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -41,7 +41,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
 
   @Override
   protected PackageCheckerNuGetPerPackage createChecker() {
-    return new PackageCheckerNuGetPerPackage(myCommand, myCalculator, mySettings);
+    return new PackageCheckerNuGetPerPackage(myCommand, mySettings);
   }
 
   @Test
@@ -53,6 +53,11 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
     Assert.assertTrue(myChecker.accept(new PackageCheckRequest(nugetMode(), ref())));
 
     m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_available_01x() throws IOException {
+    Assert.assertFalse(myChecker.accept(new PackageCheckRequest(javaMode(), ref())));
   }
 
   @Test
@@ -117,7 +122,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
       allowing(task).getMode(); will(returnValue(nugetMode()));
 
       oneOf(task).setExecuting();
-      oneOf(task).setResult(CheckResult.failed("Package was not found in the feed"));
+      oneOf(task).setResult(with(empty()));
 
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(returnValue(Collections.singletonMap(ref,result)));
     }});
@@ -145,23 +150,5 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
     myChecker.update(myExecutor, Arrays.asList(task));
 
     m.assertIsSatisfied();
-  }
-
-  private static class Expectations extends org.jmock.Expectations {
-    protected <T> Matcher<Collection<T>> equalL(final T t) {
-      return new BaseMatcher<Collection<T>>() {
-        public boolean matches(Object o) {
-          if (o instanceof Collection) {
-            Object i = ((Collection) o).iterator().next();
-            return i.equals(t);
-          }
-          return false;
-        }
-
-        public void describeTo(Description description) {
-          description.appendText("equals [" + t + "]");
-        }
-      };
-    }
   }
 }

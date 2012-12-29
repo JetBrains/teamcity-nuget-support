@@ -54,5 +54,6 @@ public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
   public void removeAllPackages() {
     myUsedPackages.clear();
     myCreatedPackages.clear();
+    myPublishedPackages.clear();
   }
 }

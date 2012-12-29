@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-tests", "nuget-tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-2.0", "nuget-commands-2.0\nuget-commands-2.0.csproj", "{C6F0CBF9-B66A-45BA-86D1-7BBD407DECF4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-tests", "nuget-commands-tests\nuget-commands-tests.csproj", "{FE16A93E-9015-4077-9179-F593E53F20EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,16 @@ Global
 		{C6F0CBF9-B66A-45BA-86D1-7BBD407DECF4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C6F0CBF9-B66A-45BA-86D1-7BBD407DECF4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C6F0CBF9-B66A-45BA-86D1-7BBD407DECF4}.Release|x86.ActiveCfg = Release|Any CPU
+		{FE16A93E-9015-4077-9179-F593E53F20EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE16A93E-9015-4077-9179-F593E53F20EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE16A93E-9015-4077-9179-F593E53F20EE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FE16A93E-9015-4077-9179-F593E53F20EE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FE16A93E-9015-4077-9179-F593E53F20EE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FE16A93E-9015-4077-9179-F593E53F20EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE16A93E-9015-4077-9179-F593E53F20EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE16A93E-9015-4077-9179-F593E53F20EE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FE16A93E-9015-4077-9179-F593E53F20EE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FE16A93E-9015-4077-9179-F593E53F20EE}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

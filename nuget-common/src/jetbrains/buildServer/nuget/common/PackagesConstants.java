@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,12 @@ public interface PackagesConstants {
   public static final String PUBLISH_RUN_TYPE = "jb.nuget.publish"; //run-type could never exceed 30 chars
   public static final String PACK_RUN_TYPE = "jb.nuget.pack"; //run-type could never exceed 30 chars
 
+  public static final String[] ALL_NUGET_RUN_TYPES = {INSTALL_RUN_TYPE, PUBLISH_RUN_TYPE, PACK_RUN_TYPE};
+
   public static final String NUGET_PATH = "nuget.path";
   public static final String NUGET_SOURCES = "nuget.sources";
   public static final String NUGET_EXCLUDE_VERSION = "nuget.excludeVersion";
+  public static final String NUGET_NO_CACHE = "nuget.noCache";
 
   public static final String NUGET_UPDATE_PACKAGES = "nuget.updatePackages";
   public static final String NUGET_UPDATE_PACKAGES_SAFE = "nuget.updatePackages.safe";

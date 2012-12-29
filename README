@@ -1,13 +1,17 @@
 This is NuGet Support TeamCity plugin, mainly NuGet support for TeamCity.
 
-This plugin will be compatible with TeamCity 7.0 and newer.
+This plugin will be compatible with TeamCity 7.1 and newer.
 
 As we fully migrated to java-based feed, there will be no .NET Feed implementation.
 
 ==== NOTE ======
-This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 6.5. Use v0.5-bugfix branch instead.
-This is a closed branch. Consider v0.8 for 7.0 compatible builds. Only bugfixes to be added
+This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 6.5.x Use v0.5-bugfix branch instead.
+This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 7.0.x Use v0.7 branch instead.
+This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 7.1.x Use v0.8 branch instead.
 ================
+
+Builds of this plugin are found here:
+http://teamcity.jetbrains.com/viewType.html?buildTypeId=bt431
 
 For more details, see 
 http://confluence.jetbrains.net/display/TW/NuGet+support
@@ -26,37 +30,11 @@ Building:
      open the sources in InteliJ IDEA and build artifact plugin-zip
 
 
-Supported features:
-
-- NuGet packages installer build runner:
-    
-  Installs packages with help of nuget install command, according to David Ebbo post 
-  (http://blog.davidebbo.com/2011/03/using-nuget-without-committing-packages.html)
-  allowing to use NuGet without committing packages to version control.
-
-  Updates packages help of nuget update command
-
-
-- NuGet Dependency Trigger:
-  
-  Build Trigger that starts a new build if package is updated.   
-
-- NuGet used packages tab
-
-  Reports list of all used packages in build configuration. 
-  Available only if NuGet Packages Installer Build Runner is used.
-
-- Build Runner to publish created NuGet packages to NuGet feeds
-
-- TeamCity is able to download and distribute NuGet.Commandline within all build agents
-
-- Build runner to create nuget package
-
-- TeamCity as NuGet feed
-  There will be a configuration parameter 'teamcity.nuget.feed.server' added on agent containing NuGet feed URL
-
+Obsolete:
+=========
 
 API gaps TeamCity:
+------------------
  - Reuse ComposideBuildProcess and DelegatingBuildProcess
  - Use XmlXppAbstractParser#parse(InputSream)
  - Consider reusing of Maven build trigger/project models
@@ -73,6 +51,7 @@ API gaps TeamCity:
  - Directory scanner may be reused
 
 API gaps NuGet:
+---------------
  - Allow to call nuget.exe with plugins without installing them into %USERPROFILE%
      http://nuget.codeplex.com/workitem/1295
  - Allow to provide authorization for NuGet sources from commandline

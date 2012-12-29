@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright 2000-2011 JetBrains s.r.o.
+  ~ Copyright 2000-2012 JetBrains s.r.o.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
   --%>
 
 <%@ include file="/include-internal.jsp" %>
-<jsp:useBean id="tools" type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.tab.LocalTool>" scope="request"/>
+<jsp:useBean id="tools" type="java.util.Collection< jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool >" scope="request"/>
+<jsp:useBean id="hasDefaultSelected" type="java.lang.Boolean" scope="request"/>
 <jsp:useBean id="installerUrl" type="java.lang.String" scope="request"/>
 <jsp:useBean id="updateUrl" type="java.lang.String" scope="request"/>
 
@@ -25,45 +26,55 @@
 
 <bs:linkScript>/js/bs/multipart.js</bs:linkScript>
 
-<p style="width: 40em;">
+<c:if test="${not hasDefaultSelected}">
+  <div class="attentionComment">No default is NuGet specified. Please specify default NuGet version by clicking on 'make default' link</div>
+</c:if>
+
+<div>
   Listed NuGet versions are automatically distributed to all build agents and can be used in NuGet-related runners.
-</p>
-<p>
+</div>
+<div>
   There <bs:are_is val="${installedPluginsCount}"/>
   <strong><c:out value="${installedPluginsCount}"/></strong>
   NuGet<bs:s val="${installedPluginsCount}"/> installed.
-</p>
+</div>
 
   <c:if test="${not (installedPluginsCount eq 0)}">
-      <table class="settings" cellpadding="0" cellspacing="0" style="width: 50%;">
-        <thead>
+    <table class="settings" cellpadding="0" cellspacing="0" style="width: 70%">
+      <thead>
+      <tr>
+        <th class="name" colspan="3" style="padding: 0.5em 1em">NuGet Version</th>
+      </tr>
+      </thead>
+      <tbody>
+      <c:forEach var="tool" items="${tools}">
         <tr>
-          <th class="name" colspan="2">NuGet Version</th>
+          <td style="
+          <c:if test="${tool.defaultTool}">font-weight: bold;</c:if> ">
+            <c:out value="${tool.version}"/>
+            <c:if test="${tool.defaultTool}">
+              <em> (default)</em>
+            </c:if>
+          </td>
+          <td class="value edit" style="width: 4%;">
+            <c:if test="${not tool.defaultTool}">
+              <a href="#" onclick="BS.NuGet.Tools.makeDefaultTool('<bs:forJs>${tool.id}</bs:forJs>');">make&nbsp;default</a>
+            </c:if>
+          </td>
+          <td class="value edit" style="width: 4%;">
+            <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">remove</a>
+          </td>
         </tr>
-        </thead>
-        <tbody>
-          <c:forEach var="tool" items="${tools}">
-            <tr>
-              <td class="name"><c:out value="${tool.version}"/></td>
-              <td class="value edit" style="width: 4%;">
-                <c:choose>
-                  <c:when test="${tool.state.installed}">
-                    <a href="#" onclick="BS.NuGet.Tools.removeTool('<bs:forJs>${tool.id}</bs:forJs>');">Remove</a>
-                  </c:when>
-                  <c:when test="${tool.state.installing}">
-                    <bs:commentIcon text="Messages"/>
-                    Installing...
-                  </c:when>
-                </c:choose>
-              </td>
-            </tr>
-          </c:forEach>
-        </tbody>
+      </c:forEach>
+      </tbody>
     </table>
   </c:if>
   <div style="margin-top: 1em;">
-    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.show()">
-      Add NuGet
+    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.showDonwload()">
+      Fetch NuGet
+    </forms:addButton>
+    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.showUpload()">
+      Upload NuGet
     </forms:addButton>
   </div>
 </bs:refreshable>
@@ -72,7 +83,7 @@
 <c:set var="actualInstallerUrl"><c:url value="${installerUrl}"/></c:set>
 <bs:modalDialog
         formId="nugetInstallForm"
-        title="Add NuGet"
+        title="TBD"
         action="${actualInstallerUrl}"
         closeCommand="BS.NuGet.Tools.InstallPopup.close();"
         saveCommand="BS.NuGet.Tools.InstallPopup.save();">
@@ -89,7 +100,7 @@
   <div class="popupSaveButtonsBlock">
     <forms:cancel onclick="BS.NuGet.Tools.InstallPopup.closeToolsDialog();"/>
     <forms:submit id="installNuGetApplyButton" label="Add"/>
-    <input type="button" class="btn cancel" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" value="Refresh"/>
+    <input id="installNuGetRefreshButton" type="button" class="btn cancel" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" value="Refresh"/>
     <forms:saving id="installNuGetApplyProgress"/>
     <div class="clr"></div>
   </div>

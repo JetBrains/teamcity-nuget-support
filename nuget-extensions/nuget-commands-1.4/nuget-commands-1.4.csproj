@@ -68,6 +68,9 @@
     <Compile Include="src\NuGetPackages.cs" />
     <Compile Include="src\NuGetTeamCityListPackagesCommand.cs" />
     <Compile Include="src\NuGetTeamCityPingCommand.cs" />
+    <Compile Include="src\PackageExtensions2.cs" />
+    <Compile Include="src\PackageFetchOption.cs" />
+    <Compile Include="src\QueryBuilder.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

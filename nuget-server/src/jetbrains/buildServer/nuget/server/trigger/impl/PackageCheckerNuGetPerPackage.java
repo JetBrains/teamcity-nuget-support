@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,15 +42,13 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
   private final PackageCheckerSettings mySettings;
 
   public PackageCheckerNuGetPerPackage(@NotNull final ListPackagesCommand command,
-                                       @NotNull final NuGetPathCalculator toolManager,
-                                       @NotNull PackageCheckerSettings settings) {
-    super(toolManager);
+                                       @NotNull final PackageCheckerSettings settings) {
     myCommand = command;
     mySettings = settings;
   }
 
   public boolean accept(@NotNull PackageCheckRequest request) {
-    return !mySettings.allowBulkMode(request) && super.accept(request);
+    return super.accept(request) && !mySettings.allowBulkMode(request);
   }
 
   public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> data) {
@@ -70,11 +68,8 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
               final SourcePackageReference pkg = packageCheckEntry.getPackage();
               Map<SourcePackageReference, Collection<SourcePackageInfo>> map = myCommand.checkForChanges(nugetPath, Collections.singleton(pkg));
               Collection<SourcePackageInfo> infos = map.get(pkg);
-              if (infos == null || infos.isEmpty()) {
-                packageCheckEntry.setResult(CheckResult.failed("Package was not found in the feed"));
-              } else {
-                packageCheckEntry.setResult(CheckResult.fromResult(infos));
-              }
+              if (infos == null) infos = Collections.emptyList();
+              packageCheckEntry.setResult(CheckResult.fromResult(infos));
             } catch (Throwable t) {
               LOG.warn("Failed to check changes of " + packageId + ". " + t.getMessage(), t);
               packageCheckEntry.setResult(CheckResult.failed(t.getMessage()));

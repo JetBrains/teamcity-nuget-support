@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
@@ -35,6 +36,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.util.HashMap;
+
+import static jetbrains.buildServer.nuget.server.toolRegistry.tab.WhatToDo.INSTALL;
+import static jetbrains.buildServer.nuget.server.toolRegistry.tab.WhatToDo.UPLOAD;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -71,22 +75,27 @@ public class InstallToolController extends BaseFormXmlController {
 
   protected ModelAndView doGet(@NotNull final HttpServletRequest request,
                               @NotNull final HttpServletResponse response) {
-    final InstallToolBean bean = new InstallToolBean();
-    final ToolsPolicy pol =
-            StringUtil.isEmptyOrSpaces(request.getParameter("fresh"))
-                    ? ToolsPolicy.ReturnCached
-                    : ToolsPolicy.FetchNew;
+    final InstallToolBean bean;
 
-    try {
-      bean.setTools(myToolsManager.getAvailableTools(pol));
-    } catch (Exception e) {
-      bean.setErrorText(e.getMessage());
-      LOG.warn("Failed to fetch NuGet.Commandline package versions. " + e.getMessage(), e);
+    if (!StringUtil.isEmptyOrSpaces(request.getParameter("uploadOnly"))) {
+      bean = new InstallToolBean(UPLOAD);
+    } else {
+      bean = new InstallToolBean(INSTALL);
+      final ToolsPolicy pol =
+              StringUtil.isEmptyOrSpaces(request.getParameter("fresh"))
+                      ? ToolsPolicy.ReturnCached
+                      : ToolsPolicy.FetchNew;
+
+      try {
+        bean.setTools(myToolsManager.getAvailableTools(pol));
+      } catch (Exception e) {
+        bean.setErrorText(e.getMessage());
+        LOG.warn("Failed to fetch NuGet.Commandline package versions. " + e.getMessage(), e);
+      }
     }
 
-    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/installTool.jsp"));
-    mv.getModelMap().put("propertiesBean", new BasePropertiesBean(new HashMap<String, String>()));
-
+    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath(bean.getView()));
+    mv.getModel().put("propertiesBean", new BasePropertiesBean(new HashMap<String, String>()));
     mv.getModel().put("installTools", bean);
     return mv;
   }
@@ -111,10 +120,25 @@ public class InstallToolController extends BaseFormXmlController {
       return;
     }
 
-    final String whatToDo = request.getParameter("whatToDo");
+    final WhatToDo whatToDo = WhatToDo.fromString(request.getParameter("whatToDo"));
+    if (whatToDo == null)  {
+      ae.addError("whatToDo", "Unknown action");
+      return;
+    }
+
     try {
-      if ("install".equals(whatToDo)) {
-        if ("custom".equals(toolId)) {
+      switch (whatToDo) {
+        case INSTALL:
+          final NuGetTool downloadedTool = myToolsManager.downloadTool(toolId);
+          updateDefault(request, downloadedTool);
+
+          return;
+
+        case DEFAULT:
+          myToolsManager.setDefaultTool(toolId);
+          return;
+
+        case UPLOAD:
           LOG.debug("Processing NuGet commandline upload.");
 
           final String file = request.getParameter("nugetUploadControl");
@@ -124,21 +148,24 @@ public class InstallToolController extends BaseFormXmlController {
           final File tempFile = new File(file);
 
           try {
-            myToolsManager.installTool(tempFile.getName(), tempFile);
+            final NuGetTool uploadedTool = myToolsManager.installTool(tempFile.getName(), tempFile);
+            updateDefault(request, uploadedTool);
           } finally {
             FileUtil.delete(tempFile);
           }
-        } else {
-          myToolsManager.installTool(toolId);
-        }
-        return;
-      }
+          return;
 
-      if ("remove".equals(whatToDo)) {
-        myToolsManager.removeTool(toolId);
+        case REMOVE:
+          myToolsManager.removeTool(toolId);
       }
     } catch (ToolException e) {
       ae.addError("toolId", e.getMessage());
     }
+  }
+
+  private void updateDefault(@NotNull HttpServletRequest request,
+                             @NotNull NuGetTool tool) {
+    if (StringUtil.isEmptyOrSpaces(request.getParameter("setAsDefault"))) return;
+    myToolsManager.setDefaultTool(tool.getId());
   }
 }

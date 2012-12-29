@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -55,7 +56,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
 
   private void visitArtifacts(@NotNull final BuildArtifact artifact, @NotNull final List<BuildArtifact> packages) {
     if (!artifact.isDirectory()) {
-      if (artifact.getName().endsWith(".nupkg")) {
+      if (FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(artifact.getName())) {
         packages.add(artifact);
       }
       return;
@@ -73,6 +74,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
     visitArtifacts(build.getArtifacts(BuildArtifactsViewMode.VIEW_ALL).getRootArtifact(), packages);
 
     for (BuildArtifact aPackage : packages) {
+      LOG.info("Indexing NuGet Package from artifact " + aPackage.getRelativePath() + " of build " + LogUtil.describe(build));
       try {
         Date finishDate = build.getFinishDate();
         if (finishDate == null) finishDate = new Date();

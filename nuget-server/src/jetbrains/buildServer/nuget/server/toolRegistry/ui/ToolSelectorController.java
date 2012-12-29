@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,9 @@ package jetbrains.buildServer.nuget.server.toolRegistry.ui;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.BasePropertiesBean;
-import jetbrains.buildServer.nuget.server.settings.SettingsSection;
-import jetbrains.buildServer.nuget.server.settings.tab.ServerSettingsTab;
+import jetbrains.buildServer.nuget.common.NuGetTools;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
-import jetbrains.buildServer.nuget.server.toolRegistry.tab.InstalledToolsController;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
@@ -34,6 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static jetbrains.buildServer.nuget.server.settings.SettingsSection.SELECTED_SECTION_KEY;
+import static jetbrains.buildServer.nuget.server.settings.tab.ServerSettingsTab.TAB_ID;
+import static jetbrains.buildServer.nuget.server.toolRegistry.tab.InstalledToolsController.SETTINGS_PAGE_ID;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -84,14 +86,14 @@ public class ToolSelectorController extends BaseController {
       mv.getModel().put("clazz", safe(request.getParameter("class")));
       mv.getModel().put("style", safe(request.getParameter("style")));
       mv.getModel().put("items", tools);
-      mv.getModel().put("settingsUrl", "/admin/admin.html?init=1&item=" + ServerSettingsTab.TAB_ID + "&" + SettingsSection.SELECTED_SECTION_KEY + "=" + InstalledToolsController.SETTINGS_PAGE_ID) ;
+      mv.getModel().put("settingsUrl", "/admin/admin.html?init=1&item=" + TAB_ID + "&" + SELECTED_SECTION_KEY + "=" + SETTINGS_PAGE_ID);
       return mv;
     }
   }
 
   @Nullable
   private ToolInfo ensureVersion(@NotNull final String version, @NotNull Collection<ToolInfo> actionInfos) {
-    if (!version.startsWith("?")) return null;
+    if (!NuGetTools.isToolReference(version)) return null;
     for (ToolInfo actionInfo : actionInfos) {
       if (actionInfo.getId().equals(version)) return actionInfo;
     }
@@ -103,6 +105,19 @@ public class ToolSelectorController extends BaseController {
   @NotNull
   private Collection<ToolInfo> getTools() {
     final ArrayList<ToolInfo> result = new ArrayList<ToolInfo>();
+
+    final NuGetInstalledTool defaultTool = myToolManager.getDefaultTool();
+    final String defaultToolName;
+    if (defaultTool != null) {
+      defaultToolName = "default (" + defaultTool.getVersion() + ")";
+    } else {
+      defaultToolName = "default (not yet selected)";
+    }
+
+    result.add(new ToolInfo(
+            NuGetTools.getDefaultToolPath(),
+            defaultToolName));
+
     for (NuGetInstalledTool nuGetInstalledTool : myToolManager.getInstalledTools()) {
       result.add(new ToolInfo(nuGetInstalledTool));
     }

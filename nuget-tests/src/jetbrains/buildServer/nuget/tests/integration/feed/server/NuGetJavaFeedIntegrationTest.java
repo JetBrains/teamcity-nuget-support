@@ -19,12 +19,18 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
+import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.Paths;
+import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.integration.ServerListPackagesCommandIntegrationTest;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -91,6 +97,21 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     final String stdout = exec.getStdout();
     System.out.println(stdout);
     Assert.assertTrue(stdout.contains(packageId_1), stdout);
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x1(@NotNull final NuGet nuget) throws NuGetExecutionException, IOException {
+    doTriggerTest(nuget, packageId_1);
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x2(@NotNull final NuGet nuget) throws NuGetExecutionException, IOException {
+    doTriggerTest(nuget, packageId_1.toLowerCase(), packageId_2.toUpperCase());
+  }
+
+  protected void doTriggerTest(@NotNull final NuGet nuget, @NotNull String... packageNames) throws NuGetExecutionException, IOException {
+    ListPackagesCommand cmd = ServerListPackagesCommandIntegrationTest.createMockCommand(createTempDir());
+    ServerListPackagesCommandIntegrationTest.doTriggerTest(cmd, nuget, getNuGetServerUrl(), packageNames);
   }
 
 }

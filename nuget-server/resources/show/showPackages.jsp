@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%--
-  ~ Copyright 2000-2011 JetBrains s.r.o.
+  ~ Copyright 2000-2012 JetBrains s.r.o.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ This build used and downlaoded ${numberOfUsedPackages} NuGet package<bs:s val="$
 
 <c:set var="numberOfCreatedPackages" value="${fn:length(packages.createdPackages)}" />
 <h3>Created Packages</h3>
-This build created ${numberOfUsedPackages} NuGet package<bs:s val="${numberOfCreatedPackages}"/>.
+This build created ${numberOfCreatedPackages} NuGet package<bs:s val="${numberOfCreatedPackages}"/>.
 <c:if test="${numberOfCreatedPackages gt 0}">
   <table class="settings" style="width:50em">
     <thead>

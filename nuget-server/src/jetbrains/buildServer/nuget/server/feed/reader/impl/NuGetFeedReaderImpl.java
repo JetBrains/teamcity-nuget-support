@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,25 +65,22 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     final Pair<String, HttpResponse> pair = myResolver.resolvePath(feedUrl);
     feedUrl = pair.first;
     LOG.debug("Resolved NuGet feed URL to " + feedUrl);
-    final Element element = toDocument(pair.second);
+    final Element element = toDocument(feedUrl, pair.second);
     LOG.debug("Recieved xml: " + XmlUtil.to_s(element));
 
     final List<FeedPackage> allPackages = new ArrayList<FeedPackage>();
     HttpGet get = myMethodFactory.createGet(feedUrl + "/Packages()",
-
             new Param("$filter", "Id eq '" + packageId + "'")
     );
 
-
     do {
       get.setHeader(HttpHeaders.ACCEPT, "application/atom+xml");
-
 
       LOG.debug("Query for packages part: " + get.getURI());
       final HttpResponse execute = myClient.execute(get);
       String packagesUrl;
       try {
-        packagesUrl = myParser.readPackages(toDocument(execute), allPackages);
+        packagesUrl = myParser.readPackages(toDocument(get.getURI().toString(), execute), allPackages);
       } finally {
         get.abort();
       }
@@ -118,12 +115,14 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     }
   }
 
-  private Element toDocument(@NotNull HttpResponse response) throws IOException {
+  private Element toDocument(@NotNull final String feedUrl, @NotNull HttpResponse response) throws IOException {
     final HttpEntity entity = response.getEntity();
     try {
       return FileUtil.parseDocument(new BufferedInputStream(entity.getContent()), false);
-    } catch (final JDOMException e) {
-      throw new IOException("Failed to parse xml document. " + e.getMessage());
+    } catch (JDOMException e) {
+      final String msg = "Failed to parse output from NuGet feed. Check feed url: " + feedUrl + " is accessible";
+      LOG.debug(msg + ". " + e.getMessage(), e);
+      throw new IOException(msg);
     } finally {
       EntityUtils.consume(entity);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -26,18 +25,12 @@ import java.io.File;
  *         Date: 04.10.11 20:15
  */
 public class PackageCheckerNuGetBase {
-  private final NuGetPathCalculator myCalculator;
-
-  public PackageCheckerNuGetBase(NuGetPathCalculator calculator) {
-    myCalculator = calculator;
-  }
-
   public boolean accept(@NotNull PackageCheckRequest request) {
-    return getNuGetPath(request.getMode()) != null;
+    return (request.getMode() instanceof CheckRequestModeNuGet);
   }
 
-  @Nullable
+  @NotNull
   protected File getNuGetPath(@NotNull CheckRequestMode entry) {
-    return myCalculator.getNuGetPath(entry);
+    return ((CheckRequestModeNuGet)entry).getNuGetPath();
   }
 }

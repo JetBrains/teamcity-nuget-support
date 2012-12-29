@@ -23,6 +23,7 @@
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolPackerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolsInstallerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolUnpackerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableToolStateTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.PluginNamingTest"/>
@@ -40,12 +41,15 @@
 
   <test name="trigger">
     <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageSourceCheckerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.NuGetSourceCheckerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckEntryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.CheckRequestModeFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesCheckerThreadTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetBulkTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetPerPackageTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerTeamCityTest"/>
     </classes>
   </test>
 

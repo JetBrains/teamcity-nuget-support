@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.impl.ToolPathsImpl;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetAgentToolHolder;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.plugins.NuGetAgentToolHolder;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;

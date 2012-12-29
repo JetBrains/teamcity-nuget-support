@@ -22,7 +22,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         ExecuteCommandImpl();
       } catch(Exception e)
       {
-        System.Console.Error.WriteLine("Failed to execute commnad: " + e.Message);
+        System.Console.Error.WriteLine("Failed to execute command: " + e.Message);
         System.Console.Error.WriteLine(e);
         throw new CommandLineException("TeamCity command failed");
       }

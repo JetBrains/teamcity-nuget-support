@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright 2000-2011 JetBrains s.r.o.
+  ~ Copyright 2000-2012 JetBrains s.r.o.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
 <c:set var="nugetSettingsPostFullUrl"><c:url value="${nugetSettingsPostUrl}"/></c:set>
 
 <bs:refreshable containerId="nugetEnableDisable" pageUrl="${nugetStatusRefreshFullUrl}">
-  <div style="padding-top:1em;" data-url="${nugetSettingsPostFullUrl}">
+  <div data-url="${nugetSettingsPostFullUrl}">
     NuGet Server<bs:help file="NuGet"/> is
     <c:choose>
       <c:when test="${serverEnabled}">
@@ -80,5 +80,43 @@
       </tr>
     </table>
   </c:if>
+
+
+  <div id="nugetFeedError" style="padding-top: 1em;">
+    <div class="attentionComment">
+      NuGet Feed must contain server URL inside.
+      Current TeamCity server configuration does not let TeamCity server to get
+      original request URL from HTTP request.
+
+      It looks like TeamCity server is wrongly configured with reverse proxy.
+      Make sure reverse proxy and TeamCity server is configured to let TeamCity
+      server know request real request URL.
+      <bs:help file="Using+HTTPS+to+access+TeamCity+server"/>
+    </div>
+    <table class="runnerFormTable nugetUrls">
+      <tr>
+        <th>URL in browser:</th>
+        <td id="nugetFeedActual"></td>
+      </tr>
+      <tr>
+        <th>URL on TeamCity:</th>
+        <td id="nugetFeedServer"></td>
+      </tr>
+    </table>
+  </div>
+
+  <script type="text/javascript">
+    (function() {
+      var contextPath = '<bs:forJs><c:url value="/"/></bs:forJs>';
+      var webUrl = "" + window.location;
+      var serverUrl = '<bs:forJs>${actualServerUrl}</bs:forJs>';
+
+      $j("#nugetFeedActual").text(webUrl);
+      $j("#nugetFeedServer").text(serverUrl);
+
+      var areSettingsValid = !! (webUrl.indexOf(serverUrl) == 0);
+      (areSettingsValid ? BS.Util.hide : BS.Util.show)('nugetFeedError');
+    })();
+  </script>
 
 </bs:refreshable>

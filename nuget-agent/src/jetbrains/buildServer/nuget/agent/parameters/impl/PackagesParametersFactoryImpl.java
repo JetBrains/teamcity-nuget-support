@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.agent.BundledTool;
 import jetbrains.buildServer.agent.BundledToolsRegistry;
 import jetbrains.buildServer.nuget.agent.parameters.*;
+import jetbrains.buildServer.nuget.common.NuGetTools;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -111,8 +112,8 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       throw new RunBuildException("Runner parameter '" + NUGET_PATH + "' was not found");
     }
 
-    if (path.startsWith("?")) {
-      final String version = path.substring(1);
+    final String version = NuGetTools.getReferredToolId(path);
+    if (version != null) {
       final BundledTool tool = myBundledTools.findTool(version);
       if (tool != null) {
         final File bundledPath = new File(tool.getRootPath(), NUGET_TOOL_REL_PATH);
@@ -219,6 +220,10 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       public boolean getExcludeVersion() {
         return getBoolean(context, NUGET_EXCLUDE_VERSION);
+      }
+
+      public boolean getNoCache(){
+        return getBoolean(context, NUGET_NO_CACHE);
       }
     };
   }

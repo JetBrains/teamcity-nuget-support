@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2011 JetBrains s.r.o.
+ * Copyright 2000-2012 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,18 @@ import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
+import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorEx;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.PackagesInfoUploader;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.PackagesWatcher;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
 import jetbrains.buildServer.util.EventDispatcher;
+import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.TestFor;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;
@@ -38,6 +42,11 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -46,7 +55,7 @@ import java.io.IOException;
 public class PackagesWatcherTest extends BaseTestCase {
   private Mockery m;
   private ArtifactsWatcher watcher;
-  private NuGetPackagesCollector collector;
+  private NuGetPackagesCollectorEx collector;
   private AgentLifeCycleListener multicaster;
   private AgentRunningBuild build;
 
@@ -72,25 +81,52 @@ public class PackagesWatcherTest extends BaseTestCase {
   }
 
   @Test
+  @TestFor(issues = "TW-23402")
+  public void test_state_is_clean_auto() throws InvocationTargetException, IllegalAccessException, IOException {
+    final String empty = serializePackages();
+
+    final Map<String, Object[]> arguments = new HashMap<String, Object[]>();
+    arguments.put("getUsedPackages", null);
+    arguments.put("addCreatedPackage", new Object[]{"aaa", "22.3.4"});
+    arguments.put("addDependenyPackage", new Object[]{"aaa", "22.3.4", "ff"});
+    arguments.put("addPublishedPackage", new Object[]{"aaa", "22.3.4", "ff"});
+
+    for (Method method : NuGetPackagesCollector.class.getMethods()) {
+      if (!Modifier.isPublic(method.getModifiers())) continue;
+      if (Modifier.isStatic(method.getModifiers())) continue;
+
+      Assert.assertTrue(arguments.containsKey(method.getName()), "Method " + method + " must be covered");
+      Object[] paramz = arguments.get(method.getName());
+      if (paramz != null) method.invoke(collector, paramz);
+    }
+
+    assertNotEmpty();
+
+    final String state1 = serializePackages();
+    Assert.assertFalse(state1.equals(empty));
+    collector.removeAllPackages();
+    final String state2 = serializePackages();
+    Assert.assertEquals(state2, empty);
+
+    assertEmpty();
+  }
+
+  @Test
   public void test_state_is_clean_after_build() {
-    collector.addCreatedPackage("aaa", "22.3.4");
-    collector.addDependenyPackage("aaa", "22.3.4", "x");
+    addAllDependencies();
     multicaster.buildFinished(build, BuildFinishedStatus.FINISHED_SUCCESS);
 
-    Assert.assertTrue(collector.getUsedPackages().getCreatedPackages().isEmpty());
-    Assert.assertTrue(collector.getUsedPackages().getUsedPackages().isEmpty());
+    assertEmpty();
   }
 
   @Test
   public void test_data_does_not_removed_on_build_stop() {
-    collector.addCreatedPackage("aaa", "22.3.4");
-    collector.addDependenyPackage("aaa", "22.3.4", "x");
+    addAllDependencies();
 
-    final PackageDependencies data = collector.getUsedPackages();
+    assertNotEmpty();
     multicaster.buildFinished(build, BuildFinishedStatus.FINISHED_SUCCESS);
 
-    Assert.assertFalse(data.getCreatedPackages().isEmpty());
-    Assert.assertFalse(data.getUsedPackages().isEmpty());
+    assertEmpty();
   }
 
   @Test
@@ -116,10 +152,9 @@ public class PackagesWatcherTest extends BaseTestCase {
 
   @Test
   public void test_clean_packages_on_build_start() {
-    collector.addDependenyPackage("aaa", "bbb", null);
+    addAllDependencies();
     multicaster.buildStarted(build);
-
-    Assert.assertTrue(collector.getUsedPackages().getUsedPackages().isEmpty());
+    assertEmpty();
 
     m.assertIsSatisfied();
   }
@@ -141,4 +176,32 @@ public class PackagesWatcherTest extends BaseTestCase {
     public void describeTo(Description description) {
     }
   }
+
+
+  private void addAllDependencies() {
+    collector.addCreatedPackage("aaa", "22.3.4");
+    collector.addDependenyPackage("aaa", "22.3.4", "x");
+    collector.addPublishedPackage("aaa", "22.3.4", "x");
+  }
+
+  private void assertEmpty() {
+    Assert.assertTrue(collector.getUsedPackages().getCreatedPackages().isEmpty());
+    Assert.assertTrue(collector.getUsedPackages().getUsedPackages().isEmpty());
+    Assert.assertTrue(collector.getUsedPackages().getPublishedPackages().isEmpty());
+  }
+
+  private void assertNotEmpty() {
+    Assert.assertFalse(collector.getUsedPackages().getCreatedPackages().isEmpty());
+    Assert.assertFalse(collector.getUsedPackages().getUsedPackages().isEmpty());
+    Assert.assertFalse(collector.getUsedPackages().getPublishedPackages().isEmpty());
+  }
+
+  @NotNull
+  private String serializePackages() throws IOException {
+    PackageDependenciesStore s = new PackageDependenciesStore();
+    final File file = createTempFile();
+    s.save(collector.getUsedPackages(), file);
+    return new String(FileUtil.loadFileText(file));
+  }
+
 }

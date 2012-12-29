@@ -25,10 +25,14 @@
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser" />
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl"/>
 
+
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.AgentNuGetTeamCityProvider"/>
 
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetWorkdirCalculatorImpl"/>
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetProcessCallbackImpl"/>
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetWorkdirCleaner"/>
   <bean class="jetbrains.buildServer.nuget.agent.runner.impl.AuthStagesBuilder"/>
+
+
+  <bean class="jetbrains.buildServer.nuget.agent.runner.EnabledPackagesOptionSetter"/>
 </beans>
