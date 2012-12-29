@@ -75,17 +75,35 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
 
   @Test
   public void test_no_sources_no_cache() throws RunBuildException, IOException {
-    final File nuget = createTempFile();
     m.checking(new Expectations(){{
       allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
-      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
       allowing(ps).getExcludeVersion(); will(returnValue(false));
       allowing(ps).getNoCache(); will(returnValue(true));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
-              nuget.getPath(),
+              myNuGetPath.getPath(),
               Arrays.asList("install", myConfig.getPath(), "-NoCache", "-OutputDirectory", myTarget.getPath()),
+              myConfig.getParentFile(),
+              Collections.singletonMap("EnableNuGetPackageRestore", "True")
+      );
+    }});
+
+    i.createInstall(ctx, ps, true, myConfig, myTarget);
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_no_sources_no_cache_notSupported() throws RunBuildException, IOException {
+    m.checking(new Expectations(){{
+      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(ps).getExcludeVersion(); will(returnValue(false));
+      allowing(ps).getNoCache(); will(returnValue(true));
+
+      oneOf(myProcessFactory).executeCommandLine(
+              ctx,
+              myNuGetPath.getPath(),
+              Arrays.asList("install", myConfig.getPath(), "-OutputDirectory", myTarget.getPath()),
               myConfig.getParentFile(),
               Collections.singletonMap("EnableNuGetPackageRestore", "True")
       );
