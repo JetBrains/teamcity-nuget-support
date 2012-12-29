@@ -146,6 +146,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   public Object[][] dataProviderNuGetVersions20p() {
     return new Object[][]{
             new Object[] { NuGet.NuGet_2_0},
+            new Object[] { NuGet.NuGet_2_1},
+            new Object[] { NuGet.NuGet_2_2},
     };
   }
 
