@@ -81,14 +81,16 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
   protected void fetchPackages(final File sln,
                              final List<PackageSource> sources,
                              final boolean excludeVersion,
+                             final boolean noCache,
                              final boolean update,
                              @NotNull final NuGet nuget,
                              @Nullable Collection<PackageInfo> detectedPackages) throws RunBuildException {
-    fetchPackages(sln, sources, excludeVersion, update, nuget, detectedPackages, BuildFinishedStatus.FINISHED_SUCCESS);
+    fetchPackages(sln, sources, excludeVersion, noCache, update, nuget, detectedPackages, BuildFinishedStatus.FINISHED_SUCCESS);
   }
   protected void fetchPackages(final File sln,
                              final List<PackageSource> sources,
                              final boolean excludeVersion,
+                             final boolean noCache,
                              final boolean update,
                              @NotNull final NuGet nuget,
                              @Nullable Collection<PackageInfo> detectedPackages,
@@ -108,6 +110,8 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
       will(returnValue(sources));
       allowing(myInstall).getExcludeVersion();
       will(returnValue(excludeVersion));
+      allowing(myInstall).getNoCache();
+      will(returnValue(noCache));
       allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myNuGet);
       will(returnValue(update ? myUpdate : null));
     }});

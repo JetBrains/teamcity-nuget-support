@@ -34,6 +34,8 @@ import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 21.07.11 15:15
@@ -88,8 +90,6 @@ public class PackagesPublishRunner extends NuGetRunnerBase {
     myBuilder.buildStages(context, stages, params);
     return process;
   }
-
-
 
   @NotNull
   public String getType() {

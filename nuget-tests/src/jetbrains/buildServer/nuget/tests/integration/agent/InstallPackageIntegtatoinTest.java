@@ -17,17 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.agent;
 
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.BuildFinishedStatus;
-import jetbrains.buildServer.agent.BuildProcess;
-import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
-import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerRunner;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigProcessFactory;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.ResourcesConfigPackagesScanner;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionPackagesScanner;
-import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionWidePackagesConfigScanner;
-import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.Paths;
@@ -38,13 +28,14 @@ import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.TestFor;
 import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -77,7 +68,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
   public void test_01_online_sources_no_cache(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, false, nuget,
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<PackageSource>emptyList(), false, true, false, nuget,
             Arrays.asList(
                     new PackageInfo("Machine.Specifications", "0.4.13.0"),
                     new PackageInfo("NUnit", "2.5.7.10213"),
@@ -349,59 +340,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertTrue(new File(myRoot, "ClassLibrary1/packages/elmah.1.2.2").isDirectory());
     Assert.assertTrue(new File(myRoot, "ClassLibrary1/packages/elmah.corelibrary.1.2.2").isDirectory());
     Assert.assertEquals(3, packageses.size());
-  }
-
-  private void fetchPackages(final File sln,
-                             final List<String> sources,
-                             final boolean excludeVersion,
-                             final boolean noCache,
-                             final boolean update,
-                             @NotNull final NuGet nuget,
-                             @Nullable Collection<PackageInfo> detectedPackages) throws RunBuildException {
-
-    m.checking(new Expectations() {{
-      allowing(myParametersFactory).loadNuGetFetchParameters(myContext);
-      will(returnValue(myNuGet));
-      allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);
-      will(returnValue(myInstall));
-
-      allowing(myNuGet).getNuGetExeFile();
-      will(returnValue(nuget.getPath()));
-      allowing(myNuGet).getSolutionFile();
-      will(returnValue(sln));
-      allowing(myNuGet).getNuGetPackageSources();
-      will(returnValue(sources));
-      allowing(myInstall).getExcludeVersion();
-      will(returnValue(excludeVersion));
-      allowing(myInstall).getNoCache();
-      will(returnValue(noCache));
-      allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myNuGet);
-      will(returnValue(update ? myUpdate : null));
-    }});
-
-    BuildProcess proc = new PackagesInstallerRunner(
-            myActionFactory,
-            myParametersFactory,
-            new LocateNuGetConfigProcessFactory(
-                    new RepositoryPathResolverImpl(),
-                    Arrays.asList(
-                            new ResourcesConfigPackagesScanner(),
-                            new SolutionPackagesScanner(new SolutionParserImpl()),
-                            new SolutionWidePackagesConfigScanner())
-            )
-    ).createBuildProcess(myBuild, myContext);
-    ((NuGetPackagesCollectorImpl)myCollector).removeAllPackages();
-
-    assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
-
-    System.out.println(myCollector.getUsedPackages());
-    if (detectedPackages != null) {
-      Assert.assertEquals(
-              new TreeSet<PackageInfo>(myCollector.getUsedPackages().getUsedPackages()),
-              new TreeSet<PackageInfo>(detectedPackages));
-    }
-
-    m.assertIsSatisfied();
   }
 
   @NotNull

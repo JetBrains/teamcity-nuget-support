@@ -24,8 +24,8 @@ import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.runner.impl.AuthStagesBuilder;
-import jetbrains.buildServer.nuget.agent.runner.publish.PublishRunnerStagesBuilder;
 import jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner;
+import jetbrains.buildServer.nuget.agent.runner.publish.PublishRunnerStagesBuilder;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.util.FileUtil;
@@ -38,9 +38,8 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -124,7 +123,12 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     return pkg;
   }
 
-  private BuildProcess callPublishRunnerEx(final NuGet nuget, final File... pkg) throws RunBuildException {
+  private void callPublishRunner(final NuGet nuget, final File... pkg) throws RunBuildException {
+    BuildProcess proc = callPublishRunnerEx(nuget, pkg);
+    assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
+  }
+
+  protected BuildProcess callPublishRunnerEx(final NuGet nuget, final File... pkg) throws RunBuildException {
     final List<String> files = new ArrayList<String>();
     for (File p : pkg) {
       files.add(p.getPath());
@@ -133,20 +137,21 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
       allowing(myPublishParameters).getFiles(); will(returnValue(files));
       allowing(myPublishParameters).getCreateOnly(); will(returnValue(true));
       allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
-      //TODO 0.9 resoulve
       allowing(myPublishParameters).getNuGetPackageSources(); will(returnValue(Collections.emptyList()));
-      allowing(myPublishParameters).getPublishSource(); will(returnValue("http://preview.nuget.org/api/v2"));
-
       allowing(myPublishParameters).getApiKey(); will(returnValue(getQ()));
+
       allowing(myParametersFactory).loadPublishParameters(myContext);will(returnValue(myPublishParameters));
     }});
 
-
     final PackagesPublishRunner runner = new PackagesPublishRunner(new PublishRunnerStagesBuilder(new AuthStagesBuilder(myActionFactory), myActionFactory), myActionFactory, myParametersFactory);
-    final BuildProcess proc = runner.createBuildProcess(myBuild, myContext);
-
-    final PackagesPublishRunner runner = new PackagesPublishRunner(myActionFactory, myParametersFactory);
     return runner.createBuildProcess(myBuild, myContext);
   }
 
+  private String getQ() {
+    final int i1 = 88001628;
+    final int universe = 42;
+    final int num = 4015;
+    final String nuget = 91 + "be" + "-" + num + "cf638bcf";
+    return (i1 + "-" + "cb" + universe + "-" + 4 + "c") + 35 + "-" + nuget;
+  }
 }

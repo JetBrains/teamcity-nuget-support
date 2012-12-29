@@ -23,7 +23,6 @@ import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.Paths;
-import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.integration.ServerListPackagesCommandIntegrationTest;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;

@@ -91,7 +91,7 @@ public class NuGetInstallPackageActionFactoryTest extends NuGetActionFactoryTest
       );
     }});
 
-    i.createInstall(ctx, ps, myConfig, myTarget);
+    i.createInstall(ctx, ps, false, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 

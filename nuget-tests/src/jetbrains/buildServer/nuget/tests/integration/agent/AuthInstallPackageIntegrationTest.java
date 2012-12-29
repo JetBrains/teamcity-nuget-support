@@ -202,7 +202,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_install(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, false, nuget, null, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, false, false, nuget, null, null);
     Assert.assertTrue(myIsAuthorized.get(), "NuGet must authorize");
   }
 
@@ -221,7 +221,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, true, nuget, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, false, true, nuget, null);
 
     Assert.assertTrue(myIsAuthorized.get(), "NuGet must authorize");
   }
