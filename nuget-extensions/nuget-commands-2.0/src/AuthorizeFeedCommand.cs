@@ -24,23 +24,15 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
       //Replace all NuGet sources with our sources.
       Sources.SavePackageSources(
-        feeds.Feeds.SelectMany(
+        feeds.Feeds.Select(
           def =>
-          new[]
+          new PackageSource(def.Url + '/',
+                            TeamCityAuthConstants.TeamCityFeedPrefix + Guid.NewGuid().ToString(), true)
             {
-              new PackageSource(def.Url + '/',
-                                TeamCityAuthConstants.TeamCityFeedPrefix + Guid.NewGuid().ToString(), true),
-              new PackageSource(def.Url + "/$metadata",
-                                TeamCityAuthConstants.TeamCityFeedPrefix + Guid.NewGuid().ToString(), false),
+              UserName = def.UserName,
+              Password = def.Password
             }
-            .Select(x =>
-              {
-                x.UserName = def.UserName;
-                x.Password = def.Password;
-                return x;
-              })
-          )
-          .ToArray()
+          ).ToArray()
         );
     }
   }
