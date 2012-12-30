@@ -97,7 +97,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
         }
 
         if (path.contains("FineCollection.1.0.189.152.nupkg")) {
-          return getFileResponse(getTestDataPath("feed/mock/FineCollection.1.0.189.152.nupkg"), Arrays.asList("Content-Type: application/zip"));
+          return getFileResponse(Paths.getTestDataPath("feed/mock/FineCollection.1.0.189.152.nupkg"), Arrays.asList("Content-Type: application/zip"));
         }
 
         return createStringResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found");
@@ -195,14 +195,13 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
 
     assertRunSuccessfully(list, BuildFinishedStatus.FINISHED_SUCCESS);
     Assert.assertTrue(getCommandsOutput().contains("FineCollection 1.0.189"));
-    Assert.assertTrue(getCommandsOutput().contains("TestUtils 1.0.189"));
+    Assert.assertFalse(getCommandsOutput().contains("TestUtils 1.0.189"));
   }
-
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_install(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, false, false, nuget, null, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, true, false, nuget, null, null);
     Assert.assertTrue(myIsAuthorized.get(), "NuGet must authorize");
   }
 
@@ -221,7 +220,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, false, true, nuget, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, true, true, nuget, null);
 
     Assert.assertTrue(myIsAuthorized.get(), "NuGet must authorize");
   }
