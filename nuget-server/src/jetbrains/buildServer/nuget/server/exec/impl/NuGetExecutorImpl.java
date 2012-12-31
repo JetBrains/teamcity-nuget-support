@@ -16,16 +16,10 @@
 
 package jetbrains.buildServer.nuget.server.exec.impl;
 
-import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
-import com.intellij.execution.process.OSProcessHandler;
-import com.intellij.execution.process.ProcessAdapter;
-import com.intellij.execution.process.ProcessEvent;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.Key;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
-import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
@@ -35,11 +29,7 @@ import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -89,90 +79,6 @@ public class NuGetExecutorImpl implements NuGetExecutor {
     listener.onFinished(result.getExitCode());
 
     return listener.getResult();
-  }
-
-  @NotNull
-  public NuGetServerHandle startNuGetServer(final int port,
-                                            @NotNull final String packagesUrl,
-                                            @NotNull final File logsFile,
-                                            @NotNull final String token) throws NuGetExecutionException {
-    assertOs();
-
-    final GeneralCommandLine cmd = new GeneralCommandLine();
-    final File path = myNuGetTeamCityProvider.getNuGetServerRunnerPath();
-    cmd.setExePath(path.getPath());
-    cmd.setWorkingDirectory(path.getParentFile());
-
-    cmd.addParameter("/Port:" + port);
-    cmd.addParameter("/TeamCityBaseUri:" + packagesUrl);
-    cmd.addParameter("/LogFile:" + logsFile.getAbsolutePath());
-    cmd.addParameter("/Token:" + token);
-
-    final Process process;
-    try {
-      process = cmd.createProcess();
-    } catch (ExecutionException e1) {
-      throw new NuGetExecutionException("Failed to start NuGet server process from: " + cmd.getCommandLineString().replace(token, "SECRET-TOKEN"));
-    }
-
-    final OSProcessHandler hander = new OSProcessHandler(process, cmd.getCommandLineString()) {
-      @Override
-      public Charset getCharset() {
-        return cmd.getCharset();
-      }
-    };
-
-    final AtomicBoolean isRunning = new AtomicBoolean(true);
-    final Logger outputLog = Logger.getInstance(getClass().getName() + ".Server");
-    hander.addProcessListener(new ProcessAdapter() {
-      @Override
-      public void onTextAvailable(ProcessEvent event, Key outputType) {
-        outputLog.info(outputType + " - " + event.getText().trim());
-      }
-
-      @Override
-      public void startNotified(ProcessEvent event) {
-        outputLog.info("NuGet server process is started. ");
-      }
-
-      @Override
-      public void processTerminated(ProcessEvent event) {
-        outputLog.info("NuGet server process is terminated. ");
-        isRunning.set(false);
-      }
-    });
-
-    hander.startNotify();
-    return new NuGetServerHandle() {
-      public int getPort() {
-        return port;
-      }
-
-      public boolean isAlive() {
-        return isRunning.get();
-      }
-
-      public void stop() {
-        if (hander.isProcessTerminated()) return;
-
-        try {
-          final OutputStream os = hander.getProcessInput();
-          if (os != null) {
-            os.write("Exit\r\n\r\n\r\n".getBytes(hander.getCharset()));
-            os.flush();
-
-            hander.waitFor(1 * 60 * 1000); //1 minute to wait for process to exit
-          }
-        } catch (IOException e) {
-          LOG.warn("Failed to shutdown process silently");
-        }
-
-        if (!hander.isProcessTerminated()) {
-          LOG.warn("NuGet server process was forcibly terminated.");
-          hander.destroyProcess();
-        }
-      }
-    };
   }
 
 
