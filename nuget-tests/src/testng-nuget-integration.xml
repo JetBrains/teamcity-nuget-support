@@ -2,10 +2,10 @@
 <suite name="nuget">
   <test name="nuget integration test">
     <classes>
-      <class name="jetbrains.buildServer.nuget.tests.integration.PackIntegrationTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.integration.InstallPackageIntegtatoinTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.agent.PackIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.agent.InstallPackageIntegtatoinTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.NuGetExecutorTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.integration.PackagesPublishIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.agent.PackagesPublishIntegrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.FeedReaderTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.ServerListPackagesCommandIntegrationTest"/>
     </classes>
