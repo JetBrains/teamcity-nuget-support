@@ -20,6 +20,7 @@
         <option name="LINE_SEPARATOR" value="&#13;&#10;" />
         <option name="FIELD_NAME_PREFIX" value="my" />
         <option name="STATIC_FIELD_NAME_PREFIX" value="our" />
+        <option name="RIGHT_MARGIN" value="140" />
         <XML>
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
         </XML>
