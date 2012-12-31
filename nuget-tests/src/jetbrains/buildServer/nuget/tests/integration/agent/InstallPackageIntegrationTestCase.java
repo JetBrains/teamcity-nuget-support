@@ -137,7 +137,4 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
 
     m.assertIsSatisfied();
   }
-
-
-
 }
