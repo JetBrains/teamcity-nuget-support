@@ -52,6 +52,7 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
   protected PackagesInstallParameters myInstall;
   protected PackagesUpdateParameters myUpdate;
 
+
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
