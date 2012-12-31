@@ -27,10 +27,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -44,6 +41,7 @@ public abstract class SimpleHttpServerBase {
   public static final String STATUS_LINE_200 = "HTTP/1.0 200 Ok";
   public static final String STATUS_LINE_500 = "HTTP/1.0 500 Error";
   public static final String STATUS_LINE_404 = "HTTP/1.0 404 Not Found";
+  public static final String STATUS_LINE_401 = "HTTP/1.1 401 Authorization Required";
 
   private volatile boolean myStopped;
 
@@ -119,7 +117,7 @@ public abstract class SimpleHttpServerBase {
       final InputStream is = new BufferedInputStream(connection.getInputStream());
       final OutputStream os = new BufferedOutputStream(connection.getOutputStream());
 
-      final PrintStream ps = new PrintStream(os);
+      final PrintStream ps = new PrintStream(os, false, "utf-8");
       final StringBuilder sb = new StringBuilder();
       while (true) {
         final int c = is.read();
@@ -224,7 +222,7 @@ public abstract class SimpleHttpServerBase {
     myWaitAfterAccept = seconds;
   }
 
-  protected abstract Response getResponse(String httpHeader);
+  protected abstract Response getResponse(String httpHeader) throws IOException;
 
   @Nullable
   protected String getRequestPath(@NotNull final String request) {
@@ -235,13 +233,23 @@ public abstract class SimpleHttpServerBase {
     return null;
   }
 
+  @Nullable
+  protected String getHeaderLine(@NotNull final String request, @NotNull final String header) {
+    for (String line : request.split("[\r\n]+")) {
+      if (line.startsWith(header)) {
+        return line.substring(header.length()).trim();
+      }
+    }
+    return null;
+  }
+
   public abstract static class Response {
     private final String myStatusLine;
     private final List<String> myHeaders;
 
-    public Response(final String statusLine, final List<String> headers) {
+    public Response(final String statusLine, final Collection<String> headers) {
       myStatusLine = statusLine;
-      myHeaders = headers;
+      myHeaders = new ArrayList<String>(headers);
     }
 
     public String getStatusLine() {
@@ -261,7 +269,7 @@ public abstract class SimpleHttpServerBase {
 
 
   public static Response createStringResponse(final String statusLine,
-                                              final List<String> headers,
+                                              final Collection<String> headers,
                                               final String content) {
     return new Response(statusLine, headers) {
       @Override
@@ -277,7 +285,7 @@ public abstract class SimpleHttpServerBase {
   }
 
   public static Response createStreamResponse(final String statusLine,
-                                              final List<String> headers,
+                                              final Collection<String> headers,
                                               final byte[] content) {
     return new Response(statusLine, headers) {
       @Override

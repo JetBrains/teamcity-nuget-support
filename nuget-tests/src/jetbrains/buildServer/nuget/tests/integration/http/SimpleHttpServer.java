@@ -55,7 +55,12 @@ public class SimpleHttpServer extends SimpleHttpServerBase {
   }
 
   @Override
-  protected Response getResponse(final String request) {
+  protected Response getResponse(final String request) throws IOException {
+    return getSimpleHttpServerResponse(request);
+  }
+
+
+  protected final Response getSimpleHttpServerResponse(final String request) throws IOException {
     return myResponse;
   }
 
