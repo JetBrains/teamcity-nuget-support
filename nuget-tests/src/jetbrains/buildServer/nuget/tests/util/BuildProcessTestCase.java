@@ -26,6 +26,8 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -33,6 +35,14 @@ import java.util.List;
  * Date: 07.07.11 20:08
  */
 public class BuildProcessTestCase extends LoggingTestCase {
+
+  protected static <T> T[] t(T...t) {
+    return t;
+  }
+
+  protected static <T> Collection<T> c(T...t) {
+    return Arrays.asList(t);
+  }
 
   @DataProvider(name = "buildFinishStatuses")
   public Object[][] buildStatuses() {
@@ -43,7 +53,7 @@ public class BuildProcessTestCase extends LoggingTestCase {
     return list.toArray(new Object[list.size()][]);
   }
 
-  protected void assertRunSuccessfully(@NotNull BuildProcess proc, @NotNull BuildFinishedStatus result) {
+  protected void assertRunSuccessfully(@NotNull BuildProcess proc, @Nullable BuildFinishedStatus result) {
     BuildFinishedStatus status = null;
     try {
       proc.start();
@@ -52,7 +62,10 @@ public class BuildProcessTestCase extends LoggingTestCase {
       Assert.fail("Failed with exception " + e);
     }
 
-    Assert.assertEquals(status, result);
+    Assert.assertNotNull(status);
+    if (result != null) {
+      Assert.assertEquals(status, result);
+    }
   }
 
   protected void assertRunException(@NotNull BuildProcess proc, @NotNull String message) {

@@ -64,6 +64,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected NuGetActionFactory myActionFactory;
   private BuildProcess myMockProcess;
   protected BuildParametersMap myBuildParametersMap;
+  protected CommandlineBuildProcessFactory myExecutor;
   protected String cmd;
 
   @NotNull
@@ -200,6 +201,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new SimplePackageInfoLoader()
     );
 
+    myExecutor = executingFactory();
     myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(executingFactory(), pu, new CommandFactoryImpl()));
   }
 
