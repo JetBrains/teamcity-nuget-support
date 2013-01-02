@@ -149,5 +149,18 @@ public class MockNuGetAuthHTTP {
     myDownloadUrl = "http://localhost:" + myHttp.getPort() + "/download/";
   }
 
+  public static interface Action {
+    void runTest(@NotNull MockNuGetAuthHTTP http) throws Throwable;
+  }
+
+  public static void executeTest(@NotNull Action action) throws Throwable {
+    MockNuGetAuthHTTP http = new MockNuGetAuthHTTP();
+    http.start();
+    try {
+      action.runTest(http);
+    } finally {
+      http.stop();
+    }
+  }
 
 }
