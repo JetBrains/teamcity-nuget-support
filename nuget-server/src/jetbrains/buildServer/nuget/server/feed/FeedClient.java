@@ -32,5 +32,5 @@ public interface FeedClient {
   HttpResponse execute(@NotNull HttpUriRequest request) throws IOException;
 
   @NotNull
-  FeedClient withCredentials(@Nullable FeedCredentials credentials) throws IOException;
+  FeedClient withCredentials(@Nullable FeedCredentials credentials);
 }

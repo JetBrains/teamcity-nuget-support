@@ -18,34 +18,27 @@ package jetbrains.buildServer.nuget.server.feed.impl;
 
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-
 /**
- * Created 02.01.13 17:35
+ * Created 02.01.13 18:37
  *
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
-public abstract class HttpClientHolder implements FeedClient {
-  protected final HttpClient myClient;
+public class AuthenticatedClientHolder extends HttpClientHolder {
+  private final FeedCredentials myCredentials;
 
-  protected HttpClientHolder(@NotNull HttpClient client) {
-    myClient = client;
+  public AuthenticatedClientHolder(@NotNull HttpClient client,
+                                   @NotNull FeedCredentials credentials) {
+    super(client);
+    myCredentials = credentials;
   }
 
   @NotNull
-  public HttpResponse execute(@NotNull HttpUriRequest request) throws IOException {
-    return myClient.execute(request);
-  }
-
-  @NotNull
+  @Override
   public FeedClient withCredentials(@Nullable FeedCredentials credentials) {
-    if (credentials == null) return this;
-    return new AuthenticatedClientHolder(myClient, credentials);
+    throw new IllegalArgumentException("Credentials were set");
   }
 }
