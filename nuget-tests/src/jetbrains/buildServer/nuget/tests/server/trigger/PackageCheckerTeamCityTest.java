@@ -36,7 +36,7 @@ import java.util.Collections;
 public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCheckerTeamCity> {
   @Override
   protected PackageCheckerTeamCity createChecker() {
-    return new PackageCheckerTeamCity(myReader);
+    return new PackageCheckerTeamCity(myFeed, myReader);
   }
 
   @Test
@@ -103,7 +103,7 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(empty()));
 
-      oneOf(myReader).queryPackageVersions("http://foo.bar", null, "foo.bar"); will(returnValue(Collections.emptyList()));
+      oneOf(myReader).queryPackageVersions(myFeed, "http://foo.bar", "foo.bar"); will(returnValue(Collections.emptyList()));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
@@ -124,7 +124,7 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(failed("foo.bar", "Failed. Error")));
 
-      oneOf(myReader).queryPackageVersions("http://foo.bar", null, "foo.bar"); will(throwException(new IOException("Failed. Error")));
+      oneOf(myReader).queryPackageVersions(myFeed, "http://foo.bar", "foo.bar"); will(throwException(new IOException("Failed. Error")));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
@@ -153,7 +153,9 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(failed("foo.bar", "Failed. Error")));
 
-      oneOf(myReader).queryPackageVersions("http://foo.bar", new FeedCredentials("username", "password"), "foo.bar");
+      oneOf(myFeed).withCredentials(new FeedCredentials("username", "password")); will(returnValue(myFeed));
+
+      oneOf(myReader).queryPackageVersions(myFeed, "http://foo.bar", "foo.bar");
       will(throwException(new IOException("Failed. Error")));
     }});
 

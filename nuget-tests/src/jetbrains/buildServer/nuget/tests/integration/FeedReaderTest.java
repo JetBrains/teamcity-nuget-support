@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
@@ -53,7 +54,7 @@ public class FeedReaderTest extends BaseTestCase {
     super.setUp();
     myClient = new FeedHttpClientHolder();
     final FeedGetMethodFactory methods = new FeedGetMethodFactory();
-    myReader = new NuGetFeedReaderImpl(myClient, new UrlResolverImpl(methods), methods, new PackagesFeedParserImpl());
+    myReader = new NuGetFeedReaderImpl(new UrlResolverImpl(methods), methods, new PackagesFeedParserImpl());
   }
 
   @AfterMethod
@@ -66,7 +67,7 @@ public class FeedReaderTest extends BaseTestCase {
   @Test(enabled = false)
   @TestFor(issues = "TW-21048")
   public void testFollowsNext() throws IOException {
-    Collection<FeedPackage> packages = myReader.queryPackageVersions(FeedConstants.NUGET_FEED_V2, "jonnyzzz.nuget.teamcity.testPackage");
+    Collection<FeedPackage> packages = myReader.queryPackageVersions(myClient, FeedConstants.NUGET_FEED_V2, "jonnyzzz.nuget.teamcity.testPackage");
     //NuGet.org feed returns 100 packages per request
     Assert.assertTrue(packages.size() > 100);
   }
@@ -88,7 +89,7 @@ public class FeedReaderTest extends BaseTestCase {
   }
 
   private void readFeed(String msRefFeed) throws IOException {
-    final Collection<FeedPackage> feedPackages = myReader.queryPackageVersions(msRefFeed, "NuGet.CommandLine");
+    final Collection<FeedPackage> feedPackages = myReader.queryPackageVersions(myClient, msRefFeed, "NuGet.CommandLine");
     Assert.assertTrue(feedPackages.size() > 0);
 
     boolean hasLatest = false;
@@ -105,7 +106,7 @@ public class FeedReaderTest extends BaseTestCase {
   }
 
   private void downloadLatest(String feed) throws IOException {
-    final Collection<FeedPackage> packages = myReader.queryPackageVersions(feed, "NuGet.CommandLine");
+    final Collection<FeedPackage> packages = myReader.queryPackageVersions(myClient, feed, "NuGet.CommandLine");
     FeedPackage latest = null;
     for (FeedPackage aPackage : packages) {
       if (aPackage.isLatestVersion()) {
@@ -115,7 +116,7 @@ public class FeedReaderTest extends BaseTestCase {
     Assert.assertNotNull(latest, "there should be the latest package");
 
     final File pkd = createTempFile();
-    myReader.downloadPackage(latest, pkd);
+    myReader.downloadPackage(myClient, latest, pkd);
 
     Assert.assertTrue(pkd.length() > 100);
     boolean hasNuGetExe = false;
@@ -189,7 +190,7 @@ public class FeedReaderTest extends BaseTestCase {
     server.start();
     try {
       for(int i = 0; i <100; i++) {
-        myReader.queryPackageVersions("http://localhost:" + server.getPort() + "/aaa", "NuGet");
+        myReader.queryPackageVersions(myClient, "http://localhost:" + server.getPort() + "/aaa", "NuGet");
       }
     } finally {
       server.stop();
@@ -212,7 +213,7 @@ public class FeedReaderTest extends BaseTestCase {
     try {
       server.start();
       try {
-        myReader.queryPackageVersions("http://localhost:" + server.getPort() + "/aaa", "NuGet");
+        myReader.queryPackageVersions(myClient, "http://localhost:" + server.getPort() + "/aaa", "NuGet");
         Assert.fail();
       } catch (IOException e) {
         Assert.assertTrue(e.getMessage().contains("Failed to parse output from NuGet feed. Check feed url:"));
@@ -221,4 +222,17 @@ public class FeedReaderTest extends BaseTestCase {
       server.stop();
     }
   }
+
+  @Test
+  @TestFor(issues = "TW-20764")
+  public void test_auth_supported() throws Throwable {
+    MockNuGetAuthHTTP.executeTest(new MockNuGetAuthHTTP.Action() {
+      public void runTest(@NotNull MockNuGetAuthHTTP http) throws Throwable {
+        FeedClient cli = myClient.withCredentials(http.getCredentials());
+        Collection<FeedPackage> result = myReader.queryPackageVersions(cli, http.getSourceUrl(), "FineCollection");
+        Assert.assertFalse(result.isEmpty());
+      }
+    });
+  }
+
 }

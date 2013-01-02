@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.feed;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -31,5 +32,5 @@ public interface FeedClient {
   HttpResponse execute(@NotNull HttpUriRequest request) throws IOException;
 
   @NotNull
-  FeedClient withCredentials(@NotNull FeedCredentials credentials) throws IOException;
+  FeedClient withCredentials(@Nullable FeedCredentials credentials) throws IOException;
 }

@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
+import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageChecker;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
@@ -32,6 +33,7 @@ import java.util.concurrent.ExecutorService;
  *         Date: 04.10.11 21:07
  */
 public abstract class PackageCheckerTestBase<T extends PackageChecker> extends TriggerTestBase {
+  protected FeedClient myFeed;
   protected NuGetFeedReader myReader;
   protected ListPackagesCommand myCommand;
   protected PackageCheckerSettings mySettings;
@@ -44,6 +46,7 @@ public abstract class PackageCheckerTestBase<T extends PackageChecker> extends T
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
+    myFeed = m.mock(FeedClient.class);
     myCommand = m.mock(ListPackagesCommand.class);
     mySettings = m.mock(PackageCheckerSettings.class);
     myExecutor = m.mock(ExecutorService.class);
@@ -51,6 +54,7 @@ public abstract class PackageCheckerTestBase<T extends PackageChecker> extends T
     myChecker = createChecker();
 
     m.checking(new Expectations(){{
+      allowing(myFeed).withCredentials(null); will(returnValue(myFeed));
       allowing(myExecutor).submit(with(any(Runnable.class))); will(new CustomAction("Execute task in same thread") {
         public Object invoke(Invocation invocation) throws Throwable {
           Runnable action = (Runnable) invocation.getParameter(0);

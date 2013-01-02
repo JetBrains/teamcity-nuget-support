@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
@@ -39,13 +40,16 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
  */
 public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
   private static final Logger LOG = Logger.getInstance(NuGetToolDownloaderImpl.class.getName());
+  private final FeedClient myFeed;
   private final NuGetFeedReader myClient;
   private final AvailableToolsState myState;
   private final NuGetToolsInstaller myInstaller;
 
-  public NuGetToolDownloaderImpl(@NotNull final NuGetFeedReader client,
+  public NuGetToolDownloaderImpl(@NotNull final FeedClient feed,
+                                 @NotNull final NuGetFeedReader client,
                                  @NotNull final AvailableToolsState state,
                                  @NotNull final NuGetToolsInstaller installer) {
+    myFeed = feed;
     myClient = client;
     myState = state;
     myInstaller = installer;
@@ -84,7 +88,7 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
                                @NotNull final File file) throws ToolException {
     FileUtil.delete(file);
     try {
-      myClient.downloadPackage(tool, file);
+      myClient.downloadPackage(myFeed, tool, file);
     } catch (Exception e) {
       final PackageInfo info = tool.getInfo();
 

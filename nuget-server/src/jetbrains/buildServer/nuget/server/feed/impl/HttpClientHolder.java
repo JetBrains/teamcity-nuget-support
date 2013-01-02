@@ -22,6 +22,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -43,7 +44,9 @@ public abstract class HttpClientHolder implements FeedClient {
   }
 
   @NotNull
-  public FeedClient withCredentials(@NotNull FeedCredentials credentials) throws IOException {
+  public FeedClient withCredentials(@Nullable FeedCredentials credentials) throws IOException {
+    if (credentials == null) return this;
+
     return new HttpClientHolder(myClient) {
     };
   }

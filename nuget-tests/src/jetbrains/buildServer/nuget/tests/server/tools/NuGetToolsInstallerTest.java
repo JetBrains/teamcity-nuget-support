@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.tools;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.server.ToolPaths;
+import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
@@ -44,6 +45,7 @@ import java.io.IOException;
  * Date: 16.08.11 1:59
  */
 public class NuGetToolsInstallerTest extends BaseTestCase {
+  private FeedClient myClient;
   private NuGetToolsInstaller myInstaller;
   private NuGetToolDownloader myDownloader;
   private ToolPaths myPaths;
@@ -58,6 +60,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
     super.setUp();
 
     m = new Mockery();
+    myClient = m.mock(FeedClient.class);
     myPaths = m.mock(ToolPaths.class);
     myFeed = m.mock(NuGetFeedReader.class);
     myState = m.mock(AvailableToolsState.class);
@@ -67,6 +70,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
             myPaths,
             myWatcher);
     myDownloader = new NuGetToolDownloaderImpl(
+            myClient,
             myFeed,
             myState,
             myInstaller
@@ -118,7 +122,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myWatcher).checkNow();
       oneOf(myState).findTool("packageId"); will(returnValue(fp));
-      oneOf(myFeed).downloadPackage(with(equal(fp)), with(any(File.class)));
+      oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal(fp)), with(any(File.class)));
       will(new CustomAction("fetch file") {
         public Object invoke(Invocation invocation) throws Throwable {
           final File file = (File) invocation.getParameter(1);
@@ -139,7 +143,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myWatcher).checkNow();
       oneOf(myState).findTool("packageId"); will(returnValue(fp));
-      oneOf(myFeed).downloadPackage(with(equal(fp)), with(any(File.class)));
+      oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal(fp)), with(any(File.class)));
       will(new CustomAction("fetch file") {
         public Object invoke(Invocation invocation) throws Throwable {
           final File file = (File) invocation.getParameter(1);
@@ -158,7 +162,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myWatcher).checkNow();
       oneOf(myState).findTool("packageId"); will(returnValue(fp));
-      oneOf(myFeed).downloadPackage(with(equal(fp)), with(any(File.class))); will(throwException(new IOException("oops")));
+      oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal(fp)), with(any(File.class))); will(throwException(new IOException("oops")));
     }});
 
     myDownloader.installNuGet("packageId");
