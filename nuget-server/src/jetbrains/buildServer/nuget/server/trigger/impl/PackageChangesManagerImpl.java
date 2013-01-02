@@ -16,6 +16,9 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
+import jetbrains.buildServer.nuget.server.trigger.PackageChangesManager;
+import jetbrains.buildServer.nuget.server.trigger.impl.queue.PackageCheckQueue;
+import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

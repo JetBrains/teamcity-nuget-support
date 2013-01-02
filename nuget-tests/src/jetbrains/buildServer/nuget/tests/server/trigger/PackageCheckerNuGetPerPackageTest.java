@@ -22,7 +22,7 @@ import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGetPerPackage;
+import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageCheckerNuGetPerPackage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

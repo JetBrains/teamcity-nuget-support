@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.buildTriggers.*;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings;
+import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;

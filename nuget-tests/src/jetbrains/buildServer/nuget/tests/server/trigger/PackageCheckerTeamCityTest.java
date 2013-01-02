@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerTeamCity;
+import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageCheckerTeamCity;
 import jetbrains.buildServer.util.TestFor;
 import org.testng.Assert;
 import org.testng.annotations.Test;

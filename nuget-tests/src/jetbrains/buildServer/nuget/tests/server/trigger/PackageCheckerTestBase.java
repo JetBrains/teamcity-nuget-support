@@ -18,8 +18,8 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageChecker;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings;
+import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageChecker;
+import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.CustomAction;
