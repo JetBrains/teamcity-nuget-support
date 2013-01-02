@@ -137,8 +137,7 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
   public void test_http_auth_supported() throws Throwable {
     final SourcePackageReference ref = new SourcePackageReference(
             "http://foo.bar",
-            "username",
-            "password",
+            new FeedCredentials("username","password"),
             "foo.bar",
             null,
             false);
@@ -153,7 +152,8 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(failed("foo.bar", "Failed. Error")));
 
-      oneOf(myFeed).withCredentials(new FeedCredentials("username", "password")); will(returnValue(myFeed));
+      oneOf(myFeed).withCredentials(new FeedCredentials("username", "password"));
+      will(returnValue(myFeed));
 
       oneOf(myReader).queryPackageVersions(myFeed, "http://foo.bar", "foo.bar");
       will(throwException(new IOException("Failed. Error")));

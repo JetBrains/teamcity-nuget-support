@@ -29,9 +29,7 @@ public class SourcePackageReference {
   @Nullable
   private final String mySource;
   @Nullable
-  private final String myUsername;
-  @Nullable
-  private final String myPassword;
+  private final FeedCredentials myCredentials;
   @NotNull
   private final String myPackageId;
   @Nullable
@@ -48,18 +46,16 @@ public class SourcePackageReference {
                                 @NotNull final String packageId,
                                 @Nullable final String versionSpec,
                                           final boolean includePrerelease) {
-    this(source, null, null, packageId, versionSpec, includePrerelease);
+    this(source, null, packageId, versionSpec, includePrerelease);
   }
 
   public SourcePackageReference(@Nullable final String source,
-                                @Nullable final String username,
-                                @Nullable final String password,
+                                @Nullable final FeedCredentials credentials,
                                 @NotNull final String packageId,
                                 @Nullable final String versionSpec,
                                           final boolean includePrerelease) {
     mySource = source;
-    myUsername = username;
-    myPassword = password;
+    myCredentials = credentials;
     myPackageId = packageId;
     myVersionSpec = versionSpec;
     myIncludePrerelease = includePrerelease;
@@ -73,8 +69,7 @@ public class SourcePackageReference {
 
   @Nullable
   public FeedCredentials getCredentials() {
-    if (myUsername == null || myPassword == null) return null;
-    return new FeedCredentials(myUsername, myPassword);
+    return myCredentials;
   }
 
   @NotNull
@@ -104,8 +99,7 @@ public class SourcePackageReference {
 
     if (!myPackageId.equals(that.myPackageId)) return false;
     if (!equals(mySource, that.mySource)) return false;
-    if (!equals(myUsername, that.myUsername)) return false;
-    if (!equals(myPassword, that.myPassword)) return false;
+    if (!equals(myCredentials, that.myCredentials)) return false;
     if (myVersionSpec != null ? !myVersionSpec.equals(that.myVersionSpec) : that.myVersionSpec != null) return false;
     if (myIncludePrerelease != that.myIncludePrerelease) return false;
 
@@ -129,7 +123,7 @@ public class SourcePackageReference {
   public String toString() {
     return "SourcePackageReference{" +
             "mySource='" + mySource + '\'' +
-            ", myUsername='" + myUsername + '\'' +
+            ", myUsername='" + (myCredentials == null ? "<null>" : myCredentials.getUsername()) + '\'' +
             ", myPackageId='" + myPackageId + '\'' +
             ", myVersionSpec='" + myVersionSpec + '\'' +
             '}';

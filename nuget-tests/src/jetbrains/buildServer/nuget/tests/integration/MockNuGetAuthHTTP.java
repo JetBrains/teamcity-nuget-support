@@ -37,7 +37,7 @@ public class MockNuGetAuthHTTP {
   private HttpAuthServer myHttp;
   private String mySourceUrl;
   private String myDownloadUrl;
-  private String myUser;
+  private String myUsername;
   private String myPassword;
   private AtomicBoolean myIsAuthorized;
 
@@ -47,18 +47,23 @@ public class MockNuGetAuthHTTP {
   }
 
   @NotNull
+  public String getPackageId() {
+    return "FineCollection";
+  }
+
+  @NotNull
   public String getDownloadUrl() {
     return myDownloadUrl;
   }
 
   @NotNull
   public FeedCredentials getCredentials() {
-    return new FeedCredentials(getUser(),  getPassword());
+    return new FeedCredentials(getUsername(),  getPassword());
   }
 
   @NotNull
-  public String getUser() {
-    return myUser;
+  public String getUsername() {
+    return myUsername;
   }
 
   @NotNull
@@ -79,7 +84,7 @@ public class MockNuGetAuthHTTP {
   }
 
   public void start() throws IOException {
-    myUser = "u-" + StringUtil.generateUniqueHash();
+    myUsername = "u-" + StringUtil.generateUniqueHash();
     myPassword = "p-" + StringUtil.generateUniqueHash();
     myIsAuthorized = new AtomicBoolean(false);
 
@@ -116,9 +121,16 @@ public class MockNuGetAuthHTTP {
         return createStringResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found");
       }
 
+      @NotNull
+      @Override
+      protected Response getNotAuthorizedResponse(String request) {
+        System.out.println("Not authorized: " + request);
+        return super.getNotAuthorizedResponse(request);
+      }
+
       @Override
       protected boolean authorizeUser(@NotNull String loginPassword) {
-        if ((myUser + ":" + myPassword).equals(loginPassword)) {
+        if ((myUsername + ":" + myPassword).equals(loginPassword)) {
           myIsAuthorized.set(true);
           return true;
         }
