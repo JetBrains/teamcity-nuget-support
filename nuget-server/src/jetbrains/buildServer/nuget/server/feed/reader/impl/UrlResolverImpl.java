@@ -43,12 +43,9 @@ import java.io.IOException;
 public class UrlResolverImpl implements UrlResolver {
   private static final Logger LOG = Logger.getInstance(UrlResolverImpl.class.getName());
 
-  private final FeedClient myClient;
   private final FeedGetMethodFactory myMethods;
 
-  public UrlResolverImpl(@NotNull final FeedClient client,
-                         @NotNull final FeedGetMethodFactory methods) {
-    myClient = client;
+  public UrlResolverImpl(@NotNull final FeedGetMethodFactory methods) {
     myMethods = methods;
   }
 
@@ -62,12 +59,12 @@ public class UrlResolverImpl implements UrlResolver {
    * @throws IOException if failed to communicate or non 3xx or 200 status returned
    */
   @NotNull
-  public Pair<String, HttpResponse> resolvePath(@NotNull String feedUrl) throws IOException {
+  public Pair<String, HttpResponse> resolvePath(@NotNull final FeedClient client, @NotNull String feedUrl) throws IOException {
     for(int _ = 100; _-->0;) {
       HttpGet ping = myMethods.createGet(feedUrl);
       ping.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
 
-      final HttpResponse execute = myClient.execute(ping);
+      final HttpResponse execute = client.execute(ping);
 
       String redirected = getRedirectedUrl(ping, execute);
       if (redirected != null) {

@@ -53,7 +53,7 @@ public class FeedReaderTest extends BaseTestCase {
     super.setUp();
     myClient = new FeedHttpClientHolder();
     final FeedGetMethodFactory methods = new FeedGetMethodFactory();
-    myReader = new NuGetFeedReaderImpl(myClient, new UrlResolverImpl(myClient, methods), methods, new PackagesFeedParserImpl());
+    myReader = new NuGetFeedReaderImpl(myClient, new UrlResolverImpl(methods), methods, new PackagesFeedParserImpl());
   }
 
   @AfterMethod

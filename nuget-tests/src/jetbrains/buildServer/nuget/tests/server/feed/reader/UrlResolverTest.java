@@ -53,7 +53,7 @@ public class UrlResolverTest extends BaseTestCase {
     super.setUp();
     m = new Mockery();
     myFeedClient = m.mock(FeedClient.class);
-    myResolver = new UrlResolverImpl(myFeedClient, new FeedGetMethodFactory());
+    myResolver = new UrlResolverImpl(new FeedGetMethodFactory());
   }
 
   @Test
@@ -63,7 +63,7 @@ public class UrlResolverTest extends BaseTestCase {
       will(returnValue(responseStatus(200)));
     }});
 
-    final Pair<String, HttpResponse> pair = myResolver.resolvePath("http://www.jetbrains.com");
+    final Pair<String, HttpResponse> pair = myResolver.resolvePath(myFeedClient, "http://www.jetbrains.com");
     Assert.assertEquals(pair.first, "http://www.jetbrains.com");
   }
 
@@ -76,7 +76,7 @@ public class UrlResolverTest extends BaseTestCase {
       will(returnValue(responseStatus(200)));
     }});
 
-    final Pair<String, HttpResponse> pair = myResolver.resolvePath("http://www.jetbrains.com");
+    final Pair<String, HttpResponse> pair = myResolver.resolvePath(myFeedClient, "http://www.jetbrains.com");
     Assert.assertEquals(pair.first, "http://www.google.com");
   }
 
@@ -89,7 +89,7 @@ public class UrlResolverTest extends BaseTestCase {
       will(returnValue(responseStatus(200)));
     }});
 
-    final Pair<String, HttpResponse> pair = myResolver.resolvePath("http://www.jetbrains.com/redirect?fwLink=555");
+    final Pair<String, HttpResponse> pair = myResolver.resolvePath(myFeedClient, "http://www.jetbrains.com/redirect?fwLink=555");
     Assert.assertEquals(pair.first, "http://www.google.com");
   }
 
@@ -102,7 +102,7 @@ public class UrlResolverTest extends BaseTestCase {
       will(returnValue(responseStatus(200)));
     }});
 
-    final Pair<String, HttpResponse> pair = myResolver.resolvePath("http://www.jetbrains.com/redirect?fwLink=555");
+    final Pair<String, HttpResponse> pair = myResolver.resolvePath(myFeedClient, "http://www.jetbrains.com/redirect?fwLink=555");
     Assert.assertEquals(pair.first, "http://www.google.com");
   }
 
@@ -128,7 +128,7 @@ public class UrlResolverTest extends BaseTestCase {
       will(returnValue(responseStatus(200)));
     }});
 
-    final Pair<String, HttpResponse> pair = myResolver.resolvePath("http://www.jetbrains.com");
+    final Pair<String, HttpResponse> pair = myResolver.resolvePath(myFeedClient, "http://www.jetbrains.com");
     Assert.assertEquals(pair.first, "http://www.google.com");
   }
 
@@ -140,7 +140,7 @@ public class UrlResolverTest extends BaseTestCase {
     }});
 
     try {
-      myResolver.resolvePath("http://www.jetbrains.com");
+      myResolver.resolvePath(myFeedClient, "http://www.jetbrains.com");
     } catch (IOException e) {
       return;
     }
@@ -155,7 +155,7 @@ public class UrlResolverTest extends BaseTestCase {
     }});
 
     try {
-      myResolver.resolvePath("http://www.jetbrains.com");
+      myResolver.resolvePath(myFeedClient, "http://www.jetbrains.com");
     } catch (IOException e) {
       return;
     }
@@ -170,7 +170,7 @@ public class UrlResolverTest extends BaseTestCase {
     }});
 
     try {
-      myResolver.resolvePath("http://www.jetbrains.com");
+      myResolver.resolvePath(myFeedClient, "http://www.jetbrains.com");
     } catch (IOException e) {
       return;
     }

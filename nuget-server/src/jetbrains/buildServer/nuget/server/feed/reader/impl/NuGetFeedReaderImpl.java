@@ -71,7 +71,7 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
                                                       @Nullable final String password,
                                                       @NotNull final String packageId) throws IOException {
     LOG.debug("Connecting to NuGet feed url: " + feedUrl);
-    final Pair<String, HttpResponse> pair = myResolver.resolvePath(feedUrl);
+    final Pair<String, HttpResponse> pair = myResolver.resolvePath(myClient, feedUrl);
     feedUrl = pair.first;
     LOG.debug("Resolved NuGet feed URL to " + feedUrl);
     final Element element = toDocument(feedUrl, pair.second);
