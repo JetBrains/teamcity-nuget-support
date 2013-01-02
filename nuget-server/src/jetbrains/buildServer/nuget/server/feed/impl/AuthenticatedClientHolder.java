@@ -18,9 +18,24 @@ package jetbrains.buildServer.nuget.server.feed.impl;
 
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.utils.URIUtils;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.protocol.BasicHttpContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
 
 /**
  * Created 02.01.13 18:37
@@ -40,5 +55,29 @@ public class AuthenticatedClientHolder extends HttpClientHolder {
   @Override
   public FeedClient withCredentials(@Nullable FeedCredentials credentials) {
     throw new IllegalArgumentException("Credentials were set");
+  }
+
+  @NotNull
+  @Override
+  public HttpResponse execute(@NotNull HttpUriRequest request) throws IOException {
+    final BasicHttpContext ctx = new BasicHttpContext();
+
+    //TODO: consider redirects
+    final HttpHost host = URIUtils.extractHost(request.getURI());
+
+    // Create AuthCache instance
+    final AuthCache authCache = new BasicAuthCache();
+    // Generate BASIC scheme object and add it to the local auth cache
+    final BasicScheme basicAuth = new BasicScheme();
+    authCache.put(host, basicAuth);
+    // Add AuthCache to the execution context
+
+    ctx.setAttribute(ClientContext.AUTH_CACHE, authCache);
+
+    final CredentialsProvider cred = new BasicCredentialsProvider();
+    cred.setCredentials(new AuthScope(host.getHostName(), host.getPort()), new UsernamePasswordCredentials(myCredentials.getUsername(), myCredentials.getPassword()));
+    ctx.setAttribute(ClientContext.CREDS_PROVIDER, cred);
+
+    return myClient.execute(request, ctx);
   }
 }

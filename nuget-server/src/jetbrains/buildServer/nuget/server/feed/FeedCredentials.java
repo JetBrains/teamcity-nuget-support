@@ -34,7 +34,7 @@ public class FeedCredentials {
   }
 
   @NotNull
-  public String getUser() {
+  public String getUsername() {
     return myUser;
   }
 
