@@ -30,6 +30,7 @@ import org.apache.http.util.EntityUtils;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -59,8 +60,16 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
   }
 
   @NotNull
+  public Collection<FeedPackage> queryPackageVersions(@NotNull final String feedUrl,
+                                                      @NotNull final String packageId) throws IOException {
+    return queryPackageVersions(feedUrl, null, null, packageId);
+  }
+
+  @NotNull
   public Collection<FeedPackage> queryPackageVersions(@NotNull String feedUrl,
-                                                      @NotNull String packageId) throws IOException {
+                                                      @Nullable final String username,
+                                                      @Nullable final String password,
+                                                      @NotNull final String packageId) throws IOException {
     LOG.debug("Connecting to NuGet feed url: " + feedUrl);
     final Pair<String, HttpResponse> pair = myResolver.resolvePath(feedUrl);
     feedUrl = pair.first;

@@ -70,6 +70,16 @@ public class SourcePackageReference {
     return mySource;
   }
 
+  @Nullable
+  public String getUsername() {
+    return myUsername;
+  }
+
+  @Nullable
+  public String getPassword() {
+    return myPassword;
+  }
+
   @NotNull
   public String getPackageId() {
     return myPackageId;
