@@ -52,7 +52,7 @@ public class NuGetTriggerController extends BaseController {
   }
 
   @Override
-  protected ModelAndView doHandle(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
     ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("trigger/editSimpleTrigger.jsp"));
     mv.getModel().put("canStartNuGetProcesses", mySystemInfo.canStartNuGetProcesses());
     mv.getModel().put("canStartNuGetProcessesMessage", mySystemInfo.getNotAvailableMessage());
