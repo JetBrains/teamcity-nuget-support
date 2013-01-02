@@ -29,4 +29,7 @@ import java.io.IOException;
 public interface FeedClient {
   @NotNull
   HttpResponse execute(@NotNull HttpUriRequest request) throws IOException;
+
+  @NotNull
+  FeedClient withCredentials(@NotNull FeedCredentials credentials) throws IOException;
 }

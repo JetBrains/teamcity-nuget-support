@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
+import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageCheckerTeamCity;
@@ -102,7 +103,7 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(empty()));
 
-      oneOf(myReader).queryPackageVersions("http://foo.bar", null, null, "foo.bar"); will(returnValue(Collections.emptyList()));
+      oneOf(myReader).queryPackageVersions("http://foo.bar", null, "foo.bar"); will(returnValue(Collections.emptyList()));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
@@ -123,7 +124,7 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(failed("foo.bar", "Failed. Error")));
 
-      oneOf(myReader).queryPackageVersions("http://foo.bar", null, null, "foo.bar"); will(throwException(new IOException("Failed. Error")));
+      oneOf(myReader).queryPackageVersions("http://foo.bar", null, "foo.bar"); will(throwException(new IOException("Failed. Error")));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
@@ -152,7 +153,7 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(failed("foo.bar", "Failed. Error")));
 
-      oneOf(myReader).queryPackageVersions("http://foo.bar", "username", "password", "foo.bar");
+      oneOf(myReader).queryPackageVersions("http://foo.bar", new FeedCredentials("username", "password"), "foo.bar");
       will(throwException(new IOException("Failed. Error")));
     }});
 

@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration;
 
+import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.nuget.tests.integration.http.HttpAuthServer;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -40,22 +41,32 @@ public class MockNuGetAuthHTTP {
   private String myPassword;
   private AtomicBoolean myIsAuthorized;
 
+  @NotNull
   public String getSourceUrl() {
     return mySourceUrl;
   }
 
+  @NotNull
   public String getDownloadUrl() {
     return myDownloadUrl;
   }
 
+  @NotNull
+  public FeedCredentials getCredentials() {
+    return new FeedCredentials(getUser(),  getPassword());
+  }
+
+  @NotNull
   public String getUser() {
     return myUser;
   }
 
+  @NotNull
   public String getPassword() {
     return myPassword;
   }
 
+  @NotNull
   public AtomicBoolean getIsAuthorized() {
     return myIsAuthorized;
   }

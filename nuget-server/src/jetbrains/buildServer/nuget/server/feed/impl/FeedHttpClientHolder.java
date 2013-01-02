@@ -18,9 +18,9 @@ package jetbrains.buildServer.nuget.server.feed.impl;
 
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.version.ServerVersionHolder;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.commons.httpclient.auth.AuthPolicy;
+import org.apache.http.auth.params.AuthPNames;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.client.protocol.ResponseContentEncoding;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -31,27 +31,31 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.net.ProxySelector;
+import java.util.Arrays;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 11.08.11 16:24
  */
-public class FeedHttpClientHolder implements FeedClient {
-  private final HttpClient myClient;
-
+public class FeedHttpClientHolder extends HttpClientHolder implements FeedClient {
   public FeedHttpClientHolder() {
-    final String serverVersion = ServerVersionHolder.getVersion().getDisplayVersion();
+    super(createHttpClient());
+  }
 
+  private static DefaultHttpClient createHttpClient() {
+    final String serverVersion = ServerVersionHolder.getVersion().getDisplayVersion();
     final HttpParams ps = new BasicHttpParams();
 
     DefaultHttpClient.setDefaultHttpParams(ps);
     HttpConnectionParams.setConnectionTimeout(ps, 300 * 1000);
     HttpConnectionParams.setSoTimeout(ps, 300 * 1000);
     HttpProtocolParams.setUserAgent(ps, "JetBrains TeamCity " + serverVersion);
+
+    ps.setBooleanParameter(ClientPNames.HANDLE_AUTHENTICATION, true);
+    ps.setParameter(AuthPNames.CREDENTIAL_CHARSET, "utf-8");
+    ps.setParameter(AuthPNames.TARGET_AUTH_PREF, Arrays.asList(AuthPolicy.BASIC));
 
     DefaultHttpClient httpclient = new DefaultHttpClient(new ThreadSafeClientConnManager(), ps);
 
@@ -61,17 +65,10 @@ public class FeedHttpClientHolder implements FeedClient {
     httpclient.addRequestInterceptor(new RequestAcceptEncoding());
     httpclient.addResponseInterceptor(new ResponseContentEncoding());
     httpclient.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(3, true));
-
-    myClient = httpclient;
-  }
-
-  @NotNull
-  public HttpResponse execute(@NotNull HttpUriRequest request) throws IOException {
-    return myClient.execute(request);
+    return httpclient;
   }
 
   public void dispose() {
     myClient.getConnectionManager().shutdown();
   }
-
 }

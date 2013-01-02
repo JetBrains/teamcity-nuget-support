@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.exec;
 
+import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -71,13 +72,9 @@ public class SourcePackageReference {
   }
 
   @Nullable
-  public String getUsername() {
-    return myUsername;
-  }
-
-  @Nullable
-  public String getPassword() {
-    return myPassword;
+  public FeedCredentials getCredentials() {
+    if (myUsername == null || myPassword == null) return null;
+    return new FeedCredentials(myUsername, myPassword);
   }
 
   @NotNull
