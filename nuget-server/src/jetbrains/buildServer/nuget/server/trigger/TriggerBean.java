@@ -26,4 +26,7 @@ public class TriggerBean {
   public String getPackageKey() {  return TriggerConstants.PACKAGE;   }
   public String getVersionKey() {  return TriggerConstants.VERSION;   }
   public String getPrereleaseKey() {  return TriggerConstants.INCLUDE_PRERELEASE;   }
+  public String getUsername() { return TriggerConstants.USERNAME; }
+  public String getPassword() { return TriggerConstants.PASSWORD; }
+
 }

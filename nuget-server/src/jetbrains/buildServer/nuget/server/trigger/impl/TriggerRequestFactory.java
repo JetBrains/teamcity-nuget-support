@@ -56,6 +56,8 @@ public class TriggerRequestFactory {
     String pkgId = descriptor.getProperties().get(PACKAGE);
     String version = descriptor.getProperties().get(VERSION);
     String source = descriptor.getProperties().get(SOURCE);
+    String username = descriptor.getProperties().get(USERNAME);
+    String password = descriptor.getProperties().get(PASSWORD);
     boolean isPrerelease = !StringUtil.isEmptyOrSpaces(descriptor.getProperties().get(INCLUDE_PRERELEASE));
 
     if (StringUtil.isEmptyOrSpaces(path)) {
@@ -80,6 +82,6 @@ public class TriggerRequestFactory {
 
     return myRequestFactory.createRequest(
             myModeFactory.createNuGetChecker(nugetPath),
-            new SourcePackageReference(source, pkgId, version, isPrerelease));
+            new SourcePackageReference(source, username, password, pkgId, version, isPrerelease));
   }
 }

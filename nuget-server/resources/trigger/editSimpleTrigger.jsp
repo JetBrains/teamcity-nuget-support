@@ -45,11 +45,27 @@
 </c:if>
 
 <tr>
-  <th>NuGet package source:</th>
+  <th rowspan="3">NuGet package source:</th>
   <td>
     <props:textProperty name="${ib.sourceKey}" style="width:20em;" />
     <span class="smallNote">Specify NuGet packages repository to monitor packages changes. Leave blank to use default NuGet feed</span>
     <span class="error" id="error_${ib.sourceKey}"></span>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <props:textProperty name="${ib.username}" style="width:20em;" />
+    <span class="smallNote">Specify username to access NuGet feed, leave blank if no authentication is required</span>
+    <span class="error" id="error_${ib.username}"></span>
+  </td>
+</tr>
+
+<tr>
+  <td>
+    <props:passwordProperty name="${ib.password}" style="width:20em;" />
+    <span class="smallNote">Specify password to access NuGet feed, leave blank if no authentication is required</span>
+    <span class="error" id="error_${ib.username}"></span>
   </td>
 </tr>
 

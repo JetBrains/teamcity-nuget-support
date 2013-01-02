@@ -27,6 +27,10 @@ import org.jetbrains.annotations.Nullable;
 public class SourcePackageReference {
   @Nullable
   private final String mySource;
+  @Nullable
+  private final String myUsername;
+  @Nullable
+  private final String myPassword;
   @NotNull
   private final String myPackageId;
   @Nullable
@@ -43,7 +47,18 @@ public class SourcePackageReference {
                                 @NotNull final String packageId,
                                 @Nullable final String versionSpec,
                                           final boolean includePrerelease) {
+    this(source, null, null, packageId, versionSpec, includePrerelease);
+  }
+
+  public SourcePackageReference(@Nullable final String source,
+                                @Nullable final String username,
+                                @Nullable final String password,
+                                @NotNull final String packageId,
+                                @Nullable final String versionSpec,
+                                          final boolean includePrerelease) {
     mySource = source;
+    myUsername = username;
+    myPassword = password;
     myPackageId = packageId;
     myVersionSpec = versionSpec;
     myIncludePrerelease = includePrerelease;
@@ -81,11 +96,17 @@ public class SourcePackageReference {
     SourcePackageReference that = (SourcePackageReference) o;
 
     if (!myPackageId.equals(that.myPackageId)) return false;
-    if (mySource != null ? !mySource.equals(that.mySource) : that.mySource != null) return false;
+    if (!equals(mySource, that.mySource)) return false;
+    if (!equals(myUsername, that.myUsername)) return false;
+    if (!equals(myPassword, that.myPassword)) return false;
     if (myVersionSpec != null ? !myVersionSpec.equals(that.myVersionSpec) : that.myVersionSpec != null) return false;
     if (myIncludePrerelease != that.myIncludePrerelease) return false;
 
     return true;
+  }
+
+  private static <T> boolean equals(@Nullable T o1, @Nullable T o2) {
+    return o1 == o2 || (o1 != null && o2 != null && o1.equals(o2));
   }
 
   @Override
@@ -101,6 +122,7 @@ public class SourcePackageReference {
   public String toString() {
     return "SourcePackageReference{" +
             "mySource='" + mySource + '\'' +
+            "myUsername='" + myUsername + "'" +
             ", myPackageId='" + myPackageId + '\'' +
             ", myVersionSpec='" + myVersionSpec + '\'' +
             '}';

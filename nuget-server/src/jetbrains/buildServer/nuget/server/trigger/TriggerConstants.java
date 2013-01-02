@@ -29,4 +29,6 @@ public interface TriggerConstants {
   public static final String PACKAGE = "nuget.package";
   public static final String VERSION = "nuget.version";
   public static final String INCLUDE_PRERELEASE = "nuget.include.prerelease";
+  public static final String USERNAME = "nuget.username";
+  public static final String PASSWORD = "nuget.password";
 }
