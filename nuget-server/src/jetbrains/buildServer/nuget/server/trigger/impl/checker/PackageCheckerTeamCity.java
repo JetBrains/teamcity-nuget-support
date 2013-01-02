@@ -78,7 +78,7 @@ public class PackageCheckerTeamCity implements PackageChecker {
           }
 
           try {
-            final Collection<FeedPackage> packages = myReader.queryPackageVersions(uri, entry.getPackage().getUsername(), entry.getPackage().getPassword(), packageId);
+            final Collection<FeedPackage> packages = myReader.queryPackageVersions(uri, entry.getPackage().getCredentials(), packageId);
             final Collection<SourcePackageInfo> infos = new ArrayList<SourcePackageInfo>();
             for (FeedPackage aPackage : packages) {
               infos.add(new SourcePackageInfo(entry.getPackage().getSource(), packageId, aPackage.getInfo().getVersion()));
