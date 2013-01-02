@@ -129,7 +129,7 @@ public class SourcePackageReference {
   public String toString() {
     return "SourcePackageReference{" +
             "mySource='" + mySource + '\'' +
-            "myUsername='" + myUsername + "'" +
+            ", myUsername='" + myUsername + '\'' +
             ", myPackageId='" + myPackageId + '\'' +
             ", myVersionSpec='" + myVersionSpec + '\'' +
             '}';
