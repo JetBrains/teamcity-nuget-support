@@ -22,7 +22,7 @@ import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGetBulk;
+import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageCheckerNuGetBulk;
 import org.hamcrest.Matcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

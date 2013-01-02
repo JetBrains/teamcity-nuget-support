@@ -17,9 +17,9 @@
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestMode;
-import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeFactory;
-import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeTeamCity;
+import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestMode;
+import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeFactory;
+import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeTeamCity;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

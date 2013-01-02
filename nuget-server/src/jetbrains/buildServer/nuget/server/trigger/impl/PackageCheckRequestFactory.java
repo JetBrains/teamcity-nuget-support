@@ -17,6 +17,8 @@
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
+import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestMode;
+import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import org.jetbrains.annotations.NotNull;
 
 /**

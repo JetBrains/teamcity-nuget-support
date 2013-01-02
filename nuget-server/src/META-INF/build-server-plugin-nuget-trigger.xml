@@ -4,25 +4,25 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
 
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.TriggerRequestFactory"/>
+  <bean class="jetbrains.buildServer.nuget.server.trigger.TriggerRequestFactory"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.NamedPackagesUpdateChecker"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.PackagesHashCalculator"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.NuGetSimpleTrigger"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesManagerImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceCheckerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesCheckerThread">
+  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.queue.PackageChangesCheckerThread">
     <constructor-arg>
       <list>
-        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerTeamCity"/>
-        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGetPerPackage"/>
-        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerNuGetBulk"/>
+        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageCheckerTeamCity"/>
+        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageCheckerNuGetPerPackage"/>
+        <bean class="jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageCheckerNuGetBulk"/>
       </list>
     </constructor-arg>
   </bean>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeFactory"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageChangesCheckerStarter"/>
+  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeFactory"/>
+  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.queue.PackageChangesCheckerStarter"/>
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory"/>
-  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettingsImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettingsImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.server.trigger.impl.source.PackageSourceCheckerImpl"/>
 

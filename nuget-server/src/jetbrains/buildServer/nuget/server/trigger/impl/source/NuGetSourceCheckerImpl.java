@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.server.trigger.impl.source;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings;
+import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import jetbrains.buildServer.util.RecentEntriesCache;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;

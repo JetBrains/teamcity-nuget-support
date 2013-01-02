@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckerSettings;
+import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceCheckerImpl;
 import jetbrains.buildServer.nuget.server.trigger.impl.source.PackageSourceChecker;
 import jetbrains.buildServer.util.TimeService;

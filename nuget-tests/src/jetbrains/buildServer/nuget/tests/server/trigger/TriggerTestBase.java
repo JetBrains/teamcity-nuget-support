@@ -18,8 +18,8 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeNuGet;
-import jetbrains.buildServer.nuget.server.trigger.impl.CheckRequestModeTeamCity;
+import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeNuGet;
+import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeTeamCity;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
