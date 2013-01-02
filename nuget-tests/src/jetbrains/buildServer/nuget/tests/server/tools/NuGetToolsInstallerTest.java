@@ -125,7 +125,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
       oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal(fp)), with(any(File.class)));
       will(new CustomAction("fetch file") {
         public Object invoke(Invocation invocation) throws Throwable {
-          final File file = (File) invocation.getParameter(1);
+          final File file = (File) invocation.getParameter(2);
           FileUtil.copy(getNuGetPackageFile(), file);
           return null;
         }
