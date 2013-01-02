@@ -42,4 +42,24 @@ public class FeedCredentials {
   public String getPassword() {
     return myPassword;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    FeedCredentials that = (FeedCredentials) o;
+
+    if (!myPassword.equals(that.myPassword)) return false;
+    if (!myUser.equals(that.myUser)) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = myUser.hashCode();
+    result = 31 * result + myPassword.hashCode();
+    return result;
+  }
 }
