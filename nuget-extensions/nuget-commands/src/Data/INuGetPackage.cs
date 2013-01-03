@@ -17,6 +17,8 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
 
     void AddEntry(NuGetPackageEntry entry);
 
+    void AddError(string message);
+
     Func<IPackage, bool> VersionChecker { get; }
   }
 }
