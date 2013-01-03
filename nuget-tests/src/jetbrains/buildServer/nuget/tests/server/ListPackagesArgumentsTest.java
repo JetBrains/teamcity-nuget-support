@@ -20,6 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesArguments;
+import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
@@ -84,6 +85,51 @@ public class ListPackagesArgumentsTest extends BaseTestCase {
 
     System.out.println(reformatted);
     Assert.assertEquals(reformatted, gold);
+  }
+
+  @Test
+  public void testDeserialize_isPrerelease() throws IOException {
+    final File tmp = createTempFile();
+
+    SourcePackageReference ref = new SourcePackageReference(
+            "http://some-source",
+            new FeedCredentials("user", "pwww"),
+            "package.id",
+            "version-spec",
+            true
+    );
+    myArguments.encodeParameters(tmp, Arrays.asList(ref));
+
+    final String xml = new String(FileUtil.loadFileText(tmp, "utf-8"));
+    final String reformatted = StringUtil.convertLineSeparators(XmlUtil.to_s(XmlUtil.from_s(xml)));
+
+    final String gold = StringUtil.convertLineSeparators("<nuget-packages>\n" +
+            "  <packages>\n" +
+            "    <package id=\"package.id\" source=\"http://some-source\" username=\"user\" password=\"pwww\" versions=\"version-spec\" include-prerelease=\"true\" />\n" +
+            "  </packages>\n" +
+            "</nuget-packages>");
+
+    System.out.println(reformatted);
+    Assert.assertEquals(reformatted, gold);
+
+    Map<SourcePackageReference, Collection<SourcePackageInfo>> map = myArguments.decodeParameters(tmp);
+    Assert.assertEquals(map.size(), 1);
+
+    final SourcePackageReference key = map.keySet().iterator().next();
+    Assert.assertNotNull(key.getCredentials());
+    assertPackageReferencesEqual(key, ref);
+
+    final String reformatted2 = StringUtil.convertLineSeparators(XmlUtil.to_s(XmlUtil.from_s(xml)));
+    Assert.assertEquals(reformatted, reformatted2);
+  }
+
+  private void assertPackageReferencesEqual(@NotNull SourcePackageReference actual,
+                                            @NotNull SourcePackageReference expected) {
+    Assert.assertEquals(actual.getPackageId(), expected.getPackageId());
+    Assert.assertEquals(actual.getCredentials(), expected.getCredentials());
+    Assert.assertEquals(actual.getSource(), expected.getSource());
+    Assert.assertEquals(actual.getVersionSpec(), expected.getVersionSpec());
+    Assert.assertEquals(actual.isIncludePrerelease(), expected.isIncludePrerelease());
   }
 
   @Test

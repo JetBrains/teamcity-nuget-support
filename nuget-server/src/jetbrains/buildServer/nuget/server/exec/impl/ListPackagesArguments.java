@@ -18,13 +18,16 @@ package jetbrains.buildServer.nuget.server.exec.impl;
 
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
+import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.Content;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -37,23 +40,41 @@ import java.util.Map;
  *         Date: 04.10.11 18:22
  */
 public class ListPackagesArguments {
+  private static final String NUGET_PACKAGES = "nuget-packages";
+  private static final String PACKAGES = "packages";
+  private static final String PACKAGE = "package";
+  private static final String VERSIONS = "versions";
+  private static final String INCLUDE_PRERELEASE = "include-prerelease";
+  private static final String USERNAME = "username";
+  private static final String PASSWORD = "password";
+  private static final String SOURCE_ELEMENT = "source";
+  private static final String SOURCE_ATTRIBUTE = "source";
 
-  public void encodeParameters(@NotNull final File file, @NotNull Collection<SourcePackageReference> refs) throws IOException {
-    final Element root = new Element("nuget-packages");
-    final Element packages = new Element("packages");
+  public void encodeParameters(@NotNull final File file,
+                               @NotNull Collection<SourcePackageReference> refs) throws IOException {
+    final Element root = new Element(NUGET_PACKAGES);
+    final Element packages = new Element(PACKAGES);
     for (SourcePackageReference ref : refs) {
-      final Element pkg = new Element("package");
+      final Element pkg = new Element(PACKAGE);
       pkg.setAttribute("id", ref.getPackageId());
       final String source = ref.getSource();
+      final FeedCredentials credentials = ref.getCredentials();
+
       if (source != null) {
-        pkg.setAttribute("source", source);
+        pkg.setAttribute(SOURCE_ATTRIBUTE, source);
       }
+
+      if (credentials != null) {
+        pkg.setAttribute(USERNAME, credentials.getUsername());
+        pkg.setAttribute(PASSWORD, credentials.getPassword());
+      }
+
       final String spec = ref.getVersionSpec();
       if (spec != null) {
-        pkg.setAttribute("versions", spec);
+        pkg.setAttribute(VERSIONS, spec);
       }
       if (ref.isIncludePrerelease()) {
-        pkg.setAttribute("include-prerelease", "true");
+        pkg.setAttribute(INCLUDE_PRERELEASE, "true");
       }
       packages.addContent((Content)pkg);
     }
@@ -80,36 +101,52 @@ public class ListPackagesArguments {
       throw new IOException("Failed to parse " + file + ". " + e.getMessage()) {{initCause(e);}};
     }
 
-    if (!root.getName().equals("nuget-packages")) throw new IOException("Invalid xml");
-    final Element packages = root.getChild("packages");
+    if (!root.getName().equals(NUGET_PACKAGES)) throw new IOException("Invalid xml");
+    final Element packages = root.getChild(PACKAGES);
     if (packages == null) throw new IOException("Invalid xml");
 
     final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = new HashMap<SourcePackageReference, Collection<SourcePackageInfo>>();
 
-    for (Object pElement : packages.getChildren("package")) {
+    for (Object pElement : packages.getChildren(PACKAGE)) {
       final Element pkg = (Element) pElement;
 
       final String id = trim(pkg.getAttributeValue("id"));
-      final String spec = trim(pkg.getAttributeValue("versions"));
-      final String source = trim(pkg.getAttributeValue("source"));
+      final String spec = trim(pkg.getAttributeValue(VERSIONS));
+      final String source = trim(pkg.getAttributeValue(SOURCE_ATTRIBUTE));
 
       if (id == null) continue;
-      final SourcePackageReference ref = new SourcePackageReference(source, id, spec);
+      final SourcePackageReference ref = new SourcePackageReference(source, parseCredentials(pkg), id, spec, parseIncludePrerelease(pkg));
 
       final Collection<SourcePackageInfo> versions = new ArrayList<SourcePackageInfo>();
       final Element pkgChild = pkg.getChild("package-entries");
-      for (Object pEntry : pkgChild.getChildren("package-entry")) {
-        final Element entry = (Element) pEntry;
+      if (pkgChild != null) {
+        for (Object pEntry : pkgChild.getChildren("package-entry")) {
+          final Element entry = (Element) pEntry;
 
-        final String version = entry.getAttributeValue("version");
-        if (version == null || jetbrains.buildServer.util.StringUtil.isEmptyOrSpaces(version)) continue;
+          final String version = entry.getAttributeValue("version");
+          if (version == null || jetbrains.buildServer.util.StringUtil.isEmptyOrSpaces(version)) continue;
 
-        versions.add(ref.toInfo(version));
+          versions.add(ref.toInfo(version));
+        }
       }
 
       result.put(ref, versions);
     }
 
     return result;
+  }
+
+  private boolean parseIncludePrerelease(@NotNull Element root) {
+    final String include = root.getAttributeValue(INCLUDE_PRERELEASE);
+    return Boolean.TRUE.equals(Boolean.parseBoolean(include));
+  }
+
+  @Nullable
+  private FeedCredentials parseCredentials(@NotNull Element pkg) {
+    final String username = trim(pkg.getAttributeValue(USERNAME));
+    final String password = trim(pkg.getAttributeValue(PASSWORD));
+    if (StringUtil.isEmptyOrSpaces(username)) return null;
+
+    return new FeedCredentials(username, password);
   }
 }
