@@ -55,6 +55,9 @@
     <Compile Include="..\nuget-commands\src\Data\NuGetPackage.cs">
       <Link>src\Data\NuGetPackage.cs</Link>
     </Compile>
+    <Compile Include="..\nuget-commands\src\Data\NuGetSource.cs">
+      <Link>src\Data\NuGetSource.cs</Link>
+    </Compile>
     <Compile Include="..\nuget-commands\src\Data\NuGetPackageEntry.cs">
       <Link>src\Data\NuGetPackageEntry.cs</Link>
     </Compile>
@@ -63,6 +66,9 @@
     </Compile>
     <Compile Include="..\nuget-commands\src\ListCommandBase.cs">
       <Link>src\ListCommandBase.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\InvalidFeedUrlException.cs">
+      <Link>src\InvalidFeedUrlException.cs</Link>
     </Compile>
     <Compile Include="..\nuget-commands\src\NuGetTeamCityListPackagesCommand.cs">
       <Link>src\NuGetTeamCityListPackagesCommand.cs</Link>

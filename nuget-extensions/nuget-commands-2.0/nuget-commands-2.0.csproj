@@ -61,6 +61,12 @@
     <Compile Include="..\nuget-commands\src\Data\NuGetPackages.cs">
       <Link>src\Data\NuGetPackages.cs</Link>
     </Compile>
+    <Compile Include="..\nuget-commands\src\Data\NuGetSource.cs">
+      <Link>src\Data\NuGetSource.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\InvalidFeedUrlException.cs">
+      <Link>src\InvalidFeedUrlException.cs</Link>
+    </Compile>
     <Compile Include="..\nuget-commands\src\ListCommandBase.cs">
       <Link>src\ListCommandBase.cs</Link>
     </Compile>
