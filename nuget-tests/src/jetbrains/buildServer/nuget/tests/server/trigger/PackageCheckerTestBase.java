@@ -32,6 +32,7 @@ import org.testng.annotations.BeforeMethod;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -85,6 +86,21 @@ public abstract class PackageCheckerTestBase<T extends PackageChecker> extends T
       @NotNull
       public Collection<SourcePackageInfo> getCollectedInfos() {
         return Arrays.asList(infos);
+      }
+    };
+  }
+
+  @NotNull
+  protected ListPackagesResult fromError(@NotNull final String message) {
+    return new ListPackagesResult() {
+      @Nullable
+      public String getErrorMessage() {
+        return message;
+      }
+
+      @NotNull
+      public Collection<SourcePackageInfo> getCollectedInfos() {
+        return Collections.emptyList();
       }
     };
   }

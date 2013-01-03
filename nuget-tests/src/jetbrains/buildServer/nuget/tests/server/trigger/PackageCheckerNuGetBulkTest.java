@@ -106,6 +106,21 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   }
 
   @Test
+  public void test_bulk_errorMessage() throws NuGetExecutionException {
+    final SourcePackageReference ref = ref();
+    final ListPackagesResult aaa = fromError("something failed");
+    final Map<SourcePackageReference, ListPackagesResult> result = Collections.singletonMap(ref, aaa);
+    final CheckablePackage task = checkablePackage("aqqq", ref, equal(CheckResult.failed("something failed")));
+
+    m.checking(new Expectations(){{
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(returnValue(result));
+    }});
+
+    myChecker.update(myExecutor, Arrays.asList(task));
+    m.assertIsSatisfied();
+  }
+
+  @Test
   public void test_bulk_empty_result_failure() throws NuGetExecutionException {
     final SourcePackageReference ref = ref();
     final ListPackagesResult aaa = fromCollection();

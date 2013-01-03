@@ -111,6 +111,27 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
   }
 
   @Test
+  public void test_bulk_errorMessage() throws NuGetExecutionException {
+    final SourcePackageReference ref = ref();
+    final ListPackagesResult result = fromError("some error ");
+
+    final CheckablePackage task = m.mock(CheckablePackage.class);
+    m.checking(new Expectations(){{
+      allowing(task).getPackage(); will(returnValue(ref));
+      allowing(task).getMode(); will(returnValue(nugetMode()));
+
+      oneOf(task).setExecuting();
+      oneOf(task).setResult(CheckResult.failed("some error "));
+
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(returnValue(Collections.singletonMap(ref, result)));
+    }});
+
+    myChecker.update(myExecutor, Arrays.asList(task));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
   public void test_bulk_empty_result() throws NuGetExecutionException {
     final ListPackagesResult result = fromCollection();
     final SourcePackageReference ref = ref();
