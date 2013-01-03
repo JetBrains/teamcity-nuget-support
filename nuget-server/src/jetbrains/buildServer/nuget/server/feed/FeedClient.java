@@ -33,4 +33,9 @@ public interface FeedClient {
 
   @NotNull
   FeedClient withCredentials(@Nullable FeedCredentials credentials);
+
+  /**
+   * @return true if given FeedClint is about to use credentials for login
+   */
+  boolean hasCredentials();
 }

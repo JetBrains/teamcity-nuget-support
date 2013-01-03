@@ -75,8 +75,11 @@ public class UrlResolverImpl implements UrlResolver {
       }
 
       final int statusCode = execute.getStatusLine().getStatusCode();
+      if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
+        throw new IOException("Failed to connect to " + feedUrl + ". " + (client.hasCredentials() ? "Wrong username or password" : "Authentication required"));
+      }
       if (statusCode != HttpStatus.SC_OK) {
-        throw new IOException("Failed to connect to " + feedUrl);
+        throw new IOException("Failed to connect to " + feedUrl + ". " + execute.getStatusLine().getReasonPhrase());
       }
 
       while (feedUrl.endsWith("/")) {

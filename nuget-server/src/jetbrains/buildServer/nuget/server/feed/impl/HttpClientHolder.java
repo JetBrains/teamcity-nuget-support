@@ -48,4 +48,8 @@ public abstract class HttpClientHolder implements FeedClient {
     if (credentials == null) return this;
     return new AuthenticatedClientHolder(myClient, credentials);
   }
+
+  public boolean hasCredentials() {
+    return false;
+  }
 }
