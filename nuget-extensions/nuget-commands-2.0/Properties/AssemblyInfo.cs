@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("JetBrains TeamCity NuGet Extended Commands 1.4")]
+[assembly: AssemblyTitle("JetBrains TeamCity NuGet Extended Commands 2.0")]
 [assembly: AssemblyDescription("NuGet commands for TeamCity NuGet integration")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("JetBrains, s.r.o.")]
