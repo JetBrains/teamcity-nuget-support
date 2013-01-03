@@ -34,27 +34,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
     }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
-    public void TestExcuteNuGet_BothInTemp(NuGetVersion version)
-    {
-      TempFilesHolder.WithTempDirectory(
-        home =>
-        {
-          var destNuGet = Path.Combine(home, "NuGet.exe");
-          var destRunner = Path.Combine(home, "TeamCity.NuGetRunner.exe");
-
-          File.Copy(Files.GetNuGetExe(version), destNuGet);
-          File.Copy(Files.NuGetRunnerExe, destRunner);
-          const string ext = "JetBrains.TeamCity.NuGet.ExtendedCommands.dll";
-          Directory.CreateDirectory(Path.Combine(home, "plugins4"));
-          File.Copy(Path.Combine(Files.NuGetRunnerExe, "../plugins4/" + ext), Path.Combine(home, "plugins4/" + ext));
-
-          ProcessExecutor.ExecuteProcess(destRunner, destNuGet, "TeamCity.Ping")
-            .Dump()
-            .AssertExitedSuccessfully();
-        });
-    }
-
-    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestDumpExtensionsPath(NuGetVersion version)
     {
       var r = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "---TeamCity.DumpExtensionsPath");

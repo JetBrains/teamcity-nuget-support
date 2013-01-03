@@ -54,7 +54,7 @@
   <ItemGroup>
     <ProjectReference Include="..\nuget-commands-1.4\nuget-commands-1.4.csproj">
       <Project>{8FA969EA-85C0-464E-9745-66B9820121A9}</Project>
-      <Name>nuget-commands</Name>
+      <Name>nuget-commands-1.4</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
