@@ -1,12 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Composition;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using JetBrains.Annotations;
-using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
-using NuGet;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
