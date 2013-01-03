@@ -9,7 +9,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
 {
   [Serializable]
   [XmlRoot("package")]
-  public class NuGetPackage
+  public class NuGetPackage : NuGetSource
   {
     [XmlIgnore] private readonly Lazy<Func<IPackage, bool>> myVersionSpec;
     [XmlIgnore] private readonly List<NuGetPackageEntry> myEntries = new List<NuGetPackageEntry>();
@@ -50,14 +50,10 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
     [XmlAttribute("versions")]
     public string VersionSpec { get; set; }
 
-    [CanBeNull]
-    [XmlElement("source")]
-    public NuGetSource Source { get; set; }
-
     [XmlIgnore]
     public NuGetSource Feed
     {
-      get { return Source ?? NuGetSource.FromFeedUrl(NuGetConstants.DefaultFeedUrl); }
+      get { return Source != null ?  this : FromFeedUrl(NuGetConstants.DefaultFeedUrl); }
     }
 
     [XmlArray("package-entries")]

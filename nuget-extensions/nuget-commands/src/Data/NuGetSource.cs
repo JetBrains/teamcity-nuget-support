@@ -10,19 +10,15 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
   [XmlRoot("source")]
   public class NuGetSource
   {
-    [NotNull]
     [XmlAttribute("source")]    
     public String Source { get; set; }
 
-    [CanBeNull]
     [XmlAttribute("username")]    
     public String Username { get; set; }
     
     [XmlIgnore]
-    [CanBeNull]
     public String Password { get; private set; }
 
-    [CanBeNull]
     [XmlAttribute("password")]
     public String SecuredPassword
     {
