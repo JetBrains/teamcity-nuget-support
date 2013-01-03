@@ -40,6 +40,13 @@ namespace JetBrains.TeamCity.NuGetRunner
         case "--TeamCity.NuGetVersion":
           Console.Out.WriteLine("TeamCity.NuGetVersion: " + runner.NuGetVersion);
           Console.Out.WriteLine();
+
+          if (args.Length >= 3)
+          {
+            string path = args[2];
+            File.WriteAllText(path, runner.NuGetVersion.ToString());
+          }
+
           return 0;
         
         default:
@@ -54,17 +61,23 @@ namespace JetBrains.TeamCity.NuGetRunner
         Console.Out.WriteLine("Using shared plugin and mutex");
         new NuGetRunMutex(runner);
         new NuGetInstallExtensions4(runner, Extensions(runner));
+        return;
       }
 
-      if (runner.NuGetVersion.Major > 1 || (runner.NuGetVersion.Major == 1 && runner.NuGetVersion.Minor >= 5))
-      {
-        new NuGetInstallExtensions5(runner, Extensions(runner));
-      }
+      new NuGetInstallExtensions5(runner, Extensions(runner));
     }
 
     private static IEnumerable<string> Extensions(NuGetRunner runner)
     {
-      return new[] { Path.Combine(typeof(Program).GetAssemblyDirectory(), "plugins4/JetBrains.TeamCity.NuGet.ExtendedCommands.dll") };
+      Func<string, string> path = p => Path.Combine(typeof(Program).GetAssemblyDirectory(), "plugins-" + p, "JetBrains.TeamCity.NuGet.ExtendedCommands." + p + ".dll");
+      
+      if (runner.NuGetVersion.Major >= 2)
+      {
+        yield return path("2.0");
+        yield break;
+      }
+      
+      yield return path("1.4");
     }
 
     static int Usage()
