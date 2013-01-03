@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 
@@ -15,7 +16,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
 
     [CanBeNull]
     [XmlAttribute("username")]    
-    public String Usename { get; set; }
+    public String Username { get; set; }
     
     [XmlIgnore]
     [CanBeNull]
@@ -47,7 +48,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
         if (x == null || y == null) return false;
 
         if (!SourceComparer.Equals(x.Source, y.Source)) return false;
-        if (x.Usename != y.Usename) return false;
+        if (x.Username != y.Username) return false;
         if (x.Password != y.Password) return false;
         return true;
       }
@@ -57,6 +58,18 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
         if (obj == null) return 0;
         return SourceComparer.GetHashCode(obj.Source);
       }
+    }
+
+
+    public override string ToString()
+    {
+      var sb = new StringBuilder();
+      sb.AppendFormat("Feed: {0}", Source);
+      if (!string.IsNullOrEmpty(Username))
+      {
+        sb.AppendFormat("User: {0}, Password", Username);
+      }
+      return sb.ToString();
     }
   }
 }
