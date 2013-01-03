@@ -72,21 +72,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
         .AssertNoErrorOutput()
         .AssertOutputContains("TeamCity NuGet Extension is available.");
     }
-    
-    [TestCase(NuGetVersion.NuGet_1_4)]
-    [TestCase(NuGetVersion.NuGet_1_5)]
-    [TestCase(NuGetVersion.NuGet_1_6)]
-    [TestCase(NuGetVersion.NuGet_1_7)]
-    [TestCase(NuGetVersion.NuGet_CommandLine_Package_Latest)]
-    [TestCase(NuGetVersion.NuGet_Latest_CI)]
-    public void TestCommand_NuGetVersion(NuGetVersion version)
-    {
-      ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version), "--TeamCity.NuGetVersion")
-        .Dump()
-        .AssertExitedSuccessfully()
-        .AssertNoErrorOutput()
-        .AssertOutputContains("TeamCity.NuGetVersion: 1.");
-    }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_NuGetVersion(NuGetVersion version)
