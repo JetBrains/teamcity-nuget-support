@@ -177,6 +177,22 @@ public class UrlResolverTest extends BaseTestCase {
     Assert.fail();
   }
 
+  @Test
+  public void test_should_fail_on_401() throws IOException {
+    m.checking(new Expectations() {{
+      oneOf(myFeedClient).hasCredentials(); will(returnValue(false));
+      oneOf(myFeedClient).execute(with(httpGet("http://www.jetbrains.com")));
+      will(returnValue(responseStatus(401)));
+    }});
+
+    try {
+      myResolver.resolvePath(myFeedClient, "http://www.jetbrains.com");
+    } catch (IOException e) {
+      return;
+    }
+    Assert.fail();
+  }
+
   private static HttpResponse responseStatus(int status) {
     return new BasicHttpResponse(HttpVersion.HTTP_1_0, status, "Status: " + status);
   }

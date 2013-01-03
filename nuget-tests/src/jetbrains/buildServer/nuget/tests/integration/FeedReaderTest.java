@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.integration;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
+import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
@@ -229,6 +230,18 @@ public class FeedReaderTest extends BaseTestCase {
     MockNuGetAuthHTTP.executeTest(new MockNuGetAuthHTTP.Action() {
       public void runTest(@NotNull MockNuGetAuthHTTP http) throws Throwable {
         FeedClient cli = myClient.withCredentials(http.getCredentials());
+        Collection<FeedPackage> result = myReader.queryPackageVersions(cli, http.getSourceUrl(), "FineCollection");
+        Assert.assertFalse(result.isEmpty());
+      }
+    });
+  }
+
+  @Test(expectedExceptions = IOException.class, expectedExceptionsMessageRegExp = ".*Wrong username or password.*")
+  @TestFor(issues = "TW-20764")
+  public void test_auth_supported_wrong_creds() throws Throwable {
+    MockNuGetAuthHTTP.executeTest(new MockNuGetAuthHTTP.Action() {
+      public void runTest(@NotNull MockNuGetAuthHTTP http) throws Throwable {
+        FeedClient cli = myClient.withCredentials(new FeedCredentials("aaa", "qqq"));
         Collection<FeedPackage> result = myReader.queryPackageVersions(cli, http.getSourceUrl(), "FineCollection");
         Assert.assertFalse(result.isEmpty());
       }

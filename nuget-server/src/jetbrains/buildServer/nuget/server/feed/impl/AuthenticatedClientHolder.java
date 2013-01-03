@@ -51,6 +51,11 @@ public class AuthenticatedClientHolder extends HttpClientHolder {
     myCredentials = credentials;
   }
 
+  @Override
+  public boolean hasCredentials() {
+    return true;
+  }
+
   @NotNull
   @Override
   public FeedClient withCredentials(@Nullable FeedCredentials credentials) {
