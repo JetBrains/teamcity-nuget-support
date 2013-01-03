@@ -7,7 +7,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
   public abstract partial class ListCommandBase
   {
-    private void GetPackageRepository(NuGetSource source, Action<IPackageRepository> processor)
+    private void GetPackageRepository(INuGetSource source, Action<IPackageRepository> processor)
     {
       var dispose = UpdateCredentialsProvider(source);
       try
@@ -20,7 +20,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       }
     }
 
-    private static Action UpdateCredentialsProvider(NuGetSource source)
+    private static Action UpdateCredentialsProvider(INuGetSource source)
     {
       if (!source.HasCredentials) return Noop;
 
@@ -50,9 +50,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     private class TeamCityCredentialProvider : ICredentialProvider
     {
-      private readonly NuGetSource mySource;
+      private readonly INuGetSource mySource;
 
-      public TeamCityCredentialProvider(NuGetSource source)
+      public TeamCityCredentialProvider(INuGetSource source)
       {
         mySource = source;
       }

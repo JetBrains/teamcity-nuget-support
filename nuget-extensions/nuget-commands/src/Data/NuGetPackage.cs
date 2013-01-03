@@ -7,9 +7,25 @@ using NuGet;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
 {
+  public interface INuGetPackage
+  {
+    bool IncludePrerelease { get; }
+
+    [NotNull]
+    string Id { get; }
+    string VersionSpec { get; }
+
+    [NotNull]
+    INuGetSource Feed { get;  }
+
+    void AddEntry(NuGetPackageEntry entry);
+
+    Func<IPackage, bool> VersionChecker { get; }
+  }
+
   [Serializable]
   [XmlRoot("package")]
-  public class NuGetPackage : NuGetSource
+  public class NuGetPackage : NuGetSource, INuGetPackage
   {
     [XmlIgnore] private readonly Lazy<Func<IPackage, bool>> myVersionSpec;
     [XmlIgnore] private readonly List<NuGetPackageEntry> myEntries = new List<NuGetPackageEntry>();
@@ -54,6 +70,12 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
     public NuGetSource Feed
     {
       get { return Source != null ?  this : FromFeedUrl(NuGetConstants.DefaultFeedUrl); }
+    }
+
+    [XmlIgnore]
+    INuGetSource INuGetPackage.Feed
+    {
+      get { return Feed; }
     }
 
     [XmlArray("package-entries")]

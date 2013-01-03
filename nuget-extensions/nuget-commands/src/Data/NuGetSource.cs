@@ -6,16 +6,25 @@ using JetBrains.Annotations;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
 {
+  public interface INuGetSource
+  {
+    String Source { get; }
+    String Username { get; }
+    String Password { get; }
+
+    bool HasCredentials { get; }
+  }
+
   [Serializable]
   [XmlRoot("source")]
-  public class NuGetSource
+  public class NuGetSource : INuGetSource
   {
-    [XmlAttribute("source")]    
+    [XmlAttribute("source")]
     public String Source { get; set; }
 
-    [XmlAttribute("username")]    
+    [XmlAttribute("username")]
     public String Username { get; set; }
-    
+
     [XmlIgnore]
     public String Password { get; private set; }
 
@@ -29,42 +38,14 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
     [NotNull]
     public static NuGetSource FromFeedUrl([NotNull] string url)
     {
-      return new NuGetSource { Source = url };
+      return new NuGetSource {Source = url};
     }
 
     [XmlIgnore]
     public bool HasCredentials
     {
-      get
-      {
-        return !String.IsNullOrWhiteSpace(Username);
-      }
+      get { return !String.IsNullOrWhiteSpace(Username); }
     }
-
-    public static readonly IEqualityComparer<NuGetSource> Comparer = new ComparerImpl();
-
-    private class ComparerImpl : IEqualityComparer<NuGetSource>
-    {
-      private readonly IEqualityComparer<String> SourceComparer = StringComparer.InvariantCultureIgnoreCase; 
-
-      public bool Equals(NuGetSource x, NuGetSource y)
-      {
-        if (x == null && y == null) return true;
-        if (x == null || y == null) return false;
-
-        if (!SourceComparer.Equals(x.Source, y.Source)) return false;
-        if (x.Username != y.Username) return false;
-        if (x.Password != y.Password) return false;
-        return true;
-      }
-
-      public int GetHashCode(NuGetSource obj)
-      {
-        if (obj == null) return 0;
-        return SourceComparer.GetHashCode(obj.Source);
-      }
-    }
-
 
     public override string ToString()
     {
@@ -75,6 +56,29 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
         sb.AppendFormat("User: {0}, Password", Username);
       }
       return sb.ToString();
+    }
+  }
+
+  public class NuGetSourceComparer : IEqualityComparer<INuGetSource>
+  {
+    public static readonly IEqualityComparer<INuGetSource> Comparer = new NuGetSourceComparer();
+    private readonly IEqualityComparer<String> SourceComparer = StringComparer.InvariantCultureIgnoreCase;
+
+    public bool Equals(INuGetSource x, INuGetSource y)
+    {
+      if (x == null && y == null) return true;
+      if (x == null || y == null) return false;
+
+      if (!SourceComparer.Equals(x.Source, y.Source)) return false;
+      if (x.Username != y.Username) return false;
+      if (x.Password != y.Password) return false;
+      return true;
+    }
+
+    public int GetHashCode(INuGetSource obj)
+    {
+      if (obj == null) return 0;
+      return SourceComparer.GetHashCode(obj.Source);
     }
   }
 }

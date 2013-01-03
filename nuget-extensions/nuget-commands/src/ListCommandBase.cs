@@ -18,7 +18,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     public IPackageSourceProvider SourceProvider { get; set; }
 
     /// <exception cref="InvalidFeedUrlException">may be thrown on error</exception>    
-    protected void GetAllPackages(NuGetSource feed, 
+    protected void GetAllPackages(INuGetSource feed, 
                                   PackageFetchOption fetchOption, 
                                   IEnumerable<string> ids, 
                                   Action<IPackage> processor) {
@@ -40,7 +40,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
           });
     }
 
-    private static void ValidateSourceUrl(NuGetSource feed)
+    private static void ValidateSourceUrl(INuGetSource feed)
     {
       string source = feed.Source;
       Uri uri;

@@ -22,13 +22,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     {
       new AssemblyResolver(GetType().Assembly.GetAssemblyDirectory());
       var reqs = LoadRequests();
-      foreach (var p in reqs.Packages)
-      {
-        //Clean all entries
-        p.Entries = null;
-      }
-
-      var sourceToRequest = reqs.Packages.GroupBy(x => x.Feed, Id, NuGetSource.Comparer);
+      reqs.ClearCheckResults();
+      
+      var sourceToRequest = reqs.Packages.GroupBy(x => x.Feed, Id, NuGetSourceComparer.Comparer);
       foreach (var sourceRequest in sourceToRequest)
       {
         ProcessPackageSource(sourceRequest.Key, sourceRequest.ToList());
@@ -37,7 +33,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       SaveRequests(reqs);
     }
 
-    private void ProcessPackageSource(NuGetSource source, List<NuGetPackage> request)
+    private void ProcessPackageSource(INuGetSource source, List<INuGetPackage> request)
     {
       //todo: optimize query to return only required set of versions.
       foreach (var req in new[]
@@ -59,7 +55,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       }
     }
 
-    private void ProcessPackages(NuGetSource source, PackageFetchOption fetchOptions, IEnumerable<NuGetPackage> package)
+    private void ProcessPackages(INuGetSource source, PackageFetchOption fetchOptions, IEnumerable<INuGetPackage> package)
     {
       var packageToData = package
         .GroupBy(x => x.Id, Id, PACKAGE_ID_COMPARER)
@@ -74,7 +70,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
                      p =>
                        {
                          count++;
-                         IGrouping<string, NuGetPackage> res;
+                         IGrouping<string, INuGetPackage> res;
                          if (!packageToData.TryGetValue(p.Id, out res)) return;
 
                          foreach (var r in res)
@@ -87,7 +83,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       System.Console.Out.WriteLine("Scanned {0} packages for feed {1}", count, source);
     }
 
-    private void SaveRequests(NuGetPackages reqs)
+    private void SaveRequests(INuGetPackages reqs)
     {
       using (var file = File.CreateText(Response))
       {
@@ -95,7 +91,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       }
     }
 
-    private NuGetPackages LoadRequests()
+    private INuGetPackages LoadRequests()
     {
       if (!File.Exists(Request))
         throw new CommandLineException("Failed to find file at {0}", Request);
