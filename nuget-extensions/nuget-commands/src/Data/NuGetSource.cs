@@ -36,6 +36,15 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
       return new NuGetSource { Source = url };
     }
 
+    [XmlIgnore]
+    public bool HasCredentials
+    {
+      get
+      {
+        return !String.IsNullOrWhiteSpace(Username);
+      }
+    }
+
     public static readonly IEqualityComparer<NuGetSource> Comparer = new ComparerImpl();
 
     private class ComparerImpl : IEqualityComparer<NuGetSource>
