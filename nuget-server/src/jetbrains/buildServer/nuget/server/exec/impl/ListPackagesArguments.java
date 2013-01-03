@@ -115,7 +115,7 @@ public class ListPackagesArguments {
       final SourcePackageReference ref = new SourcePackageReference(source, parseCredentials(pkg), id, spec, parseIncludePrerelease(pkg));
 
       final Collection<SourcePackageInfo> versions = new ArrayList<SourcePackageInfo>();
-      final String packageErrorMessage = pkg.getAttributeValue("error-message");
+      final String packageErrorMessage = pkg.getChildText("error-message");
       final Element pkgChild = pkg.getChild("package-entries");
       if (pkgChild != null) {
         for (Object pEntry : pkgChild.getChildren("package-entry")) {

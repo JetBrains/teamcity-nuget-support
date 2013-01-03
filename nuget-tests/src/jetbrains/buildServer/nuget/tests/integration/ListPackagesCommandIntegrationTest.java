@@ -149,7 +149,7 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
         Assert.assertTrue(res.getCollectedInfos().isEmpty());
         String msg = res.getErrorMessage();
         Assert.assertNotNull(msg);
-        Assert.assertTrue(msg.toLowerCase().contains("not authorized"));
+        Assert.assertTrue(msg.toLowerCase().contains("401"));
         Assert.assertEquals(result.keySet().iterator().next(), allRefs.get(0));
       }
     });

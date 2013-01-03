@@ -213,6 +213,28 @@ public class ListPackagesArgumentsTest extends BaseTestCase {
 
   }
 
+  @Test
+  public void testDeserialize_03() throws Exception {
+    final File tmp = createTempFile("<nuget-packages xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
+            "  <packages>\n" +
+            "    <package id=\"NUnit\">\n" +
+            "      <error-message>this was a error</error-message>\n" +
+            "      <package-entries>\n" +
+            "        <package-entry version=\"2.5.10.11092\"></package-entry>\n" +
+            "      </package-entries>\n" +
+            "    </package>\n" +
+            "  </packages>\n" +
+            "</nuget-packages>");
+
+    final Map<SourcePackageReference, ListPackagesResult> map = myArguments.decodeParameters(tmp);
+    Assert.assertEquals(map.size(), 1);
+    final SourcePackageReference ref = new SourcePackageReference(null, "NUnit", null);
+    final ListPackagesResult vs = map.get(ref);
+    Assert.assertNotNull(vs);
+    Assert.assertEquals(new HashSet<SourcePackageInfo>(vs.getCollectedInfos()), new HashSet<SourcePackageInfo>(Arrays.asList(ref.toInfo("2.5.10.11092"))));
+    Assert.assertEquals("this was a error", vs.getErrorMessage());
+  }
+
   @NotNull
   private List<SourcePackageReference> getFullSet() {
     return Arrays.asList(new SourcePackageReference("1", "2", "3"), new SourcePackageReference(null, "22", "33"), new SourcePackageReference(null, "222", null));
