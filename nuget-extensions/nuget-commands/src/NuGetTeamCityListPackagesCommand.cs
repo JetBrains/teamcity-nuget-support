@@ -49,6 +49,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         }
         catch (Exception e)
         {
+          foreach (var pkg in req.Data)
+            pkg.AddError(e.Message);
+
           System.Console.Out.WriteLine("Failed to check package sources information for URI {0}. {1}", source, e.Message);
           System.Console.Out.WriteLine(e);
         }

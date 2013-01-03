@@ -82,6 +82,14 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
       myEntries.Add(entry);
     }
 
+    public void AddError(string message)
+    {
+      ErrorMessage = message;
+    }
+
+    [XmlElement("error-message")]
+    public string ErrorMessage { get; set; }
+
     [XmlIgnore]
     public Func<IPackage, bool> VersionChecker
     {
@@ -93,4 +101,4 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
       return true;
     }
   }
-}
+} 
