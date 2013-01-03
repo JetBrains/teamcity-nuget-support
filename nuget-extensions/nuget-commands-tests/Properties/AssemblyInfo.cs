@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("nuget-commands-tests")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("JetBrains TeamCity NuGet Commands Tests")]
+[assembly: AssemblyDescription("tests for NuGet commands for TeamCity NuGet integration")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("JetBrains GmbH")]
-[assembly: AssemblyProduct("nuget-commands-tests")]
-[assembly: AssemblyCopyright("Copyright © JetBrains GmbH 2012")]
+[assembly: AssemblyCompany("JetBrains, s.r.o.")]
+[assembly: AssemblyProduct("TeamCity NuGet integration")]
+[assembly: AssemblyCopyright("Copyright © JetBrains 2011-2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
