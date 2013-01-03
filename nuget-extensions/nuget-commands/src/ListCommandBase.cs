@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using JetBrains.Annotations;
+using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 using NuGet;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
@@ -19,8 +20,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     /// <exception cref="InvalidFeedUrlException">may be thrown on error</exception>
     [NotNull]
-    protected IEnumerable<IPackage> GetAllPackages(string source, PackageFetchOption fetchOption, IEnumerable<string> ids)
+    protected IEnumerable<IPackage> GetAllPackages(NuGetSource feed, PackageFetchOption fetchOption, IEnumerable<string> ids)
     {
+      string source = feed.Source;
       Uri uri;
       try
       {        
