@@ -61,6 +61,15 @@
     <Compile Include="..\nuget-commands\src\Data\NuGetPackageEntry.cs">
       <Link>src\Shared\Data\NuGetPackageEntry.cs</Link>
     </Compile>
+    <Compile Include="..\nuget-commands\src\Data\INuGetPackages.cs">
+      <Link>src\Shared\Data\INuGetPackages.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\INuGetPackage.cs">
+      <Link>src\Shared\Data\INuGetPackage.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\INuGetSource.cs">
+      <Link>src\Shared\Data\INuGetSource.cs</Link>
+    </Compile>
     <Compile Include="..\nuget-commands\src\Data\NuGetPackages.cs">
       <Link>src\Shared\Data\NuGetPackages.cs</Link>
     </Compile>

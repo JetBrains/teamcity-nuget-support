@@ -6,15 +6,6 @@ using JetBrains.Annotations;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
 {
-  public interface INuGetSource
-  {
-    String Source { get; }
-    String Username { get; }
-    String Password { get; }
-
-    bool HasCredentials { get; }
-  }
-
   [Serializable]
   [XmlRoot("source")]
   public class NuGetSource : INuGetSource
