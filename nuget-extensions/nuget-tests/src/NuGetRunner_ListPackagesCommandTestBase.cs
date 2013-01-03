@@ -21,8 +21,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [XmlRoot("package")]
     public class Package
     {
-      [XmlAttribute("source")]
-      public string Source { get; set; }
+      [XmlElement("source")]
+      public NuGetSource Source { get; set; }
 
       [XmlAttribute("id")]
       public string Id { get; set; }
@@ -32,6 +32,13 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
       [XmlAttribute("include-prerelease")]
       public string IncludePrerelease { get; set; }
+    }
+
+    [XmlRoot("source")]
+    public class NuGetSource
+    {
+      [XmlAttribute("source")]
+      public string Source { get; set; }
     }
 
 
@@ -54,7 +61,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     {
       return new Package
                {
-                 Source = source,
+                 Source = new NuGetSource { Source = source },
                  Id = id,
                  Versions = version,
                  IncludePrerelease = includePrerelease == null ? null : includePrerelease.ToString()

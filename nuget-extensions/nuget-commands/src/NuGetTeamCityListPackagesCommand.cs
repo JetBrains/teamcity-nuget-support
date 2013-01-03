@@ -25,10 +25,10 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       foreach (var p in reqs.Packages)
       {
         //Clean all entries
-        p.Entries = null;        
+        p.Entries = null;
       }
 
-      var sourceToRequest = reqs.Packages.GroupBy(x => x.Feed, Id, StringComparer.InvariantCultureIgnoreCase);
+      var sourceToRequest = reqs.Packages.GroupBy(x => x.Feed, Id, NuGetSource.Comparer);
       foreach (var sourceRequest in sourceToRequest)
       {
         ProcessPackageSource(sourceRequest.Key, sourceRequest.ToList());
@@ -37,7 +37,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       SaveRequests(reqs);
     }
 
-    private void ProcessPackageSource(string source, List<NuGetPackage> request)
+    private void ProcessPackageSource(NuGetSource source, List<NuGetPackage> request)
     {
       //todo: optimize query to return only required set of versions.
       foreach (var req in new[]
@@ -59,7 +59,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       }
     }
 
-    private void ProcessPackages(string source, PackageFetchOption fetchOptions, IEnumerable<NuGetPackage> package)
+    private void ProcessPackages(NuGetSource source, PackageFetchOption fetchOptions, IEnumerable<NuGetPackage> package)
     {
       var packageToData = package
         .GroupBy(x => x.Id, Id, PACKAGE_ID_COMPARER)
