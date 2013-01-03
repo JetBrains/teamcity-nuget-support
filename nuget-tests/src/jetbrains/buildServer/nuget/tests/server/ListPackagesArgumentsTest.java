@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesArguments;
@@ -112,7 +113,7 @@ public class ListPackagesArgumentsTest extends BaseTestCase {
     System.out.println(reformatted);
     Assert.assertEquals(reformatted, gold);
 
-    Map<SourcePackageReference, Collection<SourcePackageInfo>> map = myArguments.decodeParameters(tmp);
+    Map<SourcePackageReference, ListPackagesResult> map = myArguments.decodeParameters(tmp);
     Assert.assertEquals(map.size(), 1);
 
     final SourcePackageReference key = map.keySet().iterator().next();
@@ -157,14 +158,14 @@ public class ListPackagesArgumentsTest extends BaseTestCase {
             "  </packages>\n" +
             "</nuget-packages>");
 
-    final Map<SourcePackageReference,Collection<SourcePackageInfo>> map = myArguments.decodeParameters(tmp);
+    final Map<SourcePackageReference, ListPackagesResult> map = myArguments.decodeParameters(tmp);
     Assert.assertEquals(map.size(), 3);
     for (SourcePackageReference sourcePackageReference : getFullSet()) {
       Assert.assertTrue(map.containsKey(sourcePackageReference), "must contain " + sourcePackageReference);
     }
 
-    for (Map.Entry<SourcePackageReference, Collection<SourcePackageInfo>> e : map.entrySet()) {
-      Assert.assertEquals(e.getValue().size(), 2);
+    for (Map.Entry<SourcePackageReference, ListPackagesResult> e : map.entrySet()) {
+      Assert.assertEquals(e.getValue().getCollectedInfos().size(), 2);
       Set<String> version = new HashSet<String>();
       if (e.getKey().getPackageId().equals("2")) {
         version.add("1.2.3");
@@ -179,7 +180,7 @@ public class ListPackagesArgumentsTest extends BaseTestCase {
         version.add("41.22.33");
       }
 
-      for (SourcePackageInfo i : e.getValue()) {
+      for (SourcePackageInfo i : e.getValue().getCollectedInfos()) {
         Assert.assertEquals(i.getPackageId(), e.getKey().getPackageId());
         Assert.assertEquals(i.getSource(), e.getKey().getSource());
 
@@ -203,12 +204,12 @@ public class ListPackagesArgumentsTest extends BaseTestCase {
             "  </packages>\n" +
             "</nuget-packages>");
 
-    final Map<SourcePackageReference, Collection<SourcePackageInfo>> map = myArguments.decodeParameters(tmp);
+    final Map<SourcePackageReference, ListPackagesResult> map = myArguments.decodeParameters(tmp);
     Assert.assertEquals(map.size(), 1);
     final SourcePackageReference ref = new SourcePackageReference(null, "NUnit", null);
-    final Collection<SourcePackageInfo> vs = map.get(ref);
+    final ListPackagesResult vs = map.get(ref);
     Assert.assertNotNull(vs);
-    Assert.assertEquals(new HashSet<SourcePackageInfo>(vs), new HashSet<SourcePackageInfo>(Arrays.asList(ref.toInfo("2.5.10.11092"), ref.toInfo("2.5.7.10213"), ref.toInfo("2.5.9.10348"))));
+    Assert.assertEquals(new HashSet<SourcePackageInfo>(vs.getCollectedInfos()), new HashSet<SourcePackageInfo>(Arrays.asList(ref.toInfo("2.5.10.11092"), ref.toInfo("2.5.7.10213"), ref.toInfo("2.5.9.10348"))));
 
   }
 

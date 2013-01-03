@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2012 JetBrains s.r.o.
+ * Copyright 2000-2013 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
+import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -80,7 +81,7 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
     final SourcePackageReference nunit_all = new SourcePackageReference(null, "NUnit", null);
     final SourcePackageReference nunit_filter = new SourcePackageReference(null, "NUnit", "(1.1.1.1, 2.5.9.1)");
     final SourcePackageReference youTrackSharp = new SourcePackageReference(null, "YouTrackSharp", null);
-    final Map<SourcePackageReference,Collection<SourcePackageInfo>> m1 = myCommand.checkForChanges(
+    final Map<SourcePackageReference,ListPackagesResult> m1 = myCommand.checkForChanges(
             nuget.getPath(),
             Arrays.asList(
                     nunit_all,
@@ -91,13 +92,13 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
     Assert.assertTrue(m1.size() == 3);
     System.out.println("m = " + m1);
 
-    for (Collection<SourcePackageInfo> infos : m1.values()) {
-      Assert.assertTrue(infos.size() > 0);
+    for (ListPackagesResult infos : m1.values()) {
+      Assert.assertTrue(infos.getCollectedInfos().size() > 0);
     }
 
-    final Collection<SourcePackageInfo> nAll = m1.get(nunit_all);
-    final Collection<SourcePackageInfo> nFilter = m1.get(nunit_filter);
-    final Collection<SourcePackageInfo> nYouTrack = m1.get(youTrackSharp);
+    final Collection<SourcePackageInfo> nAll = m1.get(nunit_all).getCollectedInfos();
+    final Collection<SourcePackageInfo> nFilter = m1.get(nunit_filter).getCollectedInfos();
+    final Collection<SourcePackageInfo> nYouTrack = m1.get(youTrackSharp).getCollectedInfos();
 
     Assert.assertTrue(nAll.size() == 1, new ArrayList<SourcePackageInfo>(nAll).toString());
     Assert.assertTrue(nYouTrack.size() == 1, new ArrayList<SourcePackageInfo>(nYouTrack).toString());
@@ -133,6 +134,27 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
     });
   }
 
+  @Test(dataProvider = NUGET_VERSIONS_20p)
+  public void test_auth_supported_wrong_credentials(@NotNull final NuGet nuget) throws Throwable {
+    MockNuGetAuthHTTP.executeTest(new MockNuGetAuthHTTP.Action() {
+      public void runTest(@NotNull MockNuGetAuthHTTP http) throws Throwable {
+
+        final List<SourcePackageReference> allRefs = Arrays.asList(
+                new SourcePackageReference(http.getSourceUrl(), new FeedCredentials("aaa", "bbb"), http.getPackageId(), null, false)
+        );
+
+        Map<SourcePackageReference, ListPackagesResult> result = myCommand.checkForChanges(nuget.getPath(), allRefs);
+        Assert.assertEquals(result.size(), 1);
+        ListPackagesResult res = result.values().iterator().next();
+        Assert.assertTrue(res.getCollectedInfos().isEmpty());
+        String msg = res.getErrorMessage();
+        Assert.assertNotNull(msg);
+        Assert.assertTrue(msg.toLowerCase().contains("not authorized"));
+        Assert.assertEquals(result.keySet().iterator().next(), allRefs.get(0));
+      }
+    });
+  }
+
   protected void doTriggerTest(@NotNull final NuGet nuget, @NotNull String feed, @NotNull String... packageNames) throws NuGetExecutionException {
     doTriggerTest(myCommand, nuget, feed, packageNames);
   }
@@ -151,17 +173,17 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
   }
 
   private static void assertPackages(@NotNull List<SourcePackageReference> allRefs,
-                                     @NotNull Map<SourcePackageReference, Collection<SourcePackageInfo>> m1) {
+                                     @NotNull Map<SourcePackageReference, ListPackagesResult> m1) {
     System.out.println("result: " + m1);
     for (SourcePackageReference allRef : allRefs) {
-      Collection<SourcePackageInfo> i = m1.get(allRef);
+      Collection<SourcePackageInfo> i = m1.get(allRef).getCollectedInfos();
       Assert.assertNotNull(i);
       Assert.assertTrue(i.size() == 1, "should return version for " + allRef);
     }
     Assert.assertEquals(m1.size(), allRefs.size());
 
-    for (Collection<SourcePackageInfo> infos : m1.values()) {
-      Assert.assertTrue(infos.size() == 1);
+    for (ListPackagesResult infos : m1.values()) {
+      Assert.assertTrue(infos.getCollectedInfos().size() == 1);
     }
   }
 }

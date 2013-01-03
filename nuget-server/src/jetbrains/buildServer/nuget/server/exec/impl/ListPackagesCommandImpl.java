@@ -40,7 +40,7 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
   }
 
   @NotNull
-  public Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath,
+  public Map<SourcePackageReference, ListPackagesResult> checkForChanges(@NotNull File nugetPath,
                                                                                     @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException {
     final File spec = createTempFile("trigger.spec");
     final File result = createTempFile("trigget.result");
@@ -62,9 +62,9 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
       cmd.add(FileUtil.getCanonicalFile(result).getPath());
 
 
-      return myExec.executeNuGet(nugetPath, cmd, new NuGetOutputProcessorAdapter<Map<SourcePackageReference,Collection<SourcePackageInfo>>>(commandName) {
+      return myExec.executeNuGet(nugetPath, cmd, new NuGetOutputProcessorAdapter<Map<SourcePackageReference,ListPackagesResult>>(commandName) {
         @NotNull
-        public Map<SourcePackageReference, Collection<SourcePackageInfo>> getResult() throws NuGetExecutionException {
+        public Map<SourcePackageReference, ListPackagesResult> getResult() throws NuGetExecutionException {
           try {
             return argz.decodeParameters(result);
           } catch (IOException e) {

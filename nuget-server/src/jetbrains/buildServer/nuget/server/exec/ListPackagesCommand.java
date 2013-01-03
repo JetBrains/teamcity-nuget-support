@@ -29,8 +29,8 @@ import java.util.Map;
 public interface ListPackagesCommand {
 
   @NotNull
-  Map<SourcePackageReference, Collection<SourcePackageInfo>> checkForChanges(@NotNull File nugetPath,
-                                                                             @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException;
+  Map<SourcePackageReference, ListPackagesResult> checkForChanges(@NotNull File nugetPath,
+                                                                  @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException;
 
 
 }

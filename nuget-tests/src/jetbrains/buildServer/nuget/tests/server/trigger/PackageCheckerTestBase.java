@@ -17,15 +17,21 @@
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
+import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageChecker;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.CustomAction;
 import org.testng.annotations.BeforeMethod;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -66,4 +72,20 @@ public abstract class PackageCheckerTestBase<T extends PackageChecker> extends T
   }
 
   protected abstract T createChecker();
+
+
+  @NotNull
+  protected ListPackagesResult fromCollection(@NotNull final SourcePackageInfo... infos) {
+    return new ListPackagesResult() {
+      @Nullable
+      public String getErrorMessage() {
+        return null;
+      }
+
+      @NotNull
+      public Collection<SourcePackageInfo> getCollectedInfos() {
+        return Arrays.asList(infos);
+      }
+    };
+  }
 }

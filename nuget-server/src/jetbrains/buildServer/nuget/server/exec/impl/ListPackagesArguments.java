@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.exec.impl;
 
+import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
@@ -30,10 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -47,7 +45,6 @@ public class ListPackagesArguments {
   private static final String INCLUDE_PRERELEASE = "include-prerelease";
   private static final String USERNAME = "username";
   private static final String PASSWORD = "password";
-  private static final String SOURCE_ELEMENT = "source";
   private static final String SOURCE_ATTRIBUTE = "source";
 
   public void encodeParameters(@NotNull final File file,
@@ -93,7 +90,7 @@ public class ListPackagesArguments {
     return s;
   }
 
-  public Map<SourcePackageReference, Collection<SourcePackageInfo>> decodeParameters(@NotNull final File file) throws IOException {
+  public Map<SourcePackageReference, ListPackagesResult> decodeParameters(@NotNull final File file) throws IOException {
     final Element root;
     try {
       root = FileUtil.parseDocument(file);
@@ -105,7 +102,7 @@ public class ListPackagesArguments {
     final Element packages = root.getChild(PACKAGES);
     if (packages == null) throw new IOException("Invalid xml");
 
-    final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = new HashMap<SourcePackageReference, Collection<SourcePackageInfo>>();
+    final Map<SourcePackageReference, ListPackagesResult> result = new HashMap<SourcePackageReference, ListPackagesResult>();
 
     for (Object pElement : packages.getChildren(PACKAGE)) {
       final Element pkg = (Element) pElement;
@@ -118,6 +115,7 @@ public class ListPackagesArguments {
       final SourcePackageReference ref = new SourcePackageReference(source, parseCredentials(pkg), id, spec, parseIncludePrerelease(pkg));
 
       final Collection<SourcePackageInfo> versions = new ArrayList<SourcePackageInfo>();
+      final String packageErrorMessage = pkg.getAttributeValue("error-message");
       final Element pkgChild = pkg.getChild("package-entries");
       if (pkgChild != null) {
         for (Object pEntry : pkgChild.getChildren("package-entry")) {
@@ -130,7 +128,17 @@ public class ListPackagesArguments {
         }
       }
 
-      result.put(ref, versions);
+      result.put(ref, new ListPackagesResult() {
+        @Nullable
+        public String getErrorMessage() {
+          return packageErrorMessage;
+        }
+
+        @NotNull
+        public Collection<SourcePackageInfo> getCollectedInfos() {
+          return Collections.unmodifiableCollection(versions);
+        }
+      });
     }
 
     return result;
