@@ -53,6 +53,43 @@ namespace JetBrains.TeamCity.NuGet.Tests
     }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
+    public void TestCommand_TeamCityNOOP_Sources(NuGetVersion version)
+    {
+      TempFilesHolder.WithTempFile(
+        sources =>
+          {
+            File.WriteAllText(sources,
+                              @"<sources> <source source=""http://localhost:1025/nuget/"" username=""u-WXjhnQSiZ1Ks3j3vqF2w11lCzeXJgqfS"" password=""p-9tZNW3k2DQhiPm76V5iVi2F3R25DO1PJ"" /></sources>");
+            Environment.SetEnvironmentVariable("TEAMCITY_NUGET_FEEDS", sources);
+            try
+            {
+
+              var exec = ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, Files.GetNuGetExe(version),
+                                                        "TeamCity.NOOP")
+                                        .Dump()
+                                        .AssertExitedSuccessfully()
+                                        .AssertNoErrorOutput()
+                                        .AssertOutputContains("CredentialsSetter")
+                                        .AssertOutputContains("NuGetTeamCityInfo")
+                                        ;
+
+              if (version < NuGetVersion.NuGet_2_0)
+              {
+                exec.AssertOutputContains("Feed authentication is only supported", "##teamcity");
+              }
+              else
+              {
+                exec.AssertOutputContains("ENABLED:feed=http://localhost:1025/nuget/,user=u-WXjhnQSiZ1Ks3j3vqF2w11lCzeXJgqfS");
+              }
+            }
+            finally
+            {
+              Environment.SetEnvironmentVariable("TEAMCITY_NUGET_FEEDS", "");
+            }
+          });
+    }
+
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_NuGetVersion(NuGetVersion version)
     {
 

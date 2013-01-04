@@ -23,7 +23,6 @@ namespace JetBrains.TeamCity.NuGetRunner
     static int Main2(string[] args)
     {
       Console.Out.WriteLine("JetBrains TeamCity NuGet Runner " + typeof(Program).Assembly.GetName().Version);      
-      Console.Out.WriteLine("Starting NuGet with TeamCity provided plugins...");
       if (args.Length < 2) return Usage();
 
       string nuget = args[0];
