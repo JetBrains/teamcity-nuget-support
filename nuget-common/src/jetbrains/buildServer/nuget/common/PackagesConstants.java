@@ -69,4 +69,8 @@ public interface PackagesConstants {
   public static final String NUGET_PACK_CUSOM_COMMANDLINE= "nuget.pack.commandline";
   public static final String NUGET_PACK_AS_TOOL= "nuget.pack.pack.mode.tool";
   public static final String NUGET_PACK_INCLUDE_SOURCES = "nuget.pack.include.sources" ;
+
+  public static final String NUGET_AUTH_FEED = "nuget.auth.feed";
+  public static final String NUGET_AUTH_USERNAME = "nuget.auth.username";
+  public static final String NUGET_AUTH_PASSWORD = Constants.SECURE_PROPERTY_PREFIX + "nuget.auth.password";
 }

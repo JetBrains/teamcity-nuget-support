@@ -20,21 +20,20 @@ import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.serverSide.BuildFeature;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 04.01.13 11:09
  */
 public class NuGetAuthFeature extends BuildFeature {
-  private PluginDescriptor myDescriptor;
+  private final PluginDescriptor myDescriptor;
+  private final AuthBean myKeys = new AuthBean();
 
   public NuGetAuthFeature(@NotNull PluginDescriptor descriptor) {
     myDescriptor = descriptor;
@@ -65,7 +64,22 @@ public class NuGetAuthFeature extends BuildFeature {
   public PropertiesProcessor getParametersProcessor() {
     return new PropertiesProcessor() {
       public Collection<InvalidProperty> process(Map<String, String> properties) {
-        return Collections.emptyList();
+        final List<InvalidProperty> problems = new ArrayList<InvalidProperty>();
+        if (properties == null) return problems;
+
+        if (StringUtil.isEmptyOrSpaces(properties.get(myKeys.getFeedKey()))) {
+          problems.add(new InvalidProperty(myKeys.getFeedKey(), "Feed URI must be specified"));
+        }
+
+        if (StringUtil.isEmptyOrSpaces(properties.get(myKeys.getUsernameKey()))) {
+          problems.add(new InvalidProperty(myKeys.getUsernameKey(), "Username must be specified"));
+        }
+
+        if (StringUtil.isEmptyOrSpaces(properties.get(myKeys.getPasswordKey()))) {
+          problems.add(new InvalidProperty(myKeys.getPasswordKey(), "Password must be specified"));
+        }
+
+        return problems;
       }
     };
   }
@@ -73,13 +87,6 @@ public class NuGetAuthFeature extends BuildFeature {
   @Override
   public boolean isMultipleFeaturesPerBuildTypeAllowed() {
     return true;
-  }
-
-  @Nullable
-  @Override
-  public Map<String, String> getDefaultParameters() {
-    final Map<String, String> defs = new HashMap<String, String>();
-    return defs;
   }
 
   @Nullable

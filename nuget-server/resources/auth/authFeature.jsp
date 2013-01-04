@@ -19,31 +19,31 @@
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="bs" tagdir="/WEB-INF/tags" %>
-<jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.runner.auth.AuthBean" scope="request"/>
+<jsp:useBean id="ab" class="jetbrains.buildServer.nuget.server.runner.auth.AuthBean" scope="request"/>
+
 
 <tr>
-  <td colspan="2">Specify NuGet feed credentials</td>
-</tr>
-
-<tr>
-  <th><label>Feed URI:<l:star/></label></th>
+  <th><label for="${ab.feedKey}">Feed URI:<l:star/></label></th>
   <td>
-    <props:textProperty name="feedUri" className="longField"/>
+    <props:textProperty name="${ab.feedKey}" className="longField"/>
     <span class="smallNote">Specify NuGet feed URL in the same way as you use in build</span>
+    <span class="error" id="error_${ab.feedKey}"></span>
   </td>
 </tr>
 
 <l:settingsGroup title="Credentials">
   <tr>
-    <th><label>Username:<l:star/></label></th>
+    <th><label for="${ab.usernameKey}">Username:<l:star/></label></th>
     <td>
-      <props:textProperty name="username" className="longField"/>
+      <props:textProperty name="${ab.usernameKey}" className="longField"/>
+      <span class="error" id="error_${ab.usernameKey}"></span>
     </td>
   </tr>
   <tr>
-    <th><label>Password:<l:star/></label></th>
+    <th><label for="${ab.passwordKey}">Password:<l:star/></label></th>
     <td>
-      <props:textProperty name="password" className="longField"/>
+      <props:passwordProperty name="${ab.passwordKey}" className="longField"/>
+      <span class="error" id="error_${ab.passwordKey}"></span>
     </td>
   </tr>
 </l:settingsGroup>
