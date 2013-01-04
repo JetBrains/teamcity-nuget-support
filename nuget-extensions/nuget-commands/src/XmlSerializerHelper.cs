@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
-using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 using NuGet;
-using System.Linq;
-using JetBrains.TeamCity.NuGetRunner;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
