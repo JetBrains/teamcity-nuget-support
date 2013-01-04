@@ -60,7 +60,7 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
                                          @NotNull final Map<String, String> _additionalEnvironment) throws RunBuildException {
 
     final Collection<PackageSource> sources = getSecureSources(hostContext);
-    if (sources.isEmpty())  {
+    if (sources.isEmpty() || hostContext.getConfigParameters().containsKey("teamcity.nuget.disableTeamCityRunner"))  {
       return myFactory.executeCommandLine(
               hostContext,
               program,
@@ -69,9 +69,6 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
               _additionalEnvironment
       );
     }
-
-
-
 
     return new DelegatingBuildProcess(new DelegatingBuildProcess.Action() {
       private File mySourcesFile;
@@ -98,7 +95,6 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
                 workingDir,
                 additionalEnvironment
         );
-
       }
 
       public void finishedImpl() {
@@ -109,6 +105,7 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
     });
   }
 
+  @NotNull
   private Collection<PackageSource> getSecureSources(BuildRunnerContext hostContext) {
     List<PackageSource> sources = new ArrayList<PackageSource>();
     for (PackageSource source : mySources.getGlobalPackageSources(hostContext.getBuild())) {
