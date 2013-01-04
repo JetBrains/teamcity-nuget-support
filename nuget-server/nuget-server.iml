@@ -20,6 +20,7 @@
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-server.xml</file>
           <file>jar://$TeamCityDistribution$/webapps/ROOT/WEB-INF/lib/server.jar!/META-INF/buildServerSpringMetadata.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-settings.xml</file>
+          <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-auth.xml</file>
         </fileset>
       </configuration>
     </facet>

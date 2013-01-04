@@ -27,6 +27,7 @@ public interface PackagesConstants {
   public static final String INSTALL_RUN_TYPE = "jb.nuget.installer"; //no more than 30 chars
   public static final String PUBLISH_RUN_TYPE = "jb.nuget.publish"; //run-type could never exceed 30 chars
   public static final String PACK_RUN_TYPE = "jb.nuget.pack"; //run-type could never exceed 30 chars
+  public static final String ATHU_FEATURE_TYPE = "jb.nuget.auth"; //run-type could never exceed 30 chars
 
   public static final String[] ALL_NUGET_RUN_TYPES = {INSTALL_RUN_TYPE, PUBLISH_RUN_TYPE, PACK_RUN_TYPE};
 
