@@ -19,8 +19,12 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     protected override void ExecuteCommandImpl()
     {
+      if (!File.Exists(Request))
+        throw new CommandLineException("Failed to find file at {0}", Request);
+      
       new AssemblyResolver(GetType().Assembly.GetAssemblyDirectory());
-      var reqs = LoadRequests();
+
+      INuGetPackages reqs = XmlSerializerHelper.Load<NuGetPackages>(Request);
       reqs.ClearCheckResults();
       
       var sourceToRequest = reqs.Packages.GroupBy(x => x.Feed, Id, NuGetSourceComparer.Comparer);
@@ -29,7 +33,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         ProcessPackageSource(sourceRequest.Key, sourceRequest.ToList());
       }
 
-      SaveRequests(reqs);
+      XmlSerializerHelper.Save(Response, (NuGetPackages) reqs);
     }
 
     private void ProcessPackageSource(INuGetSource source, List<INuGetPackage> request)
@@ -83,19 +87,6 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
                        });
 
       System.Console.Out.WriteLine("Scanned {0} packages for feed {1}", count, source);
-    }
-
-    private void SaveRequests(INuGetPackages reqs)
-    {
-      XmlSerializerHelper.Save(Response, (NuGetPackages) reqs);
-    }
-
-    private INuGetPackages LoadRequests()
-    {
-      if (!File.Exists(Request))
-        throw new CommandLineException("Failed to find file at {0}", Request);
-
-      return XmlSerializerHelper.Load<NuGetPackages>(Request);
     }
 
     private static T Id<T>(T t)
