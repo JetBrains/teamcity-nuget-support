@@ -22,21 +22,23 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.LoggingNuGetActionFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
+import jetbrains.buildServer.nuget.agent.commands.impl.*;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
+import jetbrains.buildServer.nuget.agent.parameters.PackageSourceManager;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.common.SimplePackageInfoLoader;
+import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;
@@ -65,7 +67,9 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   private BuildProcess myMockProcess;
   protected BuildParametersMap myBuildParametersMap;
   protected CommandlineBuildProcessFactory myExecutor;
+  protected NuGetTeamCityProvider myNuGetTeamCityProvider;
   protected String cmd;
+  protected List<PackageSource> myGlobalSources;
 
   @NotNull
   protected String getCommandsOutput() {
@@ -150,6 +154,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    myGlobalSources = new ArrayList<PackageSource>();
     myCommandsOutput = new StringBuilder();
     myRoot = createTempDir();
     m = new Mockery();
@@ -160,21 +165,22 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myMockProcess = m.mock(BuildProcess.class);
     myNuGet = m.mock(NuGetFetchParameters.class);
     myBuildParametersMap = m.mock(BuildParametersMap.class);
+    myNuGetTeamCityProvider = m.mock(NuGetTeamCityProvider.class);
 
     cmd = System.getenv("ComSpec");
+    final PackageSourceManager psm = m.mock(PackageSourceManager.class);
 
     final Map<String, String> configParameters = new TreeMap<String, String>();
 
     m.checking(new Expectations(){{
       allowing(myContext).getBuildParameters(); will(returnValue(myBuildParametersMap));
+      allowing(myContext).getConfigParameters(); will(returnValue(Collections.emptyMap()));
       allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
 
-      allowing(myContext).getBuild();
-      will(returnValue(myBuild));
-      allowing(myBuild).getBuildLogger();
-      will(returnValue(myLogger));
-      allowing(myBuild).getCheckoutDirectory();
-      will(returnValue(myRoot));
+      allowing(myContext).getBuild(); will(returnValue(myBuild));
+      allowing(myBuild).getBuildLogger();  will(returnValue(myLogger));
+      allowing(myBuild).getCheckoutDirectory();  will(returnValue(myRoot));
+      allowing(myBuild).getAgentTempDirectory(); will(returnValue(createTempDir()));
 
       allowing(myMockProcess).start();
       allowing(myMockProcess).waitFor();
@@ -192,6 +198,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
         }
       });
 
+      allowing(myNuGetTeamCityProvider).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
+      allowing(psm).getGlobalPackageSources(myBuild); will(returnValue(Collections.unmodifiableCollection(myGlobalSources)));
     }});
 
     myCollector = new NuGetPackagesCollectorImpl();
@@ -202,7 +210,42 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     );
 
     myExecutor = executingFactory();
-    myActionFactory = new LoggingNuGetActionFactoryImpl(new NuGetActionFactoryImpl(executingFactory(), pu, new CommandFactoryImpl()));
+    myActionFactory = new LoggingNuGetActionFactoryImpl(
+            new NuGetActionFactoryImpl(
+                    new NuGetAuthCommandBuildProcessFactory(
+                            executingFactory(),
+                            myNuGetTeamCityProvider,
+                            psm,
+                            new NuGetSourcesWriter()),
+                    pu,
+                    new CommandFactoryImpl()
+            )
+    );
+  }
+
+  protected void addGlobalSource(@NotNull final String feed) {
+    addGlobalSource(feed, null, null);
+  }
+
+  protected void addGlobalSource(@NotNull final String feed,
+                                 @Nullable final String user,
+                                 @Nullable final String pass) {
+    myGlobalSources.add(new PackageSource() {
+      @NotNull
+      public String getSource() {
+        return feed;
+      }
+
+      @Nullable
+      public String getUsername() {
+        return user;
+      }
+
+      @Nullable
+      public String getPassword() {
+        return pass;
+      }
+    });
   }
 
   @NotNull

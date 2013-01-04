@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2012 JetBrains s.r.o.
+ * Copyright 2000-2013 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,14 +49,10 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   protected void setUp() throws Exception {
     super.setUp();
 
-    m.checking(new Expectations() {{
-      allowing(myLogger).activityStarted(with(equal("authenticate")), with(any(String.class)), with(any(String.class)));
-      allowing(myLogger).activityFinished(with(equal("authenticate")), with(any(String.class)));
-    }});
-
     myHttp = new MockNuGetAuthHTTP();
     myHttp.start();
     myAuthSource = Arrays.asList(myHttp.getSourceUrl());
+    addGlobalSource(myHttp.getSourceUrl(), myHttp.getUsername(), myHttp.getPassword());
   }
 
   @AfterMethod
@@ -66,7 +62,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     myHttp.stop();
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_20p)
+  @Test(dataProvider = NUGET_VERSIONS_20p, enabled = false)
   public void test_bare_commands_list(@NotNull final NuGet nuget) throws RunBuildException, IOException {
     m.checking(new Expectations() {{
       allowing(myNuGet).getNuGetExeFile();
@@ -87,7 +83,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     Assert.assertTrue(getCommandsOutput().contains("TestUtils 1.0.189"));
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_20p)
+  @Test(dataProvider = NUGET_VERSIONS_20p, enabled = false)
   public void test_bare_commands_install(@NotNull final NuGet nuget) throws RunBuildException, IOException {
     m.checking(new Expectations() {{
       allowing(myNuGet).getNuGetExeFile();
@@ -110,15 +106,14 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_install(@NotNull final NuGet nuget) throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+    ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
     fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, true, false, nuget, null, null);
     Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
   }
 
-
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_update(@NotNull final NuGet nuget) throws RunBuildException {
-    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+    ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
 
     m.checking(new Expectations() {{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
@@ -130,7 +125,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
       allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
-    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, true, true, nuget, null);
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, true, false, nuget, null, null);
 
     Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
   }

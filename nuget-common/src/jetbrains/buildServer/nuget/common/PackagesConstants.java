@@ -27,6 +27,7 @@ public interface PackagesConstants {
   public static final String INSTALL_RUN_TYPE = "jb.nuget.installer"; //no more than 30 chars
   public static final String PUBLISH_RUN_TYPE = "jb.nuget.publish"; //run-type could never exceed 30 chars
   public static final String PACK_RUN_TYPE = "jb.nuget.pack"; //run-type could never exceed 30 chars
+  public static final String ATHU_FEATURE_TYPE = "jb.nuget.auth"; //run-type could never exceed 30 chars
 
   public static final String[] ALL_NUGET_RUN_TYPES = {INSTALL_RUN_TYPE, PUBLISH_RUN_TYPE, PACK_RUN_TYPE};
 
@@ -68,4 +69,8 @@ public interface PackagesConstants {
   public static final String NUGET_PACK_CUSOM_COMMANDLINE= "nuget.pack.commandline";
   public static final String NUGET_PACK_AS_TOOL= "nuget.pack.pack.mode.tool";
   public static final String NUGET_PACK_INCLUDE_SOURCES = "nuget.pack.include.sources" ;
+
+  public static final String NUGET_AUTH_FEED = "nuget.auth.feed";
+  public static final String NUGET_AUTH_USERNAME = "nuget.auth.username";
+  public static final String NUGET_AUTH_PASSWORD = Constants.SECURE_PROPERTY_PREFIX + "nuget.auth.password";
 }

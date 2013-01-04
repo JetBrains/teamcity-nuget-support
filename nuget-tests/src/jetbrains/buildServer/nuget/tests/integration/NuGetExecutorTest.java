@@ -20,7 +20,7 @@ package jetbrains.buildServer.nuget.tests.integration;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
-import jetbrains.buildServer.nuget.server.exec.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;

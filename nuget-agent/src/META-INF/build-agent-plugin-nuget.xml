@@ -13,11 +13,18 @@
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl"/>
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.LoggingNuGetActionFactoryImpl">
     <constructor-arg>
-      <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl"/>
+      <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl">
+        <constructor-arg>
+          <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetAuthCommandBuildProcessFactory"/>
+        </constructor-arg>
+      </bean>
     </constructor-arg>
   </bean>
 
+  <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetSourcesWriter"/>
+
   <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackagesParametersFactoryImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackageSourceManagerImpl"/>
 
 
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl"/>
@@ -26,4 +33,6 @@
 
 
   <bean class="jetbrains.buildServer.nuget.agent.runner.EnabledPackagesOptionSetter"/>
+
+  <bean class="jetbrains.buildServer.nuget.agent.exec.AgentNuGetTeamCityProvider"/>
 </beans>

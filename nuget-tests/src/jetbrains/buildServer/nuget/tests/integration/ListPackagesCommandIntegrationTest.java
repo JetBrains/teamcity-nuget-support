@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.TempFolderProvider;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
@@ -48,26 +49,22 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
   public void setUp() throws Exception {
     super.setUp();
 
-    myCommand = createMockCommand(createTempDir());
+    myCommand = createMockCommand(myNuGetTeamCityProvider, createTempDir());
   }
 
   @NotNull
-  public static ListPackagesCommand createMockCommand(@NotNull final File tempDir) {
+  public static ListPackagesCommand createMockCommand(@NotNull final NuGetTeamCityProvider provider, @NotNull final File tempDir) {
     Mockery m = new Mockery();
     final SystemInfo info = m.mock(SystemInfo.class);
-    final NuGetTeamCityProvider prov = m.mock(NuGetTeamCityProvider.class);
     final TempFolderProvider temp = m.mock(TempFolderProvider.class);
 
     m.checking(new Expectations(){{
       allowing(info).canStartNuGetProcesses(); will(returnValue(true));
-
-
-      allowing(prov).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
       allowing(temp).getTempDirectory(); will(returnValue(tempDir));
     }});
 
     Logger.getLogger(NuGetExecutorImpl.class.getName()).setLevel(Level.DEBUG);
-    return new ListPackagesCommandImpl(new NuGetExecutorImpl(prov, info), temp);
+    return new ListPackagesCommandImpl(new NuGetExecutorImpl(provider, info), temp);
   }
 
   @AfterMethod
