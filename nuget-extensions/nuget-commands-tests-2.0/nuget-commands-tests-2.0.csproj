@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JetBrains.TeamCity.NuGet.ExtendedCommands</RootNamespace>
-    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.Tests.2.0</AssemblyName>
+    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.2.0.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
