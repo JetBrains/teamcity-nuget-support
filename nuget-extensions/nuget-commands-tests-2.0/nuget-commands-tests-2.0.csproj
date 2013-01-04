@@ -33,6 +33,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq">
+      <HintPath>..\lib\moq\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="NuGet">
       <HintPath>..\lib\nuget\2.0\NuGet.exe</HintPath>
     </Reference>
@@ -48,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\NuGetCredentialsProviderTest.cs" />
     <Compile Include="src\TestQueryBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
