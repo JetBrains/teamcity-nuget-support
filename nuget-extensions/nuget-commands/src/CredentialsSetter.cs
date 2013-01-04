@@ -7,6 +7,7 @@ using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
   [Export]
+  [ComponentOrder(Index = "J")]
   public partial class CredentialsSetter : ICreatableComponent
   {
     private String myState = "not initialized";

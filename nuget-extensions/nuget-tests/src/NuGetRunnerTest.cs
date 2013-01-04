@@ -69,7 +69,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
                                         .Dump()
                                         .AssertExitedSuccessfully()
                                         .AssertNoErrorOutput()
-                                        .AssertOutputContains("TeamCity NuGet Extension is available.")
                                         .AssertOutputContains("CredentialsSetter")
                                         .AssertOutputContains("NuGetTeamCityInfo")
                                         ;

@@ -2,6 +2,7 @@ using NuGet.Commands;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
+  [ComponentOrder(Index = "A")]
   public class NuGetTeamCityInfo : ICreatableComponent
   {
     public void Initialize()

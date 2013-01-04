@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using NuGet;
+using System.Linq;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
@@ -13,6 +14,12 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
   {
     void Initialize();
     String Describe();
+  }
+
+  [AttributeUsage(AttributeTargets.Class)]
+  public class ComponentOrderAttribute : Attribute
+  {
+    public string Index { get; set; }
   }
 
   [Command("TeamCity.NOOP", "Command that does nothing, but creates necessary MEF components")]
@@ -28,7 +35,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     public void OnImportsSatisfied()
     {
-      foreach (var comp in myComponents)
+      foreach (var comp in GetOrderedExtensions())
       {
         try
         {
@@ -42,9 +49,15 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       }
     }
 
+    private IEnumerable<ICreatableComponent> GetOrderedExtensions()
+    {
+      return myComponents.OrderBy(
+        x => (x.GetType().GetCustomAttributes(typeof(ComponentOrderAttribute), true).OfType<ComponentOrderAttribute>().Select(a => a.Index).FirstOrDefault() ?? "Z").ToLowerInvariant());
+    }
+
     protected override void ExecuteCommandImpl()
     {
-      foreach (var component in myComponents)
+      foreach (var component in GetOrderedExtensions())
       {
         System.Console.Out.WriteLine("Component: {0}. {1}", component.GetType().FullName, component.Describe());
       }
