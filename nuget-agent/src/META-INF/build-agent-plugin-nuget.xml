@@ -18,6 +18,7 @@
   </bean>
 
   <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackagesParametersFactoryImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackageSourceManagerImpl"/>
 
 
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl"/>
