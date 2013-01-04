@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
+import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
-import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
@@ -94,9 +94,24 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   @Test
   public void test_bulk_success() throws NuGetExecutionException {
     final SourcePackageReference ref = ref();
-    final Collection<SourcePackageInfo> aaa = Arrays.asList(ref.toInfo("aaa"));
-    final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.singletonMap(ref, aaa);
+    final ListPackagesResult aaa = fromCollection(ref.toInfo("aaa"));
+    final Map<SourcePackageReference, ListPackagesResult> result = Collections.singletonMap(ref, aaa);
     final CheckablePackage task = checkablePackage("aqqq", ref, equal(CheckResult.fromResult(aaa)));
+    m.checking(new Expectations(){{
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(returnValue(result));
+    }});
+
+    myChecker.update(myExecutor, Arrays.asList(task));
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_bulk_errorMessage() throws NuGetExecutionException {
+    final SourcePackageReference ref = ref();
+    final ListPackagesResult aaa = fromError("something failed");
+    final Map<SourcePackageReference, ListPackagesResult> result = Collections.singletonMap(ref, aaa);
+    final CheckablePackage task = checkablePackage("aqqq", ref, equal(CheckResult.failed("something failed")));
+
     m.checking(new Expectations(){{
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(returnValue(result));
     }});
@@ -108,8 +123,8 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   @Test
   public void test_bulk_empty_result_failure() throws NuGetExecutionException {
     final SourcePackageReference ref = ref();
-    final Collection<SourcePackageInfo> aaa = Collections.emptyList();
-    final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.singletonMap(ref, aaa);
+    final ListPackagesResult aaa = fromCollection();
+    final Map<SourcePackageReference, ListPackagesResult> result = Collections.singletonMap(ref, aaa);
     final CheckablePackage task = checkablePackage("aqqq", ref, empty());
     m.checking(new Expectations(){{
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(ref))); will(returnValue(result));
@@ -127,7 +142,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
       tasks.add(checkablePackage("task-" + i, new SourcePackageReference("a", "package-" + i, null)));
     }
 
-    final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.emptyMap();
+    final Map<SourcePackageReference, ListPackagesResult> result = Collections.emptyMap();
 
     m.checking(new Expectations(){{
       final int bunch = mySettings.getMaxPackagesToQueryInBulk();
@@ -143,7 +158,7 @@ public class PackageCheckerNuGetBulkTest extends PackageCheckerTestBase<PackageC
   public void test_bulk_limit_chunks() throws NuGetExecutionException {
     final SourcePackageReference p1 = new SourcePackageReference("a", "package-0", null);
     final SourcePackageReference p2 = new SourcePackageReference("a", "package-0", "[42]");
-    final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = Collections.emptyMap();
+    final Map<SourcePackageReference, ListPackagesResult> result = Collections.emptyMap();
 
     m.checking(new Expectations(){{
       oneOf(myCommand).checkForChanges(with(any(File.class)), with(col(p1))); will(returnValue(result));

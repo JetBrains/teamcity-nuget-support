@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
@@ -46,13 +47,16 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
 
   private static final long TIMEOUT = 1000 * 60 * 15; //15 min
 
+  private final FeedClient myFeed;
   private final NuGetFeedReader myReader;
   private final TimeService myTime;
   private Collection<InstallableTool> myTools;
   private long lastRequest = 0;
 
-  public AvailableToolsStateImpl(@NotNull final NuGetFeedReader reader,
+  public AvailableToolsStateImpl(@NotNull FeedClient feed,
+                                 @NotNull final NuGetFeedReader reader,
                                  @NotNull final TimeService time) {
+    myFeed = feed;
     myReader = reader;
     myTime = time;
   }
@@ -87,7 +91,7 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
     FetchException exception = null;
     for (String feedUrl : Arrays.asList(NUGET_FEED_V2, MS_REF_FEED_V2, MS_REF_FEED_V1, NUGET_FEED_V1)) {
       try {
-        final Collection<FeedPackage> packages = myReader.queryPackageVersions(feedUrl, FeedConstants.NUGET_COMMANDLINE);
+        final Collection<FeedPackage> packages = myReader.queryPackageVersions(myFeed, feedUrl, FeedConstants.NUGET_COMMANDLINE);
         return CollectionsUtil.filterAndConvertCollection(
                 packages,
                 new Converter<InstallableTool, FeedPackage>() {

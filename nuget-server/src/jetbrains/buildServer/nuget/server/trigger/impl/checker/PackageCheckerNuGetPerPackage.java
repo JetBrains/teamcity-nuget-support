@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.trigger.impl.checker;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
-import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
@@ -70,10 +70,8 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
           public void run() {
             try {
               final SourcePackageReference pkg = packageCheckEntry.getPackage();
-              Map<SourcePackageReference, Collection<SourcePackageInfo>> map = myCommand.checkForChanges(nugetPath, Collections.singleton(pkg));
-              Collection<SourcePackageInfo> infos = map.get(pkg);
-              if (infos == null) infos = Collections.emptyList();
-              packageCheckEntry.setResult(CheckResult.fromResult(infos));
+              Map<SourcePackageReference, ListPackagesResult> map = myCommand.checkForChanges(nugetPath, Collections.singleton(pkg));
+              packageCheckEntry.setResult(CheckResult.fromResult(map.get(pkg)));
             } catch (Throwable t) {
               LOG.warn("Failed to check changes of " + packageId + ". " + t.getMessage(), t);
               packageCheckEntry.setResult(CheckResult.failed(t.getMessage()));

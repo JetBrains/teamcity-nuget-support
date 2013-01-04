@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.reader.impl;
 
 import com.intellij.openapi.util.Pair;
+import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import org.apache.http.HttpResponse;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,5 +29,5 @@ import java.io.IOException;
  */
 public interface UrlResolver {
   @NotNull
-  Pair<String, HttpResponse> resolvePath(@NotNull String feedUrl) throws IOException;
+  Pair<String, HttpResponse> resolvePath(@NotNull FeedClient client, @NotNull String feedUrl) throws IOException;
 }

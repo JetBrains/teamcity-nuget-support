@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
+import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageCheckerTeamCity;
@@ -35,7 +36,7 @@ import java.util.Collections;
 public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCheckerTeamCity> {
   @Override
   protected PackageCheckerTeamCity createChecker() {
-    return new PackageCheckerTeamCity(myReader);
+    return new PackageCheckerTeamCity(myFeed, myReader);
   }
 
   @Test
@@ -102,7 +103,7 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(empty()));
 
-      oneOf(myReader).queryPackageVersions("http://foo.bar", "foo.bar"); will(returnValue(Collections.emptyList()));
+      oneOf(myReader).queryPackageVersions(myFeed, "http://foo.bar", "foo.bar"); will(returnValue(Collections.emptyList()));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
@@ -123,12 +124,42 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(failed("foo.bar", "Failed. Error")));
 
-      oneOf(myReader).queryPackageVersions("http://foo.bar", "foo.bar"); will(throwException(new IOException("Failed. Error")));
+      oneOf(myReader).queryPackageVersions(myFeed, "http://foo.bar", "foo.bar"); will(throwException(new IOException("Failed. Error")));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
 
     m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-20764")
+  public void test_http_auth_supported() throws Throwable {
+    final SourcePackageReference ref = new SourcePackageReference(
+            "http://foo.bar",
+            new FeedCredentials("username","password"),
+            "foo.bar",
+            null,
+            false);
+
+    final CheckablePackage task = m.mock(CheckablePackage.class);
+    m.checking(new Expectations() {{
+      allowing(task).getPackage();
+      will(returnValue(ref));
+      allowing(task).getMode();
+      will(returnValue(javaMode()));
+
+      oneOf(task).setExecuting();
+      oneOf(task).setResult(with(failed("foo.bar", "Failed. Error")));
+
+      oneOf(myFeed).withCredentials(new FeedCredentials("username", "password"));
+      will(returnValue(myFeed));
+
+      oneOf(myReader).queryPackageVersions(myFeed, "http://foo.bar", "foo.bar");
+      will(throwException(new IOException("Failed. Error")));
+    }});
+
+    myChecker.update(myExecutor, Arrays.asList(task));
   }
 
 }
