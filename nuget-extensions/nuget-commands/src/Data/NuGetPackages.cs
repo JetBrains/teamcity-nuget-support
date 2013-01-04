@@ -13,7 +13,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
     public NuGetPackage[] Packages { get; set; }
 
     [XmlIgnore]
-    IEnumerable<INuGetPackage> INuGetPackages.Packages { get { return Packages; } }
+    IEnumerable<INuGetPackage> INuGetPackages.Packages { get { return Packages ?? new INuGetPackage[0]; } }
 
     public void ClearCheckResults()
     {

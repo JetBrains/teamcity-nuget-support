@@ -17,7 +17,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
     public String Username { get; set; }
 
     [XmlIgnore]
-    public String Password { get; private set; }
+    public String Password { get; set; }
 
     [XmlAttribute("password")]
     public String SecuredPassword

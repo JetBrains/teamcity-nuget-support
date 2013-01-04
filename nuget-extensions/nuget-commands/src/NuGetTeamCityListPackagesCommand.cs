@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml.Serialization;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 using NuGet;
 using System.Linq;
@@ -20,8 +19,12 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     protected override void ExecuteCommandImpl()
     {
+      if (!File.Exists(Request))
+        throw new CommandLineException("Failed to find file at {0}", Request);
+      
       new AssemblyResolver(GetType().Assembly.GetAssemblyDirectory());
-      var reqs = LoadRequests();
+
+      INuGetPackages reqs = XmlSerializerHelper.Load<NuGetPackages>(Request);
       reqs.ClearCheckResults();
       
       var sourceToRequest = reqs.Packages.GroupBy(x => x.Feed, Id, NuGetSourceComparer.Comparer);
@@ -30,7 +33,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         ProcessPackageSource(sourceRequest.Key, sourceRequest.ToList());
       }
 
-      SaveRequests(reqs);
+      XmlSerializerHelper.Save(Response, (NuGetPackages) reqs);
     }
 
     private void ProcessPackageSource(INuGetSource source, List<INuGetPackage> request)
@@ -84,34 +87,6 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
                        });
 
       System.Console.Out.WriteLine("Scanned {0} packages for feed {1}", count, source);
-    }
-
-    private void SaveRequests(INuGetPackages reqs)
-    {
-      using (var file = File.CreateText(Response))
-      {
-        GetSerializer().Serialize(file, reqs);
-      }
-    }
-
-    private INuGetPackages LoadRequests()
-    {
-      if (!File.Exists(Request))
-        throw new CommandLineException("Failed to find file at {0}", Request);
-
-      using (var file = File.OpenRead(Request))
-      {
-        return (NuGetPackages)GetSerializer().Deserialize(file);
-      }
-    }
-
-    private static XmlSerializer GetSerializer()
-    {
-      var parser = new XmlSerializerFactory().CreateSerializer(typeof (NuGetPackages));
-      if (parser == null)
-        throw new CommandLineException("Failed to create serialized for parameters xml");
-
-      return parser;
     }
 
     private static T Id<T>(T t)

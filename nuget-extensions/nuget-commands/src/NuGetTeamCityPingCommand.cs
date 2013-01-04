@@ -1,3 +1,4 @@
+using System.ComponentModel.Composition;
 using System.Threading;
 using NuGet;
 using NuGet.Commands;
@@ -10,21 +11,18 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [Option("Makes command wait for 1000ms before exit. Used for testing")]
     public bool Sleep { get; set; }
 
-    public NuGetTeamCityPingCommand()
-    {
-      LogRuntimeInfo();
-    }
+    private readonly NuGetTeamCityInfo myInfo;
 
-    private void LogRuntimeInfo()
+    [ImportingConstructor]
+    public NuGetTeamCityPingCommand(NuGetTeamCityInfo info)
     {
-      System.Console.Out.WriteLine("TeamCity NuGet Extension is available.");
-      System.Console.Out.WriteLine("NuGet Version = {0}", typeof (Command).Assembly.GetName().Version);
-      System.Console.Out.WriteLine("TeamCity Extension = {0}", GetType().Assembly.GetName().FullName);
+      myInfo = info;
+      myInfo.LogRuntimeInfo();
     }
 
     protected override void ExecuteCommandImpl()
     {
-      LogRuntimeInfo();
+      myInfo.LogRuntimeInfo();
       if (Sleep)
       {
         Thread.Sleep(1000);
