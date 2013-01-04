@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Xml.Serialization;
-using JetBrains.Annotations;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
 {
   [Serializable]
+  [XmlRoot("sources")]
   public class NuGetSources : INuGetSources
   {
     [XmlElement("source")]

@@ -1,7 +1,6 @@
 using System.ComponentModel.Composition;
 using System.Threading;
 using NuGet;
-using NuGet.Commands;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {

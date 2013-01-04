@@ -4,7 +4,6 @@ using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
-  [Export]
   public partial class CredentialsSetter
   {
     [Import]
