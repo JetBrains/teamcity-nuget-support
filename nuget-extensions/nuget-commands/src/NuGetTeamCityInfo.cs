@@ -1,7 +1,9 @@
+using System.ComponentModel.Composition;
 using NuGet.Commands;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
+  [Export]
   [ComponentOrder(Index = "A")]
   public class NuGetTeamCityInfo : ICreatableComponent
   {

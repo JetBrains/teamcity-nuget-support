@@ -16,10 +16,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     {
       var path = Environment.GetEnvironmentVariable("TEAMCITY_NUGET_FEEDS");
       if (string.IsNullOrWhiteSpace(path))
-      {
-        Console.Out.WriteLine("No file specified");
         return;
-      }
 
       if (!File.Exists(path))
       {

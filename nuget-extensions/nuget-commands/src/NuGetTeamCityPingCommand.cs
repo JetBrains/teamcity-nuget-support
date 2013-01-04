@@ -10,18 +10,12 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [Option("Makes command wait for 1000ms before exit. Used for testing")]
     public bool Sleep { get; set; }
 
-    private readonly NuGetTeamCityInfo myInfo;
-
-    [ImportingConstructor]
-    public NuGetTeamCityPingCommand(NuGetTeamCityInfo info)
-    {
-      myInfo = info;
-      myInfo.LogRuntimeInfo();
-    }
-
+    [Import]
+    public NuGetTeamCityInfo Info { get; set; }
+    
     protected override void ExecuteCommandImpl()
     {
-      myInfo.LogRuntimeInfo();
+      Info.LogRuntimeInfo();
       if (Sleep)
       {
         Thread.Sleep(1000);
