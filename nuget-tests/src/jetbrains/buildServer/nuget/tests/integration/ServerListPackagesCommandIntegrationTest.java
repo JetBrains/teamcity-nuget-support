@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2012 JetBrains s.r.o.
+ * Copyright 2000-2013 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.TempFolderProvider;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
