@@ -9,7 +9,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
 {
   [Serializable]
   [XmlRoot("package")]
-  public class NuGetPackage
+  public class NuGetPackage : NuGetSource, INuGetPackage
   {
     [XmlIgnore] private readonly Lazy<Func<IPackage, bool>> myVersionSpec;
     [XmlIgnore] private readonly List<NuGetPackageEntry> myEntries = new List<NuGetPackageEntry>();
@@ -24,7 +24,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
               var spec = VersionSpec;
               if (string.IsNullOrWhiteSpace(spec)) return True;
               var pSpec = VersionUtility.ParseVersionSpec(spec);
-              return xx => Enumerable.Any(new[] {xx}.FindByVersion(pSpec));
+              return xx => new[] {xx}.FindByVersion(pSpec).Any();
             }
             catch (Exception e)
             {
@@ -50,14 +50,16 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
     [XmlAttribute("versions")]
     public string VersionSpec { get; set; }
 
-    [CanBeNull]
-    [XmlAttribute("source")]
-    public string Source { get; set; }
+    [XmlIgnore]
+    public NuGetSource Feed
+    {
+      get { return Source != null ?  this : FromFeedUrl(NuGetConstants.DefaultFeedUrl); }
+    }
 
     [XmlIgnore]
-    public string Feed
+    INuGetSource INuGetPackage.Feed
     {
-      get { return Source ?? NuGetConstants.DefaultFeedUrl; }
+      get { return Feed; }
     }
 
     [XmlArray("package-entries")]
@@ -80,6 +82,14 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
       myEntries.Add(entry);
     }
 
+    public void AddError(string message)
+    {
+      ErrorMessage = message;
+    }
+
+    [XmlElement("error-message")]
+    public string ErrorMessage { get; set; }
+
     [XmlIgnore]
     public Func<IPackage, bool> VersionChecker
     {
@@ -91,4 +101,4 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
       return true;
     }
   }
-}
+} 

@@ -34,7 +34,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
       public string IncludePrerelease { get; set; }
     }
 
-
     protected static string Serialize(IEnumerable<Package> pp)
     {
       return Serialize(pp.ToArray());

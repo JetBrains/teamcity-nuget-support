@@ -4,12 +4,12 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using JetBrains.Annotations;
+using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 using NuGet;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
-  public abstract class ListCommandBase : CommandBase
+  public abstract partial class ListCommandBase : CommandBase
   {
     [Import]
     public IPackageRepositoryFactory RepositoryFactory { get; set; }
@@ -17,13 +17,35 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [Import]
     public IPackageSourceProvider SourceProvider { get; set; }
 
-    /// <exception cref="InvalidFeedUrlException">may be thrown on error</exception>
-    [NotNull]
-    protected IEnumerable<IPackage> GetAllPackages(string source, PackageFetchOption fetchOption, IEnumerable<string> ids)
+    /// <exception cref="InvalidFeedUrlException">may be thrown on error</exception>    
+    protected void GetAllPackages(INuGetSource feed, 
+                                  PackageFetchOption fetchOption, 
+                                  IEnumerable<string> ids, 
+                                  Action<IPackage> processor) {
+      System.Console.Out.WriteLine("Checking packages on source: {0}", feed);
+
+      ValidateSourceUrl(feed);
+      GetPackageRepository(
+        feed,
+        repo =>
+          {
+            var param = Expression.Parameter(typeof (IPackage));            
+            Expression filter = QueryBuilder.GenerateQuery(fetchOption, ids, param);            
+            
+            var filtered = repo.GetPackages().Where(Expression.Lambda<Func<IPackage, bool>>(filter, param));            
+            foreach (var package in filtered)
+            {
+              processor(package);
+            }            
+          });
+    }
+
+    private static void ValidateSourceUrl(INuGetSource feed)
     {
+      string source = feed.Source;
       Uri uri;
       try
-      {        
+      {
         uri = new Uri(source);
       }
       catch (Exception e)
@@ -33,27 +55,8 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
       if (uri.IsFile && !Directory.Exists(uri.LocalPath))
       {
-        throw new InvalidFeedUrlException(source, "Local path does not exist");
+        throw new InvalidFeedUrlException(source, "Local path does not exist: " + uri.LocalPath);
       }
-
-      System.Console.Out.WriteLine("Checking packages on source: {0}", source);
-      var items = GetPackageRepository(source).GetPackages();
-
-      var param = Expression.Parameter(typeof (IPackage));
-      Expression filter = QueryBuilder.GenerateQuery(fetchOption, ids, param);
-      return items.Where(Expression.Lambda<Func<IPackage, bool>>(filter, param));
-    }
-
-    private IPackageRepository GetPackageRepository(string source)
-    {
-      return RepositoryFactory.CreateRepository(source);
-    }
-  }
-
-  public class InvalidFeedUrlException : Exception
-  {
-    public InvalidFeedUrlException(string feedUrl, string message) : base(string.Format("Speficied feed URI \"{0}\" is invalid. {1}", feedUrl ?? "<null>", message))
-    {
-    }
+    }    
   }
 }
