@@ -64,6 +64,9 @@
     <Compile Include="..\nuget-commands\src\Data\NuGetSource.cs">
       <Link>src\Shared\Data\NuGetSource.cs</Link>
     </Compile>
+    <Compile Include="..\nuget-commands\src\Data\NuGetSources.cs">
+      <Link>src\Shared\Data\NuGetSources.cs</Link>
+    </Compile>
     <Compile Include="..\nuget-commands\src\Data\INuGetPackage.cs">
       <Link>src\Shared\Data\INuGetPackage.cs</Link>
     </Compile>
@@ -72,6 +75,9 @@
     </Compile>
     <Compile Include="..\nuget-commands\src\Data\INuGetSource.cs">
       <Link>src\Shared\Data\INuGetSource.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\INuGetSources.cs">
+      <Link>src\Shared\Data\INuGetSources.cs</Link>
     </Compile>
     <Compile Include="..\nuget-commands\src\InvalidFeedUrlException.cs">
       <Link>src\Shared\InvalidFeedUrlException.cs</Link>
@@ -97,6 +103,12 @@
     <Compile Include="..\nuget-commands\src\QueryBuilder.cs">
       <Link>src\Shared\QueryBuilder.cs</Link>
     </Compile>
+    <Compile Include="..\nuget-commands\src\CredentialsSetter.cs">
+      <Link>src\Shared\CredentialsSetter.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\CustomHandlers.cs">
+      <Link>src\Shared\CustomHandlers.cs</Link>
+    </Compile>
     <Compile Include="..\shared\src\Annotations.cs">
       <Link>src\Shared\Shared\Annotations.cs</Link>
     </Compile>
@@ -108,7 +120,8 @@
     <Compile Include="src\CredentialsSetter.cs" />
     <Compile Include="src\DisposableDelegate.cs" />
     <Compile Include="src\ListCommandBase.cs" />
-    <Compile Include="src\TeamCityCredentialProvider.cs" />
+    <Compile Include="src\TeamCityMultipleCredentialProvider.cs" />
+    <Compile Include="src\TeamCitySingleCredentialProvider.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

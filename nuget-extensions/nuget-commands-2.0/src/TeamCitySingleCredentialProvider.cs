@@ -5,12 +5,12 @@ using NuGet;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
-  public class TeamCityCredentialProvider : ICredentialProvider
+  public class TeamCitySingleCredentialProvider : ICredentialProvider
   {
     private readonly INuGetSource mySource;
     private readonly ICredentialProvider myNext;
 
-    public TeamCityCredentialProvider(INuGetSource source, ICredentialProvider next = null)
+    public TeamCitySingleCredentialProvider(INuGetSource source, ICredentialProvider next = null)
     {
       mySource = source;
       myNext = next;
