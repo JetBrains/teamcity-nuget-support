@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration;
 
+import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.nuget.tests.integration.http.HttpAuthServer;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -36,26 +37,41 @@ public class MockNuGetAuthHTTP {
   private HttpAuthServer myHttp;
   private String mySourceUrl;
   private String myDownloadUrl;
-  private String myUser;
+  private String myUsername;
   private String myPassword;
   private AtomicBoolean myIsAuthorized;
 
+  @NotNull
   public String getSourceUrl() {
     return mySourceUrl;
   }
 
+  @NotNull
+  public String getPackageId() {
+    return "FineCollection";
+  }
+
+  @NotNull
   public String getDownloadUrl() {
     return myDownloadUrl;
   }
 
-  public String getUser() {
-    return myUser;
+  @NotNull
+  public FeedCredentials getCredentials() {
+    return new FeedCredentials(getUsername(),  getPassword());
   }
 
+  @NotNull
+  public String getUsername() {
+    return myUsername;
+  }
+
+  @NotNull
   public String getPassword() {
     return myPassword;
   }
 
+  @NotNull
   public AtomicBoolean getIsAuthorized() {
     return myIsAuthorized;
   }
@@ -68,7 +84,7 @@ public class MockNuGetAuthHTTP {
   }
 
   public void start() throws IOException {
-    myUser = "u-" + StringUtil.generateUniqueHash();
+    myUsername = "u-" + StringUtil.generateUniqueHash();
     myPassword = "p-" + StringUtil.generateUniqueHash();
     myIsAuthorized = new AtomicBoolean(false);
 
@@ -105,9 +121,16 @@ public class MockNuGetAuthHTTP {
         return createStringResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found");
       }
 
+      @NotNull
+      @Override
+      protected Response getNotAuthorizedResponse(String request) {
+        System.out.println("Not authorized: " + request);
+        return super.getNotAuthorizedResponse(request);
+      }
+
       @Override
       protected boolean authorizeUser(@NotNull String loginPassword) {
-        if ((myUser + ":" + myPassword).equals(loginPassword)) {
+        if ((myUsername + ":" + myPassword).equals(loginPassword)) {
           myIsAuthorized.set(true);
           return true;
         }
@@ -149,5 +172,18 @@ public class MockNuGetAuthHTTP {
     myDownloadUrl = "http://localhost:" + myHttp.getPort() + "/download/";
   }
 
+  public static interface Action {
+    void runTest(@NotNull MockNuGetAuthHTTP http) throws Throwable;
+  }
+
+  public static void executeTest(@NotNull Action action) throws Throwable {
+    MockNuGetAuthHTTP http = new MockNuGetAuthHTTP();
+    http.start();
+    try {
+      action.runTest(http);
+    } finally {
+      http.stop();
+    }
+  }
 
 }

@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.integration.http;
+package jetbrains.buildServer.nuget.server.exec;
 
-import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
 
 /**
- * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 22.06.12 16:30
+ * Created 03.01.13 17:43
+ *
+ * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
-public class HttpAuthTest {
-  public static void main(String[] args) throws IOException {
-    HttpAuthServer s = new HttpAuthServer();
-    s.start();
+public interface ListPackagesResult {
+  @Nullable
+  String getErrorMessage();
 
-    System.out.println("s.getPort() = " + s.getPort());
-
-    System.in.read();
-    s.stop();
-  }
+  @NotNull
+  Collection<SourcePackageInfo> getCollectedInfos();
 }

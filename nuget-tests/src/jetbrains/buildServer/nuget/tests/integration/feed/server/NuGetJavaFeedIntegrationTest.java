@@ -21,9 +21,9 @@ import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
+import jetbrains.buildServer.nuget.tests.integration.ListPackagesCommandIntegrationTest;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
-import jetbrains.buildServer.nuget.tests.integration.ServerListPackagesCommandIntegrationTest;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -109,8 +109,8 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   }
 
   protected void doTriggerTest(@NotNull final NuGet nuget, @NotNull String... packageNames) throws NuGetExecutionException, IOException {
-    ListPackagesCommand cmd = ServerListPackagesCommandIntegrationTest.createMockCommand(createTempDir());
-    ServerListPackagesCommandIntegrationTest.doTriggerTest(cmd, nuget, getNuGetServerUrl(), packageNames);
+    ListPackagesCommand cmd = ListPackagesCommandIntegrationTest.createMockCommand(createTempDir());
+    ListPackagesCommandIntegrationTest.doTriggerTest(cmd, nuget, getNuGetServerUrl(), packageNames);
   }
 
 }

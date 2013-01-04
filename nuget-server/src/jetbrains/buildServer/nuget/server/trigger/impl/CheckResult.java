@@ -17,13 +17,14 @@
 package jetbrains.buildServer.nuget.server.trigger.impl;
 
 import com.intellij.util.Function;
+import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -45,8 +46,25 @@ public class CheckResult {
   }
 
   @NotNull
-  public static CheckResult fromResult(@NotNull final Collection<SourcePackageInfo> infos) {
-    return new CheckResult(new ArrayList<SourcePackageInfo>(infos), null);
+  public static CheckResult empty() {
+    return fromResult(Collections.<SourcePackageInfo>emptyList());
+  }
+
+  @NotNull
+  public static CheckResult fromResult(@NotNull Collection<SourcePackageInfo> data) {
+    return new CheckResult(data, null);
+  }
+
+  @NotNull
+  public static CheckResult fromResult(@Nullable final ListPackagesResult infos) {
+    if (infos == null) {
+      return fromResult(Collections.<SourcePackageInfo>emptyList());
+    }
+    String error = infos.getErrorMessage();
+    if (!StringUtil.isEmptyOrSpaces(error)) {
+      return failed(error);
+    }
+    return fromResult(infos.getCollectedInfos());
   }
 
   @NotNull

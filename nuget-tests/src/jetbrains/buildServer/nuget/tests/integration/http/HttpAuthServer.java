@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2012 JetBrains s.r.o.
+ * Copyright 2000-2013 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,11 @@ public class HttpAuthServer extends SimpleThreadedHttpServer {
       }
     }
 
+    return getNotAuthorizedResponse(request);
+  }
+
+  @NotNull
+  protected Response getNotAuthorizedResponse(String request) {
     return new Response(STATUS_LINE_401, Arrays.asList("WWW-Authenticate: Basic realm=\"Secure Area\"", "Content-Type: text/plain")) {
       @Override
       public void printContent(PrintStream ps) throws IOException {

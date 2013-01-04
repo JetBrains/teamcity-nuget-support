@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
+import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
-import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
@@ -28,9 +28,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -94,7 +92,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
   @Test
   public void test_bulk_success() throws NuGetExecutionException {
     final SourcePackageReference ref = ref();
-    final Collection<SourcePackageInfo> result = Arrays.asList(ref.toInfo("aaa"));
+    final ListPackagesResult result = fromCollection(ref.toInfo("aaa"));
 
     final CheckablePackage task = m.mock(CheckablePackage.class);
     m.checking(new Expectations(){{
@@ -104,7 +102,28 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
       oneOf(task).setExecuting();
       oneOf(task).setResult(CheckResult.fromResult(result));
 
-      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(returnValue(Collections.singletonMap(ref,result)));
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(returnValue(Collections.singletonMap(ref, result)));
+    }});
+
+    myChecker.update(myExecutor, Arrays.asList(task));
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_bulk_errorMessage() throws NuGetExecutionException {
+    final SourcePackageReference ref = ref();
+    final ListPackagesResult result = fromError("some error ");
+
+    final CheckablePackage task = m.mock(CheckablePackage.class);
+    m.checking(new Expectations(){{
+      allowing(task).getPackage(); will(returnValue(ref));
+      allowing(task).getMode(); will(returnValue(nugetMode()));
+
+      oneOf(task).setExecuting();
+      oneOf(task).setResult(CheckResult.failed("some error "));
+
+      oneOf(myCommand).checkForChanges(with(any(File.class)), with(equalL(ref))); will(returnValue(Collections.singletonMap(ref, result)));
     }});
 
     myChecker.update(myExecutor, Arrays.asList(task));
@@ -114,7 +133,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
 
   @Test
   public void test_bulk_empty_result() throws NuGetExecutionException {
-    final Collection<SourcePackageInfo> result = new ArrayList<SourcePackageInfo>();
+    final ListPackagesResult result = fromCollection();
     final SourcePackageReference ref = ref();
     final CheckablePackage task = m.mock(CheckablePackage.class);
     m.checking(new Expectations(){{
@@ -134,7 +153,6 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
 
   @Test
   public void test_bulk_error() throws NuGetExecutionException {
-    @SuppressWarnings({"unchecked"})
     final SourcePackageReference ref = ref();
     final CheckablePackage task = m.mock(CheckablePackage.class);
     m.checking(new Expectations(){{

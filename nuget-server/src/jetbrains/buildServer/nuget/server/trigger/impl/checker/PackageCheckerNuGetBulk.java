@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.trigger.impl.checker;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
-import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
+import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
@@ -99,21 +99,21 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
     executor.submit(ExceptionUtil.catchAll("Bulk check for update of NuGet packages", new Runnable() {
       public void run() {
         try {
-          final Map<SourcePackageReference, Collection<SourcePackageInfo>> result = myCommand.checkForChanges(nugetPath, map.keySet());
+          final Map<SourcePackageReference, ListPackagesResult> result = myCommand.checkForChanges(nugetPath, map.keySet());
 
-          for (Map.Entry<SourcePackageReference, Collection<SourcePackageInfo>> e : result.entrySet()) {
+          for (Map.Entry<SourcePackageReference, ListPackagesResult> e : result.entrySet()) {
             final SourcePackageReference ref = e.getKey();
             final CheckablePackage p = map.get(ref);
-            if (p != null && !e.getValue().isEmpty()) {
-              p.setResult(CheckResult.fromResult(e.getValue()));
-              map.remove(ref);
-            }
+            if (p == null) continue;
+
+            p.setResult(CheckResult.fromResult(e.getValue()));
+            map.remove(ref);
           }
 
           for (CheckablePackage entry : map.values()) {
             final String msg = "Package " + entry.getPackage().getPackageId() + " was not found in the feed";
             LOG.warn(msg + ": " + entry.getPackage());
-            entry.setResult(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList()));
+            entry.setResult(CheckResult.empty());
           }
 
         } catch (Throwable t) {

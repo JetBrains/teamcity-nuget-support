@@ -21,6 +21,7 @@ import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
+import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory;
@@ -63,6 +64,11 @@ public class TriggerRequestFactory {
     String password = descriptor.getProperties().get(PASSWORD);
     boolean isPrerelease = !StringUtil.isEmptyOrSpaces(descriptor.getProperties().get(INCLUDE_PRERELEASE));
 
+    FeedCredentials credentials = null;
+    if (username != null && password != null && !StringUtil.isEmptyOrSpaces(username) && !StringUtil.isEmptyOrSpaces(password)) {
+      credentials = new FeedCredentials(username, password);
+    }
+
     if (StringUtil.isEmptyOrSpaces(path)) {
       throw new BuildTriggerException("Path to NuGet.exe must be specified");
     }
@@ -85,6 +91,6 @@ public class TriggerRequestFactory {
 
     return myRequestFactory.createRequest(
             myModeFactory.createNuGetChecker(nugetPath),
-            new SourcePackageReference(source, username, password, pkgId, version, isPrerelease));
+            new SourcePackageReference(source, credentials, pkgId, version, isPrerelease));
   }
 }

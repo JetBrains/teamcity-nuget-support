@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
@@ -38,6 +39,7 @@ import java.util.Collections;
  */
 public class AvailableToolStateTest extends BaseTestCase {
   private Mockery m;
+  private FeedClient myClient;
   private AvailableToolsState myState;
   private NuGetFeedReader myReader;
   private TimeService myTime;
@@ -49,20 +51,25 @@ public class AvailableToolStateTest extends BaseTestCase {
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
+    myClient = m.mock(FeedClient.class);
     myReader = m.mock(NuGetFeedReader.class);
     myTime = m.mock(TimeService.class);
 
-    myState = new AvailableToolsStateImpl(myReader, myTime);
+    myState = new AvailableToolsStateImpl(myClient, myReader, myTime);
+
+    m.checking(new Expectations(){{
+      allowing(myClient).withCredentials(null); will(returnValue(myClient));
+    }});
   }
 
   @Test
   public void test_should_try_both_feeds_on_error() throws IOException {
 
     m.checking(new Expectations(){{
-      oneOf(myReader).queryPackageVersions("http://packages.nuget.org/api/v1/FeedService.svc", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
-      oneOf(myReader).queryPackageVersions("http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
-      oneOf(myReader).queryPackageVersions("https://go.microsoft.com/fwlink/?LinkID=206669", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
-      oneOf(myReader).queryPackageVersions("https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v1/FeedService.svc", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions(myClient, "https://go.microsoft.com/fwlink/?LinkID=206669", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions(myClient, "https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
       allowing(myTime).now(); will(returnValue(1000234L));
     }});
 
@@ -79,8 +86,8 @@ public class AvailableToolStateTest extends BaseTestCase {
   public void test_should_work_on_one_feed_error_1() throws IOException, FetchException {
 
     m.checking(new Expectations(){{
-      allowing(myReader).queryPackageVersions("http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
-      oneOf(myReader).queryPackageVersions("https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
+      allowing(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions(myClient, "https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
       allowing(myTime).now(); will(returnValue(1000234L));
     }});
 
@@ -92,8 +99,8 @@ public class AvailableToolStateTest extends BaseTestCase {
   public void test_should_work_on_one_feed_error_2() throws IOException, FetchException {
 
     m.checking(new Expectations(){{
-      oneOf(myReader).queryPackageVersions("http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
-      allowing(myReader).queryPackageVersions("https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
+      allowing(myReader).queryPackageVersions(myClient, "https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
       allowing(myTime).now(); will(returnValue(1000234L));
     }});
 

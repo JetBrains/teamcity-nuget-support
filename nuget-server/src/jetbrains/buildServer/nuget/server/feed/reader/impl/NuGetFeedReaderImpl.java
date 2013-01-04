@@ -43,26 +43,24 @@ import java.util.List;
  */
 public class NuGetFeedReaderImpl implements NuGetFeedReader {
   private static final Logger LOG = Logger.getInstance(NuGetFeedReader.class.getName());
-  private final FeedClient myClient;
   private final UrlResolver myResolver;
   private final FeedGetMethodFactory myMethodFactory;
   private final PackagesFeedParser myParser;
 
-  public NuGetFeedReaderImpl(@NotNull final FeedClient client,
-                             @NotNull final UrlResolver resolver,
+  public NuGetFeedReaderImpl(@NotNull final UrlResolver resolver,
                              @NotNull final FeedGetMethodFactory methodFactory,
                              @NotNull final PackagesFeedParser parser) {
-    myClient = client;
     myResolver = resolver;
     myMethodFactory = methodFactory;
     myParser = parser;
   }
 
   @NotNull
-  public Collection<FeedPackage> queryPackageVersions(@NotNull String feedUrl,
-                                                      @NotNull String packageId) throws IOException {
+  public Collection<FeedPackage> queryPackageVersions(@NotNull final FeedClient client,
+                                                      @NotNull String feedUrl,
+                                                      @NotNull final String packageId) throws IOException {
     LOG.debug("Connecting to NuGet feed url: " + feedUrl);
-    final Pair<String, HttpResponse> pair = myResolver.resolvePath(feedUrl);
+    final Pair<String, HttpResponse> pair = myResolver.resolvePath(client, feedUrl);
     feedUrl = pair.first;
     LOG.debug("Resolved NuGet feed URL to " + feedUrl);
     final Element element = toDocument(feedUrl, pair.second);
@@ -77,7 +75,7 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
       get.setHeader(HttpHeaders.ACCEPT, "application/atom+xml");
 
       LOG.debug("Query for packages part: " + get.getURI());
-      final HttpResponse execute = myClient.execute(get);
+      final HttpResponse execute = client.execute(get);
       String packagesUrl;
       try {
         packagesUrl = myParser.readPackages(toDocument(get.getURI().toString(), execute), allPackages);
@@ -93,12 +91,14 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     return allPackages;
   }
 
-  public void downloadPackage(@NotNull FeedPackage pkg, @NotNull File file) throws IOException {
+  public void downloadPackage(@NotNull FeedClient client,
+                              @NotNull FeedPackage pkg,
+                              @NotNull File file) throws IOException {
     FileUtil.createParentDirs(file);
     final String url = pkg.getDownloadUrl();
 
     final HttpGet get = myMethodFactory.createGet(url);
-    final HttpResponse resp = myClient.execute(get);
+    final HttpResponse resp = client.execute(get);
     final StatusLine statusLine = resp.getStatusLine();
     if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
       throw new IOException("Failed to download package " + pkg + ". Server returned " + statusLine);
