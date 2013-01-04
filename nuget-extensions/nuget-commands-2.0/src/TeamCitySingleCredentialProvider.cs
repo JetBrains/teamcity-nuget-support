@@ -18,7 +18,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     public ICredentials GetCredentials(Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)
     {
-      if (!retrying && !String.IsNullOrWhiteSpace(mySource.Username))
+      if (!retrying && mySource.HasCredentials)
         return new NetworkCredential(mySource.Username, mySource.Password);
 
       if (myNext != null)
