@@ -88,10 +88,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     private void SaveRequests(INuGetPackages reqs)
     {
-      using (var file = File.CreateText(Response))
-      {
-        GetSerializer().Serialize(file, reqs);
-      }
+      XmlSerializerHelper.Save(Response, (NuGetPackages) reqs);
     }
 
     private INuGetPackages LoadRequests()
@@ -99,19 +96,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       if (!File.Exists(Request))
         throw new CommandLineException("Failed to find file at {0}", Request);
 
-      using (var file = File.OpenRead(Request))
-      {
-        return (NuGetPackages)GetSerializer().Deserialize(file);
-      }
-    }
-
-    private static XmlSerializer GetSerializer()
-    {
-      var parser = new XmlSerializerFactory().CreateSerializer(typeof (NuGetPackages));
-      if (parser == null)
-        throw new CommandLineException("Failed to create serialized for parameters xml");
-
-      return parser;
+      return XmlSerializerHelper.Load<NuGetPackages>(Request);
     }
 
     private static T Id<T>(T t)

@@ -82,6 +82,9 @@
     <Compile Include="..\nuget-commands\src\NuGetTeamCityListPackagesCommand.cs">
       <Link>src\Shared\NuGetTeamCityListPackagesCommand.cs</Link>
     </Compile>
+    <Compile Include="..\nuget-commands\src\XmlSerializerHelper.cs">
+      <Link>src\Shared\XmlSerializerHelper.cs</Link>
+    </Compile>
     <Compile Include="..\nuget-commands\src\NuGetTeamCityPingCommand.cs">
       <Link>src\Shared\NuGetTeamCityPingCommand.cs</Link>
     </Compile>
