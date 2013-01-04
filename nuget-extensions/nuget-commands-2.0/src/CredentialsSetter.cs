@@ -1,6 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.IO;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
@@ -11,21 +10,9 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [Import]
     public CredentialsProviderUpdater CredentialsUpdater { get; set; }
 
-    public void Initialize()
+    private void UpdateCredentials(IEnumerable<NuGetSource> actual)
     {
-      var path = Environment.GetEnvironmentVariable("TEAMCITY_NUGET_FEEDS");
-      if (string.IsNullOrWhiteSpace(path)) return;
-
-      if (!File.Exists(path))
-      {
-        Console.Out.WriteLine("Failed to load NuGet feed credentials file: " + path);
-      }
-
-      var sources = XmlSerializerHelper.Load<NuGetSources>(path);
-
-      CredentialsUpdater.UpdateCredentialsProvider(sources);
-
-
+      CredentialsUpdater.UpdateCredentialsProvider(actual);
     }
   }
 }
