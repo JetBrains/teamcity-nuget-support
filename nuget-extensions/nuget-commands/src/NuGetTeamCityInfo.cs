@@ -6,7 +6,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
   {
     public void Initialize()
     {
-      LogRuntimeInfo();
+      
     }
 
     public void LogRuntimeInfo()
