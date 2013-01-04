@@ -94,6 +94,9 @@
     <Compile Include="..\nuget-commands\src\NuGetTeamCityPingCommand.cs">
       <Link>src\Shared\NuGetTeamCityPingCommand.cs</Link>
     </Compile>
+    <Compile Include="..\nuget-commands\src\NuGetTeamCityInfo.cs">
+      <Link>src\Shared\NuGetTeamCityInfo.cs</Link>
+    </Compile>
     <Compile Include="..\nuget-commands\src\PackageExtensions2.cs">
       <Link>src\Shared\PackageExtensions2.cs</Link>
     </Compile>
