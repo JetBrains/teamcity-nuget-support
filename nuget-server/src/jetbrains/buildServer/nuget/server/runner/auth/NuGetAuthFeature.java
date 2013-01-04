@@ -55,7 +55,7 @@ public class NuGetAuthFeature extends BuildFeature {
   @Override
   public String describeParameters(@NotNull Map<String, String> params) {
     StringBuilder sb = new StringBuilder();
-    sb.append("Feed:").append("<FEED_URL>");
+    sb.append("Feed:").append(params.get(myKeys.getFeedKey()));
     return sb.toString();
   }
 
