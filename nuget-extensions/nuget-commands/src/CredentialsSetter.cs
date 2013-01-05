@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
+using JetBrains.TeamCity.NuGetRunner;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
@@ -24,6 +25,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         return;
       }
 
+      new AssemblyResolver(GetType().Assembly.GetAssemblyDirectory());
       var sources = XmlSerializerHelper.Load<NuGetSources>(path);
       var actual = sources.Sources.Where(x => x.HasCredentials).ToArray();
 
