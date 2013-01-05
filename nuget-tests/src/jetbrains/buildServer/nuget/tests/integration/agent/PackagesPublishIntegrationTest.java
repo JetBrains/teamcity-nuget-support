@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
+import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
 import jetbrains.buildServer.util.FileUtil;
 import org.hamcrest.text.StringContains;
 import org.jetbrains.annotations.NotNull;
@@ -36,8 +37,11 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -80,6 +84,46 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     Assert.assertTrue(getCommandsOutput().contains("Your package was uploaded") || getCommandsOutput().contains("Your package was pushed."));
   }
 
+
+  @Test(dataProvider = NUGET_VERSIONS_20p)
+  public void test_publish_packages_mock_http(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    final AtomicBoolean hasPUT = new AtomicBoolean();
+    final SimpleThreadedHttpServer server = new SimpleThreadedHttpServer(){
+      @Override
+      protected void postProcessSocketData(String httpHeader, @NotNull InputStream is) throws IOException {
+        if (httpHeader.startsWith("PUT")) {
+          while(is.available() > 0) {
+            //noinspection ResultOfMethodCallIgnored
+            is.read();
+          }
+        }
+        super.postProcessSocketData(httpHeader, is);
+      }
+
+      @Override
+      protected Response getResponse(String request) {
+        System.out.println(">>" + request);
+        if (request.startsWith("PUT")) {
+          hasPUT.set(true);
+          return createStringResponse(STATUS_LINE_201, Collections.<String>emptyList(), "Created");
+        }
+        return createStringResponse(STATUS_LINE_200,Collections.<String>emptyList(), "Ok");
+      }
+    };
+
+    server.start();
+    try {
+      final File pkg = preparePackage(nuget);
+      BuildProcess p = callPublishRunnerEx(nuget, "http://localhost:" + server.getPort() + "/nuget", pkg);
+      assertRunSuccessfully(p, BuildFinishedStatus.FINISHED_SUCCESS);
+
+      Assert.assertTrue(getCommandsOutput().contains("Your package was uploaded") || getCommandsOutput().contains("Your package was pushed."));
+      Assert.assertTrue(hasPUT.get());
+    } finally {
+      server.stop();
+    }
+  }
+
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_create_mock_package(@NotNull final NuGet nuget) throws IOException {
     final File file = preparePackage(nuget);
@@ -118,16 +162,23 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     return pkg;
   }
 
-  private BuildProcess callPublishRunnerEx(final NuGet nuget, final File... pkg) throws RunBuildException {
+  private BuildProcess callPublishRunnerEx(@NotNull final NuGet nuget,
+                                           @NotNull final File... pkg) throws RunBuildException {
+    return callPublishRunnerEx(nuget, "http://preview.nuget.org/api/v2", pkg);
+  }
+
+  private BuildProcess callPublishRunnerEx(@NotNull final NuGet nuget,
+                                           @NotNull final String source,
+                                           @NotNull final File... pkg) throws RunBuildException {
     final List<String> files = new ArrayList<String>();
     for (File p : pkg) {
       files.add(p.getPath());
     }
     m.checking(new Expectations(){{
       allowing(myPublishParameters).getFiles(); will(returnValue(files));
-      allowing(myPublishParameters).getCreateOnly(); will(returnValue(true));
+      allowing(myPublishParameters).getCreateOnly(); will(returnValue(false));
       allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
-      allowing(myPublishParameters).getPublishSource(); will(returnValue("http://preview.nuget.org/api/v2"));
+      allowing(myPublishParameters).getPublishSource(); will(returnValue(source));
       allowing(myPublishParameters).getApiKey(); will(returnValue(getQ()));
 
       allowing(myParametersFactory).loadPublishParameters(myContext);will(returnValue(myPublishParameters));
@@ -142,7 +193,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
   }
 
-
+  @NotNull
   private String getQ() {
     final int i1 = 88001628;
     final int universe = 42;
