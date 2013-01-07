@@ -22,7 +22,6 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     {
       source = source.Where(x => x.HasCredentials).ToArray();
       if (source.IsEmpty()) return Noop;
-      if (source.Count() == 1) return UpdateCredentialsProvider(source.First());
 
       return UpdateCredentialsProvider(new TeamCityMultipleCredentialProvider(source));
     }
