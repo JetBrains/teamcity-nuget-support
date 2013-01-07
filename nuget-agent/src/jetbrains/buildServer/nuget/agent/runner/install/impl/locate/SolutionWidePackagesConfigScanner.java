@@ -36,7 +36,7 @@ public class SolutionWidePackagesConfigScanner implements PackagesConfigScanner 
     final File solutionPackagesConfig = findSolutionPackagesConfigFile(sln);
     if (solutionPackagesConfig != null) {
       logger.message("Found solution-wide packages.config: " + solutionPackagesConfig);
-      Collections.singleton(solutionPackagesConfig);
+      return Collections.singleton(solutionPackagesConfig);
     }
 
     return Collections.emptyList();
