@@ -26,8 +26,10 @@ import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
+import jetbrains.buildServer.nuget.tests.integration.http.HttpAuthServer;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.StringUtil;
 import org.hamcrest.text.StringContains;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -115,6 +117,57 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     try {
       final File pkg = preparePackage(nuget);
       BuildProcess p = callPublishRunnerEx(nuget, "http://localhost:" + server.getPort() + "/nuget", pkg);
+      assertRunSuccessfully(p, BuildFinishedStatus.FINISHED_SUCCESS);
+
+      Assert.assertTrue(getCommandsOutput().contains("Your package was uploaded") || getCommandsOutput().contains("Your package was pushed."));
+      Assert.assertTrue(hasPUT.get());
+    } finally {
+      server.stop();
+    }
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS_20p)
+  public void test_publish_packages_mock_http_auth(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    final String username = "u-" + StringUtil.generateUniqueHash();
+    final String password = "p-" + StringUtil.generateUniqueHash();
+
+    final AtomicBoolean hasPUT = new AtomicBoolean();
+    final SimpleThreadedHttpServer server = new HttpAuthServer(){
+      @Override
+      protected void postProcessSocketData(String httpHeader, @NotNull InputStream is) throws IOException {
+        if (httpHeader.startsWith("PUT")) {
+          while(is.available() > 0) {
+            //noinspection ResultOfMethodCallIgnored
+            is.read();
+          }
+        }
+        super.postProcessSocketData(httpHeader, is);
+      }
+
+      @Override
+      protected boolean authorizeUser(@NotNull String loginPassword) {
+        return (username + ":" + password).equals(loginPassword);
+      }
+
+      @Override
+      protected Response getAuthorizedResponse(String request) throws IOException {
+        System.out.println(">>" + request);
+        if (request.startsWith("PUT")) {
+          hasPUT.set(true);
+          return createStringResponse(STATUS_LINE_201, Collections.<String>emptyList(), "Created");
+        }
+        return createStringResponse(STATUS_LINE_200,Collections.<String>emptyList(), "Ok");
+      }
+    };
+
+    server.start();
+    final String feed = "http://localhost:" + server.getPort() + "/nuget";
+
+    addGlobalSource(feed, username, password);
+    try {
+      final File pkg = preparePackage(nuget);
+
+      BuildProcess p = callPublishRunnerEx(nuget, feed, pkg);
       assertRunSuccessfully(p, BuildFinishedStatus.FINISHED_SUCCESS);
 
       Assert.assertTrue(getCommandsOutput().contains("Your package was uploaded") || getCommandsOutput().contains("Your package was pushed."));
