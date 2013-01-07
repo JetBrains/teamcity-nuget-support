@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.runner.install;
 
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerConstants;
+import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 
 /**

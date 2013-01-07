@@ -16,14 +16,20 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
-import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider;
-import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static jetbrains.buildServer.agent.AgentRuntimeProperties.TEAMCITY_SERVER_URL;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_AUTH_REFERENCE;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_REFERENCE;
+import static jetbrains.buildServer.parameters.ReferencesResolverUtil.makeReference;
+import static jetbrains.buildServer.web.util.WebUtil.GUEST_AUTH_PREFIX;
+import static jetbrains.buildServer.web.util.WebUtil.HTTP_AUTH_PREFIX;
+import static jetbrains.buildServer.web.util.WebUtil.combineContextPath;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -39,10 +45,10 @@ public class NuGetServerPropertiesProvider extends AbstractBuildParametersProvid
   @NotNull
   @Override
   public Map<String, String> getParameters(@NotNull SBuild build, boolean emulationMode) {
-    Map<String, String> map = new HashMap<String, String>();
+    final Map<String, String> map = new HashMap<String, String>();
     if (mySettings.isNuGetServerEnabled()) {
-      //TODO: set here httpAuth url as NuGet is able to support authentication.
-      map.put(NuGetServerConstants.FEED_REFERENCE, "%" + AgentRuntimeProperties.TEAMCITY_SERVER_URL + "%" + WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
+      map.put(FEED_REFERENCE, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
+      map.put(FEED_AUTH_REFERENCE, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
     }
     return map;
   }

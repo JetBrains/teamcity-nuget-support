@@ -20,7 +20,9 @@ import jetbrains.buildServer.agent.AgentBuildFeature;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSourceManager;
+import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,7 +47,11 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
       result.add(source(feed, user, pass));
     }
 
-    //TODO: include TeamCity provided NuGet feed here as well
+    final String tcfeed = build.getSharedConfigParameters().get(NuGetServerConstants.FEED_AUTH_REFERENCE);
+    if (!StringUtil.isEmptyOrSpaces(tcfeed)) {
+      result.add(source(tcfeed, build.getAccessUser(), build.getAccessCode()));
+    }
+
     return result;
   }
 
