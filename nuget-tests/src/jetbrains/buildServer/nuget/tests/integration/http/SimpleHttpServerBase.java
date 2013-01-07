@@ -39,6 +39,7 @@ import java.util.regex.Pattern;
  */
 public abstract class SimpleHttpServerBase {
   public static final String STATUS_LINE_200 = "HTTP/1.0 200 Ok";
+  public static final String STATUS_LINE_201 = "HTTP/1.0 201 Created";
   public static final String STATUS_LINE_500 = "HTTP/1.0 500 Error";
   public static final String STATUS_LINE_404 = "HTTP/1.0 404 Not Found";
   public static final String STATUS_LINE_401 = "HTTP/1.1 401 Authorization Required";
@@ -111,10 +112,14 @@ public abstract class SimpleHttpServerBase {
     myProcessingThread.start();
   }
 
+  protected void postProcessSocketData(String httpHeader, @NotNull final InputStream is) throws IOException {
+
+  }
+
   protected void processRequest(@NotNull final Socket connection) {
     waitBeforeResponse();
     try {
-      final InputStream is = new BufferedInputStream(connection.getInputStream());
+      final InputStream is = /*new BufferedInputStream*/(connection.getInputStream());
       final OutputStream os = new BufferedOutputStream(connection.getOutputStream());
 
       final PrintStream ps = new PrintStream(os, false, "utf-8");
@@ -132,11 +137,13 @@ public abstract class SimpleHttpServerBase {
           }
         }
       }
+      final String httpHeader = sb.toString();
+      postProcessSocketData(httpHeader, is);
 
       Response response = null;
       try {
         try {
-          response = this.getResponse(sb.toString());
+          response = this.getResponse(httpHeader);
         } catch (Throwable t) {
           Loggers.TEST.error("Failed to get response. " + t.getMessage(), t);
           response = createStringResponse(STATUS_LINE_500, Collections.<String>emptyList(), "");
