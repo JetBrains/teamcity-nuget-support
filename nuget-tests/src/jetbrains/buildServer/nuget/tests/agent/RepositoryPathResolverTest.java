@@ -80,6 +80,12 @@ public class RepositoryPathResolverTest extends BaseTestCase {
   }
 
   @Test
+  public void testResolveWithConfig_04() throws IOException, RunBuildException {
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-04.Config"), new File(myHome, "nuget.config"));
+    doResolveTest("C:\\myteam\\teampackages");
+  }
+
+  @Test
   public void testResolveWithBroken() throws IOException, RunBuildException {
     m.checking(new Expectations(){{
       oneOf(myLogger).warning(with(any(String.class)));
@@ -92,7 +98,7 @@ public class RepositoryPathResolverTest extends BaseTestCase {
     final File actual = myResolver.resolvePath(myLogger, mySln);
     Assert.assertTrue(actual.exists(), "Resolved file must exist");
     Assert.assertEquals(actual, FileUtil.getCanonicalFile(actual), "should return absolute canonical path");
-    Assert.assertEquals(actual, FileUtil.getCanonicalFile(new File(myHome, packages)));
+    Assert.assertEquals(actual, FileUtil.resolvePath(myHome, packages));
 
   }
 }

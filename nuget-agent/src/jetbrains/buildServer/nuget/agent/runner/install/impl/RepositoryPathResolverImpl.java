@@ -19,7 +19,10 @@ package jetbrains.buildServer.nuget.agent.runner.install.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.util.FileUtil;
+import org.jdom.Attribute;
 import org.jdom.Element;
+import org.jdom.Text;
+import org.jdom.xpath.XPath;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -57,11 +60,28 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
     LOG.debug("Found NuGet.config file: " + config);
     try {
       final Element element = FileUtil.parseDocument(config);
-      final Element child = element.getChild("repositoryPath");
-      if (child != null) {
-        String text = child.getText();
-        if (text != null) {
-          text = text.trim();
+      {
+        final Attribute pathAttribute = (Attribute) XPath.newInstance("/configuration/config/add[@key='repositoryPath']/@value").selectSingleNode(element);
+        if (pathAttribute != null) {
+          String text = pathAttribute.getValue().trim();
+          LOG.info("Found packages path: " + text);
+          return FileUtil.resolvePath(home, text);
+        }
+      }
+
+      {
+        final Text pathText = (Text) XPath.newInstance("/configuration/repositoryPath/text()").selectSingleNode(element);
+        if (pathText != null) {
+          final String text = pathText.getTextTrim();
+          LOG.info("Found packages path: " + text);
+          return FileUtil.resolvePath(home, text);
+        }
+      }
+
+      {
+        final Text pathText = (Text) XPath.newInstance("/settings/repositoryPath/text()").selectSingleNode(element);
+        if (pathText != null) {
+          final String text = pathText.getTextTrim();
           LOG.info("Found packages path: " + text);
           return FileUtil.resolvePath(home, text);
         }
