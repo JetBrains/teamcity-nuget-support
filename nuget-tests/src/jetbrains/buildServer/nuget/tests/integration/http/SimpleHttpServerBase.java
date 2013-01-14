@@ -42,6 +42,7 @@ import java.util.regex.Pattern;
  */
 public abstract class SimpleHttpServerBase {
   public static final String STATUS_LINE_200 = "HTTP/1.0 200 Ok";
+  public static final String STATUS_LINE_301 = "HTTP/1.0 301 Moved Permanently";
   public static final String STATUS_LINE_500 = "HTTP/1.0 500 Error";
   public static final String STATUS_LINE_404 = "HTTP/1.0 404 Not Found";
 

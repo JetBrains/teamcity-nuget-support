@@ -63,11 +63,12 @@ public class UrlResolverImpl implements UrlResolver {
    */
   @NotNull
   public Pair<String, HttpResponse> resolvePath(@NotNull String feedUrl) throws IOException {
+    HttpResponse execute = null;
     for(int _ = 100; _-->0;) {
       HttpGet ping = myMethods.createGet(feedUrl);
       ping.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
 
-      final HttpResponse execute = myClient.execute(ping);
+      execute = myClient.execute(ping);
 
       String redirected = getRedirectedUrl(ping, execute);
       if (redirected != null) {
@@ -79,6 +80,7 @@ public class UrlResolverImpl implements UrlResolver {
 
       final int statusCode = execute.getStatusLine().getStatusCode();
       if (statusCode != HttpStatus.SC_OK) {
+        EntityUtils.consume(execute.getEntity());
         throw new IOException("Failed to connect to " + feedUrl);
       }
 
@@ -86,6 +88,9 @@ public class UrlResolverImpl implements UrlResolver {
         feedUrl = feedUrl.substring(0, feedUrl.length() - 1);
       }
       return Pair.create(feedUrl, execute);
+    }
+    if (execute != null) {
+      EntityUtils.consume(execute.getEntity());
     }
     throw new IOException("Failed to resolve redirects");
   }
