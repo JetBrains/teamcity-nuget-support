@@ -66,7 +66,6 @@ public class UrlResolverImpl implements UrlResolver {
       HttpGet ping = myMethods.createGet(feedUrl);
       ping.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
 
-
       execute = client.execute(ping);
 
       String redirected = getRedirectedUrl(ping, execute);
@@ -79,6 +78,7 @@ public class UrlResolverImpl implements UrlResolver {
 
       final int statusCode = execute.getStatusLine().getStatusCode();
       if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
+        EntityUtils.consume(execute.getEntity());
         throw new IOException("Failed to connect to " + feedUrl + ". " + (client.hasCredentials() ? "Wrong username or password" : "Authentication required"));
       }
       if (statusCode != HttpStatus.SC_OK) {

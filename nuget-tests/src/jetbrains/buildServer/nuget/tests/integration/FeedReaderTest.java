@@ -75,6 +75,7 @@ public class FeedReaderTest extends BaseTestCase {
             {jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase.STATUS_LINE_301 },
             {jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase.STATUS_LINE_404 },
             {jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase.STATUS_LINE_500 },
+            {jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase.STATUS_LINE_401 },
             {"HTTP/1.0 303 Do not know what is it" },
             {"HTTP/1.0 201 Created" },
             {"HTTP/1.0 503 Something" },
@@ -117,7 +118,7 @@ public class FeedReaderTest extends BaseTestCase {
       public void run() {
         for(int i = 0; i < 100; i++) {
           try {
-            myReader.queryPackageVersions(feedUrl, "some.foo.bar");
+            myReader.queryPackageVersions(myClient, feedUrl, "some.foo.bar");
             Thread.sleep(1);
           } catch (Exception e) {
             if (e instanceof org.apache.http.conn.ConnectionPoolTimeoutException) {
@@ -172,7 +173,7 @@ public class FeedReaderTest extends BaseTestCase {
       public void run() {
         for(int i = 0; i < 10; i++) {
           try {
-            myReader.queryPackageVersions(feedUrl, "some.foo.bar");
+            myReader.queryPackageVersions(myClient, feedUrl, "some.foo.bar");
             Thread.sleep(1);
           } catch (Exception e) {
             if (e instanceof org.apache.http.conn.ConnectionPoolTimeoutException) {
