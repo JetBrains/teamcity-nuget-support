@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.feed.reader.impl.*;
+import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.SimpleHttpServerBase;
 import jetbrains.buildServer.util.TestFor;
@@ -38,6 +39,7 @@ import org.testng.annotations.Test;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -63,6 +65,129 @@ public class FeedReaderTest extends BaseTestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     myClient.dispose();
+  }
+
+  public static final String DATA_PROVIDER_STATUSES = "FeedReaderLeaks";
+  @DataProvider(name = DATA_PROVIDER_STATUSES)
+  public Object[][] data_FeedReaderLeaks() {
+    return new Object[][] {
+            {jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase.STATUS_LINE_200 },
+            {jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase.STATUS_LINE_301 },
+            {jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase.STATUS_LINE_404 },
+            {jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase.STATUS_LINE_500 },
+            {"HTTP/1.0 303 Do not know what is it" },
+            {"HTTP/1.0 201 Created" },
+            {"HTTP/1.0 503 Something" },
+            {"HTTP/1.1 200 Ok" }, //fake 1.1
+    };
+  }
+
+  @Test(dataProvider = DATA_PROVIDER_STATUSES)
+  @TestFor(issues = "TW-25224")
+  public void testFeedReaderLeaks(@NotNull final String statusLine) throws IOException, InterruptedException {
+    SimpleThreadedHttpServer server = new SimpleThreadedHttpServer(){
+      @Override
+      protected Response getResponse(String request) {
+        String path = "" + getRequestPath(request);
+
+        if (path.startsWith("/feedx")) {
+          return createStringResponse(STATUS_LINE_301, Arrays.asList("Location: http://localhost:" + getPort() + "/feedy"), "Moved");
+        }
+
+        if (path.startsWith("/feedy")) {
+          return createStringResponse(STATUS_LINE_301, Arrays.asList("Location: http://localhost:" + getPort() + "/nuget"), "Moved");
+        }
+
+        if (path.startsWith("/feed")) {
+          return createStringResponse(STATUS_LINE_301, Arrays.asList("Location: http://localhost:" + getPort() + "/feedx"), "Moved");
+        }
+
+        if (path.startsWith("/nuget")) {
+          return createStringResponse(statusLine, Collections.<String>emptyList(), "<nop>");
+        }
+
+        return createStringResponse(STATUS_LINE_404, Collections.<String>emptyList(), "<nop>");
+      }
+    };
+    server.start();
+
+    final String feedUrl = "http://localhost:" + server.getPort() + "/feed";
+
+    final Runnable toFeedPing = new Runnable() {
+      public void run() {
+        for(int i = 0; i < 100; i++) {
+          try {
+            myReader.queryPackageVersions(feedUrl, "some.foo.bar");
+            Thread.sleep(1);
+          } catch (Exception e) {
+            if (e instanceof org.apache.http.conn.ConnectionPoolTimeoutException) {
+              Assert.fail("Pool exhausted");
+            }
+          }
+        }
+      }
+    };
+
+    try {
+      runAsyncAndFailOnException(10, toFeedPing);
+    } finally {
+      server.stop();
+    }
+  }
+
+  @Test
+  @TestFor(issues = "TW-25224")
+  public void testFeedReaderTooManyRedirects() throws IOException, InterruptedException {
+    SimpleThreadedHttpServer server = new SimpleThreadedHttpServer(){
+      @Override
+      protected Response getResponse(String request) {
+        String path = "" + getRequestPath(request);
+
+        for(int i = 0; i < 1000; i++) {
+          if (path.startsWith("/feed_" + i + "_z")) {
+            return createStringResponse(STATUS_LINE_301, Arrays.asList("Location: http://localhost:" + getPort() + "/feed_" + (i+1) + "_z"), "Moved");
+          }
+        }
+
+        if (path.startsWith("/feed")) {
+          return createStringResponse(STATUS_LINE_301, Arrays.asList("Location: http://localhost:" + getPort() + "/feed_0_z"), "Moved");
+        }
+
+        if (path.startsWith("/feed_1000_z")) {
+          return createStringResponse(STATUS_LINE_301, Arrays.asList("Location: http://localhost:" + getPort() + "/nuget"), "Moved");
+        }
+
+        if (path.startsWith("/nuget")) {
+          return createStringResponse(STATUS_LINE_200, Collections.<String>emptyList(), "<nop>");
+        }
+
+        return createStringResponse(STATUS_LINE_404, Collections.<String>emptyList(), "<nop>");
+      }
+    };
+    server.start();
+
+    final String feedUrl = "http://localhost:" + server.getPort() + "/feed";
+
+    final Runnable toFeedPing = new Runnable() {
+      public void run() {
+        for(int i = 0; i < 10; i++) {
+          try {
+            myReader.queryPackageVersions(feedUrl, "some.foo.bar");
+            Thread.sleep(1);
+          } catch (Exception e) {
+            if (e instanceof org.apache.http.conn.ConnectionPoolTimeoutException) {
+              Assert.fail("Pool exhausted");
+            }
+          }
+        }
+      }
+    };
+
+    try {
+      runAsyncAndFailOnException(10, toFeedPing);
+    } finally {
+      server.stop();
+    }
   }
 
   @Test(enabled = false)

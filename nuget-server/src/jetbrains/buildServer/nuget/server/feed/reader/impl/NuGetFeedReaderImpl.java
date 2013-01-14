@@ -62,9 +62,13 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
     LOG.debug("Connecting to NuGet feed url: " + feedUrl);
     final Pair<String, HttpResponse> pair = myResolver.resolvePath(client, feedUrl);
     feedUrl = pair.first;
-    LOG.debug("Resolved NuGet feed URL to " + feedUrl);
-    final Element element = toDocument(feedUrl, pair.second);
-    LOG.debug("Recieved xml: " + XmlUtil.to_s(element));
+    try {
+      LOG.debug("Resolved NuGet feed URL to " + feedUrl);
+      final Element element = toDocument(feedUrl, pair.second);
+      LOG.debug("Recieved xml: " + XmlUtil.to_s(element));
+    } finally {
+      EntityUtils.consume(pair.second.getEntity());
+    }
 
     final List<FeedPackage> allPackages = new ArrayList<FeedPackage>();
     HttpGet get = myMethodFactory.createGet(feedUrl + "/Packages()",

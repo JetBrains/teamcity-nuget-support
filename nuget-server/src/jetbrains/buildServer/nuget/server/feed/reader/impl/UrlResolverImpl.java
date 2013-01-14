@@ -59,12 +59,15 @@ public class UrlResolverImpl implements UrlResolver {
    * @throws IOException if failed to communicate or non 3xx or 200 status returned
    */
   @NotNull
+
   public Pair<String, HttpResponse> resolvePath(@NotNull final FeedClient client, @NotNull String feedUrl) throws IOException {
+    HttpResponse execute = null;
     for(int _ = 100; _-->0;) {
       HttpGet ping = myMethods.createGet(feedUrl);
       ping.getParams().setBooleanParameter(ClientPNames.HANDLE_REDIRECTS, false);
 
-      final HttpResponse execute = client.execute(ping);
+
+      execute = client.execute(ping);
 
       String redirected = getRedirectedUrl(ping, execute);
       if (redirected != null) {
@@ -79,6 +82,7 @@ public class UrlResolverImpl implements UrlResolver {
         throw new IOException("Failed to connect to " + feedUrl + ". " + (client.hasCredentials() ? "Wrong username or password" : "Authentication required"));
       }
       if (statusCode != HttpStatus.SC_OK) {
+        EntityUtils.consume(execute.getEntity());
         throw new IOException("Failed to connect to " + feedUrl + ". " + execute.getStatusLine().getReasonPhrase());
       }
 
@@ -86,6 +90,9 @@ public class UrlResolverImpl implements UrlResolver {
         feedUrl = feedUrl.substring(0, feedUrl.length() - 1);
       }
       return Pair.create(feedUrl, execute);
+    }
+    if (execute != null) {
+      EntityUtils.consume(execute.getEntity());
     }
     throw new IOException("Failed to resolve redirects");
   }
