@@ -34,6 +34,7 @@ public class FeedConstants {
 
   public static final String NUGET_COMMANDLINE = "NuGet.CommandLine";
   public static final String NUGET_EXTENSION = ".nupkg";
+  public static final String NUGET_SYMBOLS_EXTENSION = ".symbols.nupkg";
 
 
   public static final FileFilter PACKAGE_FILE_FILTER = new FileFilter() {
@@ -44,7 +45,10 @@ public class FeedConstants {
 
   public static final Filter<String> PACKAGE_FILE_NAME_FILTER = new Filter<String>() {
     public boolean accept(@NotNull String data) {
-      return data.toLowerCase().endsWith(FeedConstants.NUGET_EXTENSION.toLowerCase());
+      data = data.toLowerCase();
+      return data.endsWith(FeedConstants.NUGET_EXTENSION.toLowerCase())
+              &&
+              !data.endsWith(FeedConstants.NUGET_SYMBOLS_EXTENSION.toLowerCase());
     }
   };
 
