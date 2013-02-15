@@ -76,7 +76,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return ourCachedNuGet_CI_2_2.Value;
         case NuGetVersion.NuGet_Latest_CI:
           //timebomb
-          if (DateTime.Now < new DateTime(2013, 2, 14)) throw new IgnoreException("Needs to be fixed sool");
+          if (DateTime.Now < new DateTime(2013, 5, 14)) throw new IgnoreException("NuGet CI is down");
           return ourCachedNuGet_CI_Last.Value;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
           return ourCachedNuGet_CommandLinePackage_Last.Value;
