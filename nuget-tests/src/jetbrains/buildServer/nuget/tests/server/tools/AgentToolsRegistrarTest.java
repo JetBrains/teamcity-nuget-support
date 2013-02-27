@@ -46,8 +46,7 @@ public class AgentToolsRegistrarTest extends BaseTestCase {
     final ToolPaths paths = new ToolPathsImpl(new ServerPaths(home.getPath().toUpperCase()));
     NuGetAgentToolHolder h = new NuGetAgentToolHolder(paths);
 
-    FileUtil.writeFile(new File(paths.getNuGetToolsAgentPluginsPath(), "plugin.zip"), "this is a plugin");
-
-    Assert.assertNotNull(h.getPluginFile("plugin.zip"));
+    FileUtil.writeFileAndReportErrors(new File(paths.getNuGetToolsAgentPluginsPath(), "plugin.zip"), "this is a plugin");
+    Assert.assertNotNull(h.getPlugins().get("plugin.zip"));
   }
 }
