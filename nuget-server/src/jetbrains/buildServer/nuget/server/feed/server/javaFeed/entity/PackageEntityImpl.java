@@ -7,7 +7,6 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.ODataDataFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OAtomEntity;
@@ -106,7 +105,7 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
     if (v == null) { 
       return new org.joda.time.LocalDateTime();
     }
-    return ODataDataFormat.parseDate(v);
+    return jetbrains.buildServer.nuget.server.feed.server.index.impl.ODataDataFormat.parseDate(v);
   }
 
 
@@ -182,6 +181,13 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
   @Nullable
   public final java.lang.String getTags(){ 
     final String v = getValue("Tags");
+    return v;
+  }
+
+
+  @Nullable
+  public final java.lang.String getMinClientVersion(){ 
+    final String v = getValue("MinClientVersion");
     return v;
   }
 

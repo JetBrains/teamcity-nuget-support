@@ -29,6 +29,7 @@ import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 
 /**
@@ -75,21 +76,43 @@ public class MetadataLoaderTest {
     Assert.assertFalse(result.getKey().isEmpty());
   }
 
-
   @Test
   public void test_feed_api_not_changed() throws JDOMException, IOException {
     MetadataParseResult result = fetchNuGetOrgMetadata_v2();
     MetadataParseResult our = XmlFeedParsers.loadBeans_v2();
 
-    Assert.assertEquals(new HashSet<MetadataBeanProperty>(result.getKey()), new HashSet<MetadataBeanProperty>(our.getKey()));
-    Assert.assertEquals(new HashSet<MetadataBeanProperty>(result.getData()), new HashSet<MetadataBeanProperty>(our.getData()));
+    assertDiff(result.getKey(), our.getKey());
+    assertDiff(result.getData(), our.getData());
   }
 
+  private <T> void assertDiff(@NotNull Collection<T> a, @NotNull Collection<T> b) {
+    final HashSet<T> sa = new HashSet<T>(a);
+    final HashSet<T> sb = new HashSet<T>(b);
 
+    if (sa.equals(sb)) return;
+
+    sa.removeAll(b);
+    sb.removeAll(a);
+
+    final StringBuilder s = new StringBuilder();
+    if (!sa.isEmpty()) {
+      s.append("a-b:").append(sa).append(", ");
+    }
+
+    if (!sb.isEmpty()) {
+      s.append("b-a:").append(sb).append(", ");
+    }
+
+    if (sa.isEmpty() && sb.isEmpty()) {
+      s.append("Incorrect comparison. Setts are not equal, but dirrerences are");
+    }
+
+    Assert.fail(s.toString());
+  }
 
   @NotNull
   private MetadataParseResult fetchNuGetOrgMetadata_v2() throws IOException, JDOMException {
-    return fetchNuGetMetadata("https://nuget.org/api/v2/$metadata");
+    return fetchNuGetMetadata("http://packages.nuget.org/api/v2/$metadata");
   }
 
   @NotNull
