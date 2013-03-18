@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public enum PackagesPackDirectoryMode {
   LEAVE_AS_IS("as_is", "Do not specify"),
   EXPLICIT_DIRECTORY("explicit", "Use explicit directory"),
-  PROJECT_DIRECTORY("project", "Use Project/.nuspec directory"),
+  PROJECT_DIRECTORY("project", "Use project/.nuspec directory"),
   ;
 
   private final String myValue;
