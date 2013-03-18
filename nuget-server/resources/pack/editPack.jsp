@@ -76,17 +76,22 @@
   <props:selectSectionProperty name="${ib.packBaseDirectoryMode}" title="Base Directory">
     <c:forEach var="it" items="${ib.packBaseDirectoryModes}">
       <props:selectSectionPropertyContent value="${it.value}" caption="${it.description}">
-        <c:if test="${it.showBaseDirectorySelector}">
-          <tr>
-            <th></th>
-            <td>
+        <tr>
+        <th class="noBorder"></th>
+        <td class="noBorder">
+          <c:choose>
+            <c:when test="${it.showBaseDirectorySelector}">
               <props:textProperty name="${ib.packBaseDirectory}" className="longField"/>
               <bs:vcsTree fieldId="${ib.packBaseDirectory}" treeId="${ib.packBaseDirectory}"/>
-              <span class="smallNote">Base directory for packing. Leave blank to use build checkout directory</span>
+              <span class="smallNote"><c:out value="${it.details}"/></span>
               <span id="error_${ib.packBaseDirectory}" class="error"></span>
-            </td>
-          </tr>
-        </c:if>
+            </c:when>
+            <c:otherwise>
+              <span class="smallNote"><c:out value="${it.details}"/></span>
+            </c:otherwise>
+          </c:choose>
+        </td>
+        </tr>
       </props:selectSectionPropertyContent>
     </c:forEach>
   </props:selectSectionProperty>
