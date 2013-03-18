@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.regex.Pattern;
@@ -62,7 +63,7 @@ public class SemanticVersionsComparer  {
         String[] o2 = split(p2.getInitialPart());
 
         int x;
-        for(int i = 0; i < Math.min(o1.length, o2.length); i++) {
+        for(int i = 0, max = Math.min(o1.length, o2.length); i < max; i++) {
           if ((x = compareElements(o1[i], o2[i]))!= 0) return x;
         }
         if (o1.length < o2.length) return -1;
@@ -72,18 +73,19 @@ public class SemanticVersionsComparer  {
         o1 = split(p1.getMunisPart());
         o2 = split(p2.getMunisPart());
 
-        for(int i = 0; i < Math.min(o1.length, o2.length); i++) {
+        for(int i = 0, max = Math.min(o1.length, o2.length); i < max; i++) {
           if ((x = compareElements(o1[i], o2[i]))!= 0) return x;
         }
         if (o1.length == 0 && o2.length > 0) return 1;
         if (o2.length == 0 && o1.length > 0) return -1;
+
         if (o1.length < o2.length) return -1;
         if (o1.length > o2.length) return 1;
 
         o1 = split(p1.getPlusPart());
         o2 = split(p2.getPlusPart());
 
-        for(int i = 0; i < Math.min(o1.length, o2.length); i++) {
+        for(int i = 0, max = Math.min(o1.length, o2.length); i < max; i++) {
           if ((x = compareElements(o1[i], o2[i]))!= 0) return x;
         }
         if (o1.length < o2.length) return -1;
@@ -92,8 +94,8 @@ public class SemanticVersionsComparer  {
       }
 
       @NotNull
-      private String[] split(String s) {
-        if (s.length() == 0) return new String[0];
+      private String[] split(@Nullable String s) {
+        if (s == null || s.length() == 0) return new String[0];
         return Pattern.compile("\\.").split(s);
       }
 
@@ -147,25 +149,25 @@ public class SemanticVersionsComparer  {
     @NotNull
     public String getInitialPart() {
       int endOffset = myData.length();
-      if (myPlus > 0) endOffset = Math.min(myPlus, endOffset);
-      if (myDash > 0) endOffset = Math.min(myDash, endOffset);
+      if (myPlus >= 0) endOffset = Math.min(myPlus, endOffset);
+      if (myDash >= 0) endOffset = Math.min(myDash, endOffset);
 
       return myData.substring(0, endOffset);
     }
 
-    @NotNull
+    @Nullable
     public String getMunisPart() {
-      if (myDash <= 0) return "";
+      if (myDash < 0) return null;
 
       int endOffset = myData.length();
-      if (myPlus > 0) endOffset = Math.min(myPlus, endOffset);
+      if (myPlus >= 0) endOffset = Math.min(myPlus, endOffset);
 
       return myData.substring(myDash + 1, endOffset);
     }
 
-    @NotNull
+    @Nullable
     public String getPlusPart() {
-      if (myPlus <= 0) return "";
+      if (myPlus < 0) return null;
       return myData.substring(myPlus + 1);
     }
   }

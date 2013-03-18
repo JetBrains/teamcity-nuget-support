@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -193,19 +194,25 @@ public class VersionComparatorTest extends BaseTestCase {
 
   @Test
   public void testParsedVersion() {
-    doParsedVersionTest("1.0.0", "1.0.0", "", "");
-    doParsedVersionTest("1.0.0-beta", "1.0.0", "beta", "");
+    doParsedVersionTest("1.0.0", "1.0.0", null, null);
+    doParsedVersionTest("1.0.0-beta", "1.0.0", "beta", null);
     doParsedVersionTest("1.0.0-beta+doo", "1.0.0", "beta", "doo");
-    doParsedVersionTest("1.0.0+doo", "1.0.0", "", "doo");
+    doParsedVersionTest("1.0.0+doo", "1.0.0", null, "doo");
+  }
+
+  @Test
+  public void testParsedVersion_invalid() {
+    doParsedVersionTest("qwertyuio", "qwertyuio", null, null);
+    doParsedVersionTest("-beta", "", "beta", null);
+    doParsedVersionTest("-beta+doo", "", "beta", "doo");
+    doParsedVersionTest("+doo", "", null, "doo");
   }
 
 
-  private void doParsedVersionTest(@NotNull String version, @NotNull String a, @NotNull String b, @NotNull String c) {
+  private void doParsedVersionTest(@NotNull String version, @Nullable String a, @Nullable String b, @Nullable String c) {
     SemanticVersionsComparer.ParsedVersion pv = new SemanticVersionsComparer.ParsedVersion(version);
     Assert.assertEquals(pv.getInitialPart(), a);
     Assert.assertEquals(pv.getMunisPart(), b);
     Assert.assertEquals(pv.getPlusPart(), c);
   }
-
-
 }
