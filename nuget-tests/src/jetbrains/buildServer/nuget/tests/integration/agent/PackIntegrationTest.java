@@ -25,9 +25,9 @@ import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.SmartDirectoryCleaner;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerImpl;
+import jetbrains.buildServer.nuget.tests.agent.mock.MockPackParameters;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.util.FileUtil;
@@ -40,7 +40,6 @@ import org.testng.annotations.Test;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -50,7 +49,7 @@ import java.util.zip.ZipInputStream;
  *         Date: 23.08.11 12:58
  */
 public class PackIntegrationTest extends IntegrationTestBase {
-  protected NuGetPackParameters myPackParameters;
+  protected MockPackParameters myPackParameters;
   private SmartDirectoryCleaner myCleaner;
   private ArtifactsWatcher myPublisher;
   private File myOutputDir;
@@ -59,14 +58,12 @@ public class PackIntegrationTest extends IntegrationTestBase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    myPackParameters = m.mock(NuGetPackParameters.class);
+    myPackParameters = new MockPackParameters();
     myCleaner = m.mock(SmartDirectoryCleaner.class);
     myPublisher = m.mock(ArtifactsWatcher.class);
 
     m.checking(new Expectations(){{
       oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(myPackParameters));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
 
       allowing(myLogger).activityStarted(with(equal("pack")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("pack")), with(any(String.class)));
@@ -232,18 +229,14 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
   private void callRunner(final NuGet nuget, final boolean packAsTool, final boolean symbols, final boolean cleanOutput, @Nullable final String version, final List<String> wildcard) throws RunBuildException {
     m.checking(new Expectations(){{
-      allowing(myPackParameters).getCustomCommandline(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myPackParameters).getProperties(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(wildcard));
-      allowing(myPackParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
-      allowing(myPackParameters).getBaseDirectory(); will(returnValue(myRoot));
-      allowing(myPackParameters).getExclude(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myPackParameters).getVersion(); will(returnValue(version));
-      allowing(myPackParameters).getOutputDirectory(); will(returnValue(myOutputDir));
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(cleanOutput));
-
-      allowing(myPackParameters).packTool(); will(returnValue(packAsTool));
-      allowing(myPackParameters).packSymbols(); will(returnValue(symbols));
+      myPackParameters.setSpecFiles(wildcard);
+      myPackParameters.setNuGetExe(nuget.getPath());
+      myPackParameters.setBaseDir(myRoot);
+      myPackParameters.setVersion(version);
+      myPackParameters.setOutput(myOutputDir);
+      myPackParameters.setCleanOutput(cleanOutput);
+      myPackParameters.setPackTool(packAsTool);
+      myPackParameters.setPackSymbols(symbols);
     }});
 
     final PackRunner runner = new PackRunner(myActionFactory, myParametersFactory, new PackRunnerOutputDirectoryTrackerImpl(),myPublisher, myCleaner);

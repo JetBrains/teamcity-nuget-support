@@ -20,12 +20,12 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTracker;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerImpl;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
+import jetbrains.buildServer.nuget.tests.agent.mock.MockPackParameters;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
@@ -55,7 +55,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   private SmartDirectoryCleaner myCleaner;
   private AgentRunningBuild myBuild;
   private BuildRunnerContext myContext;
-  private NuGetPackParameters myPackParameters;
+  private MockPackParameters myPackParameters;
   private BuildProcess myProc;
   private BuildProgressLogger myLogger;
   private File myCheckoutDir;
@@ -75,7 +75,6 @@ public class PackRunnerTest extends BuildProcessTestCase {
     myCleaner = m.mock(SmartDirectoryCleaner.class);
     myBuild = m.mock(AgentRunningBuild.class);
     myContext = m.mock(BuildRunnerContext.class);
-    myPackParameters = m.mock(NuGetPackParameters.class);
     myProc = m.mock(BuildProcess.class);
     myLogger = m.mock(BuildProgressLogger.class);
     myConfigParameters = new TreeMap<String, String>();
@@ -83,6 +82,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
     myPublisher = m.mock(ArtifactsWatcher.class);
     myDetectedFiles = new ArrayList<List<File>>();
 
+    myPackParameters = new MockPackParameters();
     myCheckoutDir = createTempDir();
     m.checking(new Expectations(){{
       oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(myPackParameters));
@@ -138,16 +138,13 @@ public class PackRunnerTest extends BuildProcessTestCase {
   public void test_packRunner_outputDirectory_notCleaned() throws RunBuildException, IOException {
     final File spec = createTempFile();
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
-      allowing(myPackParameters).getOutputDirectory(); will(returnValue(createTempDir()));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setOutput(createTempDir());
+      myPackParameters.setSpecFiles(spec);
+
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
 
       oneOf(myProc).start();
       oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
-
     }});
 
     final PackRunner runner = createRunner();
@@ -161,15 +158,13 @@ public class PackRunnerTest extends BuildProcessTestCase {
   public void test_packRunner_outputDirectory_notCleaned_artifacts_no_change() throws RunBuildException, IOException {
     final File spec = createTempFile();
     final File outputDir = createTempDir();
-    FileUtil.writeFile(new File(outputDir, "foo.nupkg"), "zzz");
+    FileUtil.writeFileAndReportErrors(new File(outputDir, "foo.nupkg"), "zzz");
 
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
-      allowing(myPackParameters).getOutputDirectory();
-      will(returnValue(outputDir));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(true));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setOutput(outputDir);
+      myPackParameters.setSpecFiles(spec);
+      myPackParameters.setPublishArtifacts(true);
+
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
 
       oneOf(myProc).start();
@@ -195,12 +190,9 @@ public class PackRunnerTest extends BuildProcessTestCase {
 
     FileUtil.writeFile(foo, "zzz");
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
-      allowing(myPackParameters).getOutputDirectory();
-      will(returnValue(outputDir));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(true));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setOutput(outputDir);
+      myPackParameters.setSpecFiles(spec);
+      myPackParameters.setPublishArtifacts(true);
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
 
       oneOf(myProc).start(); will(new CustomAction("create/update fake package") {
@@ -232,14 +224,11 @@ public class PackRunnerTest extends BuildProcessTestCase {
     final File bar = new File(outputDir, "bar.nupkg");
     final File foo = new File(outputDir, "foo.nupkg");
 
-    FileUtil.writeFile(foo, "zzz");
+    FileUtil.writeFileAndReportErrors(foo, "zzz");
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
-      allowing(myPackParameters).getOutputDirectory();
-      will(returnValue(outputDir));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(true));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setOutput(outputDir);
+      myPackParameters.setSpecFiles(spec);
+      myPackParameters.setPublishArtifacts(true);
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
 
       oneOf(myProc).start(); will(new CustomAction("create/update fake package") {
@@ -275,11 +264,8 @@ public class PackRunnerTest extends BuildProcessTestCase {
 
     FileUtil.writeFile(foo, "zzz");
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
-      allowing(myPackParameters).getOutputDirectory(); will(returnValue(outputDir));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setOutput(outputDir);
+      myPackParameters.setSpecFiles(spec);
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
 
       oneOf(myProc).start(); will(new CustomAction("create/update fake package") {
@@ -307,11 +293,9 @@ public class PackRunnerTest extends BuildProcessTestCase {
     m.checking(new Expectations(){{
       oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(myPackParameters));
 
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
-      allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setCleanOutput(true);
+      myPackParameters.setOutput(temp);
+      myPackParameters.setSpecFiles(spec);
 
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
@@ -338,22 +322,17 @@ public class PackRunnerTest extends BuildProcessTestCase {
   public void test_packRunners_outputDirectory_cleaned_once2() throws RunBuildException, IOException {
     final File temp = createTempDir();
     final File spec = createTempFile();
-    final NuGetPackParameters params2 = m.mock(NuGetPackParameters.class, "params2");
+    final MockPackParameters params2 = new MockPackParameters();
 
     m.checking(new Expectations(){{
       oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(params2));
 
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
-      allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setOutput(temp);
+      myPackParameters.setSpecFiles(spec);
 
-      allowing(params2).cleanOutputDirectory(); will(returnValue(true));
-      allowing(params2).getOutputDirectory(); will(returnValue(temp));
-      allowing(params2).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(params2).publishAsArtifacts(); will(returnValue(false));
-      allowing(params2).preferProjectFileToNuSpec(); will(returnValue(false));
+      params2.setCleanOutput(true);
+      params2.setOutput(temp);
+      params2.setSpecFiles(spec);
 
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec, params2); will(returnValue(myProc));
@@ -381,24 +360,20 @@ public class PackRunnerTest extends BuildProcessTestCase {
     final File temp1 = createTempDir();
     final File temp2 = createTempDir();
     final File spec = createTempFile();
-    final NuGetPackParameters params1 = myPackParameters;
-    final NuGetPackParameters params2 = m.mock(NuGetPackParameters.class, "params2");
+    final MockPackParameters params1 = myPackParameters;
+    final MockPackParameters params2 = new MockPackParameters();
 
     m.checking(new Expectations(){{
       oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(params2));
 
+      params1.setCleanOutput(true);
+      params1.setOutput(temp1);
+      params1.setSpecFiles(spec);
 
-      allowing(params1).cleanOutputDirectory(); will(returnValue(true));
-      allowing(params1).getOutputDirectory(); will(returnValue(temp1));
-      allowing(params1).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(params1).publishAsArtifacts(); will(returnValue(false));
-      allowing(params1).preferProjectFileToNuSpec(); will(returnValue(false));
 
-      allowing(params2).cleanOutputDirectory(); will(returnValue(true));
-      allowing(params2).getOutputDirectory(); will(returnValue(temp2));
-      allowing(params2).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(params2).publishAsArtifacts(); will(returnValue(false));
-      allowing(params2).preferProjectFileToNuSpec(); will(returnValue(false));
+      params2.setCleanOutput(true);
+      params2.setOutput(temp2);
+      params2.setSpecFiles(spec);
 
       oneOf(myActionFactory).createPack(myContext, spec, params1); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec, params2); will(returnValue(myProc));
@@ -425,13 +400,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   @Test
   public void test_packRunner_no_files() throws RunBuildException, IOException {
     final File temp = createTempDir();
-    m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
-      allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Collections.emptyList()));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
-    }});
+    myPackParameters.setOutput(temp);
 
     final PackRunner runner = createRunner();
     final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
@@ -443,13 +412,8 @@ public class PackRunnerTest extends BuildProcessTestCase {
   @Test
   public void test_packRunner_no_files_artifacts() throws RunBuildException, IOException {
     final File temp = createTempDir();
-    m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
-      allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Collections.emptyList()));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(true));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
-    }});
+    myPackParameters.setOutput(temp);
+    myPackParameters.setPublishArtifacts(true);
 
     final PackRunner runner = createRunner();
     final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
@@ -465,11 +429,8 @@ public class PackRunnerTest extends BuildProcessTestCase {
     final File spec2 = createTempFile();
     final File spec3 = createTempFile();
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(false));
-      allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec1.getPath(),spec2.getPath(),spec3.getPath())));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setOutput(temp);
+      myPackParameters.setSpecFiles(spec1, spec2, spec3);
 
       oneOf(myActionFactory).createPack(myContext, spec1, myPackParameters); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec2, myPackParameters); will(returnValue(myProc));
@@ -502,11 +463,9 @@ public class PackRunnerTest extends BuildProcessTestCase {
     final File spec3 = new File(home, "3.nuspec") {{ FileUtil.writeFile(this, "aaa"); }};
 
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
-      allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(home.getPath() + "/*.nuspec")));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setCleanOutput(true);
+      myPackParameters.setOutput(temp);
+      myPackParameters.setSpecFiles(home.getPath() + "/*.nuspec");
 
       oneOf(myActionFactory).createPack(myContext, spec1, myPackParameters); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec2, myPackParameters); will(returnValue(myProc));
@@ -546,13 +505,10 @@ public class PackRunnerTest extends BuildProcessTestCase {
     final File spec1Proj = new File(home, "1.csproj") {{ FileUtil.writeFileAndReportErrors(this, "aaa"); }};
     final File spec2Proj = new File(home, "2.vbproj") {{ FileUtil.writeFileAndReportErrors(this, "aaa"); }};
 
-
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
-      allowing(myPackParameters).getOutputDirectory(); will(returnValue(temp));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(home.getPath() + "/*.nuspec")));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(true));
+      myPackParameters.setOutput(temp);
+      myPackParameters.setSpecFiles(home.getPath() + "/*.nuspec");
+      myPackParameters.setPreferProjectFile(true);
 
       oneOf(myActionFactory).createPack(myContext, spec1Proj, myPackParameters); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec2Proj, myPackParameters); will(returnValue(myProc));
@@ -566,8 +522,6 @@ public class PackRunnerTest extends BuildProcessTestCase {
 
       oneOf(myProc).start();
       oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
-
-      oneOf(myCleaner).cleanFolder(with(equal(temp)), with(any(SmartDirectoryCleanerCallback.class)));
     }});
 
     final PackRunner runner = createRunner();
@@ -584,11 +538,9 @@ public class PackRunnerTest extends BuildProcessTestCase {
     final File temp = createTempDir();
     final File spec = createTempFile();
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
-      allowing(myPackParameters).getOutputDirectory();will(returnValue(temp));
-      allowing(myPackParameters).getSpecFiles(); will(returnValue(Arrays.asList(spec.getPath())));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setCleanOutput(true);
+      myPackParameters.setOutput(temp);
+      myPackParameters.setSpecFiles(spec);
 
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
       oneOf(myCleaner).cleanFolder(with(equal(temp)), with(any(SmartDirectoryCleanerCallback.class)));
@@ -611,10 +563,8 @@ public class PackRunnerTest extends BuildProcessTestCase {
   public void test_packRunner_outputDirectoryCleaned_error() throws RunBuildException, IOException {
     final File temp = createTempDir();
     m.checking(new Expectations(){{
-      allowing(myPackParameters).cleanOutputDirectory(); will(returnValue(true));
-      allowing(myPackParameters).getOutputDirectory();will(returnValue(temp));
-      allowing(myPackParameters).publishAsArtifacts(); will(returnValue(false));
-      allowing(myPackParameters).preferProjectFileToNuSpec(); will(returnValue(false));
+      myPackParameters.setCleanOutput(true);
+      myPackParameters.setOutput(temp);
 
       allowing(myLogger).error(with(any(String.class)));
 
