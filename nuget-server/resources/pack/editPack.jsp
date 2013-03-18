@@ -45,7 +45,7 @@
 </script>
 <l:settingsGroup title="Package parameters">
   <tr>
-    <th><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
+    <th rowspan="2"><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
     <td>
       <props:multilineProperty name="${ib.packSpecFile}" linkTitle="Specification or project files" cols="60" rows="5" expanded="${true}"/>
       <bs:vcsTree callback="appendSpecificationFile" treeId="${ib.packSpecFile}"/>
@@ -54,6 +54,13 @@
       </script>
       <span class="smallNote">Specify paths to .nuspec files and/or to Visual Studio project files (i.e. .csproj or .vbproj). MSBuild-style wildcards are supported</span>
       <span id="error_${ib.packSpecFile}" class="error"></span>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <props:checkboxProperty name="${ib.packPreferProject}"/>
+      <label for="${ib.packPreferProject}">Prefer project files to .nuspec</label>
+      <span class="smallNote">Use project file (if exists, i.e. .csproj or .vbproj) for every matched .nuspec file</span>
     </td>
   </tr>
 

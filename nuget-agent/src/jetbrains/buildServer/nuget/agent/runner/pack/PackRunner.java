@@ -30,7 +30,9 @@ import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CompositeBuildProcess;
 import jetbrains.buildServer.nuget.agent.util.MatchFilesBuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -73,8 +75,21 @@ public class PackRunner extends NuGetRunnerBase {
 
     process.pushBuildProcess(
             new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcessBase.Callback() {
+              private File updateFile(@NotNull final File file) {
+                if (params.preferProjectFileToNuSpec()) {
+                  for (String ext : FeedConstants.NUGET_SUPPORTED_PROJECTS) {
+                    final File projectFile = new File(file.getParentFile(), FileUtil.getNameWithoutExtension(file) +  ext);
+                    if (projectFile.isFile()) {
+                      runningBuild.getBuildLogger().message("Detected related project file for .nupkg file: " + projectFile);
+                      return projectFile;
+                    }
+                  }
+                }
+                return file;
+              }
+
               public void fileFound(@NotNull File file) throws RunBuildException {
-                packRunners.pushBuildProcess(myActionFactory.createPack(context, file, params));
+                packRunners.pushBuildProcess(myActionFactory.createPack(context, updateFile(file), params));
               }
             })
     );

@@ -31,6 +31,10 @@
 </div>
 
 <div class="parameter">
+  Prefer project files to .nuspec: <strong><props:displayCheckboxValue name="${ib.packSources}"/></strong>
+</div>
+
+<div class="parameter">
   Version: <strong><props:displayValue name="${ib.packVersion}" emptyValue="Use default"/></strong>
 </div>
 

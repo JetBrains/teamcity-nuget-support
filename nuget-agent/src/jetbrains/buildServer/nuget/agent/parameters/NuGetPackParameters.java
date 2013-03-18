@@ -56,4 +56,6 @@ public interface NuGetPackParameters extends NuGetParameters {
   boolean packTool();
 
   boolean publishAsArtifacts();
+
+  boolean preferProjectFileToNuSpec();
 }

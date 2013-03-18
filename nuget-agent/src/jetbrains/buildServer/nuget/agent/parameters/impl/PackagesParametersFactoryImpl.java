@@ -319,6 +319,10 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
         return getBoolean(context, NUGET_PACK_PUBLISH_ARTIFACT);
       }
 
+      public boolean preferProjectFileToNuSpec() {
+        return getBoolean(context, NUGET_PACK_PREFER_PROJECT);
+      }
+
       @NotNull
       public File getNuGetExeFile() throws RunBuildException {
         return getPathToNuGet(context);
