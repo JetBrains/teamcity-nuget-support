@@ -23,6 +23,7 @@ import jetbrains.buildServer.agent.BundledTool;
 import jetbrains.buildServer.agent.BundledToolsRegistry;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -280,6 +281,11 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       public boolean cleanOutputDirectory() throws RunBuildException {
         return getBoolean(context, NUGET_PACK_OUTPUT_CLEAR);
+      }
+
+      @NotNull
+      public PackagesPackDirectoryMode getBaseDirectoryMode() {
+        return PackagesPackDirectoryMode.fromString(getParameter(context, NUGET_PACK_BASE_DIRECTORY_MODE));
       }
 
       @NotNull

@@ -73,15 +73,23 @@
     </td>
   </tr>
 
-  <tr>
-    <th><label for="${ib.packBaseDirectory}">Base Directory</label>:</th>
-    <td>
-      <props:textProperty name="${ib.packBaseDirectory}" className="longField"/>
-      <bs:vcsTree fieldId="${ib.packBaseDirectory}" treeId="${ib.packBaseDirectory}"/>
-      <span class="smallNote">Base directory for packing. Leave blank to use build checkout directory</span>
-      <span id="error_${ib.packBaseDirectory}" class="error"></span>
-    </td>
-  </tr>
+  <props:selectSectionProperty name="${ib.packBaseDirectoryMode}" title="Base Directory">
+    <c:forEach var="it" items="${ib.packBaseDirectoryModes}">
+      <props:selectSectionPropertyContent value="${it.value}" caption="${it.description}">
+        <c:if test="${it.showBaseDirectorySelector}">
+          <tr>
+            <th></th>
+            <td>
+              <props:textProperty name="${ib.packBaseDirectory}" className="longField"/>
+              <bs:vcsTree fieldId="${ib.packBaseDirectory}" treeId="${ib.packBaseDirectory}"/>
+              <span class="smallNote">Base directory for packing. Leave blank to use build checkout directory</span>
+              <span id="error_${ib.packBaseDirectory}" class="error"></span>
+            </td>
+          </tr>
+        </c:if>
+      </props:selectSectionPropertyContent>
+    </c:forEach>
+  </props:selectSectionProperty>
 
 </l:settingsGroup>
 

@@ -62,6 +62,7 @@ public interface PackagesConstants {
   public static final String NUGET_PACK_OUTPUT_DIR = "nuget.pack.output.directory";
   public static final String NUGET_PACK_PUBLISH_ARTIFACT = "nuget.pack.as.artifact";
   public static final String NUGET_PACK_PREFER_PROJECT = "nuget.pack.prefer.project";
+  public static final String NUGET_PACK_BASE_DIRECTORY_MODE = "nuget.pack.project.dir";
   public static final String NUGET_PACK_BASE_DIR = "nuget.pack.base.directory";
   public static final String NUGET_PACK_VERSION = "nuget.pack.version";
   public static final String NUGET_PACK_SPEC_FILE = "nuget.pack.specFile";

@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.agent.parameters;
 
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,6 +46,9 @@ public interface NuGetPackParameters extends NuGetParameters {
   File getOutputDirectory() throws RunBuildException;
 
   boolean cleanOutputDirectory() throws RunBuildException;
+
+  @NotNull
+  PackagesPackDirectoryMode getBaseDirectoryMode();
 
   @NotNull
   File getBaseDirectory() throws RunBuildException;

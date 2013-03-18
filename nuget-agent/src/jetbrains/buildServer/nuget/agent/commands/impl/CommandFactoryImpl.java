@@ -20,6 +20,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.runner.EnabledPackagesOptionSetter;
+import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -75,6 +76,29 @@ public class CommandFactoryImpl implements CommandFactory {
     return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), factory);
   }
 
+  private void resolveBaseDirectory(@NotNull final NuGetPackParameters params,
+                                    @NotNull final File specFile,
+                                    @NotNull final List<String> arguments) throws RunBuildException {
+    final PackagesPackDirectoryMode mode = params.getBaseDirectoryMode();
+    switch(mode) {
+      case LEAVE_AS_IS:
+        //No -BasePath
+        return;
+      case EXPLICIT_DIRECTORY:
+        arguments.add("-BasePath");
+        arguments.add(params.getBaseDirectory().getPath());
+        return;
+      case PROJECT_DIRECTORY:
+        arguments.add("-BasePath");
+        final File parentFile = specFile.getParentFile();
+        if (parentFile == null) throw new RunBuildException("Failed to find parent file for: " + specFile);
+        arguments.add(parentFile.getPath());
+        return;
+      default:
+        throw new RunBuildException("Unexpected BaseDirectory mode: " + mode);
+    }
+  }
+
   public <T> T createPack(@NotNull final File specFile,
                           @NotNull final NuGetPackParameters params,
                           @NotNull final File workdir,
@@ -86,8 +110,7 @@ public class CommandFactoryImpl implements CommandFactory {
     arguments.add("-OutputDirectory");
     arguments.add(params.getOutputDirectory().getPath());
 
-    arguments.add("-BasePath");
-    arguments.add(params.getBaseDirectory().getPath());
+    resolveBaseDirectory(params, specFile, arguments);
 
     arguments.add("-Verbose");
 

@@ -39,12 +39,30 @@
 </div>
 
 <div class="parameter">
-  Base Directory: <strong><props:displayValue name="${ib.packBaseDirectory}"/></strong>
+  <c:set var="dirModeHandled" value="${false}"/>
+  <c:forEach var="it" items="${ib.packBaseDirectoryModes}">
+    <c:if test="${it.value eq propertiesBean.properties[ib.packBaseDirectoryMode]}">
+      Base Directory:
+      <c:choose>
+        <c:when test="${it.showBaseDirectorySelector}">
+          <strong><props:displayValue name="${ib.packBaseDirectory}"/></strong>
+        </c:when>
+        <c:otherwise>
+          <strong><c:out value="${it.description}"/></strong>
+        </c:otherwise>
+      </c:choose>
+      <c:set var="dirModeHandled" value="${true}"/>
+    </c:if>
+  </c:forEach>
+  <c:if test="${not dirModeHandled}">
+    Base Directory: <strong><props:displayValue name="${ib.packBaseDirectory}"/></strong>
+  </c:if>
 </div>
 
 <div class="parameter">
   Output Directory: <strong><props:displayValue name="${ib.packOutputDirectory}"/></strong>
 </div>
+
 <div class="parameter">
   Clean Output Directory: <strong><props:displayCheckboxValue name="${ib.packOutputClear}"/></strong>
 </div>

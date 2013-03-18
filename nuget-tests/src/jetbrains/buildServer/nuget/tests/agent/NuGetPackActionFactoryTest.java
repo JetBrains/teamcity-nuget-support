@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
 import org.jmock.Expectations;
@@ -92,6 +93,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(build).getCheckoutDirectory(); will(returnValue(myWorkingDir));
       allowing(myPackParameters).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(myPackParameters).getBaseDirectory(); will(returnValue(myRoot));
+      allowing(myPackParameters).getBaseDirectoryMode(); will(returnValue(PackagesPackDirectoryMode.EXPLICIT_DIRECTORY));
       allowing(myPackParameters).getOutputDirectory(); will(returnValue(myOut));
 
       allowing(myPackParameters).getCustomCommandline(); will(returnValue(myExtra));
@@ -99,7 +101,6 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       allowing(myPackParameters).getExclude(); will(returnValue(myExcludes));
     }});
   }
-
 
   @Test
   public void test_package() throws RunBuildException {
