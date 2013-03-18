@@ -113,6 +113,9 @@ public interface PackageEntityV2  {
   @NotNull
   java.lang.Integer getVersionDownloadCount();
 
+  @Nullable
+  java.lang.String getMinClientVersion();
+
 
   String[] KeyPropertyNames = new String[] {
     "Id", 

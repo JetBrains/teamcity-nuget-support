@@ -35,6 +35,7 @@
         <Property Name="Tags" Type="Edm.String" Nullable="true" />
         <Property Name="Title" Type="Edm.String" Nullable="true" />
         <Property Name="VersionDownloadCount" Type="Edm.Int32" Nullable="false" />
+        <Property Name="MinClientVersion" Type="Edm.String" Nullable="true" />
       </EntityType>
       <EntityContainer Name="FeedContext_x0060_1" m:IsDefaultEntityContainer="true">
         <EntitySet Name="Packages" EntityType="NuGetGallery.V2FeedPackage" />
@@ -45,6 +46,14 @@
         </FunctionImport>
         <FunctionImport Name="FindPackagesById" EntitySet="Packages" ReturnType="Collection(NuGetGallery.V2FeedPackage)" m:HttpMethod="GET">
           <Parameter Name="id" Type="Edm.String" Mode="In" />
+        </FunctionImport>
+        <FunctionImport Name="GetUpdates" EntitySet="Packages" ReturnType="Collection(NuGetGallery.V2FeedPackage)" m:HttpMethod="GET">
+          <Parameter Name="packageIds" Type="Edm.String" Mode="In" />
+          <Parameter Name="versions" Type="Edm.String" Mode="In" />
+          <Parameter Name="includePrerelease" Type="Edm.Boolean" Mode="In" />
+          <Parameter Name="includeAllVersions" Type="Edm.Boolean" Mode="In" />
+          <Parameter Name="targetFrameworks" Type="Edm.String" Mode="In" />
+          <Parameter Name="versionConstraints" Type="Edm.String" Mode="In" />
         </FunctionImport>
       </EntityContainer>
     </Schema>
