@@ -90,9 +90,7 @@ public class CommandFactoryImpl implements CommandFactory {
         return;
       case PROJECT_DIRECTORY:
         arguments.add("-BasePath");
-        final File parentFile = specFile.getParentFile();
-        if (parentFile == null) throw new RunBuildException("Failed to find parent file for: " + specFile);
-        arguments.add(parentFile.getPath());
+        arguments.add(specFile.getParentFile().getPath());
         return;
       default:
         throw new RunBuildException("Unexpected BaseDirectory mode: " + mode);
@@ -101,7 +99,6 @@ public class CommandFactoryImpl implements CommandFactory {
 
   public <T> T createPack(@NotNull final File specFile,
                           @NotNull final NuGetPackParameters params,
-                          @NotNull final File workdir,
                           @NotNull final Callback<T> factory) throws RunBuildException {
     final List<String> arguments = new ArrayList<String>();
     arguments.add("pack");
@@ -143,7 +140,7 @@ public class CommandFactoryImpl implements CommandFactory {
       arguments.add(cmd);
     }
 
-    return executeNuGet(params, Collections.<String>emptyList(), arguments, workdir, factory);
+    return executeNuGet(params, Collections.<String>emptyList(), arguments, specFile.getParentFile(), factory);
   }
 
   @NotNull

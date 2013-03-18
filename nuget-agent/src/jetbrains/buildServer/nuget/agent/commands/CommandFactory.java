@@ -52,7 +52,6 @@ public interface CommandFactory {
 
   <T> T createPack(@NotNull File specFile,
                    @NotNull NuGetPackParameters params,
-                   @NotNull File workdir,
                    @NotNull Callback<T> factory) throws RunBuildException;
 
   public interface Callback<T> {

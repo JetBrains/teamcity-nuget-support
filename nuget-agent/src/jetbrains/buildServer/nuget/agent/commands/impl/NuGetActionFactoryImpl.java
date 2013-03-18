@@ -143,7 +143,6 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
     return myCommandFactory.createPack(
             specFile,
             params,
-            context.getBuild().getCheckoutDirectory(),
             getCallback(context));
   }
 }
