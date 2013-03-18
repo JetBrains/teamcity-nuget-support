@@ -55,7 +55,6 @@ public class IsLatestFieldTransformation implements PackageTransformation {
     //Note: see https://github.com/NuGet/NuGetGallery/wiki/Package-Metadata-in-the-NuGet-Gallery-Feed
     builder.setMetadata("IsLatestVersion", String.valueOf(isLatestVersion));
     builder.setMetadata("IsAbsoluteLatestVersion", String.valueOf(isAbsoluteLatestVersion));
-    builder.setMetadata("IsPrerelease", String.valueOf(!isReleaseVersion));
     return Status.CONTINUE;
   }
 }
