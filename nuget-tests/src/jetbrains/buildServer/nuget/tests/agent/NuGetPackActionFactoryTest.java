@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
 import jetbrains.buildServer.nuget.tests.agent.mock.MockPackParameters;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
@@ -191,6 +192,38 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
                       "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Symbols")
+              , myFile.getParentFile(),
+              Collections.<String, String>emptyMap());
+    }});
+
+    i.createPack(ctx, myFile, myPackParameters);
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_package_base_path_project() throws RunBuildException {
+    myPackParameters.setPackSymbols(true);
+    myPackParameters.setBaseDirMode(PackagesPackDirectoryMode.PROJECT_DIRECTORY);
+    m.checking(new Expectations(){{
+      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
+              Arrays.asList(
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myFile.getParent(), "-Verbose", "-Version", "45.239.32.12", "-Symbols")
+              , myFile.getParentFile(),
+              Collections.<String, String>emptyMap());
+    }});
+
+    i.createPack(ctx, myFile, myPackParameters);
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_package_base_path_asis() throws RunBuildException {
+    myPackParameters.setPackSymbols(true);
+    myPackParameters.setBaseDirMode(PackagesPackDirectoryMode.LEAVE_AS_IS);
+    m.checking(new Expectations(){{
+      oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
+              Arrays.asList(
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Symbols")
               , myFile.getParentFile(),
               Collections.<String, String>emptyMap());
     }});
