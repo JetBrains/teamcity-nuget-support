@@ -87,6 +87,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     private static string FetchLatestNuGetPackage(string bt)
     {
+      if (DateTime.Now < new DateTime(2013, 5, 14)) throw new IgnoreException("NuGet CI is down");
       try
       {
         var homePath = CreateTempPath();

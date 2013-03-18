@@ -67,6 +67,7 @@ public class LocalNuGetPackageItemsFactory extends PackageInfoLoaderBase {
                 //not included here: addParameter(map, "TeamCityDownloadUrl", "");
                 addParameter(map, "Id", id);
                 addParameter(map, "Version", version);
+                addParameter(map, "Title", parseProperty(root, "title"));
                 //addParameter(map, "ReleaseNotes", ""); //TODO:!
                 addParameter(map, "Authors", parseProperty(root, "authors"));
                 addParameter(map, "Dependencies", parseDependencies(root));
