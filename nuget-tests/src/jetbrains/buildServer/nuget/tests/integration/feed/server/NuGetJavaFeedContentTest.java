@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.tests.server.entity.MetadataBeanProperty;
 import jetbrains.buildServer.nuget.tests.server.entity.MetadataParseResult;
 import jetbrains.buildServer.nuget.tests.server.entity.XmlFeedParsers;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.TestFor;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.*;
 import org.jdom.xpath.XPath;
@@ -124,6 +125,16 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     final String s = openRequest("Packages()");
 
     checkFeed(s, "/feed/odata/packages.v2.CommonServiceLocator.xml");
+  }
+
+  @Test
+  @TestFor(issues = "TW-26658")
+  public void testPackages_title() throws JDOMException, IOException {
+    addPackage(Paths.getTestDataPath("/packages/YCM.Web.UI.1.0.20.7275.nupkg"), false);
+    final String s = openRequest("Packages()");
+    System.out.println(XmlUtil.to_s(XmlUtil.from_s(s)));
+
+    Assert.assertTrue(s.contains("<d:Title>YorkNet UI Components</d:Title>"));
   }
 
   @Test

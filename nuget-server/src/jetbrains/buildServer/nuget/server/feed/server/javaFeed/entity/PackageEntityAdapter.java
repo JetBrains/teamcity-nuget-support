@@ -48,6 +48,8 @@ public abstract class PackageEntityAdapter extends PackageEntityImpl implements 
   }
 
   public String getTitle() {
+    String val = getValue("Title");
+    if (val != null) return val;
     return getId();
   }
 
