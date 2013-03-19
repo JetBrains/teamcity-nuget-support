@@ -14,27 +14,30 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
+package jetbrains.buildServer.nuget.server.feed.server.index.impl.latest;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created 18.03.13 15:48
+ * Created 19.03.13 14:32
  *
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
-public class IsPrereleaseTransformation implements PackageTransformation {
-  @NotNull
-  public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
-    final String version = builder.getVersion();
-    //release or preselease version is parsed from package information according for semver.org
-    //http://semver.org/
-    //http://docs.nuget.org/docs/reference/versioning
-    final boolean isReleaseVersion = version.matches("^\\d+(\\.\\d+)+$");
+public class LatestVersionsCalculator implements LatestCalculator {
+  private final LatestCalculator[] myCalcs = {
+          new IsLatestCalculator(),
+          new IsAbsoluteLatestCalculator()};
 
-    builder.setPrerelease(!isReleaseVersion);
-    return Status.CONTINUE;
+  public void updatePackage(@NotNull NuGetPackageBuilder newLatest) {
+    for (LatestCalculator calc : myCalcs) {
+      calc.updatePackage(newLatest);
+    }
+  }
+
+  public void updateSelectedPackages() {
+    for (LatestCalculator calc : myCalcs) {
+      calc.updateSelectedPackages();
+    }
   }
 }

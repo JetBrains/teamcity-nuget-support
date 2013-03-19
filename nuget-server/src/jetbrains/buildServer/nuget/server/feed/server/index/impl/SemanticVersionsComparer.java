@@ -30,6 +30,25 @@ import java.util.regex.Pattern;
  */
 public class SemanticVersionsComparer  {
   @NotNull
+  public static Comparator<NuGetPackageBuilder> getBuildersComparator() {
+    return new Comparator<NuGetPackageBuilder>() {
+      private final Comparator<String> myVersionComparator = getSemanticVersionsComparator();
+
+      public int compare(@NotNull NuGetPackageBuilder o1, @NotNull NuGetPackageBuilder o2) {
+        final String id1 = o1.getPackageName();
+        final String id2 = o2.getPackageName();
+
+        int cmp;
+        if ((cmp = id1.compareTo(id2)) != 0) return cmp;
+
+        final String v1 = o1.getVersion();
+        final String v2 = o2.getVersion();
+        return myVersionComparator.compare(v1, v2);
+      }
+    };
+  }
+
+  @NotNull
   public static Comparator<NuGetIndexEntry> getEntriesComparator() {
     return new Comparator<NuGetIndexEntry>() {
       private final Comparator<String> myVersionComparator = getSemanticVersionsComparator();

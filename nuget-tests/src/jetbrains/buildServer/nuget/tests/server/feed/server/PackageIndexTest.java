@@ -36,6 +36,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 import java.util.*;
 
 /**
@@ -114,17 +116,8 @@ public class PackageIndexTest extends BaseTestCase {
 
     addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.44", "btY", 9);
-    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
 
-    NuGetIndexEntry next = it.next();
-    Assert.assertEquals(next.getKey(), "Foo.1.2.44");
-    Assert.assertTrue(isLatestVersion(next));
-    Assert.assertTrue(isAbsoluteLatestVersion(next));
-
-    next = it.next();
-    Assert.assertEquals(next.getKey(), "Foo.1.2.34");
-    Assert.assertFalse(isLatestVersion(next));
-    Assert.assertFalse(isAbsoluteLatestVersion(next));
+    assertPackages("Foo.1.2.44:L:A", "Foo.1.2.34");
   }
 
   @Test
@@ -136,9 +129,7 @@ public class PackageIndexTest extends BaseTestCase {
 
     addEntry("Foo", "1.2.34", "btX", 7);
 
-    final NuGetIndexEntry next = myIndex.getNuGetEntries().next();
-    Assert.assertTrue(isLatestVersion(next));
-    Assert.assertTrue(isAbsoluteLatestVersion(next));
+    assertPackages("Foo.1.2.34:L:A");
   }
 
   @Test
@@ -150,17 +141,8 @@ public class PackageIndexTest extends BaseTestCase {
 
     addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.44", "btX", 9);
-    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
 
-    NuGetIndexEntry next = it.next();
-    Assert.assertEquals(next.getKey(), "Foo.1.2.44");
-    Assert.assertTrue(isLatestVersion(next));
-    Assert.assertTrue(isAbsoluteLatestVersion(next));
-
-    next = it.next();
-    Assert.assertEquals(next.getKey(), "Foo.1.2.34");
-    Assert.assertFalse(isLatestVersion(next));
-    Assert.assertFalse(isAbsoluteLatestVersion(next));
+    assertPackages("Foo.1.2.44:L:A", "Foo.1.2.34");
   }
 
   @Test
@@ -176,9 +158,7 @@ public class PackageIndexTest extends BaseTestCase {
 
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
     final NuGetIndexEntry next = it.next();
-
     Assert.assertFalse(it.hasNext());
-
     Assert.assertEquals(next.getAttributes().get("teamcity.buildTypeId"), "btY");
   }
 
@@ -192,25 +172,8 @@ public class PackageIndexTest extends BaseTestCase {
 
     addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.44-alpha", "btX", 9);
-    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
 
-    NuGetIndexEntry next = it.next();
-    Assert.assertEquals(next.getKey(), "Foo.1.2.44-alpha");
-    Assert.assertFalse(isLatestVersion(next));
-    Assert.assertTrue(isAbsoluteLatestVersion(next));
-
-    next = it.next();
-    Assert.assertEquals(next.getKey(), "Foo.1.2.34");
-    Assert.assertTrue(isLatestVersion(next));
-    Assert.assertFalse(isAbsoluteLatestVersion(next));
-  }
-
-  private boolean isLatestVersion(@NotNull NuGetIndexEntry entry) {
-    return FlagMode.IsLatest.readField(entry);
-  }
-
-  private boolean isAbsoluteLatestVersion(@NotNull NuGetIndexEntry entry) {
-    return FlagMode.IsAbsoluteLatest.readField(entry);
+    assertPackages("Foo.1.2.44-alpha:A", "Foo.1.2.34:L");
   }
 
   @Test
@@ -312,9 +275,11 @@ public class PackageIndexTest extends BaseTestCase {
   @Test
   @TestFor(issues = "TW-20661")
   public void test_Flags_release_only() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    m.checking(new Expectations() {{
+      allowing(myProjectManager).findProjectId("btX");
+      will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT);
+      will(returnValue(true));
     }});
     addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.38", "btX", 8);
@@ -326,6 +291,87 @@ public class PackageIndexTest extends BaseTestCase {
     assertPackagesCollection(FlagMode.IsLatest, "Foo.1.2.38"); //first entry in list
   }
 
+  @Test
+  public void test_wrong_order_release() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
+      allowing(myProjectManager).findProjectId("btY"); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+
+    addEntry("Foo", "2.2.34", "btY", 7);
+    addEntry("Foo", "1.2.38", "btX", 8);
+
+    dumpFeed();
+    assertPackagesCollection(FlagMode.Exists, "Foo.1.2.38", "Foo.2.2.34");
+    assertPackagesCollection(FlagMode.IsPrerelease);
+    assertPackagesCollection(FlagMode.IsAbsoluteLatest, "Foo.2.2.34"); //sorted by build number
+    assertPackagesCollection(FlagMode.IsLatest, "Foo.2.2.34"); //first entry in list
+  }
+
+  @Test
+  public void test_wrong_order_pre_release() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId(with(any(String.class))); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+
+    addEntry("Foo", "2.3.37", "btZ", 6);
+    addEntry("Foo", "2.2.34-beta", "btY", 7);
+    addEntry("Foo", "1.2.38", "btX", 8);
+    addEntry("Foo", "1.2.38-alpha", "btX", 9);
+
+    dumpFeed();
+    assertPackagesCollection(FlagMode.Exists, "Foo.1.2.38", "Foo.1.2.38-alpha", "Foo.2.2.34-beta", "Foo.2.3.37");
+    assertPackagesCollection(FlagMode.IsPrerelease, "Foo.1.2.38-alpha", "Foo.2.2.34-beta");
+    assertPackagesCollection(FlagMode.IsAbsoluteLatest, "Foo.2.3.37");
+    assertPackagesCollection(FlagMode.IsLatest, "Foo.2.3.37");
+  }
+
+  @Test(invocationCount = 10)
+  public void assertPackagesSorted() throws UnsupportedEncodingException {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId(with(any(String.class))); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+
+    final String[] versions = {
+            "1.0.0-333",
+            "1.0.0-333.44",
+            "1.0.0-333.44.55",
+            "1.0.0-333.44.z",
+            "1.0.0-alpha",
+            "1.0.0-alpha.1",
+            "1.0.0-beta.2",
+            "1.0.0-beta.11",
+            "1.0.0-rc.1",
+            "1.0.0-rc.1+build.1",
+            "1.0.0",
+            "1.0.0+0.3.7",
+            "1.3.7+build",
+            "1.3.7+build.2.b8f12d7",
+            "1.3.7+build.11.e0f985a",
+            "1.3.7+build.11.f0f985a",
+            "1.3.7+build.z11.f0f985a"
+    };
+
+    final Set<Integer> buildId = new HashSet<Integer>();
+    final Collection<String> expected = new ArrayList<String>();
+    final Random rnd = new SecureRandom(("iddqd-" + System.nanoTime()).getBytes("utf-8"));
+    for (String version : versions) {
+      int id;
+      do {
+        id = rnd.nextInt();
+      } while(!buildId.add(id));
+
+      addEntry("Foo", version, "btQ", id);
+      expected.add("Foo." + version);
+    }
+
+    assertPackagesSorted(expected.toArray(new String[expected.size()]));
+  }
+
+
   private void dumpFeed() {
     System.out.println("Dump the feed: ");
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
@@ -333,6 +379,33 @@ public class PackageIndexTest extends BaseTestCase {
       NuGetIndexEntry p = it.next();
       System.out.println("p = " + p);
     }
+  }
+
+  private void assertPackages(@NotNull String... idsEx) {
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+
+    final Set<String> packages = new TreeSet<String>();
+    Collections.addAll(packages, idsEx);
+
+    while(it.hasNext()) {
+      final NuGetIndexEntry p = it.next();
+      final String actualName = p.getKey() + (createAdaptor(p).getIsLatestVersion() ? ":L" : "") + (createAdaptor(p).getIsAbsoluteLatestVersion() ? ":A" : "");
+      Assert.assertTrue(packages.remove(actualName), "Must not contain: " + actualName);
+    }
+    Assert.assertTrue(packages.isEmpty(), "There should also be: " + packages);
+  }
+
+  private void assertPackagesSorted(@NotNull String... idsEx) {
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+
+    int idx = 0;
+    while(it.hasNext()) {
+      final NuGetIndexEntry p = it.next();
+      final String actualName = p.getKey();
+      final String expectedName = idsEx[idx++];
+      Assert.assertEquals(actualName, expectedName);
+    }
+    Assert.assertTrue(idx == idsEx.length);
   }
 
   private void assertPackagesCollection(@NotNull FlagMode mode, @NotNull String... ids) {
@@ -359,20 +432,7 @@ public class PackageIndexTest extends BaseTestCase {
     ;
 
     public boolean readField(@NotNull final NuGetIndexEntry e) {
-      final PackageEntityAdapter ad = new PackageEntityAdapter() {
-        public String getAtomEntityType() {
-          return null;
-        }
-
-        public String getAtomEntitySource(String baseUrl) {
-          return null;
-        }
-
-        @Override
-        protected String getValue(@NotNull String key) {
-          return e.getAttributes().get(key);
-        }
-      };
+      final PackageEntityAdapter ad = createAdaptor(e);
 
       switch (this) {
         case Exists: return true;
@@ -384,5 +444,21 @@ public class PackageIndexTest extends BaseTestCase {
     }
   }
 
+  @NotNull
+  private static PackageEntityAdapter createAdaptor(@NotNull final NuGetIndexEntry e) {
+    return new PackageEntityAdapter() {
+          public String getAtomEntityType() {
+            return null;
+          }
 
+          public String getAtomEntitySource(String baseUrl) {
+            return null;
+          }
+
+          @Override
+          protected String getValue(@NotNull String key) {
+            return e.getAttributes().get(key);
+          }
+        };
+  }
 }

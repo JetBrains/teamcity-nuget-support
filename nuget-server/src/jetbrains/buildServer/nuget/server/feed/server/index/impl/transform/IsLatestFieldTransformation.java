@@ -53,8 +53,8 @@ public class IsLatestFieldTransformation implements PackageTransformation {
     //Note, thus there is no need to take case about comparison of version
     //Note, i.e. 1.0.0+build ? 1.1.0-release ? 1.0.0 ? 1.1.1 and so on.
     //Note: see https://github.com/NuGet/NuGetGallery/wiki/Package-Metadata-in-the-NuGet-Gallery-Feed
-    builder.setMetadata("IsLatestVersion", String.valueOf(isLatestVersion));
-    builder.setMetadata("IsAbsoluteLatestVersion", String.valueOf(isAbsoluteLatestVersion));
+    builder.setIsLatest(isLatestVersion);
+    builder.setIsAbsoluteLatest(isAbsoluteLatestVersion);
     return Status.CONTINUE;
   }
 }

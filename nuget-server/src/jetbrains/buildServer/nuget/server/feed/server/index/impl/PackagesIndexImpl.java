@@ -20,16 +20,22 @@ import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.latest.LatestCalculator;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.latest.LatestVersionsCalculator;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.*;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
 
@@ -68,28 +74,76 @@ public class PackagesIndexImpl implements PackagesIndex {
   }
 
   private Iterator<NuGetIndexEntry> decorateMetadata(Iterator<BuildMetadataEntry> entries) {
-    final Collection<PackageTransformation> trasformations = Arrays.asList(
+    if (TeamCityProperties.getBoolean("teamcity.nuget.simple.feed.sort")) {
+      return transformEntries(entries, getTranslatorsSimple());
+    }
+
+    final PackageTransformation[] trasformations = getTranslators();
+    final List<NuGetPackageBuilder> result = new ArrayList<NuGetPackageBuilder>();
+
+    final LatestCalculator latestPackages = new LatestVersionsCalculator();
+    while (entries.hasNext()) {
+      final NuGetPackageBuilder builder = applyTransformation(entries.next(), trasformations);
+      if (builder == null) continue;
+      latestPackages.updatePackage(builder);
+      result.add(builder);
+    }
+    latestPackages.updateSelectedPackages();
+
+    //This is most consuming operation that requires to sort collection of entire packages
+    Collections.sort(result, SemanticVersionsComparer.getBuildersComparator());
+
+    return new DecoratingIterator<NuGetIndexEntry, NuGetPackageBuilder>(
+            result.iterator(),
+            new Mapper<NuGetPackageBuilder, NuGetIndexEntry>() {
+              @Nullable
+              public NuGetIndexEntry mapKey(@NotNull NuGetPackageBuilder internal) {
+                return internal.build();
+              }
+            }
+    );
+  }
+
+  @NotNull
+  private PackageTransformation[] getTranslators() {
+    return new PackageTransformation[]{
             new SamePackagesFilterTransformation(),
             new OldFormatConvertTransformation(myBuilds),
             new AccessCheckTransformation(myProjects, myContext),
             new IsPrereleaseTransformation(),
-            new DownloadUrlComputationTransformation(),
-            new IsLatestFieldTransformation()
-    );
+            new DownloadUrlComputationTransformation()
+    };
+  }
 
+  @NotNull
+  private PackageTransformation[] getTranslatorsSimple() {
+    List<PackageTransformation> pts = new ArrayList<PackageTransformation>();
+    Collections.addAll(pts, getTranslators());
+    pts.add(new IsLatestFieldTransformation());
+    return pts.toArray(new PackageTransformation[pts.size()]);
+  }
 
+  private Iterator<NuGetIndexEntry> transformEntries(@NotNull Iterator<BuildMetadataEntry> entries,
+                                                     @NotNull final PackageTransformation[] trasformations) {
     return new DecoratingIterator<NuGetIndexEntry, BuildMetadataEntry>(
             entries,
             new Mapper<BuildMetadataEntry, NuGetIndexEntry>() {
               @Nullable
               public NuGetIndexEntry mapKey(@NotNull BuildMetadataEntry e) {
-                final NuGetPackageBuilder pb = new NuGetPackageBuilder(e);
-                for (PackageTransformation transformation : trasformations) {
-                  if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
-                }
+                final NuGetPackageBuilder pb = applyTransformation(e, trasformations);
+                if (pb == null) return null;
                 return pb.build();
               }
             });
   }
 
+  @Nullable
+  private static NuGetPackageBuilder applyTransformation(@NotNull BuildMetadataEntry e,
+                                                         @NotNull PackageTransformation[] trasformations) {
+    final NuGetPackageBuilder pb = new NuGetPackageBuilder(e);
+    for (PackageTransformation transformation : trasformations) {
+      if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
+    }
+    return pb;
+  }
 }

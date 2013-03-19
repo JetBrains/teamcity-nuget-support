@@ -31,6 +31,10 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex
 *         Date: 18.01.12 20:16
 */
 public class NuGetPackageBuilder {
+  public static final String IS_PRERELEASE = "IsPrerelease";
+  public static final String IS_LATEST_VERSION = "IsLatestVersion";
+  public static final String IS_ABSOLUTE_LATEST_VERSION = "IsAbsoluteLatestVersion";
+
   private final String myKey;
   private final long myBuildId;
   private final Map<String, String> myMetadata;
@@ -53,12 +57,20 @@ public class NuGetPackageBuilder {
 
   @NotNull
   public String getPackageName() {
-    return getMetadata().get("Id");
+    return myMetadata.get("Id");
   }
 
   @NotNull
   public String getVersion() {
-    return getMetadata().get("Version");
+    return myMetadata.get("Version");
+  }
+
+  public void setPrerelease(boolean isPrerelease) {
+    setMetadata(IS_PRERELEASE, String.valueOf(isPrerelease));
+  }
+
+  public boolean isPrerelease() {
+    return Boolean.valueOf(myMetadata.get(IS_PRERELEASE));
   }
 
   @NotNull
@@ -88,10 +100,21 @@ public class NuGetPackageBuilder {
     myMetadata.put(key, value);
   }
 
+  public void setIsAbsoluteLatest(boolean isAbsoluteLatest) {
+    setMetadata(IS_ABSOLUTE_LATEST_VERSION, String.valueOf(isAbsoluteLatest));
+  }
+
+  public void setIsLatest(boolean isLatest) {
+    setMetadata(IS_LATEST_VERSION, String.valueOf(isLatest));
+  }
+
   @Nullable
   public NuGetIndexEntry build() {
     if (getDownloadUrl() == null) return null;
     if (getBuildTypeId() == null) return null;
+
+    if (myMetadata.get(IS_LATEST_VERSION) == null) setIsLatest(false);
+    if (myMetadata.get(IS_ABSOLUTE_LATEST_VERSION) == null) setIsAbsoluteLatest(false);
     return new NuGetIndexEntry(
             myKey,
             myMetadata
