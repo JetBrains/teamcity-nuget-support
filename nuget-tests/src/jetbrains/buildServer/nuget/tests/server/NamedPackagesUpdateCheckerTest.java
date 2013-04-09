@@ -273,13 +273,59 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
   @Test
   @TestFor(issues = "TW-24575")
-  public void test_should_throw_error_if_no_packages_found() {
+  public void test_should_throw_error_if_no_packages_found_but_not_update_hash() {
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
       will(returnValue(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList())));
 
 
-      oneOf(store).getValue("hash"); will(returnValue("v2aaa"));
+      oneOf(store).getValue("hash"); will(returnValue("v2|s:src|p:pkg|v:5.6.87"));
+      never(store).putValue("hash", "v2");
+      never(store).flush();
+    }});
+
+    try {
+      checker.checkChanges(desr, store);
+      Assert.fail("Exception is expected");
+    } catch (BuildTriggerException e) {
+      Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
+    }
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-27263")
+  public void test_should_not_update_cache_if_no_packages_found_and_cache_already_valid() {
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList())));
+
+
+      oneOf(store).getValue("hash"); will(returnValue("v2|s:src|p:pkg|v:5.6.87"));
+      never(store).putValue("hash", "v2");
+      never(store).flush();
+    }});
+
+    try {
+      checker.checkChanges(desr, store);
+      Assert.fail("Exception is expected");
+    } catch (BuildTriggerException e) {
+      Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
+    }
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-27263")
+  public void test_should_update_cache_if_no_packages_found_and_cache_empty() {
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList())));
+
+
+      oneOf(store).getValue("hash"); will(returnValue(null));
       oneOf(store).putValue("hash", "v2");
       oneOf(store).flush();
     }});
