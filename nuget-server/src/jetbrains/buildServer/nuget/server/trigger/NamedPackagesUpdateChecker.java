@@ -75,7 +75,7 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
       LOG.debug("          old hash was: " + oldHash);
     }
 
-    if (!newHash.equals(oldHash)) {
+    if (oldHash == null || (!newHash.equals(oldHash) && !newHash.equals("v2"))) {
       storage.putValue(KEY, newHash);
       storage.flush();
     }
