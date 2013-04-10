@@ -273,13 +273,94 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
   @Test
   @TestFor(issues = "TW-24575")
-  public void test_should_throw_error_if_no_packages_found() {
+  public void test_should_not_trigger_build_if_feed_was_empty() {
+    //feed is empty
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList())));
+
+      oneOf(store).getValue("hash"); will(returnValue("v2|s:src|p:pkg|v:5.6.87"));
+    }});
+
+
+    //error should be reported
+    try {
+      checker.checkChanges(desr, store);
+      Assert.fail("Exception is expected");
+    } catch (BuildTriggerException e) {
+      Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
+    }
+    m.assertIsSatisfied();
+
+
+    //feed again is not empty
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+
+      oneOf(store).getValue("hash"); will(returnValue("v2|s:src|p:pkg|v:5.6.87"));
+    }});
+
+    //no build is expected
+    Assert.assertNull(checker.checkChanges(desr, store));
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-24575")
+  public void test_should_throw_error_if_no_packages_found_but_not_update_hash() {
     m.checking(new Expectations(){{
       oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
       will(returnValue(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList())));
 
 
-      oneOf(store).getValue("hash"); will(returnValue("v2aaa"));
+      oneOf(store).getValue("hash"); will(returnValue("v2|s:src|p:pkg|v:5.6.87"));
+      never(store).putValue("hash", "v2");
+      never(store).flush();
+    }});
+
+    try {
+      checker.checkChanges(desr, store);
+      Assert.fail("Exception is expected");
+    } catch (BuildTriggerException e) {
+      Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
+    }
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-27263")
+  public void test_should_not_update_cache_if_no_packages_found_and_cache_already_valid() {
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList())));
+
+
+      oneOf(store).getValue("hash"); will(returnValue("v2|s:src|p:pkg|v:5.6.87"));
+      never(store).putValue("hash", "v2");
+      never(store).flush();
+    }});
+
+    try {
+      checker.checkChanges(desr, store);
+      Assert.fail("Exception is expected");
+    } catch (BuildTriggerException e) {
+      Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
+    }
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-27263")
+  public void test_should_update_cache_if_no_packages_found_and_cache_empty() {
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Collections.<SourcePackageInfo>emptyList())));
+
+
+      oneOf(store).getValue("hash"); will(returnValue(null));
       oneOf(store).putValue("hash", "v2");
       oneOf(store).flush();
     }});
@@ -467,6 +548,20 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     m.assertIsSatisfied();
   }
 
+  @Test
+  public void test_check_should_not_trigger_after_upgrade() {
+    m.checking(new Expectations(){{
+      oneOf(chk).checkPackage(with(req(nugetFakePath, null, "NUnit", null)));
+      will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
+
+      oneOf(store).getValue("hash"); will(returnValue("aaa"));
+      oneOf(store).putValue("hash", "v2|s:src|p:pkg|v:5.6.87");
+      oneOf(store).flush();
+    }});
+
+    Assert.assertNull(checker.checkChanges(desr, store));
+    m.assertIsSatisfied();
+  }
 
   private static class Expectations extends org.jmock.Expectations {
     public Matcher<PackageCheckRequest> req(@NotNull final File nugetPath, @Nullable final String source, @NotNull final String id, @Nullable final String version) {
