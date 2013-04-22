@@ -23,13 +23,19 @@ import jetbrains.buildServer.nuget.server.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.util.FuncThrow;
 import jetbrains.buildServer.util.Util;
+import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.stax2.XMLFactoryProvider2;
+import org.odata4j.stax2.XMLWriter2;
+import org.odata4j.stax2.XMLWriterFactory2;
+import org.odata4j.stax2.domimpl.DomXMLFactoryProvider2;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.Writer;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -108,6 +114,9 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
       return;
     }
 
+    XMLFactoryProvider2.setInstance(DOM_XML_FACTORY_PROVIDER_2);
+    LOG.debug("NuGet Feed: " + WebUtil.getRequestDump(request) + "|" + request.getRequestURI());
+
     Util.doUnderContextClassLoader(getClass().getClassLoader(), new FuncThrow<Object, Exception>() {
       public Object apply() throws Exception {
         myContainer.service(new RequestWrapper(request, baseMappingPath), response);
@@ -115,4 +124,15 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
       }
     });
   }
+
+  private static final DomXMLFactoryProvider2 DOM_XML_FACTORY_PROVIDER_2 = new DomXMLFactoryProvider2() {
+    @Override
+    public XMLWriterFactory2 newXMLWriterFactory2() {
+      return new XMLWriterFactory2() {
+        public XMLWriter2 createXMLWriter(Writer writer) {
+          return new ManualXMLWriter3(writer);
+        }
+      };
+    }
+  };
 }
