@@ -7,7 +7,7 @@
     <echo message="replacing tokens in teamcity-plugin.xml file under ${home}"/>
 
     <tstamp>
-       <format property="snapshot" pattern="yyyyddMMHHmmss"/>
+       <format property="snapshot" pattern="yyyyMMddHHmmss"/>
     </tstamp>
 
     <condition property="build.number" value="snapshot-${snapshot}" else="${build.number}">
