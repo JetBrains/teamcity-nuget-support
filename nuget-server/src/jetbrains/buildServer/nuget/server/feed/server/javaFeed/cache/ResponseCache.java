@@ -45,7 +45,9 @@ public class ResponseCache implements ResponseCacheReset {
   private String key(@NotNull final HttpServletRequest request) {
     StringBuilder builder = new StringBuilder();
     builder.append(request.getMethod());
-    builder.append(" '").append(WebUtil.getPathWithoutAuthenticationType(request));
+    builder.append(" ");
+    builder.append(request.getRequestURL());
+    builder.append("@ '").append(WebUtil.getPathWithoutAuthenticationType(request));
     builder.append("?").append(WebUtil.createRequestParameters(request)).append("' ");
 
     final SUser user = SessionUser.getUser(request);
