@@ -16,7 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache;
 
-import com.intellij.util.containers.ConcurrentWeakHashMap;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.containers.ConcurrentSoftValueHashMap;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.impl.TeamCityInternalKeys;
@@ -26,13 +27,15 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 22.04.13 22:41
  */
 public class ResponseCache implements ResponseCacheReset {
-  private final ConcurrentWeakHashMap<String, ResponseCacheEntry> myCache = new ConcurrentWeakHashMap<String, ResponseCacheEntry>();
+  private static final Logger LOG = Logger.getInstance(ResponseCache.class.getName());
+  private final Map<String, ResponseCacheEntry> myCache = new ConcurrentSoftValueHashMap<String, ResponseCacheEntry>();
 
   public void resetCache() {
     myCache.clear();
@@ -42,11 +45,13 @@ public class ResponseCache implements ResponseCacheReset {
   private String key(@NotNull final HttpServletRequest request) {
     StringBuilder builder = new StringBuilder();
     builder.append(request.getMethod());
-    builder.append(" '").append(WebUtil.createPathWithParameters(request));
+    builder.append(" '").append(WebUtil.getPathWithoutAuthenticationType(request));
+    builder.append("?").append(WebUtil.createRequestParameters(request)).append("' ");
 
     final SUser user = SessionUser.getUser(request);
     if (user != null) {
-      builder.append(" as ").append(user.getId()).append(user.getUsername() != null ? user.getUsername() : "<null>");
+      final String username = user.getUsername();
+      builder.append(" as ").append(user.getId()).append(username != null ? username : "<null>");
     } else {
       builder.append("as no auth/user");
     }
@@ -59,8 +64,8 @@ public class ResponseCache implements ResponseCacheReset {
   }
 
   public void getOrCompute(@NotNull final HttpServletRequest request,
-                                   @NotNull final HttpServletResponse response,
-                                   @NotNull final ComputeAction action) throws Exception {
+                           @NotNull final HttpServletResponse response,
+                           @NotNull final ComputeAction action) throws Exception {
     final String key = key(request);
     final ResponseCacheEntry cached = myCache.get(key);
     if (cached != null) {
@@ -68,6 +73,7 @@ public class ResponseCache implements ResponseCacheReset {
       return;
     }
 
+    LOG.debug("NuGet cache miss for: " + WebUtil.getRequestDump(request));
     final ResponseWrapper wrapped = new ResponseWrapper(response);
 
     action.compute(request, wrapped);
@@ -80,7 +86,6 @@ public class ResponseCache implements ResponseCacheReset {
 
   public interface ComputeAction {
     void compute(@NotNull final HttpServletRequest request,
-                 @NotNull final HttpServletResponse response)
-            throws Exception;
+                 @NotNull final HttpServletResponse response) throws Exception;
   }
 }

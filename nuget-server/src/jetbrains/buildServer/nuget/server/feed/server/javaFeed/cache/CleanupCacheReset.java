@@ -33,7 +33,7 @@ public class CleanupCacheReset implements GeneralDataCleaner {
     myReset = reset;
   }
 
-  public void performCleanup(Connection _) throws SQLException {
+  public void performCleanup(@NotNull Connection _) throws SQLException {
     myReset.resetCache();
   }
 }
