@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCacheReset;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode;
@@ -44,9 +45,12 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
   public static final String NUGET_PROVIDER_ID = "nuget";
 
   private final LocalNuGetPackageItemsFactory myFactory;
+  private final ResponseCacheReset myReset;
 
-  public NuGetArtifactsMetadataProvider(@NotNull final LocalNuGetPackageItemsFactory myFactory) {
-    this.myFactory = myFactory;
+  public NuGetArtifactsMetadataProvider(@NotNull final LocalNuGetPackageItemsFactory factory,
+                                        @NotNull final ResponseCacheReset reset) {
+    myFactory = factory;
+    myReset = reset;
   }
 
   @NotNull
@@ -83,6 +87,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
         ma.put(TEAMCITY_ARTIFACT_RELPATH, aPackage.getRelativePath());
         ma.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
 
+        myReset.resetCache();
         store.addParameters(aPackage.getName(), ma);
       } catch (PackageLoadException e) {
         LOG.warn("Failed to read nuget package: " + aPackage);

@@ -21,6 +21,8 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedHandler;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCache;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.util.FuncThrow;
 import jetbrains.buildServer.util.Util;
 import jetbrains.buildServer.web.util.WebUtil;
@@ -41,6 +43,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
+import static jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCache.ComputeAction;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 30.12.11 17:49
@@ -50,11 +54,14 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
 
   private ServletContainer myContainer;
   private final NuGetServerJavaSettings mySettings;
+  private final ResponseCache myCache;
 
   public ODataPackagesFeedController(@NotNull final NuGetProducer producer,
                                      @NotNull final ServletConfig config,
-                                     @NotNull final NuGetServerJavaSettings settings) {
+                                     @NotNull final NuGetServerJavaSettings settings,
+                                     @NotNull final ResponseCache cache) {
     mySettings = settings;
+    myCache = cache;
     try {
       myContainer = Util.doUnderContextClassLoader(getClass().getClassLoader(), new FuncThrow<ServletContainer, ServletException>() {
         public ServletContainer apply() throws ServletException {
@@ -114,6 +121,21 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
       return;
     }
 
+    final ComputeAction action = new ComputeAction() {
+      public void compute(@NotNull final HttpServletRequest request,
+                          @NotNull final HttpServletResponse response) throws Exception {
+        processFeedRequest(baseMappingPath, request, response);
+      }
+    };
+
+    if (TeamCityProperties.getBooleanOrTrue("teamcity.nuget.feed.use.cache")) {
+      myCache.getOrCompute(request, response, action);
+    } else {
+      action.compute(request, response);
+    }
+  }
+
+  private void processFeedRequest(final String baseMappingPath, final HttpServletRequest request, final HttpServletResponse response) throws Exception {
     XMLFactoryProvider2.setInstance(DOM_XML_FACTORY_PROVIDER_2);
     LOG.debug("NuGet Feed: " + WebUtil.getRequestDump(request) + "|" + request.getRequestURI());
 
