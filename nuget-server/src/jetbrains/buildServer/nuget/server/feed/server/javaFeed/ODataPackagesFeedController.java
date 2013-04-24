@@ -128,7 +128,7 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
       }
     };
 
-    if (TeamCityProperties.getBooleanOrTrue("teamcity.nuget.feed.use.cache")) {
+    if (TeamCityProperties.getBoolean("teamcity.nuget.feed.use.cache")) {
       myCache.getOrCompute(request, response, action);
     } else {
       action.compute(request, response);
