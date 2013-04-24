@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCacheReset;
 import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode;
 import jetbrains.buildServer.serverSide.impl.LogUtil;
@@ -72,6 +73,8 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
   }
 
   public void generateMedatadata(@NotNull SBuild build, @NotNull MetadataStorageWriter store) {
+    if (!TeamCityProperties.getBooleanOrTrue("teamcity.nuget.index.packages")) return;
+
     LOG.debug("Looking for NuGet packages in " + LogUtil.describe(build));
 
     final List<BuildArtifact> packages = new ArrayList<BuildArtifact>();
