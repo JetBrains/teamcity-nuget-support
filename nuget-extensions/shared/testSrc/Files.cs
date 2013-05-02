@@ -19,8 +19,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
     private static readonly Lazy<string> ourLocalFeed_1_8 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.8");    
-    private static readonly Lazy<string> ourCachedNuGet_CI_Last = new Lazy<string>(() => FetchLatestNuGetPackage("bt4"));
-    private static readonly Lazy<string> ourCachedNuGet_CI_2_1 = new Lazy<string>(() => FetchLatestNuGetPackage("bt36"));
     private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline); 
 
     public static string GetLocalFeedURI(NuGetVersion version)
@@ -62,10 +60,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return NuGetExe_1_8;
         case NuGetVersion.NuGet_2_0:
           return NuGetExe_2_0;
-        case NuGetVersion.NuGet_2_1_CI:
-          return ourCachedNuGet_CI_2_1.Value;
-        case NuGetVersion.NuGet_Latest_CI:
-          return ourCachedNuGet_CI_Last.Value;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
           return ourCachedNuGet_CommandLinePackage_Last.Value;
         default:
@@ -73,26 +67,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
       }
     }
 
-    private static string FetchLatestNuGetPackage(string bt)
-    {
-      if (DateTime.Now < new DateTime(2013, 5, 14)) throw new IgnoreException("NuGet CI is down");
-      try
-      {
-        var homePath = CreateTempPath();
-        string url = "http://ci.nuget.org:8080/guestAuth/repository/download/" + bt +
-                     "/.lastSuccessful/Console/NuGet.exe";
-        var nugetPath = Path.Combine(homePath, "NuGet.exe");
-        var cli = new WebClient();
-        cli.DownloadFile(url, nugetPath);
-        return nugetPath;
-      } catch(Exception e)
-      {
-        string message = "Failed to fetch NuGet build: " + bt;
-        Assert.Ignore(message);
-        Console.Out.WriteLine(e);
-        throw new IgnoreException(message);
-      }
-    }
 
     private static string CreateTempPath()
     {
@@ -148,9 +122,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     NuGet_1_7 = 7,
     NuGet_1_8 = 8,
     NuGet_2_0 = 9,
-    NuGet_2_1_CI = 10,
-
-    NuGet_Latest_CI = 990,
+    
     NuGet_CommandLine_Package_Latest = 999
   }
 
@@ -162,5 +134,4 @@ namespace JetBrains.TeamCity.NuGet.Tests
       return version == NuGetVersion.NuGet_1_4;
     }
   }
-
 }

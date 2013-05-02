@@ -12,10 +12,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
   public abstract class ListCommandBase : CommandBase
   {
     [Import]
-    public IPackageRepositoryFactory RepositoryFactory { get; set; }
-
-    [Import]
-    public IPackageSourceProvider SourceProvider { get; set; }
+    public IPackageRepositoryFactory RepositoryFactoryTC { get; set; }
 
     /// <exception cref="InvalidFeedUrlException">may be thrown on error</exception>
     [NotNull]
@@ -46,7 +43,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     private IPackageRepository GetPackageRepository(string source)
     {
-      return RepositoryFactory.CreateRepository(source);
+      return RepositoryFactoryTC.CreateRepository(source);
     }
   }
 

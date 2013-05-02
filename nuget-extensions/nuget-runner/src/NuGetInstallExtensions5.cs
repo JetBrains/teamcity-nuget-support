@@ -12,6 +12,7 @@ namespace JetBrains.TeamCity.NuGetRunner
       string extensionPaths = string.Join("; ", extensions.Select(Path.GetDirectoryName).Select(Path.GetFullPath).Where(NotNull).Distinct());
       Console.Out.WriteLine("Registered additional extensions from paths: {0}", extensionPaths);
       runner.AddEnvironmentVariable("NUGET_EXTENSIONS_PATH", extensionPaths);
+      runner.AddEnvironmentVariable("NUGET_EXE_NO_PROMPT", "true");
 
       runner.BeforeNuGetStarted += (_,__) => CleanupHome();
     }
