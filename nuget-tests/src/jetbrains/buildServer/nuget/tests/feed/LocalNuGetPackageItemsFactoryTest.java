@@ -148,4 +148,14 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
     Assert.assertNotNull(aPackage.get("Title"));
   }
 
+  @Test
+  @TestFor(issues = "TW-26973")
+  public void test_minClientVersion() throws IOException, PackageLoadException {
+    final File pkg = Paths.getTestDataPath("packages/Min.Version.Two.Five.1.0.0.nupkg");
+    Assert.assertTrue(pkg.isFile());
+
+    final Map<String, String> aPackage = myFactory.loadPackage(artifact(pkg), new Date());
+    Assert.assertNotNull(aPackage.get("MinClientVersion"));
+  }
+
 }

@@ -68,11 +68,11 @@ public class LocalNuGetPackageItemsFactory extends PackageInfoLoaderBase {
                 addParameter(map, "Id", id);
                 addParameter(map, "Version", version);
                 addParameter(map, "Title", parseProperty(root, "title"));
-                //addParameter(map, "ReleaseNotes", ""); //TODO:!
+                addParameter(map, "ReleaseNotes", parseProperty(root, "releaseNotes"));
                 addParameter(map, "Authors", parseProperty(root, "authors"));
                 addParameter(map, "Dependencies", parseDependencies(root));
                 addParameter(map, "Description", parseProperty(root, "description"));
-                //addParameter(map, "Copyright", ""); //TODO:
+                addParameter(map, "Copyright", parseProperty(root, "copyright"));
                 addParameter(map, "ProjectUrl", parseProperty(root, "projectUrl"));
                 addParameter(map, "Tags", parseProperty(root, "tags"));
                 addParameter(map, "IconUrl", parseProperty(root, "iconUrl"));
@@ -84,8 +84,16 @@ public class LocalNuGetPackageItemsFactory extends PackageInfoLoaderBase {
                 //addParameter(map, "IsLatestVersion", "");
                 addParameter(map, "LastUpdated", ODataDataFormat.formatDate(finishDate));
                 //addParameter(map, "Updated", formatDate(updated));
+                addParameter(map, "MinClientVersion", parseMetadataAttribute(root, "minClientVersion"));
 
                 return map;
+              }
+
+              @Nullable
+              private String parseMetadataAttribute(@NotNull final Element root, @NotNull final String attribute) {
+                final Element metadata = getChild(root, "metadata");
+                if (metadata == null) return null;
+                return metadata.getAttributeValue(attribute);
               }
 
               @NotNull
