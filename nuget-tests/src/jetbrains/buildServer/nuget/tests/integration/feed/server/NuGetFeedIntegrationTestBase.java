@@ -100,8 +100,8 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
   protected Map<String, String> indexPackage(@NotNull final File packageFile,
                                              final boolean isLatest,
                                              final long buildId) throws IOException {
-    final SFinishedBuild build = m.mock(SFinishedBuild.class, "build-" + packageFile.getPath());
-    final BuildArtifact artifact = m.mock(BuildArtifact.class, "artifact-" + packageFile.getPath());
+    final SFinishedBuild build = m.mock(SFinishedBuild.class, "build-" + packageFile.getPath() + "#" + buildId);
+    final BuildArtifact artifact = m.mock(BuildArtifact.class, "artifact-" + packageFile.getPath() + "#" + buildId);
 
     m.checking(new Expectations() {{
       allowing(build).getBuildId(); will(returnValue(buildId));

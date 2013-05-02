@@ -17,7 +17,17 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl">
+    <constructor-arg>
+      <list>
+        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.SamePackagesFilterTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.OldFormatConvertTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.AccessCheckTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation"/>
+      </list>
+    </constructor-arg>
+  </bean>
 
   <!-- UI -->
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerController"/>

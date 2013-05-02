@@ -21,9 +21,18 @@ import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducer;
+import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
+import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
 import org.odata4j.producer.server.ODataServer;
@@ -32,10 +41,9 @@ import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -46,6 +54,9 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   private int myPort;
   private List<NuGetIndexEntry> myFeed;
   protected PackagesIndex myIndex;
+  protected PackagesIndex myActualIndex;
+  protected PackagesIndex myIndexProxy;
+  protected MetadataStorage myMetadataStorage;
   private ODataServer myServer;
   private int myCount;
   private NuGetServerSettings mySettings;
@@ -58,15 +69,67 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myPort = NetworkUtil.getFreePort(14444);
     myFeed = new ArrayList<NuGetIndexEntry>();
     myIndex = m.mock(PackagesIndex.class);
+    myActualIndex = myIndex;
+    myIndexProxy = m.mock(PackagesIndex.class, "proxy");
     mySettings = m.mock(NuGetServerSettings.class);
+    myMetadataStorage = m.mock(MetadataStorage.class);
     m.checking(new Expectations() {{
-      allowing(myIndex).getNuGetEntries();
-      will(returnIterator(myFeed));
+      allowing(myIndexProxy).getNuGetEntries(); will(new CustomAction("lazy return packages") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return getPackages();
+        }
+      });
+      allowing(myIndex).getNuGetEntries(); will(returnIterator(myFeed));
       allowing(mySettings).getNuGetFeedControllerPath(); will(returnValue(NuGetServerSettingsImpl.PATH));
+
+      allowing(myMetadataStorage).getAllEntries(NUGET_PROVIDER_ID); will(new CustomAction("transform entries") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return toEntries().iterator();
+        }
+      });
     }});
-    myProducer = new NuGetProducer(myIndex, mySettings);
+    myProducer = new NuGetProducer(myIndexProxy, mySettings);
 
     startNuGetFeedServer();
+  }
+
+  @NotNull
+  private Collection<BuildMetadataEntry> toEntries() {
+    Collection<BuildMetadataEntry> ee = new ArrayList<BuildMetadataEntry>();
+    for (final NuGetIndexEntry e : myFeed) {
+      ee.add(new BuildMetadataEntry() {
+        public long getBuildId() {
+          return e.hashCode();
+        }
+
+        @NotNull
+        public String getKey() {
+          return e.getKey();
+        }
+
+        @NotNull
+        public Map<String, String> getMetadata() {
+          return e.getAttributes();
+        }
+      });
+    }
+    return ee;
+  }
+
+  private void setPackagesIndex(@NotNull PackagesIndex index) {
+    myActualIndex = index;
+  }
+
+  public void enablePackagesIndexSorting() {
+    setPackagesIndex(new PackagesIndexImpl(myMetadataStorage, new PackageTransformation[]{
+            new IsPrereleaseTransformation(),
+            new DownloadUrlComputationTransformation()
+    }));
+  }
+
+  @NotNull
+  private Iterator<NuGetIndexEntry> getPackages() {
+    return myActualIndex.getNuGetEntries();
   }
 
   @AfterMethod
@@ -94,12 +157,18 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   }
 
   protected NuGetIndexEntry addPackage(@NotNull final File file, boolean isLatest) throws IOException {
-    final int buildId = myCount++;
-    final Map<String,String> map = indexPackage(file, isLatest, buildId);
-    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
+    final Map<String, String> map = indexPackage(file, isLatest);
     NuGetIndexEntry e = new NuGetIndexEntry(file.getName(), map);
     myFeed.add(e);
     return e;
+  }
+
+  @NotNull
+  private Map<String, String> indexPackage(@NotNull final File file, final boolean isLatest) throws IOException {
+    final int buildId = myCount++;
+    final Map<String,String> map = indexPackage(file, isLatest, buildId);
+    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
+    return map;
   }
 
   protected NuGetIndexEntry addMockPackage(@NotNull final NuGetIndexEntry entry, boolean isLatest) {
@@ -118,4 +187,28 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     return e;
   }
 
+  @NotNull
+  protected NuGetIndexEntry addMockPackage(@NotNull final String id, @NotNull final String ver) throws IOException {
+    final Map<String, String> map = new TreeMap<String, String>(indexPackage(Paths.getTestDataPath("packages/NuGet.Core.1.5.20902.9026.nupkg"), true));
+
+    map.put("Id", id);
+    map.put("Version", ver);
+
+    map.remove("IsLatestVersion");
+    map.remove("IsAbsoluteLatestVersion");
+    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
+    NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
+    myFeed.add(e);
+    return e;
+  }
+
+
+  protected void dumpFeed() {
+    final Iterator<NuGetIndexEntry> entries = myIndexProxy.getNuGetEntries();
+    while(entries.hasNext()) {
+      final NuGetIndexEntry e = entries.next();
+      final Map<String,String> a = e.getAttributes();
+      System.out.println(a.get("Id") + " " + a.get("Version") + " => absolute:" + a.get("IsAbsoluteLatestVersion") + ", latest: " + a.get("IsLatestVersion") + ", prerelease: " + a.get("IsPrerelease"));
+    }
+  }
 }

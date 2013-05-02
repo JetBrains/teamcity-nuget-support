@@ -22,11 +22,8 @@ import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.latest.LatestCalculator;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.latest.LatestVersionsCalculator;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.*;
-import jetbrains.buildServer.serverSide.BuildsManager;
-import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsLatestFieldTransformation;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
-import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import org.jetbrains.annotations.NotNull;
@@ -45,18 +42,13 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArt
  */
 public class PackagesIndexImpl implements PackagesIndex {
   private final MetadataStorage myStorage;
-  private final BuildsManager myBuilds;
-  private final ProjectManager myProjects;
-  private final SecurityContext myContext;
+  private final PackageTransformation[] myTransformations;
+
 
   public PackagesIndexImpl(@NotNull final MetadataStorage storage,
-                           @NotNull final BuildsManager builds,
-                           @NotNull final ProjectManager projects,
-                           @NotNull final SecurityContext context) {
+                           @NotNull final PackageTransformation[] transformations) {
     myStorage = storage;
-    myBuilds = builds;
-    myProjects = projects;
-    myContext = context;
+    myTransformations = transformations;
   }
 
   @NotNull
@@ -78,12 +70,11 @@ public class PackagesIndexImpl implements PackagesIndex {
       return transformEntries(entries, getTranslatorsSimple());
     }
 
-    final PackageTransformation[] trasformations = getTranslators();
     final List<NuGetPackageBuilder> result = new ArrayList<NuGetPackageBuilder>();
 
     final LatestCalculator latestPackages = new LatestVersionsCalculator();
     while (entries.hasNext()) {
-      final NuGetPackageBuilder builder = applyTransformation(entries.next(), trasformations);
+      final NuGetPackageBuilder builder = applyTransformation(entries.next(), getTranslators());
       if (builder == null) continue;
       latestPackages.updatePackage(builder);
       result.add(builder);
@@ -106,13 +97,7 @@ public class PackagesIndexImpl implements PackagesIndex {
 
   @NotNull
   private PackageTransformation[] getTranslators() {
-    return new PackageTransformation[]{
-            new SamePackagesFilterTransformation(),
-            new OldFormatConvertTransformation(myBuilds),
-            new AccessCheckTransformation(myProjects, myContext),
-            new IsPrereleaseTransformation(),
-            new DownloadUrlComputationTransformation()
-    };
+    return myTransformations;
   }
 
   @NotNull
@@ -123,7 +108,8 @@ public class PackagesIndexImpl implements PackagesIndex {
     return pts.toArray(new PackageTransformation[pts.size()]);
   }
 
-  private Iterator<NuGetIndexEntry> transformEntries(@NotNull Iterator<BuildMetadataEntry> entries,
+  @NotNull
+  private Iterator<NuGetIndexEntry> transformEntries(@NotNull final Iterator<BuildMetadataEntry> entries,
                                                      @NotNull final PackageTransformation[] trasformations) {
     return new DecoratingIterator<NuGetIndexEntry, BuildMetadataEntry>(
             entries,

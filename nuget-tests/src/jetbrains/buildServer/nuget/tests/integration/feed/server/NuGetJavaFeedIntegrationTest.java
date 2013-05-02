@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.tests.integration.ListPackagesCommandIntegrationTest;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -96,6 +97,33 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     final String stdout = exec.getStdout();
     System.out.println(stdout);
     Assert.assertTrue(stdout.contains(packageId_1), stdout);
+  }
+
+  @TestFor(issues = "TW-24051")
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void testNuGetClientReadsPrereleaseFeedQuery(@NotNull final NuGet nuget) throws Exception{
+    enableDebug();
+    enablePackagesIndexSorting();
+
+    addMockPackage("foo", "1.0.0");
+    addMockPackage("foo", "2.0.0");
+    addMockPackage("foo", "1.1.0");
+    addMockPackage("foo", "2.1.0-alpha");
+
+    dumpFeed();
+
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("list");
+    cmd.addParameter("-Prerelease");
+    cmd.addParameter("-Source");
+    cmd.addParameter(getNuGetServerUrl());
+
+    final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
+    Assert.assertEquals(exec.getExitCode(), 0);
+    final String stdout = exec.getStdout();
+    System.out.println(stdout);
+    Assert.assertTrue(stdout.contains("foo 2.1.0-alpha"));
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
