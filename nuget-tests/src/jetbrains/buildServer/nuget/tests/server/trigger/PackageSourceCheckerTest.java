@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.trigger;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.trigger.impl.source.PackageSourceCheckerImpl;
 import jetbrains.buildServer.util.FileUtil;
-import junit.framework.Assert;
+import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -66,7 +66,8 @@ public class PackageSourceCheckerTest extends BaseTestCase {
   public void testSourcesCheck_network_share() throws IOException {
     //this test may only work in case we have a known network share.
     if (!"LABS".equals(System.getenv("USERDOMAIN"))) return;
-    Assert.assertNull(myCheck.checkSource("\\\\top\\vss-6.0"));
+    String result = myCheck.checkSource("\\\\top\\vss-6.0");
+    Assert.assertNull(result, "but was: " + result);
   }
 
   @Test
