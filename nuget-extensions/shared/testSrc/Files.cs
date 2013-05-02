@@ -17,12 +17,11 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourCachedNuGetExe_2_0 = PathSearcher.SearchFile("lib/nuget/2.0/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_2_1 = PathSearcher.SearchFile("lib/nuget/2.1/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_2_2 = PathSearcher.SearchFile("lib/nuget/2.2/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_5 = PathSearcher.SearchFile("lib/nuget/2.5/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetRunnerPath = PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
     private static readonly Lazy<string> ourLocalFeed_1_8 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.8");    
-    private static readonly Lazy<string> ourCachedNuGet_CI_Last = new Lazy<string>(() => FetchLatestNuGetPackage("bt43"));
-    private static readonly Lazy<string> ourCachedNuGet_CI_2_2 = new Lazy<string>(() => FetchLatestNuGetPackage("bt42"));
     private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline); 
 
     public static string GetLocalFeedURI(NuGetVersion version)
@@ -48,6 +47,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string NuGetExe_2_0 { get { return ourCachedNuGetExe_2_0.Value; } }
     public static string NuGetExe_2_1 { get { return ourCachedNuGetExe_2_1.Value; } }
     public static string NuGetExe_2_2 { get { return ourCachedNuGetExe_2_2.Value; } }
+    public static string NuGetExe_2_5 { get { return ourCachedNuGetExe_2_5.Value; } }
     public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
 
     public static string GetNuGetExe(NuGetVersion version)
@@ -70,39 +70,14 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return NuGetExe_2_1;
         case NuGetVersion.NuGet_2_2:
           return NuGetExe_2_2;
+        case NuGetVersion.NuGet_2_5:
+          return NuGetExe_2_5;
 
 
-        case NuGetVersion.NuGet_2_2_CI:
-          return ourCachedNuGet_CI_2_2.Value;
-        case NuGetVersion.NuGet_Latest_CI:
-          //timebomb
-          if (DateTime.Now < new DateTime(2013, 5, 14)) throw new IgnoreException("NuGet CI is down");
-          return ourCachedNuGet_CI_Last.Value;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
           return ourCachedNuGet_CommandLinePackage_Last.Value;
         default:
           throw new Exception("Unsupported nuget version: " + version);
-      }
-    }
-
-    private static string FetchLatestNuGetPackage(string bt)
-    {
-      if (DateTime.Now < new DateTime(2013, 5, 14)) throw new IgnoreException("NuGet CI is down");
-      try
-      {
-        var homePath = CreateTempPath();
-        string url = "http://ci.nuget.org:8080/guestAuth/repository/download/" + bt +
-                     "/.lastSuccessful/Console/NuGet.exe";
-        var nugetPath = Path.Combine(homePath, "NuGet.exe");
-        var cli = new WebClient();
-        cli.DownloadFile(url, nugetPath);
-        return nugetPath;
-      } catch(Exception e)
-      {
-        string message = "Failed to fetch NuGet build: " + bt;
-        Assert.Ignore(message);
-        Console.Out.WriteLine(e);
-        throw new IgnoreException(message);
       }
     }
 
@@ -117,7 +92,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static string FetchLatestNuGetCommandline()
     {
       var temp = CreateTempPath();
-      ProcessExecutor.ExecuteProcess(NuGetExe_2_2, "install", "NuGet.commandline", "-Source", NuGetConstants.NuGetFeed, "-ExcludeVersion", "-OutputDirectory",
+      ProcessExecutor.ExecuteProcess(NuGetExe_2_5, "install", "NuGet.commandline", "-Source", NuGetConstants.NuGetFeed, "-ExcludeVersion", "-OutputDirectory",
                                      temp).Dump().AssertNoErrorOutput().AssertExitedSuccessfully();
       string nugetPath = Path.Combine(temp, "NuGet.CommandLine/tools/NuGet.Exe");
       Assert.IsTrue(File.Exists(nugetPath));
@@ -162,10 +137,9 @@ namespace JetBrains.TeamCity.NuGet.Tests
     NuGet_2_0 = 9,
     NuGet_2_1 = 10,
     NuGet_2_2 = 11,
+    NuGet_2_5 = 12,
     
     
-    NuGet_2_2_CI = 988,
-    NuGet_Latest_CI = 990,
     NuGet_CommandLine_Package_Latest = 999
   }
 

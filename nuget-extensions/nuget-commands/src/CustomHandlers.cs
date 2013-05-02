@@ -30,7 +30,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [ImportingConstructor]
     public CustomHandlers([ImportMany] IEnumerable<ICreatableComponent> components)
     {
-      myComponents = components;
+      myComponents = components.ToArray();
     }
 
     public void OnImportsSatisfied()

@@ -14,7 +14,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     {
       using(CredentialsUpdater.UpdateCredentialsProvider(source))
       {
-        processor(RepositoryFactory.CreateRepository(source.Source));
+        processor(RepositoryFactoryTC.CreateRepository(source.Source));
       }      
     }
   }

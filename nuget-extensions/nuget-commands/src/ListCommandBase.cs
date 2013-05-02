@@ -12,10 +12,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
   public abstract partial class ListCommandBase : CommandBase
   {
     [Import]
-    public IPackageRepositoryFactory RepositoryFactory { get; set; }
-
-    [Import]
-    public IPackageSourceProvider SourceProvider { get; set; }
+    public IPackageRepositoryFactory RepositoryFactoryTC { get; set; }
 
     /// <exception cref="InvalidFeedUrlException">may be thrown on error</exception>    
     protected void GetAllPackages(INuGetSource feed, 

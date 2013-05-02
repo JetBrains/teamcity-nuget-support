@@ -8,7 +8,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
   {
     private void GetPackageRepository(INuGetSource source, Action<IPackageRepository> processor)
     {
-      processor(RepositoryFactory.CreateRepository(source.Source));      
+      processor(RepositoryFactoryTC.CreateRepository(source.Source));      
     }
   }
 }
