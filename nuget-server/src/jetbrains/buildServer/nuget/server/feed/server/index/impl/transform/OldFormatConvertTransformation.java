@@ -66,4 +66,9 @@ public class OldFormatConvertTransformation implements PackageTransformation {
     }
     return Status.CONTINUE;
   }
+
+  @NotNull
+  public PackageTransformation createCopy() {
+    return this;
+  }
 }

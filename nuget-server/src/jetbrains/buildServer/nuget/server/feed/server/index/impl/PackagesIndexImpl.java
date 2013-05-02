@@ -29,10 +29,7 @@ import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
 
@@ -71,10 +68,11 @@ public class PackagesIndexImpl implements PackagesIndex {
     }
 
     final List<NuGetPackageBuilder> result = new ArrayList<NuGetPackageBuilder>();
-
+    final Collection<PackageTransformation> translators = getTranslators(); //contains processing state!
     final LatestCalculator latestPackages = new LatestVersionsCalculator();
     while (entries.hasNext()) {
-      final NuGetPackageBuilder builder = applyTransformation(entries.next(), getTranslators());
+
+      final NuGetPackageBuilder builder = applyTransformation(entries.next(), translators);
       if (builder == null) continue;
       latestPackages.updatePackage(builder);
       result.add(builder);
@@ -96,21 +94,24 @@ public class PackagesIndexImpl implements PackagesIndex {
   }
 
   @NotNull
-  private PackageTransformation[] getTranslators() {
-    return myTransformations;
+  private Collection<PackageTransformation> getTranslators() {
+    List<PackageTransformation> list = new ArrayList<PackageTransformation>(myTransformations.length + 1);
+    for (PackageTransformation t : myTransformations) {
+      list.add(t.createCopy());
+    }
+    return list;
   }
 
   @NotNull
-  private PackageTransformation[] getTranslatorsSimple() {
-    List<PackageTransformation> pts = new ArrayList<PackageTransformation>();
-    Collections.addAll(pts, getTranslators());
+  private Collection<PackageTransformation> getTranslatorsSimple() {
+    final Collection<PackageTransformation> pts = getTranslators();
     pts.add(new IsLatestFieldTransformation());
-    return pts.toArray(new PackageTransformation[pts.size()]);
+    return pts;
   }
 
   @NotNull
   private Iterator<NuGetIndexEntry> transformEntries(@NotNull final Iterator<BuildMetadataEntry> entries,
-                                                     @NotNull final PackageTransformation[] trasformations) {
+                                                     @NotNull final Collection<PackageTransformation> trasformations) {
     return new DecoratingIterator<NuGetIndexEntry, BuildMetadataEntry>(
             entries,
             new Mapper<BuildMetadataEntry, NuGetIndexEntry>() {
@@ -124,8 +125,8 @@ public class PackagesIndexImpl implements PackagesIndex {
   }
 
   @Nullable
-  private static NuGetPackageBuilder applyTransformation(@NotNull BuildMetadataEntry e,
-                                                         @NotNull PackageTransformation[] trasformations) {
+  private static NuGetPackageBuilder applyTransformation(@NotNull final BuildMetadataEntry e,
+                                                         @NotNull final Collection<PackageTransformation> trasformations) {
     final NuGetPackageBuilder pb = new NuGetPackageBuilder(e);
     for (PackageTransformation transformation : trasformations) {
       if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;

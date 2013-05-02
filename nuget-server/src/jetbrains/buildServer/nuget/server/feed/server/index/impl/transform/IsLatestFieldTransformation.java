@@ -57,4 +57,9 @@ public class IsLatestFieldTransformation implements PackageTransformation {
     builder.setIsAbsoluteLatest(isAbsoluteLatestVersion);
     return Status.CONTINUE;
   }
+
+  @NotNull
+  public PackageTransformation createCopy() {
+    return new IsLatestFieldTransformation();
+  }
 }

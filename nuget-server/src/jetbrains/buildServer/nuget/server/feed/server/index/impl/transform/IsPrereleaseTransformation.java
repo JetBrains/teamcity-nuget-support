@@ -37,4 +37,9 @@ public class IsPrereleaseTransformation implements PackageTransformation {
     builder.setPrerelease(!isReleaseVersion);
     return Status.CONTINUE;
   }
+
+  @NotNull
+  public PackageTransformation createCopy() {
+    return this;
+  }
 }

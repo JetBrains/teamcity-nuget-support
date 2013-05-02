@@ -62,4 +62,9 @@ public class AccessCheckTransformation implements PackageTransformation {
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
     return isAccessible(builder.getBuildTypeId()) ? Status.CONTINUE : Status.SKIP;
   }
+
+  @NotNull
+  public PackageTransformation createCopy() {
+    return this;
+  }
 }

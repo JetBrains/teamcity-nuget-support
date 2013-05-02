@@ -39,4 +39,9 @@ public class DownloadUrlComputationTransformation implements PackageTransformati
     builder.setDownloadUrl(downloadUrl);
     return Status.CONTINUE;
   }
+
+  @NotNull
+  public PackageTransformation createCopy() {
+    return this;
+  }
 }

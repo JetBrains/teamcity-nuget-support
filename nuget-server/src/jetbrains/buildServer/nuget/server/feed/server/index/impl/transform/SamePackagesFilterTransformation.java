@@ -34,4 +34,9 @@ public class SamePackagesFilterTransformation implements PackageTransformation {
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
     return reportedPackages.add(builder.getKey()) ? Status.CONTINUE : Status.SKIP;
   }
+
+  @NotNull
+  public PackageTransformation createCopy() {
+    return new SamePackagesFilterTransformation();
+  }
 }

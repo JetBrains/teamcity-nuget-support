@@ -26,6 +26,9 @@ public interface PackageTransformation {
   @NotNull
   Status applyTransformation(@NotNull final NuGetPackageBuilder builder);
 
+  @NotNull
+  PackageTransformation createCopy();
+
   enum Status {
     SKIP, CONTINUE
   }

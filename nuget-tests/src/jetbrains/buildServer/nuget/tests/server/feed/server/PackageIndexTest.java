@@ -21,9 +21,11 @@ import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.*;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.AccessCheckTransformation;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.SamePackagesFilterTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntityAdapter;
-import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.serverSide.auth.Permission;
@@ -49,7 +51,6 @@ import java.util.*;
 public class PackageIndexTest extends BaseTestCase {
   private Mockery m;
   private ProjectManager myProjectManager;
-  private BuildsManager myBuildsManager;
   private SecurityContext myContext;
   private AuthorityHolder myAuthorityHolder;
   private PackagesIndex myIndex;
@@ -62,7 +63,6 @@ public class PackageIndexTest extends BaseTestCase {
     super.setUp();
     m = new Mockery();
     myProjectManager = m.mock(ProjectManager.class);
-    myBuildsManager = m.mock(BuildsManager.class);
     myContext = m.mock(SecurityContext.class);
     myAuthorityHolder = m.mock(AuthorityHolder.class);
     myStorage = m.mock(MetadataStorage.class);
@@ -70,7 +70,6 @@ public class PackageIndexTest extends BaseTestCase {
             myStorage,
             new PackageTransformation[]{
                     new SamePackagesFilterTransformation(),
-                    new OldFormatConvertTransformation(myBuildsManager),
                     new AccessCheckTransformation(myProjectManager, myContext),
                     new IsPrereleaseTransformation(),
                     new DownloadUrlComputationTransformation()
@@ -103,7 +102,7 @@ public class PackageIndexTest extends BaseTestCase {
 
     //recall natural sort order of metadata entries
     Collections.sort(myEntries, new Comparator<BuildMetadataEntry>() {
-      public int compare(BuildMetadataEntry o1, BuildMetadataEntry o2) {
+      public int compare(@NotNull BuildMetadataEntry o1, @NotNull BuildMetadataEntry o2) {
         final long b1 = o1.getBuildId();
         final long b2 = o2.getBuildId();
         return (b1 > b2 ? -1 : b1 == b2 ? 0 : 1);
@@ -114,11 +113,7 @@ public class PackageIndexTest extends BaseTestCase {
   @Test
   @TestFor(issues = "TW-20047")
   public void testIsLatestFromBuildTypes() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myProjectManager).findProjectId("btY"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
 
     addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.44", "btY", 9);
@@ -128,10 +123,7 @@ public class PackageIndexTest extends BaseTestCase {
 
   @Test
   public void test_one_package_isLatest() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
 
     addEntry("Foo", "1.2.34", "btX", 7);
 
@@ -140,10 +132,7 @@ public class PackageIndexTest extends BaseTestCase {
 
   @Test
   public void test_two_package_isLatest() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
 
     addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.44", "btX", 9);
@@ -153,11 +142,7 @@ public class PackageIndexTest extends BaseTestCase {
 
   @Test
   public void test_same_packages() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myProjectManager).findProjectId("btY"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
 
     addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.34", "btY", 9);
@@ -171,10 +156,7 @@ public class PackageIndexTest extends BaseTestCase {
   @Test
   @TestFor(issues = "TW-19686")
   public void test_two_package_isLatest_prerelease() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
 
     addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.44-alpha", "btX", 9);
@@ -206,10 +188,7 @@ public class PackageIndexTest extends BaseTestCase {
   @Test
   @TestFor(issues = "TW-20661")
   public void test_Flags_prerelease_only() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
     addEntry("Foo", "1.2.34-alpha", "btX", 7);
     addEntry("Foo", "1.2.34-beta", "btX", 8);
 
@@ -223,10 +202,7 @@ public class PackageIndexTest extends BaseTestCase {
   @Test
   @TestFor(issues = "TW-20661")
   public void test_Flags_mixrelease_only() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
     addEntry("Foo", "1.2.34-alpha", "btX", 7);
     addEntry("Foo", "1.2.34-beta", "btX", 9);
     addEntry("Foo", "1.2.32", "btX", 8);
@@ -241,10 +217,7 @@ public class PackageIndexTest extends BaseTestCase {
   @Test
   @TestFor(issues = "TW-20661")
   public void test_Flags_mixrelease2_only() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
     addEntry("Foo", "1.2.34-alpha", "btX", 7);
     addEntry("Foo", "1.2.34-beta", "btX", 9);
     addEntry("Foo", "1.2.32", "btX", 8);
@@ -258,11 +231,17 @@ public class PackageIndexTest extends BaseTestCase {
     assertPackagesCollection(FlagMode.IsLatest, "Foo.1.2.36"); //first entry in list
   }
 
+  private void allowView() {
+    m.checking(new Expectations(){{
+      allowing(myProjectManager).findProjectId(with(any(String.class))); will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    }});
+  }
+
   @Test
   public void test_for_build() {
+    allowView();
     m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
       allowing(myStorage).getBuildEntry(42, "nuget"); will(returnIterator(myEntries));
     }});
     addEntry("Foo", "1.2.34-alpha", "btX", 7);
@@ -281,12 +260,7 @@ public class PackageIndexTest extends BaseTestCase {
   @Test
   @TestFor(issues = "TW-20661")
   public void test_Flags_release_only() {
-    m.checking(new Expectations() {{
-      allowing(myProjectManager).findProjectId("btX");
-      will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT);
-      will(returnValue(true));
-    }});
+    allowView();
     addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.38", "btX", 8);
 
@@ -299,11 +273,7 @@ public class PackageIndexTest extends BaseTestCase {
 
   @Test
   public void test_wrong_order_release() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myProjectManager).findProjectId("btY"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
 
     addEntry("Foo", "2.2.34", "btY", 7);
     addEntry("Foo", "1.2.38", "btX", 8);
@@ -317,10 +287,7 @@ public class PackageIndexTest extends BaseTestCase {
 
   @Test
   public void test_wrong_order_pre_release() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId(with(any(String.class))); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
 
     addEntry("Foo", "2.3.37", "btZ", 6);
     addEntry("Foo", "2.2.34-beta", "btY", 7);
@@ -336,10 +303,7 @@ public class PackageIndexTest extends BaseTestCase {
 
   @Test(invocationCount = 10)
   public void assertPackagesSorted() throws UnsupportedEncodingException {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId(with(any(String.class))); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
-    }});
+    allowView();
 
     final String[] versions = {
             "1.0.0-333",
@@ -427,7 +391,7 @@ public class PackageIndexTest extends BaseTestCase {
       NuGetIndexEntry p = it.next();
       Assert.assertTrue(mode.readField(p) == t.remove(p.getKey()), "package " + p + " must have " + mode);
     }
-    Assert.assertTrue(t.isEmpty(), "Unexpected package for " + mode + ": " + t.toString());
+    Assert.assertTrue(t.isEmpty(), "Unexpected packages for " + mode + ": " + t.toString());
   }
 
   private static enum FlagMode {
