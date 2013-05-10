@@ -39,13 +39,13 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArt
  */
 public class PackagesIndexImpl implements PackagesIndex {
   private final MetadataStorage myStorage;
-  private final PackageTransformation[] myTransformations;
+  private final Collection<PackageTransformation> myTransformations;
 
 
   public PackagesIndexImpl(@NotNull final MetadataStorage storage,
-                           @NotNull final PackageTransformation[] transformations) {
+                           @NotNull final Collection<PackageTransformation> transformations) {
     myStorage = storage;
-    myTransformations = transformations;
+    myTransformations = new ArrayList<PackageTransformation>(transformations);
   }
 
   @NotNull
@@ -95,7 +95,7 @@ public class PackagesIndexImpl implements PackagesIndex {
 
   @NotNull
   private Collection<PackageTransformation> getTranslators() {
-    List<PackageTransformation> list = new ArrayList<PackageTransformation>(myTransformations.length + 1);
+    List<PackageTransformation> list = new ArrayList<PackageTransformation>(myTransformations.size() + 1);
     for (PackageTransformation t : myTransformations) {
       list.add(t.createCopy());
     }

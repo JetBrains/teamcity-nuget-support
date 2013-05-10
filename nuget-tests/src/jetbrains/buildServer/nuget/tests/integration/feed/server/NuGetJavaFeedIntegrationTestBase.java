@@ -21,7 +21,6 @@ import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation;
@@ -121,10 +120,13 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   }
 
   public void enablePackagesIndexSorting() {
-    setPackagesIndex(new PackagesIndexImpl(myMetadataStorage, new PackageTransformation[]{
-            new IsPrereleaseTransformation(),
-            new DownloadUrlComputationTransformation()
-    }));
+    setPackagesIndex(new PackagesIndexImpl(
+            myMetadataStorage,
+            Arrays.asList(
+              new IsPrereleaseTransformation(),
+              new DownloadUrlComputationTransformation()
+            )
+    ));
   }
 
   @NotNull

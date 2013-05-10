@@ -19,7 +19,6 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.AccessCheckTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
@@ -68,12 +67,12 @@ public class PackageIndexTest extends BaseTestCase {
     myStorage = m.mock(MetadataStorage.class);
     myIndex = new PackagesIndexImpl(
             myStorage,
-            new PackageTransformation[]{
+            Arrays.asList(
                     new SamePackagesFilterTransformation(),
                     new AccessCheckTransformation(myProjectManager, myContext),
                     new IsPrereleaseTransformation(),
                     new DownloadUrlComputationTransformation()
-            });
+            ));
 
     myEntries = new ArrayList<BuildMetadataEntry>();
 
