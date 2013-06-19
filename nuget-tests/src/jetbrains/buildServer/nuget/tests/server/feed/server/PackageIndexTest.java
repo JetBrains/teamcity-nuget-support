@@ -20,11 +20,9 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.AccessCheckTransformation;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.SamePackagesFilterTransformation;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.*;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntityAdapter;
+import jetbrains.buildServer.nuget.tests.integration.feed.server.MockExternalIdTransformation;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.serverSide.auth.Permission;
@@ -71,6 +69,7 @@ public class PackageIndexTest extends BaseTestCase {
                     new SamePackagesFilterTransformation(),
                     new AccessCheckTransformation(myProjectManager, myContext),
                     new IsPrereleaseTransformation(),
+                    new MockExternalIdTransformation(),
                     new DownloadUrlComputationTransformation()
             ));
 

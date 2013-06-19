@@ -24,6 +24,7 @@
         <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.OldFormatConvertTransformation"/>
         <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.AccessCheckTransformation"/>
         <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.ComputeExternalBuildIdTransformation"/>
         <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation"/>
       </list>
     </constructor-arg>

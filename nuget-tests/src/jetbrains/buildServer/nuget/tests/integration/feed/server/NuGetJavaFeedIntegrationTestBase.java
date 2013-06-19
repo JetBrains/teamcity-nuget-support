@@ -124,6 +124,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
             myMetadataStorage,
             Arrays.asList(
               new IsPrereleaseTransformation(),
+              new MockExternalIdTransformation(),
               new DownloadUrlComputationTransformation()
             )
     ));
@@ -213,4 +214,5 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       System.out.println(a.get("Id") + " " + a.get("Version") + " => absolute:" + a.get("IsAbsoluteLatestVersion") + ", latest: " + a.get("IsLatestVersion") + ", prerelease: " + a.get("IsPrerelease"));
     }
   }
+
 }

@@ -29,13 +29,12 @@ public class DownloadUrlComputationTransformation implements PackageTransformati
   @NotNull
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
     String relPath = builder.getMetadata().get(PackagesIndex.TEAMCITY_ARTIFACT_RELPATH);
-    final String buildTypeId = builder.getBuildTypeId();
-    if (relPath == null || buildTypeId == null) {
-      return Status.SKIP;
-    }
+    final String buildTypeExternalId = builder.getBuildTypeExternalId();
+    if (relPath == null) return Status.SKIP;
+    if (buildTypeExternalId == null) return Status.SKIP;
 
     while (relPath.startsWith("/")) relPath = relPath.substring(1);
-    final String downloadUrl = "/repository/download/" + buildTypeId + "/" + builder.getBuildId() + ":id/" + relPath;
+    final String downloadUrl = "/repository/download/" + buildTypeExternalId + "/" + builder.getBuildId() + ":id/" + relPath;
     builder.setDownloadUrl(downloadUrl);
     return Status.CONTINUE;
   }

@@ -38,6 +38,7 @@ public class NuGetPackageBuilder {
   private final String myKey;
   private final long myBuildId;
   private final Map<String, String> myMetadata;
+  private String myExternalId = null;
 
   public NuGetPackageBuilder(@NotNull final BuildMetadataEntry entry) {
     myKey = entry.getKey();
@@ -83,8 +84,17 @@ public class NuGetPackageBuilder {
     return myMetadata.get(TEAMCITY_BUILD_TYPE_ID);
   }
 
+  @Nullable
+  public String getBuildTypeExternalId() {
+    return myExternalId;
+  }
+
   public void setBuildTypeId(@NotNull String buildTypeId) {
     setMetadata(TEAMCITY_BUILD_TYPE_ID, buildTypeId);
+  }
+
+  public void setBuildTypeExternalId(@NotNull String externalId) {
+    myExternalId = externalId;
   }
 
   public void setDownloadUrl(@NotNull final String downloadUrl) {
