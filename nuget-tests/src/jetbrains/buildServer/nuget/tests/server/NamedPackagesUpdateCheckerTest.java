@@ -86,7 +86,13 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     final SystemInfo si = m.mock(SystemInfo.class);
 
-    checker = new NamedPackagesUpdateChecker(chk, new TriggerRequestFactory(new CheckRequestModeFactory(si), manager, new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()), myRootUrlHolder), new PackagesHashCalculator());
+    checker = new NamedPackagesUpdateChecker(chk, new TriggerRequestFactory(
+            new CheckRequestModeFactory(si),
+            manager,
+            new PackageCheckRequestFactory(
+                    new PackageCheckerSettingsImpl()),
+                    Arrays.<TriggerUrlPostProcessor>asList(new TriggerUrlRootPostProcessor(myRootUrlHolder))),
+            new PackagesHashCalculator());
     nugetFakePath = createTempFile();
     final String path = nugetFakePath.getPath();
 

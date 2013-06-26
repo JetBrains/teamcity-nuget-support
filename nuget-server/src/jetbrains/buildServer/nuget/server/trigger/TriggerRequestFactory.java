@@ -16,8 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.trigger;
 
-import jetbrains.buildServer.RootUrlHolder;
-import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
@@ -26,11 +24,11 @@ import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeFactory;
-import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Collection;
 
 import static jetbrains.buildServer.nuget.server.trigger.TriggerConstants.*;
 
@@ -42,16 +40,16 @@ public class TriggerRequestFactory {
   private final CheckRequestModeFactory myModeFactory;
   private final NuGetToolManager myManager;
   private final PackageCheckRequestFactory myRequestFactory;
-  private final RootUrlHolder myHolder;
+  private final Collection<TriggerUrlPostProcessor> myUrlPostProcessors;
 
   public TriggerRequestFactory(@NotNull final CheckRequestModeFactory modeFactory,
                                @NotNull final NuGetToolManager manager,
                                @NotNull final PackageCheckRequestFactory requestFactory,
-                               @NotNull final RootUrlHolder holder) {
+                               @NotNull final Collection<TriggerUrlPostProcessor> urlPostProcessors) {
     myModeFactory = modeFactory;
     myManager = manager;
     myRequestFactory = requestFactory;
-    myHolder = holder;
+    myUrlPostProcessors = urlPostProcessors;
   }
 
   @NotNull
@@ -69,7 +67,7 @@ public class TriggerRequestFactory {
       credentials = new FeedCredentials(username, password);
     }
 
-    if (StringUtil.isEmptyOrSpaces(path)) {
+    if (path == null || StringUtil.isEmptyOrSpaces(path)) {
       throw new BuildTriggerException("Path to NuGet.exe must be specified");
     }
 
@@ -82,11 +80,10 @@ public class TriggerRequestFactory {
       throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
     }
 
-    if (source != null && ReferencesResolverUtil.mayContainReference(source)) {
-      final String rootUrlPattern = "%" + AgentRuntimeProperties.TEAMCITY_SERVER_URL + "%";
-      final String rootUrlValue = myHolder.getRootUrl();
-
-      source = source.replace(rootUrlPattern, rootUrlValue);
+    if (source != null) {
+      for (TriggerUrlPostProcessor urlPostProcessor : myUrlPostProcessors) {
+        source = urlPostProcessor.updateTriggerUrl(descriptor, source);
+      }
     }
 
     return myRequestFactory.createRequest(
