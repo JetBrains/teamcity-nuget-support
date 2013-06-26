@@ -103,7 +103,7 @@
 <tr>
   <th>Options:</th>
   <td>
-    <props:checkboxProperty name="${ib.prereleaseKey}"/> Include pre-release packages
+    <props:checkboxProperty name="${ib.prereleaseKey}"/> <label for="${ib.prereleaseKey}">Include pre-release packages</label>
     <span class="smallNote">Trigger build if pre-release package version is detected. Supported for NuGet 1.8 and newer.</span>
   </td>
 </tr>
