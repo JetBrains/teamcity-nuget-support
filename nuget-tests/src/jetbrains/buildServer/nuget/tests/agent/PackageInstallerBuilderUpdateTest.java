@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesPostUpgradeInstallBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesUpdateBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
+import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
@@ -61,6 +62,24 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       will(returnValue(createMockBuildProcess("u1")));
 
       oneOf(myActionFactory).createInstall(myContext, myInstall, myConfig, myTaget);
+      will(returnValue(createMockBuildProcess("i1")));
+    }});
+
+    doTest(t(myConfig), t("u1", "i1"));
+  }
+
+  @Test
+  public void test_restore_update_per_sln() throws RunBuildException {
+    myInstallMode = PackagesInstallMode.VIA_RESTORE;
+
+    m.checking(new Expectations(){{
+      allowing(myUpdate).getUpdateMode();
+      will(returnValue(PackagesUpdateMode.FOR_SLN));
+
+      oneOf(myActionFactory).createUpdate(myContext, myUpdate, mySln, myTaget);
+      will(returnValue(createMockBuildProcess("u1")));
+
+      oneOf(myActionFactory).createRestore(myContext, myInstall, mySln, myTaget);
       will(returnValue(createMockBuildProcess("i1")));
     }});
 
