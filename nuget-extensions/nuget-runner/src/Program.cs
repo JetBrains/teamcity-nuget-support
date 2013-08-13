@@ -69,14 +69,18 @@ namespace JetBrains.TeamCity.NuGetRunner
     private static IEnumerable<string> Extensions(NuGetRunner runner)
     {
       Func<string, string> path = p => Path.Combine(typeof(Program).GetAssemblyDirectory(), "plugins-" + p, "JetBrains.TeamCity.NuGet.ExtendedCommands." + p + ".dll");
-      
-      if (runner.NuGetVersion.Major >= 2)
+
+      if (runner.NuGetVersion.Major >= 2 && runner.NuGetVersion.Minor >= 5)
+      {
+        yield return path("2.5");
+      } else if (runner.NuGetVersion.Major >= 2)
       {
         yield return path("2.0");
-        yield break;
       }
-      
-      yield return path("1.4");
+      else
+      {
+        yield return path("1.4");
+      }
     }
 
     static int Usage()

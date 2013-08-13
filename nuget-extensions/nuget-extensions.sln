@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-1.4", "nuget-commands-1.4\nuget-commands-1.4.csproj", "{8FA969EA-85C0-464E-9745-66B9820121A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-runner", "nuget-runner\nuget-runner.csproj", "{B79E58CB-F8FD-4CD6-8B62-10EBA0DF592B}"
@@ -17,6 +17,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-tests-1.4", "nuget-commands-tests-1.4\nuget-commands-tests-1.4.csproj", "{32CD2273-5D23-4356-AA00-4D4FF7CB9AA3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-tests-2.0", "nuget-commands-tests-2.0\nuget-commands-tests-2.0.csproj", "{7075A746-ACF4-4DD6-A2D8-D3C87C8372BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-2.5", "nuget-commands-2.5\nuget-commands-2.5.csproj", "{0374957A-DD74-4662-9F67-927CE687E25A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-tests-2.5", "nuget-commands-tests-2.5\nuget-commands-tests-2.5.csproj", "{9CC26FD2-F846-4894-98B3-81EEEF0C516D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -88,6 +92,26 @@ Global
 		{7075A746-ACF4-4DD6-A2D8-D3C87C8372BE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{7075A746-ACF4-4DD6-A2D8-D3C87C8372BE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{7075A746-ACF4-4DD6-A2D8-D3C87C8372BE}.Release|x86.ActiveCfg = Release|Any CPU
+		{0374957A-DD74-4662-9F67-927CE687E25A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0374957A-DD74-4662-9F67-927CE687E25A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0374957A-DD74-4662-9F67-927CE687E25A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0374957A-DD74-4662-9F67-927CE687E25A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0374957A-DD74-4662-9F67-927CE687E25A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0374957A-DD74-4662-9F67-927CE687E25A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0374957A-DD74-4662-9F67-927CE687E25A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0374957A-DD74-4662-9F67-927CE687E25A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0374957A-DD74-4662-9F67-927CE687E25A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0374957A-DD74-4662-9F67-927CE687E25A}.Release|x86.ActiveCfg = Release|Any CPU
+		{9CC26FD2-F846-4894-98B3-81EEEF0C516D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CC26FD2-F846-4894-98B3-81EEEF0C516D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CC26FD2-F846-4894-98B3-81EEEF0C516D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{9CC26FD2-F846-4894-98B3-81EEEF0C516D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{9CC26FD2-F846-4894-98B3-81EEEF0C516D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9CC26FD2-F846-4894-98B3-81EEEF0C516D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CC26FD2-F846-4894-98B3-81EEEF0C516D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CC26FD2-F846-4894-98B3-81EEEF0C516D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{9CC26FD2-F846-4894-98B3-81EEEF0C516D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{9CC26FD2-F846-4894-98B3-81EEEF0C516D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
