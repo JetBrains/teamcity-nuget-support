@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.agent.runner.install.InstallStages;
+import jetbrains.buildServer.nuget.agent.runner.install.PackagesPostUpgradeInstallBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesUpdateBuilder;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
@@ -26,6 +27,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 18.06.12 20:01
@@ -33,15 +37,18 @@ import org.testng.annotations.Test;
 public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTestBase {
   @NotNull
   @Override
-  protected PackagesInstallerAdapter createBuilder(@NotNull InstallStages stages) {
-    return new PackagesUpdateBuilder(
-            myActionFactory,
-            stages.getUpdateStage(),
-            stages.getPostUpdateStart(),
-            myContext,
-            myInstall,
-            myUpdate
-    );
+  protected Collection<PackagesInstallerAdapter> createBuilder(@NotNull InstallStages stages) {
+    return Arrays.asList(
+            new PackagesUpdateBuilder(
+                    myActionFactory,
+                    stages.getUpdateStage(),
+                    myContext,
+                    myUpdate),
+            new PackagesPostUpgradeInstallBuilder(
+                    myActionFactory,
+                    stages.getPostUpdateStart(),
+                    myContext,
+                    myInstall));
   }
 
   @Test

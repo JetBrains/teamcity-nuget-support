@@ -17,10 +17,7 @@
 package jetbrains.buildServer.nuget.agent.commands;
 
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.parameters.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

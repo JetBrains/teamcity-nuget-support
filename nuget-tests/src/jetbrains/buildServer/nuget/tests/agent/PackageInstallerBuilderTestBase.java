@@ -26,17 +26,21 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
+import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -49,7 +53,7 @@ public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBas
 
   protected Mockery m;
   protected NuGetActionFactory myActionFactory;
-  protected PackagesInstallerAdapter myBuilder;
+  protected Collection<PackagesInstallerAdapter> myBuilders;
   protected BuildRunnerContext myContext;
   protected AgentRunningBuild myBuild;
   protected BuildProgressLogger myLogger;
@@ -60,9 +64,11 @@ public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBas
   protected File myConfig;
   protected File myConfig2;
 
+  protected PackagesInstallMode myInstallMode;
 
-  @BeforeMethod
   @Override
+  @BeforeMethod
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   protected void setUp() throws Exception {
     super.setUp();
 
@@ -75,6 +81,7 @@ public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBas
     final InstallStages stages = new InstallStagesImpl(cont("list", myProcessesList));
 
     m = new Mockery();
+    myInstallMode = PackagesInstallMode.VIA_INSTALL;
     myExecutedProcesses = new ArrayList<String>();
     myActionFactory = m.mock(NuGetActionFactory.class);
     myContext = m.mock(BuildRunnerContext.class);
@@ -84,16 +91,22 @@ public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBas
     myInstall = m.mock(PackagesInstallParameters.class);
     myUpdate = m.mock(PackagesUpdateParameters.class);
 
-    myBuilder = createBuilder(stages);
+    myBuilders = new ArrayList<PackagesInstallerAdapter>(createBuilder(stages));
 
     m.checking(new Expectations(){{
       allowing(myContext).getBuild(); will(returnValue(myBuild));
       allowing(myBuild).getBuildLogger(); will(returnValue(myLogger));
+
+      allowing(myInstall).getInstallMode(); will(new CustomAction("return myInstallMode") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return myInstallMode;
+        }
+      });
     }});
   }
 
   @NotNull
-  protected abstract PackagesInstallerAdapter createBuilder(@NotNull InstallStages stages);
+  protected abstract Collection<PackagesInstallerAdapter> createBuilder(@NotNull InstallStages stages);
 
   @NotNull
   protected BuildProcess createMockBuildProcess(@NotNull final String name) {
@@ -129,9 +142,11 @@ public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBas
 
 
   protected void doTest(File[] configs, String[] procs) throws RunBuildException {
-    myBuilder.onSolutionFileFound(mySln, myTaget);
-    for (File config : configs) {
-      myBuilder.onPackagesConfigFound(config, myTaget);
+    for (PackagesInstallerAdapter builder : myBuilders) {
+      builder.onSolutionFileFound(mySln, myTaget);
+      for (File config : configs) {
+        builder.onPackagesConfigFound(config, myTaget);
+      }
     }
 
     for (BuildProcess update : myProcessesList) {

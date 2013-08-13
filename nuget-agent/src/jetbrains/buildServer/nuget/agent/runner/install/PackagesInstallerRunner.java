@@ -21,10 +21,7 @@ import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.runner.NuGetRunnerBase;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.InstallStagesImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigBuildProcess;
@@ -78,16 +75,21 @@ public class PackagesInstallerRunner extends NuGetRunnerBase {
       locate.addInstallStageListener(new PackagesUpdateBuilder(
               myActionFactory,
               stages.getUpdateStage(),
+              context,
+              updateParameters));
+
+      locate.addInstallStageListener(new PackagesPostUpgradeInstallBuilder(
+              myActionFactory,
               stages.getPostUpdateStart(),
               context,
-              installParameters,
-              updateParameters));
+              installParameters
+      ));
     }
 
     locate.addInstallStageListener(new PackagesReportBuilder(
-            myActionFactory,
-            stages.getReportStage(),
-            context));
+      myActionFactory,
+      stages.getReportStage(),
+      context));
 
     stages.getLocateStage().pushBuildProcess(locate);
   }

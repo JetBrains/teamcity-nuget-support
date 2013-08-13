@@ -23,6 +23,7 @@ import jetbrains.buildServer.agent.BundledTool;
 import jetbrains.buildServer.agent.BundledToolsRegistry;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.util.FileUtil;
@@ -188,6 +189,14 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       public boolean getNoCache(){
         return getBoolean(context, NUGET_NO_CACHE);
+      }
+
+      @NotNull
+      public PackagesInstallMode getInstallMode() throws RunBuildException {
+        final PackagesInstallMode mode = PackagesInstallMode.parse(getParameter(context, NUGET_USE_RESTORE_COMMAND));
+        if (mode != null) return mode;
+
+        throw new RunBuildException("Invalid value of runner parameter: " + NUGET_USE_RESTORE_COMMAND);
       }
     };
   }

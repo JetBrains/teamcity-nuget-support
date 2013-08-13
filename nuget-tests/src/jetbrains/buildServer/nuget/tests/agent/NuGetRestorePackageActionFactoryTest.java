@@ -33,7 +33,7 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
   private PackagesInstallParameters ps;
   private NuGetFetchParameters nugetParams;
   private File myTarget;
-  private File myConfig;
+  private File mySolution;
   private BuildParametersMap myBuildParametersMap;
 
 
@@ -50,13 +50,15 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
     nugetParams = m.mock(NuGetFetchParameters.class);
 
     myTarget = createTempDir();
-    myConfig = createTempFile();
+    mySolution = createTempFile();
 
     myBuildParametersMap = m.mock(BuildParametersMap.class);
 
     m.checking(new Expectations(){{
       allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
       allowing(ps).getNuGetParameters(); will(returnValue(nugetParams));
+
+      allowing(nugetParams).getSolutionFile(); will(returnValue(mySolution));
     }});
   }
 
@@ -72,13 +74,13 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("restore", myConfig.getPath(), "-OutputDirectory", myTarget.getPath()),
-              myConfig.getParentFile(),
+              Arrays.asList("restore", mySolution.getPath(), "-OutputDirectory", myTarget.getPath()),
+              mySolution.getParentFile(),
               Collections.<String, String>emptyMap()
       );
     }});
 
-    i.createRestore(ctx, ps, myConfig, myTarget);
+    i.createRestore(ctx, ps, mySolution, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -94,13 +96,13 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("restore", myConfig.getPath(), "-NoCache", "-OutputDirectory", myTarget.getPath()),
-              myConfig.getParentFile(),
+              Arrays.asList("restore", mySolution.getPath(), "-NoCache", "-OutputDirectory", myTarget.getPath()),
+              mySolution.getParentFile(),
               Collections.<String, String>emptyMap()
       );
     }});
 
-    i.createRestore(ctx, ps, myConfig, myTarget);
+    i.createRestore(ctx, ps, mySolution, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -116,13 +118,13 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("restore", myConfig.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath()),
-              myConfig.getParentFile(),
+              Arrays.asList("restore", mySolution.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath()),
+              mySolution.getParentFile(),
               Collections.<String, String>emptyMap()
       );
     }});
 
-    i.createRestore(ctx, ps, myConfig, myTarget);
+    i.createRestore(ctx, ps, mySolution, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -138,13 +140,13 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("restore", myConfig.getPath(), "-OutputDirectory", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
-              myConfig.getParentFile(),
+              Arrays.asList("restore", mySolution.getPath(), "-OutputDirectory", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
+              mySolution.getParentFile(),
               Collections.<String, String>emptyMap()
       );
     }});
 
-    i.createRestore(ctx, ps, myConfig, myTarget);
+    i.createRestore(ctx, ps, mySolution, myTarget);
     m.assertIsSatisfied();
   }
 }
