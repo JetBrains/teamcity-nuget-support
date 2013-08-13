@@ -40,6 +40,12 @@ public interface CommandFactory {
                       @NotNull Callback<T> factory) throws RunBuildException;
 
   @NotNull
+  <T> T createRestore(@NotNull PackagesInstallParameters params,
+                      @NotNull File solutionFile,
+                      @NotNull File targetFolder,
+                      @NotNull Callback<T> factory) throws RunBuildException;
+
+  @NotNull
   <T> T createUpdate(@NotNull PackagesUpdateParameters params,
                      @NotNull File packagesConfig,
                      @NotNull File targetFolder,

@@ -40,6 +40,12 @@ public interface NuGetActionFactory {
                              @NotNull File targetFolder) throws RunBuildException;
 
   @NotNull
+  BuildProcess createRestore(@NotNull BuildRunnerContext context,
+                             @NotNull PackagesInstallParameters params,
+                             @NotNull File solutionFile,
+                             @NotNull File targetFolder) throws RunBuildException;
+
+  @NotNull
   BuildProcess createUpdate(@NotNull BuildRunnerContext context,
                             @NotNull PackagesUpdateParameters params,
                             @NotNull File packagesConfig,

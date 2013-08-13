@@ -53,6 +53,24 @@ public class CommandFactoryImpl implements CommandFactory {
   }
 
   @NotNull
+  public <T> T createRestore(@NotNull PackagesInstallParameters params, @NotNull File solutionFile, @NotNull File targetFolder, @NotNull Callback<T> factory) throws RunBuildException {
+    final List<String> argz = new ArrayList<String>();
+    argz.add("restore");
+    argz.add(FileUtil.getCanonicalFile(solutionFile).getPath()); //path to package
+    if (params.getExcludeVersion()) {
+      argz.add("-ExcludeVersion");
+    }
+    if (params.getNoCache()) {
+      argz.add("-NoCache");
+    }
+    argz.add("-OutputDirectory");
+    argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
+
+    final NuGetFetchParameters nuget = params.getNuGetParameters();
+    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, solutionFile.getParentFile(), factory);
+  }
+
+  @NotNull
   public <T> T createUpdate(@NotNull PackagesUpdateParameters params, @NotNull File packagesConfig, @NotNull File targetFolder, @NotNull Callback<T> factory) throws RunBuildException {
     final List<String> argz = new ArrayList<String>();
     argz.add("update");
