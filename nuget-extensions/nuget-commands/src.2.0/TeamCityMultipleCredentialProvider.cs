@@ -7,9 +7,9 @@ using System.Linq;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
-  public class TeamCityMultipleCredentialProvider : ICredentialProvider
+  public class TeamCityMultipleCredentialProvider : ICredentialProvider, INuGetCredantialsProvider
   {
-    private readonly IDictionary<Func<Uri, bool>, ICredentialProvider> mySources;
+    private readonly IDictionary<Func<Uri, bool>, TeamCitySingleCredentialProvider> mySources;
     private readonly ICredentialProvider myNext;
 
     public TeamCityMultipleCredentialProvider(IEnumerable<INuGetSource> sources, ICredentialProvider next = null)
@@ -18,10 +18,24 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         .Where(x => x.HasCredentials)
         .ToDictionary(
           x => UriEquals(x.Source),
-          x => (ICredentialProvider) new TeamCitySingleCredentialProvider(x)
+          x => new TeamCitySingleCredentialProvider(x)
         );
 
       myNext = next;
+    }
+
+    public IDictionary<INuGetSource, ICredentials> Sources
+    {
+      get
+      {
+        var data = new Dictionary<INuGetSource, ICredentials>();
+        //linq conversion of not allowed here as it may throw exception on key duplicate
+        foreach (var pair in mySources.Values.SelectMany(x=>x.Sources))
+        {
+          data.Add(pair.Key, pair.Value);
+        }
+        return data;
+      }
     }
 
     public ICredentials GetCredentials(Uri uri, IWebProxy proxy, CredentialType credentialType, bool retrying)

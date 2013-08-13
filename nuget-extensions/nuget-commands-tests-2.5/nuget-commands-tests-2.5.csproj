@@ -1,15 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7075A746-ACF4-4DD6-A2D8-D3C87C8372BE}</ProjectGuid>
+    <ProjectGuid>{9CC26FD2-F846-4894-98B3-81EEEF0C516D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JetBrains.TeamCity.NuGet.ExtendedCommands</RootNamespace>
-    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.2.0.Tests</AssemblyName>
+    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.2.5.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -17,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\2.0</OutputPath>
+    <OutputPath>bin\Debug\2.5</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -26,18 +25,17 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\2.0</OutputPath>
+    <OutputPath>bin\Release\2.5</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Moq">
       <HintPath>..\lib\moq\Moq.dll</HintPath>
     </Reference>
     <Reference Include="NuGet">
-      <HintPath>..\lib\nuget\2.0\NuGet.exe</HintPath>
+      <HintPath>..\lib\nuget\2.5\NuGet.exe</HintPath>
     </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\lib\nunit\nunit.framework.dll</HintPath>
@@ -51,14 +49,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\NuGetCredentialsProviderTest.cs" />
-    <Compile Include="src\TestQueryBuilder.cs" />
+    <Compile Include="..\nuget-commands-tests-2.0\src\NuGetCredentialsProviderTest.cs" />
+    <Compile Include="..\nuget-commands-tests-2.0\src\TestQueryBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\nuget-commands-2.0\nuget-commands-2.0.csproj">
-      <Project>{A1BABC58-91BC-46F6-B45F-604D8DAA0327}</Project>
-      <Name>nuget-commands-2.0</Name>
+    <ProjectReference Include="..\nuget-commands-2.5\nuget-commands-2.5.csproj">
+      <Project>{0374957a-dd74-4662-9f67-927ce687e25a}</Project>
+      <Name>nuget-commands-2.5</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

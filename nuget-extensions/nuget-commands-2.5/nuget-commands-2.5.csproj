@@ -1,26 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A1BABC58-91BC-46F6-B45F-604D8DAA0327}</ProjectGuid>
+    <ProjectGuid>{0374957A-DD74-4662-9F67-927CE687E25A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JetBrains.TeamCity.NuGet.ExtendedCommands</RootNamespace>
-    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.2.0</AssemblyName>
+    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.2.5</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\plugins-2.0\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NUGET_2_0</DefineConstants>
+    <OutputPath>..\bin\plugins-2.5\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NUGET_2_5</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -28,15 +26,15 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\plugins-2.0\</OutputPath>
-    <DefineConstants>TRACE;NUGET_2_0</DefineConstants>
+    <OutputPath>..\bin\plugins-2.5\</OutputPath>
+    <DefineConstants>TRACE;NUGET_2_5</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NuGet">
-      <HintPath>..\lib\nuget\2.0\NuGet.exe</HintPath>
+      <HintPath>..\lib\nuget\2.5\NuGet.exe</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -127,7 +125,7 @@
     <Compile Include="..\nuget-commands\src.2.0\ListCommandBase.cs">
       <Link>src\Shared.2.0\ListCommandBase.cs</Link>
     </Compile>
-    <Compile Include="..\nuget-commands\src.2.0\TeamCityMultipleCredentialProvider.cs" >
+    <Compile Include="..\nuget-commands\src.2.0\TeamCityMultipleCredentialProvider.cs">
       <Link>src\Shared.2.0\TeamCityMultipleCredentialProvider.cs</Link>
     </Compile>
     <Compile Include="..\nuget-commands\src.2.0\TeamCitySingleCredentialProvider.cs">
@@ -137,7 +135,7 @@
       <Link>src\Shared.2.0\CredentialsProviderUpdater.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\CredentialsProviderUpdater.cs" />   
+    <Compile Include="src\CredentialsProviderUpdater.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
