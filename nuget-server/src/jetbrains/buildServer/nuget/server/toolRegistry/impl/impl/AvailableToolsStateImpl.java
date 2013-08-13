@@ -33,8 +33,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 import static jetbrains.buildServer.nuget.common.FeedConstants.*;
 
@@ -91,7 +90,12 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
     FetchException exception = null;
     for (String feedUrl : Arrays.asList(NUGET_FEED_V2, MS_REF_FEED_V2, MS_REF_FEED_V1, NUGET_FEED_V1)) {
       try {
-        final Collection<FeedPackage> packages = myReader.queryPackageVersions(myFeed, feedUrl, FeedConstants.NUGET_COMMANDLINE);
+        final List<FeedPackage> packages = new ArrayList<FeedPackage>(myReader.queryPackageVersions(myFeed, feedUrl, FeedConstants.NUGET_COMMANDLINE));
+        Collections.sort(packages, new Comparator<FeedPackage>() {
+          public int compare(@NotNull final FeedPackage o1, @NotNull final FeedPackage o2) {
+            return -o1.compareTo(o2);
+          }
+        });
         return CollectionsUtil.filterAndConvertCollection(
                 packages,
                 new Converter<InstallableTool, FeedPackage>() {
