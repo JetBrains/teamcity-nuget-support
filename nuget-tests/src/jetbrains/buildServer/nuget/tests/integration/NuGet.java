@@ -26,16 +26,24 @@ import java.io.File;
 * Date: 31.08.11 10:39
 */
 public enum NuGet {
-  NuGet_1_6,
-  NuGet_1_7,
-  NuGet_1_8,
-  NuGet_2_0,
-  NuGet_2_1,
-  NuGet_2_2,
-  NuGet_2_5,
-  NuGet_2_6,
-  NuGet_2_7,
+  NuGet_1_6(1,6),
+  NuGet_1_7(1,7),
+  NuGet_1_8(1,8),
+  NuGet_2_0(2,0),
+  NuGet_2_1(2,1),
+  NuGet_2_2(2,2),
+  NuGet_2_5(2,5),
+  NuGet_2_6(2,6),
+  NuGet_2_7(2,7),
   ;
+
+  public final int major;
+  public final int minor;
+
+  NuGet(int major, int minor) {
+    this.major = major;
+    this.minor = minor;
+  }
 
   @NotNull
   public File getPath() {
@@ -62,4 +70,6 @@ public enum NuGet {
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }
   }
+
+
 }

@@ -83,89 +83,56 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   public static final String NUGET_VERSIONS_17p = "nuget_versions_17p";
   public static final String NUGET_VERSIONS_18p = "nuget_versions_18p";
   public static final String NUGET_VERSIONS_20p = "nuget_versions_20p";
+  public static final String NUGET_VERSIONS_27p = "nuget_versions_27p";
+
+  @NotNull
+  private Object[][] versionsFrom(@NotNull final NuGet lowerBound) {
+    final NuGet[] values =
+//            new NuGet[]{NuGet.NuGet_2_7};
+            NuGet.values();
+
+    final List<Object[]> data = new ArrayList<Object[]>();
+    for (NuGet value : values) {
+      if (value.major < lowerBound.major) continue;
+      if (value.major == lowerBound.major && value.minor < lowerBound.minor) continue;
+      data.add(new Object[]{value});
+    }
+    return data.toArray(new Object[data.size()][]);
+  }
 
   @DataProvider(name = NUGET_VERSIONS)
   public Object[][] dataProviderNuGetVersions() {
-    return new Object[][]{
-            new Object[] { NuGet.NuGet_1_6},
-            new Object[] { NuGet.NuGet_1_7},
-            new Object[] { NuGet.NuGet_1_8},
-            new Object[] { NuGet.NuGet_2_0},
-            new Object[] { NuGet.NuGet_2_1},
-            new Object[] { NuGet.NuGet_2_2},
-            new Object[] { NuGet.NuGet_2_5},
-            new Object[] { NuGet.NuGet_2_6},
-            new Object[] { NuGet.NuGet_2_7},
-    };
+    return versionsFrom(NuGet.NuGet_1_6);
   }
 
   @DataProvider(name = NUGET_VERSIONS_15p)
   public Object[][] dataProviderNuGetVersions15p() {
-    return new Object[][]{
-            new Object[] { NuGet.NuGet_1_6},
-            new Object[] { NuGet.NuGet_1_7},
-            new Object[] { NuGet.NuGet_1_8},
-            new Object[] { NuGet.NuGet_2_0},
-            new Object[] { NuGet.NuGet_2_1},
-            new Object[] { NuGet.NuGet_2_2},
-            new Object[] { NuGet.NuGet_2_5},
-            new Object[] { NuGet.NuGet_2_6},
-            new Object[] { NuGet.NuGet_2_7},
-    };
+    return versionsFrom(NuGet.NuGet_1_6);
   }
 
   @DataProvider(name = NUGET_VERSIONS_16p)
   public Object[][] dataProviderNuGetVersions16p() {
-    return new Object[][]{
-            new Object[] { NuGet.NuGet_1_6},
-            new Object[] { NuGet.NuGet_1_7},
-            new Object[] { NuGet.NuGet_1_8},
-            new Object[] { NuGet.NuGet_2_0},
-            new Object[] { NuGet.NuGet_2_1},
-            new Object[] { NuGet.NuGet_2_2},
-            new Object[] { NuGet.NuGet_2_5},
-            new Object[] { NuGet.NuGet_2_6},
-            new Object[] { NuGet.NuGet_2_7},
-    };
+    return versionsFrom(NuGet.NuGet_1_6);
   }
 
   @DataProvider(name = NUGET_VERSIONS_17p)
   public Object[][] dataProviderNuGetVersions17p() {
-    return new Object[][]{
-            new Object[] { NuGet.NuGet_1_7},
-            new Object[] { NuGet.NuGet_1_8},
-            new Object[] { NuGet.NuGet_2_0},
-            new Object[] { NuGet.NuGet_2_1},
-            new Object[] { NuGet.NuGet_2_2},
-            new Object[] { NuGet.NuGet_2_5},
-            new Object[] { NuGet.NuGet_2_6},
-            new Object[] { NuGet.NuGet_2_7},
-    };
+    return versionsFrom(NuGet.NuGet_1_7);
   }
 
   @DataProvider(name = NUGET_VERSIONS_18p)
   public Object[][] dataProviderNuGetVersions18p() {
-    return new Object[][]{
-            new Object[] { NuGet.NuGet_1_8},
-            new Object[] { NuGet.NuGet_2_0},
-            new Object[] { NuGet.NuGet_2_1},
-            new Object[] { NuGet.NuGet_2_2},
-            new Object[] { NuGet.NuGet_2_5},
-            new Object[] { NuGet.NuGet_2_6},
-            new Object[] { NuGet.NuGet_2_7},
-    };
+    return versionsFrom(NuGet.NuGet_1_8);
   }
 
   @DataProvider(name = NUGET_VERSIONS_20p)
   public Object[][] dataProviderNuGetVersions20p() {
-    return new Object[][]{
-            new Object[] { NuGet.NuGet_2_0},
-            new Object[] { NuGet.NuGet_2_1},
-            new Object[] { NuGet.NuGet_2_2},
-            new Object[] { NuGet.NuGet_2_5},
-            new Object[] { NuGet.NuGet_2_6},
-            new Object[] { NuGet.NuGet_2_7},
-    };
+    return versionsFrom(NuGet.NuGet_2_0);
+  }
+
+  @DataProvider(name = NUGET_VERSIONS_27p)
+  public Object[][] dataProviderNuGetVersions27p() {
+    return versionsFrom(NuGet.NuGet_2_7);
   }
 
   @BeforeMethod
