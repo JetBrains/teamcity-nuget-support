@@ -25,6 +25,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.testng.annotations.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 18.06.12 21:06
@@ -32,8 +35,8 @@ import org.testng.annotations.Test;
 public class PackageInstallerBuilderReportTest extends PackageInstallerBuilderTestBase {
   @NotNull
   @Override
-  protected PackagesInstallerAdapter createBuilder(@NotNull InstallStages stages) {
-    return new PackagesReportBuilder(myActionFactory, stages.getReportStage(), myContext);
+  protected Collection<PackagesInstallerAdapter> createBuilder(@NotNull InstallStages stages) {
+    return Arrays.<PackagesInstallerAdapter>asList(new PackagesReportBuilder(myActionFactory, stages.getReportStage(), myContext));
   }
 
 

@@ -30,11 +30,14 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionPack
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionWidePackagesConfigScanner;
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 
@@ -51,6 +54,7 @@ import java.util.TreeSet;
 public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
   protected PackagesInstallParameters myInstall;
   protected PackagesUpdateParameters myUpdate;
+  protected PackagesInstallMode myInstallMode;
 
 
   @BeforeMethod
@@ -61,14 +65,24 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
     myInstall = m.mock(PackagesInstallParameters.class);
     myUpdate = m.mock(PackagesUpdateParameters.class);
 
+    myInstallMode = PackagesInstallMode.VIA_INSTALL;
+
     m.checking(new Expectations(){{
       allowing(myInstall).getNuGetParameters();
       will(returnValue(myNuGet));
       allowing(myUpdate).getNuGetParameters();
       will(returnValue(myNuGet));
 
+      allowing(myInstall).getInstallMode(); will(new CustomAction("return myInstallMode") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return myInstallMode;
+        }
+      });
+
       allowing(myLogger).activityStarted(with(equal("install")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("install")), with(any(String.class)));
+      allowing(myLogger).activityStarted(with(equal("restore")), with(any(String.class)), with(any(String.class)));
+      allowing(myLogger).activityFinished(with(equal("restore")), with(any(String.class)));
       allowing(myLogger).activityStarted(with(equal("scan")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("scan")), with(any(String.class)));
     }});

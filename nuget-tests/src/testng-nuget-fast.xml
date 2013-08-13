@@ -93,6 +93,7 @@
 
 
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetInstallPackageActionFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetRestorePackageActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.RepositoryPathResolverTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetUpdatePackageActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPushActoinFactoryTest"/>

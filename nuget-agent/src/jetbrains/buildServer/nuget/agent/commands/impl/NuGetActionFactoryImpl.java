@@ -79,6 +79,14 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
     return myCommandFactory.createInstall(params, packagesConfig, targetFolder, getCallback(context));
   }
 
+  @NotNull
+  public BuildProcess createRestore(@NotNull final BuildRunnerContext context,
+                                    @NotNull final PackagesInstallParameters params,
+                                    @NotNull final File solutionFile,
+                                    @NotNull final File targetFolder) throws RunBuildException {
+    return myCommandFactory.createRestore(params, solutionFile, targetFolder, getCallback(context));
+  }
+
 
   @NotNull
   public BuildProcess createUpdate(@NotNull final BuildRunnerContext context,

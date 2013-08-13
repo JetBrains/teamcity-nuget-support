@@ -36,9 +36,20 @@
   Exclude Version: <strong><props:displayCheckboxValue name="${ib.excludeVersionKey}"/></strong>
 </div>
 <div class="parameter">
+  Restore Mode:
+  <strong>
+    <c:set var="restoreMode" value="${propertiesBean.properties[ib.restoreCommandModeKey]}"/>
+    <c:choose>
+      <c:when test="${empty restoreMode or (restoreMode eq ib.restoreCommandModeInstallValue)}">Install missing packages</c:when>
+      <c:when test="${restoreMode eq ib.restoreCommandModeRestoreValue}">Restore packages (requires NuGet 2.7+)</c:when>
+      <c:otherwise>Uknnown restore mode</c:otherwise>
+    </c:choose>
+  </strong>
+</div>
+<div class="parameter">
   Use local machine packages cache:
   <strong>
-    <props:displayCheckboxValue name="${not ib.noCacheKey}"/>
+    <props:displayCheckboxValue name="${ib.noCacheKey}" checkedValue="NO" uncheckedValue="YES"/>
   </strong>
 </div>
 <div class="parameter">
@@ -50,13 +61,12 @@
 <div class="parameter">
   Update mode:
   <strong>
-    <c:forEach var="i" items="${propertiesBean.properties[ib.updateModeKey]}">
-      <c:choose>
-        <c:when test="${i eq ib.updatePerConfigValue}">Update via packages.config file</c:when>
-        <c:when test="${i eq ib.updatePerSolutionValue}">Update via solution file</c:when>
-        <c:otherwise>Update via solution file</c:otherwise>
-      </c:choose>
-    </c:forEach>
+    <c:set var="updateMode" value="${propertiesBean.properties[ib.updateModeKey]}"/>
+    <c:choose>
+      <c:when test="${updateMode eq ib.updatePerConfigValue}">Update via packages.config file</c:when>
+      <c:when test="${updateMode eq ib.updatePerSolutionValue}">Update via solution file</c:when>
+      <c:otherwise>Update via solution file</c:otherwise>
+    </c:choose>
   </strong>
 </div>
 <div class="parameter">

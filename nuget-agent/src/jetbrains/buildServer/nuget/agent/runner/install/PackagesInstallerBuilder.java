@@ -17,11 +17,13 @@
 package jetbrains.buildServer.nuget.agent.runner.install;
 
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesInstallerAdapter;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
+import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -33,7 +35,7 @@ import java.io.File;
 public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
   private final NuGetActionFactory myActionFactory;
   private final BuildProcessContinuation myStages;
-  private final BuildRunnerContext myContext;
+  protected final BuildRunnerContext myContext;
 
   private final PackagesInstallParameters myInstallParameters;
 
@@ -47,11 +49,39 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
     myActionFactory = actionFactory;
   }
 
-  public void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException {
-    myStages.pushBuildProcess(myActionFactory.createInstall(
+  @Override
+  public void onSolutionFileFound(@NotNull File sln, @NotNull File targetFolder) throws RunBuildException {
+    if (myInstallParameters.getInstallMode() != PackagesInstallMode.VIA_RESTORE) return;
+
+    myStages.pushBuildProcess(myActionFactory.createRestore(
             myContext,
             myInstallParameters,
-            config,
+            sln,
             targetFolder));
+  }
+
+  public void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException {
+    if (myInstallParameters.getInstallMode() != PackagesInstallMode.VIA_INSTALL) return;
+
+    myStages.pushBuildProcess(wrapConfigProcess(config, new BuildProcessFactory() {
+      @NotNull
+      public BuildProcess createBuildProcess() throws RunBuildException {
+        return myActionFactory.createInstall(
+                myContext,
+                myInstallParameters,
+                config,
+                targetFolder);
+      }
+    }));
+  }
+
+  @NotNull
+  protected BuildProcess wrapConfigProcess(@NotNull final File config, @NotNull final BuildProcessFactory proc) throws RunBuildException {
+    return proc.createBuildProcess();
+  }
+
+  protected interface BuildProcessFactory {
+    @NotNull
+    BuildProcess createBuildProcess() throws RunBuildException;
   }
 }

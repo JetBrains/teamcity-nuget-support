@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.runner.install;
 
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
@@ -30,6 +31,9 @@ public class InstallBean {
   public String getNuGetSourcesKey() { return PackagesConstants.NUGET_SOURCES; }
   public String getSolutionPathKey() { return PackagesConstants.SLN_PATH; }
   public String getExcludeVersionKey() { return PackagesConstants.NUGET_EXCLUDE_VERSION;}
+  public String getRestoreCommandModeKey() { return PackagesConstants.NUGET_USE_RESTORE_COMMAND;}
+  public String getRestoreCommandModeRestoreValue() { return PackagesInstallMode.VIA_RESTORE.getName();}
+  public String getRestoreCommandModeInstallValue() { return PackagesInstallMode.VIA_INSTALL.getName();}
   public String getNoCacheKey() { return PackagesConstants.NUGET_NO_CACHE; }
   public String getUpdatePackagesKey() { return PackagesConstants.NUGET_UPDATE_PACKAGES;}
   public String getUpdatePackagesSafeKey() { return PackagesConstants.NUGET_UPDATE_PACKAGES_SAFE;}

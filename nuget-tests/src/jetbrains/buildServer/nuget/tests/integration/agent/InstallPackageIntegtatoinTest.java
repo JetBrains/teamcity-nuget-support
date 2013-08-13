@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration.agent;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.agent.StartsWithMatcher;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
@@ -60,8 +61,52 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertEquals(4, packageses.size());
   }
 
+  @Test(dataProvider = NUGET_VERSIONS_27p)
+  public void test_01_online_sources_restore(@NotNull final NuGet nuget) throws RunBuildException {
+    myInstallMode = PackagesInstallMode.VIA_RESTORE;
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213"),
+                    new PackageInfo("Ninject", "2.2.1.4"))
+    );
+
+    String packages = "packages";
+    List<File> packageses = listFiles(packages);
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(4, packageses.size());
+  }
+
   @Test(dataProvider = NUGET_VERSIONS_17p)
   public void test_01_online_sources_no_cache(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213"),
+                    new PackageInfo("Ninject", "2.2.1.4"))
+    );
+
+    String packages = "packages";
+    List<File> packageses = listFiles(packages);
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(4, packageses.size());
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS_27p)
+  public void test_01_online_sources_no_cache_restore(@NotNull final NuGet nuget) throws RunBuildException {
+    myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, false, nuget,
@@ -110,6 +155,34 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_forSln(@NotNull final NuGet nuget) throws RunBuildException {
+    ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
+
+    m.checking(new Expectations() {{
+      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
+      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
+
+      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(false));
+      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
+    }});
+
+    fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, true, nuget, null);
+
+
+    List<File> packageses = listFiles("packages");
+    System.out.println("installed packageses = " + packageses);
+
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.10.11092").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(5, packageses.size());
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS_27p)
+  public void test_01_online_sources_restore_update_forSln(@NotNull final NuGet nuget) throws RunBuildException {
+    myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     m.checking(new Expectations() {{

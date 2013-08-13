@@ -19,6 +19,7 @@
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.runner.install.InstallBean" scope="request"/>
+<jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
 
 <l:settingsGroup title="NuGet settings">
   <tr>
@@ -51,7 +52,7 @@
   </tr>
 </l:settingsGroup>
 
-<l:settingsGroup title="Packages">
+<l:settingsGroup title="Restore Packages">
   <tr>
     <th>Path to solution file:</th>
     <td>
@@ -62,7 +63,18 @@
     </td>
   </tr>
   <tr>
-    <th rowspan="2">Install Options:</th>
+    <th><label for="${ib.restoreCommandModeKey}">Restore Mode:</label></th>
+    <td>
+      <c:set var="restoreMode" value="${propertiesBean.properties[ib.restoreCommandModeKey]}"/>
+      <props:selectProperty name="${ib.restoreCommandModeKey}" style="longField">
+        <props:option value="${ib.restoreCommandModeRestoreValue}">Restore (requires NuGet 2.7+)</props:option>
+        <props:option value="${ib.restoreCommandModeInstallValue}" selected="${empty restoreMode or (restoreMode eq ib.restoreCommandModeInstallValue)}">Install</props:option>
+      </props:selectProperty>
+      <span class="smallNote">Select <em>NuGet.exe restore</em> or <em>NuGet.exe install</em> command to restore packages for the solution</span>
+    </td>
+  </tr>
+  <tr>
+    <th rowspan="2">Restore Options:</th>
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
@@ -78,7 +90,7 @@
     </td>
   </tr>
 </l:settingsGroup>
-<l:settingsGroup title="Update">
+<l:settingsGroup title="Update Packages">
   <tr>
     <th>Update Packages:</th>
     <td>

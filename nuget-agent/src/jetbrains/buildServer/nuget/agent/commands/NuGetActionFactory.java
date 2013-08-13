@@ -19,10 +19,7 @@ package jetbrains.buildServer.nuget.agent.commands;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.parameters.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -37,6 +34,12 @@ public interface NuGetActionFactory {
   BuildProcess createInstall(@NotNull BuildRunnerContext context,
                              @NotNull PackagesInstallParameters params,
                              @NotNull File packagesConfig,
+                             @NotNull File targetFolder) throws RunBuildException;
+
+  @NotNull
+  BuildProcess createRestore(@NotNull BuildRunnerContext context,
+                             @NotNull PackagesInstallParameters params,
+                             @NotNull File solutionFile,
                              @NotNull File targetFolder) throws RunBuildException;
 
   @NotNull

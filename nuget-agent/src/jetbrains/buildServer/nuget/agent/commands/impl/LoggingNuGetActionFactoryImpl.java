@@ -82,6 +82,33 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
+  public BuildProcess createRestore(@NotNull final BuildRunnerContext context,
+                                    @NotNull final PackagesInstallParameters params,
+                                    @NotNull final File solutionFile,
+                                    @NotNull final File targetFolder) throws RunBuildException {
+    return new DelegatingBuildProcess(
+            new LoggingAction(context, solutionFile, "restore") {
+              @NotNull
+              @Override
+              protected BuildProcess delegateToActualAction() throws RunBuildException {
+                return myActionFactory.createRestore(
+                        context,
+                        params,
+                        solutionFile,
+                        targetFolder);
+              }
+
+              @NotNull
+              @Override
+              protected String getBlockDescription(@NotNull String pathToLog) {
+                return "Restoring NuGet packages for " + pathToLog;
+              }
+            }
+    );
+
+  }
+
+  @NotNull
   public BuildProcess createUpdate(@NotNull final BuildRunnerContext context,
                                    @NotNull final PackagesUpdateParameters params,
                                    @NotNull final File config,
