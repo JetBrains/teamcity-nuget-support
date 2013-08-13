@@ -40,7 +40,11 @@
         <br />
         If you use TeamCity as NuGet server, specify
         <em><c:out value="${ib.nuGetFeedReference}"/></em>
-        to refer to TeamCity provided packages source.
+        to refer to TeamCity provided guest-visible packages source
+        <br />
+        Specify <em><c:out value="${ib.nuGetAuthFeedReference}"/></em>
+        to refer to TeamCity provided authenticated NuGet feed
+        (you also need to configurate <em>NuGet Feed Credentials</em> build feature)
       </span>
       <span class="error" id="error_${ib.nuGetSourcesKey}"></span>
     </td>

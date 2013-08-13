@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.entity;
 
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -29,8 +30,7 @@ import org.testng.annotations.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -39,7 +39,7 @@ import java.util.HashSet;
 public class MetadataLoaderTest {
   @Test
   public void test_parses_properties() throws JDOMException, IOException {
-    final MetadataParseResult result = XmlFeedParsers.loadBeans_v2();
+    final MetadataParseResult result = XmlFeedParsers.loadBeans_v3();
     Assert.assertFalse(result.getData().isEmpty());
     Assert.assertFalse(result.getKey().isEmpty());
 
@@ -79,35 +79,50 @@ public class MetadataLoaderTest {
   @Test
   public void test_feed_api_not_changed() throws JDOMException, IOException {
     MetadataParseResult result = fetchNuGetOrgMetadata_v2();
-    MetadataParseResult our = XmlFeedParsers.loadBeans_v2();
+    MetadataParseResult our = XmlFeedParsers.loadBeans_v3();
 
-    assertDiff(result.getKey(), our.getKey());
-    assertDiff(result.getData(), our.getData());
+    assertSameDataReturned(result.getKey(), our.getKey());
+    assertSameDataReturned(result.getData(), our.getData());
   }
 
-  private <T> void assertDiff(@NotNull Collection<T> a, @NotNull Collection<T> b) {
-    final HashSet<T> sa = new HashSet<T>(a);
-    final HashSet<T> sb = new HashSet<T>(b);
+  @SuppressWarnings("ConstantConditions")
+  private void assertSameDataReturned(@NotNull Collection<MetadataBeanProperty> fetched,
+                                      @NotNull Collection<MetadataBeanProperty> actual) {
+    final Map<String, MetadataBeanProperty> fetchedM = map(fetched);
+    final Map<String, MetadataBeanProperty> actualM = map(actual);
 
-    if (sa.equals(sb)) return;
+    final StringBuilder sb = new StringBuilder();
+    final Set<String> allKeys = new TreeSet<String>(CollectionsUtil.join(fetchedM.keySet(), actualM.keySet()));
+    for (String key : allKeys) {
+      final MetadataBeanProperty fetchedKey = fetchedM.get(key);
+      final MetadataBeanProperty actualKey = actualM.get(key);
 
-    sa.removeAll(b);
-    sb.removeAll(a);
+      if (fetchedKey == null && actualKey == null) continue;
+      if (fetchedKey == null && actualKey != null) {
+        sb.append(actualKey).append(" was not fetched").append("\n");
+        continue;
+      }
+      if (fetchedKey != null && actualKey == null) {
+        sb.append(fetchedKey).append(" was not fetched").append("\n");
+        continue;
+      }
 
-    final StringBuilder s = new StringBuilder();
-    if (!sa.isEmpty()) {
-      s.append("a-b:").append(sa).append(", ");
+      if (fetchedKey.equals(actualKey)) continue;
+
+      sb.append(key).append(":\n").append("  fetched: ").append(fetchedKey).append("\n   actual: ").append(actualKey).append("\n");
     }
 
-    if (!sb.isEmpty()) {
-      s.append("b-a:").append(sb).append(", ");
+    if (sb.length() > 0) {
+      Assert.fail(sb.toString());
     }
+  }
 
-    if (sa.isEmpty() && sb.isEmpty()) {
-      s.append("Incorrect comparison. Setts are not equal, but dirrerences are");
+  private Map<String, MetadataBeanProperty> map(@NotNull Collection<MetadataBeanProperty> props) {
+    final Map<String, MetadataBeanProperty> map = new TreeMap<String, MetadataBeanProperty>();
+    for (MetadataBeanProperty p : props) {
+      map.put(p.getName(), p);
     }
-
-    Assert.fail(s.toString());
+    return map;
   }
 
   @NotNull

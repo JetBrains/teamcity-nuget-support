@@ -17,21 +17,28 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
+import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableToolsStateImpl;
+import jetbrains.buildServer.util.TestFor;
 import jetbrains.buildServer.util.TimeService;
 import junit.framework.Assert;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -106,5 +113,29 @@ public class AvailableToolStateTest extends BaseTestCase {
 
     myState.getAvailable(ToolsPolicy.FetchNew);
     m.assertIsSatisfied();
+  }
+
+  @Test
+  @TestFor(issues = "TW-30395")
+  public void test_should_return_newer_first() throws IOException, FetchException {
+
+    m.checking(new Expectations(){{
+      oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(returnValue(Arrays.asList(commandLine("2.0.1"), commandLine("2.7.0"), commandLine("1.4.2"))));
+      allowing(myReader).queryPackageVersions(myClient, "https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      allowing(myTime).now(); will(returnValue(1000234L));
+    }});
+
+    Iterator<? extends NuGetTool> tools = myState.getAvailable(ToolsPolicy.FetchNew).iterator();
+    Assert.assertEquals(tools.next().getVersion(), "2.7.0");
+    Assert.assertEquals(tools.next().getVersion(), "2.0.1");
+    Assert.assertEquals(tools.next().getVersion(), "1.4.2");
+    Assert.assertFalse(tools.hasNext());
+
+    m.assertIsSatisfied();
+  }
+
+  @NotNull
+  private FeedPackage commandLine(@NotNull String version) {
+    return new FeedPackage("atomId", new PackageInfo("pkd", version), false, "", "download-url");
   }
 }

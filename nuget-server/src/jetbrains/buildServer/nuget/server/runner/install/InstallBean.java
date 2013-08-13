@@ -39,4 +39,5 @@ public class InstallBean {
   public String getUpdatePerSolutionValue() { return PackagesUpdateMode.FOR_SLN.getName();}
   public String getUpdatePerConfigValue() { return PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG.getName();}
   public String getNuGetFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_REFERENCE); }
+  public String getNuGetAuthFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_AUTH_REFERENCE); }
 }

@@ -50,37 +50,52 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getAuthors(){ 
     final String v = getValue("Authors");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getCopyright(){ 
     final String v = getValue("Copyright");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getDependencies(){ 
     final String v = getValue("Dependencies");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getDescription(){ 
     final String v = getValue("Description");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getIconUrl(){ 
     final String v = getValue("IconUrl");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
@@ -116,6 +131,16 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
 
 
   @NotNull
+  public final java.lang.String getLanguage(){ 
+    final String v = getValue("Language");
+    if (v == null) { 
+      return "";
+    }
+    return v;
+  }
+
+
+  @NotNull
   public final org.joda.time.LocalDateTime getLastUpdated(){ 
     final String v = getValue("LastUpdated");
     if (v == null) { 
@@ -125,30 +150,32 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
   }
 
 
-  @Nullable
-  public final java.lang.String getLanguage(){ 
-    final String v = getValue("Language");
-    return v;
-  }
-
-
-  @Nullable
+  @NotNull
   public final java.lang.String getLicenseUrl(){ 
     final String v = getValue("LicenseUrl");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getPackageHash(){ 
     final String v = getValue("PackageHash");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getPackageHashAlgorithm(){ 
     final String v = getValue("PackageHashAlgorithm");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
@@ -163,23 +190,32 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getProjectUrl(){ 
     final String v = getValue("ProjectUrl");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getReportAbuseUrl(){ 
     final String v = getValue("ReportAbuseUrl");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getReleaseNotes(){ 
     final String v = getValue("ReleaseNotes");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
@@ -194,16 +230,22 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getTags(){ 
     final String v = getValue("Tags");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
 
-  @Nullable
+  @NotNull
   public final java.lang.String getMinClientVersion(){ 
     final String v = getValue("MinClientVersion");
+    if (v == null) { 
+      return "";
+    }
     return v;
   }
 
