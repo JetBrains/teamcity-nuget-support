@@ -30,6 +30,7 @@ public class InstallBean {
   public String getNuGetSourcesKey() { return PackagesConstants.NUGET_SOURCES; }
   public String getSolutionPathKey() { return PackagesConstants.SLN_PATH; }
   public String getExcludeVersionKey() { return PackagesConstants.NUGET_EXCLUDE_VERSION;}
+  public String getRestoreCommandKey() { return PackagesConstants.NUGET_USE_RESTORE_COMMAND;}
   public String getNoCacheKey() { return PackagesConstants.NUGET_NO_CACHE; }
   public String getUpdatePackagesKey() { return PackagesConstants.NUGET_UPDATE_PACKAGES;}
   public String getUpdatePackagesSafeKey() { return PackagesConstants.NUGET_UPDATE_PACKAGES_SAFE;}

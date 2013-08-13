@@ -47,7 +47,7 @@
   </tr>
 </l:settingsGroup>
 
-<l:settingsGroup title="Packages">
+<l:settingsGroup title="Restore Packages">
   <tr>
     <th>Path to solution file:</th>
     <td>
@@ -58,7 +58,12 @@
     </td>
   </tr>
   <tr>
-    <th rowspan="2">Install Options:</th>
+    <th rowspan="3">Restore Options:</th>
+    <td>
+      <props:checkboxProperty name="${ib.restoreCommandKey}"/>
+      <label for="${ib.restoreCommandKey}">Use <em>NuGet.exe restore</em> command</label>
+      <span class="smallNote">Uses <em>NuGet.exe restore</em> command to install packages into solution. Only for NuGet 2.7 or newer</span>
+    </td>
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
@@ -74,7 +79,7 @@
     </td>
   </tr>
 </l:settingsGroup>
-<l:settingsGroup title="Update">
+<l:settingsGroup title="Update Packages">
   <tr>
     <th>Update Packages:</th>
     <td>

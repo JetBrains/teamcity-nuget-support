@@ -38,7 +38,13 @@
 <div class="parameter">
   Use local machine packages cache:
   <strong>
-    <props:displayCheckboxValue name="${not ib.noCacheKey}"/>
+    <props:displayCheckboxValue name="${ib.noCacheKey}" checkedValue="NO" uncheckedValue="YES"/>
+  </strong>
+</div>
+<div class="parameter">
+  Use <em>NuGet.exe restore</em> command:
+  <strong>
+    <props:displayCheckboxValue name="${ib.restoreCommandKey}"/>
   </strong>
 </div>
 <div class="parameter">

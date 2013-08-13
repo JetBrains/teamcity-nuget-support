@@ -34,6 +34,7 @@ public interface PackagesConstants {
   public static final String NUGET_PATH = "nuget.path";
   public static final String NUGET_SOURCES = "nuget.sources";
   public static final String NUGET_EXCLUDE_VERSION = "nuget.excludeVersion";
+  public static final String NUGET_USE_RESTORE_COMMAND = "nuget.use.restore";
   public static final String NUGET_NO_CACHE = "nuget.noCache";
 
   public static final String NUGET_UPDATE_PACKAGES = "nuget.updatePackages";

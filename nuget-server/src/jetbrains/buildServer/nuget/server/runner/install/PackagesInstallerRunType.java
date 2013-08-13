@@ -43,11 +43,13 @@ public class PackagesInstallerRunType extends NuGetRunType {
     return INSTALL_RUN_TYPE;
   }
 
+  @NotNull
   @Override
   public String getDisplayName() {
     return "NuGet Installer";
   }
 
+  @NotNull
   @Override
   public String getDescription() {
     return "Installs and updates missing NuGet packages";
@@ -96,6 +98,8 @@ public class PackagesInstallerRunType extends NuGetRunType {
 
   @Override
   public Map<String, String> getDefaultRunnerProperties() {
-    return new TreeMap<String, String>();
+    final TreeMap<String, String> map = new TreeMap<String, String>();
+    map.put(NUGET_USE_RESTORE_COMMAND, "checked");
+    return map;
   }
 }

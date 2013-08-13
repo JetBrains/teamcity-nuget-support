@@ -43,9 +43,11 @@ public abstract class NuGetRunType extends RunType {
   @Override
   public abstract String getType();
 
+  @NotNull
   @Override
   public abstract String getDisplayName();
 
+  @NotNull
   @Override
   public abstract String getDescription();
 
