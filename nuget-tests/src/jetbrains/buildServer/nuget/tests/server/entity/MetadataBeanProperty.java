@@ -24,7 +24,7 @@ import org.odata4j.edm.EdmSimpleType;
 * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
 * Date: 07.01.12 9:48
 */
-public final class MetadataBeanProperty {
+public final class MetadataBeanProperty implements Comparable<MetadataBeanProperty> {
   private final String myName;
   private final EdmSimpleType myType;
   private final String myAtomPath;
@@ -63,7 +63,7 @@ public final class MetadataBeanProperty {
   public String toString() {
     return "Property{" +
             "myName='" + myName + '\'' +
-            ", myType=" + myType +
+            ", myType=" + myType + (myNullable ? "?": "") +
             ", myAtomPath='" + myAtomPath + '\'' +
             '}';
   }
@@ -90,5 +90,14 @@ public final class MetadataBeanProperty {
     result = 31 * result + (myAtomPath != null ? myAtomPath.hashCode() : 0);
     result = 31 * result + (myNullable ? 1 : 0);
     return result;
+  }
+
+  @NotNull
+  protected String key() {
+    return getName() + "|" + getType() + "|" + getAtomPath() + "|" + myNullable;
+  }
+
+  public int compareTo(@NotNull final MetadataBeanProperty o) {
+    return key().compareToIgnoreCase(o.key());
   }
 }
