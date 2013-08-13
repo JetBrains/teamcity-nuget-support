@@ -24,7 +24,6 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public interface PackageEntityV2  { 
 
@@ -35,28 +34,28 @@ public interface PackageEntityV2  {
   @NotNull
   java.lang.String getVersion();
 
-  @Nullable
+  @NotNull
   java.lang.String getAuthors();
 
-  @Nullable
+  @NotNull
   java.lang.String getCopyright();
 
   @NotNull
   org.joda.time.LocalDateTime getCreated();
 
-  @Nullable
+  @NotNull
   java.lang.String getDependencies();
 
-  @Nullable
+  @NotNull
   java.lang.String getDescription();
 
   @NotNull
   java.lang.Integer getDownloadCount();
 
-  @Nullable
+  @NotNull
   java.lang.String getGalleryDetailsUrl();
 
-  @Nullable
+  @NotNull
   java.lang.String getIconUrl();
 
   @NotNull
@@ -69,51 +68,51 @@ public interface PackageEntityV2  {
   java.lang.Boolean getIsPrerelease();
 
   @NotNull
+  java.lang.String getLanguage();
+
+  @NotNull
   org.joda.time.LocalDateTime getLastUpdated();
 
   @NotNull
   org.joda.time.LocalDateTime getPublished();
 
-  @Nullable
-  java.lang.String getLanguage();
-
-  @Nullable
+  @NotNull
   java.lang.String getLicenseUrl();
 
-  @Nullable
+  @NotNull
   java.lang.String getPackageHash();
 
-  @Nullable
+  @NotNull
   java.lang.String getPackageHashAlgorithm();
 
   @NotNull
   java.lang.Long getPackageSize();
 
-  @Nullable
+  @NotNull
   java.lang.String getProjectUrl();
 
-  @Nullable
+  @NotNull
   java.lang.String getReportAbuseUrl();
 
-  @Nullable
+  @NotNull
   java.lang.String getReleaseNotes();
 
   @NotNull
   java.lang.Boolean getRequireLicenseAcceptance();
 
-  @Nullable
+  @NotNull
   java.lang.String getSummary();
 
-  @Nullable
+  @NotNull
   java.lang.String getTags();
 
-  @Nullable
+  @NotNull
   java.lang.String getTitle();
 
   @NotNull
   java.lang.Integer getVersionDownloadCount();
 
-  @Nullable
+  @NotNull
   java.lang.String getMinClientVersion();
 
 

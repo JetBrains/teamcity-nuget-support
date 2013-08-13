@@ -39,7 +39,7 @@ import java.util.*;
 public class MetadataLoaderTest {
   @Test
   public void test_parses_properties() throws JDOMException, IOException {
-    final MetadataParseResult result = XmlFeedParsers.loadBeans_v2();
+    final MetadataParseResult result = XmlFeedParsers.loadBeans_v3();
     Assert.assertFalse(result.getData().isEmpty());
     Assert.assertFalse(result.getKey().isEmpty());
 
@@ -79,7 +79,7 @@ public class MetadataLoaderTest {
   @Test
   public void test_feed_api_not_changed() throws JDOMException, IOException {
     MetadataParseResult result = fetchNuGetOrgMetadata_v2();
-    MetadataParseResult our = XmlFeedParsers.loadBeans_v2();
+    MetadataParseResult our = XmlFeedParsers.loadBeans_v3();
 
     assertSameDataReturned(result.getKey(), our.getKey());
     assertSameDataReturned(result.getData(), our.getData());

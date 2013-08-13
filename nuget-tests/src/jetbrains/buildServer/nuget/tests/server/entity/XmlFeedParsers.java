@@ -29,7 +29,6 @@ import org.jetbrains.annotations.NotNull;
 import org.odata4j.edm.EdmSimpleType;
 import org.testng.Assert;
 
-import javax.management.modelmbean.XMLParseException;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -50,6 +49,14 @@ public class XmlFeedParsers {
   @NotNull
   public static MetadataParseResult loadBeans_v2() throws JDOMException, IOException {
     final File data = Paths.getTestDataPath("feed/odata/metadata.v2.xml");
+    Assert.assertTrue(data.isFile());
+
+    return loadMetadataBeans(FileUtil.parseDocument(data));
+  }
+
+  @NotNull
+  public static MetadataParseResult loadBeans_v3() throws JDOMException, IOException {
+    final File data = Paths.getTestDataPath("feed/odata/metadata.v3.xml");
     Assert.assertTrue(data.isFile());
 
     return loadMetadataBeans(FileUtil.parseDocument(data));

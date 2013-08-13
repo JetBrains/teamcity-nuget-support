@@ -37,7 +37,7 @@ public class EntityGenerator extends BaseTestCase {
     final String entity = "PackageEntityImpl";
     final String ientityV2 = "PackageEntityV2";
 
-    final MetadataParseResult V2 = XmlFeedParsers.loadBeans_v2();
+    final MetadataParseResult V2 = XmlFeedParsers.loadBeans_v3();
 
     new EntityInterfaceGenerator(ientityV2, V2.getKey(), V2.getData()).generateSimpleBean();
     new EntityBeanGenerator(entity, Arrays.asList(ientityV2), V2.getData()).generateSimpleBean();
