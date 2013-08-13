@@ -66,7 +66,7 @@
             </span>
             <span class="smallNote">
               You need to enable guest user login in
-              TeamCity <a href="<c:url value="/admin/admin.html?item=serverConfigGeneral"/>">Global Settings</a>
+              TeamCity <a href="<c:url value="/admin/admin.html?item=auth"/>">Authentication</a> settings
               for public feed to work.
             </span>
           </c:when>
