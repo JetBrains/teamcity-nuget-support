@@ -1,13 +1,12 @@
 This is NuGet Support TeamCity plugin, mainly NuGet support for TeamCity.
 
-This plugin will be compatible with TeamCity 7.1 and newer.
-
-As we fully migrated to java-based feed, there will be no .NET Feed implementation.
+This plugin will be compatible with TeamCity 8.0.x and newer.
 
 ==== NOTE ======
 This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 6.5.x Use v0.5-bugfix branch instead.
 This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 7.0.x Use v0.7 branch instead.
 This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 7.1.x Use v0.8 branch instead.
+This version NuGet Support plugin is NOT FULLY COMPATIBLE with TeamCity 8.0.x Use v0.9 branch instead.
 ================
 
 Builds of this plugin are found here:
@@ -29,32 +28,5 @@ Building:
 - Then build Java part and TeamCity plugin distribution:     
      open the sources in InteliJ IDEA and build artifact plugin-zip
 
-
-Obsolete:
-=========
-
-API gaps TeamCity:
-------------------
- - Reuse ComposideBuildProcess and DelegatingBuildProcess
- - Use XmlXppAbstractParser#parse(InputSream)
- - Consider reusing of Maven build trigger/project models
- - Make server-side PluginDescription contain getPluginRoot() to avoid cast to PluginInfo
- - Add CustomDataStorage to BuildTriggerDescriptor
- - Tools server extension: 
-   - no way to provide own UI
-   - no way to implement custom downloader
-   - user may tweak download url to download malicious file instead of expected one => checkes required
- - Add an API to provide pluginData path without use of ServerPaths class and specifying names explicitly
- - Extract interfaces from jetbrains.buildServer.controllers.admin.projects.EditBuildTypeFormFactory#getOrCreateForm to make it available in open API
- - No Ant Path matcher component to convert relative and absolute patterns to list of files.
- - Option for commandline runner to avoid dumping executing commandline  (I need to hide passwords)
- - Directory scanner may be reused
-
-API gaps NuGet:
----------------
- - Allow to call nuget.exe with plugins without installing them into %USERPROFILE%
-     http://nuget.codeplex.com/workitem/1295
- - Allow to provide authorization for NuGet sources from commandline
-     http://nuget.codeplex.com/workitem/1303
 
 
