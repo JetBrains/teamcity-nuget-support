@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OAtomEntity;
 
-public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity { 
+public abstract class PackageEntityImpl  implements PackageEntityV2, PackageEntityV3, OAtomEntity { 
 
 
   @NotNull
@@ -243,6 +243,26 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity
   @NotNull
   public final java.lang.String getMinClientVersion(){ 
     final String v = getValue("MinClientVersion");
+    if (v == null) { 
+      return "";
+    }
+    return v;
+  }
+
+
+  @NotNull
+  public final java.lang.String getLicenseNames(){ 
+    final String v = getValue("LicenseNames");
+    if (v == null) { 
+      return "";
+    }
+    return v;
+  }
+
+
+  @NotNull
+  public final java.lang.String getLicenseReportUrl(){ 
+    final String v = getValue("LicenseReportUrl");
     if (v == null) { 
       return "";
     }
