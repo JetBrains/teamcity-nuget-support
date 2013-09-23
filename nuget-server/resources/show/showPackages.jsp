@@ -25,7 +25,7 @@
 
 <h3>Used Packages</h3>
 <c:set var="numberOfUsedPackages" value="${fn:length(packages.usedPackages)}"/>
-This build used and downlaoded ${numberOfUsedPackages} NuGet package<bs:s val="${numberOfUsedPackages}"/>.
+This build downlaoded and used ${numberOfUsedPackages} NuGet package<bs:s val="${numberOfUsedPackages}"/>.
 <c:if test="${numberOfUsedPackages gt 0}">
   <table class="settings" style="width:50em">
     <thead>

@@ -27,7 +27,7 @@
 <bs:linkScript>/js/bs/multipart.js</bs:linkScript>
 
 <c:if test="${not hasDefaultSelected}">
-  <div class="attentionComment">Default NuGet version is not selected. Please set a NuGet version as default by clicking on 'make default' link</div>
+  <div class="attentionComment">Default NuGet version is not set</div>
 </c:if>
 
 <div>

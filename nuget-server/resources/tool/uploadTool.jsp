@@ -22,7 +22,7 @@
   <table class="runnerFormTable">
     <tr>
       <td colspan="2">
-        Select NuGet package to upload:
+        Select a NuGet package to upload:
       </td>
     </tr>
     <tr id="nugetUploadRow">
@@ -30,9 +30,9 @@
       <td>
         <forms:file name="nugetUploadControl"/>
         <span class="smallNote">
-          Specify path to NuGet package (.nupkg file) with <em>tools/NuGet.exe</em> file inside.
+          Specify the path to a NuGet package (.nupkg file) with the <em>tools/NuGet.exe</em> file inside.
         </span>
-        <span class="smallNote">Download <em>NuGet.Commandline.&lt;VERSION&gt;.nupkg</em> file from
+        <span class="smallNote">Download the <em>NuGet.Commandline.&lt;VERSION&gt;.nupkg</em> file from
           <a href="http://nuget.org/packages/NuGet.CommandLine" target="_blank">NuGet.org</a> and upload it here</span>
         <span class="error" id="error_toolId"></span>
       </td>

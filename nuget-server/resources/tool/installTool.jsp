@@ -57,7 +57,7 @@
         <span class="smallNote">
           Select one of the following NuGet versions.
           <br />
-          Installed NuGet will be distributed to all build agents.
+          The installed NuGet will be distributed to all build agents
         </span>
         <span class="error" id="error_toolId"></span>
       </td>

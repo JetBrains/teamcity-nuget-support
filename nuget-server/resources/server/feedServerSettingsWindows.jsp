@@ -52,7 +52,7 @@
         <td>
           <c:set var="url"><c:url value="${actualServerUrl}${privateFeedUrl}"/></c:set>
           <div><a href="${url}">${url}</a></div>
-          <span class="smallNote">Access to the url requires HTTP authentication</span>
+          <span class="smallNote">Lists all packages available for the currently authenticated user (user should have view project permission). Uses HTTP BASIC authentication</span>
         </td>
       </tr>
       <tr>
@@ -62,10 +62,7 @@
           <c:when test="${not isGuestEnabled}">
             <div>Not available.</div>
             <span class="smallNote">
-              Guest user is disabled.
-            </span>
-            <span class="smallNote">
-              You need to enable guest user login in
+              Enable the guest user <bs:help file="Guest+User"/> login in
               TeamCity <a href="<c:url value="/admin/admin.html?item=auth"/>">Authentication</a> settings
               for public feed to work.
             </span>
@@ -73,7 +70,7 @@
           <c:otherwise>
             <c:set var="url"><c:url value="${actualServerUrl}${publicFeedUrl}"/></c:set>
             <div><a href="${url}">${url}</a></div>
-            <span class="smallNote">No authentication is required.</span>
+            <span class="smallNote">Lists all packages from builds available for the guest<bs:help file="Guest+User"/> user</span>
           </c:otherwise>
         </c:choose>
         </td>

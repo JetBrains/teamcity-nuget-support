@@ -33,8 +33,8 @@
     <td>
       <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
       <span class="smallNote">
-        Specify NuGet packages feed URL to push packages to.
-        Leave blank to let NuGet decide what package repository to use.
+        Specify the NuGet packages feed URL to push packages to.
+        Leave blank to let NuGet decide what package repository to use
       </span>
       <span class="error" id="error_${ib.nuGetSourceKey}"></span>
     </td>
@@ -44,7 +44,7 @@
     <td>
       <props:passwordProperty name="${ib.apiKey}" className="longField"/>
       <span class="smallNote">
-        Specify API key to access NuGet source.
+        Specify the API key to access a NuGet packages feed
       </span>
       <span class="error" id="error_${ib.apiKey}"></span>
     </td>
@@ -75,7 +75,7 @@
       <script type="text/javascript">
         BS.Util.hide($('vcsTreeControl_${ib.nuGetPublishFilesKey}'));
       </script>
-      <span>Specify NuGet package files to push to NuGet Feed. Each file on new line. Wildcards are supported</span>
+      <span>A newline-separated list of NuGet package files (.nupkg) to push to the NuGet Feed. Wildcards are supported</span>
       <span class="error" id="error_${ib.nuGetPublishFilesKey}"></span>
     </td>
   </tr>

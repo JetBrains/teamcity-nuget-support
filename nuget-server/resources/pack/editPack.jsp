@@ -60,7 +60,7 @@
     <td>
       <props:checkboxProperty name="${ib.packPreferProject}"/>
       <label for="${ib.packPreferProject}">Prefer project files to .nuspec</label>
-      <span class="smallNote">Use project file (if exists, i.e. .csproj or .vbproj) for every matched .nuspec file</span>
+      <span class="smallNote">Use the project file (if exists, i.e. .csproj or .vbproj) for every matched .nuspec file</span>
     </td>
   </tr>
 
@@ -68,7 +68,7 @@
     <th><label for="${ib.packVersion}">Version</label>:</th>
     <td>
       <props:textProperty name="${ib.packVersion}" className="longField"/>
-      <span class="smallNote">Specify version for package to create (recommended) or leave it blank to let NuGet decide</span>
+      <span class="smallNote">Specify version for the package to created (recommended) or leave it blank to let NuGet decide</span>
       <span id="error_${ib.packVersion}" class="error"></span>
     </td>
   </tr>
@@ -103,7 +103,7 @@
     <th rowspan="3"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
     <td>
       <props:textProperty name="${ib.packOutputDirectory}" className="longField"/>
-      <span class="smallNote">Specify path to put generated NuGet package. Specify directory to put generated NuGet packages into. See also <em>NuGet Publish</em> build runner.</span>
+      <span class="smallNote">The path to the output directory for generated NuGet packages. See also <em>NuGet Publish</em> build runner</span>
       <span id="error_${ib.packOutputDirectory}" class="error"></span>
     </td>
   </tr>
@@ -126,7 +126,7 @@
     <th><label for="${ib.packExcludePatterns}">Exclude files: </label></th>
     <td>
       <props:multilineProperty name="${ib.packExcludePatterns}" linkTitle="Exclude files" cols="60" rows="5" />
-      <span class="smallNote">Exclude files when creating a package. Equavalent to NuGet.exe -Exclude argument</span>
+      <span class="smallNote">Exclude files when creating a package. Equavalent to the NuGet.exe <em>-Exclude</em> argument</span>
       <span id="error_${ib.packExcludePatterns}" class="error"></span>
     </td>
   </tr>
@@ -136,7 +136,7 @@
     <td>
       <props:multilineProperty name="${ib.packProperties}" linkTitle="Properties" cols="60" rows="5" />
       <span class="smallNote">
-        Semicolon or newline separated list of package creation properties (i.e. key=value) to pass to NuGet.exe
+        A semicolon or a newline-separated list of package creation properties (i.e. key=value) to pass to the NuGet.exe
       </span>
       <span id="error_${ib.packProperties}" class="error"></span>
     </td>
