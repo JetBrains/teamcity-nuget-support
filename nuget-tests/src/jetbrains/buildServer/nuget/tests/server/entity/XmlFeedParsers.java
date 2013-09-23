@@ -63,6 +63,14 @@ public class XmlFeedParsers {
   }
 
   @NotNull
+  public static MetadataParseResult loadBeans_v4() throws JDOMException, IOException {
+    final File data = Paths.getTestDataPath("feed/odata/metadata.v4.xml");
+    Assert.assertTrue(data.isFile());
+
+    return loadMetadataBeans(FileUtil.parseDocument(data));
+  }
+
+  @NotNull
   public static MetadataParseResult loadMetadataBeans(@NotNull final Element root) throws JDOMException {
     final Namespace edmx = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/06/edmx");
     final Namespace edm = Namespace.getNamespace("http://schemas.microsoft.com/ado/2006/04/edm");

@@ -57,4 +57,9 @@ public abstract class PackageEntityAdapter extends PackageEntityImpl implements 
   public Integer getVersionDownloadCount() {
     return 42;
   }
+
+  @NotNull
+  public final LocalDateTime getLastEdited() {
+    return getLastUpdated();
+  }
 }
