@@ -61,11 +61,11 @@ public class PublishRunType extends NuGetRunType {
         final List<InvalidProperty> checks = new ArrayList<InvalidProperty>();
 
         if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PATH))) {
-          checks.add(new InvalidProperty(NUGET_PATH, "Path to nuget.exe must be specified"));
+          checks.add(new InvalidProperty(NUGET_PATH, "The path to NuGet.exe must be specified"));
         }
 
         if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_API_KEY))) {
-          checks.add(new InvalidProperty(NUGET_API_KEY, "API key must be specified"));
+          checks.add(new InvalidProperty(NUGET_API_KEY, "The API key must be specified"));
         }
 
         if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PUBLISH_FILES))) {

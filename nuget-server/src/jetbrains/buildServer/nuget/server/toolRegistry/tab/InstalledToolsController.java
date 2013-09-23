@@ -74,7 +74,7 @@ public class InstalledToolsController extends BaseController implements Settings
 
   @NotNull
   public String getSectionName() {
-    return "NuGet Commandline";
+    return "NuGet.exe";
   }
 
   @NotNull

@@ -61,14 +61,14 @@ public class PackagesInstallerRunType extends NuGetRunType {
         List<InvalidProperty> checks = new ArrayList<InvalidProperty>();
 
         if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PATH))) {
-          checks.add(new InvalidProperty(NUGET_PATH, "Path to nuget.exe must be specified"));
+          checks.add(new InvalidProperty(NUGET_PATH, "The path to nuget.exe must be specified"));
         }
 
         String sln = properties.get(SLN_PATH);
         if (StringUtil.isEmptyOrSpaces(sln)) {
-          checks.add(new InvalidProperty(SLN_PATH, "Path to solution file should be specified"));
+          checks.add(new InvalidProperty(SLN_PATH, "The path to the Visual Studio solution file should be specified"));
         } else if (!ReferencesResolverUtil.containsReference(sln) && !sln.toLowerCase().endsWith(".sln")) {
-          checks.add(new InvalidProperty(SLN_PATH, "File extension must be .sln. Specify path to .sln file."));
+          checks.add(new InvalidProperty(SLN_PATH, "The file extension must be .sln. Specify the path to a Visual Studio solution file"));
         }
 
         return checks;

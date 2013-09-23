@@ -35,10 +35,9 @@
                                cols="60" rows="5"
                                expanded="${true}"/>
       <span class="smallNote">
-        Specify NuGet package sources.
-        Leave blank to use NuGet.org as packages source.
+        Leave blank to use NuGet.org
         <br />
-        If you use TeamCity as NuGet server, specify
+        To use TeamCity as NuGet server, specify
         <em><c:out value="${ib.nuGetFeedReference}"/></em>
         to refer to TeamCity provided guest-visible packages source
         <br />
@@ -57,7 +56,7 @@
     <td>
       <props:textProperty name="${ib.solutionPathKey}" className="longField"/>
       <bs:vcsTree fieldId="${ib.solutionPathKey}"/>
-      <span class="smallNote">Specify path to Visual Studio solution file (.sln)</span>
+      <span class="smallNote">The path to Visual Studio solution file (.sln)</span>
       <span class="error" id="error_${ib.solutionPathKey}"></span>
     </td>
   </tr>
@@ -66,15 +65,15 @@
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
-      <span class="smallNote">Makes NuGet exclude package version from package folders.
-                              Equivalent to -ExcludeVersion NuGet.exe commandline argument</span>
+      <span class="smallNote">Makes NuGet exclude package version from package folder names.
+                              Equivalent to the <em>-ExcludeVersion</em> NuGet.exe commandline argument</span>
     </td>
   </tr>
   <tr>
     <td>
       <props:checkboxProperty name="${ib.noCacheKey}"/>
       <label for="${ib.noCacheKey}">Disable looking up packages from local machine cache</label>
-      <span class="smallNote">Equivalent to -NoCache NuGet.exe commanline argument</span>
+      <span class="smallNote">Equivalent to the <em>-NoCache</em> NuGet.exe commanline argument</span>
     </td>
   </tr>
 </l:settingsGroup>
@@ -84,9 +83,9 @@
     <td>
       <props:checkboxProperty name="${ib.updatePackagesKey}"/>
       <label for="${ib.updatePackagesKey}">Update packages with help of NuGet update command</label>
-      <span class="smallNote">Uses NuGet update command to update all packages under solution.
+      <span class="smallNote">Uses the NuGet <em>update</em> command to update all packages under solution.
                               Package versions and constraints are taken from
-                              packages.config files</span>
+                              <em>packages.config</em> files</span>
     </td>
   </tr>
   <tr id="nugetUpdateModeSection">
@@ -97,9 +96,11 @@
         <props:option value="${ib.updatePerConfigValue}">Update via packages.config file</props:option>
       </props:selectProperty>
       <span class="smallNote">
-        NuGet.exe provides two ways of packages update. The first one is implemented via one call to
-        <em>NuGet.exe update SolutionFile.sln</em>, the other one is implemented by calls to
-        <em>NuGet.exe update Packages.Config</em> for each Packages.Config file under solution.
+        Select how to update packages:
+        via a call to
+        <em>NuGet.exe update SolutionFile.sln</em> or
+        via calls to
+        <em>NuGet.exe update Packages.Config</em> for each <em>packages.config</em> file under the solution.
       </span>
     </td>
   </tr>
@@ -108,14 +109,14 @@
     <td>
       <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
       <label for="${ib.updatePackagesPrerelease}">Include pre-release packages</label>
-      <span class="smallNote">Equivalent to -Prerelease NuGet option</span>
+      <span class="smallNote">Equivalent to the -Prerelease NuGet.exe option</span>
     </td>
   </tr>
   <tr>
     <td>
       <props:checkboxProperty name="${ib.updatePackagesSafeKey}"/>
       <label for="${ib.updatePackagesSafeKey}">Perform safe update</label>
-      <span class="smallNote">Equivalent to -Safe NuGet option</span>
+      <span class="smallNote">Equivalent to the -Safe NuGet.exe option</span>
     </td>
   </tr>
 </l:settingsGroup>

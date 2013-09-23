@@ -41,13 +41,14 @@
   </c:forEach>
   <props:option value="custom" selected="${not hasSelected}">Custom</props:option>
 </props:selectProperty>
-<span class="smallNote">Specify path to NuGet.exe (relative to checkout directory).
-  Check installed NuGet Commandline tools in <a href="<c:url value="${settingsUrl}"/>" target="_blank">NuGet Settings</a>
+<span class="smallNote">
+  The path to NuGet.exe relative to the checkout directory.
+  Check installed NuGet Command line tools in <a href="<c:url value="${settingsUrl}"/>" target="_blank">NuGet Settings</a>
 </span>
 
 <div id="customPathContainer">
   <props:textProperty name="nugetCustomPath" className="${clazz}" style="${style}" onchange="BS.NuGet.RunnerSettings.customPathChanged();"/>
-  <span class="smallNote">Specify custom path to NuGet.exe</span>
+  <span class="smallNote">Specify a custom path to NuGet.exe</span>
 </div>
 <span class="error" id="error_${name}"></span>
 

@@ -74,15 +74,15 @@ public class PackRunType extends NuGetRunType {
     return new BasePropertiesProcessor() {
       @Override
       protected void checkProperties(@NotNull Map<String, String> map, @NotNull Collection<InvalidProperty> result) {
-        notEmpty(NUGET_PATH, "Path to nuget.exe must be specified", map, result);
+        notEmpty(NUGET_PATH, "The path to nuget.exe must be specified", map, result);
         notEmpty(NUGET_PACK_SPEC_FILE, "Package definition files must be specified", map, result);
-        notEmpty(NUGET_PACK_OUTPUT_DIR, "Package creation output directory must be specified", map, result);
+        notEmpty(NUGET_PACK_OUTPUT_DIR, "The package creation output directory must be specified", map, result);
         final String version = map.get(NUGET_PACK_VERSION);
 
         if (version != null && !StringUtil.isEmptyOrSpaces(version)
                 && !ReferencesResolverUtil.containsReference(version)
                 && !version.matches("\\d+(\\.\\d+(-.*)?){1,3}")) {
-          result.add(new InvalidProperty(NUGET_PACK_VERSION, "Version must be NuGet version format, i.e. 1.2.3 or 5.4.3.2"));
+          result.add(new InvalidProperty(NUGET_PACK_VERSION, "The version must be in the NuGet version format, i.e. 1.2.3 or 5.4.3.2"));
         }
 
         //TODO: check properties are well-formed

@@ -94,7 +94,7 @@
       <th>Package Version Spec:</th>
       <td>
         <props:hiddenProperty name="${ib.versionKey}" value=""/>
-        <span class="smallNote">Supported only for TeamCity server is running under Windows with Microsoft .NET Framework 4.0 installed.</span>
+        <span class="smallNote">Supported only for TeamCity server is running under Windows with Microsoft .NET Framework 4.0/4.5 installed.</span>
       </td>
     </tr>
   </c:otherwise>
