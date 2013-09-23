@@ -55,7 +55,7 @@ public class PackRunType extends NuGetRunType {
 
   @Override
   public String getDescription() {
-    return "Creates NuGet package from a given spec file";
+    return "Creates a NuGet package from a given spec file";
   }
 
   @NotNull

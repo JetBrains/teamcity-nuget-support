@@ -68,11 +68,11 @@ public class TriggerRequestFactory {
     }
 
     if (path == null || StringUtil.isEmptyOrSpaces(path)) {
-      throw new BuildTriggerException("Path to NuGet.exe must be specified");
+      throw new BuildTriggerException("The path to NuGet.exe must be specified");
     }
 
     if (StringUtil.isEmptyOrSpaces(pkgId)) {
-      throw new BuildTriggerException("Package Id must be specified");
+      throw new BuildTriggerException("The Package Id must be specified");
     }
 
     final File nugetPath = new File(path);

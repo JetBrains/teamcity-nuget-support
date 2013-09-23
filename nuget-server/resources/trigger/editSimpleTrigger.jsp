@@ -48,7 +48,7 @@
   <th rowspan="3">NuGet package source:</th>
   <td>
     <props:textProperty name="${ib.sourceKey}" style="width:20em;" />
-    <span class="smallNote">Specify NuGet packages repository to monitor packages changes. Leave blank to use default NuGet feed</span>
+    <span class="smallNote">Specify the NuGet packages feed URL to monitor packages changes. Leave blank to use default NuGet feed</span>
     <span class="error" id="error_${ib.sourceKey}"></span>
   </td>
 </tr>

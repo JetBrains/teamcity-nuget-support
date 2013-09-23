@@ -75,7 +75,7 @@
       <script type="text/javascript">
         BS.Util.hide($('vcsTreeControl_${ib.nuGetPublishFilesKey}'));
       </script>
-      <span>Specify NuGet package files to push to NuGet Feed. Each file on new line. Wildcards are supported</span>
+      <span>A newline-separated list of NuGet package files (.nupkg) to push to the NuGet Feed. Wildcards are supported</span>
       <span class="error" id="error_${ib.nuGetPublishFilesKey}"></span>
     </td>
   </tr>
