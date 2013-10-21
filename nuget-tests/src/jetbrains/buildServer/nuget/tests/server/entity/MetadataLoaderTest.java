@@ -62,6 +62,18 @@ public class MetadataLoaderTest {
   }
 
   @Test
+  public void test_parses_properties5() throws JDOMException, IOException {
+    final MetadataParseResult result = XmlFeedParsers.loadBeans_v5();
+    Assert.assertFalse(result.getData().isEmpty());
+    Assert.assertFalse(result.getKey().isEmpty());
+
+    for (MetadataBeanProperty property : result.getData()) {
+      if (property.getAtomPath() != null) return;
+    }
+    Assert.fail("Property must have FC_AtomPath");
+  }
+
+  @Test
   public void generateEntitries_v1() throws IOException, JDOMException {
     final FeedClient fc = new FeedHttpClientHolder();
     final HttpGet get = new HttpGet("https://nuget.org/api/v1/$metadata");
@@ -91,7 +103,7 @@ public class MetadataLoaderTest {
   @Test
   public void test_feed_api_not_changed() throws JDOMException, IOException {
     MetadataParseResult result = fetchNuGetOrgMetadata_v2();
-    MetadataParseResult our = XmlFeedParsers.loadBeans_v4();
+    MetadataParseResult our = XmlFeedParsers.loadBeans_v5();
 
     assertSameDataReturned(result.getKey(), our.getKey());
     assertSameDataReturned(result.getData(), our.getData());

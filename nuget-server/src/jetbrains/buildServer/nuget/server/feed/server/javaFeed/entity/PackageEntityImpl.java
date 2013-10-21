@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OAtomEntity;
 
-public abstract class PackageEntityImpl  implements PackageEntityV2, PackageEntityV3, OAtomEntity { 
+public abstract class PackageEntityImpl  implements PackageEntityV2, PackageEntityV3, PackageEntityV4, OAtomEntity {
 
 
   @NotNull
@@ -49,6 +49,14 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, PackageEnti
     return v;
   }
 
+  @NotNull
+  public final java.lang.String getNormalizedVersion(){
+    final String v = getValue("NormalizedVersion");
+    if (v == null) {
+      return "";
+    }
+    return v;
+  }
 
   @NotNull
   public final java.lang.String getAuthors(){ 

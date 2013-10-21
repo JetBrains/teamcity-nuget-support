@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface PackageEntityV2  { 
 
-
   @NotNull
   java.lang.String getId();
 

@@ -9,8 +9,7 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface PackageEntityV3  { 
-
+public interface PackageEntityV3  {
 
   @NotNull
   java.lang.String getId();

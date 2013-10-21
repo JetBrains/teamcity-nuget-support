@@ -37,22 +37,27 @@ public class EntityGenerator extends BaseTestCase {
     final String entity = "PackageEntityImpl";
     final String ientityV2 = "PackageEntityV2";
     final String ientityV3 = "PackageEntityV3";
+    final String ientityV4 = "PackageEntityV4";
 
     final MetadataParseResult V2 = XmlFeedParsers.loadBeans_v3();
     final MetadataParseResult V3 = XmlFeedParsers.loadBeans_v4();
+    final MetadataParseResult V4 = XmlFeedParsers.loadBeans_v5();
 
     new EntityInterfaceGenerator(ientityV2, V2.getKey(), V2.getData()).generateSimpleBean();
     new EntityInterfaceGenerator(ientityV3, V3.getKey(), V3.getData()).generateSimpleBean();
+    new EntityInterfaceGenerator(ientityV4, V4.getKey(), V4.getData()).generateSimpleBean();
 
     final Set<MetadataBeanProperty> data = new LinkedHashSet<MetadataBeanProperty>();
     data.addAll(V2.getData());
     data.addAll(V3.getData());
-    new EntityBeanGenerator(entity, Arrays.asList(ientityV2, ientityV3), data).generateSimpleBean();
+    data.addAll(V4.getData());
+    new EntityBeanGenerator(entity, Arrays.asList(ientityV2, ientityV3, ientityV4), data).generateSimpleBean();
   }
 
   private static class EntityBeanGenerator extends BeanGenerator {
     private final Collection<String> myIentities;
     private final Set<String> myExplicit = new HashSet<String>(Arrays.asList(
+                "NormalizedVersion",
                 "Created",
                 "LastEdited",
                 "Published",
