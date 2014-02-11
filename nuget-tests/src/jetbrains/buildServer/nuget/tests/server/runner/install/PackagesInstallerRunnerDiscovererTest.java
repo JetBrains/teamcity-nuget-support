@@ -49,6 +49,16 @@ public class PackagesInstallerRunnerDiscovererTest extends BaseTestCase {
   }
 
   @Test
+  public void solutionFileNotFound() throws Exception {
+    assertEmpty(myDiscoverer.discover(myBuildTypeSettings, new FileSystemBrowser(getTestDataPath("no-sln").getAbsoluteFile())));
+  }
+
+  @Test
+  public void nugetUsageNotFound() throws Exception {
+    assertEmpty(myDiscoverer.discover(myBuildTypeSettings, new FileSystemBrowser(getTestDataPath("no-nuget").getAbsoluteFile())));
+  }
+
+  @Test
   public void singleSolutionWithDotNugetDirectory() throws Exception {
     final File rootPath = getTestDataPath("single-sln-dot-nuget").getAbsoluteFile();
     final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, new FileSystemBrowser(rootPath));
