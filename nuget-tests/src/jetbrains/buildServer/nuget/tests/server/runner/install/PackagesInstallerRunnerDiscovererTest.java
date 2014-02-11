@@ -22,14 +22,18 @@ import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDiscoverer;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.BuildTypeSettings;
+import jetbrains.buildServer.serverSide.RunTypesProvider;
+import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.discovery.DiscoveredObject;
+import jetbrains.buildServer.serverSide.impl.SBuildRunnerDescriptorImpl;
 import jetbrains.buildServer.util.browser.FileSystemBrowser;
+import org.jmock.Mock;
+import org.jmock.core.matcher.AnyArgumentsMatcher;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Evgeniy.Koshkin
@@ -39,29 +43,34 @@ public class PackagesInstallerRunnerDiscovererTest extends BaseTestCase {
   private final String myDefaultToolPath = NuGetTools.getDefaultToolPath();
   private PackagesInstallerRunnerDiscoverer myDiscoverer;
   private BuildTypeSettings myBuildTypeSettings;
+  private List<SBuildRunnerDescriptor> myRegisteredRunners;
+  private RunTypesProvider myRunTypesProvider;
 
   @Override
   @BeforeMethod
   public void setUp() throws Exception {
     super.setUp();
-    myBuildTypeSettings = (BuildTypeSettings) mock(BuildTypeSettings.class).proxy();
     myDiscoverer = new PackagesInstallerRunnerDiscoverer();
+    myRegisteredRunners = new ArrayList<SBuildRunnerDescriptor>();
+    final Mock buildTypeSettingsMock = mock(BuildTypeSettings.class);
+    buildTypeSettingsMock.expects(new AnyArgumentsMatcher()).method("getBuildRunners").will(returnValue(myRegisteredRunners));
+    myBuildTypeSettings = (BuildTypeSettings) buildTypeSettingsMock.proxy();
+    myRunTypesProvider = (RunTypesProvider) mock(RunTypesProvider.class).proxy();
   }
 
   @Test
   public void solutionFileNotFound() throws Exception {
-    assertEmpty(myDiscoverer.discover(myBuildTypeSettings, new FileSystemBrowser(getTestDataPath("no-sln").getAbsoluteFile())));
+    assertEmpty(myDiscoverer.discover(myBuildTypeSettings, getBrowser("no-sln")));
   }
 
   @Test
   public void nugetUsageNotFound() throws Exception {
-    assertEmpty(myDiscoverer.discover(myBuildTypeSettings, new FileSystemBrowser(getTestDataPath("no-nuget").getAbsoluteFile())));
+    assertEmpty(myDiscoverer.discover(myBuildTypeSettings, getBrowser("no-nuget")));
   }
 
   @Test
   public void singleSolutionWithDotNugetDirectory() throws Exception {
-    final File rootPath = getTestDataPath("single-sln-dot-nuget").getAbsoluteFile();
-    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, new FileSystemBrowser(rootPath));
+    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, getBrowser("single-sln-dot-nuget"));
     assertNotNull(runners);
     assertEquals(1, runners.size());
     final DiscoveredObject runner = runners.get(0);
@@ -74,8 +83,7 @@ public class PackagesInstallerRunnerDiscovererTest extends BaseTestCase {
 
   @Test
   public void singleSolutionWithPackagesConfigInTheSameDirectory() throws Exception {
-    final File rootPath = getTestDataPath("single-sln-packages-config").getAbsoluteFile();
-    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, new FileSystemBrowser(rootPath));
+    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, getBrowser("single-sln-packages-config"));
     assertNotNull(runners);
     assertEquals(1, runners.size());
     final DiscoveredObject runner = runners.get(0);
@@ -88,16 +96,14 @@ public class PackagesInstallerRunnerDiscovererTest extends BaseTestCase {
 
   @Test
   public void severalSolutionsOneLevel() throws Exception {
-    final File rootPath = getTestDataPath("several-sln-one-level").getAbsoluteFile();
-    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, new FileSystemBrowser(rootPath));
+    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, getBrowser("several-sln-one-level"));
     assertNotNull(runners);
     assertEquals(2, runners.size());
   }
 
   @Test
   public void severalSolutionsTwoLevels() throws Exception {
-    final File rootPath = getTestDataPath("several-sln-two-levels").getAbsoluteFile();
-    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, new FileSystemBrowser(rootPath));
+    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, getBrowser("several-sln-two-levels"));
     assertNotNull(runners);
     assertEquals(1, runners.size());
     final DiscoveredObject runner = runners.get(0);
@@ -110,8 +116,7 @@ public class PackagesInstallerRunnerDiscovererTest extends BaseTestCase {
 
   @Test
   public void singleSolutionSecondLevel() throws Exception {
-    final File rootPath = getTestDataPath("single-sln-second-level").getAbsoluteFile();
-    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, new FileSystemBrowser(rootPath));
+    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, getBrowser("single-sln-second-level"));
     assertNotNull(runners);
     assertEquals(1, runners.size());
     final DiscoveredObject runner = runners.get(0);
@@ -122,9 +127,23 @@ public class PackagesInstallerRunnerDiscovererTest extends BaseTestCase {
     assertMapping(runnerParameters, PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallerRunnerDiscoverer.CHECKED);
   }
 
+  @Test
+  public void ignoreAlreadyAddedRunners() throws Exception {
+    registerNugetInstallerRunner("foo.sln");
+    assertEmpty(myDiscoverer.discover(myBuildTypeSettings, getBrowser("single-sln-dot-nuget")));
+  }
+
+  private FileSystemBrowser getBrowser(String relativePath) {
+    return new FileSystemBrowser(getTestDataPath(relativePath).getAbsoluteFile());
+  }
+
   private File getTestDataPath(String relativepath) {
     final File testDataPath = new File(Paths.getTestDataPath("discovery"), relativepath);
     assertTrue("Test data path was not found on path " + testDataPath.getPath(), testDataPath.isDirectory());
     return testDataPath;
+  }
+
+  private void registerNugetInstallerRunner(String pathToSlnFile) {
+    myRegisteredRunners.add(new SBuildRunnerDescriptorImpl("id", "name", PackagesConstants.INSTALL_RUN_TYPE, Collections.singletonMap(PackagesConstants.SLN_PATH, pathToSlnFile), Collections.EMPTY_MAP, myRunTypesProvider));
   }
 }

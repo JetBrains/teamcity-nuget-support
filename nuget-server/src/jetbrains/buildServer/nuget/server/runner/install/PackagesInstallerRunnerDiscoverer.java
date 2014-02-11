@@ -18,10 +18,14 @@ package jetbrains.buildServer.nuget.server.runner.install;
 
 import jetbrains.buildServer.nuget.common.NuGetTools;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.serverSide.BuildTypeSettings;
+import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.discovery.BreadthFirstRunnerDiscoveryExtension;
 import jetbrains.buildServer.serverSide.discovery.DiscoveredObject;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
+import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.browser.Browser;
 import jetbrains.buildServer.util.browser.Element;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +38,7 @@ public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscove
 
   private static final String PACKAGES_CONFIG = "packages.config";
   private static final String NUGET_DIR_NAME = ".nuget";
-  private static final String SLN_FILE_EXTENSION = "sln";
+  private static final String SLN_FILE_EXTENSION = ".sln";
   public static final String CHECKED = "checked";
 
   @NotNull
@@ -61,6 +65,31 @@ public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscove
         return discover(source);
       }
     });
+  }
+
+  @NotNull
+  @Override
+  protected List<DiscoveredObject> postProcessDiscoveredObjects(@NotNull BuildTypeSettings settings, @NotNull Browser browser, @NotNull List<DiscoveredObject> discovered) {
+    if(discovered.isEmpty()) return discovered;
+
+    Set<String> configuredPaths = new HashSet<String>();
+    for (SBuildRunnerDescriptor r: settings.getBuildRunners()) {
+      if (r.getType().equals(PackagesConstants.INSTALL_RUN_TYPE)) {
+        String path = r.getParameters().get(PackagesConstants.SLN_PATH);
+        if (path != null) {
+          configuredPaths.add(FileUtil.toSystemIndependentName(path));
+        }
+      }
+    }
+    if (configuredPaths.isEmpty()) return discovered;
+
+    List<DiscoveredObject> res = new ArrayList<DiscoveredObject>();
+    for (DiscoveredObject obj: discovered) {
+      final String slnPath = obj.getParameters().get(PackagesConstants.SLN_PATH);
+      if (slnPath != null && configuredPaths.contains(FileUtil.toSystemIndependentName(slnPath))) continue;
+      res.add(obj);
+    }
+    return res;
   }
 
   private DiscoveredObject discover(String slnPath) {
