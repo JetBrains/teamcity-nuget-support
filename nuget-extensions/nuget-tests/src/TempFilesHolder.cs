@@ -38,7 +38,14 @@ namespace JetBrains.TeamCity.NuGet.Tests
       }
       finally
       {
-        Directory.Delete(tmp, true);
+        try
+        {
+          Directory.Delete(tmp, true);
+        }
+        catch (Exception ex)
+        {
+          Console.Out.WriteLine("Exception occured while deleting tmp dir. " + ex);
+        }
       }
     }
 
