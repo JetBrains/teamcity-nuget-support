@@ -16,46 +16,35 @@
 
 package jetbrains.buildServer.nuget.tests.server.runner.install;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.NuGetTools;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDiscoverer;
-import jetbrains.buildServer.nuget.tests.integration.Paths;
-import jetbrains.buildServer.serverSide.BuildTypeSettings;
-import jetbrains.buildServer.serverSide.RunTypesProvider;
-import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.discovery.DiscoveredObject;
 import jetbrains.buildServer.serverSide.impl.SBuildRunnerDescriptorImpl;
-import jetbrains.buildServer.util.browser.FileSystemBrowser;
-import org.jmock.Mock;
-import org.jmock.core.matcher.AnyArgumentsMatcher;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Evgeniy.Koshkin
  */
-public class PackagesInstallerRunnerDiscovererTest extends BaseTestCase {
+public class PackagesInstallerRunnerDiscovererTest extends NuGetRunnerDiscovererTestBase {
 
   private final String myDefaultToolPath = NuGetTools.getDefaultToolPath();
   private PackagesInstallerRunnerDiscoverer myDiscoverer;
-  private BuildTypeSettings myBuildTypeSettings;
-  private List<SBuildRunnerDescriptor> myRegisteredRunners;
-  private RunTypesProvider myRunTypesProvider;
+
+  public PackagesInstallerRunnerDiscovererTest() {
+    super("install");
+  }
 
   @Override
   @BeforeMethod
   public void setUp() throws Exception {
     super.setUp();
     myDiscoverer = new PackagesInstallerRunnerDiscoverer();
-    myRegisteredRunners = new ArrayList<SBuildRunnerDescriptor>();
-    final Mock buildTypeSettingsMock = mock(BuildTypeSettings.class);
-    buildTypeSettingsMock.expects(new AnyArgumentsMatcher()).method("getBuildRunners").will(returnValue(myRegisteredRunners));
-    myBuildTypeSettings = (BuildTypeSettings) buildTypeSettingsMock.proxy();
-    myRunTypesProvider = (RunTypesProvider) mock(RunTypesProvider.class).proxy();
   }
 
   @Test
@@ -133,17 +122,7 @@ public class PackagesInstallerRunnerDiscovererTest extends BaseTestCase {
     assertEmpty(myDiscoverer.discover(myBuildTypeSettings, getBrowser("single-sln-dot-nuget")));
   }
 
-  private FileSystemBrowser getBrowser(String relativePath) {
-    return new FileSystemBrowser(getTestDataPath(relativePath).getAbsoluteFile());
-  }
-
-  private File getTestDataPath(String relativepath) {
-    final File testDataPath = new File(Paths.getTestDataPath("discovery"), relativepath);
-    assertTrue("Test data path was not found on path " + testDataPath.getPath(), testDataPath.isDirectory());
-    return testDataPath;
-  }
-
   private void registerNugetInstallerRunner(String pathToSlnFile) {
-    myRegisteredRunners.add(new SBuildRunnerDescriptorImpl("id", "name", PackagesConstants.INSTALL_RUN_TYPE, Collections.singletonMap(PackagesConstants.SLN_PATH, pathToSlnFile), Collections.EMPTY_MAP, myRunTypesProvider));
+    myRegisteredRunners.add(new SBuildRunnerDescriptorImpl("id", "name", PackagesConstants.INSTALL_RUN_TYPE, Collections.singletonMap(PackagesConstants.SLN_PATH, pathToSlnFile), Collections.<String, String>emptyMap(), myRunTypesProvider));
   }
 }

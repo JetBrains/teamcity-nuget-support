@@ -6,4 +6,5 @@
 
 
   <bean class="jetbrains.buildServer.nuget.server.runner.pack.PackRunType"/>
+  <bean class="jetbrains.buildServer.nuget.server.runner.pack.PackRunnerDiscoverer"/>
 </beans>
