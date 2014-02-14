@@ -41,14 +41,14 @@ public class PackRunnerDiscoverer extends BreadthFirstRunnerDiscoveryExtension {
   @NotNull
   @Override
   protected List<DiscoveredObject> discoverRunnersInDirectory(@NotNull Element dir, @NotNull List<Element> filesAndDirs) {
-    final List<DiscoveredObject> result = new ArrayList<DiscoveredObject>();
+    final List<String> foundNuSpecs = new ArrayList<String>();
     for(Element item : filesAndDirs){
       if(item.isLeaf() && item.getName().endsWith(NUSPEC_FILE_EXTENSION) && item.isContentAvailable()){
-        final DiscoveredObject runner = discover(item.getFullName(), getOutDirName(filesAndDirs));
-        if(runner != null) result.add(runner);
+        foundNuSpecs.add(item.getFullName());
       }
     }
-    return result;
+    if(foundNuSpecs.isEmpty()) return Collections.emptyList();
+    return Collections.singletonList(discover(getSpec(foundNuSpecs), getOutDirName(filesAndDirs)));
   }
 
   @NotNull
@@ -88,6 +88,14 @@ public class PackRunnerDiscoverer extends BreadthFirstRunnerDiscoveryExtension {
     });
     if(collision == null) return result;
     return getOutDirPathRecursively(result + "-1", filesAndDirs);
+  }
+
+  private String getSpec(Collection<String> nuSpecs) {
+    final StringBuilder sb = new StringBuilder();
+    for(String nuSpecFilePath : nuSpecs){
+      sb.append(nuSpecFilePath).append('\n');
+    }
+    return sb.toString().trim();
   }
 
   private DiscoveredObject discover(String nuSpecFilePath, String outDirName) {

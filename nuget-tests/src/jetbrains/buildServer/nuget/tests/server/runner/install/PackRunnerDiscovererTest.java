@@ -65,14 +65,22 @@ public class PackRunnerDiscovererTest extends NuGetRunnerDiscovererTestBase {
   public void severalNuSpecFilesInOneDir() throws Exception {
     final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, getBrowser("several-nuspec-one-dir"));
     assertNotNull(runners);
-    assertEquals(2, runners.size());
+    assertEquals(1, runners.size());
+    final DiscoveredObject runner = runners.get(0);
+    assertEquals(PackagesConstants.PACK_RUN_TYPE, runner.getType());
+    final Map<String, String> runnerParameters = runner.getParameters();
+    assertMapping(runnerParameters, PackagesConstants.NUGET_PACK_SPEC_FILE, "Package1.nuspec\nPackage2.nuspec");
   }
 
   @Test
   public void severalNuSpecFilesInSeveralDirs() throws Exception {
     final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, getBrowser("several-nuspec-several-dirs"));
     assertNotNull(runners);
-    assertEquals(2, runners.size());
+    assertEquals(1, runners.size());
+    final DiscoveredObject runner = runners.get(0);
+    assertEquals(PackagesConstants.PACK_RUN_TYPE, runner.getType());
+    final Map<String, String> runnerParameters = runner.getParameters();
+    assertMapping(runnerParameters, PackagesConstants.NUGET_PACK_SPEC_FILE, "Package1.nuspec\nPackage2.nuspec");
   }
 
   @Test
