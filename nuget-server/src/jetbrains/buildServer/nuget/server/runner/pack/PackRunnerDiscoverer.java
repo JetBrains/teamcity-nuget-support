@@ -91,7 +91,7 @@ public class PackRunnerDiscoverer extends BreadthFirstRunnerDiscoveryExtension {
   }
 
   private DiscoveredObject discover(String nuSpecFilePath, String outDirName) {
-    Map<String, String> parameters = new HashMap<String, String>();
+    Map<String, String> parameters = NuGetPackRunnerDefaults.getRunnerProperties();
     parameters.put(PackagesConstants.NUGET_PATH, NuGetTools.getDefaultToolPath());
     parameters.put(PackagesConstants.NUGET_PACK_SPEC_FILE, nuSpecFilePath);
     parameters.put(PackagesConstants.NUGET_PACK_OUTPUT_DIR, outDirName);

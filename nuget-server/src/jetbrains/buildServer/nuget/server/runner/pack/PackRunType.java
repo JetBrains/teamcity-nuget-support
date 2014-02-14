@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.runner.pack;
 
-import jetbrains.buildServer.agent.ServerProvidedProperties;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.runner.NuGetRunType;
 import jetbrains.buildServer.nuget.server.util.BasePropertiesProcessor;
@@ -28,7 +27,6 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
@@ -62,7 +60,6 @@ public class PackRunType extends NuGetRunType {
   @Override
   public String describeParameters(@NotNull Map<String, String> parameters) {
     StringBuilder sb = new StringBuilder();
-
     sb.append("Pack: ").append(parameters.get(PackagesConstants.NUGET_PACK_SPEC_FILE)).append("\n");
     sb.append("Version: ").append(parameters.get(PackagesConstants.NUGET_PACK_VERSION)).append("\n");
     return sb.toString();
@@ -104,10 +101,6 @@ public class PackRunType extends NuGetRunType {
 
   @Override
   public Map<String, String> getDefaultRunnerProperties() {
-    return new HashMap<String, String>(){{
-      put(PackagesConstants.NUGET_PACK_VERSION, "0." + ReferencesResolverUtil.makeReference(ServerProvidedProperties.BUILD_NUMBER_PROP));
-      put(PackagesConstants.NUGET_PACK_OUTPUT_CLEAR, "checked");
-      put(PackagesConstants.NUGET_PACK_PROPERTIES, "Configuration=Release");
-    }};
+    return NuGetPackRunnerDefaults.getRunnerProperties();
   }
 }
