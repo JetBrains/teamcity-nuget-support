@@ -35,7 +35,7 @@ import java.util.*;
 public class CommandFactoryImpl implements CommandFactory {
 
   @NotNull
-  public <T> T createInstall(@NotNull PackagesInstallParameters params, @NotNull File packagesConfig, @NotNull File targetFolder, @NotNull Callback<T> factory) throws RunBuildException {
+  public <T> T createInstall(@NotNull PackagesInstallParameters params, @NotNull File packagesConfig, @NotNull File outputDir, @NotNull Callback<T> factory) throws RunBuildException {
     final List<String> argz = new ArrayList<String>();
     argz.add("install");
     argz.add(FileUtil.getCanonicalFile(packagesConfig).getPath()); //path to package
@@ -46,14 +46,14 @@ public class CommandFactoryImpl implements CommandFactory {
       argz.add("-NoCache");
     }
     argz.add("-OutputDirectory");
-    argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
+    argz.add(FileUtil.getCanonicalFile(outputDir).getPath());
 
     final NuGetFetchParameters nuget = params.getNuGetParameters();
     return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), Collections.singletonMap(EnabledPackagesOptionSetter.ENABLE_NUGET_PACKAGE_RESTORE, "True"), factory);
   }
 
   @NotNull
-  public <T> T createRestore(@NotNull PackagesInstallParameters params, @NotNull File solutionFile, @NotNull File targetFolder, @NotNull Callback<T> factory) throws RunBuildException {
+  public <T> T createRestore(@NotNull PackagesInstallParameters params, @NotNull File solutionFile, @NotNull File outputDir, @NotNull Callback<T> factory) throws RunBuildException {
     final List<String> argz = new ArrayList<String>();
     argz.add("restore");
     argz.add(FileUtil.getCanonicalFile(solutionFile).getPath()); //path to package
@@ -64,7 +64,7 @@ public class CommandFactoryImpl implements CommandFactory {
       argz.add("-NoCache");
     }
     argz.add("-OutputDirectory");
-    argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
+    argz.add(FileUtil.getCanonicalFile(outputDir).getPath());
 
     final NuGetFetchParameters nuget = params.getNuGetParameters();
     return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, solutionFile.getParentFile(), factory);

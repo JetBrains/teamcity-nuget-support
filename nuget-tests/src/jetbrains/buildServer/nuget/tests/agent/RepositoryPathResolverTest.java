@@ -52,7 +52,7 @@ public class RepositoryPathResolverTest extends BaseTestCase {
     myHome = createTempDir();
     mySln = new File(myHome, "project.sln");
 
-    FileUtil.writeFile(mySln, "fake sln file content");
+    FileUtil.writeFileAndReportErrors(mySln, "fake sln file content");
     myResolver = new RepositoryPathResolverImpl();
   }
 
@@ -90,12 +90,12 @@ public class RepositoryPathResolverTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myLogger).warning(with(any(String.class)));
     }});
-    FileUtil.writeFile(new File(myHome, "nuget.config"), "this is a broken xml");
+    FileUtil.writeFileAndReportErrors(new File(myHome, "nuget.config"), "this is a broken xml");
     doResolveTest("packages");
   }
 
   private void doResolveTest(String packages) throws RunBuildException {
-    final File actual = myResolver.resolvePath(myLogger, mySln);
+    final File actual = myResolver.resolveRepositoryPath(myLogger, mySln);
     Assert.assertTrue(actual.exists(), "Resolved file must exist");
     Assert.assertEquals(actual, FileUtil.getCanonicalFile(actual), "should return absolute canonical path");
     Assert.assertEquals(actual, FileUtil.resolvePath(myHome, packages));

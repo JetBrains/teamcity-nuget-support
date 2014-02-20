@@ -28,9 +28,9 @@ import java.io.File;
  */
 @EventListenerAdapter
 public class PackagesInstallerAdapter implements PackagesInstallerCallback {
-  public void onPackagesConfigFound(@NotNull File config, @NotNull File targetFolder) throws RunBuildException {
+  public void onPackagesConfigFound(@NotNull File config, @NotNull File repositoryPath) throws RunBuildException {
   }
 
-  public void onSolutionFileFound(@NotNull File sln, @NotNull File targetFolder) throws RunBuildException {
+  public void onSolutionFileFound(@NotNull File sln, @NotNull File repositoryPath) throws RunBuildException {
   }
 }

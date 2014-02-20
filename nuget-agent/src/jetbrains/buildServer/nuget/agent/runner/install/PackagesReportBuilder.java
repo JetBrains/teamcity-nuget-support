@@ -42,7 +42,7 @@ public class PackagesReportBuilder extends PackagesInstallerAdapter {
     myActionFactory = actionFactory;
   }
 
-  public final void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException {
-    myStages.pushBuildProcess(myActionFactory.createUsageReport(myContext, config, targetFolder));
+  public final void onPackagesConfigFound(@NotNull final File config, @NotNull final File repositoryPath) throws RunBuildException {
+    myStages.pushBuildProcess(myActionFactory.createUsageReport(myContext, config, repositoryPath));
   }
 }

@@ -82,18 +82,18 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
 
   private void locatePackagesConfigFiles() throws RunBuildException {
     final File sln = myContext.getSolutionFile();
-    final File packages = myResolver.resolvePath(myLogger, sln);
+    final File packagesRepoPath = myResolver.resolveRepositoryPath(myLogger, sln);
 
     if (sln.isFile()) {
       LOG.debug("Found Visual Studio .sln file: " + sln);
-      myDispatcher.getMulticaster().onSolutionFileFound(sln, packages);
+      myDispatcher.getMulticaster().onSolutionFileFound(sln, packagesRepoPath);
     }
 
-    myLogger.message("Found packages folder: " + packages);
+    myLogger.message("Found packages folder: " + packagesRepoPath);
 
     final Collection<File> files = new HashSet<File>();
     for (PackagesConfigScanner scanner : myScanners) {
-      files.addAll(scanner.scanResourceConfig(myLogger, sln, packages));
+      files.addAll(scanner.scanResourceConfig(myLogger, sln, packagesRepoPath));
     }
 
     for (Iterator<File> it = files.iterator(); it.hasNext(); ) {
@@ -110,7 +110,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     }
 
     for (File file : files) {
-      myDispatcher.getMulticaster().onPackagesConfigFound(file, packages);
+      myDispatcher.getMulticaster().onPackagesConfigFound(file, packagesRepoPath);
     }
   }
 }

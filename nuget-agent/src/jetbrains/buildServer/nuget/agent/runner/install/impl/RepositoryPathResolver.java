@@ -28,6 +28,6 @@ import java.io.File;
  */
 public interface RepositoryPathResolver {
   @NotNull
-  File resolvePath(@NotNull BuildProgressLogger logger,
-                   @NotNull File solutionFile) throws RunBuildException;
+  File resolveRepositoryPath(@NotNull BuildProgressLogger logger,
+                             @NotNull File solutionFile) throws RunBuildException;
 }

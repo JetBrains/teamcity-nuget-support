@@ -17,7 +17,10 @@
 package jetbrains.buildServer.nuget.agent.commands;
 
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.nuget.agent.parameters.*;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -33,13 +36,13 @@ public interface CommandFactory {
   @NotNull
   <T> T createInstall(@NotNull PackagesInstallParameters params,
                       @NotNull File packagesConfig,
-                      @NotNull File targetFolder,
+                      @NotNull File outputDir,
                       @NotNull Callback<T> factory) throws RunBuildException;
 
   @NotNull
   <T> T createRestore(@NotNull PackagesInstallParameters params,
                       @NotNull File solutionFile,
-                      @NotNull File targetFolder,
+                      @NotNull File outputDir,
                       @NotNull Callback<T> factory) throws RunBuildException;
 
   @NotNull

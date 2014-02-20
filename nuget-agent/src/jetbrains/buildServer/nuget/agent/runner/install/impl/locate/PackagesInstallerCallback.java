@@ -30,16 +30,16 @@ public interface PackagesInstallerCallback extends EventListener {
   /**
    * Called when packages.config is found
    * @param config full path to packages.config file
-   * @param targetFolder target folder to store packages
+   * @param repositoryPath target folder to store packages
    * @throws jetbrains.buildServer.RunBuildException on erorr
    */
-  void onPackagesConfigFound(@NotNull File config, @NotNull File targetFolder) throws RunBuildException;
+  void onPackagesConfigFound(@NotNull File config, @NotNull File repositoryPath) throws RunBuildException;
 
   /**
    * Called when solution file is found
    * @param sln path to sln file
-   * @param targetFolder target folder to store packages
+   * @param repositoryPath target folder to store packages
    * @throws jetbrains.buildServer.RunBuildException on error
    */
-  void onSolutionFileFound(@NotNull File sln, @NotNull File targetFolder) throws RunBuildException;
+  void onSolutionFileFound(@NotNull File sln, @NotNull File repositoryPath) throws RunBuildException;
 }

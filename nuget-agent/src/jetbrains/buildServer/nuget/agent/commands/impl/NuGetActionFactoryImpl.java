@@ -23,7 +23,10 @@ import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.commands.CommandFactory;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
-import jetbrains.buildServer.nuget.agent.parameters.*;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
+import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
+import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import org.jetbrains.annotations.NotNull;
@@ -83,8 +86,8 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   public BuildProcess createRestore(@NotNull final BuildRunnerContext context,
                                     @NotNull final PackagesInstallParameters params,
                                     @NotNull final File solutionFile,
-                                    @NotNull final File targetFolder) throws RunBuildException {
-    return myCommandFactory.createRestore(params, solutionFile, targetFolder, getCallback(context));
+                                    @NotNull final File outputDir) throws RunBuildException {
+    return myCommandFactory.createRestore(params, solutionFile, outputDir, getCallback(context));
   }
 
 

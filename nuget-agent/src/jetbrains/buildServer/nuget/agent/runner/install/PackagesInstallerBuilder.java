@@ -50,17 +50,17 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
   }
 
   @Override
-  public void onSolutionFileFound(@NotNull File sln, @NotNull File targetFolder) throws RunBuildException {
+  public void onSolutionFileFound(@NotNull File sln, @NotNull File repositoryPath) throws RunBuildException {
     if (myInstallParameters.getInstallMode() != PackagesInstallMode.VIA_RESTORE) return;
 
     myStages.pushBuildProcess(myActionFactory.createRestore(
             myContext,
             myInstallParameters,
             sln,
-            targetFolder));
+            repositoryPath));
   }
 
-  public void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException {
+  public void onPackagesConfigFound(@NotNull final File config, @NotNull final File repositoryPath) throws RunBuildException {
     if (myInstallParameters.getInstallMode() != PackagesInstallMode.VIA_INSTALL) return;
 
     myStages.pushBuildProcess(wrapConfigProcess(config, new BuildProcessFactory() {
@@ -70,7 +70,7 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
                 myContext,
                 myInstallParameters,
                 config,
-                targetFolder);
+                repositoryPath);
       }
     }));
   }

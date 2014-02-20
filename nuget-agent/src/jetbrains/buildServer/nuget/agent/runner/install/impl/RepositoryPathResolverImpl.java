@@ -35,10 +35,10 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
   private static final Logger LOG = Logger.getInstance(RepositoryPathResolverImpl.class.getName());
 
   @NotNull
-  public File resolvePath(@NotNull final BuildProgressLogger logger,
-                          @NotNull final File solutionFile) {
+  public File resolveRepositoryPath(@NotNull final BuildProgressLogger logger,
+                                    @NotNull final File solutionFile) {
 
-    final File path = resolvePathImpl(logger, solutionFile);
+    final File path = resolveRepositoryPathImpl(logger, solutionFile);
     //noinspection ResultOfMethodCallIgnored
     path.mkdirs();
     if (!path.isDirectory()) {
@@ -47,8 +47,8 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
     return path;
   }
 
-  private File resolvePathImpl(@NotNull final BuildProgressLogger logger,
-                               @NotNull final File solutionFile) {
+  private File resolveRepositoryPathImpl(@NotNull final BuildProgressLogger logger,
+                                         @NotNull final File solutionFile) {
     final File home = solutionFile.getParentFile();
     final File config = new File(home, "nuget.config");
 

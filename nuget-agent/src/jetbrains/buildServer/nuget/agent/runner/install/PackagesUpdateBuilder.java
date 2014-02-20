@@ -49,8 +49,8 @@ public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
     myActionFactory = actionFactory;
   }
 
-  public void onSolutionFileFound(@NotNull File sln, @NotNull File targetFolder) throws RunBuildException {
-    super.onSolutionFileFound(sln, targetFolder);
+  public void onSolutionFileFound(@NotNull File sln, @NotNull File repositoryPath) throws RunBuildException {
+    super.onSolutionFileFound(sln, repositoryPath);
 
     if (myUpdateParameters.getUpdateMode() != PackagesUpdateMode.FOR_SLN) return;
 
@@ -59,13 +59,13 @@ public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
                     myContext,
                     myUpdateParameters,
                     sln,
-                    targetFolder
+                    repositoryPath
             )
     );
   }
 
-  public void onPackagesConfigFound(@NotNull final File config, @NotNull final File targetFolder) throws RunBuildException {
-    super.onPackagesConfigFound(config, targetFolder);
+  public void onPackagesConfigFound(@NotNull final File config, @NotNull final File repositoryPath) throws RunBuildException {
+    super.onPackagesConfigFound(config, repositoryPath);
 
     if (myUpdateParameters.getUpdateMode() != FOR_EACH_PACKAGES_CONFIG) return;
     myUpdateStages.pushBuildProcess(
@@ -73,7 +73,7 @@ public class PackagesUpdateBuilder extends PackagesInstallerAdapter {
                     myContext,
                     myUpdateParameters,
                     config,
-                    targetFolder
+                    repositoryPath
             )
     );
   }
