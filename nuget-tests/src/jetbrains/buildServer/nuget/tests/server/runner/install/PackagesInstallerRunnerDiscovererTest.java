@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.runner.install;
 
 import jetbrains.buildServer.nuget.common.NuGetTools;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDiscoverer;
 import jetbrains.buildServer.serverSide.discovery.DiscoveredObject;
 import jetbrains.buildServer.serverSide.impl.SBuildRunnerDescriptorImpl;
@@ -67,7 +68,7 @@ public class PackagesInstallerRunnerDiscovererTest extends NuGetRunnerDiscoverer
     final Map<String, String> runnerParameters = runner.getParameters();
     assertMapping(runnerParameters, PackagesConstants.NUGET_PATH, myDefaultToolPath);
     assertMapping(runnerParameters, PackagesConstants.SLN_PATH, "foo.sln");
-    assertMapping(runnerParameters, PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallerRunnerDiscoverer.CHECKED);
+    assertMapping(runnerParameters, PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallMode.VIA_RESTORE.getName());
   }
 
   @Test
@@ -80,7 +81,7 @@ public class PackagesInstallerRunnerDiscovererTest extends NuGetRunnerDiscoverer
     final Map<String, String> runnerParameters = runner.getParameters();
     assertMapping(runnerParameters, PackagesConstants.NUGET_PATH, myDefaultToolPath);
     assertMapping(runnerParameters, PackagesConstants.SLN_PATH, "foo.sln");
-    assertMapping(runnerParameters, PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallerRunnerDiscoverer.CHECKED);
+    assertMapping(runnerParameters, PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallMode.VIA_RESTORE.getName());
   }
 
   @Test
@@ -100,7 +101,7 @@ public class PackagesInstallerRunnerDiscovererTest extends NuGetRunnerDiscoverer
     final Map<String, String> runnerParameters = runner.getParameters();
     assertMapping(runnerParameters, PackagesConstants.NUGET_PATH, myDefaultToolPath);
     assertMapping(runnerParameters, PackagesConstants.SLN_PATH, "foo.sln");
-    assertMapping(runnerParameters, PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallerRunnerDiscoverer.CHECKED);
+    assertMapping(runnerParameters, PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallMode.VIA_RESTORE.getName());
   }
 
   @Test
@@ -113,7 +114,7 @@ public class PackagesInstallerRunnerDiscovererTest extends NuGetRunnerDiscoverer
     final Map<String, String> runnerParameters = runner.getParameters();
     assertMapping(runnerParameters, PackagesConstants.NUGET_PATH, myDefaultToolPath);
     assertMapping(runnerParameters, PackagesConstants.SLN_PATH, "dir/boo.sln");
-    assertMapping(runnerParameters, PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallerRunnerDiscoverer.CHECKED);
+    assertMapping(runnerParameters, PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallMode.VIA_RESTORE.getName());
   }
 
   @Test
