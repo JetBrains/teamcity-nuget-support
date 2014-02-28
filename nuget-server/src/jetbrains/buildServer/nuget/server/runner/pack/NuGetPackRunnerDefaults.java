@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.runner.pack;
 
 import jetbrains.buildServer.agent.ServerProvidedProperties;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 
 import java.util.HashMap;
@@ -35,6 +36,7 @@ public class NuGetPackRunnerDefaults {
       put(PackagesConstants.NUGET_PACK_VERSION, "0." + ReferencesResolverUtil.makeReference(ServerProvidedProperties.BUILD_NUMBER_PROP));
       put(PackagesConstants.NUGET_PACK_OUTPUT_CLEAR, CHECKED);
       put(PackagesConstants.NUGET_PACK_PROPERTIES, DEFAULT_PACK_PROPS);
+      put(PackagesConstants.NUGET_PACK_BASE_DIRECTORY_MODE, PackagesPackDirectoryMode.LEAVE_AS_IS.getValue());
     }};
   }
 }
