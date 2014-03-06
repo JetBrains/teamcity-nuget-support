@@ -79,7 +79,7 @@ public class PackageInstallerBuilderUpdateTest extends PackageInstallerBuilderTe
       oneOf(myActionFactory).createUpdate(myContext, myUpdate, mySln, myTaget);
       will(returnValue(createMockBuildProcess("u1")));
 
-      oneOf(myActionFactory).createRestore(myContext, myInstall, mySln, myTaget);
+      oneOf(myActionFactory).createRestoreForSolution(myContext, myInstall, mySln);
       will(returnValue(createMockBuildProcess("i1")));
     }});
 

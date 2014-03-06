@@ -52,12 +52,7 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
   @Override
   public void onSolutionFileFound(@NotNull File sln, @NotNull File repositoryPath) throws RunBuildException {
     if (myInstallParameters.getInstallMode() != PackagesInstallMode.VIA_RESTORE) return;
-
-    myStages.pushBuildProcess(myActionFactory.createRestore(
-            myContext,
-            myInstallParameters,
-            sln,
-            repositoryPath));
+    myStages.pushBuildProcess(myActionFactory.createRestoreForSolution(myContext, myInstallParameters, sln));
   }
 
   public void onPackagesConfigFound(@NotNull final File config, @NotNull final File repositoryPath) throws RunBuildException {

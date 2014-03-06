@@ -43,7 +43,7 @@ public class PackageInstallerBuilderReportTest extends PackageInstallerBuilderTe
   @Test
   public void test_report() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(myActionFactory).createUsageReport(myContext, myConfig, myTaget);
+      oneOf(myActionFactory).createUsageReport(myContext, myConfig);
       will(returnValue(createMockBuildProcess("b1")));
     }});
 
@@ -53,10 +53,10 @@ public class PackageInstallerBuilderReportTest extends PackageInstallerBuilderTe
   @Test
   public void test_report_files() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(myActionFactory).createUsageReport(myContext, myConfig, myTaget);
+      oneOf(myActionFactory).createUsageReport(myContext, myConfig);
       will(returnValue(createMockBuildProcess("b1")));
 
-      oneOf(myActionFactory).createUsageReport(myContext, myConfig2, myTaget);
+      oneOf(myActionFactory).createUsageReport(myContext, myConfig2);
       will(returnValue(createMockBuildProcess("b2")));
     }});
 
@@ -66,10 +66,10 @@ public class PackageInstallerBuilderReportTest extends PackageInstallerBuilderTe
   @Test
   public void test_report_deleted_files() throws RunBuildException {
     m.checking(new Expectations() {{
-      oneOf(myActionFactory).createUsageReport(myContext, myConfig, myTaget);
+      oneOf(myActionFactory).createUsageReport(myContext, myConfig);
       will(returnValue(createMockBuildProcess("b1")));
 
-      oneOf(myActionFactory).createUsageReport(myContext, myConfig2, myTaget);
+      oneOf(myActionFactory).createUsageReport(myContext, myConfig2);
       will(returnValue(createMockBuildProcess("b2")));
     }});
 

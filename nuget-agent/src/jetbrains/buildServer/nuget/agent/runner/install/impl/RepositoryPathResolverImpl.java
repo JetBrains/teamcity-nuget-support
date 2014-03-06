@@ -33,33 +33,36 @@ import java.io.File;
  */
 public class RepositoryPathResolverImpl implements RepositoryPathResolver {
   private static final Logger LOG = Logger.getInstance(RepositoryPathResolverImpl.class.getName());
+  private static final String NUGET_CONFIG = "nuget.config";
+  private static final String PACKAGES = "packages";
 
   @NotNull
   public File resolveRepositoryPath(@NotNull final BuildProgressLogger logger,
                                     @NotNull final File solutionFile) {
 
-    final File path = resolveRepositoryPathImpl(logger, solutionFile);
+    final File repositoryPath = resolveRepositoryPathImpl(logger, solutionFile);
     //noinspection ResultOfMethodCallIgnored
-    path.mkdirs();
-    if (!path.isDirectory()) {
-      logger.warning("Failed to create packages directory: " + path);
+    repositoryPath.mkdirs();
+    if (!repositoryPath.isDirectory()) {
+      logger.warning("Failed to create packages directory: " + repositoryPath);
     }
-    return path;
+    return repositoryPath;
   }
 
   private File resolveRepositoryPathImpl(@NotNull final BuildProgressLogger logger,
                                          @NotNull final File solutionFile) {
     final File home = solutionFile.getParentFile();
-    final File config = new File(home, "nuget.config");
+    final File configFilePath = new File(home, NUGET_CONFIG);
 
-    final File defaultPath = new File(home, "packages");
-    if (!config.isFile()) {
-      return defaultPath;
+    final File defaultRepositoryPath = new File(home, PACKAGES);
+    if (!configFilePath.isFile()) {
+      LOG.warn("Failed to find NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".");
+      return defaultRepositoryPath;
     }
 
-    LOG.debug("Found NuGet.config file: " + config);
+    LOG.debug("Found NuGet.config file: " + configFilePath);
     try {
-      final Element element = FileUtil.parseDocument(config);
+      final Element element = FileUtil.parseDocument(configFilePath);
       {
         final Attribute pathAttribute = (Attribute) XPath.newInstance("/configuration/config/add[@key='repositoryPath']/@value").selectSingleNode(element);
         if (pathAttribute != null) {
@@ -87,12 +90,12 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
         }
       }
     } catch (final Exception e) {
-      final String message = "Failed to parse NuGet.config file at " + config + ". Packages will be downloaded into default path: " + defaultPath + ". " + e.getMessage();
+      final String message = "Failed to parse NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ". " + e.getMessage();
       logger.warning(message);
       LOG.warn(message, e);
-      return defaultPath;
+      return defaultRepositoryPath;
     }
 
-    return defaultPath;
+    return defaultRepositoryPath;
   }
 }

@@ -414,6 +414,42 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertEquals(3, packageses.size());
   }
 
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_intall_mode_nuget_config_location_1(@NotNull final NuGet nuget) throws Exception {
+    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_1.zip"), "", myRoot);
+    fail();
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_install_mode_nuget_config_location_2(@NotNull final NuGet nuget) throws Exception {
+    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_2.zip"), "", myRoot);
+    fail();
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_restore_mode_nuget_config_location_1(@NotNull final NuGet nuget) throws Exception {
+    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_1.zip"), "", myRoot);
+    fail();
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_restore_mode_nuget_config_location_2(@NotNull final NuGet nuget) throws Exception {
+    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_2.zip"), "", myRoot);
+    fail();
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_update_nuget_config_location_1(@NotNull final NuGet nuget) throws Exception {
+    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_1.zip"), "", myRoot);
+    fail();
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void test_update_nuget_config_location_2(@NotNull final NuGet nuget) throws Exception {
+    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_2.zip"), "", myRoot);
+    fail();
+  }
+
 /*
   private void fetchPackages(final File sln,
                              final List<String> sources,

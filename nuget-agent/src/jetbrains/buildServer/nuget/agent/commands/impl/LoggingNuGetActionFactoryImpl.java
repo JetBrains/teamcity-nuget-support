@@ -44,8 +44,8 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
-  public BuildProcess createUsageReport(@NotNull BuildRunnerContext context, @NotNull File packagesConfig, @NotNull File targetFolder) throws RunBuildException {
-    return myActionFactory.createUsageReport(context, packagesConfig, targetFolder);
+  public BuildProcess createUsageReport(@NotNull BuildRunnerContext context, @NotNull File packagesConfig) throws RunBuildException {
+    return myActionFactory.createUsageReport(context, packagesConfig);
   }
 
   @NotNull
@@ -85,20 +85,18 @@ public class LoggingNuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
-  public BuildProcess createRestore(@NotNull final BuildRunnerContext context,
-                                    @NotNull final PackagesInstallParameters params,
-                                    @NotNull final File solutionFile,
-                                    @NotNull final File outputDir) throws RunBuildException {
+  public BuildProcess createRestoreForSolution(@NotNull final BuildRunnerContext context,
+                                               @NotNull final PackagesInstallParameters params,
+                                               @NotNull final File solutionFile) throws RunBuildException {
     return new DelegatingBuildProcess(
             new LoggingAction(context, solutionFile, "restore") {
               @NotNull
               @Override
               protected BuildProcess delegateToActualAction() throws RunBuildException {
-                return myActionFactory.createRestore(
+                return myActionFactory.createRestoreForSolution(
                         context,
                         params,
-                        solutionFile,
-                        outputDir);
+                        solutionFile);
               }
 
               @NotNull
