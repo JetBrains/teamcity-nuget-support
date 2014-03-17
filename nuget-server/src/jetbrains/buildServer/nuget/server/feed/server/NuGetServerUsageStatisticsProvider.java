@@ -41,6 +41,8 @@ public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvid
   public static final String TOTAL_REQUESTS = "jetbrains.nuget.feedDailyRequests";
   public static final String TOTAL_PACKAGES = "jetbrains.nuget.totalPackages";
   public static final String DIFF_PACKAGES = "jetbrains.nuget.packagesIds";
+  public static final String NUGET_SERVER_STAT_GROUP_NAME = "NuGet";
+
   private final NuGetServerSettings mySettings;
   private final RecentNuGetRequests myRequests;
   private final PackagesIndex myIndex;
@@ -76,10 +78,10 @@ public class NuGetServerUsageStatisticsProvider implements UsageStatisticsProvid
   }
 
   public void accept(@NotNull UsageStatisticsPresentationManager presentationManager) {
-    presentationManager.applyPresentation(TOTAL_REQUESTS, "Feed Requests Count per Day", "NuGet", null, null);
-    presentationManager.applyPresentation(TOTAL_PACKAGES, "Packages Count", "NuGet", null, null);
-    presentationManager.applyPresentation(DIFF_PACKAGES, "Different Package Ids Count", "NuGet", null, null);
-    presentationManager.applyPresentation(SERVER_ENABLED_KEY, "NuGet Feed Server", "NuGet", new UsageStatisticsFormatter() {
+    presentationManager.applyPresentation(TOTAL_REQUESTS, "Feed Requests Count per Day", NUGET_SERVER_STAT_GROUP_NAME, null, null);
+    presentationManager.applyPresentation(TOTAL_PACKAGES, "Packages Count", NUGET_SERVER_STAT_GROUP_NAME, null, null);
+    presentationManager.applyPresentation(DIFF_PACKAGES, "Different Package Ids Count", NUGET_SERVER_STAT_GROUP_NAME, null, null);
+    presentationManager.applyPresentation(SERVER_ENABLED_KEY, "NuGet Feed Server", NUGET_SERVER_STAT_GROUP_NAME, new UsageStatisticsFormatter() {
       @NotNull
       public String format(@Nullable Object statisticValue) {
         return statisticValue == null ? "disabled" : statisticValue.toString();
