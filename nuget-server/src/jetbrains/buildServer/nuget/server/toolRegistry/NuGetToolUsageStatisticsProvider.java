@@ -58,6 +58,7 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
     myServer = server;
     myNuGetToolManager = nuGetToolManager;
     myGroupName = "NuGet Versions";
+    setIdFormat("jb.nuget.version.[%s]");
   }
 
   @NotNull
