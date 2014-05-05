@@ -83,11 +83,10 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
   }
 
   @NotNull
-  public BuildProcess createRestore(@NotNull final BuildRunnerContext context,
-                                    @NotNull final PackagesInstallParameters params,
-                                    @NotNull final File solutionFile,
-                                    @NotNull final File outputDir) throws RunBuildException {
-    return myCommandFactory.createRestore(params, solutionFile, outputDir, getCallback(context));
+  public BuildProcess createRestoreForSolution(@NotNull final BuildRunnerContext context,
+                                               @NotNull final PackagesInstallParameters params,
+                                               @NotNull final File solutionFile) throws RunBuildException {
+    return myCommandFactory.createRestoreForSolution(params, solutionFile, getCallback(context));
   }
 
 
@@ -101,8 +100,7 @@ public class NuGetActionFactoryImpl implements NuGetActionFactory {
 
   @NotNull
   public BuildProcess createUsageReport(@NotNull final BuildRunnerContext context,
-                                        @NotNull final File packagesConfig,
-                                        @NotNull final File targetFolder) throws RunBuildException {
+                                        @NotNull final File packagesConfig) throws RunBuildException {
     return new BuildProcessBase() {
       @NotNull
       @Override

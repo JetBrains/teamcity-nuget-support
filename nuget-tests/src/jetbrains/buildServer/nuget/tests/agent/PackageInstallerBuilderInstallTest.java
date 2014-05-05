@@ -53,7 +53,7 @@ public class PackageInstallerBuilderInstallTest extends PackageInstallerBuilderT
   public void test_restore_no_update() throws RunBuildException {
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     m.checking(new Expectations() {{
-      oneOf(myActionFactory).createRestore(myContext, myInstall, mySln, myTaget);
+      oneOf(myActionFactory).createRestoreForSolution(myContext, myInstall, mySln);
       will(returnValue(createMockBuildProcess("b1")));
     }});
 

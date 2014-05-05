@@ -61,6 +61,11 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       }
 
       @NotNull
+      public File getWorkingDirectory() {
+        return context.getWorkingDirectory();
+      }
+
+      @NotNull
       public File getNuGetExeFile() throws RunBuildException {
         return getPathToNuGet(context);
       }

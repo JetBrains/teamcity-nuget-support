@@ -52,12 +52,7 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
   @Override
   public void onSolutionFileFound(@NotNull File sln, @NotNull File repositoryPath) throws RunBuildException {
     if (myInstallParameters.getInstallMode() != PackagesInstallMode.VIA_RESTORE) return;
-
-    myStages.pushBuildProcess(myActionFactory.createRestore(
-            myContext,
-            myInstallParameters,
-            sln,
-            repositoryPath));
+    myStages.pushBuildProcess(myActionFactory.createRestoreForSolution(myContext, myInstallParameters, sln));
   }
 
   public void onPackagesConfigFound(@NotNull final File config, @NotNull final File repositoryPath) throws RunBuildException {
@@ -73,6 +68,12 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
                 repositoryPath);
       }
     }));
+  }
+
+  @Override
+  public void onNoPackagesConfigsFound() throws RunBuildException {
+    if (myInstallParameters.getInstallMode() != PackagesInstallMode.VIA_INSTALL) return;
+    myContext.getBuild().getBuildLogger().warning("No packages.config files were found under solution. Nothing to install");
   }
 
   @NotNull

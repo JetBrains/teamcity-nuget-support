@@ -41,4 +41,10 @@ public interface NuGetFetchParameters extends NuGetParameters {
    */
   @NotNull
   File getSolutionFile() throws RunBuildException;
+
+  /**
+   * @return current working directory.
+   */
+  @NotNull
+  File getWorkingDirectory();
 }

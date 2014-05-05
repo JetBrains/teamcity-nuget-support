@@ -36,6 +36,12 @@ public interface PackagesInstallerCallback extends EventListener {
   void onPackagesConfigFound(@NotNull File config, @NotNull File repositoryPath) throws RunBuildException;
 
   /**
+   * Called when no packages.config are found
+   * @throws jetbrains.buildServer.RunBuildException on erorr
+   */
+  void onNoPackagesConfigsFound() throws RunBuildException;
+
+  /**
    * Called when solution file is found
    * @param sln path to sln file
    * @param repositoryPath target folder to store packages

@@ -43,16 +43,16 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   private final EventDispatcher<PackagesInstallerCallback> myDispatcher;
   private final NuGetFetchParameters myContext;
   private final BuildProgressLogger myLogger;
-  private final RepositoryPathResolver myResolver;
+  private final RepositoryPathResolver myRepositoryPathResolver;
   private final Collection<? extends PackagesConfigScanner> myScanners;
 
   public LocateNuGetConfigBuildProcess(@NotNull final NuGetFetchParameters context,
                                        @NotNull final BuildProgressLogger logger,
-                                       @NotNull final RepositoryPathResolver resolver,
+                                       @NotNull final RepositoryPathResolver repositoryPathResolver,
                                        @NotNull final List<PackagesConfigScanner> scanners) {
     myContext = context;
     myLogger = logger;
-    myResolver = resolver;
+    myRepositoryPathResolver = repositoryPathResolver;
     myDispatcher = EventDispatcher.create(PackagesInstallerCallback.class);
     myDispatcher.setErrorHandler(new EventDispatcher.ErrorHandler() {
       public void handle(Throwable e) {
@@ -81,19 +81,19 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
   }
 
   private void locatePackagesConfigFiles() throws RunBuildException {
-    final File sln = myContext.getSolutionFile();
-    final File packagesRepoPath = myResolver.resolveRepositoryPath(myLogger, sln);
+    final File solutionFile = myContext.getSolutionFile();
+    final File packagesRepoPath = myRepositoryPathResolver.resolveRepositoryPath(myLogger, solutionFile, myContext.getWorkingDirectory());
 
-    if (sln.isFile()) {
-      LOG.debug("Found Visual Studio .sln file: " + sln);
-      myDispatcher.getMulticaster().onSolutionFileFound(sln, packagesRepoPath);
+    if (solutionFile.isFile()) {
+      LOG.debug("Found Visual Studio .sln file: " + solutionFile);
+      myDispatcher.getMulticaster().onSolutionFileFound(solutionFile, packagesRepoPath);
     }
 
     myLogger.message("Found packages folder: " + packagesRepoPath);
 
     final Collection<File> files = new HashSet<File>();
     for (PackagesConfigScanner scanner : myScanners) {
-      files.addAll(scanner.scanResourceConfig(myLogger, sln, packagesRepoPath));
+      files.addAll(scanner.scanResourceConfig(myLogger, solutionFile, packagesRepoPath));
     }
 
     for (Iterator<File> it = files.iterator(); it.hasNext(); ) {
@@ -105,12 +105,11 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     }
 
     if (files.isEmpty()) {
-      myLogger.warning("No packages.config files were found under solution. Nothing to install");
-      return;
-    }
-
-    for (File file : files) {
-      myDispatcher.getMulticaster().onPackagesConfigFound(file, packagesRepoPath);
+      myDispatcher.getMulticaster().onNoPackagesConfigsFound();
+    } else{
+      for (File file : files) {
+        myDispatcher.getMulticaster().onPackagesConfigFound(file, packagesRepoPath);
+      }
     }
   }
 }

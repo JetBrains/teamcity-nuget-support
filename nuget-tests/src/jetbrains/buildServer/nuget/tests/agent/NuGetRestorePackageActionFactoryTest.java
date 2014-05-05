@@ -90,13 +90,13 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("restore", mySolution.getPath(), "-OutputDirectory", myTarget.getPath()),
+              Arrays.asList("restore", mySolution.getPath()),
               mySolution.getParentFile(),
               Collections.<String, String>emptyMap()
       );
     }});
 
-    i.createRestore(ctx, ps, mySolution, myTarget);
+    i.createRestoreForSolution(ctx, ps, mySolution);
     m.assertIsSatisfied();
   }
 
@@ -112,13 +112,13 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("restore", mySolution.getPath(), "-NoCache", "-OutputDirectory", myTarget.getPath()),
+              Arrays.asList("restore", mySolution.getPath(), "-NoCache"),
               mySolution.getParentFile(),
               Collections.<String, String>emptyMap()
       );
     }});
 
-    i.createRestore(ctx, ps, mySolution, myTarget);
+    i.createRestoreForSolution(ctx, ps, mySolution);
     m.assertIsSatisfied();
   }
 
@@ -134,13 +134,13 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("restore", mySolution.getPath(), "-ExcludeVersion", "-OutputDirectory", myTarget.getPath()),
+              Arrays.asList("restore", mySolution.getPath(), "-ExcludeVersion"),
               mySolution.getParentFile(),
               Collections.<String, String>emptyMap()
       );
     }});
 
-    i.createRestore(ctx, ps, mySolution, myTarget);
+    i.createRestoreForSolution(ctx, ps, mySolution);
     m.assertIsSatisfied();
   }
 
@@ -156,13 +156,13 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("restore", mySolution.getPath(), "-OutputDirectory", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
+              Arrays.asList("restore", mySolution.getPath(), "-Source", "aaa", "-Source", "bbb"),
               mySolution.getParentFile(),
               Collections.<String, String>emptyMap()
       );
     }});
 
-    i.createRestore(ctx, ps, mySolution, myTarget);
+    i.createRestoreForSolution(ctx, ps, mySolution);
     m.assertIsSatisfied();
   }
 }

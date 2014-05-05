@@ -31,6 +31,9 @@ public class PackagesInstallerAdapter implements PackagesInstallerCallback {
   public void onPackagesConfigFound(@NotNull File config, @NotNull File repositoryPath) throws RunBuildException {
   }
 
+  public void onNoPackagesConfigsFound() throws RunBuildException {
+  }
+
   public void onSolutionFileFound(@NotNull File sln, @NotNull File repositoryPath) throws RunBuildException {
   }
 }
