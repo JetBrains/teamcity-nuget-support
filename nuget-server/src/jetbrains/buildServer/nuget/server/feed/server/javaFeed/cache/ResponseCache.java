@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.util.containers.ConcurrentSoftValueHashMap;
+import com.intellij.util.containers.SoftValueHashMap;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.impl.TeamCityInternalKeys;
@@ -35,10 +35,12 @@ import java.util.Map;
  */
 public class ResponseCache implements ResponseCacheReset {
   private static final Logger LOG = Logger.getInstance(ResponseCache.class.getName());
-  private final Map<String, ResponseCacheEntry> myCache = new ConcurrentSoftValueHashMap<String, ResponseCacheEntry>();
+  private final Map<String, ResponseCacheEntry> myCache = new SoftValueHashMap<String, ResponseCacheEntry>();
 
   public void resetCache() {
-    myCache.clear();
+    synchronized (myCache) {
+      myCache.clear();
+    }
   }
 
   @NotNull
@@ -69,7 +71,10 @@ public class ResponseCache implements ResponseCacheReset {
                            @NotNull final HttpServletResponse response,
                            @NotNull final ComputeAction action) throws Exception {
     final String key = key(request);
-    final ResponseCacheEntry cached = myCache.get(key);
+    final ResponseCacheEntry cached;
+    synchronized (myCache) {
+      cached = myCache.get(key);
+    }
     if (cached != null) {
       cached.handleRequest(request, response);
       return;
@@ -81,7 +86,9 @@ public class ResponseCache implements ResponseCacheReset {
     action.compute(request, wrapped);
 
     final ResponseCacheEntry entry = wrapped.build();
-    myCache.put(key, entry);
+    synchronized (myCache) {
+      myCache.put(key, entry);
+    }
 
     entry.handleRequest(request, response);
   }
