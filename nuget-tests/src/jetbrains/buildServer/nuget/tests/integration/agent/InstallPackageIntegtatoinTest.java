@@ -73,14 +73,13 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
                     new PackageInfo("Ninject", "2.2.1.4"))
     );
 
-    String packages = "packages";
-    List<File> packageses = listFiles(packages);
-    System.out.println("installed packageses = " + packageses);
+    List<File> packages = listFiles("packages");
+    System.out.println("installed packageses = " + packages);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packageses.size());
+    Assert.assertEquals(4, packages.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_17p)
@@ -94,14 +93,13 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
                     new PackageInfo("Ninject", "2.2.1.4"))
     );
 
-    String packages = "packages";
-    List<File> packageses = listFiles(packages);
-    System.out.println("installed packageses = " + packageses);
+    List<File> packages = listFiles("packages");
+    System.out.println("installed packageses = " + packages);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packageses.size());
+    Assert.assertEquals(4, packages.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_27p)
@@ -116,14 +114,13 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
                     new PackageInfo("Ninject", "2.2.1.4"))
     );
 
-    String packages = "packages";
-    List<File> packageses = listFiles(packages);
-    System.out.println("installed packageses = " + packageses);
+    List<File> packages = listFiles("packages");
+    System.out.println("installed packageses = " + packages);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packageses.size());
+    Assert.assertEquals(4, packages.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
@@ -450,9 +447,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
                     new PackageInfo("NUnit", "2.5.7.10213")
             ));
 
-    List<File> packageses = listFiles(".nuget/customizedPath");
-    Assert.assertTrue(new File(myRoot, ".nuget/customizedPath/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, ".nuget/customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
+    List<File> packageses = listFiles("customizedPath");
+    Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
     Assert.assertEquals(2, packageses.size());
   }
 
