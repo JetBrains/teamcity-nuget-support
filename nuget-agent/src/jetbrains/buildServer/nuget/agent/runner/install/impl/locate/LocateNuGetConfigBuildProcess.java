@@ -82,7 +82,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
 
   private void locatePackagesConfigFiles() throws RunBuildException {
     final File solutionFile = myContext.getSolutionFile();
-    final File packagesRepoPath = myRepositoryPathResolver.resolveRepositoryPath(myLogger, solutionFile);
+    final File packagesRepoPath = myRepositoryPathResolver.resolveRepositoryPath(myLogger, solutionFile, myContext.getWorkingDirectory());
 
     if (solutionFile.isFile()) {
       LOG.debug("Found Visual Studio .sln file: " + solutionFile);
@@ -105,12 +105,11 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     }
 
     if (files.isEmpty()) {
-      myLogger.warning("No packages.config files were found under solution. Nothing to install");
-      return;
-    }
-
-    for (File file : files) {
-      myDispatcher.getMulticaster().onPackagesConfigFound(file, packagesRepoPath);
+      myDispatcher.getMulticaster().onNoPackagesConfigsFound();
+    } else{
+      for (File file : files) {
+        myDispatcher.getMulticaster().onPackagesConfigFound(file, packagesRepoPath);
+      }
     }
   }
 }

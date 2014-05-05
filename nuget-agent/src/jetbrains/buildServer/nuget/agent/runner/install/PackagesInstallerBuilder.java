@@ -70,6 +70,12 @@ public class PackagesInstallerBuilder extends PackagesInstallerAdapter {
     }));
   }
 
+  @Override
+  public void onNoPackagesConfigsFound() throws RunBuildException {
+    if (myInstallParameters.getInstallMode() != PackagesInstallMode.VIA_INSTALL) return;
+    myContext.getBuild().getBuildLogger().warning("No packages.config files were found under solution. Nothing to install");
+  }
+
   @NotNull
   protected BuildProcess wrapConfigProcess(@NotNull final File config, @NotNull final BuildProcessFactory proc) throws RunBuildException {
     return proc.createBuildProcess();

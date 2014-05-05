@@ -21,11 +21,14 @@ import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.util.FileUtil;
 import org.jdom.Attribute;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.Text;
 import org.jdom.xpath.XPath;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -34,13 +37,14 @@ import java.io.File;
 public class RepositoryPathResolverImpl implements RepositoryPathResolver {
   private static final Logger LOG = Logger.getInstance(RepositoryPathResolverImpl.class.getName());
   private static final String NUGET_CONFIG = "nuget.config";
+  private static final String DOT_NUGET = ".nuget";
   private static final String PACKAGES = "packages";
 
   @NotNull
   public File resolveRepositoryPath(@NotNull final BuildProgressLogger logger,
-                                    @NotNull final File solutionFile) {
-
-    final File repositoryPath = resolveRepositoryPathImpl(logger, solutionFile);
+                                    @NotNull final File solutionFile,
+                                    @NotNull final File workingDirectory) {
+    final File repositoryPath = resolveRepositoryPathImpl(solutionFile, workingDirectory, logger);
     //noinspection ResultOfMethodCallIgnored
     repositoryPath.mkdirs();
     if (!repositoryPath.isDirectory()) {
@@ -49,53 +53,78 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
     return repositoryPath;
   }
 
-  private File resolveRepositoryPathImpl(@NotNull final BuildProgressLogger logger,
-                                         @NotNull final File solutionFile) {
-    final File home = solutionFile.getParentFile();
-    final File configFilePath = new File(home, NUGET_CONFIG);
+  @NotNull
+  private File resolveRepositoryPathImpl(File solutionFile, File workingDirectory, BuildProgressLogger logger) {
+    final File solutionHomeDir = solutionFile.getParentFile();
+    final File defaultRepositoryPath = new File(solutionHomeDir, PACKAGES);
 
-    final File defaultRepositoryPath = new File(home, PACKAGES);
-    if (!configFilePath.isFile()) {
-      LOG.warn("Failed to find NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".");
+    final File configFilePath = locateNugetConfigNearSolutionFile(solutionHomeDir);
+    if (configFilePath == null) {
+      LOG.warn("Failed to find NuGet.config file near solution " + solutionFile + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".");
       return defaultRepositoryPath;
     }
-
     LOG.debug("Found NuGet.config file: " + configFilePath);
+
+    final String repositoryPath;
     try {
-      final Element element = FileUtil.parseDocument(configFilePath);
-      {
-        final Attribute pathAttribute = (Attribute) XPath.newInstance("/configuration/config/add[@key='repositoryPath']/@value").selectSingleNode(element);
-        if (pathAttribute != null) {
-          String text = pathAttribute.getValue().trim();
-          LOG.info("Found packages path: " + text);
-          return FileUtil.resolvePath(home, text);
-        }
-      }
-
-      {
-        final Text pathText = (Text) XPath.newInstance("/configuration/repositoryPath/text()").selectSingleNode(element);
-        if (pathText != null) {
-          final String text = pathText.getTextTrim();
-          LOG.info("Found packages path: " + text);
-          return FileUtil.resolvePath(home, text);
-        }
-      }
-
-      {
-        final Text pathText = (Text) XPath.newInstance("/settings/repositoryPath/text()").selectSingleNode(element);
-        if (pathText != null) {
-          final String text = pathText.getTextTrim();
-          LOG.info("Found packages path: " + text);
-          return FileUtil.resolvePath(home, text);
-        }
-      }
+      repositoryPath = extractRepositoryPathFromConfig(configFilePath);
     } catch (final Exception e) {
-      final String message = "Failed to parse NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ". " + e.getMessage();
-      logger.warning(message);
+      final String message = "Error occured while parsing NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".";
       LOG.warn(message, e);
+      logger.warning(message + " " + e.getMessage());
+      return defaultRepositoryPath;
+    }
+    if(repositoryPath == null){
+      final String message = "RepositoryPath was not extracted from NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".";
+      LOG.info(message);
+      logger.message(message);
       return defaultRepositoryPath;
     }
 
-    return defaultRepositoryPath;
+    return FileUtil.resolvePath(workingDirectory, repositoryPath);
+  }
+
+  @Nullable
+  private File locateNugetConfigNearSolutionFile(@NotNull final File solutionHomeDir) {
+    File cuirrentDir = new File(solutionHomeDir, DOT_NUGET);
+    while (cuirrentDir != null){
+      final File result = new File(cuirrentDir, NUGET_CONFIG);
+      if(result.isFile()) return result;
+      LOG.debug("NuGet.config file not found on path " + result + ".");
+      cuirrentDir = cuirrentDir.getParentFile();
+    }
+    return null;
+  }
+
+  @Nullable
+  private String extractRepositoryPathFromConfig(@NotNull final File configFilePath) throws JDOMException, IOException {
+    final Element element = FileUtil.parseDocument(configFilePath);
+    {
+      final Attribute pathAttribute = (Attribute) XPath.newInstance("/configuration/config/add[@key='repositoryPath']/@value").selectSingleNode(element);
+      if (pathAttribute != null) {
+        String text = pathAttribute.getValue().trim();
+        LOG.info("Found packages path: " + text);
+        return text;
+      }
+    }
+
+    {
+      final Text pathText = (Text) XPath.newInstance("/configuration/repositoryPath/text()").selectSingleNode(element);
+      if (pathText != null) {
+        final String text = pathText.getTextTrim();
+        LOG.info("Found repositoryPath: " + text);
+        return text;
+      }
+    }
+
+    {
+      final Text pathText = (Text) XPath.newInstance("/settings/repositoryPath/text()").selectSingleNode(element);
+      if (pathText != null) {
+        final String text = pathText.getTextTrim();
+        LOG.info("Found repositoryPath: " + text);
+        return text;
+      }
+    }
+    return null;
   }
 }

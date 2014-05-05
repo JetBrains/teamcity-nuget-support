@@ -29,5 +29,6 @@ import java.io.File;
 public interface RepositoryPathResolver {
   @NotNull
   File resolveRepositoryPath(@NotNull BuildProgressLogger logger,
-                             @NotNull File solutionFile) throws RunBuildException;
+                             @NotNull File solutionFile,
+                             @NotNull File workingDirectory) throws RunBuildException;
 }

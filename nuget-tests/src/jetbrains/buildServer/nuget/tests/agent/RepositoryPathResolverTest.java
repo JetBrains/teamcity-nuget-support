@@ -22,6 +22,7 @@ import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolver;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -37,11 +38,11 @@ import java.io.IOException;
  *         Date: 01.12.11 18:32
  */
 public class RepositoryPathResolverTest extends BaseTestCase {
+  private static final String PROJECT_SLN = "project.sln";
   private Mockery m;
   private BuildProgressLogger myLogger;
   private RepositoryPathResolver myResolver;
   private File myHome;
-  private File mySln;
 
   @BeforeMethod
   @Override
@@ -50,39 +51,41 @@ public class RepositoryPathResolverTest extends BaseTestCase {
     m = new Mockery();
     myLogger = m.mock(BuildProgressLogger.class);
     myHome = createTempDir();
-    mySln = new File(myHome, "project.sln");
-
-    FileUtil.writeFileAndReportErrors(mySln, "fake sln file content");
+    FileUtil.writeFileAndReportErrors(new File(myHome, PROJECT_SLN), "fake sln file content");
     myResolver = new RepositoryPathResolverImpl();
+
+    m.checking(new Expectations(){{
+      oneOf(myLogger).message(with(any(String.class)));
+    }});
   }
 
   @Test
   public void testDefaultPath() throws RunBuildException {
-    doResolveTest("packages");
+    doResolveTest(PROJECT_SLN, "packages");
   }
 
   @Test
   public void testResolveWithConfig_01() throws IOException, RunBuildException {
     FileUtil.copy(Paths.getTestDataPath("config/NuGet-01.config"), new File(myHome, "NuGet.config"));
-    doResolveTest("../lib");
+    doResolveTest(PROJECT_SLN, "../lib");
   }
 
   @Test
   public void testResolveWithConfig_02() throws IOException, RunBuildException {
     FileUtil.copy(Paths.getTestDataPath("config/NuGet-02.Config"), new File(myHome, "nuget.config"));
-    doResolveTest("packages");
+    doResolveTest(PROJECT_SLN, "packages");
   }
 
   @Test
   public void testResolveWithConfig_03() throws IOException, RunBuildException {
     FileUtil.copy(Paths.getTestDataPath("config/NuGet-03.Config"), new File(myHome, "nuget.config"));
-    doResolveTest("../lib");
+    doResolveTest(PROJECT_SLN, "../lib");
   }
 
   @Test
   public void testResolveWithConfig_04() throws IOException, RunBuildException {
     FileUtil.copy(Paths.getTestDataPath("config/NuGet-04.Config"), new File(myHome, "nuget.config"));
-    doResolveTest("C:\\myteam\\teampackages");
+    doResolveTest(PROJECT_SLN, "C:\\myteam\\teampackages");
   }
 
   @Test
@@ -91,14 +94,37 @@ public class RepositoryPathResolverTest extends BaseTestCase {
       oneOf(myLogger).warning(with(any(String.class)));
     }});
     FileUtil.writeFileAndReportErrors(new File(myHome, "nuget.config"), "this is a broken xml");
-    doResolveTest("packages");
+    doResolveTest(PROJECT_SLN, "packages");
   }
 
-  private void doResolveTest(String packages) throws RunBuildException {
-    final File actual = myResolver.resolveRepositoryPath(myLogger, mySln);
+  @Test
+  public void testConfigLocation_01() throws Exception {
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("config/config_location_1.zip"), "", myHome);
+    doResolveTest("apps/firstapp/firstapp.sln", "customizedPath");
+  }
+
+  @Test
+  public void testConfigLocation_02() throws Exception {
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("config/config_location_2.zip"), "", myHome);
+    doResolveTest("app.sln", "customizedPath");
+  }
+
+  @Test
+  public void testConfigLocation_03() throws Exception {
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("config/config_location_3.zip"), "", myHome);
+    doResolveTest("app.sln", "customizedPath");
+  }
+
+  @Test
+  public void testChainingMultipleConfigs() throws Exception {
+    fail();
+  }
+
+  private void doResolveTest(String slnFilePath, String expectedRepoPath) throws RunBuildException {
+    final File actual = myResolver.resolveRepositoryPath(myLogger, new File(myHome, slnFilePath), myHome);
     Assert.assertTrue(actual.exists(), "Resolved file must exist");
     Assert.assertEquals(actual, FileUtil.getCanonicalFile(actual), "should return absolute canonical path");
-    Assert.assertEquals(actual, FileUtil.resolvePath(myHome, packages));
+    Assert.assertEquals(actual, FileUtil.resolvePath(myHome, expectedRepoPath));
 
   }
 }

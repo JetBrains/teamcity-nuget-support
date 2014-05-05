@@ -67,7 +67,7 @@ public abstract class PackagesConfigScannerTestBase extends BaseTestCase {
     final RepositoryPathResolver res = new RepositoryPathResolverImpl();
     final Collection<File> scannedFiles = new ArrayList<File>();
     for (PackagesConfigScanner scannedFile : createScanner()) {
-      scannedFiles.addAll(scannedFile.scanResourceConfig(myLogger, sln, res.resolveRepositoryPath(myLogger, sln)));
+      scannedFiles.addAll(scannedFile.scanResourceConfig(myLogger, sln, res.resolveRepositoryPath(myLogger, sln, dir)));
     }
 
     final Collection<File> projects = new TreeSet<File>();

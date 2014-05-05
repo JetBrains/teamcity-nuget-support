@@ -129,19 +129,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_forConfig(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
-
-    m.checking(new Expectations() {{
-      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
-      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
-
-      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
-      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(false));
-      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
-    }});
+    allowUpdate(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, true, nuget, null);
-
 
     List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
@@ -156,16 +146,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_forSln(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
-
-    m.checking(new Expectations() {{
-      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
-      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
-
-      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
-      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(false));
-      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
-    }});
+    allowUpdate(PackagesUpdateMode.FOR_SLN);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, true, nuget, null);
 
@@ -184,19 +165,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
   public void test_01_online_sources_restore_update_forSln(@NotNull final NuGet nuget) throws RunBuildException {
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
-
-    m.checking(new Expectations() {{
-      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
-      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
-
-      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
-      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(false));
-      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
-    }});
+    allowUpdate(PackagesUpdateMode.FOR_SLN);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, true, nuget, null);
-
 
     List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
@@ -211,16 +182,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_safe(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
-
-    m.checking(new Expectations() {{
-      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
-      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
-
-      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(true));
-      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(true));
-      allowing(myUpdate).getPackagesToUpdate();  will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG));
-    }});
+    allowUpdate(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG, true, true);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, true, nuget, null);
 
@@ -238,17 +200,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
   @Test(dataProvider = NUGET_VERSIONS_17p)
   public void test_prerelease_local(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-prerelease.zip"), "prereleaseUpdate/", myRoot);
-
-    m.checking(new Expectations() {{
-      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
-      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
-
-      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
-      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(true));
-
-      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
-    }});
+    allowUpdate(PackagesUpdateMode.FOR_SLN, true, false);
 
     fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, false, true, nuget,
             Arrays.asList(
@@ -416,100 +368,117 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_intall_mode_nuget_config_location_1(@NotNull final NuGet nuget) throws Exception {
+    assertSame(PackagesInstallMode.VIA_INSTALL, myInstallMode);
+
     ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_1.zip"), "", myRoot);
-    fail();
+
+    fetchPackages(new File(myRoot, "Apps/FirstApp/FirstApp.sln"), Collections.<String>emptyList(), false, false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213")
+                    ));
+
+    List<File> packageses = listFiles("customizedPath");
+    Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(2, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_install_mode_nuget_config_location_2(@NotNull final NuGet nuget) throws Exception {
+    assertSame(PackagesInstallMode.VIA_INSTALL, myInstallMode);
+
     ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_2.zip"), "", myRoot);
-    fail();
+
+    fetchPackages(new File(myRoot, "App.sln"), Collections.<String>emptyList(), false, false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213")
+            ));
+
+    List<File> packageses = listFiles("customizedPath");
+    Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(2, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
+  public void test_install_mode_nuget_config_location_3(@NotNull final NuGet nuget) throws Exception {
+    assertSame(PackagesInstallMode.VIA_INSTALL, myInstallMode);
+
+    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_3.zip"), "", myRoot);
+
+    fetchPackages(new File(myRoot, "App.sln"), Collections.<String>emptyList(), false, false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213")
+            ));
+
+    List<File> packageses = listFiles("customizedPath");
+    Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(2, packageses.size());
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS_27p)
   public void test_restore_mode_nuget_config_location_1(@NotNull final NuGet nuget) throws Exception {
+    myInstallMode = PackagesInstallMode.VIA_RESTORE;
+
     ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_1.zip"), "", myRoot);
-    fail();
+
+    fetchPackages(new File(myRoot, "Apps/FirstApp/FirstApp.sln"), Collections.<String>emptyList(), false, false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213")
+            ));
+
+    List<File> packageses = listFiles("customizedPath");
+    Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(2, packageses.size());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS)
+  @Test(dataProvider = NUGET_VERSIONS_27p)
   public void test_restore_mode_nuget_config_location_2(@NotNull final NuGet nuget) throws Exception {
+    myInstallMode = PackagesInstallMode.VIA_RESTORE;
+
     ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_2.zip"), "", myRoot);
-    fail();
+
+    fetchPackages(new File(myRoot, "App.sln"), Collections.<String>emptyList(), false, false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213")
+            ));
+
+    List<File> packageses = listFiles(".nuget/customizedPath");
+    Assert.assertTrue(new File(myRoot, ".nuget/customizedPath/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, ".nuget/customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(2, packageses.size());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS)
-  public void test_update_nuget_config_location_1(@NotNull final NuGet nuget) throws Exception {
-    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_1.zip"), "", myRoot);
-    fail();
+  @Test(dataProvider = NUGET_VERSIONS_27p)
+  public void test_restore_mode_nuget_config_location_3(@NotNull final NuGet nuget) throws Exception {
+    myInstallMode = PackagesInstallMode.VIA_RESTORE;
+
+    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_3.zip"), "", myRoot);
+
+    fetchPackages(new File(myRoot, "App.sln"), Collections.<String>emptyList(), false, false, false, nuget,
+            Arrays.asList(
+                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new PackageInfo("NUnit", "2.5.7.10213")
+            ));
+
+    List<File> packageses = listFiles("customizedPath");
+    Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
+    Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
+    Assert.assertEquals(2, packageses.size());
   }
-
-  @Test(dataProvider = NUGET_VERSIONS)
-  public void test_update_nuget_config_location_2(@NotNull final NuGet nuget) throws Exception {
-    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_2.zip"), "", myRoot);
-    fail();
-  }
-
-/*
-  private void fetchPackages(final File sln,
-                             final List<String> sources,
-                             final boolean excludeVersion,
-                             final boolean noCache,
-                             final boolean update,
-                             @NotNull final NuGet nuget,
-                             @Nullable Collection<PackageInfo> detectedPackages) throws RunBuildException {
-
-    m.checking(new Expectations() {{
-      allowing(myParametersFactory).loadNuGetFetchParameters(myContext);
-      will(returnValue(myNuGet));
-      allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);
-      will(returnValue(myInstall));
-
-      allowing(myNuGet).getNuGetExeFile();
-      will(returnValue(nuget.getPath()));
-      allowing(myNuGet).getSolutionFile();
-      will(returnValue(sln));
-      allowing(myNuGet).getNuGetPackageSources();
-      will(returnValue(sources));
-      allowing(myInstall).getExcludeVersion();
-      will(returnValue(excludeVersion));
-      allowing(myInstall).getNoCache();
-      will(returnValue(noCache));
-      allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myNuGet);
-      will(returnValue(update ? myUpdate : null));
-    }});
-
-    BuildProcess proc = new PackagesInstallerRunner(
-            myActionFactory,
-            myParametersFactory,
-            new LocateNuGetConfigProcessFactory(
-                    new RepositoryPathResolverImpl(),
-                    Arrays.asList(
-                            new ResourcesConfigPackagesScanner(),
-                            new SolutionPackagesScanner(new SolutionParserImpl()),
-                            new SolutionWidePackagesConfigScanner())
-            )
-    ).createBuildProcess(myBuild, myContext);
-    ((NuGetPackagesCollectorImpl)myCollector).removeAllPackages();
-
-    assertRunSuccessfully(proc, BuildFinishedStatus.FINISHED_SUCCESS);
-
-    System.out.println(myCollector.getUsedPackages());
-    if (detectedPackages != null) {
-      Assert.assertEquals(
-              new TreeSet<PackageInfo>(myCollector.getUsedPackages().getUsedPackages()),
-              new TreeSet<PackageInfo>(detectedPackages));
-    }
-
-    m.assertIsSatisfied();
-  }
-*/
 
   @NotNull
-  private List<File> listFiles(String packages) {
-    File file = new File(myRoot, packages);
-    final File[] files = file.listFiles();
-    Assert.assertNotNull(files, "Failed to list for: " + file);
+  private List<File> listFiles(String dirRelativePath) {
+    File dir = new File(myRoot, dirRelativePath);
+    final File[] files = dir.listFiles();
+    Assert.assertNotNull(files, "Failed to list for: " + dir);
     return Arrays.asList(files);
   }
 }

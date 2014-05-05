@@ -31,6 +31,7 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionWide
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
+import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import org.jetbrains.annotations.NotNull;
@@ -42,10 +43,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -117,6 +115,8 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
       will(returnValue(nuget.getPath()));
       allowing(myNuGet).getSolutionFile();
       will(returnValue(sln));
+      allowing(myNuGet).getWorkingDirectory();
+      will(returnValue(myRoot));
       allowing(myNuGet).getNuGetPackageSources();
       will(returnValue(sources));
       allowing(myInstall).getExcludeVersion();
@@ -150,5 +150,21 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
     }
 
     m.assertIsSatisfied();
+  }
+
+  protected void allowUpdate(final PackagesUpdateMode updateMode){
+    allowUpdate(updateMode, false, false);
+  }
+
+  protected void allowUpdate(final PackagesUpdateMode updateMode, final boolean icludePrereleasePackages, final boolean useSafeUpdate) {
+    m.checking(new Expectations() {{
+      allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
+      allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
+
+      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(useSafeUpdate));
+      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(icludePrereleasePackages));
+      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdate).getUpdateMode(); will(returnValue(updateMode));
+    }});
   }
 }
