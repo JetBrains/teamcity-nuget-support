@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.agent.runner.install.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.util.containers.OrderedSet;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.util.FileUtil;
 import org.jdom.Attribute;
@@ -30,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -59,7 +60,7 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
     final File solutionHomeDir = solutionFile.getParentFile();
     final File defaultRepositoryPath = new File(solutionHomeDir, PACKAGES);
 
-    final OrderedSet<File> configs = locateNugetConfigsNearSolutionFile(workingDirectory, solutionHomeDir);
+    final Collection<File> configs = locateNugetConfigsNearSolutionFile(workingDirectory, solutionHomeDir);
 
     if(configs.isEmpty()) {
       LOG.warn("Failed to find NuGet.config file near solution " + solutionFile + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".");
@@ -93,8 +94,8 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
   }
 
   @NotNull
-  private OrderedSet<File> locateNugetConfigsNearSolutionFile(File workingDirectory, @NotNull final File solutionHomeDir) {
-    OrderedSet<File> result = new OrderedSet<File>();
+  private Collection<File> locateNugetConfigsNearSolutionFile(File workingDirectory, @NotNull final File solutionHomeDir) {
+    Collection<File> result = new HashSet<File>();
     try{
       File cuirrentDir = new File(solutionHomeDir, DOT_NUGET);
       final String workingDirectoryCanonicalPath = workingDirectory.getCanonicalPath();
@@ -110,7 +111,6 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
     } catch(IOException ex){
       LOG.warn(ex);
     }
-
     return result;
   }
 
