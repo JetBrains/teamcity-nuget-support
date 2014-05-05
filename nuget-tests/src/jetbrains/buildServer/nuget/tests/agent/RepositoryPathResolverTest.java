@@ -106,7 +106,7 @@ public class RepositoryPathResolverTest extends BaseTestCase {
   @Test
   public void testConfigLocation_02() throws Exception {
     ArchiveUtil.unpackZip(Paths.getTestDataPath("config/config_location_2.zip"), "", myHome);
-    doResolveTest("app.sln", "customizedPath");
+    doResolveTest("app.sln", ".nuget/customizedPath");
   }
 
   @Test
@@ -117,14 +117,20 @@ public class RepositoryPathResolverTest extends BaseTestCase {
 
   @Test
   public void testChainingMultipleConfigs() throws Exception {
-    fail();
+    ArchiveUtil.unpackZip(Paths.getTestDataPath("config/multiple_configs.zip"), "", myHome);
+    doResolveTest("a/b/app.sln", myHome, "root");
+    doResolveTest("a/b/app.sln", new File(myHome, "a"), "a/a");
+    doResolveTest("a/b/app.sln", new File(myHome, "a/b"), "a/b/sln");
   }
 
   private void doResolveTest(String slnFilePath, String expectedRepoPath) throws RunBuildException {
-    final File actual = myResolver.resolveRepositoryPath(myLogger, new File(myHome, slnFilePath), myHome);
+    doResolveTest(slnFilePath, myHome, expectedRepoPath);
+  }
+
+  private void doResolveTest(String slnFilePath, File workingDirectory, String expectedRepoPath) throws RunBuildException {
+    final File actual = myResolver.resolveRepositoryPath(myLogger, new File(myHome, slnFilePath), workingDirectory);
     Assert.assertTrue(actual.exists(), "Resolved file must exist");
     Assert.assertEquals(actual, FileUtil.getCanonicalFile(actual), "should return absolute canonical path");
     Assert.assertEquals(actual, FileUtil.resolvePath(myHome, expectedRepoPath));
-
   }
 }

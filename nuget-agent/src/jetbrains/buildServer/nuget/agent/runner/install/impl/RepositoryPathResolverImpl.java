@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.agent.runner.install.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.containers.OrderedSet;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.util.FileUtil;
 import org.jdom.Attribute;
@@ -58,42 +59,59 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
     final File solutionHomeDir = solutionFile.getParentFile();
     final File defaultRepositoryPath = new File(solutionHomeDir, PACKAGES);
 
-    final File configFilePath = locateNugetConfigNearSolutionFile(solutionHomeDir);
-    if (configFilePath == null) {
+    final OrderedSet<File> configs = locateNugetConfigsNearSolutionFile(workingDirectory, solutionHomeDir);
+
+    if(configs.isEmpty()) {
       LOG.warn("Failed to find NuGet.config file near solution " + solutionFile + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".");
       return defaultRepositoryPath;
     }
-    LOG.debug("Found NuGet.config file: " + configFilePath);
 
-    final String repositoryPath;
-    try {
-      repositoryPath = extractRepositoryPathFromConfig(configFilePath);
-    } catch (final Exception e) {
-      final String message = "Error occured while parsing NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".";
-      LOG.warn(message, e);
-      logger.warning(message + " " + e.getMessage());
-      return defaultRepositoryPath;
-    }
-    if(repositoryPath == null){
-      final String message = "RepositoryPath was not extracted from NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".";
-      LOG.info(message);
-      logger.message(message);
-      return defaultRepositoryPath;
-    }
+    File result = defaultRepositoryPath;
 
-    return FileUtil.resolvePath(workingDirectory, repositoryPath);
+    for(File configFilePath : configs){
+      LOG.debug("Found NuGet.config file: " + configFilePath);
+      final String repositoryPath;
+      try {
+        repositoryPath = extractRepositoryPathFromConfig(configFilePath);
+      } catch (final Exception e) {
+        final String message = "Error occured while parsing NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".";
+        LOG.warn(message, e);
+        logger.warning(message + " " + e.getMessage());
+        continue;
+      }
+
+      if(repositoryPath == null){
+        final String message = "RepositoryPath was not extracted from NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".";
+        LOG.info(message);
+        logger.message(message);
+        continue;
+      }
+
+      result = FileUtil.resolvePath(configFilePath.getParentFile(), repositoryPath);
+    }
+    return result;
   }
 
-  @Nullable
-  private File locateNugetConfigNearSolutionFile(@NotNull final File solutionHomeDir) {
-    File cuirrentDir = new File(solutionHomeDir, DOT_NUGET);
-    while (cuirrentDir != null){
-      final File result = new File(cuirrentDir, NUGET_CONFIG);
-      if(result.isFile()) return result;
-      LOG.debug("NuGet.config file not found on path " + result + ".");
-      cuirrentDir = cuirrentDir.getParentFile();
+  @NotNull
+  private OrderedSet<File> locateNugetConfigsNearSolutionFile(File workingDirectory, @NotNull final File solutionHomeDir) {
+    OrderedSet<File> result = new OrderedSet<File>();
+    try{
+      File cuirrentDir = new File(solutionHomeDir, DOT_NUGET);
+      final String workingDirectoryCanonicalPath = workingDirectory.getCanonicalPath();
+      while (cuirrentDir != null && cuirrentDir.getCanonicalPath().startsWith(workingDirectoryCanonicalPath)){
+        final File config = new File(cuirrentDir, NUGET_CONFIG);
+        if (!config.isFile())
+          LOG.debug("NuGet.config file not found on path " + result + ".");
+        else
+          result.add(config);
+
+        cuirrentDir = cuirrentDir.getParentFile();
+      }
+    } catch(IOException ex){
+      LOG.warn(ex);
     }
-    return null;
+
+    return result;
   }
 
   @Nullable
