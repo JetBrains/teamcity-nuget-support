@@ -64,6 +64,9 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
       allowing(log).activityStarted(with(any(String.class)),with(any(String.class)), with(any(String.class)));
       allowing(log).activityFinished(with(any(String.class)), with(any(String.class)));
       allowing(log).message(with(any(String.class)));
+      allowing(ps).getWorkingDirectory();
+      will(returnValue(myRoot));
+      allowing(cb).onNoPackagesConfigsFound();
     }});
   }
 

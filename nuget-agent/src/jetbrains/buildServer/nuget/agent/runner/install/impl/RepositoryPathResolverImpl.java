@@ -29,8 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -95,7 +94,7 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
 
   @NotNull
   private Collection<File> locateNugetConfigsNearSolutionFile(File workingDirectory, @NotNull final File solutionHomeDir) {
-    Collection<File> result = new HashSet<File>();
+    final List<File> result = new ArrayList<File>();
     try{
       File cuirrentDir = new File(solutionHomeDir, DOT_NUGET);
       final String workingDirectoryCanonicalPath = workingDirectory.getCanonicalPath();
@@ -111,6 +110,11 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
     } catch(IOException ex){
       LOG.warn(ex);
     }
+    Collections.sort(result, new Comparator<File>() {
+      public int compare(File o1, File o2) {
+        return o1.getAbsolutePath().compareToIgnoreCase(o2.getAbsolutePath());
+      }
+    });
     return result;
   }
 
