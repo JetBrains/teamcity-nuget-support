@@ -61,7 +61,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertEquals(4, packageses.size());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_27p)
+  @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_01_online_sources_restore(@NotNull final NuGet nuget) throws RunBuildException {
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
@@ -102,7 +102,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertEquals(4, packages.size());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_27p)
+  @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_01_online_sources_no_cache_restore(@NotNull final NuGet nuget) throws RunBuildException {
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
@@ -158,7 +158,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertEquals(5, packageses.size());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_27p)
+  @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_01_online_sources_restore_update_forSln(@NotNull final NuGet nuget) throws RunBuildException {
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
@@ -417,7 +417,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertEquals(2, packageses.size());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_27p)
+  @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_restore_mode_nuget_config_location_1(@NotNull final NuGet nuget) throws Exception {
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
 
@@ -435,7 +435,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertEquals(2, packageses.size());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_27p)
+  @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_restore_mode_nuget_config_location_2(@NotNull final NuGet nuget) throws Exception {
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
 
@@ -453,7 +453,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertEquals(2, packageses.size());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_27p)
+  @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_restore_mode_nuget_config_location_3(@NotNull final NuGet nuget) throws Exception {
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
 

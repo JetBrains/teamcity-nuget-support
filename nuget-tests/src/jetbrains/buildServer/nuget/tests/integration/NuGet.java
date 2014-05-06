@@ -35,6 +35,7 @@ public enum NuGet {
   NuGet_2_5(2,5),
   NuGet_2_6(2,6),
   NuGet_2_7(2,7),
+  NuGet_2_8(2,8)
   ;
 
   public final int major;
@@ -66,6 +67,8 @@ public enum NuGet {
         return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/2.6/NuGet.exe"));
       case NuGet_2_7:
         return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/2.7/NuGet.exe"));
+      case NuGet_2_8:
+        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/2.8/NuGet.exe"));
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }

@@ -112,7 +112,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_27p)
+  @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_auth_restore(@NotNull final NuGet nuget) throws RunBuildException {
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
