@@ -30,7 +30,6 @@ import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTr
 import jetbrains.buildServer.nuget.tests.agent.mock.MockPackParameters;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
-import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -190,18 +189,6 @@ public class PackIntegrationTest extends IntegrationTestBase {
     }
 
     m.assertIsSatisfied();
-  }
-
-  @Test(dataProvider = NUGET_VERSIONS)
-  public void test_nuget_config_location_1(@NotNull final NuGet nuget) throws Exception {
-    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_1.zip"), "", myRoot);
-    fail();
-  }
-
-  @Test(dataProvider = NUGET_VERSIONS)
-  public void test_nuget_config_location_2(@NotNull final NuGet nuget) throws Exception {
-    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_2.zip"), "", myRoot);
-    fail();
   }
 
   private File[] nupkgs() {

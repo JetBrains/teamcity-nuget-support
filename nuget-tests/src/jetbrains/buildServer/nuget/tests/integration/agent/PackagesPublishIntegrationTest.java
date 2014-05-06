@@ -28,7 +28,6 @@ import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.http.HttpAuthServer;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
-import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.hamcrest.text.StringContains;
@@ -182,18 +181,6 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
   public void test_create_mock_package(@NotNull final NuGet nuget) throws IOException {
     final File file = preparePackage(nuget);
     System.out.println(file);
-  }
-
-  @Test(dataProvider = NUGET_VERSIONS)
-  public void test_nuget_config_location_1(@NotNull final NuGet nuget) throws Exception {
-    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_1.zip"), "", myRoot);
-    fail();
-  }
-
-  @Test(dataProvider = NUGET_VERSIONS)
-  public void test_nuget_config_location_2(@NotNull final NuGet nuget) throws Exception {
-    ArchiveUtil.unpackZip(getTestDataPath("test-nuget_config_location_2.zip"), "", myRoot);
-    fail();
   }
 
   private File preparePackage(@NotNull final NuGet nuget) throws IOException {
