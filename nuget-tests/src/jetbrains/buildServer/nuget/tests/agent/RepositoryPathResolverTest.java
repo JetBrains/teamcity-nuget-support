@@ -123,6 +123,24 @@ public class RepositoryPathResolverTest extends BaseTestCase {
     doResolveTest("a/b/app.sln", new File(myHome, "a/b"), "a/b/sln");
   }
 
+  @Test
+  public void testCaseSensitivity_1() throws Exception {
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-case-01.config"), new File(myHome, "NuGet.config"));
+    doResolveTest(PROJECT_SLN, "customizedPath");
+  }
+
+  @Test
+  public void testCaseSensitivity_2() throws Exception {
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-case-02.config"), new File(myHome, "NuGet.config"));
+    doResolveTest(PROJECT_SLN, "customizedPath");
+  }
+
+  @Test
+  public void testCaseSensitivity_3() throws Exception {
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-case-03.config"), new File(myHome, "NuGet.config"));
+    doResolveTest(PROJECT_SLN, "customizedPath");
+  }
+
   private void doResolveTest(String slnFilePath, String expectedRepoPath) throws RunBuildException {
     doResolveTest(slnFilePath, myHome, expectedRepoPath);
   }

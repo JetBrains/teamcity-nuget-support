@@ -22,8 +22,6 @@ import jetbrains.buildServer.util.FileUtil;
 import org.jdom.Attribute;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.Text;
-import org.jdom.xpath.XPath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -121,32 +119,39 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
   @Nullable
   private String extractRepositoryPathFromConfig(@NotNull final File configFilePath) throws JDOMException, IOException {
     final Element element = FileUtil.parseDocument(configFilePath);
-    {
-      final Attribute pathAttribute = (Attribute) XPath.newInstance("/configuration/config/add[@key='repositoryPath']/@value").selectSingleNode(element);
-      if (pathAttribute != null) {
-        String text = pathAttribute.getValue().trim();
-        LOG.info("Found packages path: " + text);
-        return text;
+
+    final String elementName = element.getName();
+    if(elementName.equalsIgnoreCase("configuration")){
+      final Element config = element.getChild("config");
+      if(config != null){
+        for(Object child : config.getChildren("add")){
+          final Attribute key = ((Element)child).getAttribute("key");
+          if(key != null && key.getValue().equalsIgnoreCase("repositoryPath")){
+            String text = ((Element)child).getAttribute("value").getValue().trim();
+            LOG.info("Found packages path: " + text);
+            return text;
+          }
+        }
+      }
+
+      for (Object child : element.getChildren()){
+        if(((Element)child).getName().equalsIgnoreCase("repositoryPath")){
+          final String text = ((Element)child).getValue().trim();
+          LOG.info("Found repositoryPath: " + text);
+          return text;
+        }
+      }
+
+    } else if(elementName.equalsIgnoreCase("settings")){
+      for (Object child : element.getChildren()){
+        if(((Element)child).getName().equalsIgnoreCase("repositoryPath")){
+          final String text = ((Element)child).getValue().trim();
+          LOG.info("Found repositoryPath: " + text);
+          return text;
+        }
       }
     }
 
-    {
-      final Text pathText = (Text) XPath.newInstance("/configuration/repositoryPath/text()").selectSingleNode(element);
-      if (pathText != null) {
-        final String text = pathText.getTextTrim();
-        LOG.info("Found repositoryPath: " + text);
-        return text;
-      }
-    }
-
-    {
-      final Text pathText = (Text) XPath.newInstance("/settings/repositoryPath/text()").selectSingleNode(element);
-      if (pathText != null) {
-        final String text = pathText.getTextTrim();
-        LOG.info("Found repositoryPath: " + text);
-        return text;
-      }
-    }
     return null;
   }
 }
