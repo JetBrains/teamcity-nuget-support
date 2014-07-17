@@ -23,7 +23,7 @@
 
 <tr>
   <td colspan="2">
-    <em>Enables consuming packages from feeds which require authentication.</em><bs:help file="NuGet+Feed+Credentials"/>
+    <em>Enables interacting with feeds which require authentication.</em><bs:help file="NuGet+Feed+Credentials"/>
   </td>
 </tr>
 
