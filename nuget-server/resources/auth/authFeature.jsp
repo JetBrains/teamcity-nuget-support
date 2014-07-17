@@ -21,12 +21,17 @@
 <%@ taglib prefix="bs" tagdir="/WEB-INF/tags" %>
 <jsp:useBean id="ab" class="jetbrains.buildServer.nuget.server.runner.auth.AuthBean" scope="request"/>
 
+<tr>
+  <td colspan="2">
+    <em>Enables consuming packages from feeds which require authentication.</em><bs:help file="NuGet+Feed+Credentials"/>
+  </td>
+</tr>
 
 <tr>
   <th><label for="${ab.feedKey}">Feed URI:<l:star/></label></th>
   <td>
     <props:textProperty name="${ab.feedKey}" className="longField"/>
-    <span class="smallNote">Specify NuGet feed URL in the same way as you use in build</span>
+    <span class="smallNote">Specify a NuGet feed URL in the same way as you do in the build</span>
     <span class="error" id="error_${ab.feedKey}"></span>
   </td>
 </tr>
@@ -49,5 +54,5 @@
 </l:settingsGroup>
 
 <tr>
-  <td colspan="2">Only NuGet 2.0+ are supported</td>
+  <td colspan="2">Only NuGet 2.0+ is supported</td>
 </tr>
