@@ -18,7 +18,10 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.containers.SoftValueHashMap;
+import jetbrains.buildServer.serverSide.BuildServerAdapter;
+import jetbrains.buildServer.serverSide.BuildServerListener;
 import jetbrains.buildServer.users.SUser;
+import jetbrains.buildServer.util.EventDispatcher;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.impl.TeamCityInternalKeys;
 import jetbrains.buildServer.web.util.SessionUser;
@@ -36,6 +39,16 @@ import java.util.Map;
 public class ResponseCache implements ResponseCacheReset {
   private static final Logger LOG = Logger.getInstance(ResponseCache.class.getName());
   private final Map<String, ResponseCacheEntry> myCache = new SoftValueHashMap<String, ResponseCacheEntry>();
+
+  public ResponseCache(@NotNull EventDispatcher<BuildServerListener> dispatcher) {
+    dispatcher.addListener(new BuildServerAdapter() {
+      @Override
+      public void cleanupFinished() {
+        super.cleanupFinished();
+        resetCache();
+      }
+    });
+  }
 
   public void resetCache() {
     synchronized (myCache) {
