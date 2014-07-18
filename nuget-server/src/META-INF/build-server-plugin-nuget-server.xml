@@ -5,6 +5,7 @@
        default-autowire="constructor">
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetPackageDownloadController"/>
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesDescription"/>

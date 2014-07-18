@@ -17,10 +17,14 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.*;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.AccessCheckTransformation;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.SamePackagesFilterTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntityAdapter;
 import jetbrains.buildServer.nuget.tests.integration.feed.server.MockExternalIdTransformation;
 import jetbrains.buildServer.serverSide.ProjectManager;
@@ -70,7 +74,7 @@ public class PackageIndexTest extends BaseTestCase {
                     new AccessCheckTransformation(myProjectManager, myContext),
                     new IsPrereleaseTransformation(),
                     new MockExternalIdTransformation(),
-                    new DownloadUrlComputationTransformation()
+                    new DownloadUrlComputationTransformation(m.mock(NuGetServerSettings.class))
             ));
 
     myEntries = new ArrayList<BuildMetadataEntry>();

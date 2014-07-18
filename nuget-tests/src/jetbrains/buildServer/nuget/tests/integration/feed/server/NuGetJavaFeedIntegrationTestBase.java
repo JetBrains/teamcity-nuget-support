@@ -125,7 +125,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
             Arrays.asList(
               new IsPrereleaseTransformation(),
               new MockExternalIdTransformation(),
-              new DownloadUrlComputationTransformation()
+              new DownloadUrlComputationTransformation(mySettings)
             )
     ));
   }

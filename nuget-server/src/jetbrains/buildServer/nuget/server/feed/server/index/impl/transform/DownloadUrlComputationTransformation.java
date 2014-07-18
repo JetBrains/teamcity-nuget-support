@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index.impl.transform;
 
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
@@ -26,6 +27,13 @@ import org.jetbrains.annotations.NotNull;
 *         Date: 18.01.12 20:29
 */
 public class DownloadUrlComputationTransformation implements PackageTransformation {
+
+  private final NuGetServerSettings myServerSettings;
+
+  public DownloadUrlComputationTransformation(NuGetServerSettings serverSettings) {
+    myServerSettings = serverSettings;
+  }
+
   @NotNull
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
     String relPath = builder.getMetadata().get(PackagesIndex.TEAMCITY_ARTIFACT_RELPATH);
@@ -34,7 +42,7 @@ public class DownloadUrlComputationTransformation implements PackageTransformati
     if (buildTypeExternalId == null) return Status.SKIP;
 
     while (relPath.startsWith("/")) relPath = relPath.substring(1);
-    final String downloadUrl = "/repository/download/" + buildTypeExternalId + "/" + builder.getBuildId() + ":id/" + relPath;
+    final String downloadUrl = myServerSettings.getNuGetFeedControllerPath() + "/download/" + buildTypeExternalId + "/" + builder.getBuildId() + ":id/" + relPath;
     builder.setDownloadUrl(downloadUrl);
     return Status.CONTINUE;
   }

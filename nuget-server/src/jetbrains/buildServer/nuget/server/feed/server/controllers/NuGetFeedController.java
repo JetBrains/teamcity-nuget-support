@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.controllers;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
@@ -27,7 +26,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 
@@ -36,8 +34,6 @@ import java.util.Date;
  *         Date: 17.01.12 17:40
  */
 public class NuGetFeedController extends BaseController {
-  private static final Logger LOG = Logger.getInstance(NuGetFeedController.class.getName());
-
   private final String myNuGetPath;
   private final NuGetServerSettings mySettings;
   private final RecentNuGetRequests myRequestsList;
@@ -60,7 +56,7 @@ public class NuGetFeedController extends BaseController {
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
     if (!mySettings.isNuGetServerEnabled()) {
-      return nugetFeedIsDisabled(response);
+      return NuGetResponseUtil.nugetFeedIsDisabled(response);
     }
 
     String requestPath = WebUtil.getPathWithoutAuthenticationType(request);
@@ -81,18 +77,6 @@ public class NuGetFeedController extends BaseController {
     final long actualTime = new Date().getTime() - startTime;
     myRequestsList.reportFeedRequestFinished(pathAndQuery, actualTime);
 
-    return noImplementationFoundError(response);
-  }
-
-  private ModelAndView nugetFeedIsDisabled(@NotNull final HttpServletResponse response) throws IOException {
-    response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed server is not enabled in TeamCity server configuration");
-    return null;
-  }
-
-  private ModelAndView noImplementationFoundError(@NotNull final HttpServletResponse response) throws IOException {
-    final String err = "No available " + NuGetFeedHandler.class + " implementations registered";
-    LOG.warn(err);
-    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, err);
-    return null;
+    return NuGetResponseUtil.noImplementationFoundError(response);
   }
 }
