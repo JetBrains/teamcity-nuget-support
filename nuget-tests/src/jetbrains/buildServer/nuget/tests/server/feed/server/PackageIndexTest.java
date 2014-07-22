@@ -67,6 +67,10 @@ public class PackageIndexTest extends BaseTestCase {
     myContext = m.mock(SecurityContext.class);
     myAuthorityHolder = m.mock(AuthorityHolder.class);
     myStorage = m.mock(MetadataStorage.class);
+    final NuGetServerSettings serverSettings = m.mock(NuGetServerSettings.class);
+    m.checking(new Expectations(){{
+      allowing(serverSettings).getNuGetFeedControllerPath(); will(returnValue("foo"));
+    }});
     myIndex = new PackagesIndexImpl(
             myStorage,
             Arrays.asList(
@@ -74,7 +78,7 @@ public class PackageIndexTest extends BaseTestCase {
                     new AccessCheckTransformation(myProjectManager, myContext),
                     new IsPrereleaseTransformation(),
                     new MockExternalIdTransformation(),
-                    new DownloadUrlComputationTransformation(m.mock(NuGetServerSettings.class))
+                    new DownloadUrlComputationTransformation(serverSettings)
             ));
 
     myEntries = new ArrayList<BuildMetadataEntry>();
