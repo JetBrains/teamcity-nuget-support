@@ -42,7 +42,6 @@
 
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCache"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.CleanupCacheReset"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.ODataPackagesFeedController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducer"/>
 </beans>
