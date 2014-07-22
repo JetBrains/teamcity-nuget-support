@@ -58,8 +58,6 @@ public class NuGetPackageDownloadController extends BaseController {
       return NuGetResponseUtil.nugetFeedIsDisabled(response);
     }
 
-    //TODO: should authenticate???
-
     final String artifactDownloadUrl = requestPath.replace(feedControllerPath, "/repository");
     RequestDispatcher dispatcher = request.getRequestDispatcher(artifactDownloadUrl);
     if (dispatcher != null) {
