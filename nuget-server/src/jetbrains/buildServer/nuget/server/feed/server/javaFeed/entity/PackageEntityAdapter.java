@@ -24,6 +24,9 @@ import org.joda.time.LocalDateTime;
  *         Date: 11.01.12 18:36
  */
 public abstract class PackageEntityAdapter extends PackageEntityImpl implements PackageEntity {
+
+  private static final int NO_INFO_DOWNLOAD_COUNT = 0;
+
   @NotNull
   public LocalDateTime getCreated() {
     return getLastUpdated();
@@ -31,7 +34,7 @@ public abstract class PackageEntityAdapter extends PackageEntityImpl implements 
 
   @NotNull
   public Integer getDownloadCount() {
-    return 42;
+    return NO_INFO_DOWNLOAD_COUNT;
   }
 
   public String getGalleryDetailsUrl() {
@@ -55,7 +58,7 @@ public abstract class PackageEntityAdapter extends PackageEntityImpl implements 
 
   @NotNull
   public Integer getVersionDownloadCount() {
-    return 42;
+    return NO_INFO_DOWNLOAD_COUNT;
   }
 
   @NotNull
