@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.ui;
 
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.BasePropertiesBean;
-import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.util.StringUtil;
@@ -64,36 +64,45 @@ public class ToolSelectorController extends BaseController {
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
     final String name = safe(request.getParameter("name"));
-    String value = parseValue(request, "value", name);
+    final String value = parseValue(request, "value", name);
     final Collection<ToolInfo> tools = getTools();
-    final ToolInfo bundledTool = ensureVersion(value, tools);
+    return !StringUtil.isEmptyOrSpaces(request.getParameter("view")) ? doHandleView(value, tools) : doHandleEdit(request, name, value, tools);
+  }
 
-    if (!StringUtil.isEmptyOrSpaces(request.getParameter("view"))) {
-      ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/runnerSettingsView.jsp"));
-      if (bundledTool != null) {
-        mv.getModel().put("tool", bundledTool.getVersion());
-        mv.getModel().put("bundled", true);
-      } else {
-        mv.getModel().put("tool", value);
-        mv.getModel().put("bundled", false);
+  private ModelAndView doHandleEdit(HttpServletRequest request, String name, String value, Collection<ToolInfo> tools) {
+    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/runnerSettingsEdit.jsp"));
+    if(value.isEmpty()){
+      final NuGetInstalledTool defaultTool = myToolManager.getDefaultTool();
+      if(defaultTool != null){
+        value = NuGetToolReferenceUtils.getDefaultToolPath();
       }
-      return mv;
-    } else {
-      ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/runnerSettingsEdit.jsp"));
-      mv.getModel().put("name", name);
-      mv.getModel().put("value", value);
-      mv.getModel().put("customValue", safe(parseValue(request, "customValue", "nugetCustomPath")));
-      mv.getModel().put("clazz", safe(request.getParameter("class")));
-      mv.getModel().put("style", safe(request.getParameter("style")));
-      mv.getModel().put("items", tools);
-      mv.getModel().put("settingsUrl", "/admin/admin.html?init=1&item=" + TAB_ID + "&" + SELECTED_SECTION_KEY + "=" + SETTINGS_PAGE_ID);
-      return mv;
     }
+    mv.getModel().put("value", value);
+    mv.getModel().put("name", name);
+    mv.getModel().put("customValue", safe(parseValue(request, "customValue", "nugetCustomPath")));
+    mv.getModel().put("clazz", safe(request.getParameter("class")));
+    mv.getModel().put("style", safe(request.getParameter("style")));
+    mv.getModel().put("items", tools);
+    mv.getModel().put("settingsUrl", "/admin/admin.html?init=1&item=" + TAB_ID + "&" + SELECTED_SECTION_KEY + "=" + SETTINGS_PAGE_ID);
+    return mv;
+  }
+
+  private ModelAndView doHandleView(String value, Collection<ToolInfo> tools) {
+    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("tool/runnerSettingsView.jsp"));
+    final ToolInfo bundledTool = ensureVersion(value, tools);
+    if (bundledTool != null) {
+      mv.getModel().put("tool", bundledTool.getVersion());
+      mv.getModel().put("bundled", true);
+    } else {
+      mv.getModel().put("tool", value);
+      mv.getModel().put("bundled", false);
+    }
+    return mv;
   }
 
   @Nullable
   private ToolInfo ensureVersion(@NotNull final String version, @NotNull Collection<ToolInfo> actionInfos) {
-    if (!NuGetTools.isToolReference(version)) return null;
+    if (!NuGetToolReferenceUtils.isToolReference(version)) return null;
     for (ToolInfo actionInfo : actionInfos) {
       if (actionInfo.getId().equals(version)) return actionInfo;
     }
@@ -115,7 +124,7 @@ public class ToolSelectorController extends BaseController {
     }
 
     result.add(new ToolInfo(
-            NuGetTools.getDefaultToolPath(),
+            NuGetToolReferenceUtils.getDefaultToolPath(),
             defaultToolName));
 
     for (NuGetInstalledTool nuGetInstalledTool : myToolManager.getInstalledTools()) {
