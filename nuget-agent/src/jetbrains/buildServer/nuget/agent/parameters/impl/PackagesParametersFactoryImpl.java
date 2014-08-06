@@ -22,7 +22,7 @@ import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.agent.BundledTool;
 import jetbrains.buildServer.agent.BundledToolsRegistry;
 import jetbrains.buildServer.nuget.agent.parameters.*;
-import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
@@ -83,7 +83,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       throw new RunBuildException("Runner parameter '" + NUGET_PATH + "' was not found");
     }
 
-    final String version = NuGetTools.getReferredToolId(path);
+    final String version = NuGetToolReferenceUtils.getReferredToolId(path);
     if (version != null) {
       final BundledTool tool = myBundledTools.findTool(version);
       if (tool != null) {

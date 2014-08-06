@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
-import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
 import jetbrains.buildServer.util.StringUtil;
@@ -120,13 +120,13 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   public String getNuGetPath(@Nullable final String path) {
     if (path == null || StringUtil.isEmptyOrSpaces(path)) return path;
 
-    if (NuGetTools.isDefaultToolPath(path)) {
+    if (NuGetToolReferenceUtils.isDefaultToolPath(path)) {
       final String id = getDefaultToolId();
       if (id == null || StringUtil.isEmptyOrSpaces(id)) {
         throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE + ". Default NuGet version is not selected");
       }
 
-      final String ref = NuGetTools.getToolReference(id);
+      final String ref = NuGetToolReferenceUtils.getToolReference(id);
       final InstalledTool nuGetPath = findTool(id);
       if (nuGetPath == null) {
         throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified version " + ref + " was not found");
@@ -134,7 +134,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
       return nuGetPath.getPath().getPath();
     }
 
-    final String id = NuGetTools.getReferredToolId(path);
+    final String id = NuGetToolReferenceUtils.getReferredToolId(path);
     if (id == null) return path;
     final InstalledTool nuGetPath = findTool(id);
     if (nuGetPath != null) {

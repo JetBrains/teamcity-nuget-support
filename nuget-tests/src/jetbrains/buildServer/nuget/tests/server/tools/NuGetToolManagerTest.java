@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.impl.ToolPathsImpl;
@@ -172,7 +172,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
       allowing(myToolsRegistry).findTool("aaa"); will(returnValue(it));
     }});
 
-    Assert.assertEquals(myToolManager.getNuGetPath(NuGetTools.getDefaultToolPath()), "some-path");
+    Assert.assertEquals(myToolManager.getNuGetPath(NuGetToolReferenceUtils.getDefaultToolPath()), "some-path");
   }
 
   @Test(expectedExceptions = RuntimeException.class)
@@ -183,7 +183,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
       allowing(myToolsRegistry).findTool("bbb"); will(returnValue(null));
     }});
 
-    myToolManager.getNuGetPath(NuGetTools.getDefaultToolPath());
+    myToolManager.getNuGetPath(NuGetToolReferenceUtils.getDefaultToolPath());
   }
 
   @Test
@@ -195,7 +195,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
       allowing(myToolsRegistry).getTools(); will(returnValue(Arrays.asList(it)));
     }});
 
-    final String defaultId = NuGetTools.getDefaultToolPath();
+    final String defaultId = NuGetToolReferenceUtils.getDefaultToolPath();
     for (NuGetInstalledTool tool : myToolManager.getInstalledTools()) {
       Assert.assertFalse(tool.getId().equals(defaultId));
     }

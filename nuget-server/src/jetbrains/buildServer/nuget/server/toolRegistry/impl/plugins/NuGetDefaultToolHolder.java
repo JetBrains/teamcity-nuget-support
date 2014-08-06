@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.plugins;
 
-import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsSettings;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming;
@@ -49,7 +49,7 @@ public class NuGetDefaultToolHolder implements AgentPluginsProvider{
 
   @NotNull
   private String getPluginName() {
-    return myNaming.getAgentFileName(NuGetTools.getDefaultToolId());
+    return myNaming.getAgentFileName(NuGetToolReferenceUtils.getDefaultToolId());
   }
 
   @Nullable

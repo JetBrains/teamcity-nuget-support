@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.ui;
 
-import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +29,7 @@ public class ToolInfo {
   private final String myVersion;
 
   public ToolInfo(@NotNull final NuGetInstalledTool tool) {
-    this(NuGetTools.getToolReference(tool.getId()), tool.getVersion());
+    this(NuGetToolReferenceUtils.getToolReference(tool.getId()), tool.getVersion());
   }
 
   public ToolInfo(@NotNull final String id,

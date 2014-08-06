@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.runner.install;
 
-import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.serverSide.BuildTypeSettings;
@@ -94,7 +94,7 @@ public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscove
 
   private DiscoveredObject discover(String slnPath) {
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(PackagesConstants.NUGET_PATH, NuGetTools.getDefaultToolPath());
+    parameters.put(PackagesConstants.NUGET_PATH, NuGetToolReferenceUtils.getDefaultToolPath());
     parameters.put(PackagesConstants.SLN_PATH, slnPath);
     parameters.put(PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallMode.VIA_RESTORE.getName());
     return new DiscoveredObject(PackagesConstants.INSTALL_RUN_TYPE, parameters);

@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.server.runner.install;
 
-import jetbrains.buildServer.nuget.common.NuGetTools;
+import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDiscoverer;
@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class PackagesInstallerRunnerDiscovererTest extends NuGetRunnerDiscovererTestBase {
 
-  private final String myDefaultToolPath = NuGetTools.getDefaultToolPath();
+  private final String myDefaultToolPath = NuGetToolReferenceUtils.getDefaultToolPath();
   private PackagesInstallerRunnerDiscoverer myDiscoverer;
 
   public PackagesInstallerRunnerDiscovererTest() {

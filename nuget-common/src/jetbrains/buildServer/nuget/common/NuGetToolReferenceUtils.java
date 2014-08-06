@@ -28,7 +28,7 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  * @since v0.9
  */
-public class NuGetTools {
+public class NuGetToolReferenceUtils {
   private static final String TOOL_REFERENCE_PREFIX = "?";
   private static final String TOOL_DEFAULT_NAME = NUGET_COMMANDLINE + ".DEFAULT" + NUGET_EXTENSION;
 
