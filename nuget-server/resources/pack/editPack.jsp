@@ -57,11 +57,11 @@
     </td>
   </tr>
 
-  <tr>
+  <tr class="advancedSetting">
     <th><label for="${ib.packVersion}">Version</label>:</th>
     <td>
       <props:textProperty name="${ib.packVersion}" className="longField"/>
-      <span class="smallNote">Specify version for the package to created (recommended) or leave it blank to let NuGet decide</span>
+      <span class="smallNote">Overrides the version number from the nuspec file.</span>
       <span id="error_${ib.packVersion}" class="error"></span>
     </td>
   </tr>
