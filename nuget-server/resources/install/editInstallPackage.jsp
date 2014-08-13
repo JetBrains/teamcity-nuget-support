@@ -13,6 +13,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
 <%@ include file="/include.jsp"%>
 <%@ taglib prefix="forms" tagdir="/WEB-INF/tags/forms" %>
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
@@ -21,13 +22,9 @@
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.runner.install.InstallBean" scope="request"/>
 <jsp:useBean id="propertiesBean" scope="request" type="jetbrains.buildServer.controllers.BasePropertiesBean"/>
 
-<l:settingsGroup title="NuGet settings">
-  <tr>
-    <th>NuGet.exe<l:star/>:</th>
-    <td>
-      <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
-    </td>
-  </tr>
+<jsp:include page="../tool/editNugetExeSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
+
+<l:settingsGroup title="Packages Sources">
   <tr>
     <th>Packages Sources:</th>
     <td>

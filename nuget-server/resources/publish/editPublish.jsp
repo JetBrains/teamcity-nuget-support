@@ -21,13 +21,9 @@
 <%@ taglib prefix="bs" tagdir="/WEB-INF/tags" %>
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.runner.publish.PublishBean" scope="request"/>
 
-<l:settingsGroup title="NuGet settings">
-  <tr>
-    <th>NuGet.exe<l:star/>:</th>
-    <td>
-      <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
-    </td>
-  </tr>
+<jsp:include page="../tool/editNugetExeSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
+
+<l:settingsGroup title="Packages Source">
   <tr>
     <th>Package Source:</th>
     <td>

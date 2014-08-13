@@ -21,14 +21,7 @@
 <%@ taglib prefix="bs" tagdir="/WEB-INF/tags" %>
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.runner.pack.PackBean" scope="request"/>
 
-<l:settingsGroup title="NuGet settings">
-  <tr>
-    <th>NuGet.exe<l:star/>:</th>
-    <td>
-      <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
-    </td>
-  </tr>
-</l:settingsGroup>
+<jsp:include page="../tool/editNugetExeSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
 
 <script type="text/javascript">
   appendSpecificationFile = function(specFile) {
