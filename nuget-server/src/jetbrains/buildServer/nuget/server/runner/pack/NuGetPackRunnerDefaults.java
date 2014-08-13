@@ -33,7 +33,7 @@ public class NuGetPackRunnerDefaults {
 
   public static Map<String,String> getRunnerProperties() {
     return new HashMap<String, String>(){{
-      put(PackagesConstants.NUGET_PACK_VERSION, "0." + ReferencesResolverUtil.makeReference(ServerProvidedProperties.BUILD_NUMBER_PROP));
+      put(PackagesConstants.NUGET_PACK_VERSION, "1.0." + ReferencesResolverUtil.makeReference(ServerProvidedProperties.BUILD_NUMBER_PROP));
       put(PackagesConstants.NUGET_PACK_OUTPUT_CLEAR, CHECKED);
       put(PackagesConstants.NUGET_PACK_PROPERTIES, DEFAULT_PACK_PROPS);
       put(PackagesConstants.NUGET_PACK_BASE_DIRECTORY_MODE, PackagesPackDirectoryMode.LEAVE_AS_IS.getValue());
