@@ -38,7 +38,7 @@
 </script>
 <l:settingsGroup title="Package parameters">
   <tr>
-    <th rowspan="2"><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
+    <th><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
     <td>
       <props:multilineProperty name="${ib.packSpecFile}" linkTitle="Specification or project files" cols="60" rows="5" expanded="${true}"/>
       <bs:vcsTree callback="appendSpecificationFile" treeId="${ib.packSpecFile}"/>
@@ -49,7 +49,8 @@
       <span id="error_${ib.packSpecFile}" class="error"></span>
     </td>
   </tr>
-  <tr>
+  <tr class="advancedSetting">
+    <th class="noBorder"></th>
     <td>
       <props:checkboxProperty name="${ib.packPreferProject}"/>
       <label for="${ib.packPreferProject}">Prefer project files to .nuspec</label>
@@ -66,12 +67,11 @@
     </td>
   </tr>
 
-  <props:selectSectionProperty name="${ib.packBaseDirectoryMode}" title="Base Directory">
-    <c:forEach var="it" items="${ib.packBaseDirectoryModes}">
-      <props:selectSectionPropertyContent value="${it.value}" caption="${it.description}">
-        <tr>
-        <th class="noBorder"></th>
-        <td class="noBorder">
+  <tr class="advancedSetting">
+    <th><label>Base Directory</label>:</th>
+    <td>
+      <c:forEach var="it" items="${ib.packBaseDirectoryModes}">
+        <div>
           <c:choose>
             <c:when test="${it.showBaseDirectorySelector}">
               <props:textProperty name="${ib.packBaseDirectory}" className="longField"/>
@@ -83,11 +83,10 @@
               <span class="smallNote"><c:out value="${it.details}"/></span>
             </c:otherwise>
           </c:choose>
-        </td>
-        </tr>
-      </props:selectSectionPropertyContent>
-    </c:forEach>
-  </props:selectSectionProperty>
+        </div>
+      </c:forEach>
+    </td>
+  </tr>
 
 </l:settingsGroup>
 
@@ -100,7 +99,7 @@
       <span id="error_${ib.packOutputDirectory}" class="error"></span>
     </td>
   </tr>
-  <tr>
+  <tr class="advancedSetting">
     <td>
       <props:checkboxProperty name="${ib.packOutputClear}"/><label for="${ib.packOutputClear}">Clean output directory</label>
     </td>
@@ -113,9 +112,9 @@
   </tr>
 </l:settingsGroup>
 
-<l:settingsGroup title="Additionals parameters">
+<l:settingsGroup title="Additionals parameters" className="advancedSetting">
 
-  <tr>
+  <tr class="advancedSetting">
     <th><label for="${ib.packExcludePatterns}">Exclude files: </label></th>
     <td>
       <props:multilineProperty name="${ib.packExcludePatterns}" linkTitle="Exclude files" cols="60" rows="5" />
@@ -124,7 +123,7 @@
     </td>
   </tr>
 
-  <tr>
+  <tr class="advancedSetting">
     <th><label for="${ib.packProperties}">Properties:</label></th>
     <td>
       <props:multilineProperty name="${ib.packProperties}" linkTitle="Properties" cols="60" rows="5" />
@@ -135,21 +134,21 @@
     </td>
   </tr>
 
-  <tr>
+  <tr class="advancedSetting">
     <th rowspan="2">Options:</th>
     <td>
       <props:checkboxProperty name="${ib.packAsTool}"/>
       <label for="${ib.packAsTool}">Create <strong>tool</strong> package</label>
     </td>
   </tr>
-  <tr>
+  <tr class="advancedSetting">
     <td>
       <props:checkboxProperty name="${ib.packSources}"/>
       <label for="${ib.packSources}">Include sources and symbols</label>
     </td>
   </tr>
 
-  <tr>
+  <tr class="advancedSetting">
     <th><label for="${ib.packCustomCommandline}">Additional commandline arguments:</label></th>
     <td>
       <props:multilineProperty name="${ib.packCustomCommandline}" linkTitle="Commandline" cols="60" rows="5" />
