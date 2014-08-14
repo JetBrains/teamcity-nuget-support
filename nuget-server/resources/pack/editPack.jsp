@@ -68,23 +68,13 @@
   </tr>
 
   <tr class="advancedSetting">
-    <th><label>Base Directory</label>:</th>
+    <th><label for="${ib.packBaseDirectoryMode}">Base Directory</label>:</th>
     <td>
-      <c:forEach var="it" items="${ib.packBaseDirectoryModes}">
-        <div>
-          <c:choose>
-            <c:when test="${it.showBaseDirectorySelector}">
-              <props:textProperty name="${ib.packBaseDirectory}" className="longField"/>
-              <bs:vcsTree fieldId="${ib.packBaseDirectory}" treeId="${ib.packBaseDirectory}"/>
-              <span class="smallNote"><c:out value="${it.details}"/></span>
-              <span id="error_${ib.packBaseDirectory}" class="error"></span>
-            </c:when>
-            <c:otherwise>
-              <span class="smallNote"><c:out value="${it.details}"/></span>
-            </c:otherwise>
-          </c:choose>
-        </div>
-      </c:forEach>
+      <props:selectProperty name="${ib.packBaseDirectoryMode}">
+        <c:forEach var="it" items="${ib.packBaseDirectoryModes}">
+          <props:option value="${it.value}"><c:out value="${it.description}"/></props:option>
+        </c:forEach>
+      </props:selectProperty>
     </td>
   </tr>
 
