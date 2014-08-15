@@ -24,7 +24,7 @@
 <jsp:include page="../tool/editNugetExeSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
 
 <l:settingsGroup title="Packages Source">
-  <tr>
+  <tr class="advancedSetting">
     <th>Package Source:</th>
     <td>
       <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
@@ -71,12 +71,12 @@
       <script type="text/javascript">
         BS.Util.hide($('vcsTreeControl_${ib.nuGetPublishFilesKey}'));
       </script>
-      <span>A newline-separated list of NuGet package files (.nupkg) to push to the NuGet Feed. Wildcards are supported</span>
+      <span class="smallNote">A newline-separated list of NuGet package files (.nupkg) to push to the NuGet Feed. Wildcards are supported</span>
       <span class="error" id="error_${ib.nuGetPublishFilesKey}"></span>
     </td>
   </tr>
 
-  <tr>
+  <tr class="advancedSetting">
     <th>Options:</th>
     <td>
       <props:checkboxProperty name="${ib.nuGetPublishCreateOnlyKey}"/>
