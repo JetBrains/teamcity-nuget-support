@@ -24,7 +24,7 @@
 
 <c:choose>
   <c:when test="${nugetExeDefaultSpecified}">
-    <l:settingsGroup title="NuGet settings" className="advancedSetting">
+    <l:settingsGroup title="NuGet Settings" className="advancedSetting">
       <tr class="advancedSetting">
         <th>NuGet.exe<l:star/>:</th>
         <td>
@@ -34,7 +34,7 @@
     </l:settingsGroup>
   </c:when>
   <c:otherwise>
-    <l:settingsGroup title="NuGet settings">
+    <l:settingsGroup title="NuGet Settings">
       <tr>
         <th>NuGet.exe<l:star/>:</th>
         <td>

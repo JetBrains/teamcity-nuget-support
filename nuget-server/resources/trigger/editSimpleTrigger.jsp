@@ -22,6 +22,10 @@
 <jsp:useBean id="canStartNuGetProcesses" type="java.lang.Boolean" scope="request"/>
 <jsp:useBean id="canStartNuGetProcessesMessage" type="java.lang.String" scope="request"/>
 
+<tr>
+  <td colspan="2"><em>The NuGet Dependency Trigger allows starting a new build if a NuGet packages update is detected in the NuGet repository.</em></td>
+</tr>
+
 <jsp:include page="../tool/editNugetExeSettings.html?name=${ib.nuGetExeKey}&style=width:20em"/>
 
 <c:if test="${not canStartNuGetProcesses}">
@@ -39,67 +43,73 @@
    </tr>
 </c:if>
 
-<tr class="advancedSetting">
-  <th rowspan="3">NuGet package source:</th>
-  <td>
-    <props:textProperty name="${ib.sourceKey}" style="width:20em;" />
-    <span class="smallNote">Specify the NuGet packages feed URL to monitor packages changes. Leave blank to use default NuGet feed</span>
-    <span class="error" id="error_${ib.sourceKey}"></span>
-  </td>
-</tr>
+<l:settingsGroup title="Nuget Package Source" className="advancedSetting">
+  <tr class="advancedSetting">
+    <td><label>Feed URL:</label></td>
+    <td>
+      <props:textProperty name="${ib.sourceKey}" style="width:20em;" />
+      <span class="smallNote">Specify the NuGet packages feed URL to monitor packages changes. Leave blank to use default NuGet feed</span>
+      <span class="error" id="error_${ib.sourceKey}"></span>
+    </td>
+  </tr>
 
-<tr class="advancedSetting">
-  <td>
-    <props:textProperty name="${ib.username}" style="width:20em;" />
-    <span class="smallNote">Specify username to access NuGet feed, leave blank if no authentication is required</span>
-    <span class="error" id="error_${ib.username}"></span>
-  </td>
-</tr>
+  <tr class="advancedSetting">
+    <td><label>Username:</label></td>
+    <td>
+      <props:textProperty name="${ib.username}" style="width:20em;" />
+      <span class="smallNote">Specify username to access NuGet feed, leave blank if no authentication is required</span>
+      <span class="error" id="error_${ib.username}"></span>
+    </td>
+  </tr>
 
-<tr class="advancedSetting">
-  <td>
-    <props:passwordProperty name="${ib.password}" style="width:20em;" />
-    <span class="smallNote">Specify password to access NuGet feed, leave blank if no authentication is required</span>
-    <span class="error" id="error_${ib.username}"></span>
-  </td>
-</tr>
+  <tr class="advancedSetting">
+    <td><label>Password:</label></td>
+    <td>
+      <props:passwordProperty name="${ib.password}" style="width:20em;" />
+      <span class="smallNote">Specify password to access NuGet feed, leave blank if no authentication is required</span>
+      <span class="error" id="error_${ib.username}"></span>
+    </td>
+  </tr>
+</l:settingsGroup>
 
-<tr>
-  <th>Package Id<l:star/>:</th>
-  <td>
-    <props:textProperty name="${ib.packageKey}" style="width:20em;"/>
-    <span class="smallNote">Specify package Id to check for updates.</span>
-    <span class="error" id="error_${ib.packageKey}"></span>
-  </td>
-</tr>
+<l:settingsGroup title="Package Parameters" className="advancedSetting">
+  <tr>
+    <td><label>Package Id<l:star/>:</label></td>
+    <td>
+      <props:textProperty name="${ib.packageKey}" style="width:20em;"/>
+      <span class="smallNote">Specify package Id to check for updates.</span>
+      <span class="error" id="error_${ib.packageKey}"></span>
+    </td>
+  </tr>
 
-<c:choose>
-  <c:when test="${canStartNuGetProcesses}">
-    <tr class="advancedSetting">
-      <th>Package Version Spec:</th>
-      <td>
-        <props:textProperty name="${ib.versionKey}" style="width:20em;"/>
-        <span class="smallNote">Specify package version to check. Leave empty to check for latest version</span>
-        <span class="error" id="error_${ib.versionKey}"></span>
-      </td>
-    </tr>
-  </c:when>
-  <c:otherwise>
-    <tr class="advancedSetting">
-      <th>Package Version Spec:</th>
-      <td>
-        <props:hiddenProperty name="${ib.versionKey}" value=""/>
-        <span class="smallNote">Supported only for TeamCity server is running under Windows with Microsoft .NET Framework 4.0/4.5 installed.</span>
-      </td>
-    </tr>
-  </c:otherwise>
-</c:choose>
+  <c:choose>
+    <c:when test="${canStartNuGetProcesses}">
+      <tr class="advancedSetting">
+        <td><label>Package Version Spec:</label></td>
+        <td>
+          <props:textProperty name="${ib.versionKey}" style="width:20em;"/>
+          <span class="smallNote">Specify package version to check. Leave empty to check for latest version</span>
+          <span class="error" id="error_${ib.versionKey}"></span>
+        </td>
+      </tr>
+    </c:when>
+    <c:otherwise>
+      <tr class="advancedSetting">
+        <td><label>Package Version Spec:</label></td>
+        <td>
+          <props:hiddenProperty name="${ib.versionKey}" value=""/>
+          <span class="smallNote">Supported only for TeamCity server is running under Windows with Microsoft .NET Framework 4.0/4.5 installed.</span>
+        </td>
+      </tr>
+    </c:otherwise>
+  </c:choose>
+</l:settingsGroup>
 
-<tr class="advancedSetting">
-  <th>Options:</th>
-  <td>
-    <props:checkboxProperty name="${ib.prereleaseKey}"/> <label for="${ib.prereleaseKey}">Include pre-release packages</label>
-    <span class="smallNote">Trigger build if pre-release package version is detected. Supported for NuGet 1.8 and newer.</span>
-  </td>
-</tr>
+<l:settingsGroup title="Options" className="advancedSetting">
+  <tr class="advancedSetting">
+    <td colspan="2">
+      <props:checkboxProperty name="${ib.prereleaseKey}"/> <label for="${ib.prereleaseKey}">Trigger build if pre-release package version is detected.</label>
+    </td>
+  </tr>
+</l:settingsGroup>
 
