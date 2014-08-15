@@ -22,12 +22,7 @@
 <jsp:useBean id="canStartNuGetProcesses" type="java.lang.Boolean" scope="request"/>
 <jsp:useBean id="canStartNuGetProcessesMessage" type="java.lang.String" scope="request"/>
 
-<tr>
-  <th>NuGet.exe<l:star/>:</th>
-  <td>
-    <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetExeKey}&style=width:20em"/>
-  </td>
-</tr>
+<jsp:include page="../tool/editNugetExeSettings.html?name=${ib.nuGetExeKey}&style=width:20em"/>
 
 <c:if test="${not canStartNuGetProcesses}">
   <tr>
@@ -44,7 +39,7 @@
    </tr>
 </c:if>
 
-<tr>
+<tr class="advancedSetting">
   <th rowspan="3">NuGet package source:</th>
   <td>
     <props:textProperty name="${ib.sourceKey}" style="width:20em;" />
@@ -53,7 +48,7 @@
   </td>
 </tr>
 
-<tr>
+<tr class="advancedSetting">
   <td>
     <props:textProperty name="${ib.username}" style="width:20em;" />
     <span class="smallNote">Specify username to access NuGet feed, leave blank if no authentication is required</span>
@@ -61,7 +56,7 @@
   </td>
 </tr>
 
-<tr>
+<tr class="advancedSetting">
   <td>
     <props:passwordProperty name="${ib.password}" style="width:20em;" />
     <span class="smallNote">Specify password to access NuGet feed, leave blank if no authentication is required</span>
@@ -80,7 +75,7 @@
 
 <c:choose>
   <c:when test="${canStartNuGetProcesses}">
-    <tr>
+    <tr class="advancedSetting">
       <th>Package Version Spec:</th>
       <td>
         <props:textProperty name="${ib.versionKey}" style="width:20em;"/>
@@ -90,7 +85,7 @@
     </tr>
   </c:when>
   <c:otherwise>
-    <tr>
+    <tr class="advancedSetting">
       <th>Package Version Spec:</th>
       <td>
         <props:hiddenProperty name="${ib.versionKey}" value=""/>
@@ -100,7 +95,7 @@
   </c:otherwise>
 </c:choose>
 
-<tr>
+<tr class="advancedSetting">
   <th>Options:</th>
   <td>
     <props:checkboxProperty name="${ib.prereleaseKey}"/> <label for="${ib.prereleaseKey}">Include pre-release packages</label>
