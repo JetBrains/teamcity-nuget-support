@@ -23,30 +23,6 @@
 
 <jsp:include page="../tool/editNugetExeSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
 
-<l:settingsGroup title="Packages Source">
-  <tr class="advancedSetting">
-    <th>Package Source:</th>
-    <td>
-      <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
-      <span class="smallNote">
-        Specify the NuGet packages feed URL to push packages to.
-        Leave blank to let NuGet decide what package repository to use
-      </span>
-      <span class="error" id="error_${ib.nuGetSourceKey}"></span>
-    </td>
-  </tr>
-  <tr>
-    <th>API key<l:star/>:</th>
-    <td>
-      <props:passwordProperty name="${ib.apiKey}" className="longField"/>
-      <span class="smallNote">
-        Specify the API key to access a NuGet packages feed
-      </span>
-      <span class="error" id="error_${ib.apiKey}"></span>
-    </td>
-  </tr>
-</l:settingsGroup>
-
 <script type="text/javascript">
   appendPackageToUpload = function(packageFile) {
     var textarea = $j(BS.Util.escapeId('${ib.nuGetPublishFilesKey}'));
@@ -60,33 +36,53 @@
     }
   };
 </script>
-<l:settingsGroup title="Packages">
-  <tr>
-    <th>Packages to upload<l:star/>:</th>
-    <td>
-      <props:multilineProperty name="${ib.nuGetPublishFilesKey}" linkTitle="Packages files"
-                               cols="60" rows="5"
-                               expanded="${true}"/>
-      <bs:vcsTree callback="appendPackageToUpload" treeId="${ib.nuGetPublishFilesKey}"/>
-      <script type="text/javascript">
-        BS.Util.hide($('vcsTreeControl_${ib.nuGetPublishFilesKey}'));
-      </script>
-      <span class="smallNote">A newline-separated list of NuGet package files (.nupkg) to push to the NuGet Feed. Wildcards are supported</span>
-      <span class="error" id="error_${ib.nuGetPublishFilesKey}"></span>
-    </td>
-  </tr>
 
-  <tr class="advancedSetting">
-    <th>Options:</th>
-    <td>
-      <props:checkboxProperty name="${ib.nuGetPublishCreateOnlyKey}"/>
-      <label for="${ib.nuGetPublishCreateOnlyKey}">Only upload package but do not publish it to feed</label>
+<tr>
+  <th>Packages<l:star/>:</th>
+  <td>
+    <props:multilineProperty name="${ib.nuGetPublishFilesKey}" linkTitle="Package files"
+                             cols="60" rows="5"
+                             expanded="${true}"/>
+    <bs:vcsTree callback="appendPackageToUpload" treeId="${ib.nuGetPublishFilesKey}"/>
+    <script type="text/javascript">
+      BS.Util.hide($('vcsTreeControl_${ib.nuGetPublishFilesKey}'));
+    </script>
+    <span class="smallNote">A newline-separated list of NuGet package files (.nupkg) to push to the NuGet feed. Wildcards are supported.</span>
+    <span class="error" id="error_${ib.nuGetPublishFilesKey}"></span>
+  </td>
+</tr>
+
+<tr class="advancedSetting">
+  <th class="noBorder"></th>
+  <td>
+    <props:checkboxProperty name="${ib.nuGetPublishCreateOnlyKey}"/>
+    <label for="${ib.nuGetPublishCreateOnlyKey}">Only upload packages but do not publish them to feed</label>
+    <span class="smallNote">Specifies if packages should be created and uploaded to the TeamCity server but not published to the NuGet feed.</span>
+  </td>
+</tr>
+
+<tr>
+  <th>API key<l:star/>:</th>
+  <td>
+    <props:passwordProperty name="${ib.apiKey}" className="longField"/>
       <span class="smallNote">
-        Specifies if the package should be created and uploaded to the server but not published to the server
+        Specify the API key to access a NuGet packages feed.
       </span>
-    </td>
-  </tr>
-</l:settingsGroup>
+    <span class="error" id="error_${ib.apiKey}"></span>
+  </td>
+</tr>
+
+<tr class="advancedSetting">
+  <th>Package Source:</th>
+  <td>
+    <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
+      <span class="smallNote">
+        Specify the NuGet packages feed URL to push packages to. Leave blank to let NuGet decide what package repository to use.
+      </span>
+    <span class="error" id="error_${ib.nuGetSourceKey}"></span>
+  </td>
+</tr>
+
 <script type="text/javascript">
   $j(document).ready(function() {
     //move vcs-tree icon to the left from textarea, after completion icon
