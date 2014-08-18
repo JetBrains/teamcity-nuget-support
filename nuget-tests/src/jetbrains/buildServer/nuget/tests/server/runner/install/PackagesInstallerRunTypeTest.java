@@ -17,6 +17,8 @@
 package jetbrains.buildServer.nuget.tests.server.runner.install;
 
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunType;
+import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDefaults;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.Test;
@@ -28,7 +30,8 @@ import org.testng.annotations.Test;
 public class PackagesInstallerRunTypeTest extends NuGetRunTypeTest<PackagesInstallerRunType> {
   @NotNull
   protected PackagesInstallerRunType createRunType() {
-    return new PackagesInstallerRunType(myDescriptor);
+    final NuGetToolManager toolManager = (NuGetToolManager) mock(NuGetToolManager.class).proxy();
+    return new PackagesInstallerRunType(myDescriptor, new PackagesInstallerRunnerDefaults(toolManager));
   }
 
 

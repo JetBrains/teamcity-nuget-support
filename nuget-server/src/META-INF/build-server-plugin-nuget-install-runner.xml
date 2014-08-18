@@ -6,4 +6,5 @@
 
   <bean class="jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunType"/>
   <bean class="jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDiscoverer"/>
+  <bean class="jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDefaults"/>
 </beans>

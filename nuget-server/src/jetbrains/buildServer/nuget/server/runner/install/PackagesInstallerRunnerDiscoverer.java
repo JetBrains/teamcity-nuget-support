@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.server.runner.install;
 
 import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.serverSide.BuildTypeSettings;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.discovery.BreadthFirstRunnerDiscoveryExtension;
@@ -40,6 +39,12 @@ public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscove
   private static final String PACKAGES_CONFIG = "packages.config";
   private static final String NUGET_DIR_NAME = ".nuget";
   private static final String SLN_FILE_EXTENSION = ".sln";
+
+  @NotNull private final PackagesInstallerRunnerDefaults myDefaults;
+
+  public PackagesInstallerRunnerDiscoverer(@NotNull PackagesInstallerRunnerDefaults defaults) {
+    myDefaults = defaults;
+  }
 
   @NotNull
   @Override
@@ -96,7 +101,7 @@ public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscove
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put(PackagesConstants.NUGET_PATH, NuGetToolReferenceUtils.getDefaultToolPath());
     parameters.put(PackagesConstants.SLN_PATH, slnPath);
-    parameters.put(PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesInstallMode.VIA_RESTORE.getName());
+    parameters.putAll(myDefaults.getRunnerProperties());
     return new DiscoveredObject(PackagesConstants.INSTALL_RUN_TYPE, parameters);
   }
 }

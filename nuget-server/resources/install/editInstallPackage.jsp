@@ -24,8 +24,47 @@
 
 <jsp:include page="../tool/editNugetExeSettings.html?name=${ib.nuGetPathKey}&class=longField"/>
 
-<l:settingsGroup title="Packages Sources">
+<l:settingsGroup title="Restore Packages">
   <tr>
+    <th>Path To Solution File<l:star/>:</th>
+    <td>
+      <props:textProperty name="${ib.solutionPathKey}" className="longField"/>
+      <bs:vcsTree fieldId="${ib.solutionPathKey}"/>
+      <span class="smallNote">The path to Visual Studio solution file (.sln)</span>
+      <span class="error" id="error_${ib.solutionPathKey}"></span>
+    </td>
+  </tr>
+  <tr class="advancedSetting">
+    <th><label for="${ib.restoreCommandModeKey}">Restore Mode:</label></th>
+    <td>
+      <c:set var="restoreMode" value="${propertiesBean.properties[ib.restoreCommandModeKey]}"/>
+      <props:selectProperty name="${ib.restoreCommandModeKey}" style="longField">
+        <props:option value="${ib.restoreCommandModeRestoreValue}">Restore (requires NuGet 2.7+)</props:option>
+        <props:option value="${ib.restoreCommandModeInstallValue}" selected="${empty restoreMode or (restoreMode eq ib.restoreCommandModeInstallValue)}">Install</props:option>
+      </props:selectProperty>
+      <span class="smallNote">Select <em>NuGet.exe restore</em> or <em>NuGet.exe install</em> command to restore packages for the solution</span>
+    </td>
+  </tr>
+  <tr class="advancedSetting">
+    <th rowspan="2">Restore Options:</th>
+    <td>
+      <props:checkboxProperty name="${ib.excludeVersionKey}"/>
+      <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
+      <span class="smallNote">Makes NuGet exclude package version from package folder names.
+                              Equivalent to the <em>-ExcludeVersion</em> NuGet.exe commandline argument</span>
+    </td>
+  </tr>
+  <tr class="advancedSetting">
+    <td>
+      <props:checkboxProperty name="${ib.noCacheKey}"/>
+      <label for="${ib.noCacheKey}">Disable looking up packages from local machine cache</label>
+      <span class="smallNote">Equivalent to the <em>-NoCache</em> NuGet.exe commanline argument</span>
+    </td>
+  </tr>
+</l:settingsGroup>
+
+<l:settingsGroup title="Packages Sources" className="advancedSetting">
+  <tr class="advancedSetting">
     <th>Packages Sources:</th>
     <td>
       <props:multilineProperty name="${ib.nuGetSourcesKey}"
@@ -48,46 +87,8 @@
   </tr>
 </l:settingsGroup>
 
-<l:settingsGroup title="Restore Packages">
-  <tr>
-    <th>Path to solution file:</th>
-    <td>
-      <props:textProperty name="${ib.solutionPathKey}" className="longField"/>
-      <bs:vcsTree fieldId="${ib.solutionPathKey}"/>
-      <span class="smallNote">The path to Visual Studio solution file (.sln)</span>
-      <span class="error" id="error_${ib.solutionPathKey}"></span>
-    </td>
-  </tr>
-  <tr>
-    <th><label for="${ib.restoreCommandModeKey}">Restore Mode:</label></th>
-    <td>
-      <c:set var="restoreMode" value="${propertiesBean.properties[ib.restoreCommandModeKey]}"/>
-      <props:selectProperty name="${ib.restoreCommandModeKey}" style="longField">
-        <props:option value="${ib.restoreCommandModeRestoreValue}">Restore (requires NuGet 2.7+)</props:option>
-        <props:option value="${ib.restoreCommandModeInstallValue}" selected="${empty restoreMode or (restoreMode eq ib.restoreCommandModeInstallValue)}">Install</props:option>
-      </props:selectProperty>
-      <span class="smallNote">Select <em>NuGet.exe restore</em> or <em>NuGet.exe install</em> command to restore packages for the solution</span>
-    </td>
-  </tr>
-  <tr>
-    <th rowspan="2">Restore Options:</th>
-    <td>
-      <props:checkboxProperty name="${ib.excludeVersionKey}"/>
-      <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
-      <span class="smallNote">Makes NuGet exclude package version from package folder names.
-                              Equivalent to the <em>-ExcludeVersion</em> NuGet.exe commandline argument</span>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <props:checkboxProperty name="${ib.noCacheKey}"/>
-      <label for="${ib.noCacheKey}">Disable looking up packages from local machine cache</label>
-      <span class="smallNote">Equivalent to the <em>-NoCache</em> NuGet.exe commanline argument</span>
-    </td>
-  </tr>
-</l:settingsGroup>
-<l:settingsGroup title="Update Packages">
-  <tr>
+<l:settingsGroup title="Update Packages" className="advancedSetting">
+  <tr class="advancedSetting">
     <th>Update Packages:</th>
     <td>
       <props:checkboxProperty name="${ib.updatePackagesKey}"/>
@@ -97,7 +98,7 @@
                               <em>packages.config</em> files</span>
     </td>
   </tr>
-  <tr id="nugetUpdateModeSection">
+  <tr id="nugetUpdateModeSection" class="advancedSetting">
     <th>Update Mode:</th>
     <td>
       <props:selectProperty name="${ib.updateModeKey}" style="longField">
@@ -113,7 +114,7 @@
       </span>
     </td>
   </tr>
-  <tr>
+  <tr class="advancedSetting">
     <th rowspan="2">Update Options:</th>
     <td>
       <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
@@ -121,7 +122,7 @@
       <span class="smallNote">Equivalent to the -Prerelease NuGet.exe option</span>
     </td>
   </tr>
-  <tr>
+  <tr class="advancedSetting">
     <td>
       <props:checkboxProperty name="${ib.updatePackagesSafeKey}"/>
       <label for="${ib.updatePackagesSafeKey}">Perform safe update</label>

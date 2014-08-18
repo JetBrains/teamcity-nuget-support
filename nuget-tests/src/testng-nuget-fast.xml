@@ -124,6 +124,7 @@
 
       <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.UrlResolverTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackagesInstallerRunTypeTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackagesInstallerRunnerDefaultsTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackagesInstallerRunnerDiscovererTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackRunTypeTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackRunnerDiscovererTest"/>

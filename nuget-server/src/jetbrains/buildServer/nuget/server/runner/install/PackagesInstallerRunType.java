@@ -24,7 +24,10 @@ import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
 
@@ -33,8 +36,12 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  * Date: 08.07.11 20:45
  */
 public class PackagesInstallerRunType extends NuGetRunType {
-  public PackagesInstallerRunType(@NotNull final PluginDescriptor descriptor) {
+  @NotNull private final PackagesInstallerRunnerDefaults myDefaults;
+
+  public PackagesInstallerRunType(@NotNull final PluginDescriptor descriptor,
+                                  @NotNull final PackagesInstallerRunnerDefaults defaults) {
     super(descriptor);
+    myDefaults = defaults;
   }
 
   @NotNull
@@ -98,8 +105,6 @@ public class PackagesInstallerRunType extends NuGetRunType {
 
   @Override
   public Map<String, String> getDefaultRunnerProperties() {
-    final TreeMap<String, String> map = new TreeMap<String, String>();
-    map.put(NUGET_USE_RESTORE_COMMAND, "checked");
-    return map;
+    return myDefaults.getRunnerProperties();
   }
 }

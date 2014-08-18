@@ -18,8 +18,10 @@ package jetbrains.buildServer.nuget.tests;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunType;
+import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDefaults;
 import jetbrains.buildServer.nuget.server.runner.pack.PackRunType;
 import jetbrains.buildServer.nuget.server.runner.publish.PublishRunType;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jmock.Mockery;
 import org.testng.Assert;
@@ -31,32 +33,33 @@ import org.testng.annotations.Test;
  * Date: 21.07.11 19:03
  */
 public class RunTypeNameTest extends BaseTestCase {
-  private Mockery m;
-  private PluginDescriptor descr;
+  private PluginDescriptor myDescriptor;
+  private PackagesInstallerRunnerDefaults myDefaults;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
-    descr = m.mock(PluginDescriptor.class);
+    Mockery m = new Mockery();
+    myDescriptor = m.mock(PluginDescriptor.class);
+    myDefaults = new PackagesInstallerRunnerDefaults(m.mock(NuGetToolManager.class));
   }
 
   @Test
   public void test_installPackagesRunTypeIdLendth() {
-    final String type = new PackagesInstallerRunType(descr).getType();
+    final String type = new PackagesInstallerRunType(myDescriptor, myDefaults).getType();
     Assert.assertTrue(type.length() < 30);
   }
 
   @Test
   public void test_packRunTypeIdLendth() {
-    final String type = new PackRunType(descr).getType();
+    final String type = new PackRunType(myDescriptor).getType();
     Assert.assertTrue(type.length() < 30);
   }
 
   @Test
   public void test_publishPackagesRunTypeIdLendth() {
-    final String type = new PublishRunType(descr).getType();
+    final String type = new PublishRunType(myDescriptor).getType();
     Assert.assertTrue(type.length() < 30);
   }
 }
