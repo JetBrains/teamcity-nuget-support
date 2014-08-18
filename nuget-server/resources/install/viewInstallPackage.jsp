@@ -52,6 +52,11 @@
     <props:displayCheckboxValue name="${ib.noCacheKey}" checkedValue="NO" uncheckedValue="YES"/>
   </strong>
 </div>
+
+<div class="parameter">
+  Restore / install command custom commandline: <strong><props:displayValue name="${ib.restoreCustomCommandline}" showInPopup="${true}"/></strong>
+</div>
+
 <div class="parameter">
   Update packages:
   <strong>
@@ -80,4 +85,8 @@
   <strong>
     <props:displayCheckboxValue name="${ib.updatePackagesPrerelease}"/>
   </strong>
+</div>
+
+<div class="parameter">
+  Update command custom commandline: <strong><props:displayValue name="${ib.updateCustomCommandline}" showInPopup="${true}"/></strong>
 </div>

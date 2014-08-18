@@ -47,4 +47,7 @@ public interface NuGetFetchParameters extends NuGetParameters {
    */
   @NotNull
   File getWorkingDirectory();
+
+  @NotNull
+  Collection<String> getCustomCommandline();
 }

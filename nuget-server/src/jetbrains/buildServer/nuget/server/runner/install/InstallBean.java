@@ -16,10 +16,10 @@
 
 package jetbrains.buildServer.nuget.server.runner.install;
 
+import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
-import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 
 /**
@@ -43,4 +43,6 @@ public class InstallBean {
   public String getUpdatePerConfigValue() { return PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG.getName();}
   public String getNuGetFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_REFERENCE); }
   public String getNuGetAuthFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_AUTH_REFERENCE); }
+  public String getRestoreCustomCommandline() { return PackagesConstants.NUGET_RESTORE_CUSOM_COMMANDLINE; }
+  public String getUpdateCustomCommandline() { return PackagesConstants.NUGET_UPDATE_CUSOM_COMMANDLINE; }
 }

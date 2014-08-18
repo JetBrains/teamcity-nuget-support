@@ -66,6 +66,11 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       }
 
       @NotNull
+      public Collection<String> getCustomCommandline() {
+        return getMultilineParameter(context, NUGET_RESTORE_CUSOM_COMMANDLINE);
+      }
+
+      @NotNull
       public File getNuGetExeFile() throws RunBuildException {
         return getPathToNuGet(context);
       }
@@ -233,6 +238,11 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       @NotNull
       public Collection<String> getPackagesToUpdate() {
         return getMultilineParameter(context, NUGET_UPDATE_PACKAGE_IDS);
+      }
+
+      @NotNull
+      public Collection<String> getCustomCommandline() {
+        return getMultilineParameter(context, NUGET_UPDATE_CUSOM_COMMANDLINE);
       }
     };
   }

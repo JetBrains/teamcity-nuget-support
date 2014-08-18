@@ -36,12 +36,14 @@ public interface PackagesConstants {
   public static final String NUGET_EXCLUDE_VERSION = "nuget.excludeVersion";
   public static final String NUGET_USE_RESTORE_COMMAND = "nuget.use.restore";
   public static final String NUGET_NO_CACHE = "nuget.noCache";
+  public static final String NUGET_RESTORE_CUSOM_COMMANDLINE= "nuget.restore.commandline";
 
   public static final String NUGET_UPDATE_PACKAGES = "nuget.updatePackages";
   public static final String NUGET_UPDATE_PACKAGES_SAFE = "nuget.updatePackages.safe";
   public static final String NUGET_UPDATE_PACKAGES_PRERELEASE = "nuget.updatePackages.include.prerelease";
   public static final String NUGET_UPDATE_PACKAGE_IDS = "nuget.updatePackages.ids";
   public static final String NUGET_UPDATE_MODE = "nuget.updatePackages.mode";
+  public static final String NUGET_UPDATE_CUSOM_COMMANDLINE= "nuget.update.commandline";
 
   public static final String SLN_PATH = "sln.path";
 

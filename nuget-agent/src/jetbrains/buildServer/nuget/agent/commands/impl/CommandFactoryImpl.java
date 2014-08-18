@@ -48,8 +48,14 @@ public class CommandFactoryImpl implements CommandFactory {
     argz.add("-OutputDirectory");
     argz.add(FileUtil.getCanonicalFile(outputDir).getPath());
 
-    final NuGetFetchParameters nuget = params.getNuGetParameters();
-    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), Collections.singletonMap(EnabledPackagesOptionSetter.ENABLE_NUGET_PACKAGE_RESTORE, "True"), factory);
+    final NuGetFetchParameters nugetFetchParams = params.getNuGetParameters();
+    for (String cmd : nugetFetchParams.getCustomCommandline()) {
+      if (!argz.contains(cmd) && !argz.contains(cmd.toLowerCase())) {
+        argz.add(cmd);
+      }
+    }
+
+    return executeNuGet(nugetFetchParams, nugetFetchParams.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), Collections.singletonMap(EnabledPackagesOptionSetter.ENABLE_NUGET_PACKAGE_RESTORE, "True"), factory);
   }
 
   @NotNull
@@ -63,8 +69,15 @@ public class CommandFactoryImpl implements CommandFactory {
     if (params.getNoCache()) {
       argz.add("-NoCache");
     }
-    final NuGetFetchParameters nuget = params.getNuGetParameters();
-    return executeNuGet(nuget, nuget.getNuGetPackageSources(), argz, solutionFile.getParentFile(), factory);
+
+    final NuGetFetchParameters nugetFetchParams = params.getNuGetParameters();
+    for (String cmd : nugetFetchParams.getCustomCommandline()) {
+      if (!argz.contains(cmd) && !argz.contains(cmd.toLowerCase())) {
+        argz.add(cmd);
+      }
+    }
+
+    return executeNuGet(nugetFetchParams, nugetFetchParams.getNuGetPackageSources(), argz, solutionFile.getParentFile(), factory);
   }
 
   @NotNull
@@ -78,6 +91,13 @@ public class CommandFactoryImpl implements CommandFactory {
     if (params.getIncludePrereleasePackages()) {
       argz.add("-Prerelease");
     }
+
+    for (String cmd : params.getCustomCommandline()) {
+      if (!argz.contains(cmd) && !argz.contains(cmd.toLowerCase())) {
+        argz.add(cmd);
+      }
+    }
+
     argz.add("-Verbose");
     argz.add("-RepositoryPath");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());

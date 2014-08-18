@@ -46,7 +46,7 @@
     </td>
   </tr>
   <tr class="advancedSetting">
-    <th rowspan="2">Restore Options:</th>
+    <th rowspan="3">Restore Options:</th>
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
@@ -59,6 +59,13 @@
       <props:checkboxProperty name="${ib.noCacheKey}"/>
       <label for="${ib.noCacheKey}">Disable looking up packages from local machine cache</label>
       <span class="smallNote">Equivalent to the <em>-NoCache</em> NuGet.exe commanline argument</span>
+    </td>
+  </tr>
+  <tr class="advancedSetting">
+    <td>
+      <props:multilineProperty name="${ib.restoreCustomCommandline}" linkTitle="Additional commandline arguments:" cols="60" rows="5" />
+      <span class="smallNote">Additional commandline parameters to add to calling NuGet.exe</span>
+      <span id="error_${ib.restoreCustomCommandline}" class="error"></span>
     </td>
   </tr>
 </l:settingsGroup>
@@ -115,7 +122,7 @@
     </td>
   </tr>
   <tr class="advancedSetting">
-    <th rowspan="2">Update Options:</th>
+    <th rowspan="3">Update Options:</th>
     <td>
       <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
       <label for="${ib.updatePackagesPrerelease}">Include pre-release packages</label>
@@ -127,6 +134,13 @@
       <props:checkboxProperty name="${ib.updatePackagesSafeKey}"/>
       <label for="${ib.updatePackagesSafeKey}">Perform safe update</label>
       <span class="smallNote">Equivalent to the -Safe NuGet.exe option</span>
+    </td>
+  </tr>
+  <tr class="advancedSetting">
+    <td>
+      <props:multilineProperty name="${ib.updateCustomCommandline}" linkTitle="Additional commandline arguments:" cols="60" rows="5" />
+      <span class="smallNote">Additional commandline parameters to add to calling NuGet.exe</span>
+      <span id="error_${ib.updateCustomCommandline}" class="error"></span>
     </td>
   </tr>
 </l:settingsGroup>

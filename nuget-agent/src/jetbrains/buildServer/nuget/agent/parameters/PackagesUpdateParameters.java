@@ -40,7 +40,6 @@ public interface PackagesUpdateParameters extends NuGetFetchParametersHolder {
    */
   boolean getUseSafeUpdate();
 
-
   /**
    * @return true if update should include prerelease packages
    */
@@ -52,4 +51,7 @@ public interface PackagesUpdateParameters extends NuGetFetchParametersHolder {
    */
   @NotNull
   Collection<String> getPackagesToUpdate();
+
+  @NotNull
+  Collection<String> getCustomCommandline();
 }
