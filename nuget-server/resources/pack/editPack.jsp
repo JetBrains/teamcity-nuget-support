@@ -36,6 +36,7 @@
     }
   };
 </script>
+
 <l:settingsGroup title="Package parameters">
   <tr>
     <th><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
@@ -70,11 +71,29 @@
   <tr class="advancedSetting">
     <th><label for="${ib.packBaseDirectoryMode}">Base Directory</label>:</th>
     <td>
-      <props:selectProperty name="${ib.packBaseDirectoryMode}">
+      <props:selectProperty name="${ib.packBaseDirectoryMode}" onchange="BS.NuGet.PackRunnerSettings.onBaseDirModeChange();">
         <c:forEach var="it" items="${ib.packBaseDirectoryModes}">
           <props:option value="${it.value}"><c:out value="${it.description}"/></props:option>
         </c:forEach>
       </props:selectProperty>
+      <c:forEach var="it" items="${ib.packBaseDirectoryModes}">
+        <c:choose>
+          <c:when test="${it.showBaseDirectorySelector}">
+            <props:hiddenProperty name="${it.value}-showBaseDirectorySelector"/>
+            <div id="content-${it.value}" class="packBaseDirectoryModeContent" style="padding-top: 8px">
+              <props:textProperty name="${ib.packBaseDirectory}" className="longField" />
+              <bs:vcsTree fieldId="${ib.packBaseDirectory}" treeId="${ib.packBaseDirectory}"/>
+              <span class="smallNote"><c:out value="${it.details}"/></span>
+              <span id="error_${ib.packBaseDirectory}" class="error"></span>
+            </div>
+          </c:when>
+          <c:otherwise>
+            <div id="content-${it.value}" class="packBaseDirectoryModeContent">
+              <span class="smallNote"><c:out value="${it.details}"/></span>
+            </div>
+          </c:otherwise>
+        </c:choose>
+      </c:forEach>
     </td>
   </tr>
 
@@ -148,6 +167,23 @@
   </tr>
 
 </l:settingsGroup>
+
+<script type="text/javascript">
+  if (!BS) BS = {};
+  if (!BS.NuGet) BS.NuGet = {};
+  BS.NuGet.PackRunnerSettings = {
+    onBaseDirModeChange : function() {
+      var selected = $('${ib.packBaseDirectoryMode}').value;
+      $j('div .packBaseDirectoryModeContent').hide();
+      if(!($(selected + '-showBaseDirectorySelector'))){
+        $('${ib.packBaseDirectory}').value = '';
+      }
+      BS.Util.show('content-' + selected);
+    }
+  };
+  BS.NuGet.PackRunnerSettings.onBaseDirModeChange();
+</script>
+
 <script type="text/javascript">
   $j(document).ready(function() {
     //move vcs-tree icon to the left from textarea, after completion icon
