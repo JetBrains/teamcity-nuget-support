@@ -50,8 +50,8 @@ import java.util.*;
  *         Date: 22.06.12 16:47
  */
 public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
-  protected PackagesInstallParameters myInstall;
-  protected PackagesUpdateParameters myUpdate;
+  protected PackagesInstallParameters myInstallParameters;
+  protected PackagesUpdateParameters myUpdateParameters;
   protected PackagesInstallMode myInstallMode;
 
 
@@ -60,18 +60,20 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    myInstall = m.mock(PackagesInstallParameters.class);
-    myUpdate = m.mock(PackagesUpdateParameters.class);
+    myInstallParameters = m.mock(PackagesInstallParameters.class);
+    myUpdateParameters = m.mock(PackagesUpdateParameters.class);
 
     myInstallMode = PackagesInstallMode.VIA_INSTALL;
 
     m.checking(new Expectations(){{
-      allowing(myInstall).getNuGetParameters();
-      will(returnValue(myNuGet));
-      allowing(myUpdate).getNuGetParameters();
-      will(returnValue(myNuGet));
+      allowing(myInstallParameters).getNuGetParameters();
+      will(returnValue(myFetchParameters));
+      allowing(myUpdateParameters).getNuGetParameters();
+      will(returnValue(myFetchParameters));
+      allowing(myUpdateParameters).getCustomCommandline();
+      will(returnValue(Collections.emptyList()));
 
-      allowing(myInstall).getInstallMode(); will(new CustomAction("return myInstallMode") {
+      allowing(myInstallParameters).getInstallMode(); will(new CustomAction("return myInstallMode") {
         public Object invoke(Invocation invocation) throws Throwable {
           return myInstallMode;
         }
@@ -107,24 +109,26 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
 
     m.checking(new Expectations() {{
       allowing(myParametersFactory).loadNuGetFetchParameters(myContext);
-      will(returnValue(myNuGet));
-      allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myNuGet);
-      will(returnValue(myInstall));
+      will(returnValue(myFetchParameters));
+      allowing(myParametersFactory).loadInstallPackagesParameters(myContext, myFetchParameters);
+      will(returnValue(myInstallParameters));
 
-      allowing(myNuGet).getNuGetExeFile();
+      allowing(myFetchParameters).getNuGetExeFile();
       will(returnValue(nuget.getPath()));
-      allowing(myNuGet).getSolutionFile();
+      allowing(myFetchParameters).getSolutionFile();
       will(returnValue(sln));
-      allowing(myNuGet).getWorkingDirectory();
+      allowing(myFetchParameters).getWorkingDirectory();
       will(returnValue(myRoot));
-      allowing(myNuGet).getNuGetPackageSources();
+      allowing(myFetchParameters).getNuGetPackageSources();
       will(returnValue(sources));
-      allowing(myInstall).getExcludeVersion();
+      allowing(myFetchParameters).getCustomCommandline();
+      will(returnValue(Collections.emptyList()));
+      allowing(myInstallParameters).getExcludeVersion();
       will(returnValue(excludeVersion));
-      allowing(myInstall).getNoCache();
+      allowing(myInstallParameters).getNoCache();
       will(returnValue(noCache));
-      allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myNuGet);
-      will(returnValue(update ? myUpdate : null));
+      allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myFetchParameters);
+      will(returnValue(update ? myUpdateParameters : null));
     }});
 
     BuildProcess proc = new PackagesInstallerRunner(
@@ -161,10 +165,10 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
       allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
 
-      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(useSafeUpdate));
-      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(icludePrereleasePackages));
-      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode(); will(returnValue(updateMode));
+      allowing(myUpdateParameters).getUseSafeUpdate(); will(returnValue(useSafeUpdate));
+      allowing(myUpdateParameters).getIncludePrereleasePackages(); will(returnValue(icludePrereleasePackages));
+      allowing(myUpdateParameters).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdateParameters).getUpdateMode(); will(returnValue(updateMode));
     }});
   }
 }

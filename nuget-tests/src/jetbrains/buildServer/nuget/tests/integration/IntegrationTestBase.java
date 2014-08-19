@@ -61,7 +61,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected BuildRunnerContext myContext;
   protected BuildProgressLogger myLogger;
   protected PackagesParametersFactory myParametersFactory;
-  protected NuGetFetchParameters myNuGet;
+  protected NuGetFetchParameters myFetchParameters;
   protected NuGetPackagesCollector myCollector;
   protected NuGetActionFactory myActionFactory;
   private BuildProcess myMockProcess;
@@ -154,7 +154,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myLogger = m.mock(BuildProgressLogger.class);
     myParametersFactory = m.mock(PackagesParametersFactory.class);
     myMockProcess = m.mock(BuildProcess.class);
-    myNuGet = m.mock(NuGetFetchParameters.class);
+    myFetchParameters = m.mock(NuGetFetchParameters.class);
     myBuildParametersMap = m.mock(BuildParametersMap.class);
     myNuGetTeamCityProvider = m.mock(NuGetTeamCityProvider.class);
 

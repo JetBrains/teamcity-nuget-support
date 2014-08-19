@@ -66,12 +66,12 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   @Test(dataProvider = NUGET_VERSIONS_20p, enabled = false)
   public void test_bare_commands_list(@NotNull final NuGet nuget) throws RunBuildException, IOException {
     m.checking(new Expectations() {{
-      allowing(myNuGet).getNuGetExeFile();
+      allowing(myFetchParameters).getNuGetExeFile();
       will(returnValue(nuget.getPath()));
     }});
 
     File wd = createTempDir(); //myWorkdirCalculator.getNuGetWorkDir(myContext, myWorkDir);
-    //BuildProcess auth = myActionFactory.createAuthenticateFeeds(myContext, myAuthSource, myNuGet);
+    //BuildProcess auth = myActionFactory.createAuthenticateFeeds(myContext, myAuthSource, myFetchParameters);
     BuildProcess list = myExecutor.executeCommandLine(myContext, nuget.getPath().getPath(), Arrays.asList("list", "-AllVersions"), wd, Collections.<String, String>emptyMap());
 
     //assertRunSuccessfully(auth, BuildFinishedStatus.FINISHED_SUCCESS);
@@ -87,12 +87,12 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   @Test(dataProvider = NUGET_VERSIONS_20p, enabled = false)
   public void test_bare_commands_install(@NotNull final NuGet nuget) throws RunBuildException, IOException {
     m.checking(new Expectations() {{
-      allowing(myNuGet).getNuGetExeFile();
+      allowing(myFetchParameters).getNuGetExeFile();
       will(returnValue(nuget.getPath()));
     }});
 
     File wd = createTempDir(); //myWorkdirCalculator.getNuGetWorkDir(myContext, myWorkDir);
-    //    BuildProcess auth = myActionFactory.createAuthenticateFeeds(myContext, myAuthSource, myNuGet);
+    //    BuildProcess auth = myActionFactory.createAuthenticateFeeds(myContext, myAuthSource, myFetchParameters);
     BuildProcess list = myExecutor.executeCommandLine(myContext, nuget.getPath().getPath(), Arrays.asList("install", "FineCollection"), wd, Collections.<String, String>emptyMap());
 
     //    assertRunSuccessfully(auth, BuildFinishedStatus.FINISHED_SUCCESS);
@@ -128,10 +128,10 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
       allowing(myLogger).activityFinished(with(equal("update")), with(equal("nuget")));
 
-      allowing(myUpdate).getUseSafeUpdate(); will(returnValue(false));
-      allowing(myUpdate).getIncludePrereleasePackages(); will(returnValue(false));
-      allowing(myUpdate).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
-      allowing(myUpdate).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
+      allowing(myUpdateParameters).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdateParameters).getIncludePrereleasePackages(); will(returnValue(false));
+      allowing(myUpdateParameters).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdateParameters).getUpdateMode(); will(returnValue(PackagesUpdateMode.FOR_SLN));
     }});
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), myAuthSource, false, true, false, nuget, null, null);
