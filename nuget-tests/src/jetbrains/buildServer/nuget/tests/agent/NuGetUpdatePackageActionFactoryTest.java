@@ -45,8 +45,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   private CommandlineBuildProcessFactory myProcessFactory;
   private NuGetActionFactoryImpl i;
   private BuildRunnerContext ctx;
-  private NuGetFetchParameters nugetParams;
-  private PackagesUpdateParameters ps;
+  private NuGetFetchParameters myFetchParameters;
+  private PackagesUpdateParameters myUpdateParameters;
   private File myTarget;
   private File myConfig;
   private BuildParametersMap myBuildParametersMap;
@@ -61,8 +61,8 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
     PackageUsages pu = m.mock(PackageUsages.class);
     i = new NuGetActionFactoryImpl(myProcessFactory, pu, new CommandFactoryImpl());
     ctx = m.mock(BuildRunnerContext.class);
-    ps = m.mock(PackagesUpdateParameters.class);
-    nugetParams = m.mock(NuGetFetchParameters.class);
+    myUpdateParameters = m.mock(PackagesUpdateParameters.class);
+    myFetchParameters = m.mock(NuGetFetchParameters.class);
 
     myTarget = createTempDir();
     myConfig = createTempFile();
@@ -71,7 +71,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
 
     m.checking(new Expectations(){{
       allowing(ctx).getBuildParameters(); will(returnValue(myBuildParametersMap));
-      allowing(ps).getNuGetParameters(); will(returnValue(nugetParams));
+      allowing(myUpdateParameters).getNuGetParameters(); will(returnValue(myFetchParameters));
     }});
   }
 
@@ -79,11 +79,12 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   public void test_no_sources() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
-      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
-      allowing(ps).getUseSafeUpdate(); will(returnValue(false));
-      allowing(ps).getIncludePrereleasePackages(); will(returnValue(false));
-      allowing(ps).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myFetchParameters).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myFetchParameters).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(myUpdateParameters).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdateParameters).getIncludePrereleasePackages(); will(returnValue(false));
+      allowing(myUpdateParameters).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdateParameters).getCustomCommandline();  will(returnValue(Collections.<String>emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
@@ -94,7 +95,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       );
     }});
 
-    i.createUpdate(ctx, ps, myConfig, myTarget);
+    i.createUpdate(ctx, myUpdateParameters, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -102,11 +103,12 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   public void test_packageIds() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
-      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
-      allowing(ps).getUseSafeUpdate(); will(returnValue(false));
-      allowing(ps).getIncludePrereleasePackages(); will(returnValue(false));
-      allowing(ps).getPackagesToUpdate(); will(returnValue(Arrays.asList("aaa", "bbb")));
+      allowing(myFetchParameters).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myFetchParameters).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(myUpdateParameters).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdateParameters).getIncludePrereleasePackages(); will(returnValue(false));
+      allowing(myUpdateParameters).getPackagesToUpdate(); will(returnValue(Arrays.asList("aaa", "bbb")));
+      allowing(myUpdateParameters).getCustomCommandline();  will(returnValue(Collections.<String>emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
@@ -117,7 +119,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       );
     }});
 
-    i.createUpdate(ctx, ps, myConfig, myTarget);
+    i.createUpdate(ctx, myUpdateParameters, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -125,11 +127,12 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   public void test_safe() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(nugetParams).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
-      allowing(nugetParams).getNuGetExeFile();  will(returnValue(nuget));
-      allowing(ps).getUseSafeUpdate(); will(returnValue(true));
-      allowing(ps).getIncludePrereleasePackages(); will(returnValue(false));
-      allowing(ps).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myFetchParameters).getNuGetPackageSources(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myFetchParameters).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(myUpdateParameters).getUseSafeUpdate(); will(returnValue(true));
+      allowing(myUpdateParameters).getIncludePrereleasePackages(); will(returnValue(false));
+      allowing(myUpdateParameters).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdateParameters).getCustomCommandline();  will(returnValue(Collections.<String>emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
@@ -140,7 +143,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       );
     }});
 
-    i.createUpdate(ctx, ps, myConfig, myTarget);
+    i.createUpdate(ctx, myUpdateParameters, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -148,11 +151,12 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   public void test_sources() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(NuGetUpdatePackageActionFactoryTest.this.nugetParams).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
-      allowing(NuGetUpdatePackageActionFactoryTest.this.nugetParams).getNuGetExeFile();  will(returnValue(nuget));
-      allowing(ps).getUseSafeUpdate(); will(returnValue(false));
-      allowing(ps).getIncludePrereleasePackages(); will(returnValue(false));
-      allowing(ps).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(NuGetUpdatePackageActionFactoryTest.this.myFetchParameters).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
+      allowing(NuGetUpdatePackageActionFactoryTest.this.myFetchParameters).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(myUpdateParameters).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdateParameters).getIncludePrereleasePackages(); will(returnValue(false));
+      allowing(myUpdateParameters).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdateParameters).getCustomCommandline();  will(returnValue(Collections.<String>emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
@@ -163,7 +167,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       );
     }});
 
-    i.createUpdate(ctx, ps, myConfig, myTarget);
+    i.createUpdate(ctx, myUpdateParameters, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 
@@ -171,11 +175,12 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
   public void test_sources_prerelease() throws RunBuildException, IOException {
     final File nuget = createTempFile();
     m.checking(new Expectations(){{
-      allowing(NuGetUpdatePackageActionFactoryTest.this.nugetParams).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
-      allowing(NuGetUpdatePackageActionFactoryTest.this.nugetParams).getNuGetExeFile();  will(returnValue(nuget));
-      allowing(ps).getUseSafeUpdate(); will(returnValue(false));
-      allowing(ps).getIncludePrereleasePackages(); will(returnValue(true));
-      allowing(ps).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(NuGetUpdatePackageActionFactoryTest.this.myFetchParameters).getNuGetPackageSources(); will(returnValue(Arrays.asList("aaa", "bbb")));
+      allowing(NuGetUpdatePackageActionFactoryTest.this.myFetchParameters).getNuGetExeFile();  will(returnValue(nuget));
+      allowing(myUpdateParameters).getUseSafeUpdate(); will(returnValue(false));
+      allowing(myUpdateParameters).getIncludePrereleasePackages(); will(returnValue(true));
+      allowing(myUpdateParameters).getPackagesToUpdate(); will(returnValue(Collections.<String>emptyList()));
+      allowing(myUpdateParameters).getCustomCommandline();  will(returnValue(Collections.<String>emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
@@ -186,7 +191,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       );
     }});
 
-    i.createUpdate(ctx, ps, myConfig, myTarget);
+    i.createUpdate(ctx, myUpdateParameters, myConfig, myTarget);
     m.assertIsSatisfied();
   }
 
