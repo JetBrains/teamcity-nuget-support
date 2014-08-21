@@ -78,6 +78,7 @@ public class ToolSelectorController extends BaseController {
       }
     }
     mv.getModel().put("value", value);
+    mv.getModel().put("defaultSpecified", myToolManager.getDefaultTool() != null);
     mv.getModel().put("name", name);
     mv.getModel().put("customValue", safe(parseValue(request, "customValue", "nugetCustomPath")));
     mv.getModel().put("clazz", safe(request.getParameter("class")));
@@ -118,9 +119,9 @@ public class ToolSelectorController extends BaseController {
     final NuGetInstalledTool defaultTool = myToolManager.getDefaultTool();
     final String defaultToolName;
     if (defaultTool != null) {
-      defaultToolName = "default (" + defaultTool.getVersion() + ")";
+      defaultToolName = "<Default (" + defaultTool.getVersion() + ")>";
     } else {
-      defaultToolName = "default (not yet selected)";
+      defaultToolName = "<Default (not yet selected)>";
     }
 
     result.add(new ToolInfo(

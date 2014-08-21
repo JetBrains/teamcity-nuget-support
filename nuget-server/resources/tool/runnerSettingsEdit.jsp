@@ -23,6 +23,7 @@
 <jsp:useBean id="clazz" scope="request" type="java.lang.String"/>
 <jsp:useBean id="style" scope="request" type="java.lang.String"/>
 <jsp:useBean id="value" scope="request" type="java.lang.String"/>
+<jsp:useBean id="defaultSpecified" scope="request" type="java.lang.Boolean"/>
 <jsp:useBean id="customValue" scope="request" type="java.lang.String"/>
 <jsp:useBean id="settingsUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="items" scope="request" type="java.util.Collection<jetbrains.buildServer.nuget.server.toolRegistry.ui.ToolInfo >"/>
@@ -31,7 +32,10 @@
 
 <props:selectProperty name="nugetPathSelector" className="${clazz}" style="${style}" onchange="BS.NuGet.RunnerSettings.selectionChanged();">
   <c:set var="isSelected" value="${value eq ''}"/>
-  <props:option value="" selected="${isSelected}">-- Select NuGet version to run --</props:option>
+
+  <c:if test="${!defaultSpecified}">
+    <props:option value="" selected="${isSelected}">-- Select NuGet version to run --</props:option>
+  </c:if>
 
   <c:set var="hasSelected" value="${isSelected}"/>
   <c:forEach var="it" items="${items}">
@@ -39,7 +43,7 @@
     <props:option value="${it.id}" selected="${isSelected}"><c:out value="${it.version}"/></props:option>
     <c:if test="${isSelected}"><c:set var="hasSelected" value="${true}"/></c:if>
   </c:forEach>
-  <props:option value="custom" selected="${not hasSelected}">Custom</props:option>
+  <props:option value="custom" selected="${not hasSelected}"><c:out value="<Custom>"/></props:option>
 </props:selectProperty>
 <span class="smallNote">
   The path to NuGet.exe relative to the checkout directory.

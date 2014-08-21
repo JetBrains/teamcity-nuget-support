@@ -26,7 +26,7 @@
   <c:when test="${nugetExeDefaultSpecified}">
     <l:settingsGroup title="NuGet Settings" className="advancedSetting">
       <tr class="advancedSetting">
-        <th>NuGet.exe<l:star/>:</th>
+        <th>NuGet.exe:</th>
         <td>
           <jsp:include page="../tool/runnerSettings.html?name=${name}&class=${clazz}"/>
         </td>
