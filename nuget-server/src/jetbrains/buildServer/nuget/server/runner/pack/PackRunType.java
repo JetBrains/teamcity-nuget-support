@@ -61,7 +61,10 @@ public class PackRunType extends NuGetRunType {
   public String describeParameters(@NotNull Map<String, String> parameters) {
     StringBuilder sb = new StringBuilder();
     sb.append("Pack: ").append(parameters.get(PackagesConstants.NUGET_PACK_SPEC_FILE)).append("\n");
-    sb.append("Version: ").append(parameters.get(PackagesConstants.NUGET_PACK_VERSION)).append("\n");
+    final String version = parameters.get(PackagesConstants.NUGET_PACK_VERSION);
+    if(version != null){
+      sb.append("Version: ").append(version).append("\n");
+    }
     return sb.toString();
   }
 
