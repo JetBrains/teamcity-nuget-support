@@ -98,7 +98,6 @@ public class CommandFactoryImpl implements CommandFactory {
       }
     }
 
-    argz.add("-Verbose");
     argz.add("-RepositoryPath");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
 
@@ -143,8 +142,6 @@ public class CommandFactoryImpl implements CommandFactory {
     arguments.add(params.getOutputDirectory().getPath());
 
     resolveBaseDirectory(params, specFile, arguments);
-
-    arguments.add("-Verbose");
 
     String version = params.getVersion();
     if (!StringUtil.isEmptyOrSpaces(version)) {
