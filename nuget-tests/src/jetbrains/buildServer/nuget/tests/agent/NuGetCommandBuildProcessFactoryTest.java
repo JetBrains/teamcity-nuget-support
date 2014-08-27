@@ -20,7 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
-import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactoryImpl;
+import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactoryImpl_renamed;
 import jetbrains.buildServer.runner.SimpleRunnerConstants;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -58,7 +58,7 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
     myBuild =  m.mock(AgentRunningBuild.class);
     myProcess = m.mock(BuildProcess.class);
     myLogger = m.mock(BuildProgressLogger.class);
-    myFactory = new NuGetCommandBuildProcessFactoryImpl(myFacade);
+    myFactory = new NuGetCommandBuildProcessFactoryImpl_renamed(myFacade);
 
     m.checking(new Expectations(){{
       oneOf(myFacade).createBuildRunnerContext(myBuild, SimpleRunnerConstants.TYPE, myWorkDir.getPath(), myRootContext);

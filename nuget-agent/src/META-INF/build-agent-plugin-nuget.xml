@@ -7,7 +7,7 @@
 
   <import resource="classpath*:META-INF/spring-nuget-common.xml"/>
 
-  <bean class="jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactoryImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactoryImpl_renamed"/>
   <bean class="jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl"/>

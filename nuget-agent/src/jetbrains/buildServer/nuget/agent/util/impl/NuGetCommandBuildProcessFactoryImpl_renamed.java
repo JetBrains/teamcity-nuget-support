@@ -34,13 +34,13 @@ import java.util.Map;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 15:13
  */
-public class NuGetCommandBuildProcessFactoryImpl implements CommandlineBuildProcessFactory {
+public class NuGetCommandBuildProcessFactoryImpl_renamed implements CommandlineBuildProcessFactory {
 
   private static final String NUGET_CMD_OPTION_MARK = "-";
 
   private final BuildProcessFacade myFacade;
 
-  public NuGetCommandBuildProcessFactoryImpl(@NotNull final BuildProcessFacade facade) {
+  public NuGetCommandBuildProcessFactoryImpl_renamed(@NotNull final BuildProcessFacade facade) {
     myFacade = facade;
   }
 
