@@ -90,7 +90,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12")
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Version", "45.239.32.12")
               , myFile.getParentFile(),
               Collections.<String, String>emptyMap());
     }});
@@ -111,7 +111,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Properties", "p1=p2", "-Properties", "p3=p24")
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Version", "45.239.32.12", "-Properties", "p1=p2", "-Properties", "p3=p24")
               , myFile.getParentFile(),
               Collections.<String, String>emptyMap());
     }});
@@ -129,7 +129,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Properties", "p1=p2", "-Properties", "p3=p24")
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Properties", "p1=p2", "-Properties", "p3=p24")
               , myFile.getParentFile(),
               Collections.<String, String>emptyMap());
     }});
@@ -144,7 +144,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
     m.checking(new Expectations() {{
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "arg1", "arg2")
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Version", "45.239.32.12", "arg1", "arg2")
               , myFile.getParentFile(),
               Collections.<String, String>emptyMap());
     }});
@@ -160,7 +160,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Exclude", "aaa", "-Exclude", "d/v/de")
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Version", "45.239.32.12", "-Exclude", "aaa", "-Exclude", "d/v/de")
               , myFile.getParentFile(),
               Collections.<String, String>emptyMap());
     }});
@@ -176,7 +176,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
 
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Tool")
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Version", "45.239.32.12", "-Tool")
               , myFile.getParentFile(),
               Collections.<String, String>emptyMap());
     }});
@@ -191,7 +191,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Symbols")
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myRoot.getPath(), "-Version", "45.239.32.12", "-Symbols")
               , myFile.getParentFile(),
               Collections.<String, String>emptyMap());
     }});
@@ -207,7 +207,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myFile.getParent(), "-Verbose", "-Version", "45.239.32.12", "-Symbols")
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-BasePath", myFile.getParent(), "-Version", "45.239.32.12", "-Symbols")
               , myFile.getParentFile(),
               Collections.<String, String>emptyMap());
     }});
@@ -223,7 +223,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myProcessFactory).executeCommandLine(ctx, myNuGet.getPath(),
               Arrays.asList(
-                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-Verbose", "-Version", "45.239.32.12", "-Symbols")
+                      "pack", myFile.getPath(), "-OutputDirectory", myOut.getPath(), "-Version", "45.239.32.12", "-Symbols")
               , myFile.getParentFile(),
               Collections.<String, String>emptyMap());
     }});

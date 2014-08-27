@@ -89,7 +89,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath()),
+              Arrays.asList("update", myConfig.getPath(), "-RepositoryPath", myTarget.getPath()),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -113,7 +113,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Id", "aaa", "-Id", "bbb"),
+              Arrays.asList("update", myConfig.getPath(), "-RepositoryPath", myTarget.getPath(), "-Id", "aaa", "-Id", "bbb"),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -137,7 +137,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("update", myConfig.getPath(), "-Safe", "-Verbose", "-RepositoryPath", myTarget.getPath()),
+              Arrays.asList("update", myConfig.getPath(), "-Safe", "-RepositoryPath", myTarget.getPath()),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -161,7 +161,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("update", myConfig.getPath(), "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
+              Arrays.asList("update", myConfig.getPath(), "-RepositoryPath", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
@@ -185,7 +185,7 @@ public class NuGetUpdatePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("update", myConfig.getPath(), "-Prerelease", "-Verbose", "-RepositoryPath", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
+              Arrays.asList("update", myConfig.getPath(), "-Prerelease", "-RepositoryPath", myTarget.getPath(), "-Source", "aaa", "-Source", "bbb"),
               myConfig.getParentFile(),
               Collections.<String, String>emptyMap()
       );
