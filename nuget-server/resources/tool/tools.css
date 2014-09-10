@@ -21,3 +21,13 @@ div.nugetInstallFormDialog {
 div.nugetInstallFormDialog .runnerFormTable th {
   width: 6em;
 }
+
+#nugetInstallFormLoading {
+  padding-left: 12px;
+}
+
+#nugetInstallFormLoading .icon-refresh {
+  position: relative;
+  top: 2px;
+  left: -4px;
+}
