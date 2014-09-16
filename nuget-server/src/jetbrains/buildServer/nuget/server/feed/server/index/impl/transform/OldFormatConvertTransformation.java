@@ -30,6 +30,8 @@ import org.jetbrains.annotations.Nullable;
 *         Date: 18.01.12 20:29
 */
 public class OldFormatConvertTransformation implements PackageTransformation {
+  private static final String LAST_UPDATED = "LastUpdated";
+
   private final BuildsManager myBuilds;
 
   public OldFormatConvertTransformation(@NotNull final BuildsManager builds) {
@@ -52,7 +54,7 @@ public class OldFormatConvertTransformation implements PackageTransformation {
     if (aBuild == null || !(aBuild instanceof SFinishedBuild)) return null;
     final SFinishedBuild build = (SFinishedBuild) aBuild;
 
-    builder.setMetadata("LastUpdated", ODataDataFormat.formatDate(build.getFinishDate()));
+    builder.setMetadata(LAST_UPDATED, ODataDataFormat.formatDate(build.getFinishDate()));
     return build.getBuildTypeId();
   }
 
