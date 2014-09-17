@@ -44,12 +44,7 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
     return myEntry.getAttributes().get(key);
   }
 
-  public String getAtomEntitySource(String baseUri) {
-    int idx = baseUri.indexOf(mySettings.getNuGetFeedControllerPath());
-    if (idx < 0) {
-      return null;
-    }
-    //TODO: check slashes here
-    return baseUri.substring(0, idx) + myEntry.getPackageDownloadUrl();
+  public String getAtomEntitySource() {
+    return myEntry.getPackageDownloadUrl();
   }
 }

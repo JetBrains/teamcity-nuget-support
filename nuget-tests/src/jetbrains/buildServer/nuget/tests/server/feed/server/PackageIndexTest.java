@@ -427,7 +427,7 @@ public class PackageIndexTest extends BaseTestCase {
             return null;
           }
 
-          public String getAtomEntitySource(String baseUrl) {
+          public String getAtomEntitySource() {
             return null;
           }
 
