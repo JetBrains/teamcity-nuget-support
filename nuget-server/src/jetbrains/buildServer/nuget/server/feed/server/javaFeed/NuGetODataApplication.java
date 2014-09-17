@@ -29,9 +29,9 @@ import java.util.Set;
 * Date: 05.01.12 0:06
 */
 public class NuGetODataApplication extends AbstractODataApplication {
-  private final NuGetProducer myProducer;
+  private final NuGetProducerHolder myProducer;
 
-  public NuGetODataApplication(@NotNull final NuGetProducer producer) {
+  public NuGetODataApplication(@NotNull final NuGetProducerHolder producer) {
     myProducer = producer;
   }
 

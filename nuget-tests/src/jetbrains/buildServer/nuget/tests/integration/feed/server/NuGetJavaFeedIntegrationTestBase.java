@@ -24,7 +24,7 @@ import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation;
-import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducer;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducerHolder;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
@@ -49,7 +49,7 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArt
  * Date: 04.01.12 23:55
  */
 public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBase {
-  protected NuGetProducer myProducer;
+  protected NuGetProducerHolder myProducer;
   private int myPort;
   private List<NuGetIndexEntry> myFeed;
   protected PackagesIndex myIndex;
@@ -87,7 +87,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
         }
       });
     }});
-    myProducer = new NuGetProducer(myIndexProxy, mySettings);
+    myProducer = new NuGetProducerHolder(myIndexProxy, mySettings);
 
     startNuGetFeedServer();
   }
