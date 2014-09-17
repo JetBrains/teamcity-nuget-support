@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.server.feed.server.index.NuGetServerStatisticsProvider;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.latest.LatestCalculator;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.latest.LatestVersionsCalculator;
@@ -37,7 +38,11 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArt
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 19.10.11 16:18
  */
-public class PackagesIndexImpl implements PackagesIndex {
+public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsProvider {
+  private static final String TOTAL_NUMBER_OF_ITEMS_STAT = "Total number of items in index";
+  private static final String NUMBER_OF_INDEXED_BUILDS_STAT = "Number of indexed builds";
+  private static final String NUMBER_OF_PACKAGE_IDS_STAT = "Number of unique package Ids";
+
   private final MetadataStorage myStorage;
   private final Collection<PackageTransformation> myTransformations;
 
@@ -132,5 +137,27 @@ public class PackagesIndexImpl implements PackagesIndex {
       if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
     }
     return pb;
+  }
+
+  @NotNull
+  public Map<String, Long> getStatistics() {
+    final Iterator<BuildMetadataEntry> entries = myStorage.getAllEntries(NUGET_PROVIDER_ID);
+
+    long totalItemsNumber = 0;
+    Set<Long> buildIds = new HashSet<Long>();
+    Set<String> packageIds = new HashSet<String>();
+
+    while(entries.hasNext()){
+      final BuildMetadataEntry entry = entries.next();
+      totalItemsNumber++;
+      buildIds.add(entry.getBuildId());
+      packageIds.add(entry.getMetadata().get(NuGetIndexEntry.ID));
+    }
+
+    final Map<String, Long> stats = new HashMap<String, Long>();
+    stats.put(TOTAL_NUMBER_OF_ITEMS_STAT, totalItemsNumber);
+    stats.put(NUMBER_OF_INDEXED_BUILDS_STAT, (long) buildIds.size());
+    stats.put(NUMBER_OF_PACKAGE_IDS_STAT, (long) packageIds.size());
+    return stats;
   }
 }

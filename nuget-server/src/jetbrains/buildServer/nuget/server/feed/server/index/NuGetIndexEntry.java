@@ -26,6 +26,9 @@ import java.util.Map;
  * Date: 30.12.11 19:29
  */
 public class NuGetIndexEntry {
+  public static final String ID = "Id";
+  public static final String VERSION = "Version";
+
   @NotNull private final String myKey;
   @NotNull private final Map<String, String> myAttributes;
 
@@ -52,7 +55,7 @@ public class NuGetIndexEntry {
 
   @NotNull
   public PackageInfo getPackageInfo() {
-    return new PackageInfo(myAttributes.get("Id"), myAttributes.get("Version"));
+    return new PackageInfo(myAttributes.get(ID), myAttributes.get(VERSION));
   }
 
   @Override

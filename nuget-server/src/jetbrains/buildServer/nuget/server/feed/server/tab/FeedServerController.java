@@ -20,6 +20,7 @@ import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.index.NuGetServerStatisticsProvider;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
@@ -42,6 +43,7 @@ public class FeedServerController extends BaseController {
   @NotNull private final PluginDescriptor myDescriptor;
   @NotNull private final NuGetServerSettings mySettings;
   @NotNull private final ServerSettings myServerSettings;
+  @NotNull private final NuGetServerStatisticsProvider myStatisticsProvider;
 
   public FeedServerController(@NotNull final AuthorizationInterceptor auth,
                               @NotNull final PermissionChecker checker,
@@ -49,11 +51,13 @@ public class FeedServerController extends BaseController {
                               @NotNull final WebControllerManager web,
                               @NotNull final PluginDescriptor descriptor,
                               @NotNull final ServerSettings serverSettings,
-                              @NotNull final NuGetServerSettings settings) {
+                              @NotNull final NuGetServerSettings settings,
+                              @NotNull final NuGetServerStatisticsProvider statisticsProvider) {
     mySection = section;
     myDescriptor = descriptor;
     mySettings = settings;
     myServerSettings = serverSettings;
+    myStatisticsProvider = statisticsProvider;
     final String myPath = section.getIncludePath();
 
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
@@ -76,8 +80,8 @@ public class FeedServerController extends BaseController {
     mv.getModel().put("publicFeedUrl", mySettings.getNuGetGuestAuthFeedControllerPath());
     mv.getModel().put("serverEnabled", mySettings.isNuGetServerEnabled());
     mv.getModel().put("isGuestEnabled", myServerSettings.isGuestLoginAllowed());
+    mv.getModel().put("packagesIndexStat", myStatisticsProvider.getStatistics());
 
     return mv;
   }
-
 }

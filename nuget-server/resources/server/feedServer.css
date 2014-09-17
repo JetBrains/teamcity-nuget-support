@@ -22,11 +22,18 @@ table.nugetUrls {
   width: 60em;
 }
 
-
 table.nugetUrls th {
   width: 15em;
 }
 
 table.nugetUrls td div {
   font-weight: bold;
+}
+
+table.nugetStat {
+  width: 60em;
+}
+
+table.nugetStat th {
+  width: 15em;
 }

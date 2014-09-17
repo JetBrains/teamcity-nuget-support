@@ -26,6 +26,8 @@
 <jsp:useBean id="publicFeedUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="actualServerUrl" scope="request" type="java.lang.String" />
 
+<jsp:useBean id="packagesIndexStat" scope="request" type="java.util.Map" />
+
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerContants"/>
 
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
@@ -78,6 +80,18 @@
     </table>
   </c:if>
 
+  <table class="runnerFormTable nugetStat">
+    <tr class="groupingTitle">
+      <td>Packages index statistics</td>
+    </tr>
+    <tr>
+      <td>
+        <c:forEach var="stat" items="${packagesIndexStat}">
+          <div>${stat.key}: <strong><c:out value="${stat.value}"/></strong></div>
+        </c:forEach>
+      </td>
+    </tr>
+  </table>
 
   <div id="nugetFeedError" style="padding-top: 1em;">
     <div class="attentionComment">
