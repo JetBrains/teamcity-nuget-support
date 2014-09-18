@@ -20,10 +20,13 @@ import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEnt
 import org.core4j.Func;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmFunctionImport;
-import org.odata4j.producer.exceptions.NotImplementedException;
 import org.odata4j.producer.BaseResponse;
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.producer.inmemory.*;
+import org.odata4j.producer.exceptions.NotImplementedException;
+import org.odata4j.producer.inmemory.InMemoryEdmGenerator;
+import org.odata4j.producer.inmemory.InMemoryEntityInfo;
+import org.odata4j.producer.inmemory.InMemoryProducer;
+import org.odata4j.producer.inmemory.InMemoryTypeMapping;
 
 import java.util.Map;
 
@@ -31,26 +34,22 @@ import java.util.Map;
  * @author Evgeniy.Koshkin
  */
 public class NuGetFeedInMemoryProducer extends InMemoryProducer {
-  private static final String NUGET_GALLERY_NAMESPACE = "NuGetGallery";
-  private static final String ENTITY_SET_NAME = "Packages";
-  private static final String ENTITY_TYPE_NAME = "V2FeedPackage";
-  private static final String CONTAINER_NAME = "V2FeedContext";
 
   public NuGetFeedInMemoryProducer() {
-    super(NUGET_GALLERY_NAMESPACE);
+    super(MetadataConstants.NUGET_GALLERY_NAMESPACE);
   }
 
   public void register(Func<Iterable<PackageEntity>> getFunc){
     register(PackageEntity.class,
-            ENTITY_SET_NAME,
-            ENTITY_TYPE_NAME,
+            MetadataConstants.ENTITY_SET_NAME,
+            MetadataConstants.ENTITY_TYPE_NAME,
             getFunc,
             PackageEntity.KeyPropertyNames);
   }
 
   @Override
   protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis) {
-    return new NuGetFeedInMemoryEdmGenerator(namespace, CONTAINER_NAME, typeMapping, idPropName, eis);
+    return new NuGetFeedInMemoryEdmGenerator(namespace, MetadataConstants.CONTAINER_NAME, typeMapping, idPropName, eis);
   }
 
   @Override

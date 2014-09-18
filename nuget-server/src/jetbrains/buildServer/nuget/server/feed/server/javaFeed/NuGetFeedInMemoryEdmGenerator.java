@@ -16,10 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
-import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmDecorator;
-import org.odata4j.edm.EdmEntitySet;
-import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.edm.*;
 import org.odata4j.producer.inmemory.InMemoryEdmGenerator;
 import org.odata4j.producer.inmemory.InMemoryEntityInfo;
 import org.odata4j.producer.inmemory.InMemoryTypeMapping;
@@ -30,13 +27,6 @@ import java.util.Map;
  * @author Evgeniy.Koshkin
  */
 public class NuGetFeedInMemoryEdmGenerator extends InMemoryEdmGenerator {
-
-  private static final String PACKAGES_ENTITY_SET_NAME = "Packages";
-  private static final String HTTP_METHOD_GET = "GET";
-  private static final String SEARCH_FUNCTION_NAME = "Search";
-  private static final String FIND_PACKAGES_BY_ID_FUNCTION_NAME = "FindPackagesById";
-  private static final String GET_UPDATES_FUNCTION_NAME = "GetUpdates";
-
   private EdmFunctionImport.Builder mySearchFunc;
   private EdmFunctionImport.Builder myFindPackagesByIdFunc;
   private EdmFunctionImport.Builder myGetUpdatesFunc;
@@ -45,28 +35,35 @@ public class NuGetFeedInMemoryEdmGenerator extends InMemoryEdmGenerator {
                               String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis) {
     super(namespace, containerName, typeMapping, idPropertyName, eis);
 
-    final EdmEntitySet.Builder packagesEntitySet = new EdmEntitySet.Builder().setName(PACKAGES_ENTITY_SET_NAME);
+    final EdmEntitySet.Builder packagesEntitySet = new EdmEntitySet.Builder().setName(MetadataConstants.ENTITY_SET_NAME);
 
     mySearchFunc = new EdmFunctionImport.Builder()
-            .setName(SEARCH_FUNCTION_NAME)
+            .setName(MetadataConstants.SEARCH_FUNCTION_NAME)
             .setEntitySet(packagesEntitySet)
-            .setHttpMethod(HTTP_METHOD_GET);
+            .setHttpMethod(MetadataConstants.HTTP_METHOD_GET);
 
     myFindPackagesByIdFunc = new EdmFunctionImport.Builder()
-            .setName(FIND_PACKAGES_BY_ID_FUNCTION_NAME)
+            .setName(MetadataConstants.FIND_PACKAGES_BY_ID_FUNCTION_NAME)
             .setEntitySet(packagesEntitySet)
-            .setHttpMethod(HTTP_METHOD_GET);
+            .setHttpMethod(MetadataConstants.HTTP_METHOD_GET);
 
     myGetUpdatesFunc = new EdmFunctionImport.Builder()
-            .setName(GET_UPDATES_FUNCTION_NAME)
+            .setName(MetadataConstants.GET_UPDATES_FUNCTION_NAME)
             .setEntitySet(packagesEntitySet)
-            .setHttpMethod(HTTP_METHOD_GET);
+            .setHttpMethod(MetadataConstants.HTTP_METHOD_GET);
   }
 
   @Override
   public EdmDataServices.Builder generateEdm(EdmDecorator decorator) {
-    final EdmDataServices.Builder builder = super.generateEdm(decorator);
-    builder.getSchemas().get(0).getEntityContainers().get(0).addFunctionImports(mySearchFunc, myFindPackagesByIdFunc, myGetUpdatesFunc);
-    return builder;
+    final EdmDataServices.Builder edmBuilder = super.generateEdm(decorator);
+    for(EdmSchema.Builder schemaBuilder : edmBuilder.getSchemas()){
+      if(schemaBuilder.getNamespace().equalsIgnoreCase(MetadataConstants.NUGET_GALLERY_NAMESPACE)){
+        for(EdmEntityContainer.Builder entityContainerBuilder : schemaBuilder.getEntityContainers()){
+          if(entityContainerBuilder.getName().equalsIgnoreCase(MetadataConstants.CONTAINER_NAME))
+          entityContainerBuilder.addFunctionImports(mySearchFunc, myFindPackagesByIdFunc, myGetUpdatesFunc);
+        }
+      }
+    }
+    return edmBuilder;
   }
 }
