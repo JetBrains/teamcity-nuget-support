@@ -16,11 +16,10 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
-import org.odata4j.edm.EdmEntityContainer;
+import org.odata4j.edm.EdmDataServices;
+import org.odata4j.edm.EdmDecorator;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
-import org.odata4j.edm.EdmSchema;
-import org.odata4j.producer.inmemory.InMemoryComplexTypeInfo;
 import org.odata4j.producer.inmemory.InMemoryEdmGenerator;
 import org.odata4j.producer.inmemory.InMemoryEntityInfo;
 import org.odata4j.producer.inmemory.InMemoryTypeMapping;
@@ -43,9 +42,8 @@ public class NuGetFeedInMemoryEdmGenerator extends InMemoryEdmGenerator {
   private EdmFunctionImport.Builder myGetUpdatesFunc;
 
   public NuGetFeedInMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping,
-                              String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis,
-                              Map<String, InMemoryComplexTypeInfo<?>> complexTypes, boolean flatten) {
-    super(namespace, containerName, typeMapping, idPropertyName, eis, complexTypes, flatten);
+                              String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis) {
+    super(namespace, containerName, typeMapping, idPropertyName, eis);
 
     final EdmEntitySet.Builder packagesEntitySet = new EdmEntitySet.Builder().setName(PACKAGES_ENTITY_SET_NAME);
 
@@ -66,8 +64,9 @@ public class NuGetFeedInMemoryEdmGenerator extends InMemoryEdmGenerator {
   }
 
   @Override
-  protected void addFunctions(EdmSchema.Builder schema, EdmEntityContainer.Builder container) {
-    super.addFunctions(schema, container);
-    container.addFunctionImports(mySearchFunc, myFindPackagesByIdFunc, myGetUpdatesFunc);
+  public EdmDataServices.Builder generateEdm(EdmDecorator decorator) {
+    final EdmDataServices.Builder builder = super.generateEdm(decorator);
+    builder.getSchemas().get(0).getEntityContainers().get(0).addFunctionImports(mySearchFunc, myFindPackagesByIdFunc, myGetUpdatesFunc);
+    return builder;
   }
 }

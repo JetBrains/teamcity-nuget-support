@@ -1,16 +1,16 @@
 <component name="libraryTable">
   <library name="odata4j">
     <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-core-0.6.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-jersey-0.6.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/odata4j/core4j-0.5.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-core-0.7.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-jersey-0.7.0.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$PROJECT_DIR$/lib/odata4j/core4j-0.5-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-core-0.7.0-sources.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-jersey-0.7.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-core-0.6.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/odata4j/odata4j-jersey-0.6.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

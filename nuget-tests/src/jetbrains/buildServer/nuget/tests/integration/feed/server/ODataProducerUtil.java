@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.sun.jersey.api.container.filter.LoggingFilter;
-import org.odata4j.jersey.producer.server.ODataJerseyServer;
+import org.odata4j.jersey.producer.server.JerseyServer;
 import org.odata4j.producer.resources.DefaultODataApplication;
 import org.odata4j.producer.resources.RootApplication;
 import org.odata4j.producer.server.ODataServer;
@@ -32,7 +32,7 @@ public class ODataProducerUtil {
   }
 
   public static ODataServer createODataServer(String baseUri) {
-    return new ODataJerseyServer(baseUri, DefaultODataApplication.class, RootApplication.class)
+    return new JerseyServer(baseUri, DefaultODataApplication.class, RootApplication.class)
             .addJerseyRequestFilter(LoggingFilter.class) // log all requests
             ;
   }
