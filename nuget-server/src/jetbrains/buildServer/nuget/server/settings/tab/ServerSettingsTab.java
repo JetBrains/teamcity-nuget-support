@@ -34,6 +34,8 @@ import java.util.Map;
  */
 public class ServerSettingsTab extends SimpleCustomTab {
   public static final String TAB_ID = "nugetServerSettingsTab";
+  private static final String NUGET = "NuGet";
+
   private final PermissionChecker myChecker;
   private final Collection<SettingsSection> mySections = new ArrayList<SettingsSection>();
 
@@ -45,7 +47,7 @@ public class ServerSettingsTab extends SimpleCustomTab {
             PlaceId.ADMIN_SERVER_CONFIGURATION_TAB,
             TAB_ID,
             descriptor.getPluginResourcesPath("settings.jsp"),
-            "NuGet Settings");
+            NUGET);
     myChecker = checker;
     setPosition(PositionConstraint.between(Arrays.asList("pluginsTab"), Arrays.asList("mavenSettings", "toolLoadTab", "usage-statistics")));
 

@@ -33,6 +33,7 @@
 
   <!-- UI -->
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerController"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerStatController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsController"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsSection"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerMyTools"/>

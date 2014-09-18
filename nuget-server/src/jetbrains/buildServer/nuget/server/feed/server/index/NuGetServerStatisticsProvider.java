@@ -25,5 +25,5 @@ import java.util.Map;
  */
 public interface NuGetServerStatisticsProvider {
   @NotNull
-  Map<String, Long> getStatistics();
+  Map<String, Long> getIndexStatistics();
 }

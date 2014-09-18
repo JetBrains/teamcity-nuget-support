@@ -18,15 +18,15 @@
   width: 60em;
 }
 
-table.nugetUrls {
+table.nugetSettings {
   width: 60em;
 }
 
-table.nugetUrls th {
+table.nugetSettings th {
   width: 15em;
 }
 
-table.nugetUrls td div {
+table.nugetSettings td div {
   font-weight: bold;
 }
 
