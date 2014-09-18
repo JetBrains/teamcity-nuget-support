@@ -140,7 +140,7 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
   }
 
   @NotNull
-  public Map<String, Long> getStatistics() {
+  public Map<String, Long> getIndexStatistics() {
     final Iterator<BuildMetadataEntry> entries = myStorage.getAllEntries(NUGET_PROVIDER_ID);
 
     long totalItemsNumber = 0;
