@@ -67,6 +67,6 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
       LOG.debug("Failed to process NuGet feed function call. Failed to find target function by name " + name.getName());
       throw new NotImplementedException();
     }
-    return targetFunction.call(params, queryInfo);
+    return targetFunction.call(name.getReturnType(), params, queryInfo);
   }
 }

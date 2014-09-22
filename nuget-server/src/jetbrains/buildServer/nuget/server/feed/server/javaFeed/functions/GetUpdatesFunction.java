@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions;
 
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.MetadataConstants;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.*;
 import org.odata4j.producer.QueryInfo;
@@ -50,7 +51,8 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
                     new EdmFunctionParameter.Builder().setName(MetadataConstants.VERSION_CONSTRAINTS).setType(EdmSimpleType.STRING));
   }
 
-  public org.odata4j.producer.BaseResponse call(Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+  @Nullable
+  public org.odata4j.producer.BaseResponse call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
     throw new NotImplementedException();
   }
 }

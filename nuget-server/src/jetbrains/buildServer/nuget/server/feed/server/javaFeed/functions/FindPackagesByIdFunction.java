@@ -21,12 +21,12 @@ import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.MetadataConstants;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OSimpleObject;
 import org.odata4j.edm.*;
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -60,7 +60,8 @@ public class FindPackagesByIdFunction implements NuGetFeedFunction {
             .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID).setType(EdmSimpleType.STRING));
   }
 
-  public org.odata4j.producer.BaseResponse call(Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+  @Nullable
+  public org.odata4j.producer.BaseResponse call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
     final OFunctionParameter idParam = params.get(MetadataConstants.ID);
     if(idParam == null){
       LOG.debug(String.format("Bad %s function call. ID parameter is not specified.", getName()));
@@ -74,11 +75,11 @@ public class FindPackagesByIdFunction implements NuGetFeedFunction {
     }
     final OSimpleObject idObjectCasted = (OSimpleObject) id;
     final String packageId = idObjectCasted.getValue().toString();
-    final Iterator<NuGetIndexEntry> entries = myIndex.getNuGetEntries(packageId);
-    if(!entries.hasNext()){
-      LOG.debug("No packages found by id " + packageId);
+    final Iterator<NuGetIndexEntry> indexEntries = myIndex.getNuGetEntries(packageId);
+    if(!indexEntries.hasNext()){
+      LOG.debug("No packages found for id " + packageId);
       return null;
     }
-    throw new NotImplementedException();
+    return new NuGetPackagesCollectionResponse(indexEntries, returnType);
   }
 }
