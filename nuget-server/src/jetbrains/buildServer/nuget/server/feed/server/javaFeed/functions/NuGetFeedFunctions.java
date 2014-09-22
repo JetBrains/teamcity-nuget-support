@@ -34,7 +34,7 @@ public class NuGetFeedFunctions {
   private final Collection<NuGetFeedFunction> myAPIv2Functions;
 
   public NuGetFeedFunctions(@NotNull PackagesIndex index) {
-    myAPIv2Functions = Lists.newArrayList(new FindPackagesByIdFunction(index), new GetUpdatesFunction(), new SearchFunction());
+    myAPIv2Functions = Lists.newArrayList(new FindPackagesByIdFunction(index) , new GetUpdatesFunction() /*, new SearchFunction()*/);
   }
 
   @Nullable
