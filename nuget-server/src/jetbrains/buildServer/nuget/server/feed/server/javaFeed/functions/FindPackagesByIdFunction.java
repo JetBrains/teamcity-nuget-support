@@ -16,19 +16,34 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions;
 
+import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.MetadataConstants;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OFunctionParameter;
+import org.odata4j.core.OObject;
+import org.odata4j.core.OSimpleObject;
 import org.odata4j.edm.*;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.exceptions.NotImplementedException;
 
+import java.util.Iterator;
 import java.util.Map;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class FindPackagesByIdFunction implements NuGetFeedFunction {
+
+  private final Logger LOG = Logger.getInstance(getClass().getName());
+
+  @NotNull private final PackagesIndex myIndex;
+
+  public FindPackagesByIdFunction(@NotNull final PackagesIndex index) {
+    myIndex = index;
+  }
+
   @NotNull
   public String getName() {
     return MetadataConstants.FIND_PACKAGES_BY_ID_FUNCTION_NAME;
@@ -46,6 +61,24 @@ public class FindPackagesByIdFunction implements NuGetFeedFunction {
   }
 
   public org.odata4j.producer.BaseResponse call(Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+    final OFunctionParameter idParam = params.get(MetadataConstants.ID);
+    if(idParam == null){
+      LOG.debug(String.format("Bad %s function call. ID parameter is not specified.", getName()));
+      return null;
+    }
+    final OObject id = idParam.getValue();
+    if(!(id instanceof OSimpleObject))
+    {
+      LOG.debug(String.format("Bad %s function call. ID parameter type is invalid.", getName()));
+      return null;
+    }
+    final OSimpleObject idObjectCasted = (OSimpleObject) id;
+    final String packageId = idObjectCasted.getValue().toString();
+    final Iterator<NuGetIndexEntry> entries = myIndex.getNuGetEntries(packageId);
+    if(!entries.hasNext()){
+      LOG.debug("No packages found by id " + packageId);
+      return null;
+    }
     throw new NotImplementedException();
   }
 }

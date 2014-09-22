@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunction;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunctions;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,6 @@ import org.odata4j.producer.inmemory.InMemoryEntityInfo;
 import org.odata4j.producer.inmemory.InMemoryTypeMapping;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -37,10 +37,10 @@ import java.util.Map;
 public class NuGetFeedInMemoryEdmGenerator extends InMemoryEdmGenerator {
 
   private final Logger LOG = Logger.getInstance(getClass().getName());
-  private final Collection<NuGetFeedFunction> myFunctions;
+  private final NuGetFeedFunctions myFunctions;
 
   public NuGetFeedInMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping,
-                                       String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis, Collection<NuGetFeedFunction> functions) {
+                                       String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis, NuGetFeedFunctions functions) {
     super(namespace, containerName, typeMapping, idPropertyName, eis);
     myFunctions = functions;
   }
@@ -77,7 +77,7 @@ public class NuGetFeedInMemoryEdmGenerator extends InMemoryEdmGenerator {
 
   private List<EdmFunctionImport.Builder> generateNugetAPIv2FunctionImports(EdmEntityType entityType) {
     final List<EdmFunctionImport.Builder> result = new ArrayList<EdmFunctionImport.Builder>();
-    for(NuGetFeedFunction function : myFunctions){
+    for(NuGetFeedFunction function : myFunctions.getAll()){
       result.add(function.generateImport(entityType));
     }
     return result;

@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntity;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunctions;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;
@@ -37,12 +38,12 @@ import java.util.Iterator;
 public class NuGetProducerHolder {
   private final NuGetFeedInMemoryProducer myProducer;
 
-  public NuGetProducerHolder(@NotNull final PackagesIndex index, @NotNull final NuGetServerSettings settings) {
+  public NuGetProducerHolder(@NotNull final PackagesIndex index, @NotNull final NuGetServerSettings settings, @NotNull final NuGetFeedFunctions functions) {
     //Workaround for Xml generation. Default STAX xml writer
     //used to generate <foo></foo> that is badly parsed in
     //.NET OData WCF client
     XMLFactoryProvider2.setInstance(new XmlPullXMLFactoryProvider2());
-    myProducer = new NuGetFeedInMemoryProducer();
+    myProducer = new NuGetFeedInMemoryProducer(functions);
     myProducer.register(new Func<Iterable<PackageEntity>>() {
       public Iterable<PackageEntity> apply() {
         return new Iterable<PackageEntity>() {

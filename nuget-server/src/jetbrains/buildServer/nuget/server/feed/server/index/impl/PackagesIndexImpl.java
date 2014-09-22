@@ -58,8 +58,10 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
     return decorateMetadata(getBuildEntries(buildId));
   }
 
-  private Iterator<BuildMetadataEntry> getBuildEntries(long buildId) {
-    return myStorage.getBuildEntry(buildId, NUGET_PROVIDER_ID);
+  @NotNull
+  public Iterator<NuGetIndexEntry> getNuGetEntries(@NotNull String packageId) {
+    //TODO: pass valid key
+    return decorateMetadata(myStorage.getEntriesByKey(packageId, NUGET_PROVIDER_ID));
   }
 
   @NotNull
@@ -96,6 +98,11 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
               }
             }
     );
+  }
+
+
+  private Iterator<BuildMetadataEntry> getBuildEntries(long buildId) {
+    return myStorage.getBuildEntry(buildId, NUGET_PROVIDER_ID);
   }
 
   @NotNull
