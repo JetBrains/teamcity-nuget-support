@@ -60,8 +60,7 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
 
   @NotNull
   public Iterator<NuGetIndexEntry> getNuGetEntries(@NotNull String packageId) {
-    //TODO: pass valid key
-    return decorateMetadata(myStorage.getEntriesByKey(packageId, NUGET_PROVIDER_ID));
+    return decorateMetadata(myStorage.getEntriesByKey(NUGET_PROVIDER_ID, packageId));
   }
 
   @NotNull
