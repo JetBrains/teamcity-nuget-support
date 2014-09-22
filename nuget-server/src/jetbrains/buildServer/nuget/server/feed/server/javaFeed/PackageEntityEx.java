@@ -27,6 +27,9 @@ import org.odata4j.core.OAtomStreamEntity;
  * Date: 11.01.12 12:40
  */
 public class PackageEntityEx extends PackageEntityAdapter implements OAtomStreamEntity {
+
+  private static final String APPLICATION_ZIP = "application/zip";
+
   private final NuGetIndexEntry myEntry;
   private final NuGetServerSettings mySettings;
 
@@ -36,15 +39,20 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
   }
 
   public String getAtomEntityType() {
-    return "application/zip";
+    return APPLICATION_ZIP;
+  }
+
+  public String getAtomEntitySource(String baseUri) {
+    int idx = baseUri.indexOf(mySettings.getNuGetFeedControllerPath());
+    if (idx < 0) {
+      return null;
+    }
+    //TODO: check slashes here
+    return baseUri.substring(0, idx) + myEntry.getPackageDownloadUrl();
   }
 
   @Override
   protected String getValue(@NotNull String key) {
     return myEntry.getAttributes().get(key);
-  }
-
-  public String getAtomEntitySource() {
-    return myEntry.getPackageDownloadUrl();
   }
 }
