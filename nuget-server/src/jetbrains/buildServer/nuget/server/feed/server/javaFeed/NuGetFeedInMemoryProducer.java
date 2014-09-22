@@ -16,8 +16,15 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
+import com.google.common.collect.Lists;
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntity;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.FindPackagesByIdFunction;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.GetUpdatesFunction;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunction;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.SearchFunction;
 import org.core4j.Func;
+import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.producer.BaseResponse;
@@ -28,12 +35,17 @@ import org.odata4j.producer.inmemory.InMemoryEntityInfo;
 import org.odata4j.producer.inmemory.InMemoryProducer;
 import org.odata4j.producer.inmemory.InMemoryTypeMapping;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class NuGetFeedInMemoryProducer extends InMemoryProducer {
+
+  private final Logger LOG = Logger.getInstance(getClass().getName());
+
+  private Collection<NuGetFeedFunction> myAPIv2Functions = Lists.newArrayList(new FindPackagesByIdFunction(), new GetUpdatesFunction(), new SearchFunction());
 
   public NuGetFeedInMemoryProducer() {
     super(MetadataConstants.NUGET_GALLERY_NAMESPACE);
@@ -49,11 +61,21 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
 
   @Override
   protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis) {
-    return new NuGetFeedInMemoryEdmGenerator(namespace, MetadataConstants.CONTAINER_NAME, typeMapping, idPropName, eis);
+    return new NuGetFeedInMemoryEdmGenerator(namespace, MetadataConstants.CONTAINER_NAME, typeMapping, idPropName, eis, myAPIv2Functions);
   }
 
   @Override
   public BaseResponse callFunction(EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
-    throw new NotImplementedException();
+    final NuGetFeedFunction targetFunction = findFunction(name);
+    if(targetFunction == null){
+      LOG.warn("Failed to process NuGet feed function call. Failed to find target function by name " + name.getName());
+      throw new NotImplementedException();
+    }
+    return targetFunction.call(params, queryInfo);
+  }
+
+  @Nullable
+  private NuGetFeedFunction findFunction(EdmFunctionImport name) {
+    return null;
   }
 }
