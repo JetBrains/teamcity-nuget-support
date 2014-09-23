@@ -46,7 +46,7 @@
     </td>
   </tr>
   <tr class="advancedSetting">
-    <th rowspan="3">Restore Options:</th>
+    <th rowspan="2">Restore Options:</th>
     <td>
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
@@ -62,9 +62,10 @@
     </td>
   </tr>
   <tr class="advancedSetting">
+    <th><label for="${ib.restoreCustomCommandline}">Command line parameters:</label></th>
     <td>
-      <props:multilineProperty name="${ib.restoreCustomCommandline}" linkTitle="Additional commandline arguments:" cols="60" rows="5" />
-      <span class="smallNote">Additional commandline parameters to add to calling NuGet.exe</span>
+      <props:textProperty name="${ib.restoreCustomCommandline}" className="longField" expandable="true"/>
+      <span class="smallNote">Enter additional command line parameters to calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Restore_command">nuget restore</a> command</span>
       <span id="error_${ib.restoreCustomCommandline}" class="error"></span>
     </td>
   </tr>
@@ -122,7 +123,7 @@
     </td>
   </tr>
   <tr class="advancedSetting">
-    <th rowspan="3">Update Options:</th>
+    <th rowspan="2">Update Options:</th>
     <td>
       <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
       <label for="${ib.updatePackagesPrerelease}">Include pre-release packages</label>
@@ -137,9 +138,10 @@
     </td>
   </tr>
   <tr class="advancedSetting">
+    <th><label for="${ib.updateCustomCommandline}">Command line parameters:</label></th>
     <td>
-      <props:multilineProperty name="${ib.updateCustomCommandline}" linkTitle="Additional commandline arguments:" cols="60" rows="5" />
-      <span class="smallNote">Additional commandline parameters to add to calling NuGet.exe</span>
+      <props:textProperty name="${ib.updateCustomCommandline}" className="longField" expandable="true"/>
+      <span class="smallNote">Enter additional command line parameters to calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Update_Command">nuget update</a> command</span>
       <span id="error_${ib.updateCustomCommandline}" class="error"></span>
     </td>
   </tr>

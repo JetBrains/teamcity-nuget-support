@@ -158,10 +158,10 @@
   </tr>
 
   <tr class="advancedSetting">
-    <th><label for="${ib.packCustomCommandline}">Additional commandline arguments:</label></th>
+    <th><label for="${ib.packCustomCommandline}">Command line parameters:</label></th>
     <td>
-      <props:multilineProperty name="${ib.packCustomCommandline}" linkTitle="Commandline" cols="60" rows="5" />
-      <span class="smallNote">Additional commandline parameters to add to calling NuGet.exe</span>
+      <props:textProperty name="${ib.packCustomCommandline}" className="longField" expandable="true"/>
+      <span class="smallNote">Enter additional command line parameters to calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Pack_Command">nuget pack</a> command</span>
       <span id="error_${ib.packCustomCommandline}" class="error"></span>
     </td>
   </tr>
