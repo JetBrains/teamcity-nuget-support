@@ -87,7 +87,7 @@
 </div>
 
 <div class="parameter">
-  Custom commandline: <strong><props:displayValue name="${ib.packCustomCommandline}" showInPopup="${true}"/></strong>
+  Custom command line: <strong><props:displayValue name="${ib.packCustomCommandline}" showInPopup="${true}"/></strong>
 </div>
 
 

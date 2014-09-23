@@ -51,7 +51,7 @@
       <props:checkboxProperty name="${ib.excludeVersionKey}"/>
       <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
       <span class="smallNote">Makes NuGet exclude package version from package folder names.
-                              Equivalent to the <em>-ExcludeVersion</em> NuGet.exe commandline argument</span>
+                              Equivalent to the <em>-ExcludeVersion</em> NuGet.exe command line argument</span>
     </td>
   </tr>
   <tr class="advancedSetting">
@@ -65,7 +65,7 @@
     <th><label for="${ib.restoreCustomCommandline}">Command line parameters:</label></th>
     <td>
       <props:textProperty name="${ib.restoreCustomCommandline}" className="longField" expandable="true"/>
-      <span class="smallNote">Enter additional command line parameters to calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Restore_command">nuget restore</a> command</span>
+      <span class="smallNote">Enter additional parameters to use when calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Restore_command">nuget restore</a> command</span>
       <span id="error_${ib.restoreCustomCommandline}" class="error"></span>
     </td>
   </tr>
@@ -82,13 +82,13 @@
       <span class="smallNote">
         Leave blank to use NuGet.org
         <br />
-        To use TeamCity as NuGet server, specify
+        To use TeamCity as a NuGet server, specify
         <em><c:out value="${ib.nuGetFeedReference}"/></em>
-        to refer to TeamCity provided guest-visible packages source
+        to refer to the TeamCity-provided guest-visible packages source
         <br />
         Specify <em><c:out value="${ib.nuGetAuthFeedReference}"/></em>
-        to refer to TeamCity provided authenticated NuGet feed
-        (you also need to configurate <em>NuGet Feed Credentials</em> build feature)
+        to refer to the TeamCity-provided authenticated NuGet feed and configure the <em>NuGet Feed Credentials</em> build feature
+        <bs:help file="NuGet+Feed+Credentials"/>
       </span>
       <span class="error" id="error_${ib.nuGetSourcesKey}"></span>
     </td>
@@ -141,7 +141,7 @@
     <th><label for="${ib.updateCustomCommandline}">Command line parameters:</label></th>
     <td>
       <props:textProperty name="${ib.updateCustomCommandline}" className="longField" expandable="true"/>
-      <span class="smallNote">Enter additional command line parameters to calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Update_Command">nuget update</a> command</span>
+      <span class="smallNote">Enter additional parameters to use when calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Update_Command">nuget update</a> command</span>
       <span id="error_${ib.updateCustomCommandline}" class="error"></span>
     </td>
   </tr>

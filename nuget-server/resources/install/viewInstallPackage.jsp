@@ -54,7 +54,7 @@
 </div>
 
 <div class="parameter">
-  Restore / install command custom commandline: <strong><props:displayValue name="${ib.restoreCustomCommandline}" showInPopup="${true}"/></strong>
+  Restore / install command custom command line: <strong><props:displayValue name="${ib.restoreCustomCommandline}" showInPopup="${true}"/></strong>
 </div>
 
 <div class="parameter">
@@ -88,5 +88,5 @@
 </div>
 
 <div class="parameter">
-  Update command custom commandline: <strong><props:displayValue name="${ib.updateCustomCommandline}" showInPopup="${true}"/></strong>
+  Update command custom command line: <strong><props:displayValue name="${ib.updateCustomCommandline}" showInPopup="${true}"/></strong>
 </div>

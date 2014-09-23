@@ -161,7 +161,7 @@
     <th><label for="${ib.packCustomCommandline}">Command line parameters:</label></th>
     <td>
       <props:textProperty name="${ib.packCustomCommandline}" className="longField" expandable="true"/>
-      <span class="smallNote">Enter additional command line parameters to calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Pack_Command">nuget pack</a> command</span>
+      <span class="smallNote">Enter additional parameters to use when calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Pack_Command">nuget pack</a> command</span>
       <span id="error_${ib.packCustomCommandline}" class="error"></span>
     </td>
   </tr>
