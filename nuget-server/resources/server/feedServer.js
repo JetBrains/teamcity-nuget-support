@@ -55,16 +55,5 @@ BS.NuGet.FeedServer = {
 
   enableFeedServer : function(el) {
     BS.NuGet.FeedServer._request(el, true);
-  },
-
-  collectStatistics : function(url){
-    $j('#update_progress').html('<div class="resultsTitle"><i class="icon-refresh icon-spin"></i> Collecting NuGet server statistics...</div>');
-    BS.ajaxUpdater($('statisticsDataContainer'), url, {
-      method: 'get',
-      onComplete: function() {
-        $j('#update_progress').empty();
-      }
-    });
-    return false;
   }
 };

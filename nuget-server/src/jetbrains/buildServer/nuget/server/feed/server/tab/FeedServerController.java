@@ -42,7 +42,6 @@ public class FeedServerController extends BaseController {
   @NotNull private final PluginDescriptor myDescriptor;
   @NotNull private final NuGetServerSettings mySettings;
   @NotNull private final ServerSettings myServerSettings;
-  @NotNull private final FeedServerStatController myStatController;
 
   public FeedServerController(@NotNull final AuthorizationInterceptor auth,
                               @NotNull final PermissionChecker checker,
@@ -50,13 +49,11 @@ public class FeedServerController extends BaseController {
                               @NotNull final WebControllerManager web,
                               @NotNull final PluginDescriptor descriptor,
                               @NotNull final ServerSettings serverSettings,
-                              @NotNull final NuGetServerSettings settings,
-                              @NotNull final FeedServerStatController statController) {
+                              @NotNull final NuGetServerSettings settings) {
     mySection = section;
     myDescriptor = descriptor;
     mySettings = settings;
     myServerSettings = serverSettings;
-    myStatController = statController;
     final String myPath = section.getIncludePath();
 
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
@@ -79,7 +76,6 @@ public class FeedServerController extends BaseController {
     mv.getModel().put("publicFeedUrl", mySettings.getNuGetGuestAuthFeedControllerPath());
     mv.getModel().put("serverEnabled", mySettings.isNuGetServerEnabled());
     mv.getModel().put("isGuestEnabled", myServerSettings.isGuestLoginAllowed());
-    mv.getModel().put("getStatisticsUrl", myStatController.getPath());
 
     return mv;
   }

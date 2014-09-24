@@ -25,13 +25,11 @@
 <jsp:useBean id="privateFeedUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="publicFeedUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="actualServerUrl" scope="request" type="java.lang.String" />
-<jsp:useBean id="getStatisticsUrl" scope="request" type="java.lang.String" />
 
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerContants"/>
 
 <c:set var="nugetStatusRefreshFullUrl"><c:url value="${nugetStatusRefreshUrl}"/></c:set>
 <c:set var="nugetSettingsPostFullUrl"><c:url value="${nugetSettingsPostUrl}"/></c:set>
-<c:set var="getStatisticsFullUrl"><c:url value="${getStatisticsUrl}"/></c:set>
 
 <bs:refreshable containerId="nugetEnableDisable" pageUrl="${nugetStatusRefreshFullUrl}">
   <div data-url="${nugetSettingsPostFullUrl}">
@@ -79,18 +77,6 @@
       </tr>
     </table>
   </c:if>
-
-  <table class="runnerFormTable nugetSettings">
-    <tr>
-      <th>Statistics:</th>
-      <td>
-        <input type="button" value="Collect Now" class="btn btn_mini" onclick="BS.NuGet.FeedServer.collectStatistics('${getStatisticsFullUrl}');">
-      </td>
-    </tr>
-  </table>
-
-  <div id="update_progress"></div>
-  <div id="statisticsDataContainer"></div>
 
   <div id="nugetFeedError" style="padding-top: 1em;">
     <div class="attentionComment">

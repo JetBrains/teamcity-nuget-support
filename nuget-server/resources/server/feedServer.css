@@ -29,11 +29,3 @@ table.nugetSettings th {
 table.nugetSettings td div {
   font-weight: bold;
 }
-
-table.nugetStat {
-  width: 60em;
-}
-
-table.nugetStat th {
-  width: 15em;
-}
