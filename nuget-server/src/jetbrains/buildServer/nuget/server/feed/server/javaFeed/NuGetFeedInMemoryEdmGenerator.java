@@ -23,6 +23,7 @@ import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.edm.*;
+import org.odata4j.producer.inmemory.InMemoryComplexTypeInfo;
 import org.odata4j.producer.inmemory.InMemoryEdmGenerator;
 import org.odata4j.producer.inmemory.InMemoryEntityInfo;
 import org.odata4j.producer.inmemory.InMemoryTypeMapping;
@@ -40,8 +41,8 @@ public class NuGetFeedInMemoryEdmGenerator extends InMemoryEdmGenerator {
   private final NuGetFeedFunctions myFunctions;
 
   public NuGetFeedInMemoryEdmGenerator(String namespace, String containerName, InMemoryTypeMapping typeMapping,
-                                       String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis, NuGetFeedFunctions functions) {
-    super(namespace, containerName, typeMapping, idPropertyName, eis);
+                                       String idPropertyName, Map<String, InMemoryEntityInfo<?>> eis, Map<String, InMemoryComplexTypeInfo<?>> complexTypes, NuGetFeedFunctions functions) {
+    super(namespace, containerName, typeMapping, idPropertyName, eis, complexTypes);
     myFunctions = functions;
   }
 

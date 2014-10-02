@@ -17,9 +17,11 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.MetadataConstants;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OCollection;
 import org.odata4j.core.OCollections;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmType;
 import org.odata4j.producer.CollectionResponse;
 
@@ -29,6 +31,9 @@ import java.util.Iterator;
  * @author Evgeniy.Koshkin
  */
 public class NuGetPackagesCollectionResponse implements CollectionResponse {
+
+  @NotNull private final EdmEntitySet.Builder myPackagesEntitySetBuilder = new EdmEntitySet.Builder().setName(MetadataConstants.ENTITY_SET_NAME);
+
   private final Iterator<NuGetIndexEntry> myEntries;
   private final EdmType myEntityType;
 
@@ -37,10 +42,26 @@ public class NuGetPackagesCollectionResponse implements CollectionResponse {
     myEntityType = entityType;
   }
 
+  public EdmEntitySet getEntitySet() {
+    return myPackagesEntitySetBuilder.build();
+  }
+
+  public String getCollectionName() {
+    return MetadataConstants.ENTITY_SET_NAME;
+  }
+
+  public Integer getInlineCount() {
+    return null;
+  }
+
+  public String getSkipToken() {
+    return null;
+  }
+
   public OCollection getCollection() {
     final OCollection.Builder resultBuilder = OCollections.newBuilder(myEntityType);
     while (myEntries.hasNext()){
-      //resultBuilder.add(OEntities.create());
+      //TODO: create items
     }
     return resultBuilder.build();
   }

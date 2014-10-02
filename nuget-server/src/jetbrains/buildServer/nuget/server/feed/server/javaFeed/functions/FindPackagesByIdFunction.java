@@ -39,6 +39,7 @@ public class FindPackagesByIdFunction implements NuGetFeedFunction {
   private final Logger LOG = Logger.getInstance(getClass().getName());
 
   @NotNull private final PackagesIndex myIndex;
+  @NotNull private final EdmEntitySet.Builder myPackagesEntitySetBuilder = new EdmEntitySet.Builder().setName(MetadataConstants.ENTITY_SET_NAME);
 
   public FindPackagesByIdFunction(@NotNull final PackagesIndex index) {
     myIndex = index;
@@ -51,10 +52,9 @@ public class FindPackagesByIdFunction implements NuGetFeedFunction {
 
   @NotNull
   public EdmFunctionImport.Builder generateImport(@NotNull EdmType returnType) {
-    final EdmEntitySet.Builder packagesEntitySet = new EdmEntitySet.Builder().setName(MetadataConstants.ENTITY_SET_NAME);
     return new EdmFunctionImport.Builder()
             .setName(MetadataConstants.FIND_PACKAGES_BY_ID_FUNCTION_NAME)
-            .setEntitySet(packagesEntitySet)
+            .setEntitySet(myPackagesEntitySetBuilder)
             .setHttpMethod(MetadataConstants.HTTP_METHOD_GET)
             .setReturnType(returnType)
             .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID).setType(EdmSimpleType.STRING));

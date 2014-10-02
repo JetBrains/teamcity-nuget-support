@@ -40,8 +40,8 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
   private static final String COLLECTION_VALUE_SEPARATOR = "|";
   private static final Comparator<String> SEMANTIC_VERSIONS_COMPARATOR = SemanticVersionsComparer.getSemanticVersionsComparator();
 
-  private final Logger LOG = Logger.getInstance(getClass().getName());
-
+  @NotNull private final Logger LOG = Logger.getInstance(getClass().getName());
+  @NotNull private final EdmEntitySet.Builder myPackagesEntitySetBuilder = new EdmEntitySet.Builder().setName(MetadataConstants.ENTITY_SET_NAME);
   @NotNull private final PackagesIndex myIndex;
 
   public GetUpdatesFunction(@NotNull PackagesIndex index) {
@@ -55,10 +55,9 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
 
   @NotNull
   public EdmFunctionImport.Builder generateImport(@NotNull EdmType returnType) {
-    final EdmEntitySet.Builder packagesEntitySet = new EdmEntitySet.Builder().setName(MetadataConstants.ENTITY_SET_NAME);
     return new EdmFunctionImport.Builder()
             .setName(MetadataConstants.GET_UPDATES_FUNCTION_NAME)
-            .setEntitySet(packagesEntitySet)
+            .setEntitySet(myPackagesEntitySetBuilder)
             .setHttpMethod(MetadataConstants.HTTP_METHOD_GET)
             .setReturnType(returnType)
             .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.PACKAGE_IDS).setType(EdmSimpleType.STRING),

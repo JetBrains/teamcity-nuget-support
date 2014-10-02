@@ -21,8 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.*;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.producer.exceptions.NotImplementedException;
 
 import java.util.Map;
 

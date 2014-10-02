@@ -24,13 +24,11 @@ import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.ODataContext;
 import org.odata4j.producer.QueryInfo;
-import org.odata4j.producer.exceptions.NotImplementedException;
-import org.odata4j.producer.inmemory.InMemoryEdmGenerator;
-import org.odata4j.producer.inmemory.InMemoryEntityInfo;
-import org.odata4j.producer.inmemory.InMemoryProducer;
-import org.odata4j.producer.inmemory.InMemoryTypeMapping;
+import org.odata4j.producer.inmemory.*;
 
 import java.util.Map;
 
@@ -56,12 +54,12 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   }
 
   @Override
-  protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis) {
-    return new NuGetFeedInMemoryEdmGenerator(namespace, MetadataConstants.CONTAINER_NAME, typeMapping, idPropName, eis, myFunctions);
+  protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis, Map<String, InMemoryComplexTypeInfo<?>> complexTypesInfo) {
+    return new NuGetFeedInMemoryEdmGenerator(namespace, MetadataConstants.CONTAINER_NAME, typeMapping, idPropName, eis, complexTypesInfo, myFunctions);
   }
 
   @Override
-  public BaseResponse callFunction(EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+  public BaseResponse callFunction(ODataContext context, EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
     final NuGetFeedFunction targetFunction = myFunctions.find(name);
     if(targetFunction == null){
       LOG.debug("Failed to process NuGet feed function call. Failed to find target function by name " + name.getName());
