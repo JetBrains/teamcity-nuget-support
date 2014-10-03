@@ -20,16 +20,19 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntity;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunction;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunctions;
+import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.Converter;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.core.OEntity;
 import org.odata4j.core.OFunctionParameter;
+import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.exceptions.NotImplementedException;
-import org.odata4j.producer.BaseResponse;
-import org.odata4j.producer.ODataContext;
-import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.*;
 import org.odata4j.producer.inmemory.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,12 +62,25 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   }
 
   @Override
-  public BaseResponse callFunction(ODataContext context, EdmFunctionImport name, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
-    final NuGetFeedFunction targetFunction = myFunctions.find(name);
+  public BaseResponse callFunction(ODataContext context, EdmFunctionImport function, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+    final NuGetFeedFunction targetFunction = myFunctions.find(function);
     if(targetFunction == null){
-      LOG.debug("Failed to process NuGet feed function call. Failed to find target function by name " + name.getName());
+      LOG.debug("Failed to process NuGet feed function call. Failed to find target function by name " + function.getName());
       throw new NotImplementedException();
     }
-    return targetFunction.call(name.getReturnType(), params, queryInfo);
+
+    final Iterable<Object> objects = targetFunction.call(function.getReturnType(), params, queryInfo);
+    if(objects == null) return null;
+
+    EdmEntitySet metadataEntitySet = getMetadata().findEdmEntitySet(function.getEntitySet().getName());
+    final EdmEntitySet entitySet = metadataEntitySet != null ? metadataEntitySet : function.getEntitySet();
+
+    final PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
+    List<OEntity> entitiesList = CollectionsUtil.convertCollection(objects, new Converter<OEntity, Object>() {
+      public OEntity createFrom(@NotNull Object source) {
+        return toOEntity(entitySet, source, pathHelper);
+      }
+    });
+    return Responses.entities(entitiesList, entitySet, null, null);
   }
 }

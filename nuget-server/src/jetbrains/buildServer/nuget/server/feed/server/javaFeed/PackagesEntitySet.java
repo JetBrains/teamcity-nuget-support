@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions;
+package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.odata4j.core.OFunctionParameter;
-import org.odata4j.edm.EdmFunctionImport;
-import org.odata4j.edm.EdmType;
-import org.odata4j.producer.QueryInfo;
-
-import java.util.Map;
+import org.odata4j.edm.EdmEntitySet;
 
 /**
  * @author Evgeniy.Koshkin
  */
-public interface NuGetFeedFunction {
-  @NotNull String getName();
-  @NotNull EdmFunctionImport.Builder generateImport(@NotNull EdmType returnType);
-  @Nullable Iterable<Object> call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo);
+public class PackagesEntitySet {
+  @NotNull
+  private static final EdmEntitySet.Builder myPackagesEntitySetBuilder
+          = new EdmEntitySet.Builder().setName(MetadataConstants.ENTITY_SET_NAME);
+
+  public static EdmEntitySet.Builder getBuilder() {
+    return myPackagesEntitySetBuilder;
+  }
 }

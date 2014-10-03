@@ -49,7 +49,7 @@ public class SearchFunction implements NuGetFeedFunction {
   }
 
   @Nullable
-  public org.odata4j.producer.BaseResponse call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
+  public Iterable<Object> call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
     throw new NotImplementedException();
   }
 }

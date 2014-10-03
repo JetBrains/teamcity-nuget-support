@@ -17,17 +17,25 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparer;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.MetadataConstants;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackageEntityEx;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackagesEntitySet;
+import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OSimpleObject;
-import org.odata4j.edm.*;
+import org.odata4j.edm.EdmFunctionImport;
+import org.odata4j.edm.EdmFunctionParameter;
+import org.odata4j.edm.EdmSimpleType;
+import org.odata4j.edm.EdmType;
 import org.odata4j.producer.QueryInfo;
 
 import java.util.*;
@@ -41,11 +49,12 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
   private static final Comparator<String> SEMANTIC_VERSIONS_COMPARATOR = SemanticVersionsComparer.getSemanticVersionsComparator();
 
   @NotNull private final Logger LOG = Logger.getInstance(getClass().getName());
-  @NotNull private final EdmEntitySet.Builder myPackagesEntitySetBuilder = new EdmEntitySet.Builder().setName(MetadataConstants.ENTITY_SET_NAME);
   @NotNull private final PackagesIndex myIndex;
+  @NotNull private final NuGetServerSettings myServerSettings;
 
-  public GetUpdatesFunction(@NotNull PackagesIndex index) {
+  public GetUpdatesFunction(@NotNull PackagesIndex index, @NotNull NuGetServerSettings serverSettings) {
     myIndex = index;
+    myServerSettings = serverSettings;
   }
 
   @NotNull
@@ -57,7 +66,7 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
   public EdmFunctionImport.Builder generateImport(@NotNull EdmType returnType) {
     return new EdmFunctionImport.Builder()
             .setName(MetadataConstants.GET_UPDATES_FUNCTION_NAME)
-            .setEntitySet(myPackagesEntitySetBuilder)
+            .setEntitySet(PackagesEntitySet.getBuilder())
             .setHttpMethod(MetadataConstants.HTTP_METHOD_GET)
             .setReturnType(returnType)
             .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.PACKAGE_IDS).setType(EdmSimpleType.STRING),
@@ -69,7 +78,7 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
   }
 
   @Nullable
-  public org.odata4j.producer.BaseResponse call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
+  public Iterable<Object> call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
     final List<String> packageIds = extractListOfStringsFromParamValue(params, MetadataConstants.PACKAGE_IDS);
     if(packageIds.isEmpty()){
       //TODO LOG
@@ -111,7 +120,12 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
       //TODO LOG
       return null;
     }
-    return new NuGetPackagesCollectionResponse(result.iterator(), returnType);
+
+    return CollectionsUtil.convertCollection(result, new Converter<Object, NuGetIndexEntry>() {
+      public Object createFrom(@NotNull NuGetIndexEntry source) {
+        return new PackageEntityEx(source, myServerSettings);
+      }
+    });
   }
 
   private boolean extractBooleanParameterValue(Map<String, OFunctionParameter> parameters, String parameterName, boolean defaultValue) {

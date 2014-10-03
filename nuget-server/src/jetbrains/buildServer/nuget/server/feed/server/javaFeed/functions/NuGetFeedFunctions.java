@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions;
 
 import com.google.common.collect.Lists;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.filters.Filter;
@@ -33,8 +34,8 @@ import java.util.Collections;
 public class NuGetFeedFunctions {
   private final Collection<NuGetFeedFunction> myAPIv2Functions;
 
-  public NuGetFeedFunctions(@NotNull PackagesIndex index) {
-    myAPIv2Functions = Lists.newArrayList(new FindPackagesByIdFunction(index) , new GetUpdatesFunction(index) /*, new SearchFunction()*/);
+  public NuGetFeedFunctions(@NotNull PackagesIndex index, @NotNull NuGetServerSettings serverSettings) {
+    myAPIv2Functions = Lists.newArrayList(new FindPackagesByIdFunction(index, serverSettings) , new GetUpdatesFunction(index, serverSettings) /*, new SearchFunction()*/);
   }
 
   @Nullable

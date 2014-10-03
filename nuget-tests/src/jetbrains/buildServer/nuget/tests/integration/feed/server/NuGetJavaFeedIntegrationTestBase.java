@@ -88,7 +88,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
         }
       });
     }});
-    myProducer = new NuGetProducerHolder(myIndexProxy, mySettings, new NuGetFeedFunctions(myIndexProxy));
+    myProducer = new NuGetProducerHolder(myIndexProxy, mySettings, new NuGetFeedFunctions(myIndexProxy, mySettings));
 
     startNuGetFeedServer();
   }
