@@ -26,6 +26,7 @@ import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OEntity;
 import org.odata4j.core.OFunctionParameter;
+import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.exceptions.NotImplementedException;
@@ -42,6 +43,9 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
 
   private final Logger LOG = Logger.getInstance(getClass().getName());
   private final NuGetFeedFunctions myFunctions;
+  private final Object mySyncRoot = new Object();
+
+  private String myApiVersion;
 
   public NuGetFeedInMemoryProducer(@NotNull NuGetFeedFunctions functions) {
     super(MetadataConstants.NUGET_GALLERY_NAMESPACE);
@@ -57,8 +61,15 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   }
 
   @Override
-  protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis, Map<String, InMemoryComplexTypeInfo<?>> complexTypesInfo) {
-    return new NuGetFeedInMemoryEdmGenerator(namespace, MetadataConstants.CONTAINER_NAME, typeMapping, idPropName, eis, complexTypesInfo, myFunctions);
+  public EdmDataServices getMetadata() {
+    final String apiVersionToUse = NuGetAPIVersion.getVersionToUse();
+    synchronized (mySyncRoot){
+      if(!apiVersionToUse.equalsIgnoreCase(myApiVersion)){
+        cleanCachedMetadata();
+        myApiVersion = apiVersionToUse;
+      }
+    }
+    return super.getMetadata();
   }
 
   @Override
@@ -82,5 +93,10 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
       }
     });
     return Responses.entities(entitiesList, entitySet, null, null);
+  }
+
+  @Override
+  protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis, Map<String, InMemoryComplexTypeInfo<?>> complexTypesInfo) {
+    return new NuGetFeedInMemoryEdmGenerator(namespace, MetadataConstants.CONTAINER_NAME, typeMapping, idPropName, eis, complexTypesInfo, myFunctions);
   }
 }

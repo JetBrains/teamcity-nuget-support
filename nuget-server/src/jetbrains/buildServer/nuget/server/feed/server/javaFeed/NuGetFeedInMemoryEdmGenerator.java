@@ -49,30 +49,31 @@ public class NuGetFeedInMemoryEdmGenerator extends InMemoryEdmGenerator {
   @Override
   public EdmDataServices.Builder generateEdm(EdmDecorator decorator) {
     final EdmDataServices.Builder edmBuilder = super.generateEdm(decorator);
-    boolean setFuncImports = false;
-    for(EdmSchema.Builder schemaBuilder : edmBuilder.getSchemas()){
-      if(schemaBuilder.getNamespace().equalsIgnoreCase(MetadataConstants.NUGET_GALLERY_NAMESPACE)){
-        final EdmEntityType.Builder entityTypeBuilder = CollectionsUtil.findFirst(schemaBuilder.getEntityTypes(), new Filter<EdmEntityType.Builder>() {
-          public boolean accept(@NotNull EdmEntityType.Builder data) {
-            return data.getName().equalsIgnoreCase(MetadataConstants.ENTITY_TYPE_NAME);
-          }
-        });
-        if(entityTypeBuilder != null) {
-          for(EdmEntityContainer.Builder entityContainerBuilder : schemaBuilder.getEntityContainers()){
-            if(entityContainerBuilder.getName().equalsIgnoreCase(MetadataConstants.CONTAINER_NAME)){
-              entityContainerBuilder.addFunctionImports(generateNugetAPIv2FunctionImports(entityTypeBuilder.build()));
-              setFuncImports = true;
+    if(NuGetAPIVersion.shouldUseV2()){
+      LOG.debug("Generating NuGet API v2 function imports.");
+      boolean setFuncImports = false;
+      for(EdmSchema.Builder schemaBuilder : edmBuilder.getSchemas()){
+        if(schemaBuilder.getNamespace().equalsIgnoreCase(MetadataConstants.NUGET_GALLERY_NAMESPACE)){
+          final EdmEntityType.Builder entityTypeBuilder = CollectionsUtil.findFirst(schemaBuilder.getEntityTypes(), new Filter<EdmEntityType.Builder>() {
+            public boolean accept(@NotNull EdmEntityType.Builder data) {
+              return data.getName().equalsIgnoreCase(MetadataConstants.ENTITY_TYPE_NAME);
+            }
+          });
+          if(entityTypeBuilder != null) {
+            for(EdmEntityContainer.Builder entityContainerBuilder : schemaBuilder.getEntityContainers()){
+              if(entityContainerBuilder.getName().equalsIgnoreCase(MetadataConstants.CONTAINER_NAME)){
+                entityContainerBuilder.addFunctionImports(generateNugetAPIv2FunctionImports(entityTypeBuilder.build()));
+                setFuncImports = true;
+              }
             }
           }
         }
       }
+      if(setFuncImports)
+        LOG.debug("NuGet API v2 function imports were setted up succesfully.");
+      else
+        LOG.warn("NuGet API v2 function imports were NOT setted up.");
     }
-
-    if(setFuncImports)
-      LOG.debug("NuGet API v2 function imports were setted up succesfully.");
-    else
-      LOG.warn("NuGet API v2 function imports were NOT setted up.");
-
     return edmBuilder;
   }
 
