@@ -46,4 +46,11 @@ public class NuGetODataApplication extends AbstractODataApplication {
     });
     return set;
   }
+
+  @Override
+  public Set<Class<?>> getClasses() {
+    final Set<Class<?>> classes = super.getClasses();
+    classes.add(NuGetFeedResponseListener.class);
+    return classes;
+  }
 }
