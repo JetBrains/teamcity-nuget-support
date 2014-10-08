@@ -39,7 +39,8 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerMyTools"/>
 
   <!--stats -->
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerUsageStatisticsProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.NuGetPackagesIndexStatisticsProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetFeedUsageStatisticsProvider"/>
 
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCache"/>

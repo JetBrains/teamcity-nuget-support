@@ -22,9 +22,7 @@ import jetbrains.buildServer.util.RecentEntriesCache;
 import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -32,29 +30,41 @@ import java.util.TreeSet;
  */
 public class RecentNuGetRequests {
   private static final Logger LOG = Logger.getInstance(RecentNuGetRequests.class.getName());
-  private final RecentEntriesCache<String, String> myRequests = new RecentEntriesCache<String, String>(5000, false);
-  private final RecentEntriesCache<Long, Long> myRequestTimes = new RecentEntriesCache<Long, Long>(20000, false);
-  
+  private final RecentEntriesCache<String, String> myFeedRequests = new RecentEntriesCache<String, String>(5000, false);
+  private final RecentEntriesCache<Long, Long> myFeedRequestTimes = new RecentEntriesCache<Long, Long>(20000, false);
+  private final Map<String, Integer> myFeedFunctionCalls = new HashMap<String, Integer>();
+
   public void reportFeedRequest(@NotNull final String url) {
     LOG.debug("NuGet Feed started for " + url);
 
     final long time = getTime();
-    myRequestTimes.put(time, time);
+    myFeedRequestTimes.put(time, time);
     //TODO: trim identifiers in request to merge same trees
-    myRequests.put(url, url);
-  }
-
-  private long getTime() {
-    return new Date().getTime();
+    myFeedRequests.put(url, url);
   }
 
   public void reportFeedRequestFinished(@NotNull final String url, long time) {
     LOG.debug("NuGet Feed Request finsihed in " + time + "ms for " + url);
   }
-  
+
+  public void reportFunctionCall(@NotNull String targetFunctionName) {
+    synchronized (myFeedFunctionCalls){
+      final Integer functionCallCount = myFeedFunctionCalls.get(targetFunctionName);
+      if(functionCallCount == null)
+        myFeedFunctionCalls.put(targetFunctionName, 1);
+      else
+        myFeedFunctionCalls.put(targetFunctionName, functionCallCount + 1);
+    }
+  }
+
+  @NotNull
+  public Map<String, Integer> getFunctionCalls() {
+    return Collections.unmodifiableMap(myFeedFunctionCalls);
+  }
+
   @NotNull
   public Collection<String> getRecentRequests() {
-    return new TreeSet<String>(myRequests.keySet());
+    return new TreeSet<String>(myFeedRequests.keySet());
   }
 
   public int getTotalRequests() {
@@ -63,11 +73,15 @@ public class RecentNuGetRequests {
     final long now = getTime();
     final long startTime = now - SPAN;
 
-    myRequestTimes.removeValues(new Filter<Long>() {
+    myFeedRequestTimes.removeValues(new Filter<Long>() {
       public boolean accept(@NotNull Long data) {
         return data < startTime;
       }
     });
-    return myRequestTimes.size();
+    return myFeedRequestTimes.size();
+  }
+
+  private long getTime() {
+    return new Date().getTime();
   }
 }

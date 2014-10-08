@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntity;
@@ -38,12 +39,15 @@ import java.util.Iterator;
 public class NuGetProducerHolder {
   private final NuGetFeedInMemoryProducer myProducer;
 
-  public NuGetProducerHolder(@NotNull final PackagesIndex index, @NotNull final NuGetServerSettings settings, @NotNull final NuGetFeedFunctions functions) {
+  public NuGetProducerHolder(@NotNull final PackagesIndex index,
+                             @NotNull final NuGetServerSettings settings,
+                             @NotNull final NuGetFeedFunctions functions,
+                             @NotNull final RecentNuGetRequests recentRequests) {
     //Workaround for Xml generation. Default STAX xml writer
     //used to generate <foo></foo> that is badly parsed in
     //.NET OData WCF client
     XMLFactoryProvider2.setInstance(new XmlPullXMLFactoryProvider2());
-    myProducer = new NuGetFeedInMemoryProducer(functions);
+    myProducer = new NuGetFeedInMemoryProducer(functions, recentRequests);
     myProducer.register(new Func<Iterable<PackageEntity>>() {
       public Iterable<PackageEntity> apply() {
         return new Iterable<PackageEntity>() {

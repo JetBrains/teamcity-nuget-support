@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntity;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunction;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunctions;
@@ -40,16 +41,18 @@ import java.util.Map;
  * @author Evgeniy.Koshkin
  */
 public class NuGetFeedInMemoryProducer extends InMemoryProducer {
-
-  private final Logger LOG = Logger.getInstance(getClass().getName());
-  private final NuGetFeedFunctions myFunctions;
+  private static final Logger LOG = Logger.getInstance(NuGetFeedInMemoryProducer.class.getName());
   private final Object mySyncRoot = new Object();
+
+  @NotNull private final NuGetFeedFunctions myFunctions;
+  @NotNull private final RecentNuGetRequests myRecentRequests;
 
   private String myApiVersion;
 
-  public NuGetFeedInMemoryProducer(@NotNull NuGetFeedFunctions functions) {
+  public NuGetFeedInMemoryProducer(@NotNull final NuGetFeedFunctions functions, @NotNull final RecentNuGetRequests recentRequests) {
     super(MetadataConstants.NUGET_GALLERY_NAMESPACE);
     myFunctions = functions;
+    myRecentRequests = recentRequests;
   }
 
   public void register(Func<Iterable<PackageEntity>> getFunc){
@@ -79,6 +82,8 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
       LOG.debug("Failed to process NuGet feed function call. Failed to find target function by name " + function.getName());
       throw new NotImplementedException();
     }
+
+    myRecentRequests.reportFunctionCall(targetFunction.getName());
 
     final Iterable<Object> objects = targetFunction.call(function.getReturnType(), params, queryInfo);
     if(objects == null) return null;
