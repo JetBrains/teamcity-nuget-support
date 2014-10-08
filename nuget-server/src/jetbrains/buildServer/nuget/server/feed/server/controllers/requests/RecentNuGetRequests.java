@@ -33,9 +33,10 @@ public class RecentNuGetRequests {
   private final RecentEntriesCache<String, String> myFeedRequests = new RecentEntriesCache<String, String>(5000, false);
   private final RecentEntriesCache<Long, Long> myFeedRequestTimes = new RecentEntriesCache<Long, Long>(20000, false);
   private final Map<String, Integer> myFeedFunctionCalls = new HashMap<String, Integer>();
+  private int myMetadataRequestsCount = 0;
 
   public void reportFeedRequest(@NotNull final String url) {
-    LOG.debug("NuGet Feed started for " + url);
+    LOG.debug("NuGet Feed request processing started for " + url);
 
     final long time = getTime();
     myFeedRequestTimes.put(time, time);
@@ -44,7 +45,12 @@ public class RecentNuGetRequests {
   }
 
   public void reportFeedRequestFinished(@NotNull final String url, long time) {
-    LOG.debug("NuGet Feed Request finsihed in " + time + "ms for " + url);
+    LOG.debug("NuGet Feed Request request processing finsihed in " + time + "ms for " + url);
+  }
+
+  public void reportFeedMetadataRequest() {
+    LOG.debug("NuGet Feed metadat requested");
+    myMetadataRequestsCount++;
   }
 
   public void reportFunctionCall(@NotNull String targetFunctionName) {
@@ -79,6 +85,10 @@ public class RecentNuGetRequests {
       }
     });
     return myFeedRequestTimes.size();
+  }
+
+  public int getMetadataRequestsCount() {
+    return myMetadataRequestsCount;
   }
 
   private long getTime() {

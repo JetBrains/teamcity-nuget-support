@@ -38,6 +38,7 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
   private static final String FEED_ENABLED_KEY = "jetbrains.nuget.server";
   private static final String FUNCTIONS_STAT_ID_FORMAT = "jetbrains.nuget.api.functions.[%s]";
   private static final String TOTAL_REQUESTS_STAT_ID = "jetbrains.nuget.feedDailyRequests";
+  private static final String METADATA_REQUESTS_STAT_ID = "jetbrains.nuget.feedDailyRequests.metadata";
 
   private static final PositionAware NUGET_API_CALLS_GROUP = new PositionAware() {
     @NotNull
@@ -70,18 +71,6 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
   @Override
   protected void accept(@NotNull UsageStatisticsPublisher publisher, @NotNull UsageStatisticsPresentationManager presentationManager) {
     if (mySettings.isNuGetServerEnabled()) {
-      final int totalRequests = myRequests.getTotalRequests();
-
-      publisher.publishStatistic(TOTAL_REQUESTS_STAT_ID, totalRequests);
-      presentationManager.applyPresentation(TOTAL_REQUESTS_STAT_ID, "Feed Requests Count per Day", myGroupName, null, null);
-
-      final Map<String, Integer> functionCalls = myRequests.getFunctionCalls();
-      final UsageStatisticsFormatter formatter = new PercentageFormatter(totalRequests);
-      for(String functionName : functionCalls.keySet()){
-        final String statisticId = makeId(functionName);
-        presentationManager.applyPresentation(statisticId, String.format("%s Function Calls per Day", functionName), myGroupName, formatter, null);
-        publisher.publishStatistic(statisticId, functionCalls.get(functionName));
-      }
 
       publisher.publishStatistic(FEED_ENABLED_KEY, "enabled");
       presentationManager.applyPresentation(FEED_ENABLED_KEY, "NuGet Feed", myGroupName, new UsageStatisticsFormatter() {
@@ -90,6 +79,23 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
           return statisticValue == null ? "disabled" : statisticValue.toString();
         }
       }, null);
+
+      final int totalRequests = myRequests.getTotalRequests();
+
+      publisher.publishStatistic(TOTAL_REQUESTS_STAT_ID, totalRequests);
+      presentationManager.applyPresentation(TOTAL_REQUESTS_STAT_ID, "Feed Requests Count per Day", myGroupName, null, null);
+
+      final UsageStatisticsFormatter formatter = new PercentageFormatter(totalRequests);
+
+      publisher.publishStatistic(METADATA_REQUESTS_STAT_ID, myRequests.getMetadataRequestsCount());
+      presentationManager.applyPresentation(METADATA_REQUESTS_STAT_ID, "Feed Metadata Requests Count per Day", myGroupName, formatter, null);
+
+      final Map<String, Integer> functionCalls = myRequests.getFunctionCalls();
+      for(String functionName : functionCalls.keySet()){
+        final String statisticId = makeId(functionName);
+        presentationManager.applyPresentation(statisticId, String.format("%s Function Calls per Day", functionName), myGroupName, formatter, null);
+        publisher.publishStatistic(statisticId, functionCalls.get(functionName));
+      }
     }
   }
 }
