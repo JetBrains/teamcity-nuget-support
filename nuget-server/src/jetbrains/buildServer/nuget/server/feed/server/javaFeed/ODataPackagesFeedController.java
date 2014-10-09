@@ -56,7 +56,7 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
   private final NuGetServerJavaSettings mySettings;
   private final ResponseCache myCache;
 
-  public ODataPackagesFeedController(@NotNull final NuGetProducer producer,
+  public ODataPackagesFeedController(@NotNull final NuGetProducerHolder producer,
                                      @NotNull final ServletConfig config,
                                      @NotNull final NuGetServerJavaSettings settings,
                                      @NotNull final ResponseCache cache) {

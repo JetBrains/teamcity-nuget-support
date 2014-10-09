@@ -90,7 +90,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
         ma.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
 
         myReset.resetCache();
-        store.addParameters(aPackage.getName(), ma);
+        store.addParameters(ma.get("Id"), ma);
       } catch (PackageLoadException e) {
         LOG.warn("Failed to read NuGet package: " + aPackage);
       }

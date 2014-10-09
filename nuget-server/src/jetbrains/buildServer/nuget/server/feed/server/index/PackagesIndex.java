@@ -35,4 +35,7 @@ public interface PackagesIndex {
 
   @NotNull
   Iterator<NuGetIndexEntry> getNuGetEntries(long buildId);
+
+  @NotNull
+  Iterator<NuGetIndexEntry> getNuGetEntries(@NotNull String packageId);
 }

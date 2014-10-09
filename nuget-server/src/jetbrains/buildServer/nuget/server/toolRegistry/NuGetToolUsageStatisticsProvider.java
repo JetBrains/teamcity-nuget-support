@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerUsageStatisticsProvider;
+import jetbrains.buildServer.nuget.server.feed.server.index.NuGetPackagesIndexStatisticsProvider;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
@@ -47,7 +47,7 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
 
     @NotNull
     public PositionConstraint getConstraint() {
-      return PositionConstraint.after(NuGetServerUsageStatisticsProvider.NUGET_SERVER_STAT_GROUP_NAME);
+      return PositionConstraint.after(NuGetPackagesIndexStatisticsProvider.NUGET_SERVER_STAT_GROUP_NAME);
     }
   };
 

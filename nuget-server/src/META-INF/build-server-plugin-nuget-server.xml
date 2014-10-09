@@ -38,10 +38,12 @@
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerMyTools"/>
 
   <!--stats -->
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerUsageStatisticsProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.NuGetPackagesIndexStatisticsProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetFeedUsageStatisticsProvider"/>
 
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCache"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.ODataPackagesFeedController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducer"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducerHolder"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunctions"/>
 </beans>

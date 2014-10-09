@@ -1,0 +1,3 @@
+odata4j lib was forked in order to make it compatible with requests sent by nuget feed clients (nuget.exe, visual studio, etc.)
+Build of forked lib - https://teamcity.jetbrains.com/viewType.html?buildTypeId=OData4j_Odata4jFor
+Sources - https://github.com/ekoshkin/odata4j

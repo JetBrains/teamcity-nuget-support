@@ -29,9 +29,9 @@ import java.util.Set;
 * Date: 05.01.12 0:06
 */
 public class NuGetODataApplication extends AbstractODataApplication {
-  private final NuGetProducer myProducer;
+  private final NuGetProducerHolder myProducer;
 
-  public NuGetODataApplication(@NotNull final NuGetProducer producer) {
+  public NuGetODataApplication(@NotNull final NuGetProducerHolder producer) {
     myProducer = producer;
   }
 
@@ -45,5 +45,12 @@ public class NuGetODataApplication extends AbstractODataApplication {
       }
     });
     return set;
+  }
+
+  @Override
+  public Set<Class<?>> getClasses() {
+    final Set<Class<?>> classes = super.getClasses();
+    classes.add(NuGetFeedResponseListener.class);
+    return classes;
   }
 }

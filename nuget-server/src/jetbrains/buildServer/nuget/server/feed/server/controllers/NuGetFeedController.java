@@ -34,6 +34,8 @@ import java.util.Date;
  *         Date: 17.01.12 17:40
  */
 public class NuGetFeedController extends BaseController {
+  private static final String METADATA_URL_SUFFIX = "$metadata";
+
   private final String myNuGetPath;
   private final NuGetServerSettings mySettings;
   private final RecentNuGetRequests myRequestsList;
@@ -66,6 +68,9 @@ public class NuGetFeedController extends BaseController {
     final String query = request.getQueryString();
     final String pathAndQuery = path + (query != null ? ("?" + query) : "");
     myRequestsList.reportFeedRequest(pathAndQuery);
+    if(pathAndQuery.endsWith(METADATA_URL_SUFFIX)){
+      myRequestsList.reportFeedMetadataRequest();
+    }
 
     final long startTime = new Date().getTime();
     for (NuGetFeedHandler handler : myHandlers) {
