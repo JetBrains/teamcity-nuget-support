@@ -91,13 +91,12 @@ public class PackageIndexTest extends BaseTestCase {
 
   private void addEntry(final String name, final String version, final String bt, final long buildId) {
     final Map<String, String> myEntryData = new TreeMap<String, String>();
-    final String key = name + "." + version;
-    final BuildMetadataEntry entry = m.mock(BuildMetadataEntry.class, key + "-" + System.nanoTime());
+    final BuildMetadataEntry entry = m.mock(BuildMetadataEntry.class, name + "." + version + "-" + System.nanoTime());
 
     m.checking(new Expectations(){{
       allowing(entry).getBuildId(); will(returnValue(buildId));
       allowing(entry).getMetadata(); will(returnValue(myEntryData));
-      allowing(entry).getKey(); will(returnValue(key));
+      allowing(entry).getKey(); will(returnValue(name));
     }});
 
     myEntryData.put("teamcity.buildTypeId", bt);
@@ -183,8 +182,9 @@ public class PackageIndexTest extends BaseTestCase {
 
   @Test
   public void testCheckesProjectAccess_exception() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(throwException(new RuntimeException("proj1")));
+    m.checking(new Expectations() {{
+      allowing(myProjectManager).findProjectId("btX");
+      will(throwException(new RuntimeException("proj1")));
     }});
     addEntry("Foo", "1.2.34", "btX", 7);
 

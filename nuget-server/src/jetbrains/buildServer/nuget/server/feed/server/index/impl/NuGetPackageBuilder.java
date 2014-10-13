@@ -34,15 +34,19 @@ public class NuGetPackageBuilder {
   public static final String IS_PRERELEASE = "IsPrerelease";
   public static final String IS_LATEST_VERSION = "IsLatestVersion";
   public static final String IS_ABSOLUTE_LATEST_VERSION = "IsAbsoluteLatestVersion";
+  private static final String VERSION = "Version";
+  private static final String ID = "Id";
 
   private final String myKey;
+  private final String myVersion;
   private final long myBuildId;
   private final Map<String, String> myMetadata;
   private String myExternalId = null;
 
   public NuGetPackageBuilder(@NotNull final BuildMetadataEntry entry) {
-    myKey = entry.getKey();
     myMetadata = new HashMap<String, String>(entry.getMetadata());
+    myVersion = myMetadata.get(VERSION);
+    myKey = entry.getKey() + "." + myVersion;
     myBuildId = entry.getBuildId();
     setMetadata(TEAMCITY_BUILD_ID, String.valueOf(myBuildId));
   }
@@ -58,12 +62,12 @@ public class NuGetPackageBuilder {
 
   @NotNull
   public String getPackageName() {
-    return myMetadata.get("Id");
+    return myMetadata.get(ID);
   }
 
   @NotNull
   public String getVersion() {
-    return myMetadata.get("Version");
+    return myVersion;
   }
 
   public void setPrerelease(boolean isPrerelease) {
