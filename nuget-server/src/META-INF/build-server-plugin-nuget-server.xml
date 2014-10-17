@@ -18,6 +18,7 @@
 
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataConversionManager"/>
   <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl">
     <constructor-arg>
       <list>
