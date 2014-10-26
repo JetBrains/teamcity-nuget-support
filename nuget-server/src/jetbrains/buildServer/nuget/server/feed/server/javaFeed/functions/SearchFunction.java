@@ -43,7 +43,7 @@ import java.util.Map;
 public class SearchFunction implements NuGetFeedFunction {
 
   private static final Logger LOG = Logger.getInstance(SearchFunction.class.getName());
-  private static final String[] ATTRIBUTES_TO_SEARCH = new String[]{ "Id", "Description", "Tags" };
+  private static final String[] ATTRIBUTES_TO_SEARCH = new String[]{ "Id", "Title", "Tags", "Description", "Authors", "Owners" };
 
   @NotNull private final PackagesIndex myIndex;
   @NotNull private final NuGetServerSettings myServerSettings;
