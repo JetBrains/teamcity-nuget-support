@@ -123,7 +123,16 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testCountRequest() throws Exception {
-    fail();
+    addMockPackage(new NuGetIndexEntry("id-matches", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("id-not-matches", CollectionsUtil.asMap(PackageAttributes.ID, "boo", PackageAttributes.VERSION, "2")));
+    addMockPackage(new NuGetIndexEntry("description-matches", CollectionsUtil.asMap(PackageAttributes.DESCRIPTION, "foo", PackageAttributes.VERSION, "3")));
+    addMockPackage(new NuGetIndexEntry("description-not-matches", CollectionsUtil.asMap(PackageAttributes.DESCRIPTION, "boo", PackageAttributes.VERSION, "4")));
+    addMockPackage(new NuGetIndexEntry("tags-matches", CollectionsUtil.asMap(PackageAttributes.TAGS, "foo", PackageAttributes.VERSION, "5")));
+    addMockPackage(new NuGetIndexEntry("tags-not-matches", CollectionsUtil.asMap(PackageAttributes.TAGS, "boo", PackageAttributes.VERSION, "6")));
+    addMockPackage(new NuGetIndexEntry("authors-matches", CollectionsUtil.asMap(PackageAttributes.AUTHORS, "foo", PackageAttributes.VERSION, "7")));
+    addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(PackageAttributes.AUTHORS, "boo", PackageAttributes.VERSION, "8")));
+
+    assertEquals("4", openRequest("Search()/$count?&searchTerm='foo'&targetFramework='net45'&includePrerelease=true"));
   }
 
   @Test
@@ -138,6 +147,7 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(PackageAttributes.AUTHORS, "boo", PackageAttributes.VERSION, "8")));
 
     final String responseBody = openRequest("Search()?&searchTerm='foo'&targetFramework='net45'&includePrerelease=true");
+
     assertContainsPackageVersion(responseBody, "1.0");
     assertNotContainsPackageVersion(responseBody, "2.0");
     assertContainsPackageVersion(responseBody, "3.0");
