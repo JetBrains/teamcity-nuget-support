@@ -23,9 +23,9 @@ import org.jetbrains.annotations.NotNull;
  * @author Evgeniy.Koshkin
  */
 public class NuGetAPIVersion {
-  private static final String TEAMCITY_NUGET_API_VERSION = "teamcity.nuget.api.version";
-  private static final String V1 = "v1";
-  private static final String V2 = "v2";
+  public static final String TEAMCITY_NUGET_API_VERSION_PROP_NAME = "teamcity.nuget.api.version";
+  public static final String V1 = "v1";
+  public static final String V2 = "v2";
 
   public static boolean shouldUseV2() {
     return getVersionToUse().equalsIgnoreCase(V2);
@@ -33,6 +33,6 @@ public class NuGetAPIVersion {
 
   @NotNull
   public static String getVersionToUse() {
-    return TeamCityProperties.getProperty(TEAMCITY_NUGET_API_VERSION, V1);
+    return TeamCityProperties.getProperty(TEAMCITY_NUGET_API_VERSION_PROP_NAME, V1);
   }
 }

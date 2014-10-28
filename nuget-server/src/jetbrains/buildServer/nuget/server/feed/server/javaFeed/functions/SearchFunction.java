@@ -37,13 +37,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackageAttributes.*;
+
 /**
  * @author Evgeniy.Koshkin
  */
 public class SearchFunction implements NuGetFeedFunction {
 
   private static final Logger LOG = Logger.getInstance(SearchFunction.class.getName());
-  private static final String[] ATTRIBUTES_TO_SEARCH = new String[]{ "Id", "Title", "Tags", "Description", "Authors", "Owners" };
+  private static final String[] PACKAGE_ATTRIBUTES_TO_SEARCH = new String[]{ ID, /*TITLE,*/ TAGS, DESCRIPTION, AUTHORS, /* OWNERS */};
 
   @NotNull private final PackagesIndex myIndex;
   @NotNull private final NuGetServerSettings myServerSettings;
@@ -111,7 +113,7 @@ public class SearchFunction implements NuGetFeedFunction {
 
   private boolean matches(NuGetIndexEntry indexEntry, String searchTerm) {
     final Map<String, String> indexEntryAttributes = indexEntry.getAttributes();
-    for(String attributeName : ATTRIBUTES_TO_SEARCH){
+    for(String attributeName : PACKAGE_ATTRIBUTES_TO_SEARCH){
       final String attributeValue = indexEntryAttributes.get(attributeName);
       if(attributeValue != null && attributeValue.contains(searchTerm))
         return true;

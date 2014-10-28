@@ -16,10 +16,10 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
-import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -43,7 +43,7 @@ import java.util.*;
 
 import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
 import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -169,13 +169,13 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
         final HttpGet get = createGetQuery(req, reqs);
         execute(get, new ExecuteAction<Object>() {
           public Object processResult(@NotNull HttpResponse response) throws IOException {
-            final HttpEntity entity = response.getEntity();
             System.out.println("Request: " + get.getRequestLine());
-            entity.writeTo(System.out);
-            System.out.println();
-            System.out.println();
-
-            Assert.assertTrue(response.getStatusLine().getStatusCode() == SC_OK);
+            final HttpEntity entity = response.getEntity();
+            if(entity != null){
+              entity.writeTo(System.out);
+              System.out.println();
+            }
+            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_OK);
             return null;
           }
         });
@@ -183,4 +183,37 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
     };
   }
 
+  @NotNull
+  protected Runnable assert400(@NotNull final String req,
+                               @NotNull final NameValuePair... reqs) {
+    return new Runnable() {
+      public void run() {
+        final HttpGet get = createGetQuery(req, reqs);
+        execute(get, new ExecuteAction<Object>() {
+          public Object processResult(@NotNull HttpResponse response) throws IOException {
+            System.out.println("Request: " + get.getRequestLine());
+            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_BAD_REQUEST);
+            return null;
+          }
+        });
+      }
+    };
+  }
+
+  @NotNull
+  protected Runnable assert404(@NotNull final String req,
+                               @NotNull final NameValuePair... reqs) {
+    return new Runnable() {
+      public void run() {
+        final HttpGet get = createGetQuery(req, reqs);
+        execute(get, new ExecuteAction<Object>() {
+          public Object processResult(@NotNull HttpResponse response) throws IOException {
+            System.out.println("Request: " + get.getRequestLine());
+            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_NOT_FOUND);
+            return null;
+          }
+        });
+      }
+    };
+  }
 }

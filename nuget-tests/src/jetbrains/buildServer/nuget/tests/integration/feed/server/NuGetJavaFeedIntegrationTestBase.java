@@ -176,9 +176,12 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     return map;
   }
 
+  protected NuGetIndexEntry addMockPackage(@NotNull final NuGetIndexEntry entry){
+    return addMockPackage(entry, false);
+  }
+
   protected NuGetIndexEntry addMockPackage(@NotNull final NuGetIndexEntry entry, boolean isLatest) {
     final Map<String, String> map = new HashMap<String, String>(entry.getAttributes());
-    final int buildId = myCount++;
 
     final String id = entry.getAttributes().get("Id");
     final String ver = entry.getAttributes().get("Version");
