@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  *
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
-public class SemanticVersionsComparer  {
+public class SemanticVersionsComparators {
   @NotNull
   public static Comparator<NuGetPackageBuilder> getBuildersComparator() {
     return new Comparator<NuGetPackageBuilder>() {

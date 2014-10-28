@@ -20,7 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparer;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparators;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.MetadataConstants;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackageEntityEx;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackagesEntitySet;
@@ -46,7 +46,7 @@ import java.util.*;
 public class GetUpdatesFunction implements NuGetFeedFunction {
 
   private static final String COLLECTION_VALUE_SEPARATOR = "|";
-  private static final Comparator<String> SEMANTIC_VERSIONS_COMPARATOR = SemanticVersionsComparer.getSemanticVersionsComparator();
+  private static final Comparator<String> SEMANTIC_VERSIONS_COMPARATOR = SemanticVersionsComparators.getSemanticVersionsComparator();
 
   @NotNull private final Logger LOG = Logger.getInstance(getClass().getName());
   @NotNull private final PackagesIndex myIndex;
