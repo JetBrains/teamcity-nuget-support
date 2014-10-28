@@ -112,7 +112,12 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
   }
 
   @Test
-  public void testSkipTop() throws Exception {
+  public void testSkip() throws Exception {
+    fail();
+  }
+
+  @Test
+  public void testTop() throws Exception {
     fail();
   }
 
