@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetServerStatisticsProvider;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
@@ -157,7 +158,7 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
       final BuildMetadataEntry entry = entries.next();
       totalItemsNumber++;
       buildIds.add(entry.getBuildId());
-      packageIds.add(entry.getMetadata().get(NuGetIndexEntry.ID));
+      packageIds.add(entry.getMetadata().get(PackageAttributes.ID));
     }
 
     final Map<String, Long> stats = new HashMap<String, Long>();
