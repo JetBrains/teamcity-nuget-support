@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
 import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
 
 /**
@@ -183,12 +184,12 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected NuGetIndexEntry addMockPackage(@NotNull final NuGetIndexEntry entry, boolean isLatest) {
     final Map<String, String> map = new HashMap<String, String>(entry.getAttributes());
 
-    final String id = entry.getAttributes().get("Id");
-    final String ver = entry.getAttributes().get("Version");
+    final String id = entry.getAttributes().get(ID);
+    final String ver = entry.getAttributes().get(VERSION);
 
-    map.put("Version", ver + "." + myCount);
-    map.put("IsLatestVersion", String.valueOf(isLatest));
-    map.put("IsAbsoluteLatestVersion", String.valueOf(isLatest));
+    map.put(VERSION, ver + "." + myCount);
+    map.put(IS_LATEST_VERSION, String.valueOf(isLatest));
+    map.put(IS_ABSOLUTE_LATEST_VERSION, String.valueOf(isLatest));
     map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
     NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
     myFeed.add(e);
@@ -199,11 +200,11 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected NuGetIndexEntry addMockPackage(@NotNull final String id, @NotNull final String ver) throws IOException {
     final Map<String, String> map = new TreeMap<String, String>(indexPackage(Paths.getTestDataPath("packages/NuGet.Core.1.5.20902.9026.nupkg"), true));
 
-    map.put("Id", id);
-    map.put("Version", ver);
+    map.put(ID, id);
+    map.put(VERSION, ver);
 
-    map.remove("IsLatestVersion");
-    map.remove("IsAbsoluteLatestVersion");
+    map.remove(IS_LATEST_VERSION);
+    map.remove(IS_ABSOLUTE_LATEST_VERSION);
     map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
     NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
     myFeed.add(e);
@@ -216,7 +217,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     while(entries.hasNext()) {
       final NuGetIndexEntry e = entries.next();
       final Map<String,String> a = e.getAttributes();
-      System.out.println(a.get("Id") + " " + a.get("Version") + " => absolute:" + a.get("IsAbsoluteLatestVersion") + ", latest: " + a.get("IsLatestVersion") + ", prerelease: " + a.get("IsPrerelease"));
+      System.out.println(a.get(ID) + " " + a.get(VERSION) + " => absolute:" + a.get(IS_ABSOLUTE_LATEST_VERSION) + ", latest: " + a.get(IS_LATEST_VERSION) + ", prerelease: " + a.get(IS_PRERELEASE));
     }
   }
 

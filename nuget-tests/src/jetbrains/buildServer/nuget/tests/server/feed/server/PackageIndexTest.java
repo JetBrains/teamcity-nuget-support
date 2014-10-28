@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
@@ -101,8 +102,8 @@ public class PackageIndexTest extends BaseTestCase {
 
     myEntryData.put("teamcity.buildTypeId", bt);
     myEntryData.put("teamcity.artifactPath", "btX/ZZZ");
-    myEntryData.put("Version", version);
-    myEntryData.put("Id", name);
+    myEntryData.put(PackageAttributes.VERSION, version);
+    myEntryData.put(PackageAttributes.ID, name);
     myEntries.add(entry);
 
     //recall natural sort order of metadata entries

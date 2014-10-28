@@ -34,6 +34,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 06.09.11 22:03
@@ -65,26 +67,26 @@ public class LocalNuGetPackageItemsFactory extends PackageInfoLoaderBase {
                 //The list is generated from
                 //JetBrains.TeamCity.NuGet.Feed.Tests.DumpRequiredPackageParameters2()
                 //not included here: addParameter(map, "TeamCityDownloadUrl", "");
-                addParameter(map, "Id", id);
-                addParameter(map, "Version", version);
+                addParameter(map, ID, id);
+                addParameter(map, VERSION, version);
                 addParameter(map, "Title", parseProperty(root, "title"));
-                addParameter(map, "ReleaseNotes", parseProperty(root, "releaseNotes"));
-                addParameter(map, "Authors", parseProperty(root, "authors"));
-                addParameter(map, "Dependencies", parseDependencies(root));
-                addParameter(map, "Description", parseProperty(root, "description"));
-                addParameter(map, "Copyright", parseProperty(root, "copyright"));
-                addParameter(map, "ProjectUrl", parseProperty(root, "projectUrl"));
-                addParameter(map, "Tags", parseProperty(root, "tags"));
-                addParameter(map, "IconUrl", parseProperty(root, "iconUrl"));
-                addParameter(map, "LicenseUrl", parseProperty(root, "licenseUrl"));
-                addParameter(map, "RequireLicenseAcceptance", parseProperty(root, "requireLicenseAcceptance"));
-                addParameter(map, "PackageHash", sha512(nupkg));
-                addParameter(map, "PackageHashAlgorithm", "SHA512");
-                addParameter(map, "PackageSize", String.valueOf(nupkg.getSize()));
+                addParameter(map, RELEASE_NOTES, parseProperty(root, "releaseNotes"));
+                addParameter(map, AUTHORS, parseProperty(root, "authors"));
+                addParameter(map, DEPENDENCIES, parseDependencies(root));
+                addParameter(map, DESCRIPTION, parseProperty(root, "description"));
+                addParameter(map, COPYRIGHT, parseProperty(root, "copyright"));
+                addParameter(map, PROJECT_URL, parseProperty(root, "projectUrl"));
+                addParameter(map, TAGS, parseProperty(root, "tags"));
+                addParameter(map, ICON_URL, parseProperty(root, "iconUrl"));
+                addParameter(map, LICENSE_URL, parseProperty(root, "licenseUrl"));
+                addParameter(map, REQUIRE_LICENSE_ACCEPTANCE, parseProperty(root, "requireLicenseAcceptance"));
+                addParameter(map, PACKAGE_HASH, sha512(nupkg));
+                addParameter(map, PACKAGE_HASH_ALGORITHM, "SHA512");
+                addParameter(map, PACKAGE_SIZE, String.valueOf(nupkg.getSize()));
                 //addParameter(map, "IsLatestVersion", "");
-                addParameter(map, "LastUpdated", ODataDataFormat.formatDate(finishDate));
+                addParameter(map, LAST_UPDATED, ODataDataFormat.formatDate(finishDate));
                 //addParameter(map, "Updated", formatDate(updated));
-                addParameter(map, "MinClientVersion", parseMetadataAttribute(root, "minClientVersion"));
+                addParameter(map, MIN_CLIENT_VERSION, parseMetadataAttribute(root, "minClientVersion"));
 
                 return map;
               }

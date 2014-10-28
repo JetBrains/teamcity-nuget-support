@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
 import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.*;
 
 /**
@@ -31,11 +32,6 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex
 *         Date: 18.01.12 20:16
 */
 public class NuGetPackageBuilder {
-  public static final String IS_PRERELEASE = "IsPrerelease";
-  public static final String IS_LATEST_VERSION = "IsLatestVersion";
-  public static final String IS_ABSOLUTE_LATEST_VERSION = "IsAbsoluteLatestVersion";
-  private static final String VERSION = "Version";
-  private static final String ID = "Id";
 
   private final String myKey;
   private final String myVersion;

@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCacheReset;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
@@ -90,7 +91,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
         ma.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
 
         myReset.resetCache();
-        store.addParameters(ma.get("Id"), ma);
+        store.addParameters(ma.get(PackageAttributes.ID), ma);
       } catch (PackageLoadException e) {
         LOG.warn("Failed to read NuGet package: " + aPackage);
       }

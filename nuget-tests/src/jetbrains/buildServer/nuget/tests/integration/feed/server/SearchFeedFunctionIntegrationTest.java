@@ -16,9 +16,9 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetAPIVersion;
-import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackageAttributes;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;

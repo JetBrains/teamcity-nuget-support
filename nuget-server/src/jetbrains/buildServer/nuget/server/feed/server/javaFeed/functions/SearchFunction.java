@@ -37,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
 
 /**
  * @author Evgeniy.Koshkin

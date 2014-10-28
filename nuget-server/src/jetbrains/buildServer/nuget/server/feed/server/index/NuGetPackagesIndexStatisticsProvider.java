@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.feed.server.index;
 
 import com.intellij.openapi.util.Pair;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsProvider;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsPublisher;
 import jetbrains.buildServer.usageStatistics.presentation.UsageStatisticsPresentationManager;
@@ -65,7 +66,7 @@ public class NuGetPackagesIndexStatisticsProvider implements UsageStatisticsProv
     final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
     while(it.hasNext()) {
       NuGetIndexEntry next = it.next();
-      packagesCounter.add(next.getAttributes().get("Id"));
+      packagesCounter.add(next.getAttributes().get(PackageAttributes.ID));
       count++;
     }
     return Pair.create(count, packagesCounter.size());

@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -130,7 +131,7 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
       map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
       map.put(TEAMCITY_BUILD_TYPE_ID, "bt_" + packageFile.getName());
       map.put("TeamCityDownloadUrl", "some-download-url/" + packageFile.getName());
-      map.put("IsLatestVersion", String.valueOf(isLatest));
+      map.put(PackageAttributes.IS_LATEST_VERSION, String.valueOf(isLatest));
       return map;
     } catch (PackageLoadException e) {
       throw new RuntimeException(e);

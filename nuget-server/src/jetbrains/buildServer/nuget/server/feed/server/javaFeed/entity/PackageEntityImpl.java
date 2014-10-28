@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OAtomEntity;
 
-import static jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
 
 public abstract class PackageEntityImpl  implements PackageEntityV2, PackageEntityV3, PackageEntityV4, OAtomEntity {
 

@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.index;
 
 import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -26,8 +27,6 @@ import java.util.Map;
  * Date: 30.12.11 19:29
  */
 public class NuGetIndexEntry {
-  public static final String ID = "Id";
-  public static final String VERSION = "Version";
 
   @NotNull private final String myKey;
   @NotNull private final Map<String, String> myAttributes;
@@ -55,7 +54,7 @@ public class NuGetIndexEntry {
 
   @NotNull
   public PackageInfo getPackageInfo() {
-    return new PackageInfo(myAttributes.get(ID), myAttributes.get(VERSION));
+    return new PackageInfo(myAttributes.get(PackageAttributes.ID), myAttributes.get(PackageAttributes.VERSION));
   }
 
   @Override

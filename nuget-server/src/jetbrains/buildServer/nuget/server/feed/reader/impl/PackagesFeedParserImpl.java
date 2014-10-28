@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.reader.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.util.StringUtil;
 import org.jdom.Element;
 import org.jdom.Namespace;
@@ -70,13 +71,13 @@ public class PackagesFeedParserImpl implements PackagesFeedParser {
     final String content = getChildAttribute(entry, "content", atom, "src");
     final Element props = getChild(entry, "properties", metadata);
 
-    String packageId = getChildTextSafe(props, "Id", services);
+    String packageId = getChildTextSafe(props, PackageAttributes.ID, services);
     if (StringUtil.isEmptyOrSpaces(packageId)) {
       packageId = getChildText(entry, "title", atom);
     }
-    final String version = getChildText(props, "Version", services);
-    final String desription = getChildText(props, "Description", services);
-    final boolean isLatestVersion = "true".equalsIgnoreCase(getChildTextSafe(props, "IsLatestVersion", services));
+    final String version = getChildText(props, PackageAttributes.VERSION, services);
+    final String desription = getChildText(props, PackageAttributes.DESCRIPTION, services);
+    final boolean isLatestVersion = "true".equalsIgnoreCase(getChildTextSafe(props, PackageAttributes.IS_LATEST_VERSION, services));
 
     return new FeedPackage(
             atomId,
