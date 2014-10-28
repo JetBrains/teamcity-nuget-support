@@ -142,10 +142,14 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "3")));
 
     final String response = openRequest("Search()?$skip=1&searchTerm=''&targetFramework='net45'&includePrerelease=true");
-
     assertContainsPackageVersion(response, "1.0");
     assertContainsPackageVersion(response, "2.0");
     assertNotContainsPackageVersion(response, "3.0");
+
+    final String skipZeroResponse = openRequest("Search()?$skip=0&searchTerm=''&targetFramework='net45'&includePrerelease=true");
+    assertContainsPackageVersion(skipZeroResponse, "1.0");
+    assertContainsPackageVersion(skipZeroResponse, "2.0");
+    assertContainsPackageVersion(skipZeroResponse, "3.0");
   }
 
   @Test
@@ -155,10 +159,14 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "3")));
 
     final String response = openRequest("Search()?$top=2&searchTerm=''&targetFramework='net45'&includePrerelease=true");
-
     assertContainsPackageVersion(response, "3.0");
     assertContainsPackageVersion(response, "2.0");
     assertNotContainsPackageVersion(response, "1.0");
+
+    final String topZeroResponse = openRequest("Search()?$top=0&searchTerm=''&targetFramework='net45'&includePrerelease=true");
+    assertNotContainsPackageVersion(topZeroResponse, "1.0");
+    assertNotContainsPackageVersion(topZeroResponse, "2.0");
+    assertNotContainsPackageVersion(topZeroResponse, "3.0");
   }
 
   @Test

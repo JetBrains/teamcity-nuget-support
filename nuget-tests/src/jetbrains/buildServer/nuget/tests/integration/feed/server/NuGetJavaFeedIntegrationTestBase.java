@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsIm
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparer;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducerHolder;
@@ -166,6 +167,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final Map<String, String> map = indexPackage(file, isLatest);
     NuGetIndexEntry e = new NuGetIndexEntry(file.getName(), map);
     myFeed.add(e);
+    Collections.sort(myFeed, SemanticVersionsComparer.getEntriesComparator());
     return e;
   }
 
@@ -193,6 +195,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
     NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
     myFeed.add(e);
+    Collections.sort(myFeed, SemanticVersionsComparer.getEntriesComparator());
     return e;
   }
 
@@ -208,6 +211,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
     NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
     myFeed.add(e);
+    Collections.sort(myFeed, SemanticVersionsComparer.getEntriesComparator());
     return e;
   }
 
