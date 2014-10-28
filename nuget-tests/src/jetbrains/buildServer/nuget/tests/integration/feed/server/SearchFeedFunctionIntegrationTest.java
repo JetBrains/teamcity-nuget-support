@@ -193,12 +193,12 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
   public void testAllAttributesAreProcessed() throws Exception {
     addMockPackage(new NuGetIndexEntry("id-matches", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "1")));
     addMockPackage(new NuGetIndexEntry("id-not-matches", CollectionsUtil.asMap(PackageAttributes.ID, "boo", PackageAttributes.VERSION, "2")));
-    addMockPackage(new NuGetIndexEntry("description-matches", CollectionsUtil.asMap(PackageAttributes.DESCRIPTION, "foo", PackageAttributes.VERSION, "3")));
-    addMockPackage(new NuGetIndexEntry("description-not-matches", CollectionsUtil.asMap(PackageAttributes.DESCRIPTION, "boo", PackageAttributes.VERSION, "4")));
-    addMockPackage(new NuGetIndexEntry("tags-matches", CollectionsUtil.asMap(PackageAttributes.TAGS, "foo", PackageAttributes.VERSION, "5")));
-    addMockPackage(new NuGetIndexEntry("tags-not-matches", CollectionsUtil.asMap(PackageAttributes.TAGS, "boo", PackageAttributes.VERSION, "6")));
-    addMockPackage(new NuGetIndexEntry("authors-matches", CollectionsUtil.asMap(PackageAttributes.AUTHORS, "foo", PackageAttributes.VERSION, "7")));
-    addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(PackageAttributes.AUTHORS, "boo", PackageAttributes.VERSION, "8")));
+    addMockPackage(new NuGetIndexEntry("description-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.DESCRIPTION, "foo", PackageAttributes.VERSION, "3")));
+    addMockPackage(new NuGetIndexEntry("description-not-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.DESCRIPTION, "boo", PackageAttributes.VERSION, "4")));
+    addMockPackage(new NuGetIndexEntry("tags-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.TAGS, "foo", PackageAttributes.VERSION, "5")));
+    addMockPackage(new NuGetIndexEntry("tags-not-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.TAGS, "boo", PackageAttributes.VERSION, "6")));
+    addMockPackage(new NuGetIndexEntry("authors-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.AUTHORS, "foo", PackageAttributes.VERSION, "7")));
+    addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.AUTHORS, "boo", PackageAttributes.VERSION, "8")));
 
     final String responseBody = openRequest("Search()?&searchTerm='foo'&targetFramework='net45'&includePrerelease=true");
 

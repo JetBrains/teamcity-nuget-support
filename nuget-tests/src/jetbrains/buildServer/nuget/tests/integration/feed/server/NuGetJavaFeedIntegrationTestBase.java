@@ -168,6 +168,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     NuGetIndexEntry e = new NuGetIndexEntry(file.getName(), map);
     myFeed.add(e);
     Collections.sort(myFeed, SemanticVersionsComparators.getEntriesComparator());
+    Collections.reverse(myFeed);
     return e;
   }
 
@@ -196,6 +197,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
     myFeed.add(e);
     Collections.sort(myFeed, SemanticVersionsComparators.getEntriesComparator());
+    Collections.reverse(myFeed);
     return e;
   }
 
@@ -212,6 +214,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
     myFeed.add(e);
     Collections.sort(myFeed, SemanticVersionsComparators.getEntriesComparator());
+    Collections.reverse(myFeed);
     return e;
   }
 
