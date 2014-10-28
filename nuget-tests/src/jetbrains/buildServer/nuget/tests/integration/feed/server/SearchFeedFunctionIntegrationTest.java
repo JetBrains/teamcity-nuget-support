@@ -61,7 +61,8 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
   @Test
   public void testEmptySearchTerm() throws Exception {
     addMockPackage("foo", "1.0.0.0");
-    assert200("Search()?&searchTerm=''&targetFramework='net45'&includePrerelease=true").run();
+    final String response = openRequest("Search()?&searchTerm=''&targetFramework='net45'&includePrerelease=true");
+    assertContainsPackageVersion(response, "1.0.0.0");
   }
 
   @Test
@@ -85,7 +86,19 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testIncludePreRelease() throws Exception {
-    fail();
+    addMockPackage(new NuGetIndexEntry("pre-release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.TRUE.toString(), PackageAttributes.VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.FALSE.toString(), PackageAttributes.VERSION, "2")));
+    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "3")));
+
+    final String preReleaseIncludedFeedResponse = openRequest("Search()?&searchTerm=''&targetFramework='net45'&includePrerelease=true");
+    assertContainsPackageVersion(preReleaseIncludedFeedResponse, "1.0");
+    assertContainsPackageVersion(preReleaseIncludedFeedResponse, "2.0");
+    assertContainsPackageVersion(preReleaseIncludedFeedResponse, "3.0");
+
+    final String preReleaseNotIncludedFeedResponse = openRequest("Search()?&searchTerm=''&targetFramework='net45'&includePrerelease=false");
+    assertNotContainsPackageVersion(preReleaseNotIncludedFeedResponse, "1.0");
+    assertContainsPackageVersion(preReleaseNotIncludedFeedResponse, "2.0");
+    assertContainsPackageVersion(preReleaseNotIncludedFeedResponse, "3.0");
   }
 
   @Test
@@ -120,13 +133,21 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(PackageAttributes.AUTHORS, "boo", PackageAttributes.VERSION, "8")));
 
     final String responseBody = openRequest("Search()?&searchTerm='foo'&targetFramework='net45'&includePrerelease=true");
-    assertContains(responseBody, "1.0");
-    assertNotContains(responseBody, "2.0", false);
-    assertContains(responseBody, "3.0");
-    assertNotContains(responseBody, "4.0", false);
-    assertContains(responseBody, "5.0");
-    assertNotContains(responseBody, "6.0", false);
-    assertContains(responseBody, "7.0");
-    assertNotContains(responseBody, "8.0", false);
+    assertContainsPackageVersion(responseBody, "1.0");
+    assertNotContainsPackageVersion(responseBody, "2.0");
+    assertContainsPackageVersion(responseBody, "3.0");
+    assertNotContainsPackageVersion(responseBody, "4.0");
+    assertContainsPackageVersion(responseBody, "5.0");
+    assertNotContainsPackageVersion(responseBody, "6.0");
+    assertContainsPackageVersion(responseBody, "7.0");
+    assertNotContainsPackageVersion(responseBody, "8.0");
+  }
+
+  private void assertContainsPackageVersion(String responseBody, String version){
+    assertContains(responseBody, "<d:Version>" + version + "</d:Version>");
+  }
+
+  private void assertNotContainsPackageVersion(String responseBody, String version){
+    assertNotContains(responseBody, "<d:Version>" + version + "</d:Version>", false);
   }
 }
