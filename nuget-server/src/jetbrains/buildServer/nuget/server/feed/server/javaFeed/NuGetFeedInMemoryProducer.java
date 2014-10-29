@@ -75,7 +75,7 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   }
 
   @Override
-  public BaseResponse callFunction(ODataContext context, EdmFunctionImport function, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+  public BaseResponse callFunction(ODataContext context, EdmFunctionImport function, Map<String, OFunctionParameter> params, QueryInfo queryInfo, boolean isCountCall) {
     final NuGetFeedFunction targetFunction = myFunctions.find(function);
     if(targetFunction == null){
       LOG.debug("Failed to process NuGet feed function call. Failed to find target function by name " + function.getName());
@@ -93,10 +93,12 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
             .queryInfo(queryInfo)
             .odataContext(context)
             .pathHelper(new PropertyPathHelper(queryInfo)).build();
-
     final InMemoryEntityInfo<?> ei = getEntityInfo(MetadataConstants.ENTITY_SET_NAME);
 
-    return getEntitiesResponse(rc, rc.getEntitySet(), Enumerable.create(functionCallResult), ei.getPropertyModel());
+    if(isCountCall)
+      return getCountResponse(rc, Enumerable.create(functionCallResult));
+    else
+      return getEntitiesResponse(rc, rc.getEntitySet(), Enumerable.create(functionCallResult), ei.getPropertyModel());
   }
 
   @Override
