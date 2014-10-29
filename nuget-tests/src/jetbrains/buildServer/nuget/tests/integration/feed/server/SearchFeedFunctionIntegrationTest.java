@@ -172,7 +172,17 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testOrderBy() throws Exception {
-    fail();
+    addMockPackage(new NuGetIndexEntry("1", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), DESCRIPTION, "3", VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("2", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), DESCRIPTION, "2", VERSION, "2")));
+    addMockPackage(new NuGetIndexEntry("3", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), DESCRIPTION, "1", VERSION, "3")));
+
+    final String defaultOrderingResponse = openRequest("Search()?&searchTerm=''&targetFramework='net45'&includePrerelease=true");
+    final String orderByDescriptionDescResponse = openRequest("Search()?$orderby=Description%20desc,Id&searchTerm=''&targetFramework='net45'&includePrerelease=true");
+    final String orderByDescriptionAscResponse = openRequest("Search()?$orderby=Description%20asc,Id&searchTerm=''&targetFramework='net45'&includePrerelease=true");
+
+    assertPackageVersionsOrder(defaultOrderingResponse, "3.0", "2.0", "1.0");
+    assertPackageVersionsOrder(orderByDescriptionDescResponse, "1.0", "2.0", "3.0");
+    assertPackageVersionsOrder(orderByDescriptionAscResponse, "3.0", "2.0", "1.0");
   }
 
   @Test
@@ -219,5 +229,15 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   private void assertNotContainsPackageVersion(String responseBody, String version){
     assertNotContains(responseBody, "<d:Version>" + version + "</d:Version>", false);
+  }
+
+  private void assertPackageVersionsOrder(String responseBody, String... versions) {
+    int prevVersionPosition = 0;
+    for (String version : versions){
+      final int i = responseBody.indexOf("<d:Version>" + version + "</d:Version>");
+      if(i == -1) fail("Response doesn't contain package version " + version);
+      assertGreater(i, prevVersionPosition);
+      prevVersionPosition = i;
+    }
   }
 }
