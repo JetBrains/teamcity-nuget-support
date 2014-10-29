@@ -16,13 +16,14 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetAPIVersion;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
 
 /**
  * @author Evgeniy.Koshkin
@@ -86,9 +87,9 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testIncludePreRelease() throws Exception {
-    addMockPackage(new NuGetIndexEntry("pre-release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.TRUE.toString(), PackageAttributes.VERSION, "1")));
-    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.FALSE.toString(), PackageAttributes.VERSION, "2")));
-    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "3")));
+    addMockPackage(new NuGetIndexEntry("pre-release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "2")));
+    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(ID, "foo", VERSION, "3")));
 
     final String preReleaseIncludedFeedResponse = openRequest("Search()?&searchTerm=''&targetFramework='net45'&includePrerelease=true");
     assertContainsPackageVersion(preReleaseIncludedFeedResponse, "1.0");
@@ -103,14 +104,14 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testFilterIsAbsoluteLatestVersion() throws Exception {
-    addMockPackage(new NuGetIndexEntry("pre-release-old", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.TRUE.toString(), PackageAttributes.VERSION, "1")));
-    addMockPackage(new NuGetIndexEntry("release-old", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.FALSE.toString(), PackageAttributes.VERSION, "2")));
-    addMockPackage(new NuGetIndexEntry("release-latest", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "3")));
-    addMockPackage(new NuGetIndexEntry("pre-release-latest", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.TRUE.toString(), PackageAttributes.VERSION, "4")));
-    addMockPackage(new NuGetIndexEntry("pre-release-old", CollectionsUtil.asMap(PackageAttributes.ID, "boo", PackageAttributes.IS_PRERELEASE, Boolean.TRUE.toString(), PackageAttributes.VERSION, "5")));
-    addMockPackage(new NuGetIndexEntry("pre-release-latest", CollectionsUtil.asMap(PackageAttributes.ID, "boo", PackageAttributes.IS_PRERELEASE, Boolean.TRUE.toString(), PackageAttributes.VERSION, "6")));
-    addMockPackage(new NuGetIndexEntry("release-old", CollectionsUtil.asMap(PackageAttributes.ID, "boo", PackageAttributes.IS_PRERELEASE, Boolean.FALSE.toString(), PackageAttributes.VERSION, "7")));
-    addMockPackage(new NuGetIndexEntry("release-latest", CollectionsUtil.asMap(PackageAttributes.ID, "boo", PackageAttributes.VERSION, "8")));
+    addMockPackage(new NuGetIndexEntry("pre-release-old", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("release-old", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "2")));
+    addMockPackage(new NuGetIndexEntry("release-latest", CollectionsUtil.asMap(ID, "foo", VERSION, "3")));
+    addMockPackage(new NuGetIndexEntry("pre-release-latest", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "4")));
+    addMockPackage(new NuGetIndexEntry("pre-release-old", CollectionsUtil.asMap(ID, "boo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "5")));
+    addMockPackage(new NuGetIndexEntry("pre-release-latest", CollectionsUtil.asMap(ID, "boo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "6")));
+    addMockPackage(new NuGetIndexEntry("release-old", CollectionsUtil.asMap(ID, "boo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "7")));
+    addMockPackage(new NuGetIndexEntry("release-latest", CollectionsUtil.asMap(ID, "boo", VERSION, "8")));
 
     final String includedPrereleaseResponse = openRequest("Search()?$filter=IsAbsoluteLatestVersion&searchTerm=''&targetFramework='net45'&includePrerelease=true");
 
@@ -137,9 +138,9 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testSkip() throws Exception {
-    addMockPackage(new NuGetIndexEntry("pre-release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.TRUE.toString(), PackageAttributes.VERSION, "1")));
-    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.FALSE.toString(), PackageAttributes.VERSION, "2")));
-    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "3")));
+    addMockPackage(new NuGetIndexEntry("pre-release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "2")));
+    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(ID, "foo", VERSION, "3")));
 
     final String response = openRequest("Search()?$skip=1&searchTerm=''&targetFramework='net45'&includePrerelease=true");
     assertContainsPackageVersion(response, "1.0");
@@ -154,9 +155,9 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testTop() throws Exception {
-    addMockPackage(new NuGetIndexEntry("pre-release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.TRUE.toString(), PackageAttributes.VERSION, "1")));
-    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.IS_PRERELEASE, Boolean.FALSE.toString(), PackageAttributes.VERSION, "2")));
-    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "3")));
+    addMockPackage(new NuGetIndexEntry("pre-release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "2")));
+    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(ID, "foo", VERSION, "3")));
 
     final String response = openRequest("Search()?$top=2&searchTerm=''&targetFramework='net45'&includePrerelease=true");
     assertContainsPackageVersion(response, "3.0");
@@ -176,14 +177,14 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testCountRequest() throws Exception {
-    addMockPackage(new NuGetIndexEntry("id-matches", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "1")));
-    addMockPackage(new NuGetIndexEntry("id-not-matches", CollectionsUtil.asMap(PackageAttributes.ID, "boo", PackageAttributes.VERSION, "2")));
-    addMockPackage(new NuGetIndexEntry("description-matches", CollectionsUtil.asMap(PackageAttributes.DESCRIPTION, "foo", PackageAttributes.VERSION, "3")));
-    addMockPackage(new NuGetIndexEntry("description-not-matches", CollectionsUtil.asMap(PackageAttributes.DESCRIPTION, "boo", PackageAttributes.VERSION, "4")));
-    addMockPackage(new NuGetIndexEntry("tags-matches", CollectionsUtil.asMap(PackageAttributes.TAGS, "foo", PackageAttributes.VERSION, "5")));
-    addMockPackage(new NuGetIndexEntry("tags-not-matches", CollectionsUtil.asMap(PackageAttributes.TAGS, "boo", PackageAttributes.VERSION, "6")));
-    addMockPackage(new NuGetIndexEntry("authors-matches", CollectionsUtil.asMap(PackageAttributes.AUTHORS, "foo", PackageAttributes.VERSION, "7")));
-    addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(PackageAttributes.AUTHORS, "boo", PackageAttributes.VERSION, "8")));
+    addMockPackage(new NuGetIndexEntry("id-matches", CollectionsUtil.asMap(ID, "foo", VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("id-not-matches", CollectionsUtil.asMap(ID, "boo", VERSION, "2")));
+    addMockPackage(new NuGetIndexEntry("description-matches", CollectionsUtil.asMap(DESCRIPTION, "foo", VERSION, "3")));
+    addMockPackage(new NuGetIndexEntry("description-not-matches", CollectionsUtil.asMap(DESCRIPTION, "boo", VERSION, "4")));
+    addMockPackage(new NuGetIndexEntry("tags-matches", CollectionsUtil.asMap(TAGS, "foo", VERSION, "5")));
+    addMockPackage(new NuGetIndexEntry("tags-not-matches", CollectionsUtil.asMap(TAGS, "boo", VERSION, "6")));
+    addMockPackage(new NuGetIndexEntry("authors-matches", CollectionsUtil.asMap(AUTHORS, "foo", VERSION, "7")));
+    addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(AUTHORS, "boo", VERSION, "8")));
 
     assertEquals("4", openRequest("Search()/$count?&searchTerm='foo'&targetFramework='net45'&includePrerelease=true"));
     assertEquals("2", openRequest("Search()/$count?$filter=IsAbsoluteLatestVersion&searchTerm='foo'&targetFramework='net45'&includePrerelease=true"));
@@ -191,14 +192,14 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testAllAttributesAreProcessed() throws Exception {
-    addMockPackage(new NuGetIndexEntry("id-matches", CollectionsUtil.asMap(PackageAttributes.ID, "foo", PackageAttributes.VERSION, "1")));
-    addMockPackage(new NuGetIndexEntry("id-not-matches", CollectionsUtil.asMap(PackageAttributes.ID, "boo", PackageAttributes.VERSION, "2")));
-    addMockPackage(new NuGetIndexEntry("description-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.DESCRIPTION, "foo", PackageAttributes.VERSION, "3")));
-    addMockPackage(new NuGetIndexEntry("description-not-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.DESCRIPTION, "boo", PackageAttributes.VERSION, "4")));
-    addMockPackage(new NuGetIndexEntry("tags-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.TAGS, "foo", PackageAttributes.VERSION, "5")));
-    addMockPackage(new NuGetIndexEntry("tags-not-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.TAGS, "boo", PackageAttributes.VERSION, "6")));
-    addMockPackage(new NuGetIndexEntry("authors-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.AUTHORS, "foo", PackageAttributes.VERSION, "7")));
-    addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(PackageAttributes.ID, "some-id", PackageAttributes.AUTHORS, "boo", PackageAttributes.VERSION, "8")));
+    addMockPackage(new NuGetIndexEntry("id-matches", CollectionsUtil.asMap(ID, "foo", VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("id-not-matches", CollectionsUtil.asMap(ID, "boo", VERSION, "2")));
+    addMockPackage(new NuGetIndexEntry("description-matches", CollectionsUtil.asMap(ID, "some-id", DESCRIPTION, "foo", VERSION, "3")));
+    addMockPackage(new NuGetIndexEntry("description-not-matches", CollectionsUtil.asMap(ID, "some-id", DESCRIPTION, "boo", VERSION, "4")));
+    addMockPackage(new NuGetIndexEntry("tags-matches", CollectionsUtil.asMap(ID, "some-id", TAGS, "foo", VERSION, "5")));
+    addMockPackage(new NuGetIndexEntry("tags-not-matches", CollectionsUtil.asMap(ID, "some-id", TAGS, "boo", VERSION, "6")));
+    addMockPackage(new NuGetIndexEntry("authors-matches", CollectionsUtil.asMap(ID, "some-id", AUTHORS, "foo", VERSION, "7")));
+    addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(ID, "some-id", AUTHORS, "boo", VERSION, "8")));
 
     final String responseBody = openRequest("Search()?&searchTerm='foo'&targetFramework='net45'&includePrerelease=true");
 
