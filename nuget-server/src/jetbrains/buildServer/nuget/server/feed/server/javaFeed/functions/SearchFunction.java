@@ -108,36 +108,12 @@ public class SearchFunction implements NuGetFeedFunction {
     if(includePreRelease) format += ", including pre-release packages";
     LOG.debug(format);
 
-    Integer top = null;
-    Integer skip = null;
-    if(queryInfo != null){
-      top = queryInfo.top;
-      skip = queryInfo.skip;
-    }
-
     final List<NuGetIndexEntry> result = new ArrayList<NuGetIndexEntry>();
-    if(top != null && top == 0) {
-      LOG.debug("Feed query top zero elements. Responding with empty set of packages.");
-    } else {
-      final Iterator<NuGetIndexEntry> entryIterator = myIndex.getNuGetEntries();
-      int skipped = 0;
-      while (entryIterator.hasNext()){
-        final NuGetIndexEntry indexEntry = entryIterator.next();
-        if(matches(indexEntry, searchTerm, includePreRelease)){
-          if(skip != null && skipped < skip){
-            skipped++;
-            continue;
-          }
-          result.add(indexEntry);
-          if(top != null && result.size() == top){
-            LOG.debug(String.format("Top %d packages found as requested. Stop searching.", top));
-            break;
-          }
-        }
-      }
-      if(result.isEmpty()){
-        LOG.debug(String.format("No packages found by searchTerm %s.", searchTerm));
-        return null;
+    final Iterator<NuGetIndexEntry> entryIterator = myIndex.getNuGetEntries();
+    while (entryIterator.hasNext()){
+      final NuGetIndexEntry indexEntry = entryIterator.next();
+      if(matches(indexEntry, searchTerm, includePreRelease)){
+        result.add(indexEntry);
       }
     }
     return CollectionsUtil.convertCollection(result, new Converter<Object, NuGetIndexEntry>() {
