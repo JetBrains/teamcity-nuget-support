@@ -137,37 +137,35 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
   }
 
   @Test
-  public void testSkip() throws Exception {
+  public void testSkipTop() throws Exception {
     addMockPackage(new NuGetIndexEntry("pre-release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "1")));
     addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "2")));
     addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(ID, "foo", VERSION, "3")));
 
-    final String response = openRequest("Search()?$skip=1&searchTerm=''&targetFramework='net45'&includePrerelease=true");
-    assertContainsPackageVersion(response, "1.0");
-    assertContainsPackageVersion(response, "2.0");
-    assertNotContainsPackageVersion(response, "3.0");
+    final String skipResponse = openRequest("Search()?$skip=1&searchTerm=''&targetFramework='net45'&includePrerelease=true");
+    assertNotContainsPackageVersion(skipResponse, "1.0");
+    assertContainsPackageVersion(skipResponse, "2.0");
+    assertContainsPackageVersion(skipResponse, "3.0");
 
     final String skipZeroResponse = openRequest("Search()?$skip=0&searchTerm=''&targetFramework='net45'&includePrerelease=true");
     assertContainsPackageVersion(skipZeroResponse, "1.0");
     assertContainsPackageVersion(skipZeroResponse, "2.0");
     assertContainsPackageVersion(skipZeroResponse, "3.0");
-  }
 
-  @Test
-  public void testTop() throws Exception {
-    addMockPackage(new NuGetIndexEntry("pre-release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "1")));
-    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "2")));
-    addMockPackage(new NuGetIndexEntry("release", CollectionsUtil.asMap(ID, "foo", VERSION, "3")));
-
-    final String response = openRequest("Search()?$top=2&searchTerm=''&targetFramework='net45'&includePrerelease=true");
-    assertContainsPackageVersion(response, "3.0");
-    assertContainsPackageVersion(response, "2.0");
-    assertNotContainsPackageVersion(response, "1.0");
+    final String topResponse = openRequest("Search()?$top=2&searchTerm=''&targetFramework='net45'&includePrerelease=true");
+    assertContainsPackageVersion(topResponse, "1.0");
+    assertContainsPackageVersion(topResponse, "2.0");
+    assertNotContainsPackageVersion(topResponse, "3.0");
 
     final String topZeroResponse = openRequest("Search()?$top=0&searchTerm=''&targetFramework='net45'&includePrerelease=true");
     assertNotContainsPackageVersion(topZeroResponse, "1.0");
     assertNotContainsPackageVersion(topZeroResponse, "2.0");
     assertNotContainsPackageVersion(topZeroResponse, "3.0");
+
+    final String skipTopResponse = openRequest("Search()?$skip=1&$top=1&searchTerm=''&targetFramework='net45'&includePrerelease=true");
+    assertNotContainsPackageVersion(skipTopResponse, "1.0");
+    assertContainsPackageVersion(skipTopResponse, "2.0");
+    assertNotContainsPackageVersion(skipTopResponse, "3.0");
   }
 
   @Test
@@ -180,7 +178,7 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     final String orderByDescriptionDescResponse = openRequest("Search()?$orderby=Description%20desc,Id&searchTerm=''&targetFramework='net45'&includePrerelease=true");
     final String orderByDescriptionAscResponse = openRequest("Search()?$orderby=Description%20asc,Id&searchTerm=''&targetFramework='net45'&includePrerelease=true");
 
-    assertPackageVersionsOrder(defaultOrderingResponse, "3.0", "2.0", "1.0");
+    assertPackageVersionsOrder(defaultOrderingResponse, "1.0", "2.0", "3.0");
     assertPackageVersionsOrder(orderByDescriptionDescResponse, "1.0", "2.0", "3.0");
     assertPackageVersionsOrder(orderByDescriptionAscResponse, "3.0", "2.0", "1.0");
   }
