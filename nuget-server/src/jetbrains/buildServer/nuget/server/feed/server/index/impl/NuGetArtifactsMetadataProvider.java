@@ -37,8 +37,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
-import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
+import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -53,11 +52,14 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
 
   private final LocalNuGetPackageItemsFactory myFactory;
   private final ResponseCacheReset myReset;
+  private final FrameworkConstraintsCalculator myFrameworkConstraintsCalculator;
 
   public NuGetArtifactsMetadataProvider(@NotNull final LocalNuGetPackageItemsFactory factory,
-                                        @NotNull final ResponseCacheReset reset) {
+                                        @NotNull final ResponseCacheReset reset,
+                                        @NotNull final FrameworkConstraintsCalculator frameworkConstraintsCalculator) {
     myFactory = factory;
     myReset = reset;
+    myFrameworkConstraintsCalculator = frameworkConstraintsCalculator;
   }
 
   @NotNull
@@ -89,6 +91,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
         final Map<String,String> ma = myFactory.loadPackage(aPackage, finishDate);
         ma.put(TEAMCITY_ARTIFACT_RELPATH, aPackage.getRelativePath());
         ma.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
+        ma.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(myFrameworkConstraintsCalculator.getPackageConstraints(aPackage)));
 
         myReset.resetCache();
         store.addParameters(ma.get(PackageAttributes.ID), ma);
