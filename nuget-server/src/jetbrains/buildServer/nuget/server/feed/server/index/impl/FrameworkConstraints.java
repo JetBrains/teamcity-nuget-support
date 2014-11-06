@@ -16,23 +16,27 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
+import com.google.common.collect.Sets;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class FrameworkConstraints {
+
+  private static final String SEPARATOR = "|";
+
   @NotNull
   public static String convertToString(Collection<String> constraints){
-    return "";
+    return StringUtil.join("|", constraints);
   }
 
   @NotNull
   public static Set<String> convertFromString(@NotNull String string){
-    return Collections.emptySet();
+    return Sets.newHashSet(string.split(SEPARATOR));
   }
 }
