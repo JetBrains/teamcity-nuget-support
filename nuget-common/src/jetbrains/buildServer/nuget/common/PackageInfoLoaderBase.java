@@ -80,11 +80,11 @@ public abstract class PackageInfoLoaderBase {
   }
 
   @Nullable
-  protected static Element getChild(@Nullable final Element root, final String child) {
+  protected static Element getChild(@Nullable final Element root, final String childName) {
     if (root == null) return null;
-    Element metadata = root.getChild(child);
-    if (metadata != null) return metadata;
-    return root.getChild(child, root.getNamespace(NS));
+    Element child = root.getChild(childName);
+    if (child != null) return child;
+    return root.getChild(childName, root.getNamespace(NS));
   }
 
   @NotNull
