@@ -78,7 +78,7 @@ public class FrameworkConstraintsCalculatorTest extends BaseTestCase {
 
   @Test
   public void shouldProcessSubfoldersWithValidShortFrameworkName() throws Exception {
-    assertPackageConstraints(Sets.newHashSet("net35", "sl30"), "packages/subfolders.nupkg");
+    assertPackageConstraints(Sets.newHashSet("net35", "sl30"), "packages/CommonServiceLocator.1.0.nupkg");
   }
 
   @Test
