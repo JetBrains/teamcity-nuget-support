@@ -16,25 +16,108 @@
 
 package jetbrains.buildServer.nuget.tests.feed;
 
+import com.google.common.collect.Sets;
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.FrameworkConstraintsCalculator;
+import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
+import jetbrains.buildServer.util.FileUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.api.Invocation;
+import org.jmock.lib.action.CustomAction;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class FrameworkConstraintsCalculatorTest extends BaseTestCase {
+  private Mockery m;
+  private Set<InputStream> myStreams;
+  private FrameworkConstraintsCalculator myCalculator;
+
+  @Override
+  @BeforeMethod
+  public void setUp() throws Exception {
+    super.setUp();
+    m = new Mockery();
+    myStreams = new HashSet<InputStream>();
+    myCalculator = new FrameworkConstraintsCalculator();
+  }
+
+  @Override
+  @AfterMethod
+  public void tearDown() throws Exception {
+    for (InputStream stream : myStreams) {
+      FileUtil.close(stream);
+    }
+    super.tearDown();
+  }
+
   @Test
   public void testEmptySetOfConstraints() throws Exception {
-    fail();
+    assertPackageConstraints(Collections.<String>emptySet(), "packages/noConstraints.nupkg");
   }
 
   @Test
   public void shouldProcessFrameworkAssemblyReferences() throws Exception {
-    fail();
+    assertPackageConstraints(Sets.newHashSet("net40"), "packages/frameworkAssemblyReferences.nupkg");
   }
 
   @Test
   public void shouldProcessSubfoldersWithValidShortFrameworkName() throws Exception {
+    assertPackageConstraints(Sets.newHashSet("net35", "sl30"), "packages/subfolders.nupkg");
+  }
+
+  @Test
+  public void testUnknownFrameworkNames() throws Exception {
     fail();
+  }
+
+  @Test
+  public void testShortFrameworkNamesCaseInsensitivity() throws Exception {
+    fail();
+  }
+
+  @Test
+  public void testSubfoldersNamesCaseInsensitivity() throws Exception {
+    fail();
+  }
+
+  private void assertPackageConstraints(Set<String> expectedConstraints, @NotNull String pathToPackage) throws IOException {
+    final File pkg = Paths.getTestDataPath(pathToPackage);
+    Assert.assertTrue(pkg.isFile(), "Package wasn't found on path " + pkg.getAbsolutePath());
+    assertEquals(expectedConstraints, myCalculator.getPackageConstraints(artifact(pkg)));
+  }
+
+  @NotNull
+  private BuildArtifact artifact(@NotNull final File file) throws IOException {
+    final BuildArtifact a = m.mock(BuildArtifact.class, file.getPath());
+    m.checking(new Expectations(){{
+      allowing(a).getInputStream(); will(new CustomAction("open file") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          final FileInputStream stream = new FileInputStream(file);
+          myStreams.add(stream);
+          return stream;
+        }
+      });
+      allowing(a).getTimestamp(); will(returnValue(file.lastModified()));
+      allowing(a).getSize(); will(returnValue(file.length()));
+      allowing(a).getRelativePath(); will(returnValue(file.getPath()));
+      allowing(a).getName(); will(returnValue(file.getName()));
+    }});
+    return a;
   }
 }
