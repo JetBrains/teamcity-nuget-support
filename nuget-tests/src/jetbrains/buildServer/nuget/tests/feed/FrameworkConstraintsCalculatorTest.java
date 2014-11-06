@@ -78,22 +78,32 @@ public class FrameworkConstraintsCalculatorTest extends BaseTestCase {
 
   @Test
   public void shouldProcessSubfoldersWithValidShortFrameworkName() throws Exception {
-    assertPackageConstraints(Sets.newHashSet("net35", "sl30"), "packages/CommonServiceLocator.1.0.nupkg");
+    assertPackageConstraints(Sets.newHashSet("net40-full", "net40-client", "net40"), "packages/subfolders.nupkg");
   }
 
   @Test
-  public void testUnknownFrameworkNames() throws Exception {
-    fail();
+  public void shouldNotProcessUnknownSubfolders() throws Exception {
+    assertPackageConstraints(Collections.<String>emptySet(), "packages/unknownSubfolders.nupkg");
+  }
+
+  @Test
+  public void testUnrecognizedFramework() throws Exception {
+    assertPackageConstraints(Collections.<String>emptySet(), "packages/unrecognizedFramework.nupkg");
+  }
+
+  @Test
+  public void testUnrecognizedFrameworkUnderLibSubfolder() throws Exception {
+    assertPackageConstraints(Sets.newHashSet("unrecognized"), "packages/unrecognizedFrameworkUnderLib.nupkg");
   }
 
   @Test
   public void testShortFrameworkNamesCaseInsensitivity() throws Exception {
-    fail();
+    assertPackageConstraints(Sets.newHashSet("net40"), "packages/frameworkNamesCaseInsensitivity.nupkg");
   }
 
   @Test
   public void testSubfoldersNamesCaseInsensitivity() throws Exception {
-    fail();
+    assertPackageConstraints(Sets.newHashSet("net40-client"), "packages/subfoldersNamesCaseInsensitivity.nupkg");
   }
 
   private void assertPackageConstraints(Set<String> expectedConstraints, @NotNull String pathToPackage) throws IOException {
