@@ -87,7 +87,7 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
     latestPackages.updateSelectedPackages();
 
     //This is most consuming operation that requires to sort collection of entire packages
-    Collections.sort(result, SemanticVersionsComparer.getBuildersComparator());
+    Collections.sort(result, SemanticVersionsComparators.getBuildersComparator());
 
     return new DecoratingIterator<NuGetIndexEntry, NuGetPackageBuilder>(
             result.iterator(),

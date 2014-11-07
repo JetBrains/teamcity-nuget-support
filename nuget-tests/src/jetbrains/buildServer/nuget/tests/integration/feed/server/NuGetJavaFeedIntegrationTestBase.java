@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import com.intellij.util.containers.SortedList;
 import jetbrains.buildServer.NetworkUtil;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
@@ -23,6 +24,7 @@ import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsIm
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparators;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducerHolder;
@@ -53,15 +55,15 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArt
  */
 public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBase {
   protected NuGetProducerHolder myProducer;
-  private int myPort;
-  private List<NuGetIndexEntry> myFeed;
   protected PackagesIndex myIndex;
   protected PackagesIndex myActualIndex;
   protected PackagesIndex myIndexProxy;
   protected MetadataStorage myMetadataStorage;
+  private SortedList<NuGetIndexEntry> myFeed;
   private ODataServer myServer;
-  private int myCount;
   private NuGetServerSettings mySettings;
+  private int myPort;
+  private int myCount;
 
   @BeforeMethod
   @Override
@@ -69,7 +71,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     super.setUp();
     myCount = 0;
     myPort = NetworkUtil.getFreePort(14444);
-    myFeed = new ArrayList<NuGetIndexEntry>();
+    myFeed = new SortedList<NuGetIndexEntry>(SemanticVersionsComparators.getEntriesComparator());
     myIndex = m.mock(PackagesIndex.class);
     myActualIndex = myIndex;
     myIndexProxy = m.mock(PackagesIndex.class, "proxy");
@@ -86,7 +88,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
       allowing(myMetadataStorage).getAllEntries(NUGET_PROVIDER_ID); will(new CustomAction("transform entries") {
         public Object invoke(Invocation invocation) throws Throwable {
-          return toEntries().iterator();
+          return toEntries(myFeed).iterator();
         }
       });
     }});
@@ -96,9 +98,9 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   }
 
   @NotNull
-  private Collection<BuildMetadataEntry> toEntries() {
+  private static Collection<BuildMetadataEntry> toEntries(Iterable<NuGetIndexEntry> feed) {
     Collection<BuildMetadataEntry> ee = new ArrayList<BuildMetadataEntry>();
-    for (final NuGetIndexEntry e : myFeed) {
+    for (final NuGetIndexEntry e : feed) {
       ee.add(new BuildMetadataEntry() {
         public long getBuildId() {
           return e.hashCode();
