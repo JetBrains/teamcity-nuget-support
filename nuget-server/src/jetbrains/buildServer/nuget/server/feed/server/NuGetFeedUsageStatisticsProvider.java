@@ -16,29 +16,31 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
+import com.intellij.openapi.util.Pair;
 import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
-import jetbrains.buildServer.nuget.server.feed.server.index.NuGetPackagesIndexStatisticsProvider;
+import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsPublisher;
 import jetbrains.buildServer.usageStatistics.impl.providers.BaseDefaultUsageStatisticsProvider;
-import jetbrains.buildServer.usageStatistics.presentation.UsageStatisticsFormatter;
 import jetbrains.buildServer.usageStatistics.presentation.UsageStatisticsPresentationManager;
-import jetbrains.buildServer.usageStatistics.presentation.formatters.PercentageFormatter;
 import jetbrains.buildServer.util.positioning.PositionAware;
 import jetbrains.buildServer.util.positioning.PositionConstraint;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatisticsProvider {
 
-  private static final String FEED_ENABLED_KEY = "jetbrains.nuget.server";
-  private static final String FUNCTIONS_STAT_ID_FORMAT = "jetbrains.nuget.api.functions.[%s]";
+  public static final String GROUP_NAME = "NuGet Feed Usage";
+
   private static final String TOTAL_REQUESTS_STAT_ID = "jetbrains.nuget.feedDailyRequests";
-  private static final String METADATA_REQUESTS_STAT_ID = "jetbrains.nuget.feedDailyRequests.metadata";
+  private static final String TOTAL_PACKAGES_STAT_ID = "jetbrains.nuget.totalPackages";
+  private static final String DIFF_PACKAGES_STAT_ID = "jetbrains.nuget.packagesIds";
 
   private static final PositionAware NUGET_API_CALLS_GROUP = new PositionAware() {
     @NotNull
@@ -48,18 +50,21 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
 
     @NotNull
     public PositionConstraint getConstraint() {
-      return PositionConstraint.after(NuGetPackagesIndexStatisticsProvider.NUGET_SERVER_STAT_GROUP_NAME);
+      return PositionConstraint.UNDEFINED;
     }
   };
 
   private final RecentNuGetRequests myRequests;
+  private final PackagesIndex myIndex;
   private final NuGetServerSettings mySettings;
 
-  public NuGetFeedUsageStatisticsProvider(@NotNull final RecentNuGetRequests requests, @NotNull final NuGetServerSettings settings) {
+  public NuGetFeedUsageStatisticsProvider(@NotNull final RecentNuGetRequests requests,
+                                          @NotNull final NuGetServerSettings settings,
+                                          @NotNull final PackagesIndex index) {
     myRequests = requests;
     mySettings = settings;
-    myGroupName = "NuGet Feed Usage";
-    setIdFormat(FUNCTIONS_STAT_ID_FORMAT);
+    myIndex = index;
+    myGroupName = GROUP_NAME;
   }
 
   @NotNull
@@ -71,31 +76,26 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
   @Override
   protected void accept(@NotNull UsageStatisticsPublisher publisher, @NotNull UsageStatisticsPresentationManager presentationManager) {
     if (mySettings.isNuGetServerEnabled()) {
-
-      publisher.publishStatistic(FEED_ENABLED_KEY, "enabled");
-      presentationManager.applyPresentation(FEED_ENABLED_KEY, "NuGet Feed", myGroupName, new UsageStatisticsFormatter() {
-        @NotNull
-        public String format(@Nullable Object statisticValue) {
-          return statisticValue == null ? "disabled" : statisticValue.toString();
-        }
-      }, null);
-
-      final int totalRequests = myRequests.getTotalRequests();
-
-      publisher.publishStatistic(TOTAL_REQUESTS_STAT_ID, totalRequests);
+      publisher.publishStatistic(TOTAL_REQUESTS_STAT_ID, myRequests.getTotalRequests());
       presentationManager.applyPresentation(TOTAL_REQUESTS_STAT_ID, "Feed Requests Count per Day", myGroupName, null, null);
 
-      final UsageStatisticsFormatter formatter = new PercentageFormatter(totalRequests);
-
-      publisher.publishStatistic(METADATA_REQUESTS_STAT_ID, myRequests.getMetadataRequestsCount());
-      presentationManager.applyPresentation(METADATA_REQUESTS_STAT_ID, "Feed Metadata Requests Count per Day", myGroupName, formatter, null);
-
-      final Map<String, Integer> functionCalls = myRequests.getFunctionCalls();
-      for(String functionName : functionCalls.keySet()){
-        final String statisticId = makeId(functionName);
-        presentationManager.applyPresentation(statisticId, String.format("%s Function Calls per Day", functionName), myGroupName, formatter, null);
-        publisher.publishStatistic(statisticId, functionCalls.get(functionName));
-      }
+      final Pair<Integer, Integer> indexEntriesCount = countIndexEntries();
+      publisher.publishStatistic(TOTAL_PACKAGES_STAT_ID, indexEntriesCount.first);
+      presentationManager.applyPresentation(TOTAL_PACKAGES_STAT_ID, "Packages Count", myGroupName, null, null);
+      publisher.publishStatistic(DIFF_PACKAGES_STAT_ID, indexEntriesCount.second);
+      presentationManager.applyPresentation(DIFF_PACKAGES_STAT_ID, "Different Package Ids Count", myGroupName, null, null);
     }
+  }
+
+  private Pair<Integer, Integer> countIndexEntries() {
+    int count = 0;
+    final Set<String> packagesCounter = new HashSet<String>();
+    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
+    while(it.hasNext()) {
+      NuGetIndexEntry next = it.next();
+      packagesCounter.add(next.getAttributes().get("Id"));
+      count++;
+    }
+    return Pair.create(count, packagesCounter.size());
   }
 }

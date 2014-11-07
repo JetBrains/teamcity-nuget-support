@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.NetworkUtil;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
-import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsImpl;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
@@ -89,7 +88,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
         }
       });
     }});
-    myProducer = new NuGetProducerHolder(myIndexProxy, mySettings, new NuGetFeedFunctions(myIndexProxy, mySettings), new RecentNuGetRequests());
+    myProducer = new NuGetProducerHolder(myIndexProxy, mySettings, new NuGetFeedFunctions(myIndexProxy, mySettings));
 
     startNuGetFeedServer();
   }

@@ -22,7 +22,9 @@ import jetbrains.buildServer.util.RecentEntriesCache;
 import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.TreeSet;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -32,8 +34,6 @@ public class RecentNuGetRequests {
   private static final Logger LOG = Logger.getInstance(RecentNuGetRequests.class.getName());
   private final RecentEntriesCache<String, String> myFeedRequests = new RecentEntriesCache<String, String>(5000, false);
   private final RecentEntriesCache<Long, Long> myFeedRequestTimes = new RecentEntriesCache<Long, Long>(20000, false);
-  private final Map<String, Integer> myFeedFunctionCalls = new HashMap<String, Integer>();
-  private int myMetadataRequestsCount = 0;
 
   public void reportFeedRequest(@NotNull final String url) {
     LOG.debug("NuGet Feed request processing started for " + url);
@@ -46,26 +46,6 @@ public class RecentNuGetRequests {
 
   public void reportFeedRequestFinished(@NotNull final String url, long time) {
     LOG.debug("NuGet Feed Request request processing finsihed in " + time + "ms for " + url);
-  }
-
-  public void reportFeedMetadataRequest() {
-    LOG.debug("NuGet Feed metadat requested");
-    myMetadataRequestsCount++;
-  }
-
-  public void reportFunctionCall(@NotNull String targetFunctionName) {
-    synchronized (myFeedFunctionCalls){
-      final Integer functionCallCount = myFeedFunctionCalls.get(targetFunctionName);
-      if(functionCallCount == null)
-        myFeedFunctionCalls.put(targetFunctionName, 1);
-      else
-        myFeedFunctionCalls.put(targetFunctionName, functionCallCount + 1);
-    }
-  }
-
-  @NotNull
-  public Map<String, Integer> getFunctionCalls() {
-    return Collections.unmodifiableMap(myFeedFunctionCalls);
   }
 
   @NotNull
@@ -85,10 +65,6 @@ public class RecentNuGetRequests {
       }
     });
     return myFeedRequestTimes.size();
-  }
-
-  public int getMetadataRequestsCount() {
-    return myMetadataRequestsCount;
   }
 
   private long getTime() {
