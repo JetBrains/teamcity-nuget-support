@@ -34,7 +34,7 @@ import jetbrains.buildServer.nuget.agent.parameters.PackageSourceManager;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
-import jetbrains.buildServer.nuget.common.SimplePackageInfoLoader;
+import jetbrains.buildServer.nuget.common.PackageInfoLoader;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jetbrains.annotations.NotNull;
@@ -197,7 +197,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     PackageUsages pu = new PackageUsagesImpl(
             myCollector,
             new NuGetPackagesConfigParser(),
-            new SimplePackageInfoLoader()
+            new PackageInfoLoader()
     );
 
     myExecutor = executingFactory();
