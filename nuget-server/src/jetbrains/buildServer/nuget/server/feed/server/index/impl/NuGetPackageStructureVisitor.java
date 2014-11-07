@@ -76,7 +76,7 @@ public class NuGetPackageStructureVisitor {
         }
       }
     } catch (IOException e) {
-      //LOG
+      LOG.warn("Failed to read content of NuGet package " + nugetPackageName);
       if(zipInputStream != null){
         try {
           zipInputStream.close();
