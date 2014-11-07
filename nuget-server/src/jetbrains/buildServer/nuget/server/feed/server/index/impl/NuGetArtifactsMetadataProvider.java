@@ -87,27 +87,29 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
     for (BuildArtifact aPackage : packages) {
       LOG.info("Indexing NuGet package from artifact " + aPackage.getRelativePath() + " of build " + LogUtil.describe(build));
       try {
-        final LocalNuGetPackageItemsFactory packageItemsFactory = LocalNuGetPackageItemsFactory.createForBuild(build);
-        final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
-        final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
-        new NuGetPackageStructureVisitor(analysers).visit(aPackage);
-
-        final Map<String,String> ma = packageItemsFactory.getItems();
-
-        ma.put(PACKAGE_HASH, sha512(aPackage));
-        ma.put(PACKAGE_HASH_ALGORITHM, SHA512);
-        ma.put(PACKAGE_SIZE, String.valueOf(aPackage.getSize()));
-
-        ma.put(TEAMCITY_ARTIFACT_RELPATH, aPackage.getRelativePath());
-        ma.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
-        ma.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints()));
-
+        final Map<String, String> metadata = generateMetadataForPackage(build, aPackage);
         myReset.resetCache();
-        store.addParameters(ma.get(PackageAttributes.ID), ma);
+        store.addParameters(metadata.get(PackageAttributes.ID), metadata);
       } catch (PackageLoadException e) {
         LOG.warn("Failed to read NuGet package: " + aPackage);
       }
     }
+  }
+
+  public Map<String, String> generateMetadataForPackage(SBuild build, BuildArtifact aPackage) throws PackageLoadException {
+    final LocalNuGetPackageItemsFactory packageItemsFactory = LocalNuGetPackageItemsFactory.createForBuild(build);
+    final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
+    final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
+    new NuGetPackageStructureVisitor(analysers).visit(aPackage);
+
+    final Map<String,String> metadata = packageItemsFactory.getItems();
+    metadata.put(PACKAGE_HASH, sha512(aPackage));
+    metadata.put(PACKAGE_HASH_ALGORITHM, SHA512);
+    metadata.put(PACKAGE_SIZE, String.valueOf(aPackage.getSize()));
+    metadata.put(TEAMCITY_ARTIFACT_RELPATH, aPackage.getRelativePath());
+    metadata.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
+    metadata.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints()));
+    return metadata;
   }
 
   private boolean isIndexingEnabledForBuildType(@Nullable SBuildType buildType) {
