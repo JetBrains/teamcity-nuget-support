@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -37,8 +38,6 @@ import java.util.zip.ZipInputStream;
  * @author Evgeniy.Koshkin
  */
 public class NuGetPackageStructureVisitor {
-
-  private static final String NUSPEC_FILE_EXTENSION = ".nuspec";
 
   private static final Logger LOG = Logger.getInstance(NuGetPackageStructureVisitor.class.getName());
 
@@ -63,7 +62,7 @@ public class NuGetPackageStructureVisitor {
         for(NuGetPackageStructureAnalyser analyser : myAnalysers){
           analyser.analyseEntry(zipEntryName);
         }
-        if (zipEntryName.endsWith(NUSPEC_FILE_EXTENSION)) {
+        if (zipEntryName.endsWith(FeedConstants.NUSPEC_FILE_EXTENSION)) {
           LOG.debug(String.format("Nuspec file found on path %s in NuGet package %s", zipEntryName, nugetPackageName));
           final NuspecFileContent nuspecContent = readNuspecFileContent(zipInputStream);
           if (nuspecContent == null)

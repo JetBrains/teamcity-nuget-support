@@ -70,7 +70,7 @@ public class PackageInfoLoader {
       zos = new ZipInputStream(new BufferedInputStream(stream));
       ZipEntry ze;
       while ((ze = zos.getNextEntry()) != null) {
-        if (ze.getName().endsWith(".nuspec")) {
+        if (ze.getName().endsWith(FeedConstants.NUSPEC_FILE_EXTENSION)) {
           try {
             return FileUtil.parseDocument(zos, false);
           } catch (JDOMException e) {
