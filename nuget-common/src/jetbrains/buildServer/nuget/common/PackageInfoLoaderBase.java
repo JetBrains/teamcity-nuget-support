@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.common;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jdom.Element;
@@ -27,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -37,7 +37,6 @@ import java.util.zip.ZipInputStream;
  */
 public abstract class PackageInfoLoaderBase {
   private static final Logger LOG = Logger.getInstance(PackageInfoLoaderBase.class.getName());
-  public static final String NS = "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd";
 
   @NotNull
   protected <T> T loadPackage(@NotNull PackageHolder holder, @NotNull PackageInfoLoader<T> loader) throws PackageLoadException {
@@ -46,8 +45,10 @@ public abstract class PackageInfoLoaderBase {
       throw new PackageLoadException("Failed to fetch .nuspec from package");
     }
 
-    final String id = parseProperty(root, "id");
-    final String version = parseProperty(root, "version");
+    final NuspecFileContent nuspec = new NuspecFileContent(root);
+
+    final String id = nuspec.getId();
+    final String version = nuspec.getVersion();
 
     if (id == null || StringUtil.isEmptyOrSpaces(id)) {
       throw new PackageLoadException("Invalid package. Failed to parse package Id for package: " + holder.getPackageName());
@@ -71,40 +72,6 @@ public abstract class PackageInfoLoaderBase {
   protected interface PackageInfoLoader<T> {
     @NotNull
     T createPackageInfo(@NotNull Element nuspec, @NotNull final String id, @NotNull final String version) throws PackageLoadException;
-  }
-
-  @Nullable
-  protected static String parseProperty(@NotNull final Element root, final @NotNull String name) {
-    final Element child = getChild(getChild(root, "metadata"), name);
-    return child == null ? null : child.getTextNormalize();
-  }
-
-  @Nullable
-  protected static Element getChild(@Nullable final Element root, final String childName) {
-    if (root == null) return null;
-    Element child = root.getChild(childName);
-    if (child != null) return child;
-    return root.getChild(childName, root.getNamespace(NS));
-  }
-
-  @NotNull
-  protected static List<Element> getChildren(@Nullable final Element root, final String child) {
-    if (root == null) return Collections.emptyList();
-    List<Element> result = new ArrayList<Element>();
-    for (List list : Arrays.asList(root.getChildren(child), root.getChildren(child, root.getNamespace(NS)))) {
-      for (Object o : list) {
-        result.add((Element)o);
-      }
-    }
-    return result;
-  }
-
-  protected static void addParameter(@NotNull final Map<String, String> map,
-                            @NotNull final String key,
-                            @Nullable final String value) {
-    if (!StringUtil.isEmptyOrSpaces(value)) {
-      map.put(key, value);
-    }
   }
 
   @Nullable

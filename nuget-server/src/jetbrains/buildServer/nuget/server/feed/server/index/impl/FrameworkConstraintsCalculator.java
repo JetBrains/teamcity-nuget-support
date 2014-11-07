@@ -17,88 +17,47 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.PackageInfoLoaderBase;
+import jetbrains.buildServer.nuget.common.nuspec.FrameworkAssembly;
+import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
 import jetbrains.buildServer.nuget.server.util.VersionUtility;
-import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
-import jetbrains.buildServer.util.FileUtil;
-import org.jdom.Element;
-import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * @author Evgeniy.Koshkin
  */
-public class FrameworkConstraintsCalculator extends PackageInfoLoaderBase {
-
-  private static final String NUSPEC_FILE_EXTENSION = ".nuspec";
-  private static final String METADATA_ELEMENT = "metadata";
-  private static final String FRAMEWORK_ASSEMBLIES_ELEMENT = "frameworkAssemblies";
-  private static final String FRAMEWORK_ASSEMBLY_ELEMENT = "frameworkAssembly";
-  private static final String TARGET_FRAMEWORK_ATTRIBUTE = "targetFramework";
+public class FrameworkConstraintsCalculator implements NuGetPackageStructureAnalyser {
 
   private static final Pattern SUBFOLDER_MATCHING_PATTERN = Pattern.compile("(content|lib|build|tools)\\/([^\\/]+)\\/.*");
   private static final String LIB_FOLDER = "lib";
 
   private static final Logger LOG = Logger.getInstance(FrameworkConstraintsCalculator.class.getName());
 
+  private final Set<String> myConstraints = new HashSet<String>();
+
   @NotNull
-  public Set<String> getPackageConstraints(@NotNull final BuildArtifact nugetPackage) {
-    ZipInputStream zipInputStream = null;
-    InputStream stream = null;
-    final String nugetPackageName = nugetPackage.getName();
-    final Set<String> constraints = new HashSet<String>();
-    try {
-      stream = nugetPackage.getInputStream();
-      zipInputStream = new ZipInputStream(new BufferedInputStream(stream));
-      ZipEntry zipEntry;
-      while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-        if(zipEntry.isDirectory()) continue;
-        final String zipEntryName = zipEntry.getName();
-        if (zipEntryName.endsWith(NUSPEC_FILE_EXTENSION)) {
-          LOG.debug(String.format("Nuspec file found on path %s in NuGet package %s", zipEntryName, nugetPackageName));
-          final Element document = readNuspecFileContent(zipInputStream);
-          if (document == null)
-            LOG.warn("Failed to read .nuspec file content from NuGet package " + nugetPackageName);
-          else {
-            final Collection<String> constraintsFromNuspec = extractConstraintsFromNuspec(document);
-            if(constraintsFromNuspec.isEmpty())
-              LOG.debug(String.format("No framework constraints were extracted from .nuspec %s for NuGet package %s", zipEntryName, nugetPackageName));
-            else
-              constraints.addAll(constraintsFromNuspec);
-          }
-          zipInputStream.closeEntry();
-        }
-        else {
-          final String targetFramework = extractTargetFrameworkFromReferenceFilePath(zipEntryName);
-          if (targetFramework != null)
-            constraints.add(targetFramework);
-        }
-      }
-    } catch (IOException e) {
-      //LOG
-      if(zipInputStream != null){
-        try {
-          zipInputStream.close();
-        } catch (IOException ex) {
-          //NOP
-        }
-      }
-    } finally {
-      FileUtil.close(stream);
-    }
-    return constraints;
+  public Set<String> getPackageConstraints() {
+    return myConstraints;
+  }
+
+  public void analyseNuspecFile(@NotNull NuspecFileContent nuspecContent) {
+    final Collection<String> constraintsFromNuspec = extractConstraintsFromNuspec(nuspecContent);
+    if(constraintsFromNuspec.isEmpty())
+      LOG.debug(String.format("No framework constraints were extracted from .nuspec file for NuGet package %s %s", nuspecContent.getId(), nuspecContent.getVersion()));
+    else
+      myConstraints.addAll(constraintsFromNuspec);
+  }
+
+  public void analyseEntry(@NotNull String entryName) {
+    final String targetFramework = extractTargetFrameworkFromReferenceFilePath(entryName);
+    if (targetFramework != null)
+      myConstraints.add(targetFramework);
   }
 
   @Nullable
@@ -113,31 +72,11 @@ public class FrameworkConstraintsCalculator extends PackageInfoLoaderBase {
       return null;
   }
 
-  @Nullable
-  private Element readNuspecFileContent(final ZipInputStream finalZipInputStream) throws IOException {
-    try {
-      return FileUtil.parseDocument(new InputStream() {
-        @Override
-        public int read() throws IOException {
-          return finalZipInputStream.read();
-        }
-
-        @Override
-        public void close() throws IOException {
-          //do nothing, should avoid stream closing by xml parse util
-        }
-      }, false);
-    } catch (JDOMException e) {
-      LOG.debug(e);
-      return null;
-    }
-  }
-
   @NotNull
-  private Collection<String> extractConstraintsFromNuspec(@NotNull Element nuspecRootElement) {
+  private Collection<String> extractConstraintsFromNuspec(@NotNull NuspecFileContent nuspecContent) {
     final Collection<String> targetFrameworks = new HashSet<String>();
-    for(Element frameworkAssemblyElement : getChildren(getChild(getChild(nuspecRootElement, METADATA_ELEMENT), FRAMEWORK_ASSEMBLIES_ELEMENT), FRAMEWORK_ASSEMBLY_ELEMENT)){
-      final String targetFramework = frameworkAssemblyElement.getAttributeValue(TARGET_FRAMEWORK_ATTRIBUTE);
+    for(FrameworkAssembly frameworkAssembly : nuspecContent.getFrameworkAssemblies()){
+      final String targetFramework = frameworkAssembly.getTargetFramework();
       if(targetFramework != null)
         targetFrameworks.add(targetFramework.toLowerCase());
     }

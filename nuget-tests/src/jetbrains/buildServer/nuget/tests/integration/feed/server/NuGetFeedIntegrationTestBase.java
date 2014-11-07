@@ -16,11 +16,12 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import com.google.common.collect.Lists;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.*;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -42,8 +43,7 @@ import org.testng.annotations.BeforeMethod;
 import java.io.*;
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
-import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
+import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.*;
 import static org.apache.http.HttpStatus.*;
 
 /**
@@ -126,8 +126,14 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
     }});
 
     try {
-      final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-      final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(artifact, new Date()));
+      final LocalNuGetPackageItemsFactory packageItemsFactory = LocalNuGetPackageItemsFactory.createForBuild(build);
+      final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
+      final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
+
+      new NuGetPackageStructureVisitor(analysers).visit(artifact);
+
+      final Map<String,String> map = packageItemsFactory.getItems();
+      map.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints()));
       map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
       map.put(TEAMCITY_BUILD_TYPE_ID, "bt_" + packageFile.getName());
       map.put("TeamCityDownloadUrl", "some-download-url/" + packageFile.getName());

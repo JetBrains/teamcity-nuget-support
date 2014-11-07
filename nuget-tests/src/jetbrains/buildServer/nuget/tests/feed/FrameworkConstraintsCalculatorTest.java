@@ -16,9 +16,13 @@
 
 package jetbrains.buildServer.nuget.tests.feed;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.FrameworkConstraintsCalculator;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureAnalyser;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureVisitor;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.FileUtil;
@@ -46,7 +50,6 @@ import java.util.Set;
 public class FrameworkConstraintsCalculatorTest extends BaseTestCase {
   private Mockery m;
   private Set<InputStream> myStreams;
-  private FrameworkConstraintsCalculator myCalculator;
 
   @Override
   @BeforeMethod
@@ -54,7 +57,6 @@ public class FrameworkConstraintsCalculatorTest extends BaseTestCase {
     super.setUp();
     m = new Mockery();
     myStreams = new HashSet<InputStream>();
-    myCalculator = new FrameworkConstraintsCalculator();
   }
 
   @Override
@@ -106,10 +108,12 @@ public class FrameworkConstraintsCalculatorTest extends BaseTestCase {
     assertPackageConstraints(Sets.newHashSet("net40-client"), "packages/subfoldersNamesCaseInsensitivity.nupkg");
   }
 
-  private void assertPackageConstraints(Set<String> expectedConstraints, @NotNull String pathToPackage) throws IOException {
+  private void assertPackageConstraints(Set<String> expectedConstraints, @NotNull String pathToPackage) throws IOException, PackageLoadException {
     final File pkg = Paths.getTestDataPath(pathToPackage);
     Assert.assertTrue(pkg.isFile(), "Package wasn't found on path " + pkg.getAbsolutePath());
-    assertEquals(expectedConstraints, myCalculator.getPackageConstraints(artifact(pkg)));
+    final FrameworkConstraintsCalculator calculator = new FrameworkConstraintsCalculator();
+    new NuGetPackageStructureVisitor(Lists.<NuGetPackageStructureAnalyser>newArrayList(calculator)).visit(artifact(pkg));
+    assertEquals(expectedConstraints, calculator.getPackageConstraints());
   }
 
   @NotNull

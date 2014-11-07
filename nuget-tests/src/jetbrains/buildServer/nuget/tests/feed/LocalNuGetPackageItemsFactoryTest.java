@@ -16,9 +16,12 @@
 
 package jetbrains.buildServer.nuget.tests.feed;
 
+import com.google.common.collect.Lists;
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureAnalyser;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureVisitor;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.FileUtil;
@@ -47,7 +50,6 @@ import java.util.*;
 public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   private Mockery m;
   private Set<InputStream> myStreams;
-  private LocalNuGetPackageItemsFactory myFactory;
 
   @BeforeMethod
   @Override
@@ -55,7 +57,6 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
     super.setUp();
     m = new Mockery();
     myStreams = new HashSet<InputStream>();
-    myFactory = new LocalNuGetPackageItemsFactory();
   }
 
   @AfterMethod
@@ -104,10 +105,8 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   public void test_NinjectMVC() throws InvocationTargetException, IllegalAccessException, PackageLoadException, IOException {
     final File pkg = Paths.getTestDataPath("packages/Ninject.MVC3.2.2.2.0.nupkg");
     Assert.assertTrue(pkg.isFile());
-
-    final Map<String, String> aPackage = myFactory.loadPackage(artifact(pkg), new Date());
     Assert.assertEquals(
-            store(aPackage),
+            store(loadPackage(pkg)),
             "Authors = Remo Gloor, Ian Davis\n" +
                     "Dependencies = Ninject:[2.2.0.0, 2.3.0.0)|WebActivator:1.4\n" +
                     "Description = Extension for Ninject providing integration with ASP.NET MVC3\n" +
@@ -124,18 +123,14 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
                     "Version = 2.2.2.0");
   }
 
-
   @Test
   @TestFor(issues = "TW-21975")
   public void test_dependencies_20() throws InvocationTargetException, IllegalAccessException, PackageLoadException, IOException {
     final File pkg = Paths.getTestDataPath("packages/PackageWithPlatformDependencies.3.0.0.nupkg");
     Assert.assertTrue(pkg.isFile());
-
-    final Map<String, String> aPackage = myFactory.loadPackage(artifact(pkg), new Date());
-
-    String deps = aPackage.get("Dependencies");
-    Assert.assertNotNull(deps);
-    Assert.assertEquals(deps, "Ninject:[2.2.0.0, 2.3.0.0)|WebActivator:1.4|jQuery:1.2.4:net40|WebActivator:1.3.4:net40|RouteMagic:1.1.0|Microsoft.Net.Http:2.0.20710.0:net40-client|Endjeeeeore:3.0.0.0:net40-client|Endjtttttmposition:3.0.0.0:net40-client|Entttre:3.0.0.0:net40-full|Endjittttosition:3.0.0.0:net40-full|Endeeeeore:3.0.0.0:Net45|Endjttre:3.0.0.0:portable-windows8+net45|EnqqqweCore:3.0.0.0:WinRT45|Endjbcvbcvore:3.0.0.0:WP8");
+    final String dependencies = loadPackage(pkg).get("Dependencies");
+    Assert.assertNotNull(dependencies);
+    Assert.assertEquals(dependencies, "Ninject:[2.2.0.0, 2.3.0.0)|WebActivator:1.4|jQuery:1.2.4:net40|WebActivator:1.3.4:net40|RouteMagic:1.1.0|Microsoft.Net.Http:2.0.20710.0:net40-client|Endjeeeeore:3.0.0.0:net40-client|Endjtttttmposition:3.0.0.0:net40-client|Entttre:3.0.0.0:net40-full|Endjittttosition:3.0.0.0:net40-full|Endeeeeore:3.0.0.0:Net45|Endjttre:3.0.0.0:portable-windows8+net45|EnqqqweCore:3.0.0.0:WinRT45|Endjbcvbcvore:3.0.0.0:WP8");
   }
 
   @Test
@@ -143,9 +138,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   public void test_title() throws InvocationTargetException, IllegalAccessException, PackageLoadException, IOException {
     final File pkg = Paths.getTestDataPath("packages/YCM.Web.UI.1.0.20.7275.nupkg");
     Assert.assertTrue(pkg.isFile());
-
-    final Map<String, String> aPackage = myFactory.loadPackage(artifact(pkg), new Date());
-    Assert.assertNotNull(aPackage.get("Title"));
+    Assert.assertNotNull(loadPackage(pkg).get("Title"));
   }
 
   @Test
@@ -153,9 +146,13 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   public void test_minClientVersion() throws IOException, PackageLoadException {
     final File pkg = Paths.getTestDataPath("packages/Min.Version.Two.Five.1.0.0.nupkg");
     Assert.assertTrue(pkg.isFile());
-
-    final Map<String, String> aPackage = myFactory.loadPackage(artifact(pkg), new Date());
-    Assert.assertNotNull(aPackage.get("MinClientVersion"));
+    Assert.assertNotNull(loadPackage(pkg).get("MinClientVersion"));
   }
 
+  @NotNull
+  private Map<String, String> loadPackage(@NotNull File artifact) throws PackageLoadException, IOException {
+    final LocalNuGetPackageItemsFactory packageItemsFactory = new LocalNuGetPackageItemsFactory(new Date());
+    new NuGetPackageStructureVisitor(Lists.<NuGetPackageStructureAnalyser>newArrayList(packageItemsFactory)).visit(artifact(artifact));
+    return packageItemsFactory.getItems();
+  }
 }
