@@ -101,16 +101,16 @@ public class NuspecFileContent {
     final Element dependencies = getChild(metadata, DEPENDENCIES_ELEMENT);
     if(dependencies == null) return null;
 
-    final Collection<Dependency> topLevelDependencies = new HashSet<Dependency>();
+    final Collection<Dependency> topLevelDependencies = new LinkedHashSet<Dependency>();
     for (Element dep : getChildren(dependencies, DEPENDENCY_ELEMENT)) {
       final String id = dep.getAttributeValue(ID);
       final String versionConstraint = dep.getAttributeValue(VERSION);
       topLevelDependencies.add(new Dependency(id, versionConstraint));
     }
 
-    final Collection<DependencyGroup> groups = new HashSet<DependencyGroup>();
+    final Collection<DependencyGroup> groups = new LinkedHashSet<DependencyGroup>();
     for (Element group : getChildren(dependencies, GROUP_ELEMENT)) {
-      final Collection<Dependency> groupDependencies = new HashSet<Dependency>();
+      final Collection<Dependency> groupDependencies = new LinkedHashSet<Dependency>();
       for (Element dep : getChildren(group, DEPENDENCY_ELEMENT)) {
         final String id = dep.getAttributeValue(ID);
         final String versionConstraint = dep.getAttributeValue(VERSION);
