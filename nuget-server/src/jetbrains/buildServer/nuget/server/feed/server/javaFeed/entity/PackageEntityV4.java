@@ -23,6 +23,7 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import org.jetbrains.annotations.NotNull;
 
 public interface PackageEntityV4 {
@@ -126,12 +127,6 @@ public interface PackageEntityV4 {
   @NotNull
   String getLicenseReportUrl();
 
-
-  String[] KeyPropertyNames = new String[] {
-    "Id", 
-    "Version", 
-  };
-
-
+  String[] KeyPropertyNames = new String[] { PackageAttributes.ID, PackageAttributes.VERSION };
 }
 

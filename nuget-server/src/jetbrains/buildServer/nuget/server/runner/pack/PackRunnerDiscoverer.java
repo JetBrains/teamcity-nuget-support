@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.runner.pack;
 
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.serverSide.BuildTypeSettings;
@@ -35,7 +36,6 @@ import java.util.*;
  * @author Evgeniy.Koshkin
  */
 public class PackRunnerDiscoverer extends BreadthFirstRunnerDiscoveryExtension {
-  private static final String NUSPEC_FILE_EXTENSION = ".nuspec";
   public static final String DEFAULT_OUT_DIR_PATH = "nuget-pack-out";
 
   @NotNull
@@ -43,7 +43,7 @@ public class PackRunnerDiscoverer extends BreadthFirstRunnerDiscoveryExtension {
   protected List<DiscoveredObject> discoverRunnersInDirectory(@NotNull Element dir, @NotNull List<Element> filesAndDirs) {
     final List<String> foundNuSpecs = new ArrayList<String>();
     for(Element item : filesAndDirs){
-      if(item.isLeaf() && item.getName().endsWith(NUSPEC_FILE_EXTENSION) && item.isContentAvailable()){
+      if(item.isLeaf() && item.getName().endsWith(FeedConstants.NUSPEC_FILE_EXTENSION) && item.isContentAvailable()){
         foundNuSpecs.add(item.getFullName());
       }
     }

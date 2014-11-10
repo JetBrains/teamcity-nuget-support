@@ -23,13 +23,8 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
-import java.util.*;
-import java.lang.*;
-import org.odata4j.core.*;
-import org.odata4j.internal.*;
-import org.joda.time.*;
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public interface PackageEntityV2  { 
 
@@ -120,12 +115,6 @@ public interface PackageEntityV2  {
   @NotNull
   java.lang.String getMinClientVersion();
 
-
-  String[] KeyPropertyNames = new String[] {
-    "Id", 
-    "Version", 
-  };
-
-
+  String[] KeyPropertyNames = new String[] { PackageAttributes.ID, PackageAttributes.VERSION };
 }
 

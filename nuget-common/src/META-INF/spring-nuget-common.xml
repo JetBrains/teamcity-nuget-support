@@ -7,6 +7,6 @@
        default-autowire="constructor">
 
   <bean class="jetbrains.buildServer.nuget.common.PackageDependenciesStore"/>
-  <bean class="jetbrains.buildServer.nuget.common.SimplePackageInfoLoader"/>
+  <bean class="jetbrains.buildServer.nuget.common.PackageInfoLoader"/>
 
 </beans>

@@ -25,7 +25,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigPa
 import jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageInfo;
-import jetbrains.buildServer.nuget.common.SimplePackageInfoLoader;
+import jetbrains.buildServer.nuget.common.PackageInfoLoader;
 import jetbrains.buildServer.nuget.common.SourcePackageInfo;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.StringUtil;
@@ -53,7 +53,7 @@ public class PackageUsagesTest extends BaseTestCase {
   protected void setUp() throws Exception {
     super.setUp();
     myCollector = new NuGetPackagesCollectorImpl();
-    myUsages = new PackageUsagesImpl(myCollector, new NuGetPackagesConfigParser(), new SimplePackageInfoLoader());
+    myUsages = new PackageUsagesImpl(myCollector, new NuGetPackagesConfigParser(), new PackageInfoLoader());
   }
 
   @Test

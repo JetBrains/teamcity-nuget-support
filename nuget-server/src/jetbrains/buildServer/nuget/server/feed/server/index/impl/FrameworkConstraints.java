@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
+package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
-import jetbrains.buildServer.serverSide.TeamCityProperties;
+import com.google.common.collect.Sets;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Evgeniy.Koshkin
  */
-public class NuGetAPIVersion {
-  public static final String TEAMCITY_NUGET_API_VERSION_PROP_NAME = "teamcity.nuget.api.version";
-  public static final String V1 = "v1";
-  public static final String V2 = "v2";
+public class FrameworkConstraints {
 
-  public static boolean shouldUseV2() {
-    return getVersionToUse().equalsIgnoreCase(V2);
+  private static final String SEPARATOR = "|";
+
+  @NotNull
+  public static String convertToString(Collection<String> constraints){
+    return StringUtil.join("|", constraints);
   }
 
   @NotNull
-  public static String getVersionToUse() {
-    return TeamCityProperties.getProperty(TEAMCITY_NUGET_API_VERSION_PROP_NAME, V1);
+  public static Set<String> convertFromString(@NotNull String string){
+    return Sets.newHashSet(string.split(SEPARATOR));
   }
 }

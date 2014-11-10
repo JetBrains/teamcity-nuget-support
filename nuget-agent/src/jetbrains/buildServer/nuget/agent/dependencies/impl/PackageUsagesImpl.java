@@ -20,8 +20,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.common.PackageInfoLoader;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
-import jetbrains.buildServer.nuget.common.SimplePackageInfoLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,11 +38,11 @@ public class PackageUsagesImpl implements PackageUsages {
 
   private final NuGetPackagesCollector myCollector;
   private final NuGetPackagesConfigParser myParser;
-  private final SimplePackageInfoLoader myLoader;
+  private final PackageInfoLoader myLoader;
 
   public PackageUsagesImpl(@NotNull final NuGetPackagesCollector collector,
                            @NotNull final NuGetPackagesConfigParser parser,
-                           @NotNull final SimplePackageInfoLoader loader) {
+                           @NotNull final PackageInfoLoader loader) {
     myCollector = collector;
     myParser = parser;
     myLoader = loader;

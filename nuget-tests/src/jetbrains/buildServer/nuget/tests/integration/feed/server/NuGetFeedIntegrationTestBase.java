@@ -16,10 +16,12 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import com.google.common.collect.Lists;
+import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
-import jetbrains.buildServer.nuget.common.PackageLoadException;
+import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.*;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -41,9 +43,8 @@ import org.testng.annotations.BeforeMethod;
 import java.io.*;
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
-import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
-import static org.apache.http.HttpStatus.SC_OK;
+import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.*;
+import static org.apache.http.HttpStatus.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -125,12 +126,18 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
     }});
 
     try {
-      final LocalNuGetPackageItemsFactory factory = new LocalNuGetPackageItemsFactory();
-      final Map<String, String> map = new HashMap<String, String>(factory.loadPackage(artifact, new Date()));
+      final LocalNuGetPackageItemsFactory packageItemsFactory = LocalNuGetPackageItemsFactory.createForBuild(build);
+      final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
+      final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
+
+      new NuGetPackageStructureVisitor(analysers).visit(artifact);
+
+      final Map<String,String> map = packageItemsFactory.getItems();
+      map.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints()));
       map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
       map.put(TEAMCITY_BUILD_TYPE_ID, "bt_" + packageFile.getName());
       map.put("TeamCityDownloadUrl", "some-download-url/" + packageFile.getName());
-      map.put("IsLatestVersion", String.valueOf(isLatest));
+      map.put(PackageAttributes.IS_LATEST_VERSION, String.valueOf(isLatest));
       return map;
     } catch (PackageLoadException e) {
       throw new RuntimeException(e);
@@ -169,13 +176,13 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
         final HttpGet get = createGetQuery(req, reqs);
         execute(get, new ExecuteAction<Object>() {
           public Object processResult(@NotNull HttpResponse response) throws IOException {
-            final HttpEntity entity = response.getEntity();
             System.out.println("Request: " + get.getRequestLine());
-            entity.writeTo(System.out);
-            System.out.println();
-            System.out.println();
-
-            Assert.assertTrue(response.getStatusLine().getStatusCode() == SC_OK);
+            final HttpEntity entity = response.getEntity();
+            if(entity != null){
+              entity.writeTo(System.out);
+              System.out.println();
+            }
+            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_OK);
             return null;
           }
         });
@@ -183,4 +190,37 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
     };
   }
 
+  @NotNull
+  protected Runnable assert400(@NotNull final String req,
+                               @NotNull final NameValuePair... reqs) {
+    return new Runnable() {
+      public void run() {
+        final HttpGet get = createGetQuery(req, reqs);
+        execute(get, new ExecuteAction<Object>() {
+          public Object processResult(@NotNull HttpResponse response) throws IOException {
+            System.out.println("Request: " + get.getRequestLine());
+            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_BAD_REQUEST);
+            return null;
+          }
+        });
+      }
+    };
+  }
+
+  @NotNull
+  protected Runnable assert404(@NotNull final String req,
+                               @NotNull final NameValuePair... reqs) {
+    return new Runnable() {
+      public void run() {
+        final HttpGet get = createGetQuery(req, reqs);
+        execute(get, new ExecuteAction<Object>() {
+          public Object processResult(@NotNull HttpResponse response) throws IOException {
+            System.out.println("Request: " + get.getRequestLine());
+            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_NOT_FOUND);
+            return null;
+          }
+        });
+      }
+    };
+  }
 }

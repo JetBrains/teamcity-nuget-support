@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparer;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparators;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
@@ -170,7 +170,7 @@ public class VersionComparatorTest extends BaseTestCase {
       for (int toId = 0; toId < initial.size(); toId++) {
         final String to = initial.get(toId);
 
-        int cmp = SemanticVersionsComparer.getSemanticVersionsComparator().compare(from, to);
+        int cmp = SemanticVersionsComparators.getSemanticVersionsComparator().compare(from, to);
         final String msg = from + " : " + to + " => " + cmp;
 
         if (fromId == toId) Assert.assertEquals(cmp, 0, msg);
@@ -182,12 +182,12 @@ public class VersionComparatorTest extends BaseTestCase {
 
     List<String> copy = new ArrayList<String>(_versions);
     Collections.reverse(copy);
-    Collections.sort(copy, SemanticVersionsComparer.getSemanticVersionsComparator());
+    Collections.sort(copy, SemanticVersionsComparators.getSemanticVersionsComparator());
     Assert.assertEquals(copy, initial);
 
     for (int i = 0; i < 10; i++) {
       Collections.shuffle(copy);
-      Collections.sort(copy, SemanticVersionsComparer.getSemanticVersionsComparator());
+      Collections.sort(copy, SemanticVersionsComparators.getSemanticVersionsComparator());
       Assert.assertEquals(copy, initial);
     }
   }
@@ -210,7 +210,7 @@ public class VersionComparatorTest extends BaseTestCase {
 
 
   private void doParsedVersionTest(@NotNull String version, @Nullable String a, @Nullable String b, @Nullable String c) {
-    SemanticVersionsComparer.ParsedVersion pv = new SemanticVersionsComparer.ParsedVersion(version);
+    SemanticVersionsComparators.ParsedVersion pv = new SemanticVersionsComparators.ParsedVersion(version);
     Assert.assertEquals(pv.getInitialPart(), a);
     Assert.assertEquals(pv.getMunisPart(), b);
     Assert.assertEquals(pv.getPlusPart(), c);

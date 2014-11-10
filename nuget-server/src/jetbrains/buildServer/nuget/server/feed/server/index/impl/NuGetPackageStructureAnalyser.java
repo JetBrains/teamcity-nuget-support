@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
+package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
-import jetbrains.buildServer.serverSide.TeamCityProperties;
+import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Evgeniy.Koshkin
  */
-public class NuGetAPIVersion {
-  public static final String TEAMCITY_NUGET_API_VERSION_PROP_NAME = "teamcity.nuget.api.version";
-  public static final String V1 = "v1";
-  public static final String V2 = "v2";
-
-  public static boolean shouldUseV2() {
-    return getVersionToUse().equalsIgnoreCase(V2);
-  }
-
-  @NotNull
-  public static String getVersionToUse() {
-    return TeamCityProperties.getProperty(TEAMCITY_NUGET_API_VERSION_PROP_NAME, V1);
-  }
+public interface NuGetPackageStructureAnalyser {
+  void analyseEntry(@NotNull String entryName);
+  void analyseNuspecFile(@NotNull NuspecFileContent nuspecContent);
 }

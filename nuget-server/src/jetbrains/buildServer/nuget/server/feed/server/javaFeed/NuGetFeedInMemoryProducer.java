@@ -17,23 +17,23 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntity;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunction;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunctions;
-import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.Converter;
+import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
-import org.odata4j.core.OEntity;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.edm.EdmDataServices;
-import org.odata4j.edm.EdmEntitySet;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.exceptions.NotImplementedException;
-import org.odata4j.producer.*;
+import org.odata4j.producer.BaseResponse;
+import org.odata4j.producer.ODataContext;
+import org.odata4j.producer.PropertyPathHelper;
+import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.inmemory.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,11 +44,14 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   private final Object mySyncRoot = new Object();
 
   @NotNull private final NuGetFeedFunctions myFunctions;
+  @NotNull private final RecentNuGetRequests myRecentRequests;
+
   private String myApiVersion;
 
-  public NuGetFeedInMemoryProducer(@NotNull final NuGetFeedFunctions functions) {
+  public NuGetFeedInMemoryProducer(@NotNull final NuGetFeedFunctions functions, @NotNull final RecentNuGetRequests recentRequests) {
     super(MetadataConstants.NUGET_GALLERY_NAMESPACE);
     myFunctions = functions;
+    myRecentRequests = recentRequests;
   }
 
   public void register(Func<Iterable<PackageEntity>> getFunc){
@@ -72,26 +75,30 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   }
 
   @Override
-  public BaseResponse callFunction(ODataContext context, EdmFunctionImport function, Map<String, OFunctionParameter> params, QueryInfo queryInfo) {
+  public BaseResponse callFunction(ODataContext context, EdmFunctionImport function, Map<String, OFunctionParameter> params, QueryInfo queryInfo, boolean isCountCall) {
     final NuGetFeedFunction targetFunction = myFunctions.find(function);
     if(targetFunction == null){
       LOG.debug("Failed to process NuGet feed function call. Failed to find target function by name " + function.getName());
       throw new NotImplementedException();
     }
 
-    final Iterable<Object> objects = targetFunction.call(function.getReturnType(), params, queryInfo);
-    if(objects == null) return null;
+    myRecentRequests.reportFunctionCall(targetFunction.getName());
 
-    EdmEntitySet metadataEntitySet = getMetadata().findEdmEntitySet(function.getEntitySet().getName());
-    final EdmEntitySet entitySet = metadataEntitySet != null ? metadataEntitySet : function.getEntitySet();
+    final Iterable<Object> functionCallResult = targetFunction.call(function.getReturnType(), params, queryInfo);
+    if(functionCallResult == null) return null;
 
-    final PropertyPathHelper pathHelper = new PropertyPathHelper(queryInfo);
-    List<OEntity> entitiesList = CollectionsUtil.convertCollection(objects, new Converter<OEntity, Object>() {
-      public OEntity createFrom(@NotNull Object source) {
-        return toOEntity(entitySet, source, pathHelper);
-      }
-    });
-    return Responses.entities(entitiesList, entitySet, null, null);
+    final RequestContext rc = RequestContext.newBuilder(RequestContext.RequestType.GetEntities)
+            .entitySetName(MetadataConstants.ENTITY_SET_NAME)
+            .entitySet(getMetadata().getEdmEntitySet(MetadataConstants.ENTITY_SET_NAME))
+            .queryInfo(queryInfo)
+            .odataContext(context)
+            .pathHelper(new PropertyPathHelper(queryInfo)).build();
+    final InMemoryEntityInfo<?> ei = getEntityInfo(MetadataConstants.ENTITY_SET_NAME);
+
+    if(isCountCall)
+      return getCountResponse(rc, Enumerable.create(functionCallResult));
+    else
+      return getEntitiesResponse(rc, rc.getEntitySet(), Enumerable.create(functionCallResult), ei.getPropertyModel());
   }
 
   @Override
