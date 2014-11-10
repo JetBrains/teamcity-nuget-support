@@ -94,10 +94,13 @@ public class PackageIndexTest extends BaseTestCase {
     final Map<String, String> myEntryData = new TreeMap<String, String>();
     final BuildMetadataEntry entry = m.mock(BuildMetadataEntry.class, name + "." + version + "-" + System.nanoTime());
 
-    m.checking(new Expectations(){{
-      allowing(entry).getBuildId(); will(returnValue(buildId));
-      allowing(entry).getMetadata(); will(returnValue(myEntryData));
-      allowing(entry).getKey(); will(returnValue(name));
+    m.checking(new Expectations() {{
+      allowing(entry).getBuildId();
+      will(returnValue(buildId));
+      allowing(entry).getMetadata();
+      will(returnValue(myEntryData));
+      allowing(entry).getKey();
+      will(returnValue(name));
     }});
 
     myEntryData.put("teamcity.buildTypeId", bt);
