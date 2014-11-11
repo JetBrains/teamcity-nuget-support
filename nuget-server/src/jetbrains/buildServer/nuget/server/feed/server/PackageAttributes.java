@@ -27,6 +27,7 @@ public class PackageAttributes {
   public static final String COPYRIGHT = "Copyright";
   public static final String DEPENDENCIES = "Dependencies";
   public static final String DESCRIPTION = "Description";
+  public static final String TITLE = "Title";
   public static final String ICON_URL = "IconUrl";
   public static final String IS_LATEST_VERSION = "IsLatestVersion";
   public static final String IS_ABSOLUTE_LATEST_VERSION = "IsAbsoluteLatestVersion";

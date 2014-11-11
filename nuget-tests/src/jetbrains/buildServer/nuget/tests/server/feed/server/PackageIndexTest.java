@@ -16,9 +16,9 @@
 
 package jetbrains.buildServer.nuget.tests.server.feed.server;
 
+import com.google.common.collect.Maps;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
-import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
@@ -34,6 +34,7 @@ import jetbrains.buildServer.serverSide.auth.Permission;
 import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -45,6 +46,8 @@ import org.testng.annotations.Test;
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.util.*;
+
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -87,36 +90,8 @@ public class PackageIndexTest extends BaseTestCase {
     m.checking(new Expectations(){{
       allowing(myContext).getAuthorityHolder(); will(returnValue(myAuthorityHolder));
       allowing(myStorage).getAllEntries("nuget"); will(returnIterator(myEntries));
+      allowing(myStorage).findEntriesWithValue(with(equal("nuget")), with(any(String.class)), with(PackagesIndexImpl.PACKAGE_ATTRIBUTES_TO_SEARCH)); will(returnIterator(myEntries));
     }});
-  }
-
-  private void addEntry(final String name, final String version, final String bt, final long buildId) {
-    final Map<String, String> myEntryData = new TreeMap<String, String>();
-    final BuildMetadataEntry entry = m.mock(BuildMetadataEntry.class, name + "." + version + "-" + System.nanoTime());
-
-    m.checking(new Expectations() {{
-      allowing(entry).getBuildId();
-      will(returnValue(buildId));
-      allowing(entry).getMetadata();
-      will(returnValue(myEntryData));
-      allowing(entry).getKey();
-      will(returnValue(name));
-    }});
-
-    myEntryData.put("teamcity.buildTypeId", bt);
-    myEntryData.put("teamcity.artifactPath", "btX/ZZZ");
-    myEntryData.put(PackageAttributes.VERSION, version);
-    myEntryData.put(PackageAttributes.ID, name);
-    myEntries.add(entry);
-
-    //recall natural sort order of metadata entries
-    Collections.sort(myEntries, new Comparator<BuildMetadataEntry>() {
-      public int compare(@NotNull BuildMetadataEntry o1, @NotNull BuildMetadataEntry o2) {
-        final long b1 = o1.getBuildId();
-        final long b2 = o2.getBuildId();
-        return (b1 > b2 ? -1 : b1 == b2 ? 0 : 1);
-      }
-    });
   }
 
   @Test
@@ -175,9 +150,11 @@ public class PackageIndexTest extends BaseTestCase {
 
   @Test
   public void testCheckesProjectAccess() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId("btX"); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(false));
+    m.checking(new Expectations() {{
+      allowing(myProjectManager).findProjectId("btX");
+      will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT);
+      will(returnValue(false));
     }});
     addEntry("Foo", "1.2.34", "btX", 7);
 
@@ -242,9 +219,11 @@ public class PackageIndexTest extends BaseTestCase {
   }
 
   private void allowView() {
-    m.checking(new Expectations(){{
-      allowing(myProjectManager).findProjectId(with(any(String.class))); will(returnValue("proj1"));
-      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT); will(returnValue(true));
+    m.checking(new Expectations() {{
+      allowing(myProjectManager).findProjectId(with(any(String.class)));
+      will(returnValue("proj1"));
+      allowing(myAuthorityHolder).isPermissionGrantedForProject("proj1", Permission.VIEW_PROJECT);
+      will(returnValue(true));
     }});
   }
 
@@ -351,6 +330,57 @@ public class PackageIndexTest extends BaseTestCase {
     assertPackagesSorted(expected.toArray(new String[expected.size()]));
   }
 
+  @Test
+  public void test_search_allAttributesAreProcessed() throws Exception {
+    allowView();
+
+    addEntry("foo", "1", "btX", 1);
+    addEntry("boo", "2", "btX", 2);
+    addEntry("description-matches", "3", "btX", 3, CollectionsUtil.asMap(DESCRIPTION, "foo"));
+    addEntry("description-not-match", "4", "btX", 4, CollectionsUtil.asMap(DESCRIPTION, "boo"));
+    addEntry("tags-match", "5", "btX", 5, CollectionsUtil.asMap(TAGS, "foo"));
+    addEntry("tags-not-match", "6", "btX", 6, CollectionsUtil.asMap(TAGS, "boo"));
+    addEntry("authors-match", "7", "btX", 7, CollectionsUtil.asMap(AUTHORS, "foo"));
+    addEntry("authors-not-match", "8", "btX", 8, CollectionsUtil.asMap(AUTHORS, "boo"));
+    addEntry("title-matches", "9", "btX", 9, CollectionsUtil.asMap(TITLE, "foo"));
+    addEntry("title-not-matches", "10", "btX", 10, CollectionsUtil.asMap(TITLE, "boo"));
+
+    assertTrue(myIndex.search("foo").hasNext());
+
+    m.assertIsSatisfied();
+  }
+
+  private void addEntry(final String packageId, final String packageVersion, final String buildTypeId, final long buildId){
+    addEntry(packageId, packageVersion, buildTypeId, buildId, Maps.<String, String>newHashMap());
+  }
+
+  private void addEntry(final String packageId, final String packageVersion, final String buildTypeId, final long buildId, @NotNull final Map<String, String> entryData) {
+    final BuildMetadataEntry entry = m.mock(BuildMetadataEntry.class, packageId + "." + packageVersion + "-" + System.nanoTime());
+
+    m.checking(new Expectations() {{
+      allowing(entry).getBuildId();
+      will(returnValue(buildId));
+      allowing(entry).getMetadata();
+      will(returnValue(entryData));
+      allowing(entry).getKey();
+      will(returnValue(packageId));
+    }});
+
+    entryData.put("teamcity.buildTypeId", buildTypeId);
+    entryData.put("teamcity.artifactPath", "btX/ZZZ");
+    entryData.put(VERSION, packageVersion);
+    entryData.put(ID, packageId);
+    myEntries.add(entry);
+
+    //recall natural sort order of metadata entries
+    Collections.sort(myEntries, new Comparator<BuildMetadataEntry>() {
+      public int compare(@NotNull BuildMetadataEntry o1, @NotNull BuildMetadataEntry o2) {
+        final long b1 = o1.getBuildId();
+        final long b2 = o2.getBuildId();
+        return (b1 > b2 ? -1 : b1 == b2 ? 0 : 1);
+      }
+    });
+  }
 
   private void dumpFeed() {
     System.out.println("Dump the feed: ");
@@ -427,18 +457,18 @@ public class PackageIndexTest extends BaseTestCase {
   @NotNull
   private static PackageEntityAdapter createAdaptor(@NotNull final NuGetIndexEntry e) {
     return new PackageEntityAdapter() {
-          public String getAtomEntityType() {
-            return null;
-          }
+      public String getAtomEntityType() {
+        return null;
+      }
 
-          public String getAtomEntitySource(String baseUrl) {
-            return null;
-          }
+      public String getAtomEntitySource(String baseUrl) {
+        return null;
+      }
 
-          @Override
-          protected String getValue(@NotNull String key) {
-            return e.getAttributes().get(key);
-          }
-        };
+      @Override
+      protected String getValue(@NotNull String key) {
+        return e.getAttributes().get(key);
+      }
+    };
   }
 }

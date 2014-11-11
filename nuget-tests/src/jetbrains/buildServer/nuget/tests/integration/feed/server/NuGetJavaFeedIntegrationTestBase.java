@@ -82,6 +82,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
           return getPackages();
         }
       });
+      allowing(myIndexProxy).search(with(any(String.class))); will(returnIterator(myFeed));
       allowing(myIndex).getNuGetEntries(); will(returnIterator(myFeed));
       allowing(mySettings).getNuGetFeedControllerPath(); will(returnValue(NuGetServerSettingsImpl.PATH));
 
@@ -127,9 +128,9 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     setPackagesIndex(new PackagesIndexImpl(
             myMetadataStorage,
             Arrays.asList(
-              new IsPrereleaseTransformation(),
-              new MockExternalIdTransformation(),
-              new DownloadUrlComputationTransformation(mySettings)
+                    new IsPrereleaseTransformation(),
+                    new MockExternalIdTransformation(),
+                    new DownloadUrlComputationTransformation(mySettings)
             )
     ));
   }

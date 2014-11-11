@@ -18,9 +18,9 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
-import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.FrameworkConstraints;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackageEntityEx;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
@@ -32,21 +32,16 @@ import org.odata4j.core.OSimpleObject;
 import org.odata4j.edm.*;
 import org.odata4j.producer.QueryInfo;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.IS_PRERELEASE;
 import static jetbrains.buildServer.nuget.server.feed.server.javaFeed.MetadataConstants.*;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class SearchFunction implements NuGetFeedFunction {
-
   private static final Logger LOG = Logger.getInstance(SearchFunction.class.getName());
-  private static final String[] PACKAGE_ATTRIBUTES_TO_SEARCH = new String[]{ PackageAttributes.ID, /*TITLE,*/ TAGS, DESCRIPTION, AUTHORS, /* OWNERS */};
 
   @NotNull private final PackagesIndex myIndex;
   @NotNull private final NuGetServerSettings myServerSettings;
@@ -90,6 +85,21 @@ public class SearchFunction implements NuGetFeedFunction {
     final OSimpleObject searchTermCasted = (OSimpleObject) searchTermParamValue;
     final String searchTerm = searchTermCasted.getValue().toString();
 
+    final OFunctionParameter targetFrameworkParam = params.get(TARGET_FRAMEWORK);
+    if(targetFrameworkParam == null){
+      LOG.debug(String.format("Bad %s function call. targetFramework parameter is not specified.", getName()));
+      return null;
+    }
+    final OObject targetFrameworkParamValue = targetFrameworkParam.getValue();
+    if(!(targetFrameworkParamValue instanceof OSimpleObject))
+    {
+      LOG.debug(String.format("Bad %s function call. targetFramework parameter type is invalid.", getName()));
+      return null;
+    }
+    final OSimpleObject targetFrameworkCasted = (OSimpleObject) targetFrameworkParamValue;
+    final String targetFramework = targetFrameworkCasted.getValue().toString();
+    final Set<String> frameworkConstraints = FrameworkConstraints.convertFromString(targetFramework);
+
     final OFunctionParameter includePreReleaseParam = params.get(INCLUDE_PRERELEASE);
     if(includePreReleaseParam == null){
       LOG.debug(String.format("Bad %s function call. 'includePrerelease' parameter is not specified.", getName()));
@@ -104,15 +114,16 @@ public class SearchFunction implements NuGetFeedFunction {
     final OSimpleObject includePreReleaseCasted = (OSimpleObject) includePreReleaseParamValue;
     final boolean includePreRelease = Boolean.parseBoolean(includePreReleaseCasted.getValue().toString());
 
-    String format = String.format("Searching packages by term %s", searchTerm);
+    String format = String.format("Searching packages by term '%s'", searchTerm);
     if(includePreRelease) format += ", including pre-release packages";
+    if(!targetFramework.isEmpty()) format += ", with target framework constraints " + targetFramework;
     LOG.debug(format);
 
     final List<NuGetIndexEntry> result = new ArrayList<NuGetIndexEntry>();
-    final Iterator<NuGetIndexEntry> entryIterator = myIndex.getNuGetEntries();
+    final Iterator<NuGetIndexEntry> entryIterator = myIndex.search(searchTerm);
     while (entryIterator.hasNext()){
       final NuGetIndexEntry indexEntry = entryIterator.next();
-      if(matches(indexEntry, searchTerm, includePreRelease)){
+      if(matches(indexEntry, includePreRelease, frameworkConstraints)){
         result.add(indexEntry);
       }
     }
@@ -123,14 +134,10 @@ public class SearchFunction implements NuGetFeedFunction {
     });
   }
 
-  private boolean matches(NuGetIndexEntry indexEntry, String searchTerm, boolean includePreRelease) {
+  private boolean matches(NuGetIndexEntry indexEntry, boolean includePreRelease, Set<String> frameworkConstraints) {
     final Map<String, String> indexEntryAttributes = indexEntry.getAttributes();
     if(!includePreRelease && Boolean.parseBoolean(indexEntryAttributes.get(IS_PRERELEASE))) return false;
-    for(String attributeName : PACKAGE_ATTRIBUTES_TO_SEARCH){
-      final String attributeValue = indexEntryAttributes.get(attributeName);
-      if(attributeValue != null && attributeValue.contains(searchTerm))
-        return true;
-    }
-    return false;
+    final Set<String> entryConstraints = FrameworkConstraints.convertFromString(indexEntryAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS));
+    return entryConstraints.isEmpty() || !CollectionsUtil.intersect(entryConstraints, frameworkConstraints).isEmpty();
   }
 }

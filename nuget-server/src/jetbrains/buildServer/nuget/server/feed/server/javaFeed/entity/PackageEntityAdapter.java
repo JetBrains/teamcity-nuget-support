@@ -19,6 +19,8 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDateTime;
 
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.TITLE;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 11.01.12 18:36
@@ -37,6 +39,7 @@ public abstract class PackageEntityAdapter extends PackageEntityImpl implements 
     return NO_INFO_DOWNLOAD_COUNT;
   }
 
+  @NotNull
   public String getGalleryDetailsUrl() {
     return getProjectUrl();
   }
@@ -46,12 +49,14 @@ public abstract class PackageEntityAdapter extends PackageEntityImpl implements 
     return getLastUpdated();
   }
 
+  @NotNull
   public String getSummary() {
     return getDescription();
   }
 
+  @NotNull
   public String getTitle() {
-    String val = getValue("Title");
+    String val = getValue(TITLE);
     if (val != null) return val;
     return getId();
   }

@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
+import com.google.common.collect.Lists;
 import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
@@ -33,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
 import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
 
 /**
@@ -40,6 +42,9 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArt
  *         Date: 19.10.11 16:18
  */
 public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsProvider {
+
+  public static final Collection<String> PACKAGE_ATTRIBUTES_TO_SEARCH = Lists.newArrayList(PackageAttributes.ID, TITLE, TAGS, DESCRIPTION, AUTHORS);
+
   private static final String TOTAL_NUMBER_OF_ITEMS_STAT = "Total number of items in index";
   private static final String NUMBER_OF_INDEXED_BUILDS_STAT = "Number of indexed builds";
   private static final String NUMBER_OF_PACKAGE_IDS_STAT = "Number of unique package Ids";
@@ -62,6 +67,11 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
   @NotNull
   public Iterator<NuGetIndexEntry> getNuGetEntries(@NotNull String packageId) {
     return decorateMetadata(myStorage.getEntriesByKey(NUGET_PROVIDER_ID, packageId));
+  }
+
+  @NotNull
+  public Iterator<NuGetIndexEntry> search(@NotNull String serachTerm) {
+    return decorateMetadata(myStorage.findEntriesWithValue(NUGET_PROVIDER_ID, serachTerm, PACKAGE_ATTRIBUTES_TO_SEARCH));
   }
 
   @NotNull

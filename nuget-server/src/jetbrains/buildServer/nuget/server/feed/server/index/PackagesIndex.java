@@ -39,4 +39,7 @@ public interface PackagesIndex {
 
   @NotNull
   Iterator<NuGetIndexEntry> getNuGetEntries(@NotNull String packageId);
+
+  @NotNull
+  Iterator<NuGetIndexEntry> search(@NotNull String serachTerm);
 }

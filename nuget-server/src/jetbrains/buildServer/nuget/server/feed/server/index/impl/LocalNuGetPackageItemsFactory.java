@@ -65,7 +65,7 @@ public class LocalNuGetPackageItemsFactory implements NuGetPackageStructureAnaly
     //not included here: addItem(map, "TeamCityDownloadUrl", "");
     addItem(ID, nuspec.getId());
     addItem(VERSION, nuspec.getVersion());
-    addItem("Title", nuspec.getTitle());
+    addItem(TITLE, nuspec.getTitle());
     addItem(RELEASE_NOTES, nuspec.getReleaseNotes());
     addItem(AUTHORS, nuspec.getAuthors());
     addItem(DEPENDENCIES, parseDependencies(nuspec));
