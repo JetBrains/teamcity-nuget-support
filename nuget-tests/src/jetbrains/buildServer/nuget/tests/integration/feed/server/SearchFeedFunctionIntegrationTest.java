@@ -16,7 +16,9 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import com.google.common.collect.Lists;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.FrameworkConstraints;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetAPIVersion;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.testng.annotations.AfterMethod;
@@ -24,6 +26,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS;
 
 /**
  * @author Evgeniy.Koshkin
@@ -55,15 +58,15 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test(enabled = false)
   public void testNoPackagesFound() throws Exception {
-    addMockPackage("foo", "1.0.0.0");
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net45")), VERSION, "1")));
     assert404("Search()?&searchTerm='noSuchPackage'&targetFramework='net45'&includePrerelease=true").run();
   }
 
   @Test
   public void testEmptySearchTerm() throws Exception {
-    addMockPackage("foo", "1.0.0.0");
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net45")), VERSION, "1")));
     final String response = openRequest("Search()?&searchTerm=''&targetFramework='net45'&includePrerelease=true");
-    assertContainsPackageVersion(response, "1.0.0.0");
+    assertContainsPackageVersion(response, "1.0");
   }
 
   @Test
@@ -82,7 +85,17 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testTargetFramework() throws Exception {
-    fail("TW-38385");
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, "", VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net45")), VERSION, "2")));
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net40")), VERSION, "3")));
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net40", "net45")), VERSION, "4")));
+
+    final String response = openRequest("Search()?&searchTerm=''&targetFramework='net45%7Cnet45%7Cnet45%7Cnet45%7Cnet45%7Cnet45%7Cnet45'&includePrerelease=true");
+
+    assertContainsPackageVersion(response, "1.0");
+    assertContainsPackageVersion(response, "2.0");
+    assertNotContainsPackageVersion(response, "3.0");
+    assertContainsPackageVersion(response, "4.0");
   }
 
   @Test
@@ -185,40 +198,11 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testCountRequest() throws Exception {
-    addMockPackage(new NuGetIndexEntry("id-matches", CollectionsUtil.asMap(ID, "foo", VERSION, "1")));
-    addMockPackage(new NuGetIndexEntry("id-not-matches", CollectionsUtil.asMap(ID, "boo", VERSION, "2")));
-    addMockPackage(new NuGetIndexEntry("description-matches", CollectionsUtil.asMap(ID, "some-id", DESCRIPTION, "foo", VERSION, "3")));
-    addMockPackage(new NuGetIndexEntry("description-not-matches", CollectionsUtil.asMap(ID, "some-id", DESCRIPTION, "boo", VERSION, "4")));
-    addMockPackage(new NuGetIndexEntry("tags-matches", CollectionsUtil.asMap(ID, "some-id", TAGS, "foo", VERSION, "5")));
-    addMockPackage(new NuGetIndexEntry("tags-not-matches", CollectionsUtil.asMap(ID, "some-id", TAGS, "boo", VERSION, "6")));
-    addMockPackage(new NuGetIndexEntry("authors-matches", CollectionsUtil.asMap(ID, "some-id", AUTHORS, "foo", VERSION, "7")), true);
-    addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(ID, "some-id", AUTHORS, "boo", VERSION, "8")));
+    addMockPackage(new NuGetIndexEntry("aaa", CollectionsUtil.asMap(ID, "foo", VERSION, "1")));
+    addMockPackage(new NuGetIndexEntry("bbb", CollectionsUtil.asMap(ID, "foo", VERSION, "2")), true);
 
-    assertEquals("4", openRequest("Search()/$count?&searchTerm='foo'&targetFramework='net45'&includePrerelease=true"));
-    assertEquals("1", openRequest("Search()/$count?$filter=IsAbsoluteLatestVersion&searchTerm='foo'&targetFramework='net45'&includePrerelease=true"));
-  }
-
-  @Test
-  public void testAllAttributesAreProcessed() throws Exception {
-    addMockPackage(new NuGetIndexEntry("id-matches", CollectionsUtil.asMap(ID, "foo", VERSION, "1")));
-    addMockPackage(new NuGetIndexEntry("id-not-matches", CollectionsUtil.asMap(ID, "boo", VERSION, "2")));
-    addMockPackage(new NuGetIndexEntry("description-matches", CollectionsUtil.asMap(ID, "some-id", DESCRIPTION, "foo", VERSION, "3")));
-    addMockPackage(new NuGetIndexEntry("description-not-matches", CollectionsUtil.asMap(ID, "some-id", DESCRIPTION, "boo", VERSION, "4")));
-    addMockPackage(new NuGetIndexEntry("tags-matches", CollectionsUtil.asMap(ID, "some-id", TAGS, "foo", VERSION, "5")));
-    addMockPackage(new NuGetIndexEntry("tags-not-matches", CollectionsUtil.asMap(ID, "some-id", TAGS, "boo", VERSION, "6")));
-    addMockPackage(new NuGetIndexEntry("authors-matches", CollectionsUtil.asMap(ID, "some-id", AUTHORS, "foo", VERSION, "7")));
-    addMockPackage(new NuGetIndexEntry("authors-not-matches", CollectionsUtil.asMap(ID, "some-id", AUTHORS, "boo", VERSION, "8")));
-
-    final String responseBody = openRequest("Search()?&searchTerm='foo'&targetFramework='net45'&includePrerelease=true");
-
-    assertContainsPackageVersion(responseBody, "1.0");
-    assertNotContainsPackageVersion(responseBody, "2.0");
-    assertContainsPackageVersion(responseBody, "3.0");
-    assertNotContainsPackageVersion(responseBody, "4.0");
-    assertContainsPackageVersion(responseBody, "5.0");
-    assertNotContainsPackageVersion(responseBody, "6.0");
-    assertContainsPackageVersion(responseBody, "7.0");
-    assertNotContainsPackageVersion(responseBody, "8.0");
+    assertEquals("2", openRequest("Search()/$count?&searchTerm=''&targetFramework='net45'&includePrerelease=true"));
+    assertEquals("1", openRequest("Search()/$count?$filter=IsAbsoluteLatestVersion&searchTerm=''&targetFramework='net45'&includePrerelease=true"));
   }
 
   private void assertContainsPackageVersion(String responseBody, String version){
