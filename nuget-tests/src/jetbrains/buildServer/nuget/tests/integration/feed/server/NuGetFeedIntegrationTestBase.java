@@ -186,7 +186,7 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
               entity.writeTo(System.out);
               System.out.println();
             }
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_NO_CONTENT);
+            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_OK);
             return null;
           }
         });
