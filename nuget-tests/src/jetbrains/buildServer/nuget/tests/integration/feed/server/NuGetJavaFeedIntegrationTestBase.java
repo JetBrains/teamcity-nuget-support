@@ -82,6 +82,11 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
           return getPackages();
         }
       });
+      allowing(myIndexProxy).getNuGetEntries(with(any(String.class))); will(new CustomAction("lazy return packages") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return getPackages();
+        }
+      });
       allowing(myIndex).getNuGetEntries(); will(returnIterator(myFeed));
       allowing(mySettings).getNuGetFeedControllerPath(); will(returnValue(NuGetServerSettingsImpl.PATH));
 

@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.google.common.collect.Lists;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.FrameworkConstraints;
+import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.testng.annotations.Test;
 
@@ -28,7 +28,7 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex
 /**
  * @author Evgeniy.Koshkin
  */
-public class SearchFeedFunctionIntegrationTest extends FeedFunctionIntegrationTestBase {
+public class SearchFunctionIntegrationTest extends FeedFunctionIntegrationTestBase {
 
   @Test(enabled = false)
   public void testBadRequest() throws Exception {

@@ -17,9 +17,10 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparators;
+import jetbrains.buildServer.nuget.server.util.SemanticVersion;
+import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.Converter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -28,9 +29,9 @@ import java.util.*;
 /**
  * Created 18.03.13 15:58
  *
- * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
+ * @author Eugene Petrenko (eugene.petrenko@jetbrains.com); re-written by evgeniy.koshkin
  */
-public class VersionComparatorTest extends BaseTestCase {
+public class SemanticVersionTest extends BaseTestCase {
   @Test
   public void test_simple_versions() {
     doTest("1.0.0", "2.0.0", "2.0.1", "2.1.0", "3.3.3", "4.0.0");
@@ -158,19 +159,25 @@ public class VersionComparatorTest extends BaseTestCase {
   }
 
   private void doTest(String... vs) {
-    doTest(Arrays.asList(vs));
+    doTest(CollectionsUtil.convertCollection(Arrays.asList(vs), new Converter<SemanticVersion, String>() {
+      public SemanticVersion createFrom(@NotNull String source) {
+        final SemanticVersion semanticVersion = SemanticVersion.tryParse(source);
+        assertNotNull("Failed to parse version " + source, semanticVersion);
+        return semanticVersion;
+      }
+    }));
   }
 
-  private void doTest(Collection<String> _versions) {
-    final List<String> initial = new ArrayList<String>(_versions);
+  private void doTest(Collection<SemanticVersion> _versions) {
+    final List<SemanticVersion> initial = new ArrayList<SemanticVersion>(_versions);
 
     for (int fromId = 0; fromId < initial.size(); fromId++) {
-      final String from = initial.get(fromId);
+      final SemanticVersion from = initial.get(fromId);
 
       for (int toId = 0; toId < initial.size(); toId++) {
-        final String to = initial.get(toId);
+        final SemanticVersion to = initial.get(toId);
 
-        int cmp = SemanticVersionsComparators.getSemanticVersionsComparator().compare(from, to);
+        int cmp = from.compareTo(to);
         final String msg = from + " : " + to + " => " + cmp;
 
         if (fromId == toId) Assert.assertEquals(cmp, 0, msg);
@@ -180,39 +187,15 @@ public class VersionComparatorTest extends BaseTestCase {
       }
     }
 
-    List<String> copy = new ArrayList<String>(_versions);
+    List<SemanticVersion> copy = new ArrayList<SemanticVersion>(_versions);
     Collections.reverse(copy);
-    Collections.sort(copy, SemanticVersionsComparators.getSemanticVersionsComparator());
+    Collections.sort(copy);
     Assert.assertEquals(copy, initial);
 
     for (int i = 0; i < 10; i++) {
       Collections.shuffle(copy);
-      Collections.sort(copy, SemanticVersionsComparators.getSemanticVersionsComparator());
+      Collections.sort(copy);
       Assert.assertEquals(copy, initial);
     }
-  }
-
-  @Test
-  public void testParsedVersion() {
-    doParsedVersionTest("1.0.0", "1.0.0", null, null);
-    doParsedVersionTest("1.0.0-beta", "1.0.0", "beta", null);
-    doParsedVersionTest("1.0.0-beta+doo", "1.0.0", "beta", "doo");
-    doParsedVersionTest("1.0.0+doo", "1.0.0", null, "doo");
-  }
-
-  @Test
-  public void testParsedVersion_invalid() {
-    doParsedVersionTest("qwertyuio", "qwertyuio", null, null);
-    doParsedVersionTest("-beta", "", "beta", null);
-    doParsedVersionTest("-beta+doo", "", "beta", "doo");
-    doParsedVersionTest("+doo", "", null, "doo");
-  }
-
-
-  private void doParsedVersionTest(@NotNull String version, @Nullable String a, @Nullable String b, @Nullable String c) {
-    SemanticVersionsComparators.ParsedVersion pv = new SemanticVersionsComparators.ParsedVersion(version);
-    Assert.assertEquals(pv.getInitialPart(), a);
-    Assert.assertEquals(pv.getMunisPart(), b);
-    Assert.assertEquals(pv.getPlusPart(), c);
   }
 }

@@ -21,7 +21,11 @@ import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.*;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.FrameworkConstraintsCalculator;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureAnalyser;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureVisitor;
+import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -182,7 +186,24 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
               entity.writeTo(System.out);
               System.out.println();
             }
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_OK);
+            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_NO_CONTENT);
+            return null;
+          }
+        });
+      }
+    };
+  }
+
+  @NotNull
+  protected Runnable assert204(@NotNull final String req,
+                               @NotNull final NameValuePair... reqs) {
+    return new Runnable() {
+      public void run() {
+        final HttpGet get = createGetQuery(req, reqs);
+        execute(get, new ExecuteAction<Object>() {
+          public Object processResult(@NotNull HttpResponse response) throws IOException {
+            System.out.println("Request: " + get.getRequestLine());
+            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_NO_CONTENT);
             return null;
           }
         });

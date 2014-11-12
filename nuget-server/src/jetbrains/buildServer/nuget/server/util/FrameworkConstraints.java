@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.index.impl;
+package jetbrains.buildServer.nuget.server.util;
 
 import com.google.common.collect.Sets;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -36,7 +38,8 @@ public class FrameworkConstraints {
   }
 
   @NotNull
-  public static Set<String> convertFromString(@NotNull String string){
-    return Sets.newHashSet(string.split(SEPARATOR));
+  public static Set<String> convertFromString(@Nullable String string){
+    if(string == null) return Collections.emptySet();
+    return Sets.newHashSet(StringUtil.split(string, SEPARATOR));
   }
 }
