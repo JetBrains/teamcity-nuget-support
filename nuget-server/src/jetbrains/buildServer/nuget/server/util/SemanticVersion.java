@@ -41,7 +41,7 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
   }
 
   @Nullable
-  public static SemanticVersion valueOf(String versionString) {
+  public static SemanticVersion valueOf(@NotNull String versionString) {
     if (Strings.isNullOrEmpty(versionString)) return null;
 
     final Matcher match = VERSION_STRING_MATCHING_PATTERN.matcher(versionString.trim());

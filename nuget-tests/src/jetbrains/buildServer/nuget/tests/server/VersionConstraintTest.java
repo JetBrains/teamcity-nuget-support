@@ -31,10 +31,10 @@ public class VersionConstraintTest extends BaseTestCase {
   @DataProvider(name = "versions-to-test")
   public Object[][] versionsProvider() {
     return new Object[][] {
-            {"1.0", "1.0", true},
-            {"(1.0,)", "1.0", false},
-            {"1.0", "1.1", true},
-            {"(1.0,)", "1.1", true},
+            { "1.0", "1.0", true },
+            { "(1.0,)", "1.0", false },
+            { "1.0", "1.1", true },
+            { "(1.0,)", "1.1", true },
             { "1.0", "0.1", false },
             { "(1.0,)", "0.1", false },
             { "[,1.0]", "1.0", true },

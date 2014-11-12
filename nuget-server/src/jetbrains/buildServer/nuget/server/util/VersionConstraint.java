@@ -74,16 +74,29 @@ public class VersionConstraint {
         return null;
     }
 
-    final String[] parts = Iterables.toArray(VERSIONS_IN_RANGE.split(value.substring(1, value.length() - 1)), String.class);
-    if ( parts.length > 2 || parts.length == 0 ) return null;
-
-    final String minVersionString = parts[0];
-    final String maxVersionString = (parts.length == 2) ? parts[1] : parts[0];
+    final String valueTrimmed = value.substring(1, value.length() - 1);
+    final String[] parts = Iterables.toArray(VERSIONS_IN_RANGE.split(valueTrimmed), String.class);
+    String minVersionString = "";
+    String maxVersionString = "";
+    if(parts.length == 2){
+      minVersionString = parts[0];
+      maxVersionString = parts[1];
+    } else if (parts.length == 1){
+      if(valueTrimmed.indexOf(',') == -1){
+        minVersionString = maxVersionString = parts[0];
+      } else{
+        if(valueTrimmed.startsWith(",")){
+          maxVersionString = parts[0];
+        } else if(valueTrimmed.endsWith(",")){
+          minVersionString = parts[0];
+        } else return null;
+      }
+    } else return null;
 
     SemanticVersion minVersion = SemanticVersion.valueOf(minVersionString);
     SemanticVersion maxVersion = SemanticVersion.valueOf(maxVersionString);
 
-    if ( minVersion == null || maxVersion == null ) return null;
+    if ( minVersion == null && maxVersion == null ) return null;
 
     versionSpec.myMinVersion = minVersion;
     versionSpec.myMaxVersion = maxVersion;
