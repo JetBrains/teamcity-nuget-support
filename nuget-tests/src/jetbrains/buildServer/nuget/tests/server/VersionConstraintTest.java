@@ -60,7 +60,7 @@ public class VersionConstraintTest extends BaseTestCase {
   public void test(@NotNull String versionSpec, @NotNull String version, boolean shouldMatch) throws Exception {
     final VersionConstraint versionConstraint = VersionConstraint.tryParse(versionSpec);
     assertNotNull(versionConstraint);
-    final SemanticVersion semanticVersion = SemanticVersion.tryParse(version);
+    final SemanticVersion semanticVersion = SemanticVersion.valueOf(version);
     assertNotNull(semanticVersion);
     assertEquals(shouldMatch, versionConstraint.satisfies(semanticVersion));
   }

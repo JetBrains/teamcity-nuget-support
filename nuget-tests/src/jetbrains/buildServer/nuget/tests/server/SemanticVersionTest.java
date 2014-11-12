@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.tests.server.feed.server;
+package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.util.SemanticVersion;
@@ -39,7 +39,7 @@ public class SemanticVersionTest extends BaseTestCase {
 
   @Test
   public void test_simple_versions2() {
-    doTest("1.0.0-beta", "1.0.0", "1.0.0+snapshot", "2.0.0", "2.0.1", "2.1.0", "3.3.3", "4.0.0");
+    doTest("1.0.0-beta", "1.0.0", "1.0.1+snapshot", "2.0.0", "2.0.1", "2.1.0", "3.3.3", "4.0.0");
   }
 
   @Test
@@ -54,17 +54,12 @@ public class SemanticVersionTest extends BaseTestCase {
 
   @Test
   public void test_simple_versions4() {
-    doTest("1.0.0", "1.0.0+beta");
-  }
-
-  @Test
-  public void test_simple_versions4_1() {
-    doTest("1.0.0+beta", "1.0.0+beta.5");
+    doTest("1.0.0+beta", "1.0.1+beta.5");
   }
 
   @Test
   public void test_simple_4versions() {
-    doTest("0.0.0.34", "1.0.0.0", "1.0.0.0+snapshot", "2.0.0.0", "4.0.0.3");
+    doTest("0.0.0.34", "1.0.0.0-beta", "1.0.0.0", "2.0.0.0", "4.0.0.3");
   }
 
   @Test
@@ -110,19 +105,6 @@ public class SemanticVersionTest extends BaseTestCase {
   }
 
   @Test
-  public void rule_11() {
-    /**
-     * 11. A build version MAY be denoted by appending a plus sign and a series of dot separated
-     * identifiers immediately following the patch version or pre-release version. Identifiers
-     * MUST be comprised of only ASCII alphanumerics and dash [0-9A-Za-z-]. Build versions satisfy
-     * and have a higher precedence than the associated normal version.
-     * Examples: 1.0.0+build.1, 1.3.7+build.11.e0f985a.
-     */
-    doTest("1.0.0", "1.0.0+build.1");
-    doTest("1.0.0", "1.3.7+build.11.e0f985a");
-  }
-
-  @Test
   public void simple_spec() {
     /**
      * 12. Precedence MUST be calculated by separating the version into major, minor, patch, pre-release,
@@ -147,13 +129,7 @@ public class SemanticVersionTest extends BaseTestCase {
             "1.0.0-beta.2",
             "1.0.0-beta.11",
             "1.0.0-rc.1",
-            "1.0.0-rc.1+build.1",
             "1.0.0",
-            "1.0.0+0.3.7",
-            "1.3.7+build",
-            "1.3.7+build.2.b8f12d7",
-            "1.3.7+build.11.e0f985a",
-            "1.3.7+build.11.f0f985a",
             "1.3.7+build.z11.f0f985a"
             );
   }
@@ -161,7 +137,7 @@ public class SemanticVersionTest extends BaseTestCase {
   private void doTest(String... vs) {
     doTest(CollectionsUtil.convertCollection(Arrays.asList(vs), new Converter<SemanticVersion, String>() {
       public SemanticVersion createFrom(@NotNull String source) {
-        final SemanticVersion semanticVersion = SemanticVersion.tryParse(source);
+        final SemanticVersion semanticVersion = SemanticVersion.valueOf(source);
         assertNotNull("Failed to parse version " + source, semanticVersion);
         return semanticVersion;
       }

@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * @author Evgeniy.Koshkin
  */
 public class SemanticVersion implements Comparable<SemanticVersion> {
-  private static Pattern VERSION_STRING_MATCHING_PATTERN = Pattern.compile("^(\\d+(\\s*\\.\\s*\\d+){0,3})(-[a-z][0-9a-z-]*)?$", Pattern.CASE_INSENSITIVE);
+  private static Pattern VERSION_STRING_MATCHING_PATTERN = Pattern.compile("^([0-9]+)\\.([0-9]+)\\.([0-9]+)(?:\\.(?:[0-9]+))?(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-\\.]+)?$", Pattern.CASE_INSENSITIVE);
 
   @NotNull private final Version myVersion;
   @Nullable private final String mySpecialVersion;
@@ -41,14 +41,18 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
   }
 
   @Nullable
-  public static SemanticVersion tryParse(String versionString) {
+  public static SemanticVersion valueOf(String versionString) {
     if (Strings.isNullOrEmpty(versionString)) return null;
 
-    final Matcher match = VERSION_STRING_MATCHING_PATTERN.matcher( versionString.trim() );
-    Version versionValue;
-    if (!match.matches() || null == (versionValue = Version.parse(match.group(1)))) return null;
+    final Matcher match = VERSION_STRING_MATCHING_PATTERN.matcher(versionString.trim());
+    if (!match.find()) return null;
 
-    String release = match.group(3);
+    int major = Integer.valueOf(match.group(1));
+    int minor = Integer.valueOf(match.group(2));
+    int patch = Integer.valueOf(match.group(3));
+    final Version versionValue = new Version(major, minor, patch);
+
+    String release = match.group(4);
     if (release != null && release.startsWith("-"))
       release = release.substring(1);
 
@@ -56,8 +60,8 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
   }
 
   public static int compareAsVersions(@NotNull String versionString1, @NotNull String versionString2) {
-    final SemanticVersion version1 = tryParse(versionString1);
-    final SemanticVersion version2 = tryParse(versionString2);
+    final SemanticVersion version1 = valueOf(versionString1);
+    final SemanticVersion version2 = valueOf(versionString2);
     return version1 != null && version2 != null ? version1.compareTo(version2) : versionString1.compareTo(versionString2);
   }
 
@@ -69,7 +73,21 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
     if (empty && otherEmpty) return 0;
     else if (empty) return 1;
     else if (otherEmpty) return -1;
-    return mySpecialVersion.compareToIgnoreCase( other.mySpecialVersion);
+
+    String[] o1 = split(mySpecialVersion);
+    String[] o2 = split(other.mySpecialVersion);
+
+    int x;
+    for(int i = 0, max = Math.min(o1.length, o2.length); i < max; i++) {
+      if ((x = compareElements(o1[i], o2[i]))!= 0) return x;
+    }
+    if (o1.length == 0 && o2.length > 0) return 1;
+    if (o2.length == 0 && o1.length > 0) return -1;
+
+    if (o1.length < o2.length) return -1;
+    if (o1.length > o2.length) return 1;
+
+    return 0;
   }
 
   @Override
@@ -88,6 +106,45 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
     hash = 43 * hash + this.myVersion.hashCode();
     hash = 43 * hash + (this.mySpecialVersion != null ? this.mySpecialVersion.hashCode() : 0);
     return hash;
+  }
+
+  private int compareElements(@NotNull String s1, @NotNull String s2) {
+    int i1 = 0;
+    int i2 = 0;
+    boolean isInt1 = true;
+    boolean isInt2 = true;
+    try {
+      i1 = Integer.parseInt(s1);
+    } catch (Exception e) {
+      isInt1 = false;
+    }
+    try {
+      i2 = Integer.parseInt(s2);
+    } catch (Exception e) {
+      isInt2 = false;
+    }
+
+    if (isInt1 && isInt2) {
+      if (i1 == i2) return 0;
+      if (i1 < i2) return -1;
+      if (i1 > i2) return 1;
+    }
+
+    if (isInt1 && !isInt2) {
+      return -1;
+    }
+
+    if (!isInt1 && isInt2) {
+      return 1;
+    }
+
+    return s1.compareTo(s2);
+  }
+
+  @NotNull
+  private String[] split(@Nullable String s) {
+    if (s == null || s.length() == 0) return new String[0];
+    return Pattern.compile("\\.").split(s);
   }
 
   private static class Version implements Comparable<Version> {
@@ -110,7 +167,7 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
       this.myBuild = build;
     }
 
-    public static Version parse(final String version ) {
+    public static Version valueOf(final String version) {
       final Matcher matcher = PATTERN.matcher( version );
       if ( !matcher.matches() )
         throw new IllegalArgumentException("<" + version + "> does not match format " + FORMAT);

@@ -40,7 +40,7 @@ public class VersionConstraint {
     value = value.trim();
     final VersionConstraint versionSpec = new VersionConstraint();
 
-    final SemanticVersion version = SemanticVersion.tryParse(value);
+    final SemanticVersion version = SemanticVersion.valueOf(value);
     if ( version != null )
     {
       versionSpec.myIsMinInclusive = true;
@@ -80,8 +80,8 @@ public class VersionConstraint {
     final String minVersionString = parts[0];
     final String maxVersionString = (parts.length == 2) ? parts[1] : parts[0];
 
-    SemanticVersion minVersion = SemanticVersion.tryParse(minVersionString);
-    SemanticVersion maxVersion = SemanticVersion.tryParse(maxVersionString);
+    SemanticVersion minVersion = SemanticVersion.valueOf(minVersionString);
+    SemanticVersion maxVersion = SemanticVersion.valueOf(maxVersionString);
 
     if ( minVersion == null || maxVersion == null ) return null;
 

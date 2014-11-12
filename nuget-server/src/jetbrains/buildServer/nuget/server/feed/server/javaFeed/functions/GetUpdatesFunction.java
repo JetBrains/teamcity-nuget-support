@@ -103,7 +103,7 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
     final List<NuGetIndexEntry> result = new ArrayList<NuGetIndexEntry>();
 
     for(int i = 0; i < packageIds.size(); i++){
-      final SemanticVersion requestedVersion = SemanticVersion.tryParse(versions.get(i));
+      final SemanticVersion requestedVersion = SemanticVersion.valueOf(versions.get(i));
       if (requestedVersion == null) continue;
 
       final String requestedPackageId = packageIds.get(i);
@@ -140,7 +140,7 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
     if(!includePreRelease && Boolean.parseBoolean(indexEntryAttributes.get(IS_PRERELEASE))) return false;
     final Set<String> entryFrameworkConstraints = FrameworkConstraints.convertFromString(indexEntryAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS));
     if(!entryFrameworkConstraints.isEmpty() && !targetFrameworks.isEmpty() && CollectionsUtil.intersect(entryFrameworkConstraints, targetFrameworks).isEmpty()) return false;
-    final SemanticVersion entryVersion = SemanticVersion.tryParse(indexEntry.getPackageInfo().getVersion());
+    final SemanticVersion entryVersion = SemanticVersion.valueOf(indexEntry.getPackageInfo().getVersion());
     return entryVersion != null && (versionConstraint == null || versionConstraint.satisfies(entryVersion)) && requestedVersion.compareTo(entryVersion) < 0;
   }
 
