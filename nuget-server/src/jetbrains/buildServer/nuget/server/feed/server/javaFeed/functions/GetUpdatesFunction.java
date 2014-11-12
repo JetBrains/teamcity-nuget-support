@@ -107,7 +107,7 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
       if (requestedVersion == null) continue;
 
       final String requestedPackageId = packageIds.get(i);
-      final VersionConstraint versionConstraint = VersionConstraint.tryParse(versionConstraints.get(i));
+      final VersionConstraint versionConstraint = VersionConstraint.valueOf(versionConstraints.get(i));
 
       final Iterator<NuGetIndexEntry> entryIterator = myIndex.getNuGetEntries(requestedPackageId);
       while (entryIterator.hasNext()){

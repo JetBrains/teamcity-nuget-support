@@ -35,7 +35,7 @@ public class VersionConstraint {
   private boolean myIsMaxInclusive = true;
 
   @Nullable
-  public static VersionConstraint tryParse(@Nullable String value) {
+  public static VersionConstraint valueOf(@Nullable String value) {
     if(StringUtil.isEmpty(value)) return null;
     value = value.trim();
     final VersionConstraint versionSpec = new VersionConstraint();
