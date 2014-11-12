@@ -88,6 +88,7 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
     if(versions.isEmpty()) return null;
 
     final List<String> versionConstraints = extractListOfStringsFromParamValue(params, MetadataConstants.VERSION_CONSTRAINTS);
+    final boolean versionConstraintsProvided = !versionConstraints.isEmpty();
 
     if(packageIds.size() != versions.size()){
       LOG.debug(String.format("Bad %s function call. Number of requested package IDs (%d) is not consistent with number of package versions (%d).",
@@ -97,17 +98,27 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
 
     final boolean includeAllVersions = extractBooleanParameterValue(params, MetadataConstants.INCLUDE_ALL_VERSIONS);
     final boolean includePreRelease = extractBooleanParameterValue(params, MetadataConstants.INCLUDE_PRERELEASE);
-
     final Collection<String> frameworkConstraints = FrameworkConstraints.convertFromString(extractStringParameterValue(params, MetadataConstants.TARGET_FRAMEWORKS));
 
     final List<NuGetIndexEntry> result = new ArrayList<NuGetIndexEntry>();
 
     for(int i = 0; i < packageIds.size(); i++){
-      final SemanticVersion requestedVersion = SemanticVersion.valueOf(versions.get(i));
-      if (requestedVersion == null) continue;
-
       final String requestedPackageId = packageIds.get(i);
-      final VersionConstraint versionConstraint = VersionConstraint.valueOf(versionConstraints.get(i));
+      final String versionString = versions.get(i);
+      final SemanticVersion requestedVersion = SemanticVersion.valueOf(versionString);
+      if (requestedVersion == null){
+        LOG.warn("Failed to create valid semantic version from string " + versionString);
+        continue;
+      }
+      final VersionConstraint versionConstraint;
+      if (!versionConstraintsProvided) versionConstraint = null;
+      else {
+        final String versionConstraintString = versionConstraints.get(i);
+        versionConstraint = VersionConstraint.valueOf(versionConstraintString);
+        if(versionConstraint == null) {
+          LOG.warn("Failed to create valid version constraint from string " + versionConstraintString);
+        }
+      }
 
       final Iterator<NuGetIndexEntry> entryIterator = myIndex.getNuGetEntries(requestedPackageId);
       while (entryIterator.hasNext()){

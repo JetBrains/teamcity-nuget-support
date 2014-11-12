@@ -57,28 +57,16 @@ public class GetUpdatesFunctionIntegrationTest extends FeedFunctionIntegrationTe
 
   @Test
   public void shouldHandleVersionConstraintsParameter() throws Exception {
-    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.4")));
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.2")));
     addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.3")));
-    addMockPackage(new NuGetIndexEntry("boo", CollectionsUtil.asMap(ID, "boo", VERSION, "4.0")));
-    addMockPackage(new NuGetIndexEntry("boo", CollectionsUtil.asMap(ID, "boo", VERSION, "3.0")));
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.4")));
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.4.1")));
 
-    String response = openRequest("GetUpdates()?packageIds='foo%7Cboo'&versions='3.4%7C4.0'&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='3.4%7C4.0'");
-    assertNotContainsPackageVersion(response, "3.3");
-    assertContainsPackageVersion(response, "3.4");
-    assertNotContainsPackageVersion(response, "3.0");
-    assertContainsPackageVersion(response, "4.0");
-
-    response = openRequest("GetUpdates()?packageIds='foo%7Cboo'&versions='3.4%7C4.0'&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='%7C4.0'");
-    assertContainsPackageVersion(response, "3.3");
-    assertContainsPackageVersion(response, "3.4");
-    assertNotContainsPackageVersion(response, "3.0");
-    assertContainsPackageVersion(response, "4.0");
-
-    response = openRequest("GetUpdates()?packageIds='foo%7Cboo'&versions='3.4%7C4.0'&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='3.4%7Cabdfsdf'");
-    assertNotContainsPackageVersion(response, "3.3");
-    assertContainsPackageVersion(response, "3.4");
-    assertContainsPackageVersion(response, "3.0");
-    assertContainsPackageVersion(response, "4.0");
+    String response = openRequest("GetUpdates()?packageIds='foo'&versions='3.3'&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='(3.4,)'");
+    assertNotContainsPackageVersion(response, "3.2.0");
+    assertNotContainsPackageVersion(response, "3.3.0");
+    assertNotContainsPackageVersion(response, "3.4.0");
+    assertContainsPackageVersion(response, "3.4.1.0");
   }
 
   @Test
