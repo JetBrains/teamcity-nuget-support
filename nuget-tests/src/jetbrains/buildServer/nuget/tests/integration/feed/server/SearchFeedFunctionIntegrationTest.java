@@ -19,10 +19,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 import com.google.common.collect.Lists;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.FrameworkConstraints;
-import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetAPIVersion;
 import jetbrains.buildServer.util.CollectionsUtil;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
@@ -31,21 +28,7 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex
 /**
  * @author Evgeniy.Koshkin
  */
-public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationTestBase {
-
-  @Override
-  @BeforeMethod
-  public void setUp() throws Exception {
-    super.setUp();
-    System.setProperty(NuGetAPIVersion.TEAMCITY_NUGET_API_VERSION_PROP_NAME, NuGetAPIVersion.V2);
-  }
-
-  @Override
-  @AfterMethod
-  public void tearDown() throws Exception {
-    System.getProperties().remove(NuGetAPIVersion.TEAMCITY_NUGET_API_VERSION_PROP_NAME);
-    super.tearDown();
-  }
+public class SearchFeedFunctionIntegrationTest extends FeedFunctionIntegrationTestBase {
 
   @Test(enabled = false)
   public void testBadRequest() throws Exception {
@@ -205,21 +188,4 @@ public class SearchFeedFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     assertEquals("1", openRequest("Search()/$count?$filter=IsAbsoluteLatestVersion&searchTerm=''&targetFramework='net45'&includePrerelease=true"));
   }
 
-  private void assertContainsPackageVersion(String responseBody, String version){
-    assertContains(responseBody, "<d:Version>" + version + "</d:Version>");
-  }
-
-  private void assertNotContainsPackageVersion(String responseBody, String version){
-    assertNotContains(responseBody, "<d:Version>" + version + "</d:Version>", false);
-  }
-
-  private void assertPackageVersionsOrder(String responseBody, String... versions) {
-    int prevVersionPosition = 0;
-    for (String version : versions){
-      final int i = responseBody.indexOf("<d:Version>" + version + "</d:Version>");
-      if(i == -1) fail("Response doesn't contain package version " + version);
-      assertGreater(i, prevVersionPosition);
-      prevVersionPosition = i;
-    }
-  }
 }
