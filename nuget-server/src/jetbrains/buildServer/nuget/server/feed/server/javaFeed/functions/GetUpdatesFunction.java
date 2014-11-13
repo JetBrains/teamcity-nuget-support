@@ -20,10 +20,12 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparators;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.MetadataConstants;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackageEntityEx;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackagesEntitySet;
+import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
+import jetbrains.buildServer.nuget.server.util.SemanticVersion;
+import jetbrains.buildServer.nuget.server.util.VersionConstraint;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.StringUtil;
@@ -40,13 +42,14 @@ import org.odata4j.producer.QueryInfo;
 
 import java.util.*;
 
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.IS_PRERELEASE;
+
 /**
  * @author Evgeniy.Koshkin
  */
 public class GetUpdatesFunction implements NuGetFeedFunction {
 
   private static final String COLLECTION_VALUE_SEPARATOR = "|";
-  private static final Comparator<String> SEMANTIC_VERSIONS_COMPARATOR = SemanticVersionsComparators.getSemanticVersionsComparator();
 
   @NotNull private final Logger LOG = Logger.getInstance(getClass().getName());
   @NotNull private final PackagesIndex myIndex;
@@ -84,6 +87,9 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
     final List<String> versions = extractListOfStringsFromParamValue(params, MetadataConstants.VERSIONS);
     if(versions.isEmpty()) return null;
 
+    final List<String> versionConstraints = extractListOfStringsFromParamValue(params, MetadataConstants.VERSION_CONSTRAINTS);
+    final boolean versionConstraintsProvided = !versionConstraints.isEmpty();
+
     if(packageIds.size() != versions.size()){
       LOG.debug(String.format("Bad %s function call. Number of requested package IDs (%d) is not consistent with number of package versions (%d).",
               getName(), packageIds.size(), versions.size()));
@@ -91,15 +97,33 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
     }
 
     final boolean includeAllVersions = extractBooleanParameterValue(params, MetadataConstants.INCLUDE_ALL_VERSIONS);
+    final boolean includePreRelease = extractBooleanParameterValue(params, MetadataConstants.INCLUDE_PRERELEASE);
+    final Collection<String> frameworkConstraints = FrameworkConstraints.convertFromString(extractStringParameterValue(params, MetadataConstants.TARGET_FRAMEWORKS));
+
     final List<NuGetIndexEntry> result = new ArrayList<NuGetIndexEntry>();
 
     for(int i = 0; i < packageIds.size(); i++){
-      final String requestedVersion = versions.get(i);
       final String requestedPackageId = packageIds.get(i);
+      final String versionString = versions.get(i);
+      final SemanticVersion requestedVersion = SemanticVersion.valueOf(versionString);
+      if (requestedVersion == null){
+        LOG.warn("Failed to create valid semantic version from string " + versionString);
+        continue;
+      }
+      final VersionConstraint versionConstraint;
+      if (!versionConstraintsProvided) versionConstraint = null;
+      else {
+        final String versionConstraintString = versionConstraints.get(i);
+        versionConstraint = VersionConstraint.valueOf(versionConstraintString);
+        if(versionConstraint == null) {
+          LOG.warn("Failed to create valid version constraint from string " + versionConstraintString);
+        }
+      }
+
       final Iterator<NuGetIndexEntry> entryIterator = myIndex.getNuGetEntries(requestedPackageId);
       while (entryIterator.hasNext()){
         final NuGetIndexEntry indexEntry = entryIterator.next();
-        if(SEMANTIC_VERSIONS_COMPARATOR.compare(requestedVersion, indexEntry.getPackageInfo().getVersion()) < 0){
+        if(match(indexEntry, requestedVersion,  includePreRelease, frameworkConstraints, versionConstraint)){
           LOG.debug(String.format("Matched indexed package found fof id:%s version:%s. %s", requestedPackageId, requestedVersion, indexEntry));
           result.add(indexEntry);
           if(!includeAllVersions){
@@ -122,16 +146,27 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
     });
   }
 
+  private boolean match(@NotNull NuGetIndexEntry indexEntry, @NotNull SemanticVersion requestedVersion, boolean includePreRelease, @NotNull Collection<String> targetFrameworks, @Nullable VersionConstraint versionConstraint) {
+    final Map<String, String> indexEntryAttributes = indexEntry.getAttributes();
+    if(!includePreRelease && Boolean.parseBoolean(indexEntryAttributes.get(IS_PRERELEASE))) return false;
+    final Set<String> entryFrameworkConstraints = FrameworkConstraints.convertFromString(indexEntryAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS));
+    if(!entryFrameworkConstraints.isEmpty() && !targetFrameworks.isEmpty() && CollectionsUtil.intersect(entryFrameworkConstraints, targetFrameworks).isEmpty()) return false;
+    final SemanticVersion entryVersion = SemanticVersion.valueOf(indexEntry.getPackageInfo().getVersion());
+    return entryVersion != null && (versionConstraint == null || versionConstraint.satisfies(entryVersion)) && requestedVersion.compareTo(entryVersion) < 0;
+  }
+
   private boolean extractBooleanParameterValue(Map<String, OFunctionParameter> parameters, String parameterName) {
     return Boolean.valueOf(extractStringParameterValue(parameters, parameterName));
   }
 
+  @NotNull
   private List<String> extractListOfStringsFromParamValue(Map<String, OFunctionParameter> parameters, String parameterName){
     final String parameterValue = extractStringParameterValue(parameters, parameterName);
     if (parameterValue == null) return Collections.emptyList();
     else return StringUtil.split(parameterValue, COLLECTION_VALUE_SEPARATOR);
   }
 
+  @Nullable
   private String extractStringParameterValue(Map<String, OFunctionParameter> parameters, String parameterName){
     final OFunctionParameter parameter = parameters.get(parameterName);
     if(parameter == null){

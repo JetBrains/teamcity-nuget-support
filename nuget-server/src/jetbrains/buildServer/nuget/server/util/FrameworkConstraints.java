@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.feed.server.index.impl;
+package jetbrains.buildServer.nuget.server.util;
 
 import com.google.common.collect.Sets;
 import jetbrains.buildServer.util.StringUtil;

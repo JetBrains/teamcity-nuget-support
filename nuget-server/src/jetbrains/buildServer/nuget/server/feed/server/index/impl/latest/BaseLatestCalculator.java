@@ -17,10 +17,9 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl.latest;
 
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparators;
+import jetbrains.buildServer.nuget.server.util.SemanticVersion;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,13 +29,12 @@ import java.util.Map;
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
 public abstract class BaseLatestCalculator implements LatestCalculator {
-  private final Comparator<String> myVersionsComparator = SemanticVersionsComparators.getSemanticVersionsComparator();
   private final Map<String, NuGetPackageBuilder> myLatestPackages = new HashMap<String, NuGetPackageBuilder>();
 
   public void updatePackage(@NotNull NuGetPackageBuilder newLatest) {
     final NuGetPackageBuilder currentLatest = myLatestPackages.get(newLatest.getPackageName());
 
-    if (currentLatest == null || myVersionsComparator.compare(currentLatest.getVersion(), newLatest.getVersion()) < 0) {
+    if (currentLatest == null || SemanticVersion.compareAsVersions(currentLatest.getVersion(), newLatest.getVersion()) < 0) {
       myLatestPackages.put(newLatest.getPackageName(), newLatest);
     }
   }
