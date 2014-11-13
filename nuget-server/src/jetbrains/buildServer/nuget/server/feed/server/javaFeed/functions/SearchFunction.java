@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackageEntityEx;
 import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
+import jetbrains.buildServer.nuget.server.util.VersionUtility;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
 import org.jetbrains.annotations.NotNull;
@@ -134,10 +135,10 @@ public class SearchFunction implements NuGetFeedFunction {
     });
   }
 
-  private boolean matches(NuGetIndexEntry indexEntry, boolean includePreRelease, Set<String> frameworkConstraints) {
-    final Map<String, String> indexEntryAttributes = indexEntry.getAttributes();
-    if(!includePreRelease && Boolean.parseBoolean(indexEntryAttributes.get(IS_PRERELEASE))) return false;
-    final Set<String> entryConstraints = FrameworkConstraints.convertFromString(indexEntryAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS));
-    return entryConstraints.isEmpty() || !CollectionsUtil.intersect(entryConstraints, frameworkConstraints).isEmpty();
+  private boolean matches(NuGetIndexEntry nugetPackage, boolean includePreRelease, Set<String> requestedFrameworks) {
+    final Map<String, String> nugetPackageAttributes = nugetPackage.getAttributes();
+    if(!includePreRelease && Boolean.parseBoolean(nugetPackageAttributes.get(IS_PRERELEASE))) return false;
+    final Set<String> packageFrameworkConstraints = FrameworkConstraints.convertFromString(nugetPackageAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS));
+    return VersionUtility.isPackageCompatibleWithFrameworks(requestedFrameworks, packageFrameworkConstraints);
   }
 }

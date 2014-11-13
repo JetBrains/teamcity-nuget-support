@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.util;
 
 import com.google.common.base.Strings;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -156,82 +155,5 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
   private String[] split(@Nullable String s) {
     if (s == null || s.length() == 0) return new String[0];
     return Pattern.compile("\\.").split(s);
-  }
-
-  private static class Version implements Comparable<Version> {
-    private static final String FORMAT = "(\\d+)\\.(\\d+)(?:\\.)?(\\d*)(?:\\.)?(\\d*)";
-    private static final Pattern PATTERN = Pattern.compile(FORMAT);
-
-    private final int myMajor;
-    private final int myMinor;
-    private final int myPatch;
-    private final int myBuild;
-
-    public Version(final int major, final int minor, final int patch ) {
-      this( major, minor, patch, 0 );
-    }
-
-    public Version(final int major, final int minor, final int patch, final int build ){
-      this.myMajor = major;
-      this.myMinor = minor;
-      this.myPatch = patch;
-      this.myBuild = build;
-    }
-
-    public static Version valueOf(final String version) {
-      final Matcher matcher = PATTERN.matcher( version );
-      if ( !matcher.matches() )
-        throw new IllegalArgumentException("<" + version + "> does not match format " + FORMAT);
-
-      final int major = Integer.valueOf( matcher.group( 1 ) );
-      final int minor = Integer.valueOf( matcher.group( 2 ) );
-      final int patch;
-      final String patchMatch = matcher.group( 3 );
-      if (StringUtils.isNotEmpty(patchMatch))
-        patch = Integer.valueOf(patchMatch);
-      else
-        patch = 0;
-
-      final int build;
-      final String buildMatch = matcher.group( 4 );
-      if (StringUtils.isNotEmpty(buildMatch) )
-        build = Integer.valueOf(buildMatch);
-      else
-        build = 0;
-
-      return new Version( major, minor, patch, build );
-    }
-
-    @Override
-    public int hashCode() {
-      int hash = 5;
-      hash = 43 * hash + this.myMajor;
-      hash = 43 * hash + this.myMinor;
-      hash = 43 * hash + this.myPatch;
-      hash = 43 * hash + this.myBuild;
-      return hash;
-    }
-
-    @Override
-    public boolean equals( @Nullable final Object object ){
-      if (!(object instanceof Version)) return false;
-      final Version other = (Version) object;
-      return !(other.myMajor != this.myMajor || other.myMinor != this.myMinor || other.myPatch != this.myPatch || other.myBuild != this.myBuild);
-    }
-
-    public int compareTo( @NotNull final Version other ){
-      if (equals(other)) return 0;
-      if (this.myMajor < other.myMajor) return -1;
-      else if (this.myMajor == other.myMajor)
-        if (this.myMinor < other.myMinor) return -1;
-        else if (this.myMinor == other.myMinor) if (this.myPatch < other.myPatch) return -1;
-        else if (this.myPatch == other.myPatch && this.myBuild < other.myBuild) return -1;
-      return 1;
-    }
-
-    @Override
-    public String toString(){
-      return String.valueOf(this.myMajor) + "." + this.myMinor + "." + this.myPatch + "." + this.myBuild;
-    }
   }
 }
