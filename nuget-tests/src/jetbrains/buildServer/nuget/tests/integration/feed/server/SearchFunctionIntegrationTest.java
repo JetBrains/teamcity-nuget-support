@@ -79,6 +79,13 @@ public class SearchFunctionIntegrationTest extends FeedFunctionIntegrationTestBa
     assertContainsPackageVersion(response, "2.0");
     assertNotContainsPackageVersion(response, "3.0");
     assertContainsPackageVersion(response, "4.0");
+
+    final String emptyTargetFrameworkresponse = openRequest("Search()?&searchTerm=''&targetFramework=''&includePrerelease=true");
+
+    assertContainsPackageVersion(emptyTargetFrameworkresponse, "1.0");
+    assertContainsPackageVersion(emptyTargetFrameworkresponse, "2.0");
+    assertContainsPackageVersion(emptyTargetFrameworkresponse, "3.0");
+    assertContainsPackageVersion(emptyTargetFrameworkresponse, "4.0");
   }
 
   @Test

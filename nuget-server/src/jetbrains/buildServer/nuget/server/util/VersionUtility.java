@@ -261,9 +261,10 @@ public class VersionUtility {
     return new FrameworkName(identifierPart, version, profilePart);
   }
 
-  public static boolean isPackageCompatibleWithFrameworks(Set<String> frameworks, final Set<String> packageFrameworkConstraints) {
+  public static boolean isPackageCompatibleWithFrameworks(Set<String> projectFrameworks, final Set<String> packageFrameworkConstraints) {
     if(packageFrameworkConstraints.isEmpty()) return true; //package is compatible with all the frameworks
-    final List<FrameworkName> frameworksParsed = CollectionsUtil.convertAndFilterNulls(frameworks, new Converter<FrameworkName, String>() {
+    if(projectFrameworks.isEmpty()) return true; //no project-level constraints were provided
+    final List<FrameworkName> frameworksParsed = CollectionsUtil.convertAndFilterNulls(projectFrameworks, new Converter<FrameworkName, String>() {
       public FrameworkName createFrom(@NotNull String source) {
         return parseFrameworkName(source);
       }
