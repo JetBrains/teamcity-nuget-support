@@ -116,11 +116,12 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     cmd.setExePath(nuget.getPath().getPath());
     cmd.addParameter("list");
     cmd.addParameter("-Prerelease");
+    cmd.addParameter("-AllVersions");
     cmd.addParameter("-Source");
     cmd.addParameter(getNuGetServerUrl());
 
     final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
-    Assert.assertEquals(exec.getExitCode(), 0);
+    Assert.assertEquals(exec.getExitCode(), 0, exec.getStderr());
     final String stdout = exec.getStdout();
     System.out.println(stdout);
     Assert.assertTrue(stdout.contains("foo 2.1.0-alpha"));
