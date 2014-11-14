@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackagesEntitySet
 import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
 import jetbrains.buildServer.nuget.server.util.SemanticVersion;
 import jetbrains.buildServer.nuget.server.util.VersionConstraint;
+import jetbrains.buildServer.nuget.server.util.VersionUtility;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.StringUtil;
@@ -98,7 +99,7 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
 
     final boolean includeAllVersions = extractBooleanParameterValue(params, MetadataConstants.INCLUDE_ALL_VERSIONS);
     final boolean includePreRelease = extractBooleanParameterValue(params, MetadataConstants.INCLUDE_PRERELEASE);
-    final Collection<String> frameworkConstraints = FrameworkConstraints.convertFromString(extractStringParameterValue(params, MetadataConstants.TARGET_FRAMEWORKS));
+    final Set<String> frameworkConstraints = FrameworkConstraints.convertFromString(extractStringParameterValue(params, MetadataConstants.TARGET_FRAMEWORKS));
 
     final List<NuGetIndexEntry> result = new ArrayList<NuGetIndexEntry>();
 
@@ -146,11 +147,11 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
     });
   }
 
-  private boolean match(@NotNull NuGetIndexEntry indexEntry, @NotNull SemanticVersion requestedVersion, boolean includePreRelease, @NotNull Collection<String> targetFrameworks, @Nullable VersionConstraint versionConstraint) {
+  private boolean match(@NotNull NuGetIndexEntry indexEntry, @NotNull SemanticVersion requestedVersion, boolean includePreRelease, @NotNull Set<String> targetFrameworks, @Nullable VersionConstraint versionConstraint) {
     final Map<String, String> indexEntryAttributes = indexEntry.getAttributes();
     if(!includePreRelease && Boolean.parseBoolean(indexEntryAttributes.get(IS_PRERELEASE))) return false;
-    final Set<String> entryFrameworkConstraints = FrameworkConstraints.convertFromString(indexEntryAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS));
-    if(!entryFrameworkConstraints.isEmpty() && !targetFrameworks.isEmpty() && CollectionsUtil.intersect(entryFrameworkConstraints, targetFrameworks).isEmpty()) return false;
+    final Set<String> packageFrameworkConstraints = FrameworkConstraints.convertFromString(indexEntryAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS));
+    if(!targetFrameworks.isEmpty() && !VersionUtility.isPackageCompatibleWithFrameworks(targetFrameworks, packageFrameworkConstraints)) return false;
     final SemanticVersion entryVersion = SemanticVersion.valueOf(indexEntry.getPackageInfo().getVersion());
     return entryVersion != null && (versionConstraint == null || versionConstraint.satisfies(entryVersion)) && requestedVersion.compareTo(entryVersion) < 0;
   }
