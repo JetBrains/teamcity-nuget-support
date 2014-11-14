@@ -16,28 +16,10 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetAPIVersion;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-
 /**
  * @author Evgeniy.Koshkin
  */
 public abstract class FeedFunctionIntegrationTestBase extends NuGetJavaFeedIntegrationTestBase {
-  @Override
-  @BeforeMethod
-  public void setUp() throws Exception {
-    super.setUp();
-    System.setProperty(NuGetAPIVersion.TEAMCITY_NUGET_API_VERSION_PROP_NAME, NuGetAPIVersion.V2);
-  }
-
-  @Override
-  @AfterMethod
-  public void tearDown() throws Exception {
-    System.getProperties().remove(NuGetAPIVersion.TEAMCITY_NUGET_API_VERSION_PROP_NAME);
-    super.tearDown();
-  }
-
   protected void assertContainsPackageVersion(String responseBody, String version){
     assertContains(responseBody, "<d:Version>" + version + "</d:Version>");
   }

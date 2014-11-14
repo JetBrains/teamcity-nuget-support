@@ -33,6 +33,6 @@ public class NuGetAPIVersion {
 
   @NotNull
   public static String getVersionToUse() {
-    return TeamCityProperties.getProperty(TEAMCITY_NUGET_API_VERSION_PROP_NAME, V1);
+    return TeamCityProperties.getProperty(TEAMCITY_NUGET_API_VERSION_PROP_NAME, V2);
   }
 }
