@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.util;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.util.CaseInsensitiveMap;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
@@ -31,12 +32,17 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.apache.commons.lang.StringUtils.join;
+import static org.apache.commons.lang.StringUtils.rightPad;
+
 /**
  * Snapshot of http://nuget.codeplex.com/SourceControl/latest#src/Core/Utility/VersionUtility.cs
  * Nuget 2.8.3 version
  * @author Evgeniy.Koshkin
  */
 public class VersionUtility {
+
+  private static final Logger LOG = Logger.getInstance(VersionUtility.class.getName());
 
   private static final String NET_FRAMEWORK_IDENTIFIER = ".NETFramework";
   private static final String NET_CORE_FRAMEWORK_IDENTIFIER = ".NETCore";
@@ -119,6 +125,17 @@ public class VersionUtility {
           "Full",""
   ));
 
+  private static final Map<FrameworkName, FrameworkName> FRAMEWORK_NAME_ALIAS = CollectionsUtil.asMap(
+          new FrameworkName("WindowsPhone", Version.valueOf("0.0"), ""), new FrameworkName(SILVERLIGHT_IDENTIFIER, Version.valueOf("3.0"), "WindowsPhone"),
+          new FrameworkName("WindowsPhone", Version.valueOf("7.0"), ""), new FrameworkName(SILVERLIGHT_IDENTIFIER, Version.valueOf("3.0"), "WindowsPhone"),
+          new FrameworkName("WindowsPhone", Version.valueOf("7.1"), ""), new FrameworkName(SILVERLIGHT_IDENTIFIER, Version.valueOf("4.0"), "WindowsPhone71"),
+          new FrameworkName("WindowsPhone", Version.valueOf("8.0"), ""), new FrameworkName(SILVERLIGHT_IDENTIFIER, Version.valueOf("8.0"), "WindowsPhone"),
+          new FrameworkName("WindowsPhone", Version.valueOf("8.1"), ""), new FrameworkName(SILVERLIGHT_IDENTIFIER, Version.valueOf("8.1"), "WindowsPhone"),
+          new FrameworkName("Windows", Version.valueOf("0.0"), ""), new FrameworkName(".NETCore", Version.valueOf("4.5"), ""),
+          new FrameworkName("Windows", Version.valueOf("8.0"), ""), new FrameworkName(".NETCore", Version.valueOf("4.5"), ""),
+          new FrameworkName("Windows", Version.valueOf("8.1"), ""), new FrameworkName(".NETCore", Version.valueOf("4.5.1"), "")
+  );
+
   private static final Map<String, FrameworkName> EQUIVALENT_PROJECT_FRAMEWORKS = new CaseInsensitiveMap<FrameworkName>(Collections.singletonMap(
           ASP_NET_FRAMEWORK_IDENTIFIER, new FrameworkName(NET_FRAMEWORK_IDENTIFIER, Version.EMPTY, "")
   ));
@@ -127,7 +144,7 @@ public class VersionUtility {
 
   private static Map<String, Map<String, String>> getCompatibilityMappings() {
     Map<String, Map<String, String>> mappings = new CaseInsensitiveMap<Map<String, String>>();
-    mappings.put(NET_CORE_FRAMEWORK_IDENTIFIER, CollectionsUtil.asMap(
+    mappings.put(NET_FRAMEWORK_IDENTIFIER, CollectionsUtil.asMap(
             "Client", "",
             "", "Client"));
     mappings.put(SILVERLIGHT_IDENTIFIER, CollectionsUtil.asMap(
@@ -142,6 +159,106 @@ public class VersionUtility {
 
   public static boolean isKnownFramework(@NotNull String frameworkString) {
     return parseFrameworkName(frameworkString) != null;
+  }
+
+  public static boolean isCompatible(FrameworkName projectFrameworkName, FrameworkName packageTargetFrameworkName) {
+    if (projectFrameworkName == null || packageTargetFrameworkName == null) return true;
+
+    projectFrameworkName = normalizeFrameworkName(projectFrameworkName);
+    packageTargetFrameworkName = normalizeFrameworkName(packageTargetFrameworkName);
+
+    final String projectFrameworkIdentifier = projectFrameworkName.getIdentifier();
+    final String packageTargetFrameworkIdentifier = packageTargetFrameworkName.getIdentifier();
+
+    if (!projectFrameworkIdentifier.equalsIgnoreCase(packageTargetFrameworkIdentifier)){
+      if (EQUIVALENT_PROJECT_FRAMEWORKS.containsKey(projectFrameworkIdentifier)){
+        FrameworkName equivalentFrameworkName = EQUIVALENT_PROJECT_FRAMEWORKS.get(projectFrameworkIdentifier);
+        if(equivalentFrameworkName.getIdentifier().equalsIgnoreCase(packageTargetFrameworkIdentifier)){
+          projectFrameworkName = equivalentFrameworkName;
+        }
+      }
+      else return false;
+    }
+
+    final Version projectFrameworkVersion = projectFrameworkName.getVersion();
+    final Version packageTargetFrameworkVersion = packageTargetFrameworkName.getVersion();
+    if (projectFrameworkVersion != null && packageTargetFrameworkVersion != null && projectFrameworkVersion.compareTo(packageTargetFrameworkVersion) < 0){
+      return false;
+    }
+
+    final String projectFrameworkProfile = projectFrameworkName.getProfile();
+    final String packageTargetFrameworkProfile = packageTargetFrameworkName.getProfile();
+
+    if (StringUtil.areEqual(projectFrameworkProfile, packageTargetFrameworkProfile)){
+      return true;
+    }
+
+    if (COMPATIBILTY_MAPPINGS.containsKey(projectFrameworkName.getIdentifier())){
+      final Map<String, String> mapping = COMPATIBILTY_MAPPINGS.get(projectFrameworkName.getIdentifier());
+      if (mapping.containsKey(packageTargetFrameworkProfile)) {
+        return mapping.get(packageTargetFrameworkProfile).equalsIgnoreCase(projectFrameworkProfile);
+      }
+    }
+
+    return false;
+  }
+
+  @Nullable
+  public static FrameworkName parseFrameworkName(@NotNull String frameworkNameString) {
+    final String[] frameworkStringParts = frameworkNameString.split(PROFILE_PART_SEPARATOR);
+    if (frameworkStringParts.length > 2) return null;
+
+    final String frameworkNameAndVersion = frameworkStringParts.length > 0 ? frameworkStringParts[0].trim() : null;
+    if(StringUtil.isEmpty(frameworkNameAndVersion)) return null;
+
+    String profilePart = frameworkStringParts.length > 1 ? frameworkStringParts[1].trim() : "";
+    String identifierPart;
+    String versionPart = "";
+
+    final Matcher matcher = VERSION_MATCHING_PATTERN.matcher(frameworkNameAndVersion);
+
+    if (matcher.find()) {
+      identifierPart = frameworkNameAndVersion.substring(0, matcher.start()).trim();
+      versionPart = frameworkNameAndVersion.substring(matcher.start()).trim();
+    }
+    else {
+      identifierPart = frameworkNameAndVersion.trim();
+    }
+
+    if (!StringUtil.isEmpty(identifierPart)){
+      if (!KNOWN_IDENTIFIERS.containsKey(identifierPart)) return null;
+      identifierPart = KNOWN_IDENTIFIERS.get(identifierPart);
+    }
+
+    if (!StringUtil.isEmpty(profilePart)){
+      if (KNOWN_PROFILES.containsKey(profilePart))
+        profilePart = KNOWN_PROFILES.get(profilePart);
+    }
+
+    try{
+      Integer.parseInt(versionPart);
+      if (versionPart.length() > 4){
+        versionPart = versionPart.substring(0, 4);
+      }
+      // Make sure it has at least 2 digits so it parses as a valid version
+      versionPart = join(splitByChar(rightPad(versionPart, 2, '0')), ".");
+    } catch (NumberFormatException ex){
+      LOG.debug(ex);
+    }
+
+    Version version = Version.valueOf(versionPart);
+    if(version == null){
+      if (StringUtil.isEmpty(identifierPart) || !StringUtil.isEmpty(versionPart)){
+        return null;
+      }
+      version = Version.EMPTY;
+    }
+
+    if (StringUtil.isEmpty(identifierPart)){
+      identifierPart = NET_FRAMEWORK_IDENTIFIER;
+    }
+
+    return new FrameworkName(identifierPart, version, profilePart);
   }
 
   public static boolean isPackageCompatibleWithFrameworks(Set<String> frameworks, final Set<String> packageFrameworkConstraints) {
@@ -165,112 +282,15 @@ public class VersionUtility {
     return false;
   }
 
-  private static boolean isCompatible(FrameworkName projectFrameworkName, FrameworkName packageTargetFrameworkName) {
-    if (projectFrameworkName == null) return true;
-
-    final String projectFrameworkIdentifier = projectFrameworkName.getIdentifier();
-    final String packageTargetFrameworkIdentifier = packageTargetFrameworkName.getIdentifier();
-
-    if (!projectFrameworkIdentifier.equalsIgnoreCase(packageTargetFrameworkIdentifier))
-    {
-      if (EQUIVALENT_PROJECT_FRAMEWORKS.containsKey(projectFrameworkIdentifier)){
-        FrameworkName equivalentFrameworkName = EQUIVALENT_PROJECT_FRAMEWORKS.get(projectFrameworkIdentifier);
-        if(equivalentFrameworkName.getIdentifier().equalsIgnoreCase(packageTargetFrameworkIdentifier)){
-          projectFrameworkName = equivalentFrameworkName;
-        }
-      }
-      else return false;
-    }
-
-    if (projectFrameworkName.getVersion().compareTo(packageTargetFrameworkName.getVersion()) < 0){
-      return false;
-    }
-
-    if (projectFrameworkName.getProfile().equalsIgnoreCase(packageTargetFrameworkName.getProfile())){
-      return true;
-    }
-
-    if (COMPATIBILTY_MAPPINGS.containsKey(projectFrameworkName.getIdentifier())){
-      final Map<String, String> mapping = COMPATIBILTY_MAPPINGS.get(projectFrameworkName.getIdentifier());
-      if (mapping.containsKey(packageTargetFrameworkName.getProfile())) {
-        return mapping.get(packageTargetFrameworkName.getProfile()).equalsIgnoreCase(projectFrameworkName.getProfile());
-      }
-    }
-
-    return false;
+  private static FrameworkName normalizeFrameworkName(FrameworkName framework){
+    return FRAMEWORK_NAME_ALIAS.containsKey(framework) ? FRAMEWORK_NAME_ALIAS.get(framework) : framework;
   }
 
-  @Nullable
-  private static FrameworkName parseFrameworkName(@NotNull String frameworkNameString) {
-    final String[] frameworkStringParts = frameworkNameString.split(PROFILE_PART_SEPARATOR);
-    if (frameworkStringParts.length > 2) return null;
-
-    final String frameworkNameAndVersion = frameworkStringParts.length > 0 ? frameworkStringParts[0].trim() : null;
-    if(StringUtil.isEmpty(frameworkNameAndVersion)) return null;
-
-    String profilePart = frameworkStringParts.length > 1 ? frameworkStringParts[1].trim() : "";
-    String identifierPart;
-    String versionPart = "";
-
-    final Matcher matcher = VERSION_MATCHING_PATTERN.matcher(frameworkNameAndVersion);
-
-    if (matcher.find()) {
-      identifierPart = frameworkNameAndVersion.substring(0, matcher.start()).trim();
-      versionPart = frameworkNameAndVersion.substring(matcher.start() + 1).trim();
+  private static String[] splitByChar(String text) {
+    String[] result = new String[text.length()];
+    for (int i = 0; i < result.length; i++) {
+      result[i] = text.substring(i, i + 1);
     }
-    else {
-      identifierPart = frameworkNameAndVersion.trim();
-    }
-
-    if (!StringUtil.isEmpty(identifierPart)){
-      if (!KNOWN_IDENTIFIERS.containsKey(identifierPart)) return null;
-      identifierPart = KNOWN_IDENTIFIERS.get(identifierPart);
-    }
-
-    if (!StringUtil.isEmpty(profilePart)){
-      if (KNOWN_PROFILES.containsKey(profilePart))
-        profilePart = KNOWN_PROFILES.get(profilePart);
-    }
-
-    Version version = Version.valueOf(versionPart);
-    if(version == null){
-      if (StringUtil.isEmpty(identifierPart) || !StringUtil.isEmpty(versionPart)){
-        return null;
-      }
-      version = Version.EMPTY;
-    }
-
-    if (StringUtil.isEmpty(identifierPart)){
-      identifierPart = NET_FRAMEWORK_IDENTIFIER;
-    }
-
-    return new FrameworkName(identifierPart, version, profilePart);
-  }
-
-  private static class FrameworkName {
-    @NotNull private final String myIdentifier;
-    @NotNull private final Version myVersion;
-    @NotNull private final String myProfile;
-
-    public FrameworkName(@NotNull String identifier, @NotNull Version version, @NotNull String profile) {
-      myIdentifier = identifier;
-      myVersion = version;
-      myProfile = profile;
-    }
-
-    @NotNull
-    public String getIdentifier() {
-      return myIdentifier;
-    }
-
-    @NotNull
-    public Version getVersion() {
-      return myVersion;
-    }
-
-    @NotNull
-    public String getProfile() {
-      return myProfile;
-    }
+    return result;
   }
 }
