@@ -21,6 +21,8 @@
 <jsp:useBean id="updateUrl" type="java.lang.String" scope="request"/>
 
 <c:set var="actualUpdateUrl"><c:url value="${updateUrl}"/></c:set>
+<c:set var="actualInstallerUrl"><c:url value="${installerUrl}"/></c:set>
+
 <bs:refreshable containerId="nugetPackagesList" pageUrl="${actualUpdateUrl}">
 <c:set var="installedPluginsCount" value="${fn:length(tools)}"/>
 
@@ -70,17 +72,15 @@
     </table>
   </c:if>
   <div style="margin-top: 1em;">
-    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.showDonwload()">
+    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.showDonwload('${actualInstallerUrl}')">
       Fetch NuGet
     </forms:addButton>
-    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.showUpload()">
+    <forms:addButton onclick="BS.NuGet.Tools.InstallPopup.showUpload('${actualInstallerUrl}')">
       Upload NuGet
     </forms:addButton>
   </div>
 </bs:refreshable>
 
-
-<c:set var="actualInstallerUrl"><c:url value="${installerUrl}"/></c:set>
 <bs:modalDialog
         formId="nugetInstallForm"
         title="TBD"
@@ -93,14 +93,14 @@
     Fetching available NuGet versions from NuGet.org
   </div>
 
-  <bs:refreshable containerId="nugetInstallFormResresh" pageUrl="${actualInstallerUrl}">
+  <div id="nugetInstallFormResresh">
 
-  </bs:refreshable>
+  </div>
 
   <div class="popupSaveButtonsBlock">
     <forms:submit id="installNuGetApplyButton" label="Add"/>
     <forms:cancel onclick="BS.NuGet.Tools.InstallPopup.closeToolsDialog();"/>
-    <input id="installNuGetRefreshButton" type="button" class="btn cancel" onclick="BS.NuGet.Tools.InstallPopup.refreshForm(true);" value="Refresh"/>
+    <input id="installNuGetRefreshButton" type="button" class="btn cancel" onclick="BS.NuGet.Tools.InstallPopup.refreshForm('${actualInstallerUrl}', true);" value="Refresh"/>
     <forms:saving id="installNuGetApplyProgress"/>
   </div>
 </bs:modalDialog>

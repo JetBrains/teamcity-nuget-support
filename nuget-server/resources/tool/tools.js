@@ -64,10 +64,11 @@ BS.NuGet.Tools = {
       $('installNuGetApplyButton').disabled = 'disabled';
     },
 
-    refreshForm : function(fresh, uploadOnly) {
+    refreshForm : function(url, fresh, uploadOnly) {
       var that = this;
       this.disableSubmit();
-      BS.Util.hide($('nugetInstallFormResresh'));
+      var installFormResreshContainer = $("nugetInstallFormResresh");
+      BS.Util.hide(installFormResreshContainer);
       BS.Util.show($('nugetInstallFormLoading'));
 
       var refreshParams = "";
@@ -79,30 +80,35 @@ BS.NuGet.Tools = {
         refreshParams += (refreshParams.length > 0 ? "&" : "") + "uploadOnly=1"
       }
 
-      $('nugetInstallFormResresh').refresh(null, refreshParams, function() {
-        BS.Util.hide($('nugetInstallFormLoading'));
-        BS.Util.show($('nugetInstallFormResresh'));
-        that.showCentered();
-        $('installNuGetApplyButton').disabled = '';
+      BS.ajaxUpdater(installFormResreshContainer, url, {
+        method: 'get',
+        parameters: refreshParams,
+        onComplete: function() {
+          BS.Util.hide($('nugetInstallFormLoading'));
+          BS.Util.show($('nugetInstallFormResresh'));
+          that.showCentered();
+          $('installNuGetApplyButton').disabled = '';
+        }
       });
+
       return false;
     },
 
-    showDonwload : function() {
+    showDonwload : function(url) {
       BS.Util.reenableForm(this.formElement());
       $("nugetInstallFormTitle").innerHTML = "Add NuGet";
       BS.Util.show($("installNuGetRefreshButton"));
       this.showCentered();
-      this.refreshForm(false, false);
+      this.refreshForm(url, false, false);
       return false;
     },
 
-    showUpload : function() {
+    showUpload : function(url) {
       BS.Util.reenableForm(this.formElement());
       $("nugetInstallFormTitle").innerHTML = "Upload NuGet";
       BS.Util.hide($("installNuGetRefreshButton"));
       this.showCentered();
-      this.refreshForm(false, true);
+      this.refreshForm(url, false, true);
       return false;
     },
 
