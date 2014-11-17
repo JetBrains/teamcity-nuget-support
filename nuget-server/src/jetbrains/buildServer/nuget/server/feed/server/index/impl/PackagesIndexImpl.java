@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import com.google.common.collect.Lists;
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
@@ -42,6 +43,8 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArt
  *         Date: 19.10.11 16:18
  */
 public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsProvider {
+
+  private static final Logger LOG = Logger.getInstance(PackagesIndexImpl.class.getName());
 
   public static final Collection<String> PACKAGE_ATTRIBUTES_TO_SEARCH = Lists.newArrayList(PackageAttributes.ID, TITLE, TAGS, DESCRIPTION, AUTHORS);
 
@@ -147,13 +150,18 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
   }
 
   @Nullable
-  private static NuGetPackageBuilder applyTransformation(@NotNull final BuildMetadataEntry e,
+  private static NuGetPackageBuilder applyTransformation(@NotNull final BuildMetadataEntry entry,
                                                          @NotNull final Collection<PackageTransformation> trasformations) {
-    final NuGetPackageBuilder pb = new NuGetPackageBuilder(e);
-    for (PackageTransformation transformation : trasformations) {
-      if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
+    try{
+      final NuGetPackageBuilder pb = new NuGetPackageBuilder(entry);
+      for (PackageTransformation transformation : trasformations) {
+        if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
+      }
+      return pb;
+    } catch (Exception ex){
+      LOG.warn("Failed to convert build metadata entry to nuget package. Entry: " + entry.toString(), ex);
+      return null;
     }
-    return pb;
   }
 
   @NotNull
