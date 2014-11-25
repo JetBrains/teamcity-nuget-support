@@ -159,4 +159,14 @@ public class VersionUtilityTest extends BaseTestCase {
   public void isCompatibleReturnsTrueIfProjectFrameworkIsNull(){
     assertTrue(VersionUtility.isCompatible(null, VersionUtility.parseFrameworkName("net40-client")));
   }
+
+  @Test
+  public void testNormalizeVersion() throws Exception {
+    assertEquals("1.0.0", VersionUtility.normalizeVersion("1"));
+    assertEquals("2.0.0", VersionUtility.normalizeVersion("2.0"));
+    assertEquals("3.0.0", VersionUtility.normalizeVersion("3.0.0.0"));
+    assertEquals("4.0.0-alpha", VersionUtility.normalizeVersion("4.0.0.0-alpha"));
+    assertEquals("5.0.0", VersionUtility.normalizeVersion("05.0"));
+    assertEquals("6.2.1.1", VersionUtility.normalizeVersion("6.2.01.1"));
+  }
 }

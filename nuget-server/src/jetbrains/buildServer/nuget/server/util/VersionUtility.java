@@ -283,6 +283,20 @@ public class VersionUtility {
     return false;
   }
 
+  @Nullable
+  public static String normalizeVersion(@NotNull String versionString) {
+    final SemanticVersion semanticVersion = SemanticVersion.valueOf(versionString);
+    if(semanticVersion == null) return null;
+    final Version version = semanticVersion.getVersion();
+    if(version == null) return null;
+    return String.format("%d.%d.%d%s%s",
+            version.getMajor(),
+            version.getMinor(),
+            version.getPatch(),
+            version.getBuild() > 0 ? ("." + String.valueOf(version.getBuild())) : "",
+            !StringUtil.isEmpty(semanticVersion.getSpecialVersion()) ? ("-" + semanticVersion.getSpecialVersion()) : "");
+  }
+
   private static FrameworkName normalizeFrameworkName(FrameworkName framework){
     return FRAMEWORK_NAME_ALIAS.containsKey(framework) ? FRAMEWORK_NAME_ALIAS.get(framework) : framework;
   }

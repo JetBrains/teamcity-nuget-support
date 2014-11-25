@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * @author Evgeniy.Koshkin
  */
 public class SemanticVersion implements Comparable<SemanticVersion> {
-  private static Pattern VERSION_STRING_MATCHING_PATTERN = Pattern.compile("^([0-9]+)(?:\\.([0-9]+))?(?:\\.([0-9]+))?(?:\\.(?:[0-9]+))?(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-\\.]+)?$", Pattern.CASE_INSENSITIVE);
+  private static Pattern VERSION_STRING_MATCHING_PATTERN = Pattern.compile("^([0-9]+)(?:\\.([0-9]+))?(?:\\.([0-9]+))?(?:\\.([0-9]+))?(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-\\.]+)?$", Pattern.CASE_INSENSITIVE);
 
   @NotNull private final Version myVersion;
   @Nullable private final String mySpecialVersion;
@@ -51,10 +51,12 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
     int minor = (minorString != null) ? Integer.valueOf(minorString) : 0;
     final String patchString = match.group(3);
     int patch = (patchString != null) ? Integer.valueOf(patchString) : 0;
+    final String buildString = match.group(4);
+    int build = (buildString != null) ? Integer.valueOf(buildString) : 0;
 
-    final Version versionValue = new Version(major, minor, patch);
+    final Version versionValue = new Version(major, minor, patch, build);
 
-    String release = match.group(4);
+    String release = match.group(5);
     if (release != null && release.startsWith("-"))
       release = release.substring(1);
 
@@ -65,6 +67,16 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
     final SemanticVersion version1 = valueOf(versionString1);
     final SemanticVersion version2 = valueOf(versionString2);
     return version1 != null && version2 != null ? version1.compareTo(version2) : versionString1.compareTo(versionString2);
+  }
+
+  @NotNull
+  public Version getVersion() {
+    return myVersion;
+  }
+
+  @Nullable
+  public String getSpecialVersion() {
+    return mySpecialVersion;
   }
 
   public int compareTo(@NotNull SemanticVersion other) {

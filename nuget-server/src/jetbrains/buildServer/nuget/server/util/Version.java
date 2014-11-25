@@ -73,6 +73,22 @@ public class Version implements Comparable<Version> {
     return new Version( major, minor, patch, build );
   }
 
+  public int getMajor() {
+    return myMajor;
+  }
+
+  public int getMinor() {
+    return myMinor;
+  }
+
+  public int getPatch() {
+    return myPatch;
+  }
+
+  public int getBuild() {
+    return myBuild;
+  }
+
   @Override
   public int hashCode() {
     int hash = 5;
