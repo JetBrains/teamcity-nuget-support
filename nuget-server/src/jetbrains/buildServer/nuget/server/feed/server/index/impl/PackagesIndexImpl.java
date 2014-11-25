@@ -73,8 +73,8 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
   }
 
   @NotNull
-  public Iterator<NuGetIndexEntry> search(@NotNull String serachTerm) {
-    return decorateMetadata(myStorage.findEntriesWithValue(NUGET_PROVIDER_ID, serachTerm, PACKAGE_ATTRIBUTES_TO_SEARCH));
+  public Iterator<NuGetIndexEntry> search(@NotNull String searchTerm) {
+    return decorateMetadata(myStorage.findEntriesWithValue(NUGET_PROVIDER_ID, searchTerm, PACKAGE_ATTRIBUTES_TO_SEARCH));
   }
 
   @NotNull
