@@ -114,6 +114,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
                     "Id = Ninject.MVC3\n" +
                     "LastUpdated = ddd\n" +
                     "LicenseUrl = https://github.com/ninject/ninject.web.mvc/raw/master/mvc3/LICENSE.txt\n" +
+                    "NormalizedVersion = 2.2.2\n" +
                     "ProjectUrl = http://www.ninject.org\n" +
                     "RequireLicenseAcceptance = true\n" +
                     "Tags = Ninject ioc di web mvc3\n" +
