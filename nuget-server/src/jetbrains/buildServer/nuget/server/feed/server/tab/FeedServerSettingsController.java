@@ -16,13 +16,16 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.tab;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerJavaSettings;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
+import jetbrains.buildServer.serverSide.metadata.impl.indexer.MetadataIndexerService;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
@@ -37,14 +40,20 @@ import javax.servlet.http.HttpServletResponse;
  *         Date: 01.11.11 17:56
  */
 public class FeedServerSettingsController extends BaseController {
+  private static final String NUGET_FEED_ENABLED_PARAM_NAME = "nuget-feed-enabled";
+  private static final Logger LOG = Logger.getInstance(FeedServerSettingsController.class.getName());
+
   @NotNull private final NuGetServerJavaSettings mySettings;
+  @NotNull private final MetadataIndexerService myMetadataIndexerService;
 
   public FeedServerSettingsController(@NotNull final AuthorizationInterceptor auth,
                                       @NotNull final PermissionChecker checker,
                                       @NotNull final FeedServerSettingsSection section,
                                       @NotNull final WebControllerManager web,
-                                      @NotNull final NuGetServerJavaSettings settings) {
+                                      @NotNull final NuGetServerJavaSettings settings,
+                                      @NotNull final MetadataIndexerService metadataIndexerService) {
     mySettings = settings;
+    myMetadataIndexerService = metadataIndexerService;
     final String myPath = section.getSettingsPath();
 
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
@@ -59,21 +68,25 @@ public class FeedServerSettingsController extends BaseController {
   @Override
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
-
-    final Boolean param = getServerStatus(request);
-    if (param == null) {
+    final Boolean enabled = getServerStatus(request);
+    if (enabled == null) {
       response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
       return null;
     }
-
-    mySettings.setNuGetJavaFeedEnabled(param);
+    mySettings.setNuGetJavaFeedEnabled(enabled);
+    if(enabled){
+      LOG.info("NuGet feed was enabled. Start re-indexing NuGet builds metadata.");
+      myMetadataIndexerService.reindexProviderData(NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
+    } else{
+      LOG.info("NuGet feed was disabled. Newly published .nupkg files will not be indexed while feed is disabled.");
+    }
     response.setStatus(HttpServletResponse.SC_OK);
     return null;
   }
 
   @Nullable
   private Boolean getServerStatus(@NotNull final HttpServletRequest request) {
-    final String v = request.getParameter("nuget-feed-enabled");
+    final String v = request.getParameter(NUGET_FEED_ENABLED_PARAM_NAME);
     if (StringUtil.isEmptyOrSpaces(v)) return false;
     try {
       return Boolean.valueOf(v);
