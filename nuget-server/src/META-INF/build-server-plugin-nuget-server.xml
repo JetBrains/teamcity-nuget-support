@@ -29,6 +29,7 @@
       </list>
     </constructor-arg>
   </bean>
+  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.NuGetPackagesIndexer"/>
 
   <!-- UI -->
   <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerController"/>

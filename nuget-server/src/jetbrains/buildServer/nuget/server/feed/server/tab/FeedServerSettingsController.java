@@ -21,11 +21,10 @@ import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerJavaSettings;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider;
+import jetbrains.buildServer.nuget.server.feed.server.index.NuGetPackagesIndexer;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
-import jetbrains.buildServer.serverSide.metadata.impl.indexer.MetadataIndexerService;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
@@ -44,16 +43,16 @@ public class FeedServerSettingsController extends BaseController {
   private static final Logger LOG = Logger.getInstance(FeedServerSettingsController.class.getName());
 
   @NotNull private final NuGetServerJavaSettings mySettings;
-  @NotNull private final MetadataIndexerService myMetadataIndexerService;
+  @NotNull private final NuGetPackagesIndexer myPackagesIndexer;
 
   public FeedServerSettingsController(@NotNull final AuthorizationInterceptor auth,
                                       @NotNull final PermissionChecker checker,
                                       @NotNull final FeedServerSettingsSection section,
                                       @NotNull final WebControllerManager web,
                                       @NotNull final NuGetServerJavaSettings settings,
-                                      @NotNull final MetadataIndexerService metadataIndexerService) {
+                                      @NotNull final NuGetPackagesIndexer packagesIndexer) {
     mySettings = settings;
-    myMetadataIndexerService = metadataIndexerService;
+    myPackagesIndexer = packagesIndexer;
     final String myPath = section.getSettingsPath();
 
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
@@ -76,7 +75,7 @@ public class FeedServerSettingsController extends BaseController {
     mySettings.setNuGetJavaFeedEnabled(enabled);
     if(enabled){
       LOG.info("NuGet feed was enabled. Start re-indexing NuGet builds metadata.");
-      myMetadataIndexerService.reindexProviderData(NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
+      myPackagesIndexer.reindexAll();
     } else{
       LOG.info("NuGet feed was disabled. Newly published .nupkg files will not be indexed while feed is disabled.");
     }
