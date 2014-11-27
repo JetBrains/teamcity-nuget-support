@@ -23,13 +23,15 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.ODataDataFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joda.time.LocalDateTime;
 import org.odata4j.core.OAtomEntity;
 
 import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
 
-public abstract class PackageEntityImpl  implements PackageEntityV2, PackageEntityV3, PackageEntityV4, OAtomEntity {
+public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity {
 
   @NotNull
   public final java.lang.String getId(){ 
@@ -39,7 +41,6 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, PackageEnti
     }
     return v;
   }
-
 
   @NotNull
   public final java.lang.String getVersion(){ 
@@ -152,10 +153,11 @@ public abstract class PackageEntityImpl  implements PackageEntityV2, PackageEnti
   @NotNull
   public final org.joda.time.LocalDateTime getLastUpdated(){ 
     final String v = getValue(LAST_UPDATED);
-    if (v == null) { 
-      return new org.joda.time.LocalDateTime();
+    if (v != null) {
+      final LocalDateTime date = ODataDataFormat.parseDate(v);
+      if (date != null) return date;
     }
-    return jetbrains.buildServer.nuget.server.feed.server.index.impl.ODataDataFormat.parseDate(v);
+    return new LocalDateTime();
   }
 
 

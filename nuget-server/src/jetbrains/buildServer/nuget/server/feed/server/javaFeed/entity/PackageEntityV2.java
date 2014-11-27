@@ -35,6 +35,9 @@ public interface PackageEntityV2  {
   java.lang.String getVersion();
 
   @NotNull
+  java.lang.String getNormalizedVersion();
+
+  @NotNull
   java.lang.String getAuthors();
 
   @NotNull
@@ -72,6 +75,9 @@ public interface PackageEntityV2  {
 
   @NotNull
   org.joda.time.LocalDateTime getLastUpdated();
+
+  @NotNull
+  org.joda.time.LocalDateTime getLastEdited();
 
   @NotNull
   org.joda.time.LocalDateTime getPublished();
@@ -114,6 +120,12 @@ public interface PackageEntityV2  {
 
   @NotNull
   java.lang.String getMinClientVersion();
+
+  @NotNull
+  java.lang.String getLicenseNames();
+
+  @NotNull
+  java.lang.String getLicenseReportUrl();
 
   String[] KeyPropertyNames = new String[] { PackageAttributes.ID, PackageAttributes.VERSION };
 }
