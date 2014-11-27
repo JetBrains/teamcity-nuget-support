@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
+import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
@@ -60,9 +61,12 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
   private static final String SHA512 = "SHA512";
 
   private final ResponseCacheReset myReset;
+  @NotNull
+  private final NuGetServerSettings myFeedSettings;
 
-  public NuGetArtifactsMetadataProvider(@NotNull final ResponseCacheReset reset) {
+  public NuGetArtifactsMetadataProvider(@NotNull final ResponseCacheReset reset, @NotNull final NuGetServerSettings feedSettings) {
     myReset = reset;
+    myFeedSettings = feedSettings;
   }
 
   @NotNull
@@ -71,6 +75,10 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
   }
 
   public void generateMedatadata(@NotNull SBuild build, @NotNull MetadataStorageWriter store) {
+    if(!myFeedSettings.isNuGetServerEnabled()){
+      LOG.debug(String.format("Skip NuGet metadata generation for build %s. NuGet feed disabled.", LogUtil.describe(build)));
+      return;
+    }
     if (!TeamCityProperties.getBooleanOrTrue(TEAMCITY_NUGET_INDEX_PACKAGES_PROP_NAME)){
       LOG.info(String.format("Skip NuGet metadata generation for build %s. NuGet packages indexing disabled on the server.", LogUtil.describe(build)));
       return;
