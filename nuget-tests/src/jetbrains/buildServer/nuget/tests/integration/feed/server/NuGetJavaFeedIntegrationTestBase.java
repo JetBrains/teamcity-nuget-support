@@ -228,4 +228,21 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     }
   }
 
+  protected void assertContainsPackageVersion(String responseBody, String version){
+    assertContains(responseBody, "<d:Version>" + version + "</d:Version>");
+  }
+
+  protected void assertNotContainsPackageVersion(String responseBody, String version){
+    assertNotContains(responseBody, "<d:Version>" + version + "</d:Version>", false);
+  }
+
+  protected void assertPackageVersionsOrder(String responseBody, String... versions) {
+    int prevVersionPosition = 0;
+    for (String version : versions){
+      final int i = responseBody.indexOf("<d:Version>" + version + "</d:Version>");
+      if(i == -1) fail("Response doesn't contain package version " + version);
+      assertGreater(i, prevVersionPosition);
+      prevVersionPosition = i;
+    }
+  }
 }

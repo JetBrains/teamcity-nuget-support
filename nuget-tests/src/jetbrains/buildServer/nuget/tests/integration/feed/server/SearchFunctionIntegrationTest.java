@@ -28,7 +28,7 @@ import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex
 /**
  * @author Evgeniy.Koshkin
  */
-public class SearchFunctionIntegrationTest extends FeedFunctionIntegrationTestBase {
+public class SearchFunctionIntegrationTest extends NuGetJavaFeedIntegrationTestBase {
 
   @Test(enabled = false)
   public void testBadRequest() throws Exception {
