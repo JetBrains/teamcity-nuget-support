@@ -50,10 +50,10 @@ BS.NuGet.FeedServer = {
   },
 
   disableFeedServer : function(el) {
-    var message = "Newly created packages will not be indexed while feed is disabled.\n" +
-            "In order to provide consistent feed content all build artifacts on the server will be re-indexed in case feed will be enabled back later.\n" +
-            "Full re-index can require significant time. Some existing packages could disappear from the feed during that period.\n\n" +
-            "Are you sure you want to disable NuGet feed now?";
+    var message = "Newly created packages will not be indexed after the feed is disabled.\n" +
+            "To provide consistent feed content, all build artifacts on the server will be re-indexed on the feed re-enabling.\n" +
+            "Full re-indexing may require significant time. Some existing packages may disappear from the feed during that period.\n\n" +
+            "Are you sure you want to disable the NuGet feed now?";
     if(confirm(message)){
       BS.NuGet.FeedServer._request(el, false);
     }
