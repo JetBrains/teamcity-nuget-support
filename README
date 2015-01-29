@@ -2,15 +2,8 @@ This is NuGet Support TeamCity plugin, mainly NuGet support for TeamCity.
 
 This plugin will be compatible with TeamCity 8.0.x and newer.
 
-==== NOTE ======
-This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 6.5.x Use v0.5-bugfix branch instead.
-This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 7.0.x Use v0.7 branch instead.
-This version NuGet Support plugin is NOT COMPATIBLE with TeamCity 7.1.x Use v0.8 branch instead.
-This version NuGet Support plugin is NOT FULLY COMPATIBLE with TeamCity 8.0.x Use v0.9 branch instead.
-================
-
 Builds of this plugin are found here:
-http://teamcity.jetbrains.com/viewType.html?buildTypeId=bt431
+https://teamcity.jetbrains.com/project.html?projectId=TeamCityPluginsByJetBrains_NuGet
 
 For more details, see 
 http://confluence.jetbrains.net/display/TW/NuGet+support
@@ -20,7 +13,7 @@ License:
  Apache 2.0
 
 
-Building:
+Building the plugin:
 =========
 - First build .Net part of the plugin:    
      msbuild nuget-extensions/nuget-extensions.sln /t:Rebuild /p:Configuration=Release
