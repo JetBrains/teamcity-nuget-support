@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions;
 
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.util.containers.SortedList;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
+import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparators;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.MetadataConstants;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackageEntityEx;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.PackagesEntitySet;
@@ -121,18 +123,7 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
         }
       }
 
-      final Iterator<NuGetIndexEntry> entryIterator = myIndex.getNuGetEntries(requestedPackageId);
-      while (entryIterator.hasNext()){
-        final NuGetIndexEntry indexEntry = entryIterator.next();
-        if(match(indexEntry, requestedVersion,  includePreRelease, frameworkConstraints, versionConstraint)){
-          LOG.debug(String.format("Matched indexed package found fof id:%s version:%s. %s", requestedPackageId, requestedVersion, indexEntry));
-          result.add(indexEntry);
-          if(!includeAllVersions){
-            LOG.debug(String.format("Not all the versions requested. Skip further index lookup for id:%s version:%s.", requestedPackageId, requestedVersion));
-            break;
-          }
-        }
-      }
+      result.addAll(getUpdateOfPackageWithId(includeAllVersions, includePreRelease, frameworkConstraints, requestedPackageId, requestedVersion, versionConstraint));
     }
 
     if(result.isEmpty()){
@@ -145,6 +136,22 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
         return new PackageEntityEx(source, myServerSettings);
       }
     });
+  }
+
+  @NotNull
+  private Collection<NuGetIndexEntry> getUpdateOfPackageWithId(boolean includeAllVersions, boolean includePreRelease, Set<String> frameworkConstraints, String requestedPackageId, SemanticVersion requestedVersion, VersionConstraint versionConstraint) {
+    final Iterator<NuGetIndexEntry> entryIterator = myIndex.getNuGetEntries(requestedPackageId);
+    List<NuGetIndexEntry> result = new SortedList<NuGetIndexEntry>(Collections.reverseOrder(SemanticVersionsComparators.getEntriesComparator()));
+    while (entryIterator.hasNext()){
+      final NuGetIndexEntry indexEntry = entryIterator.next();
+      if(match(indexEntry, requestedVersion,  includePreRelease, frameworkConstraints, versionConstraint)){
+        LOG.debug(String.format("Matched indexed package found fof id:%s version:%s. %s", requestedPackageId, requestedVersion, indexEntry));
+        result.add(indexEntry);
+      }
+    }
+    if(includeAllVersions) return result;
+    else if(result.isEmpty()) return Collections.emptyList();
+    else return Collections.singletonList(result.get(0));
   }
 
   private boolean match(@NotNull NuGetIndexEntry indexEntry, @NotNull SemanticVersion requestedVersion, boolean includePreRelease, @NotNull Set<String> targetFrameworks, @Nullable VersionConstraint versionConstraint) {

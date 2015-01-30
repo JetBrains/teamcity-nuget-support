@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,13 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     addMockPackage(new NuGetIndexEntry("new-stable", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "3")));
     addMockPackage(new NuGetIndexEntry("newest-pre-release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "4")));
 
-    final String preReleaseIncludedResponse = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints=''");
+    final String preReleaseIncludedResponse = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''");
     assertNotContainsPackageVersion(preReleaseIncludedResponse, "1.0");
     assertNotContainsPackageVersion(preReleaseIncludedResponse, "2.0");
-    assertContainsPackageVersion(preReleaseIncludedResponse, "3.0");
+    assertNotContainsPackageVersion(preReleaseIncludedResponse, "3.0");
     assertContainsPackageVersion(preReleaseIncludedResponse, "4.0");
 
-    final String stableResponse = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=false&includeAllVersions=true&targetFrameworks=''&versionConstraints=''");
+    final String stableResponse = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=false&includeAllVersions=false&targetFrameworks=''&versionConstraints=''");
     assertNotContainsPackageVersion(stableResponse, "1.0");
     assertNotContainsPackageVersion(stableResponse, "2.0");
     assertContainsPackageVersion(stableResponse, "3.0");
@@ -100,8 +100,8 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     final String includeSingleVersionResponse = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''");
     assertNotContainsPackageVersion(includeSingleVersionResponse, "1.0");
     assertNotContainsPackageVersion(includeSingleVersionResponse, "2.0");
-    assertContainsPackageVersion(includeSingleVersionResponse, "3.0");
-    assertNotContainsPackageVersion(includeSingleVersionResponse, "4.0");
+    assertNotContainsPackageVersion(includeSingleVersionResponse, "3.0");
+    assertContainsPackageVersion(includeSingleVersionResponse, "4.0");
   }
 
   @Test
