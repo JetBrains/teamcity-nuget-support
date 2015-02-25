@@ -76,7 +76,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
       public Result AssertNoErrorOutput()
       {
-        Assert.IsTrue(string.IsNullOrWhiteSpace(Error));
+        Assert.IsTrue(string.IsNullOrWhiteSpace(Error), String.Format("Error recieved - {0}", Error));
         return this;
       }
 
