@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
+import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
@@ -78,8 +79,9 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     m.assertIsSatisfied();
   }
 
-  @Test(dataProvider = NUGET_VERSIONS, dependsOnGroups = "this test will publish a package to preview nuget repo")
+  @Test(dataProvider = NUGET_VERSIONS)
   public void test_publish_packages(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    TestNGUtil.skip("this test will publish a package to preview nuget repo");
     final File pkg = preparePackage(nuget);
     callPublishRunner(nuget, pkg);
 

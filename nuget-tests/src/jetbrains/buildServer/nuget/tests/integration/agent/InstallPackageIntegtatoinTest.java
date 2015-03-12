@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.agent;
 
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
@@ -252,8 +253,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertEquals(4, packageses.size());
   }
 
-  @Test(enabled = false, dependsOnGroups = "Need to understand how to check NuGet uses only specified sources", dataProvider = NUGET_VERSIONS)
+  @Test(enabled = false, dataProvider = NUGET_VERSIONS)
   public void test_01_local_sources(@NotNull final NuGet nuget) throws RunBuildException {
+    TestNGUtil.skip("Need to understand how to check NuGet uses only specified sources");
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
     File sourcesDir = new File(myRoot, "js");
     ArchiveUtil.unpackZip(Paths.getTestDataPath("test-01-sources.zip"), "", sourcesDir);
@@ -292,8 +294,10 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertEquals(6, packageses.size());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_15p, dependsOnGroups = "support no packages scenriod/parse sln/scan projects")
+  @Test(dataProvider = NUGET_VERSIONS_15p)
   public void test_no_packages_scenario(@NotNull final NuGet nuget) throws RunBuildException {
+    TestNGUtil.skip("support no packages scenriod/parse sln/scan projects");
+
     ArchiveUtil.unpackZip(getTestDataPath("nuget-nopackages.zip"), "", myRoot);
 
     fetchPackages(
