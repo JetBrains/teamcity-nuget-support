@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="testng">
     <CLASSES>
-      <root url="jar://$TeamCityDistribution$/devPackage/tests/junit-3.8.2.jar!/" />
       <root url="jar://$TeamCityDistribution$/devPackage/tests/testng-6.8.jar!/" />
+      <root url="jar://$TeamCityDistribution$/devPackage/tests/junit-4.11.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
