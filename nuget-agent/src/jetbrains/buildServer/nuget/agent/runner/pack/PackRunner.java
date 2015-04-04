@@ -21,6 +21,7 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.configuration.ChangeListener;
+import jetbrains.buildServer.configuration.FilesState;
 import jetbrains.buildServer.configuration.FilesWatcher;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
@@ -67,11 +68,11 @@ public class PackRunner extends NuGetRunnerBase {
     final NuGetPackParameters params = myParametersFactory.loadPackParameters(context);
 
     final CompositeBuildProcess packRunners = new CompositeBuildProcessImpl();
-    final FilesWatcher watcher = createFileWatcher(params.getOutputDirectory());
     final Set<File> createdPackages = new TreeSet<File>();
 
     process.pushBuildProcess(new OutputDirectoryCleanerProcess(params, runningBuild, myCleaner, myTracker.getState(runningBuild)));
-    process.pushBuildProcess(resetFileWatcherProcess(watcher));
+
+    final FilesState filesState = createFilesState(params.getOutputDirectory());
 
     process.pushBuildProcess(
             new MatchFilesBuildProcess(context, params, new MatchFilesBuildProcessBase.Callback() {
@@ -96,7 +97,7 @@ public class PackRunner extends NuGetRunnerBase {
     //calls NuGet to pack all selected packages
     process.pushBuildProcess(packRunners);
     //collect changed files
-    process.pushBuildProcess(collectCreatedFiles(watcher, createdPackages));
+    process.pushBuildProcess(collectCreatedFiles(filesState, createdPackages, params.getOutputDirectory()));
     //publish packages data
     process.pushBuildProcess(myActionFactory.createCreatedPackagesReport(context, createdPackages));
     //publish files as artifacts if needed
@@ -107,34 +108,20 @@ public class PackRunner extends NuGetRunnerBase {
     return process;
   }
 
-  private BuildProcessBase resetFileWatcherProcess(@NotNull final FilesWatcher watcher) {
-    return new BuildProcessBase() {
-      @NotNull
-      @Override
-      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
-        watcher.resetChanged();
-        return BuildFinishedStatus.FINISHED_SUCCESS;
-      }
-    };
-  }
-
   @NotNull
-  private BuildProcessBase collectCreatedFiles(@NotNull final FilesWatcher watcher,
-                                               @NotNull final Set<File> detectedFiles) {
+  private BuildProcessBase collectCreatedFiles(@NotNull final FilesState filesState,
+                                               @NotNull final Set<File> detectedFiles,
+                                               @NotNull final File outputDir) {
     return new BuildProcessBase() {
       @NotNull
       @Override
       protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+        filesState.computeChanges(getDirectoryFiles(outputDir));
+
         detectedFiles.clear();
-        final ChangeListener listener = new ChangeListener() {
-          public void changeOccured(String requestor) {
-            detectedFiles.addAll(watcher.getModifiedFiles());
-            detectedFiles.addAll(watcher.getNewFiles());
-          }
-        };
-        watcher.registerListener(listener);
-        watcher.checkForModifications();
-        watcher.unregisterListener(listener);
+
+        detectedFiles.addAll(filesState.getModifiedFiles());
+        detectedFiles.addAll(filesState.getNewFiles());
 
         return BuildFinishedStatus.FINISHED_SUCCESS;
       }
@@ -175,13 +162,20 @@ public class PackRunner extends NuGetRunnerBase {
     };
   }
 
-  private FilesWatcher createFileWatcher(@NotNull final File outputDir) {
-    return new FilesWatcher(new FilesWatcher.WatchedFilesProvider() {
-      public File[] getWatchedFiles() {
-        final File[] files = outputDir.listFiles();
-        return files != null ? files : new File[0];
-      }
-    });
+  @NotNull
+  private FilesState createFilesState(@NotNull final File outputDir) {
+    FilesState fs = new FilesState();
+    fs.resetState(getDirectoryFiles(outputDir));
+    return fs;
+  }
+
+  @NotNull
+  private File[] getDirectoryFiles(@NotNull File dir) {
+    File[] files = dir.listFiles();
+    if (files == null) {
+      files = new File[0];
+    }
+    return files;
   }
 
   @NotNull
