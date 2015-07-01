@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,15 +66,19 @@ public class FindPackagesByIdFunction implements NuGetFeedFunction {
             .setEntitySet(PackagesEntitySet.getBuilder())
             .setHttpMethod(MetadataConstants.HTTP_METHOD_GET)
             .setReturnType(returnType)
-            .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID).setType(EdmSimpleType.STRING));
+            .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID).setType(EdmSimpleType.STRING))
+            .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID_UPPER_CASE).setType(EdmSimpleType.STRING));
   }
 
   @Nullable
   public Iterable<Object> call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
-    final OFunctionParameter idParam = params.get(MetadataConstants.ID);
+    OFunctionParameter idParam = params.get(MetadataConstants.ID_UPPER_CASE);
     if(idParam == null){
-      LOG.debug(String.format("Bad %s function call. ID parameter is not specified.", getName()));
-      return null;
+      idParam = params.get(MetadataConstants.ID);
+      if(idParam == null){
+        LOG.debug(String.format("Bad %s function call. ID parameter is not specified.", getName()));
+        return null;
+      }
     }
     final OObject id = idParam.getValue();
     if(!(id instanceof OSimpleObject))

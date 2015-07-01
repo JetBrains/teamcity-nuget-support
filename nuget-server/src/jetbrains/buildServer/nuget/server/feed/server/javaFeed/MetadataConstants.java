@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ public class MetadataConstants {
   public static final String GET_UPDATES_FUNCTION_NAME = "GetUpdates";
 
   public static final String ID = "id";
+  public static final String ID_UPPER_CASE = "Id";  //used by VS since 2015 version
   public static final String SEARCH_TERM = "searchTerm";
   public static final String TARGET_FRAMEWORK = "targetFramework";
   public static final String INCLUDE_PRERELEASE = "includePrerelease";
