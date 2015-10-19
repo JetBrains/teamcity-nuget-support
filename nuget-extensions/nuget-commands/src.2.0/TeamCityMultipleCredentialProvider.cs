@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
-using NuGet;
 using System.Linq;
+using NuGet;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 {
