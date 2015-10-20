@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.common.FeedConstants.*;
+import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_FEED_V1;
+import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_FEED_V2;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -88,7 +89,7 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
 
   private Collection<InstallableTool> fetchAvailable() throws FetchException {
     FetchException exception = null;
-    for (String feedUrl : Arrays.asList(NUGET_FEED_V2, MS_REF_FEED_V2, MS_REF_FEED_V1, NUGET_FEED_V1)) {
+    for (String feedUrl : Arrays.asList(NUGET_FEED_V2, NUGET_FEED_V1)) {
       try {
         final List<FeedPackage> packages = new ArrayList<FeedPackage>(myReader.queryPackageVersions(myFeed, feedUrl, FeedConstants.NUGET_COMMANDLINE));
         Collections.sort(packages, new Comparator<FeedPackage>() {

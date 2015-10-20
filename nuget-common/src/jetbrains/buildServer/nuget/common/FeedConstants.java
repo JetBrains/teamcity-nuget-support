@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import java.io.FileFilter;
  * Date: 11.08.11 16:04
  */
 public class FeedConstants {
-  public static final String MS_REF_FEED_V1 = "https://go.microsoft.com/fwlink/?LinkID=206669";
-  public static final String MS_REF_FEED_V2 = "https://go.microsoft.com/fwlink/?LinkID=230477";
   public static final String NUGET_FEED_V1 = "http://packages.nuget.org/api/v1/FeedService.svc";
   public static final String NUGET_FEED_V2 = "http://packages.nuget.org/api/v2";
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ public class PackageCheckerTeamCity implements PackageChecker {
         @NotNull
         private String getUri(@NotNull final SourcePackageReference request) {
           String uri = request.getSource();
-          if (uri == null) uri = FeedConstants.MS_REF_FEED_V2;
+          if (uri == null) uri = FeedConstants.NUGET_FEED_V2;
           return uri;
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
 import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.feed.reader.impl.*;
+import jetbrains.buildServer.nuget.server.feed.reader.impl.NuGetFeedReaderImpl;
+import jetbrains.buildServer.nuget.server.feed.reader.impl.PackagesFeedParserImpl;
+import jetbrains.buildServer.nuget.server.feed.reader.impl.UrlResolverImpl;
 import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.SimpleHttpServerBase;
@@ -202,8 +204,6 @@ public class FeedReaderTest extends BaseTestCase {
   @DataProvider(name = "nuget-feeds")
   public Object[][] nugetFeedsProvider() {
     return new Object[][] {
-            {FeedConstants.MS_REF_FEED_V1},
-            {FeedConstants.MS_REF_FEED_V2},
             {FeedConstants.NUGET_FEED_V1},
             {FeedConstants.NUGET_FEED_V2},
     };
