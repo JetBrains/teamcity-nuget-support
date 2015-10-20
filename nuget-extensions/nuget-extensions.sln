@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-tests-2.8", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-3.2", "nuget-commands-3.2\nuget-commands-3.2.csproj", "{B9249A11-BB64-46E0-A6F8-50D42817A71D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-tests-3.2", "nuget-commands-tests-3.2\nuget-commands-tests-3.2.csproj", "{B4939425-38AE-43E2-92AA-1227DA19F5F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -152,6 +154,18 @@ Global
 		{B9249A11-BB64-46E0-A6F8-50D42817A71D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B9249A11-BB64-46E0-A6F8-50D42817A71D}.Release|x86.ActiveCfg = Release|Any CPU
 		{B9249A11-BB64-46E0-A6F8-50D42817A71D}.Release|x86.Build.0 = Release|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Debug|x86.Build.0 = Debug|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Release|x86.ActiveCfg = Release|Any CPU
+		{B4939425-38AE-43E2-92AA-1227DA19F5F3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
