@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeFactory;
 import jetbrains.buildServer.util.StringUtil;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -80,7 +81,10 @@ public class TriggerRequestFactory {
       throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
     }
 
-    if (source != null) {
+    if(StringUtils.isEmpty(source)){
+      source = null;
+    }
+    else {
       for (TriggerUrlPostProcessor urlPostProcessor : myUrlPostProcessors) {
         source = urlPostProcessor.updateTriggerUrl(descriptor, source);
       }
