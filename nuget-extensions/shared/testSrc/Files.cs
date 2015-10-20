@@ -121,8 +121,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     private static IEnumerable<NuGetVersion> AllNuGets()
     {
-      yield return NuGetVersion.NuGet_3_2;
-      //return Enum.GetValues(typeof (NuGetVersion)).Cast<NuGetVersion>();
+      return Enum.GetValues(typeof (NuGetVersion)).Cast<NuGetVersion>();
     }
 
     public static NuGetVersion[] NuGetVersions15p

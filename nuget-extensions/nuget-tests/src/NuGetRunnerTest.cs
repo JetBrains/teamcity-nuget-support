@@ -100,7 +100,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
           .AssertNoErrorOutput();
 
       var text = res.Output;
-      Assert.IsTrue(text.Contains("TeamCity.NuGetVersion: 1.") || text.Contains("TeamCity.NuGetVersion: 2."));
+      Assert.IsTrue(text.Contains("TeamCity.NuGetVersion: 1.") || text.Contains("TeamCity.NuGetVersion: 2.") || text.Contains("TeamCity.NuGetVersion: 3."));
     }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
