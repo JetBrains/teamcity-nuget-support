@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 
 package jetbrains.buildServer.nuget.server.trigger.impl.settings;
-
-import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -39,7 +36,7 @@ public interface PackageCheckerSettings {
 
   int getCheckerThreads();
 
-  boolean allowBulkMode(@NotNull PackageCheckRequest request);
+  boolean allowBulkMode();
 
   int getMaxPackagesToQueryInBulk();
 }
