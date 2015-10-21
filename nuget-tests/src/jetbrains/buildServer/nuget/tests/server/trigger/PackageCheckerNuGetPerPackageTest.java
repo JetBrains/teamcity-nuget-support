@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
   @Test
   public void test_available_01() throws IOException {
     m.checking(new Expectations() {{
-      oneOf(mySettings).allowBulkMode(with(any(PackageCheckRequest.class)));
+      oneOf(mySettings).allowBulkMode();
       will(returnValue(false));
     }});
     Assert.assertTrue(myChecker.accept(new PackageCheckRequest(nugetMode(), ref())));
@@ -61,7 +61,7 @@ public class PackageCheckerNuGetPerPackageTest extends PackageCheckerTestBase<Pa
   @Test
   public void test_available_02() throws IOException {
     m.checking(new Expectations() {{
-      oneOf(mySettings).allowBulkMode(with(any(PackageCheckRequest.class)));
+      oneOf(mySettings).allowBulkMode();
       will(returnValue(true));
     }});
     Assert.assertFalse(myChecker.accept(new PackageCheckRequest(nugetMode(), ref())));
