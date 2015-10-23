@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,8 +75,6 @@ public class AvailableToolStateTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v1/FeedService.svc", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
       oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
-      oneOf(myReader).queryPackageVersions(myClient, "https://go.microsoft.com/fwlink/?LinkID=206669", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
-      oneOf(myReader).queryPackageVersions(myClient, "https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
       allowing(myTime).now(); will(returnValue(1000234L));
     }});
 
@@ -94,7 +92,7 @@ public class AvailableToolStateTest extends BaseTestCase {
 
     m.checking(new Expectations(){{
       allowing(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
-      oneOf(myReader).queryPackageVersions(myClient, "https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
+      oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v1/FeedService.svc", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
       allowing(myTime).now(); will(returnValue(1000234L));
     }});
 
@@ -107,7 +105,7 @@ public class AvailableToolStateTest extends BaseTestCase {
 
     m.checking(new Expectations(){{
       oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));
-      allowing(myReader).queryPackageVersions(myClient, "https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      allowing(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v1/FeedService.svc", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
       allowing(myTime).now(); will(returnValue(1000234L));
     }});
 
@@ -121,7 +119,7 @@ public class AvailableToolStateTest extends BaseTestCase {
 
     m.checking(new Expectations(){{
       oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(returnValue(Arrays.asList(commandLine("2.0.1"), commandLine("2.7.0"), commandLine("1.4.2"))));
-      allowing(myReader).queryPackageVersions(myClient, "https://go.microsoft.com/fwlink/?LinkID=230477", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
+      allowing(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v1/FeedService.svc", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
       allowing(myTime).now(); will(returnValue(1000234L));
     }});
 
