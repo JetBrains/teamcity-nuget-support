@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.agent.parameters;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * Created 04.01.13 19:18
@@ -32,5 +32,5 @@ public interface PackageSourceManager {
    * @return returns collection of all build-wide package sources
    */
   @NotNull
-  Collection<PackageSource> getGlobalPackageSources(@NotNull AgentRunningBuild build);
+  Set<PackageSource> getGlobalPackageSources(@NotNull AgentRunningBuild build);
 }

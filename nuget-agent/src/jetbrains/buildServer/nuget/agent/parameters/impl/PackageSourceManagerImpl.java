@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,10 @@ import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created 04.01.13 19:19
@@ -36,23 +38,23 @@ import java.util.Collection;
  */
 public class PackageSourceManagerImpl implements PackageSourceManager {
   @NotNull
-  public Collection<PackageSource> getGlobalPackageSources(@NotNull AgentRunningBuild build) {
-    final Collection<PackageSource> result = new ArrayList<PackageSource>();
+  public Set<PackageSource> getGlobalPackageSources(@NotNull AgentRunningBuild build) {
+    final Map<String, PackageSource> result = new HashMap<String, PackageSource>();
 
     for (AgentBuildFeature feature : build.getBuildFeaturesOfType(PackagesConstants.ATHU_FEATURE_TYPE)) {
       final String feed = feature.getParameters().get(PackagesConstants.NUGET_AUTH_FEED);
       final String user = feature.getParameters().get(PackagesConstants.NUGET_AUTH_USERNAME);
       final String pass = feature.getParameters().get(PackagesConstants.NUGET_AUTH_PASSWORD);
 
-      result.add(source(feed, user, pass));
+      result.put(feed, source(feed, user, pass));
     }
 
     final String tcfeed = build.getSharedConfigParameters().get(NuGetServerConstants.FEED_AUTH_REFERENCE);
     if (!StringUtil.isEmptyOrSpaces(tcfeed)) {
-      result.add(source(tcfeed, build.getAccessUser(), build.getAccessCode()));
+      result.put(tcfeed, source(tcfeed, build.getAccessUser(), build.getAccessCode()));
     }
 
-    return result;
+    return new HashSet<PackageSource>(result.values());
   }
 
   @NotNull
@@ -73,6 +75,19 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
       @Nullable
       public String getPassword() {
         return pass;
+      }
+
+      @Override
+      public int hashCode() {
+        return feed.hashCode();
+      }
+
+      @Override
+      public boolean equals(Object obj) {
+        if ( this == obj ) return true;
+        if (!(obj instanceof PackageSource)) return false;
+        PackageSource that = (PackageSource)obj;
+        return feed.equals(that.getSource());
       }
     };
   }
