@@ -70,7 +70,7 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
     final Collection<PackageSource> sources = getSecureSources(hostContext);
 
     if(LOG.isDebugEnabled()){
-      LOG.debug("Providing credentials for packages sources: " + StringUtil.join(", ", CollectionsUtil.convertAndFilterNulls(sources, new Converter<String, PackageSource>() {
+      LOG.debug("Provided credentials for NuGet packages sources: " + StringUtil.join(", ", CollectionsUtil.convertAndFilterNulls(sources, new Converter<String, PackageSource>() {
         public String createFrom(@NotNull PackageSource source) {
           return source.getSource();
         }
