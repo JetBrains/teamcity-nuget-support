@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.tab;
 
+import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
@@ -26,7 +27,6 @@ import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
-import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -42,6 +42,7 @@ public class FeedServerController extends BaseController {
   @NotNull private final PluginDescriptor myDescriptor;
   @NotNull private final NuGetServerSettings mySettings;
   @NotNull private final ServerSettings myServerSettings;
+  @NotNull private final RootUrlHolder myRootUrlHolder;
 
   public FeedServerController(@NotNull final AuthorizationInterceptor auth,
                               @NotNull final PermissionChecker checker,
@@ -49,11 +50,13 @@ public class FeedServerController extends BaseController {
                               @NotNull final WebControllerManager web,
                               @NotNull final PluginDescriptor descriptor,
                               @NotNull final ServerSettings serverSettings,
-                              @NotNull final NuGetServerSettings settings) {
+                              @NotNull final NuGetServerSettings settings,
+                              @NotNull final RootUrlHolder rootUrlHolder) {
     mySection = section;
     myDescriptor = descriptor;
     mySettings = settings;
     myServerSettings = serverSettings;
+    myRootUrlHolder = rootUrlHolder;
     final String myPath = section.getIncludePath();
 
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
@@ -69,7 +72,7 @@ public class FeedServerController extends BaseController {
                                   @NotNull final HttpServletResponse response) throws Exception {
     final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsWindows.jsp"));
 
-    mv.getModel().put("actualServerUrl", WebUtil.getRootUrl(request));
+    mv.getModel().put("actualServerUrl", myRootUrlHolder.getRootUrl());
     mv.getModel().put("nugetStatusRefreshUrl", mySection.getIncludePath());
     mv.getModel().put("nugetSettingsPostUrl", mySection.getSettingsPath());
     mv.getModel().put("privateFeedUrl", mySettings.getNuGetHttpAuthFeedControllerPath());
