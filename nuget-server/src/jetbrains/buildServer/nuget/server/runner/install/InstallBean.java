@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class InstallBean {
   public String getUpdatePerSolutionValue() { return PackagesUpdateMode.FOR_SLN.getName();}
   public String getUpdatePerConfigValue() { return PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG.getName();}
   public String getNuGetFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_REFERENCE); }
-  public String getNuGetAuthFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_AUTH_REFERENCE); }
+  public String getNuGetAuthFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED); }
   public String getRestoreCustomCommandline() { return PackagesConstants.NUGET_RESTORE_CUSOM_COMMANDLINE; }
   public String getUpdateCustomCommandline() { return PackagesConstants.NUGET_UPDATE_CUSOM_COMMANDLINE; }
 }

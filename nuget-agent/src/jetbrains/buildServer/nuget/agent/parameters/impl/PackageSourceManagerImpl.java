@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.agent.parameters.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.agent.AgentBuildFeature;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
@@ -37,6 +38,9 @@ import java.util.Set;
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
 public class PackageSourceManagerImpl implements PackageSourceManager {
+
+  private static final Logger LOG = Logger.getInstance(PackageSourceManagerImpl.class.getName());
+
   @NotNull
   public Set<PackageSource> getGlobalPackageSources(@NotNull AgentRunningBuild build) {
     final Map<String, PackageSource> result = new HashMap<String, PackageSource>();
@@ -49,10 +53,17 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
       result.put(feed, source(feed, user, pass));
     }
 
-    final String tcfeed = build.getSharedConfigParameters().get(NuGetServerConstants.FEED_AUTH_REFERENCE);
-    if (!StringUtil.isEmptyOrSpaces(tcfeed)) {
-      result.put(tcfeed, source(tcfeed, build.getAccessUser(), build.getAccessCode()));
-    }
+    final String agentProvidedTcFeedUrl = build.getSharedConfigParameters().get(NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED);
+    if (StringUtil.isEmptyOrSpaces(agentProvidedTcFeedUrl))
+      LOG.debug("Failed to resolve TeamCity internal NuGet feed url via config parameter " + NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED);
+    else
+      result.put(agentProvidedTcFeedUrl, source(agentProvidedTcFeedUrl, build.getAccessUser(), build.getAccessCode()));
+
+    final String serverProvidedTcFeedUrl = build.getSharedBuildParameters().getSystemProperties().get(NuGetServerConstants.FEED_AUTH_REFERENCE_SERVER_PROVIDED);
+    if (StringUtil.isEmptyOrSpaces(serverProvidedTcFeedUrl))
+      LOG.debug("Failed to resolve TeamCity internal NuGet feed url via system property " + NuGetServerConstants.FEED_AUTH_REFERENCE_SERVER_PROVIDED);
+    else
+      result.put(serverProvidedTcFeedUrl, source(serverProvidedTcFeedUrl, build.getAccessUser(), build.getAccessCode()));
 
     return new HashSet<PackageSource>(result.values());
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.feed.server;
 
+import jetbrains.buildServer.RootUrlHolder;
+import jetbrains.buildServer.agent.Constants;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider;
 import org.jetbrains.annotations.NotNull;
@@ -24,12 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static jetbrains.buildServer.agent.AgentRuntimeProperties.TEAMCITY_SERVER_URL;
-import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_AUTH_REFERENCE;
-import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_REFERENCE;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.*;
 import static jetbrains.buildServer.parameters.ReferencesResolverUtil.makeReference;
-import static jetbrains.buildServer.web.util.WebUtil.GUEST_AUTH_PREFIX;
-import static jetbrains.buildServer.web.util.WebUtil.HTTP_AUTH_PREFIX;
-import static jetbrains.buildServer.web.util.WebUtil.combineContextPath;
+import static jetbrains.buildServer.web.util.WebUtil.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -37,9 +36,11 @@ import static jetbrains.buildServer.web.util.WebUtil.combineContextPath;
  */
 public class NuGetServerPropertiesProvider extends AbstractBuildParametersProvider {
   @NotNull private final NuGetServerSettings mySettings;
+  @NotNull private final RootUrlHolder myRootUrlHolder;
 
-  public NuGetServerPropertiesProvider(@NotNull final NuGetServerSettings settings) {
+  public NuGetServerPropertiesProvider(@NotNull final NuGetServerSettings settings, @NotNull final RootUrlHolder rootUrlHolder) {
     mySettings = settings;
+    myRootUrlHolder = rootUrlHolder;
   }
 
   @NotNull
@@ -52,8 +53,9 @@ public class NuGetServerPropertiesProvider extends AbstractBuildParametersProvid
   public Map<String, String> getProperties() {
     final Map<String, String> map = new HashMap<String, String>();
     if (mySettings.isNuGetServerEnabled()) {
-      map.put(FEED_REFERENCE, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
-      map.put(FEED_AUTH_REFERENCE, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
+      map.put(FEED_REFERENCE, myRootUrlHolder.getRootUrl() + combineContextPath(GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
+      map.put(FEED_AUTH_REFERENCE_AGENT_PROVIDED, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
+      map.put(Constants.SYSTEM_PREFIX + FEED_AUTH_REFERENCE_SERVER_PROVIDED, myRootUrlHolder.getRootUrl() + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
     }
     return map;
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,5 +22,6 @@ package jetbrains.buildServer.nuget.common;
  */
 public class NuGetServerConstants {
   public static final String FEED_REFERENCE = "teamcity.nuget.feed.server";
-  public static final String FEED_AUTH_REFERENCE = "teamcity.nuget.feed.auth.server";
+  public static final String FEED_AUTH_REFERENCE_AGENT_PROVIDED = "teamcity.nuget.feed.auth.server";
+  public static final String FEED_AUTH_REFERENCE_SERVER_PROVIDED = "teamcity.nuget.feed.auth.serverRootUrlBased.server";
 }

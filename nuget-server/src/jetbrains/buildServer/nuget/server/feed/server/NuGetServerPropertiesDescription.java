@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class NuGetServerPropertiesDescription extends AbstractParameterDescripti
   @Override
   public String describe(@NotNull String paramName) {
     if (NuGetServerConstants.FEED_REFERENCE.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed";
-    if (NuGetServerConstants.FEED_AUTH_REFERENCE.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed with basic authentication";
+    if (NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed with basic authentication";
     return null;
   }
 }
