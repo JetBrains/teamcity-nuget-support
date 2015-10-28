@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected CommandlineBuildProcessFactory myExecutor;
   protected NuGetTeamCityProvider myNuGetTeamCityProvider;
   protected String cmd;
-  protected List<PackageSource> myGlobalSources;
+  protected Set<PackageSource> myGlobalSources;
 
   @NotNull
   protected String getCommandsOutput() {
@@ -145,7 +145,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    myGlobalSources = new ArrayList<PackageSource>();
+    myGlobalSources = new HashSet<PackageSource>();
     myCommandsOutput = new StringBuilder();
     myRoot = createTempDir();
     m = new Mockery();
@@ -190,7 +190,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       });
 
       allowing(myNuGetTeamCityProvider).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
-      allowing(psm).getGlobalPackageSources(myBuild); will(returnValue(Collections.unmodifiableCollection(myGlobalSources)));
+      allowing(psm).getGlobalPackageSources(myBuild); will(returnValue(Collections.unmodifiableSet(myGlobalSources)));
     }});
 
     myCollector = new NuGetPackagesCollectorImpl();
