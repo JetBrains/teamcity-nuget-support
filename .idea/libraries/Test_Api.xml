@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="Test-Api">
     <CLASSES>
-      <root url="jar://$teamcitydistribution$/devPackage/tests/tests-support.jar!/" />
-      <root url="jar://$teamcitydistribution$/devPackage/tests/tests-integration.jar!/" />
+      <root url="jar://$TeamCityDistribution$/devPackage/tests/tests-support.jar!/" />
+      <root url="jar://$TeamCityDistribution$/devPackage/tests/tests-integration.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
