@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,10 +62,6 @@ public class PublishRunType extends NuGetRunType {
 
         if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PATH))) {
           checks.add(new InvalidProperty(NUGET_PATH, "The path to NuGet.exe must be specified"));
-        }
-
-        if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_API_KEY))) {
-          checks.add(new InvalidProperty(NUGET_API_KEY, "The API key must be specified"));
         }
 
         if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PUBLISH_FILES))) {

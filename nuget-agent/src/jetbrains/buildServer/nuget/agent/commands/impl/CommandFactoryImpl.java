@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@ import java.util.*;
  * Date: 21.07.11 16:10
  */
 public class CommandFactoryImpl implements CommandFactory {
+
+  private static final String TEAMCITY_NUGET_API_KEY_ENV_VAR_NAME_PREFIX = "teamcity_nuget_api_key_";
 
   @NotNull
   public <T> T createInstall(@NotNull PackagesInstallParameters params, @NotNull File packagesConfig, @NotNull File outputDir, @NotNull Callback<T> factory) throws RunBuildException {
@@ -179,25 +181,32 @@ public class CommandFactoryImpl implements CommandFactory {
   public <T> T createPush(@NotNull final NuGetPublishParameters params,
                           @NotNull final File packagePath,
                           @NotNull final Callback<T> factory) throws RunBuildException {
-    final String apiKey = "teamcity_nuget_api_key_" + System.currentTimeMillis();
-
     final List<String> arguments = new ArrayList<String>();
     arguments.add("push");
     arguments.add(packagePath.getPath());
-    arguments.add("%%" + apiKey + "%%");
     if (params.getCreateOnly()) {
       arguments.add("-CreateOnly");
     }
+    final String apiKey = params.getApiKey();
+    final String apiKeyEnvVarName = TEAMCITY_NUGET_API_KEY_ENV_VAR_NAME_PREFIX + System.currentTimeMillis();
+    if(!StringUtil.isEmptyOrSpaces(apiKey)){
+      arguments.add("%%" + apiKeyEnvVarName + "%%");
+    }
+    final Map<String, String> additionalEnvironment = StringUtil.isEmptyOrSpaces(apiKey)
+            ? Collections.<String, String>emptyMap()
+            : Collections.singletonMap(apiKeyEnvVarName, apiKey);
 
     final String source = params.getPublishSource();
+    final List<String> sources = StringUtil.isEmptyOrSpaces(source)
+            ? Collections.<String>emptyList()
+            : Collections.singletonList(source);
+
     return executeNuGet(
             params,
-            StringUtil.isEmptyOrSpaces(source)
-                    ? Collections.<String>emptyList()
-                    : Arrays.asList(source),
+            sources,
             arguments,
             packagePath.getParentFile(),
-            Collections.singletonMap(apiKey, params.getApiKey()),
+            additionalEnvironment,
             factory);
   }
 
