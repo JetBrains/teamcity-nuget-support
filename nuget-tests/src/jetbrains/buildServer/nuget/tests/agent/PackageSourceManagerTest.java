@@ -17,19 +17,17 @@
 package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.AgentServerFunctionalTestCase;
-import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.agent.AgentRunningBuildEx;
+import jetbrains.buildServer.agent.Constants;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSourceManager;
 import jetbrains.buildServer.nuget.agent.parameters.impl.PackageSourceManagerImpl;
 import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.runner.auth.AuthBean;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import jetbrains.buildServer.serverSide.BuildTypeEx;
-import jetbrains.buildServer.serverSide.SimpleParameter;
+import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.parameters.BuildParametersProvider;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.filters.Filter;
@@ -42,17 +40,24 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_AUTH_REFERENCE_SERVER_PROVIDED;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class PackageSourceManagerTest extends AgentServerFunctionalTestCase {
 
-  private static final String AGENT_PROVIDED_URL = "server_url_from_agent_props/tc_internal_feed_url";
-  private static final String SERVER_PROVIDED_URL = "server_root_url/httpAuth/nuget_feed_controller_path";
   private static final AuthBean AUTH_BEAN = new AuthBean();
+  private static final String AGENT_BASED_URL = "agent";
+  private static final String SERVER_BASED_URL = "server";
+  private static final Map<String, String> PARAMETERS = CollectionsUtil.asMap(
+          FEED_AUTH_REFERENCE_AGENT_PROVIDED, AGENT_BASED_URL,
+          Constants.SYSTEM_PREFIX + FEED_AUTH_REFERENCE_SERVER_PROVIDED, SERVER_BASED_URL);
 
   private PackageSourceManager mySources;
   private BuildTypeEx myNugetEnabledBuildType;
@@ -63,18 +68,14 @@ public class PackageSourceManagerTest extends AgentServerFunctionalTestCase {
   protected void setUp1() throws Throwable {
     super.setUp1();
     m = new Mockery();
-    final NuGetServerSettings nuGetServerSettings = m.mock(NuGetServerSettings.class);
-    final RootUrlHolder rootUrlHolder = m.mock(RootUrlHolder.class);
+    final BuildParametersProvider parametersProvider = m.mock(BuildParametersProvider.class);
     m.checking(new Expectations(){{
-      allowing(rootUrlHolder).getRootUrl(); will(returnValue("server_root_url"));
-      allowing(nuGetServerSettings).isNuGetServerEnabled(); will(returnValue(true));
-      allowing(nuGetServerSettings).getNuGetFeedControllerPath(); will(returnValue("nuget_feed_controller_path"));
+      allowing(parametersProvider).getParameters(with(any(SBuild.class)), with(any(Boolean.class))); will(returnValue(PARAMETERS));
+      allowing(parametersProvider).getParametersAvailableOnAgent(with(any(SBuild.class))); will(returnValue(Collections.emptyList()));
     }});
-
-    myServer.registerExtension(BuildParametersProvider.class, "source", new NuGetServerPropertiesProvider(nuGetServerSettings, rootUrlHolder));
+    myServer.registerExtension(BuildParametersProvider.class, "source", parametersProvider);
     mySources = new PackageSourceManagerImpl();
     myNugetEnabledBuildType = createBuildType();
-    myNugetEnabledBuildType.addConfigParameter(new SimpleParameter(NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED, AGENT_PROVIDED_URL));
   }
 
   @AfterMethod
@@ -92,8 +93,8 @@ public class PackageSourceManagerTest extends AgentServerFunctionalTestCase {
     final List<PackageSource> packageSources = getPackageSourcesOfRunningBuild(runningBuild);
 
     assertEquals(2, packageSources.size());
-    assertContainsPackageSource(AGENT_PROVIDED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
-    assertContainsPackageSource(SERVER_PROVIDED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
+    assertContainsPackageSource(AGENT_BASED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
+    assertContainsPackageSource(SERVER_BASED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
   }
 
   @Test
@@ -104,8 +105,8 @@ public class PackageSourceManagerTest extends AgentServerFunctionalTestCase {
     final List<PackageSource> packageSources = getPackageSourcesOfRunningBuild(runningBuild);
 
     assertEquals(2, packageSources.size());
-    assertContainsPackageSource(AGENT_PROVIDED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
-    assertContainsPackageSource(SERVER_PROVIDED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
+    assertContainsPackageSource(AGENT_BASED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
+    assertContainsPackageSource(SERVER_BASED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
   }
 
   @Test
@@ -118,8 +119,8 @@ public class PackageSourceManagerTest extends AgentServerFunctionalTestCase {
 
     assertEquals(3, packageSources.size());
 
-    assertContainsPackageSource(AGENT_PROVIDED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
-    assertContainsPackageSource(SERVER_PROVIDED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
+    assertContainsPackageSource(AGENT_BASED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
+    assertContainsPackageSource(SERVER_BASED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
     assertContainsPackageSource("some_url", "user2", "password2", packageSources);
   }
 
