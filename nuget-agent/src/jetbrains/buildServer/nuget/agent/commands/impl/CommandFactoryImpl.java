@@ -184,9 +184,7 @@ public class CommandFactoryImpl implements CommandFactory {
     final List<String> arguments = new ArrayList<String>();
     arguments.add("push");
     arguments.add(packagePath.getPath());
-    if (params.getCreateOnly()) {
-      arguments.add("-CreateOnly");
-    }
+
     final String apiKey = params.getApiKey();
     final String apiKeyEnvVarName = TEAMCITY_NUGET_API_KEY_ENV_VAR_NAME_PREFIX + System.currentTimeMillis();
     if(!StringUtil.isEmptyOrSpaces(apiKey)){
@@ -195,6 +193,10 @@ public class CommandFactoryImpl implements CommandFactory {
     final Map<String, String> additionalEnvironment = StringUtil.isEmptyOrSpaces(apiKey)
             ? Collections.<String, String>emptyMap()
             : Collections.singletonMap(apiKeyEnvVarName, apiKey);
+
+    if (params.getCreateOnly()) {
+      arguments.add("-CreateOnly");
+    }
 
     final String source = params.getPublishSource();
     final List<String> sources = StringUtil.isEmptyOrSpaces(source)
