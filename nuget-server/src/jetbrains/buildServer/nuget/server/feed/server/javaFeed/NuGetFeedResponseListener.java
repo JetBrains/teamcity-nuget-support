@@ -32,13 +32,13 @@ public class NuGetFeedResponseListener implements ResponseListener {
   private final Logger LOG = Logger.getInstance(getClass().getName());
 
   public void onError(long id, Throwable ex) {
-    LOG.warn("Error on processing NuGet feed response with ID " + id, ex);
+    LOG.warnAndDebugDetails("Error on processing NuGet feed response with ID " + id, ex);
   }
 
   public void onResponse(long id, ContainerResponse response) {
   }
 
   public void onMappedException(long id, Throwable exception, ExceptionMapper mapper) {
-    LOG.warn("Exception on processing NuGet feed response with ID " + id, exception);
+    LOG.warnAndDebugDetails("Exception on processing NuGet feed response with ID " + id, exception);
   }
 }
