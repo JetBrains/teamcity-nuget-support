@@ -65,8 +65,7 @@ public class PackRunnerOutputDirectoryTrackerImpl implements PackRunnerOutputDir
         return CleanOutcome.CLEANED_BEFORE;
       }
 
-      //if (Boolean.FALSE.equals(aBoolean))
-      return CleanOutcome.NOT_CLEANED_BEFORE;
+      return cleanEnabled ? CleanOutcome.NOT_CLEANED_BEFORE : CleanOutcome.NO_CLEAN_REQUIRED;
     }
   }
 }
