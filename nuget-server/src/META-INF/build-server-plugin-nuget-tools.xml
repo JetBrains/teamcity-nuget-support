@@ -12,6 +12,8 @@
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstallToolController"/>
 
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableToolsStateImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableOnPackagesNugetOrg"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableOnDistNugetOrg"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsSettings"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolManagerImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolsInstallerImpl"/>

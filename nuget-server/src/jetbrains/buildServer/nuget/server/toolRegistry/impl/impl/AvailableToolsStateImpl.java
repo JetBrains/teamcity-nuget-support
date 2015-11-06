@@ -17,26 +17,20 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
-import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
-import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.Converter;
+import jetbrains.buildServer.nuget.server.util.SemanticVersion;
 import jetbrains.buildServer.util.TimeService;
-import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
-import java.util.*;
-
-import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_FEED_V1;
-import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_FEED_V2;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -44,39 +38,32 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_FEED_V2;
  */
 public class AvailableToolsStateImpl implements AvailableToolsState {
   private static final Logger LOG = Logger.getInstance(AvailableToolsStateImpl.class.getName());
-
   private static final long TIMEOUT = 1000 * 60 * 15; //15 min
+  private static final Comparator<? super NuGetTool> COMPARATOR = new Comparator<NuGetTool>() {
+    public int compare(NuGetTool o1, NuGetTool o2) {
+      return SemanticVersion.compareAsVersions(o2.getVersion(), o1.getVersion());
+    }
+  };
 
-  private final FeedClient myFeed;
-  private final NuGetFeedReader myReader;
-  private final TimeService myTime;
-  private Collection<InstallableTool> myTools;
+  @NotNull private final TimeService myTime;
+  @NotNull private final Collection<AvailableToolsFetcher> myFetchers;
+
+  private Collection<NuGetTool> myTools;
   private long lastRequest = 0;
 
-  public AvailableToolsStateImpl(@NotNull FeedClient feed,
-                                 @NotNull final NuGetFeedReader reader,
-                                 @NotNull final TimeService time) {
-    myFeed = feed;
-    myReader = reader;
+  public AvailableToolsStateImpl(@NotNull final TimeService time, @NotNull Collection<AvailableToolsFetcher> fetchers) {
     myTime = time;
+    myFetchers = fetchers;
   }
 
   @Nullable
   public FeedPackage findTool(@NotNull final String id) {
-    final Collection<InstallableTool> tools = myTools;
-    if (tools != null) {
-      for (InstallableTool tool : tools) {
-        if(tool.getPackage().getAtomId().equals(id)) {
-          return tool.getPackage();
-        }
-      }
-    }
     return null;
   }
 
   @NotNull
   public Collection<? extends NuGetTool> getAvailable(ToolsPolicy policy) throws FetchException {
-    Collection<InstallableTool> nuGetTools = myTools;
+    Collection<NuGetTool> nuGetTools = myTools;
     if (policy == ToolsPolicy.FetchNew
             || nuGetTools == null
             || lastRequest + TIMEOUT < myTime.now()) {
@@ -87,73 +74,17 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
     return nuGetTools;
   }
 
-  private Collection<InstallableTool> fetchAvailable() throws FetchException {
-    FetchException exception = null;
-    for (String feedUrl : Arrays.asList(NUGET_FEED_V2, NUGET_FEED_V1)) {
+  private Set<NuGetTool> fetchAvailable() {
+    final TreeSet<NuGetTool> available = new TreeSet<NuGetTool>(COMPARATOR);
+    for(AvailableToolsFetcher fetcher : myFetchers){
       try {
-        final List<FeedPackage> packages = new ArrayList<FeedPackage>(myReader.queryPackageVersions(myFeed, feedUrl, FeedConstants.NUGET_COMMANDLINE));
-        Collections.sort(packages, new Comparator<FeedPackage>() {
-          public int compare(@NotNull final FeedPackage o1, @NotNull final FeedPackage o2) {
-            return -o1.compareTo(o2);
-          }
-        });
-        return CollectionsUtil.filterAndConvertCollection(
-                packages,
-                new Converter<InstallableTool, FeedPackage>() {
-                  public InstallableTool createFrom(@NotNull FeedPackage source) {
-                    return new InstallableTool(source);
-                  }
-                },
-                new Filter<FeedPackage>() {
-                  public boolean accept(@NotNull FeedPackage data) {
-                    final String[] version = data.getInfo().getVersion().split("\\.");
-                    if (version.length < 2) return false;
-                    int major = parse(version[0]);
-                    if (major < 1) return false;
-
-                    int minor = parse(version[1]);
-                    return !(major == 1 && minor < 4);
-
-                  }
-
-                  private int parse(String s) {
-                    try {
-                      return Integer.parseInt(s.trim());
-                    } catch (Exception e) {
-                      return -1;
-                    }
-                  }
-                }
-        );
-      } catch (IOException e) {
-        LOG.warn("Failed to fetch versions from: " + feedUrl + ". " + e.getMessage(), e);
-        exception = new FetchException(e.getMessage(), e);
+        available.addAll(fetcher.fetchAvailable());
+      } catch (FetchException e) {
+        LOG.warn("Failed fetch available NuGet tools from " + fetcher.getSourceDisplayName(), e);
       }
     }
-    throw exception;
+    return available;
   }
 
-  private static class InstallableTool implements NuGetTool {
-    private final FeedPackage myPackage;
-
-    private InstallableTool(@NotNull final FeedPackage aPackage) {
-      myPackage = aPackage;
-    }
-
-    @NotNull
-    public String getId() {
-      return myPackage.getAtomId();
-    }
-
-    @NotNull
-    public String getVersion() {
-      return myPackage.getInfo().getVersion();
-    }
-
-    @NotNull
-    public FeedPackage getPackage() {
-      return myPackage;
-    }
-  }
 
 }
