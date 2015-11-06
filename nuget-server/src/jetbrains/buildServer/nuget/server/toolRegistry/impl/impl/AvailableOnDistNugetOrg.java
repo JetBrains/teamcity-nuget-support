@@ -23,7 +23,9 @@ import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpHeaders;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.http.MediaType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +37,9 @@ import java.util.List;
  * @author Evgeniy.Koshkin
  */
 public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
+  private static final int CONNECTION_TIMEOUT_SECONDS = 60;
   private final static String DIST_NUGET_ORG_INDEX_JSON_URL = "http://dist.nuget.org/index.json";
+  private static final String NUGET_COMMANDLINE_ARTIFACT_NAME = "win-x86-commandline";
   private static final Logger LOG = Logger.getInstance(AvailableOnDistNugetOrg.class.getName());
 
   @NotNull
@@ -45,9 +49,9 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
 
   @NotNull
   public Collection<NuGetTool> fetchAvailable() {
-    HttpClient client = HttpUtil.createHttpClient(60);
+    HttpClient client = HttpUtil.createHttpClient(CONNECTION_TIMEOUT_SECONDS);
     final GetMethod post = new GetMethod(DIST_NUGET_ORG_INDEX_JSON_URL);
-    post.addRequestHeader("Accept", "application/json");
+    post.addRequestHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
     try {
       int status = client.executeMethod(post);
       String respText = post.getResponseBodyAsString();
@@ -56,17 +60,17 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
         final AvailableArtifacts artifacts = gson.fromJson(respText, AvailableArtifacts.class);
         final List<NuGetTool> nugets = new ArrayList<NuGetTool>();
         for (final Artifact artifact : artifacts.getArtifacts()) {
-          if(!artifact.getName().equalsIgnoreCase("win-x86-commandline")) continue;
-          for (final Version cmdVersion : artifact.getVersions()) {
+          if(!artifact.getName().equalsIgnoreCase(NUGET_COMMANDLINE_ARTIFACT_NAME)) continue;
+          for (final Version commandlineVersion : artifact.getVersions()) {
             nugets.add(new NuGetTool() {
               @NotNull
               public String getId() {
-                return artifact.getName() + cmdVersion.getVersion();
+                return artifact.getName() + "." + commandlineVersion.getVersion();
               }
 
               @NotNull
               public String getVersion() {
-                return cmdVersion.getVersion();
+                return commandlineVersion.getVersion();
               }
             });
           }
