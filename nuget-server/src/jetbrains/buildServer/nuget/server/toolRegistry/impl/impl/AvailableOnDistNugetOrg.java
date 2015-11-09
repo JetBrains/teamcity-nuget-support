@@ -19,7 +19,6 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.http.HttpUtil;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -48,7 +47,7 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
   }
 
   @NotNull
-  public Collection<NuGetTool> fetchAvailable() {
+  public Collection<DownloadableNuGetTool> fetchAvailable() {
     HttpClient client = HttpUtil.createHttpClient(CONNECTION_TIMEOUT_SECONDS);
     final GetMethod post = new GetMethod(DIST_NUGET_ORG_INDEX_JSON_URL);
     post.addRequestHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
@@ -58,11 +57,16 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
       if (status == HttpStatus.SC_OK) {
         final Gson gson = new Gson();
         final AvailableArtifacts artifacts = gson.fromJson(respText, AvailableArtifacts.class);
-        final List<NuGetTool> nugets = new ArrayList<NuGetTool>();
+        final List<DownloadableNuGetTool> nugets = new ArrayList<DownloadableNuGetTool>();
         for (final Artifact artifact : artifacts.getArtifacts()) {
           if(!artifact.getName().equalsIgnoreCase(NUGET_COMMANDLINE_ARTIFACT_NAME)) continue;
           for (final Version commandlineVersion : artifact.getVersions()) {
-            nugets.add(new NuGetTool() {
+            nugets.add(new DownloadableNuGetTool() {
+              @NotNull
+              public String getDownloadUrl() {
+                return commandlineVersion.getUrl();
+              }
+
               @NotNull
               public String getId() {
                 return artifact.getName() + "." + commandlineVersion.getVersion();

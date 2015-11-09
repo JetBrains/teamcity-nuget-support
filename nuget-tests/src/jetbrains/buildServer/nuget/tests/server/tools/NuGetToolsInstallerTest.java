@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,10 @@ import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolDownloader;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolDownloaderImpl;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolsInstallerImpl;
 import jetbrains.buildServer.nuget.tests.Strings;
@@ -122,7 +125,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myWatcher).checkNow();
       oneOf(myState).findTool("packageId"); will(returnValue(fp));
-      oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal(fp)), with(any(File.class)));
+      oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal("download-url")), with(any(File.class)));
       will(new CustomAction("fetch file") {
         public Object invoke(Invocation invocation) throws Throwable {
           final File file = (File) invocation.getParameter(2);
@@ -143,7 +146,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myWatcher).checkNow();
       oneOf(myState).findTool("packageId"); will(returnValue(fp));
-      oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal(fp)), with(any(File.class)));
+      oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal("download-url")), with(any(File.class)));
       will(new CustomAction("fetch file") {
         public Object invoke(Invocation invocation) throws Throwable {
           final File file = (File) invocation.getParameter(1);
@@ -162,7 +165,7 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
     m.checking(new Expectations(){{
       oneOf(myWatcher).checkNow();
       oneOf(myState).findTool("packageId"); will(returnValue(fp));
-      oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal(fp)), with(any(File.class))); will(throwException(new IOException("oops")));
+      oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal("download-url")), with(any(File.class))); will(throwException(new IOException("oops")));
     }});
 
     myDownloader.installNuGet("packageId");

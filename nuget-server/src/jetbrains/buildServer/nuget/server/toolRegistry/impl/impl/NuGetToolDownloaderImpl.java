@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
@@ -59,13 +57,13 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
   public String installNuGet(@NotNull final String packageId) throws ToolException {
     LOG.info("Start installing package " + packageId);
 
-    final FeedPackage tool = myState.findTool(packageId);
+    final DownloadableNuGetTool tool = myState.findTool(packageId);
     if (tool == null) {
       throw new ToolException("Failed to find package " + packageId);
     }
 
     LOG.info("Downloading package from: " + tool.getDownloadUrl());
-    final String key = tool.getInfo().getId() + "." + tool.getInfo().getVersion();
+    final String key = tool.getId();
     final File tmp = createTempFile(key);
     downloadPackage(tool, tmp);
     return myInstaller.installNuGet(key + NUGET_EXTENSION, tmp);
@@ -84,17 +82,15 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
     }
   }
 
-  private void downloadPackage(@NotNull final FeedPackage tool,
+  private void downloadPackage(@NotNull final DownloadableNuGetTool tool,
                                @NotNull final File file) throws ToolException {
     FileUtil.delete(file);
     try {
-      myClient.downloadPackage(myFeed, tool, file);
+      myClient.downloadPackage(myFeed, tool.getDownloadUrl(), file);
     } catch (Exception e) {
-      final PackageInfo info = tool.getInfo();
-
       LOG.warn("Failed to download package " + tool + " to " + file + ". " + e.getMessage());
       LOG.debug("Failed to download package " + tool + " to " + file + ". " + e.getMessage(), e);
-      throw new ToolException("Failed to download package " + info.getId() + " " + info.getVersion() + ". " + e.getMessage());
+      throw new ToolException("Failed to download package " + tool.getId() + " " + tool.getVersion() + ". " + e.getMessage());
     }
   }
 }

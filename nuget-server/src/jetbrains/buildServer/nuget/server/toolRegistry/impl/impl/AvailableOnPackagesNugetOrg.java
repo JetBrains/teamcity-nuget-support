@@ -22,7 +22,6 @@ import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.filters.Filter;
@@ -55,7 +54,7 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
   }
 
   @NotNull
-  public Collection<NuGetTool> fetchAvailable() throws FetchException {
+  public Collection<DownloadableNuGetTool> fetchAvailable() throws FetchException {
     FetchException exception = null;
     for (String feedUrl : Arrays.asList(NUGET_FEED_V2, NUGET_FEED_V1)) {
       try {
@@ -67,9 +66,14 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
         });
         return CollectionsUtil.filterAndConvertCollection(
                 packages,
-                new Converter<NuGetTool, FeedPackage>() {
-                  public NuGetTool createFrom(@NotNull final FeedPackage source) {
-                    return new NuGetTool() {
+                new Converter<DownloadableNuGetTool, FeedPackage>() {
+                  public DownloadableNuGetTool createFrom(@NotNull final FeedPackage source) {
+                    return new DownloadableNuGetTool() {
+                      @NotNull
+                      public String getDownloadUrl() {
+                        return source.getDownloadUrl();
+                      }
+
                       @NotNull
                       public String getId() {
                         return source.getAtomId();

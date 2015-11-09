@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
@@ -48,7 +47,7 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
   @NotNull private final TimeService myTime;
   @NotNull private final Collection<AvailableToolsFetcher> myFetchers;
 
-  private Collection<NuGetTool> myTools;
+  private Collection<DownloadableNuGetTool> myTools;
   private long lastRequest = 0;
 
   public AvailableToolsStateImpl(@NotNull final TimeService time, @NotNull Collection<AvailableToolsFetcher> fetchers) {
@@ -57,13 +56,21 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
   }
 
   @Nullable
-  public FeedPackage findTool(@NotNull final String id) {
+  public DownloadableNuGetTool findTool(@NotNull final String id) {
+    final Collection<DownloadableNuGetTool> tools = myTools;
+    if (tools != null) {
+      for (DownloadableNuGetTool tool : tools) {
+        if(tool.getId().equals(id)) {
+          return tool;
+        }
+      }
+    }
     return null;
   }
 
   @NotNull
   public Collection<? extends NuGetTool> getAvailable(ToolsPolicy policy) throws FetchException {
-    Collection<NuGetTool> nuGetTools = myTools;
+    Collection<DownloadableNuGetTool> nuGetTools = myTools;
     if (policy == ToolsPolicy.FetchNew
             || nuGetTools == null
             || lastRequest + TIMEOUT < myTime.now()) {
@@ -74,8 +81,8 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
     return nuGetTools;
   }
 
-  private Set<NuGetTool> fetchAvailable() {
-    final TreeSet<NuGetTool> available = new TreeSet<NuGetTool>(COMPARATOR);
+  private Set<DownloadableNuGetTool> fetchAvailable() {
+    final TreeSet<DownloadableNuGetTool> available = new TreeSet<DownloadableNuGetTool>(COMPARATOR);
     for(AvailableToolsFetcher fetcher : myFetchers){
       try {
         available.addAll(fetcher.fetchAvailable());
@@ -85,6 +92,4 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
     }
     return available;
   }
-
-
 }
