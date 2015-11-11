@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolDownlo
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -49,6 +50,13 @@ public class NuGetToolDownloaderTest extends BaseTestCase {
     myClient = m.mock(FeedClient.class);
     myFeed = m.mock(NuGetFeedReader.class);
     myDownloader = new NuGetToolDownloaderImpl(myFeed, myClient);
+  }
+
+  @Override
+  @AfterMethod
+  public void tearDown() throws Exception {
+    m.assertIsSatisfied();
+    super.tearDown();
   }
 
   @Test(expectedExceptions = ToolException.class)
