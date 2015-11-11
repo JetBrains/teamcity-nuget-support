@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ public class NuGetToolsInstallerImpl implements NuGetToolsInstaller {
     myWatcher = watcher;
   }
 
-  @NotNull
-  public String installNuGet(@NotNull final String toolName,
+  public void installNuGet(@NotNull final String toolName,
                              @NotNull final File toolFile) throws ToolException {
     LOG.info("Start installing package " + toolName + " from file: " + toolFile);
 
@@ -59,7 +58,6 @@ public class NuGetToolsInstallerImpl implements NuGetToolsInstaller {
     final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolName);
     validatePackage(toolFile);
     publishDownloadedPackage(dest, toolFile);
-    return toolName;
   }
 
   private void publishDownloadedPackage(@NotNull final File dest, @NotNull final File tmp) throws ToolException {

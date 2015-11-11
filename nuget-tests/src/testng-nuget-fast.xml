@@ -28,6 +28,7 @@
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolPackerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolsInstallerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolDownloaderTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolUnpackerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableToolStateTest"/>

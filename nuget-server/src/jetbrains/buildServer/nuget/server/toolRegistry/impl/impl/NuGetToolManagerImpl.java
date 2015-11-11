@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,28 +33,25 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_COMMANDLINE
  * Date: 11.08.11 1:07
  */
 public class NuGetToolManagerImpl implements NuGetToolManager {
-  private final AvailableToolsState myAvailables;
+  private final AvailableToolsState myAvailableTools;
+  private final ToolsRegistry myInstalledTools;
   private final NuGetToolsInstaller myInstaller;
-  private final NuGetToolDownloader myDownloader;
-  private final ToolsRegistry myInstalled;
   private final NuGetToolsSettings mySettings;
 
-  public NuGetToolManagerImpl(@NotNull final AvailableToolsState availables,
+  public NuGetToolManagerImpl(@NotNull final AvailableToolsState availableTools,
                               @NotNull final NuGetToolsInstaller installer,
-                              @NotNull final NuGetToolDownloader downloader,
-                              @NotNull final ToolsRegistry installed,
+                              @NotNull final ToolsRegistry installedTools,
                               @NotNull final NuGetToolsSettings settings) {
-    myAvailables = availables;
+    myAvailableTools = availableTools;
     myInstaller = installer;
-    myDownloader = downloader;
-    myInstalled = installed;
+    myInstalledTools = installedTools;
     mySettings = settings;
   }
 
   @NotNull
   public Collection<? extends NuGetInstalledTool> getInstalledTools() {
     final String defaultToolId = getDefaultToolId();
-    final Collection<? extends NuGetInstalledTool> tools = myInstalled.getTools();
+    final Collection<? extends NuGetInstalledTool> tools = myInstalledTools.getTools();
     if (defaultToolId == null || StringUtil.isEmptyOrSpaces(defaultToolId)) {
       return tools;
     }
@@ -77,7 +74,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
       installed.add(tool.getVersion());
     }
     //This must be cached to make if work faster!
-    final Collection<NuGetTool> available = new ArrayList<NuGetTool>(myAvailables.getAvailable(policy));
+    final Collection<NuGetTool> available = new ArrayList<NuGetTool>(myAvailableTools.getAvailable(policy));
     final Iterator<NuGetTool> it = available.iterator();
     while (it.hasNext()) {
       NuGetTool next = it.next();
@@ -88,14 +85,15 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     return available;
   }
 
-  @NotNull
-  public NuGetTool downloadTool(@NotNull String toolId) throws ToolException {
-    return findInstalledTool(myDownloader.installNuGet(toolId));
+  @Nullable
+  public DownloadableNuGetTool findAvailableToolById(String toolId) {
+    return myAvailableTools.findTool(toolId);
   }
 
   @NotNull
   public NuGetTool installTool(@NotNull String toolName, @NotNull File toolFile) throws ToolException {
-    return findInstalledTool(myInstaller.installNuGet(toolName, toolFile));
+    myInstaller.installNuGet(toolName, toolFile);
+    return findInstalledTool(toolName);
   }
 
   @NotNull
@@ -109,11 +107,11 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   @Nullable
   private InstalledTool findTool(@Nullable final String toolId) {
-    return myInstalled.findTool(toolId);
+    return myInstalledTools.findTool(toolId);
   }
 
   public void removeTool(@NotNull String toolId) {
-    myInstalled.removeTool(toolId);
+    myInstalledTools.removeTool(toolId);
   }
 
   @Nullable

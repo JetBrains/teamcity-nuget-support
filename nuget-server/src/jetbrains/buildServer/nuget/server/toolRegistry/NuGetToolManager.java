@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,15 +42,8 @@ public interface NuGetToolManager {
   @NotNull
   Collection<? extends NuGetTool> getAvailableTools(@NotNull final ToolsPolicy policy) throws FetchException;
 
-  /**
-   * Downloads and installs nuget tools for both server and agent
-   * @param toolId tool id for tool to install
-   * @throws ToolException on tool installation error
-   * @return installed NuGet tool
-   */
-  @NotNull
-  NuGetTool downloadTool(@NotNull String toolId) throws ToolException;
-
+  @Nullable
+  DownloadableNuGetTool findAvailableToolById(String toolId);
 
   /**
    * Installs tool from a given .nupkg file

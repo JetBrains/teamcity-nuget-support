@@ -19,10 +19,8 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolDownloader;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolDownloader;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,65 +30,42 @@ import java.io.IOException;
 import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
 
 /**
- * Created 27.12.12 18:48
- *
- * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
+ * @author Evgeniy.Koshkin
  */
 public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
   private static final Logger LOG = Logger.getInstance(NuGetToolDownloaderImpl.class.getName());
-  private final FeedClient myFeed;
-  private final NuGetFeedReader myClient;
-  private final AvailableToolsState myState;
-  private final NuGetToolsInstaller myInstaller;
 
-  public NuGetToolDownloaderImpl(@NotNull final FeedClient feed,
-                                 @NotNull final NuGetFeedReader client,
-                                 @NotNull final AvailableToolsState state,
-                                 @NotNull final NuGetToolsInstaller installer) {
-    myFeed = feed;
+  @NotNull private final NuGetFeedReader myClient;
+  @NotNull private final FeedClient myFeed;
+
+  public NuGetToolDownloaderImpl(@NotNull final NuGetFeedReader client, @NotNull final FeedClient feed) {
     myClient = client;
-    myState = state;
-    myInstaller = installer;
+    myFeed = feed;
   }
 
   @NotNull
-  public String installNuGet(@NotNull final String packageId) throws ToolException {
-    LOG.info("Start installing package " + packageId);
-
-    final DownloadableNuGetTool tool = myState.findTool(packageId);
-    if (tool == null) {
-      throw new ToolException("Failed to find package " + packageId);
-    }
-
+  public File downloadTool(@NotNull DownloadableNuGetTool tool) throws ToolException {
+    LOG.info("Start installing package " + tool.getId());
     LOG.info("Downloading package from: " + tool.getDownloadUrl());
-    final String key = tool.getId();
-    final File tmp = createTempFile(key);
-    downloadPackage(tool, tmp);
-    return myInstaller.installNuGet(key + NUGET_EXTENSION, tmp);
-  }
-
-  @NotNull
-  private File createTempFile(@NotNull final String name) throws ToolException {
+    File tempFile;
     try {
-      File tempFile = FileUtil.createTempFile(name, NUGET_EXTENSION);
+      tempFile = FileUtil.createTempFile(tool.getId(), NUGET_EXTENSION);
       FileUtil.createParentDirs(tempFile);
-      return tempFile;
     } catch (IOException e) {
       String msg = "Failed to create temp file";
       LOG.debug(e);
       throw new ToolException(msg);
     }
-  }
+    FileUtil.delete(tempFile);
 
-  private void downloadPackage(@NotNull final DownloadableNuGetTool tool,
-                               @NotNull final File file) throws ToolException {
-    FileUtil.delete(file);
     try {
-      myClient.downloadPackage(myFeed, tool.getDownloadUrl(), file);
+      myClient.downloadPackage(myFeed, tool.getDownloadUrl(), tempFile);
     } catch (Exception e) {
-      LOG.warn("Failed to download package " + tool + " to " + file + ". " + e.getMessage());
-      LOG.debug("Failed to download package " + tool + " to " + file + ". " + e.getMessage(), e);
+      LOG.warn("Failed to download package " + tool + " to " + tempFile + ". " + e.getMessage());
+      LOG.debug("Failed to download package " + tool + " to " + tempFile + ". " + e.getMessage(), e);
       throw new ToolException("Failed to download package " + tool.getId() + " " + tool.getVersion() + ". " + e.getMessage());
     }
+
+    return tempFile;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry.impl;
+package jetbrains.buildServer.nuget.server.toolRegistry;
 
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 /**
- * Created 27.12.12 18:51
- *
- * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
+ * @author Evgeniy.Koshkin
  */
 public interface NuGetToolDownloader {
-  @NotNull
-  String installNuGet(@NotNull String packageId) throws ToolException;
+  @NotNull File downloadTool(@NotNull DownloadableNuGetTool tool) throws ToolException;
 }
