@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableToolsFetcher;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableToolsStateImpl;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.util.TestFor;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
@@ -84,12 +85,60 @@ public class AvailableToolStateTest extends BaseTestCase {
   }
 
   @Test
-  public void test_find_tool() throws Exception {
-    fail();
+  public void test_find_tool_getAvailableNotCalled() throws Exception {
+    final AvailableToolsFetcher fetcher = m.mock(AvailableToolsFetcher.class);
+    final TimeService time = m.mock(TimeService.class);
+    m.checking(new Expectations(){{
+      allowing(time).now(); will(returnValue(1000234L));
+      allowing(fetcher).fetchAvailable(); will(returnValue(Lists.newArrayList(toolForId("knownId"))));
+    }});
+
+    final AvailableToolsState state = new AvailableToolsStateImpl(time, Lists.newArrayList(fetcher));
+    assertNull(state.findTool(toolForId("knownId").getId()));
   }
 
-  private static NuGetTool toolOfVersion(final String version){
-    return new NuGetTool() {
+  @Test
+  public void test_find_tool_unknownToolId() throws Exception {
+    final AvailableToolsFetcher fetcher = m.mock(AvailableToolsFetcher.class);
+    final TimeService time = m.mock(TimeService.class);
+    m.checking(new Expectations(){{
+      allowing(time).now(); will(returnValue(1000234L));
+      allowing(fetcher).fetchAvailable(); will(returnValue(Lists.newArrayList(toolForId("knownId"))));
+    }});
+
+    final AvailableToolsState state = new AvailableToolsStateImpl(time, Lists.newArrayList(fetcher));
+    assertNotEmpty(state.getAvailable(ToolsPolicy.FetchNew));
+
+    assertNull(state.findTool(toolForId("unknownId").getId()));
+    assertNotNull(state.findTool(toolForId("knownId").getId()));
+  }
+
+  private static DownloadableNuGetTool toolForId(final String id){
+    return new DownloadableNuGetTool() {
+      @NotNull
+      public String getDownloadUrl() {
+        return "downloadUrl-for-" + getId();
+      }
+
+      @NotNull
+      public String getId() {
+        return id;
+      }
+
+      @NotNull
+      public String getVersion() {
+        return "0";
+      }
+    };
+  }
+
+  private static DownloadableNuGetTool toolOfVersion(final String version){
+    return new DownloadableNuGetTool() {
+      @NotNull
+      public String getDownloadUrl() {
+        return "downloadUrl-for-" + getId();
+      }
+
       @NotNull
       public String getId() {
         return "nuget-exe-" + version;
