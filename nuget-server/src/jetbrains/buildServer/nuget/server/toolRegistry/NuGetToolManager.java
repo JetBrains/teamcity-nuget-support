@@ -47,13 +47,12 @@ public interface NuGetToolManager {
 
   /**
    * Installs tool from a given .nupkg file
-   * @param toolName name of the NuGet Commandline package. Expected to be informat NuGet.CommandLine.x.y.z*.nupkg
    * @param toolFile path to Tool file to be copied as the result of install
    * @throws ToolException in case file is wrong
    * @return installed NuGet tool
    */
   @NotNull
-  NuGetTool installTool(@NotNull final String toolName, @NotNull File toolFile) throws ToolException;
+  NuGetTool installTool(@NotNull final String toolId, @NotNull final String toolFileName, @NotNull File toolFile) throws ToolException;
 
   /**
    * Removes tool from server and build agents

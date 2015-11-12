@@ -133,8 +133,8 @@ public class ToolsRegistryTest extends BaseTestCase {
 
   private InstalledTool tool(String name) {
     file(myPackagesHome, name + ".nupkg");
-    file(myAgentHome, name + ".nupkg.zip");
-    file(myToolsHome, name + ".nupkg/tools/nuget.exe");
+    file(myAgentHome, name + ".zip");
+    file(myToolsHome, name + "/tools/nuget.exe");
     return new InstalledTool() {
       @NotNull
       public File getAgentPluginFile() {

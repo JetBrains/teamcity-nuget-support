@@ -17,12 +17,12 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPacker;
 import jetbrains.buildServer.util.FileUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -36,12 +36,16 @@ public class InstalledNuGetAsExecutable implements InstalledTool {
   @NotNull private final PluginNaming myNaming;
   @NotNull private final ToolPacker myPacker;
   @NotNull private final File myPath;
+  @NotNull private final String myId;
+  @NotNull private final String myVersion;
   @NotNull private final File myUnpackFolder;
 
   protected InstalledNuGetAsExecutable(@NotNull PluginNaming naming, @NotNull ToolPacker packer, @NotNull File path) {
     myNaming = naming;
     myPacker = packer;
     myPath = path;
+    myId = FilenameUtils.removeExtension(path.getName());
+    myVersion = ToolIdUtils.getVersionFromId(myId);
     myUnpackFolder = FileUtil.getCanonicalFile(myNaming.getUnpackedFolder(myPath));
   }
 
@@ -61,23 +65,12 @@ public class InstalledNuGetAsExecutable implements InstalledTool {
 
   @NotNull
   public String getId() {
-    return myPath.getName();
-  }
-
-  @NotNull
-  public static String getVersionFromFileName(@NotNull String fileName){
-    if (fileName.toLowerCase().endsWith(FeedConstants.EXE_EXTENSION.toLowerCase())) {
-      fileName = fileName.substring(0, fileName.length() - FeedConstants.EXE_EXTENSION.length());
-      if (fileName.toLowerCase().startsWith(FeedConstants.NUGET_COMMANDLINE.toLowerCase() + ".")) {
-        fileName = fileName.substring(FeedConstants.NUGET_COMMANDLINE.length() + 1);
-      }
-    }
-    return fileName;
+    return myId;
   }
 
   @NotNull
   public String getVersion() {
-    return getVersionFromFileName(myPath.getName());
+    return myVersion;
   }
 
   public void install() {

@@ -26,6 +26,7 @@ import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import org.apache.commons.io.FilenameUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
@@ -135,7 +136,7 @@ public class InstallToolController extends BaseFormXmlController {
 
           final File downloadedToolLocation = myToolsDownloader.downloadTool(tool);
           try {
-            final NuGetTool downloadedTool = myToolsManager.installTool(tool.getDestinationFileName(), downloadedToolLocation);
+            final NuGetTool downloadedTool = myToolsManager.installTool(tool.getId(), tool.getDestinationFileName(), downloadedToolLocation);
             updateDefault(request, downloadedTool);
           } finally {
             FileUtil.delete(downloadedToolLocation);
@@ -156,7 +157,8 @@ public class InstallToolController extends BaseFormXmlController {
           final File tempFile = new File(file);
 
           try {
-            final NuGetTool uploadedTool = myToolsManager.installTool(tempFile.getName(), tempFile);
+            final String uploadedFileName = tempFile.getName();
+            final NuGetTool uploadedTool = myToolsManager.installTool(FilenameUtils.removeExtension(uploadedFileName), uploadedFileName, tempFile);
             updateDefault(request, uploadedTool);
           } finally {
             FileUtil.delete(tempFile);

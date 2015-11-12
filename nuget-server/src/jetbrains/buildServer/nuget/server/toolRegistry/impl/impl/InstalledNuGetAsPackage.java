@@ -17,13 +17,13 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPacker;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolUnpacker;
 import jetbrains.buildServer.util.FileUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -39,6 +39,8 @@ public class InstalledNuGetAsPackage implements InstalledTool {
   private final ToolPacker myPacker;
   private final ToolUnpacker myUnpacker;
   private final File myPath;
+  private final String myId;
+  private final String myVersion;
   private File myUnpackFolder;
 
   protected InstalledNuGetAsPackage(@NotNull PluginNaming naming, @NotNull ToolPacker packer, @NotNull ToolUnpacker unpacker, @NotNull final File path) {
@@ -46,6 +48,8 @@ public class InstalledNuGetAsPackage implements InstalledTool {
     myPacker = packer;
     myUnpacker = unpacker;
     myPath = path;
+    myId = FilenameUtils.removeExtension(path.getName());
+    myVersion = ToolIdUtils.getVersionFromId(myId);
     myUnpackFolder = FileUtil.getCanonicalFile(myNaming.getUnpackedFolder(myPath));
   }
 
@@ -85,23 +89,12 @@ public class InstalledNuGetAsPackage implements InstalledTool {
 
   @NotNull
   public String getId() {
-    return myPath.getName();
-  }
-
-  @NotNull
-  public static String getVersionFromFileName(@NotNull String fileName){
-    if (fileName.toLowerCase().endsWith(FeedConstants.NUGET_EXTENSION.toLowerCase())) {
-      fileName = fileName.substring(0, fileName.length() - FeedConstants.NUGET_EXTENSION.length());
-      if (fileName.toLowerCase().startsWith(FeedConstants.NUGET_COMMANDLINE.toLowerCase() + ".")) {
-        fileName = fileName.substring(FeedConstants.NUGET_COMMANDLINE.length() + 1);
-      }
-    }
-    return fileName;
+    return myId;
   }
 
   @NotNull
   public String getVersion() {
-    return getVersionFromFileName(myPath.getName());
+    return myVersion;
   }
 
   @Override

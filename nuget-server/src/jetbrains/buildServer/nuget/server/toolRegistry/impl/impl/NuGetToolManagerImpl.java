@@ -91,9 +91,9 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   @NotNull
-  public NuGetTool installTool(@NotNull String toolName, @NotNull File toolFile) throws ToolException {
-    myInstaller.installNuGet(toolName, toolFile);
-    return findInstalledTool(toolName);
+  public NuGetTool installTool(@NotNull String toolId, @NotNull String toolFileName, @NotNull File toolFile) throws ToolException {
+    myInstaller.installNuGet(toolFileName, toolFile);
+    return findInstalledTool(toolId);
   }
 
   @NotNull

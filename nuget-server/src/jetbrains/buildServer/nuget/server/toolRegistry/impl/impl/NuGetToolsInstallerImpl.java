@@ -44,12 +44,12 @@ public class NuGetToolsInstallerImpl implements NuGetToolsInstaller {
     myWatcher = watcher;
   }
 
-  public void installNuGet(@NotNull final String toolName, @NotNull final File toolFile) throws ToolException {
-    LOG.info("Start installing package " + toolName + " from file: " + toolFile);
-    if (FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(toolName)) {
+  public void installNuGet(@NotNull final String toolFileName, @NotNull final File toolFile) throws ToolException {
+    LOG.info("Start installing package " + toolFileName + " from file: " + toolFile);
+    if (FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(toolFileName)) {
       NuGetPackageValidationUtil.validatePackage(toolFile);
     }
-    final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolName);
+    final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolFileName);
     if (dest.isFile()) throw new ToolException("Tool with such version already exists");
     try {
       FileUtil.copy(toolFile, dest);

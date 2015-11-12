@@ -63,11 +63,11 @@ public class NuGetToolManagerTest extends BaseTestCase {
     final InstalledTool it = m.mock(InstalledTool.class);
 
     m.checking(new Expectations(){{
-      oneOf(myInstaller).installNuGet("aaa", new File("foo"));
-      oneOf(myToolsRegistry).findTool("aaa"); will(returnValue(it));
+      oneOf(myInstaller).installNuGet("filename", new File("foo"));
+      oneOf(myToolsRegistry).findTool("id"); will(returnValue(it));
     }});
 
-    assertSame(it, myToolManager.installTool("aaa", new File("foo")));
+    assertSame(it, myToolManager.installTool("id", "filename", new File("foo")));
   }
 
   @Test
