@@ -135,7 +135,7 @@ public class InstallToolController extends BaseFormXmlController {
 
           final File downloadedToolLocation = myToolsDownloader.downloadTool(tool);
           try {
-            final NuGetTool downloadedTool = myToolsManager.installTool(toolId, downloadedToolLocation);
+            final NuGetTool downloadedTool = myToolsManager.installTool(tool.getDestinationFileName(), downloadedToolLocation);
             updateDefault(request, downloadedTool);
           } finally {
             FileUtil.delete(downloadedToolLocation);

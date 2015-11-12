@@ -77,6 +77,11 @@ public class NuGetToolDownloaderTest extends BaseTestCase {
       }
 
       @NotNull
+      public String getDestinationFileName() {
+        return "some_path";
+      }
+
+      @NotNull
       public String getId() {
         return id;
       }

@@ -30,8 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_FEED_V1;
-import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_FEED_V2;
+import static jetbrains.buildServer.nuget.common.FeedConstants.*;
 
 /**
  * @author Evgeniy.Koshkin
@@ -75,8 +74,13 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
                       }
 
                       @NotNull
+                      public String getDestinationFileName() {
+                        return source.getInfo().getId() + "." + source.getInfo().getVersion() + NUGET_EXTENSION;
+                      }
+
+                      @NotNull
                       public String getId() {
-                        return source.getAtomId();
+                        return source.getInfo().getId() + "." + source.getInfo().getVersion();
                       }
 
                       @NotNull

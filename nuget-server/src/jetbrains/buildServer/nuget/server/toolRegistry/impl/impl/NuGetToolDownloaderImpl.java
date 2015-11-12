@@ -27,8 +27,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.IOException;
 
-import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
-
 /**
  * @author Evgeniy.Koshkin
  */
@@ -49,7 +47,7 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
     LOG.info("Downloading package from: " + tool.getDownloadUrl());
     File tempFile;
     try {
-      tempFile = FileUtil.createTempFile(tool.getId(), NUGET_EXTENSION);
+      tempFile = FileUtil.createTempFile(tool.getId(), ".tmp");
       FileUtil.createParentDirs(tempFile);
     } catch (IOException e) {
       String msg = "Failed to create temp file";

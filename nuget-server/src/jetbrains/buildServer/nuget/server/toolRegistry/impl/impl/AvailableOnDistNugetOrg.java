@@ -32,6 +32,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static jetbrains.buildServer.nuget.common.FeedConstants.EXE_EXTENSION;
+
 /**
  * @author Evgeniy.Koshkin
  */
@@ -65,6 +67,11 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
               @NotNull
               public String getDownloadUrl() {
                 return commandlineVersion.getUrl();
+              }
+
+              @NotNull
+              public String getDestinationFileName() {
+                return artifact.getName() + "." + commandlineVersion.getVersion() + EXE_EXTENSION;
               }
 
               @NotNull

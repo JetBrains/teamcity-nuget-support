@@ -121,6 +121,11 @@ public class AvailableToolStateTest extends BaseTestCase {
       }
 
       @NotNull
+      public String getDestinationFileName() {
+        return "some_path";
+      }
+
+      @NotNull
       public String getId() {
         return id;
       }
@@ -137,6 +142,11 @@ public class AvailableToolStateTest extends BaseTestCase {
       @NotNull
       public String getDownloadUrl() {
         return "downloadUrl-for-" + getId();
+      }
+
+      @NotNull
+      public String getDestinationFileName() {
+        return "some_path";
       }
 
       @NotNull

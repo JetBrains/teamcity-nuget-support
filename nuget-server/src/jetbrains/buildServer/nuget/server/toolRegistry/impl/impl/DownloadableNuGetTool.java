@@ -24,4 +24,5 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface DownloadableNuGetTool extends NuGetTool {
   @NotNull String getDownloadUrl();
+  @NotNull String getDestinationFileName();
 }

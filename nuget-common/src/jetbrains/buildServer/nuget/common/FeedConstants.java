@@ -32,6 +32,7 @@ public class FeedConstants {
 
   public static final String NUGET_COMMANDLINE = "NuGet.CommandLine";
   public static final String NUGET_EXTENSION = ".nupkg";
+  public static final String EXE_EXTENSION = ".exe";
   public static final String NUGET_SUPPORTED_PROJECTS[] = {".csproj", ".vbproj", ".fsproj", ".nproj"}; //see PackCommand.cs
   public static final String NUGET_SYMBOLS_EXTENSION = ".symbols.nupkg";
   public static final String NUSPEC_FILE_EXTENSION = ".nuspec";
