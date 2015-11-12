@@ -44,31 +44,20 @@ public class NuGetToolsInstallerImpl implements NuGetToolsInstaller {
     myWatcher = watcher;
   }
 
-  public void installNuGet(@NotNull final String toolName,
-                             @NotNull final File toolFile) throws ToolException {
+  public void installNuGet(@NotNull final String toolName, @NotNull final File toolFile) throws ToolException {
     LOG.info("Start installing package " + toolName + " from file: " + toolFile);
-
     if (FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(toolName)) {
       NuGetPackageValidationUtil.validatePackage(toolFile);
     }
-
     final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolName);
-    publishDownloadedTool(dest, toolFile);
-  }
-
-  private void publishDownloadedTool(@NotNull final File dest, @NotNull final File tmp) throws ToolException {
-    if (dest.isFile()) {
-      throw new ToolException("Tool with such version already exists");
-    }
-
+    if (dest.isFile()) throw new ToolException("Tool with such version already exists");
     try {
-      FileUtil.copy(tmp, dest);
-      FileUtil.delete(tmp);
+      FileUtil.copy(toolFile, dest);
+      FileUtil.delete(toolFile);
     } catch (IOException e) {
-      LOG.debug("Failed to copy downloaded package from " + tmp + " to " + dest + ". " + e.getMessage(), e);
+      LOG.debug("Failed to copy downloaded package from " + toolFile + " to " + dest + ". " + e.getMessage(), e);
       throw new ToolException("Failed to copy downloaded package. " + e.getMessage());
     }
-
     myWatcher.checkNow();
   }
 }
