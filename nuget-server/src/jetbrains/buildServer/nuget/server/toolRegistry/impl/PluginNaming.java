@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
 import jetbrains.buildServer.nuget.server.ToolPaths;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -36,13 +37,13 @@ public class PluginNaming {
   @NotNull
   public File getUnpackedFolder(@NotNull final File packageFile) {
     //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getNuGetToolsPath(), packageFile.getName());
+    return new File(myPaths.getNuGetToolsPath(), FilenameUtils.removeExtension(packageFile.getName()));
   }
 
   @NotNull
   public File getAgentFile(@NotNull final File packageFile) {
     //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getNuGetToolsAgentPluginsPath(), getAgentFileName(packageFile.getName()));
+    return new File(myPaths.getNuGetToolsAgentPluginsPath(), getAgentFileName(FilenameUtils.removeExtension(packageFile.getName())));
   }
 
   @NotNull
