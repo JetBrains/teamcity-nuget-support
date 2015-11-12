@@ -27,9 +27,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.zip.ZipFile;
-
-import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_TOOL_REL_PATH;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -51,16 +48,15 @@ public class NuGetToolsInstallerImpl implements NuGetToolsInstaller {
                              @NotNull final File toolFile) throws ToolException {
     LOG.info("Start installing package " + toolName + " from file: " + toolFile);
 
-    if (!FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(toolName)) {
-      throw new ToolException("NuGet package file must have extension .nupkg");
+    if (FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(toolName)) {
+      NuGetPackageValidationUtil.validatePackage(toolFile);
     }
 
     final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolName);
-    validatePackage(toolFile);
-    publishDownloadedPackage(dest, toolFile);
+    publishDownloadedTool(dest, toolFile);
   }
 
-  private void publishDownloadedPackage(@NotNull final File dest, @NotNull final File tmp) throws ToolException {
+  private void publishDownloadedTool(@NotNull final File dest, @NotNull final File tmp) throws ToolException {
     if (dest.isFile()) {
       throw new ToolException("Tool with such version already exists");
     }
@@ -74,27 +70,5 @@ public class NuGetToolsInstallerImpl implements NuGetToolsInstaller {
     }
 
     myWatcher.checkNow();
-  }
-
-  public void validatePackage(@NotNull final File pkg) throws ToolException {
-    ZipFile file = null;
-    try {
-      file = new ZipFile(pkg);
-      if (file.getEntry(NUGET_TOOL_REL_PATH) == null) {
-        throw new ToolException("NuGet package must contain " + NUGET_TOOL_REL_PATH + " file");
-      }
-    } catch (IOException e) {
-      String msg = "Failed to read NuGet package file. " + e.getMessage();
-      LOG.warn(msg, e);
-      throw new ToolException(msg);
-    } finally {
-      if (file != null) {
-        try {
-          file.close();
-        } catch (IOException e) {
-          //NOP
-        }
-      }
-    }
   }
 }

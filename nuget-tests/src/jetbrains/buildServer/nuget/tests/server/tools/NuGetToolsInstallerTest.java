@@ -70,17 +70,6 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
   }
 
   @Test
-  public void testPackageValidation() throws ToolException, IOException {
-    final File testPackage = getNuGetPackageFile();
-    myInstaller.validatePackage(testPackage);
-  }
-
-  @Test(expectedExceptions = ToolException.class)
-  public void testPackageValidataionFailed() throws IOException, ToolException {
-    myInstaller.validatePackage(createTempFile(22233));
-  }
-
-  @Test
   public void testUploadKnownFile() throws ToolException, IOException {
     m.checking(new Expectations(){{
       oneOf(myWatcher).checkNow();

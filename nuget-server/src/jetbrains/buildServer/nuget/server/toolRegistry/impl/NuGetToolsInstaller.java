@@ -28,5 +28,4 @@ import java.io.File;
  */
 public interface NuGetToolsInstaller {
   void installNuGet(@NotNull String toolName, @NotNull File toolFile) throws ToolException;
-  void validatePackage(@NotNull File packageFile) throws ToolException;
 }
