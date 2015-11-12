@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPacker;
@@ -86,7 +87,7 @@ public class InstalledNuGetAsExecutable implements InstalledTool {
       FileUtil.delete(myUnpackFolder);
 
       FileUtil.createDir(myUnpackFolder);
-      FileUtil.copy(myPath, new File(myUnpackFolder, FeedConstants.NUGET_EXE));
+      FileUtil.copy(myPath, new File(myUnpackFolder, PackagesConstants.NUGET_TOOL_REL_PATH));
 
       FileUtil.createParentDirs(agentPluginFile);
       myPacker.packTool(agentPluginFile, myUnpackFolder);
