@@ -84,7 +84,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
     final InstalledTool it = m.mock(InstalledTool.class);
     m.checking(new Expectations(){{
       allowing(it).getId(); will(returnValue("aaa"));
-      allowing(it).getPath(); will(returnValue(new File("some-path")));
+      allowing(it).getNuGetExePath(); will(returnValue(new File("some-path")));
       allowing(it).getVersion(); will(returnValue("42.333.667"));
       allowing(myToolsRegistry).findTool("aaa"); will(returnValue(it));
     }});
@@ -93,7 +93,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
     assertNotNull(ret);
     assertTrue(ret.isDefaultTool());
     assertEquals(it.getId(), ret.getId());
-    assertEquals(it.getPath(), ret.getPath());
+    assertEquals(it.getNuGetExePath(), ret.getNuGetExePath());
     assertEquals(it.getVersion(), ret.getVersion());
   }
 
@@ -125,7 +125,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
   public void test_nuget_path_preset() throws IOException {
     final InstalledTool it = m.mock(InstalledTool.class);
     m.checking(new Expectations(){{
-      allowing(it).getPath(); will(returnValue(new File("some-path")));
+      allowing(it).getNuGetExePath(); will(returnValue(new File("some-path")));
       allowing(myToolsRegistry).findTool("aaa"); will(returnValue(it));
     }});
 
@@ -138,7 +138,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
 
     final InstalledTool it = m.mock(InstalledTool.class);
     m.checking(new Expectations(){{
-      allowing(it).getPath(); will(returnValue(new File("some-path")));
+      allowing(it).getNuGetExePath(); will(returnValue(new File("some-path")));
       allowing(myToolsRegistry).findTool("aaa"); will(returnValue(it));
     }});
 

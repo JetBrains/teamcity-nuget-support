@@ -30,6 +30,7 @@ public class FeedConstants {
   public static final String NUGET_FEED_V1 = "http://packages.nuget.org/api/v1/FeedService.svc";
   public static final String NUGET_FEED_V2 = "http://packages.nuget.org/api/v2";
 
+  public static final String NUGET_EXE = "nuget.exe";
   public static final String NUGET_COMMANDLINE = "NuGet.CommandLine";
   public static final String NUGET_EXTENSION = ".nupkg";
   public static final String EXE_EXTENSION = ".exe";
@@ -44,13 +45,28 @@ public class FeedConstants {
     }
   };
 
-  public static final Filter<String> PACKAGE_FILE_NAME_FILTER = new Filter<String>() {
-    public boolean accept(@NotNull String data) {
-      data = data.toLowerCase();
-      return data.endsWith(FeedConstants.NUGET_EXTENSION.toLowerCase())
-              &&
-              !data.endsWith(FeedConstants.NUGET_SYMBOLS_EXTENSION.toLowerCase());
+  public static final FileFilter EXE_FILE_FILTER = new FileFilter() {
+    public boolean accept(File pathname) {
+      return pathname.isFile() && EXE_FILE_NAME_FILTER.accept(pathname.getName());
     }
   };
 
+  public static final FileFilter NUGET_TOOL_FILE_FILTER = new FileFilter() {
+    public boolean accept(File pathname) {
+      return pathname.isFile() && PACKAGE_FILE_NAME_FILTER.accept(pathname.getName()) || EXE_FILE_NAME_FILTER.accept(pathname.getName());
+    }
+  };
+
+  public static final Filter<String> EXE_FILE_NAME_FILTER = new Filter<String>() {
+    public boolean accept(@NotNull String data) {
+      return data.toLowerCase().endsWith(FeedConstants.EXE_EXTENSION.toLowerCase());
+    }
+  };
+
+  public static final Filter<String> PACKAGE_FILE_NAME_FILTER = new Filter<String>() {
+    public boolean accept(@NotNull String data) {
+      data = data.toLowerCase();
+      return data.endsWith(FeedConstants.NUGET_EXTENSION.toLowerCase()) && !data.endsWith(FeedConstants.NUGET_SYMBOLS_EXTENSION.toLowerCase());
+    }
+  };
 }

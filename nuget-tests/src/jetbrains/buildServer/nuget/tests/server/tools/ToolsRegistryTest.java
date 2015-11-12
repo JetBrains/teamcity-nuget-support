@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.InstalledToolsFactory;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.ToolsRegistryImpl;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -46,7 +48,6 @@ public class ToolsRegistryTest extends BaseTestCase {
   private File myAgentHome;
   private ToolsRegistry myRegistry;
   private ToolsWatcher myWatcher;
-  private PluginNaming myNaming;
 
   @BeforeMethod
   @Override
@@ -66,10 +67,17 @@ public class ToolsRegistryTest extends BaseTestCase {
       allowing(path).getNuGetToolsPackages(); will(returnValue(myPackagesHome));
       allowing(path).getNuGetToolsAgentPluginsPath(); will(returnValue(myAgentHome));
     }});
-    myNaming = new PluginNaming(path);
-    myRegistry = new ToolsRegistryImpl(path, myNaming, myWatcher);
+
+    final PluginNaming naming = new PluginNaming(path);
+    myRegistry = new ToolsRegistryImpl(path, myWatcher, new InstalledToolsFactory(naming, new ToolPacker(), new ToolUnpacker()));
   }
 
+  @Override
+  @AfterMethod
+  public void tearDown() throws Exception {
+    m.assertIsSatisfied();
+    super.tearDown();
+  }
 
   @Test
   public void test_empty() {
@@ -86,25 +94,18 @@ public class ToolsRegistryTest extends BaseTestCase {
 
   @Test
   public void test_one_package() {
-    nupkg("NuGet.CommandLine.1.2.3.4");
+    tool("NuGet.CommandLine.1.2.3.4");
     Assert.assertEquals(myRegistry.getTools().size(), 1);
-  }
-
-  private InstalledTool nupkg(String name) {
-    File pkg = file(myPackagesHome, name + ".nupkg");
-    file(myAgentHome, name + ".nupkg.zip");
-    file(myToolsHome, name + ".nupkg/tools/nuget.exe");
-    return new InstalledToolImpl(myNaming, pkg);
   }
 
   @Test
   public void test_two_packages() {
-    nupkg("NuGet.CommandLine.1.2.3.4");
-    nupkg("NuGet.CommandLine.1.3.3.4");
-    nupkg("NuGet.CommandLine.1.2.6.4");
-    nupkg("NuGet.CommandLine.2.2.3.4.z");
-    nupkg("NuGet.CommandLine.2.2.3.14.y");
-    nupkg("NuGet.aaaamandLine.4.4.4");
+    tool("NuGet.CommandLine.1.2.3.4");
+    tool("NuGet.CommandLine.1.3.3.4");
+    tool("NuGet.CommandLine.1.2.6.4");
+    tool("NuGet.CommandLine.2.2.3.4.z");
+    tool("NuGet.CommandLine.2.2.3.14.y");
+    tool("NuGet.aaaamandLine.4.4.4");
 
     assertPackageNames("NuGet.aaaamandLine.4.4.4", "1.2.3.4", "1.2.6.4", "1.3.3.4", "2.2.3.4.z", "2.2.3.14.y");
   }
@@ -112,25 +113,61 @@ public class ToolsRegistryTest extends BaseTestCase {
   @Test
   public void test_package_with_error() {
     m.checking(new Expectations(){{
-      oneOf(myWatcher).updatePackage(with(any(InstalledToolImpl.class)));
+      oneOf(myWatcher).updateTool(with(any(InstalledTool.class)));
     }});
 
-    InstalledTool nupkg = nupkg("NuGet.CommandLine.1.2.3.4");
+    InstalledTool nupkg = tool("NuGet.CommandLine.1.2.3.4");
     FileUtil.delete(nupkg.getAgentPluginFile());
     assertPackageNames();
 
     //call once more to assert no cleanup is performed
     myRegistry.getTools();
-
-    m.assertIsSatisfied();
   }
 
   @Test
   public void test_package_with_error_recover() {
     test_package_with_error();
-    nupkg("NuGet.CommandLine.1.2.3.4");
+    tool("NuGet.CommandLine.1.2.3.4");
     assertPackageNames("1.2.3.4");
   }
+
+  private InstalledTool tool(String name) {
+    file(myPackagesHome, name + ".nupkg");
+    file(myAgentHome, name + ".nupkg.zip");
+    file(myToolsHome, name + ".nupkg/tools/nuget.exe");
+    return new InstalledTool() {
+      @NotNull
+      public File getAgentPluginFile() {
+        return myAgentHome;
+      }
+
+      public void install() {
+      }
+
+      public void delete() {
+      }
+
+      @NotNull
+      public File getNuGetExePath() {
+        return null;
+      }
+
+      public boolean isDefaultTool() {
+        return false;
+      }
+
+      @NotNull
+      public String getId() {
+        return null;
+      }
+
+      @NotNull
+      public String getVersion() {
+        return null;
+      }
+    };
+  }
+
 
   private void assertPackageNames(String... goldNames) {
     final Collection<? extends NuGetInstalledTool> tools = myRegistry.getTools();

@@ -33,7 +33,8 @@
       <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolUnpackerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableToolStateTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.tools.PluginNamingTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.InstalledNuGetAsPackageTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.InstalledNuGetAsExecutableTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AgentToolsRegistrarTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableOnDistNugetOrgTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableOnPackagesNugetOrgTest"/>

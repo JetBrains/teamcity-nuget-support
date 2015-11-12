@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.ToolPaths;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,16 +38,16 @@ public class ToolsRegistryImpl implements ToolsRegistry {
   private static final Logger LOG = Logger.getInstance(ToolsRegistryImpl.class.getName());
 
   private final ToolPaths myPaths;
-  private final PluginNaming myNaming;
   private final ToolsWatcher myWatcher;
-  private final Set<File> myPackageErrors = new CopyOnWriteArraySet<File>();
+  private final Set<String> myInstallationErrors = new CopyOnWriteArraySet<String>();
+  private final InstalledToolsFactory myInstalledToolsFactory;
 
   public ToolsRegistryImpl(@NotNull final ToolPaths paths,
-                           @NotNull final PluginNaming naming,
-                           @NotNull final ToolsWatcher watcher) {
+                           @NotNull final ToolsWatcher watcher,
+                           @NotNull final InstalledToolsFactory installedToolsFactory) {
     myPaths = paths;
-    myNaming = naming;
     myWatcher = watcher;
+    myInstalledToolsFactory = installedToolsFactory;
   }
 
   @NotNull
@@ -64,31 +66,32 @@ public class ToolsRegistryImpl implements ToolsRegistry {
     return null;
   }
 
-  private void handlePackageError(@NotNull InstalledTool tool, @NotNull String error) {
-    if (!myPackageErrors.add(tool.getPackageFile())) return;
+  private void handleToolInstallationError(@NotNull InstalledTool tool, @NotNull String error) {
+    if (!myInstallationErrors.add(tool.getId())) return;
     LOG.warn(error);
-    myWatcher.updatePackage(tool);
+    myWatcher.updateTool(tool);
   }
 
   @NotNull
   private Collection<InstalledTool> getToolsInternal() {
-    final File[] tools = myPaths.getNuGetToolsPackages().listFiles(FeedConstants.PACKAGE_FILE_FILTER);
+    final File[] tools = myPaths.getNuGetToolsPackages().listFiles(FeedConstants.NUGET_TOOL_FILE_FILTER);
     if (tools == null) return Collections.emptyList();
 
     final List<InstalledTool> result = new ArrayList<InstalledTool>();
     for (final File path : tools) {
-      final InstalledTool e = new InstalledToolImpl(myNaming, path);
-      if (!e.getPath().isFile()) {
-        handlePackageError(e, "NuGet.exe is not found at " + e);
+      final InstalledTool e = myInstalledToolsFactory.createToolForPath(path);
+      if(e == null) continue;
+      if (!e.getNuGetExePath().isFile()) {
+        handleToolInstallationError(e, "NuGet.exe is not found at " + e);
         continue;
       }
 
       if (!e.getAgentPluginFile().isFile()) {
-        handlePackageError(e, "NuGet tool is not packed for agent. " + e);
+        handleToolInstallationError(e, "NuGet tool is not packed for agent. " + e);
         continue;
       }
 
-      myPackageErrors.remove(e.getPackageFile());
+      myInstallationErrors.remove(e.getId());
       result.add(e);
     }
 

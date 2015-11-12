@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.http.HttpUtil;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -71,12 +72,12 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
 
               @NotNull
               public String getDestinationFileName() {
-                return artifact.getName() + "." + commandlineVersion.getVersion() + EXE_EXTENSION;
+                return FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion() + EXE_EXTENSION;
               }
 
               @NotNull
               public String getId() {
-                return artifact.getName() + "." + commandlineVersion.getVersion();
+                return FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion();
               }
 
               @NotNull

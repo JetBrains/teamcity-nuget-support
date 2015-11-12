@@ -20,6 +20,7 @@
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolDownloaderImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolUsageStatisticsProvider"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.ToolsRegistryImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.InstalledToolsFactory"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPacker"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolUnpacker"/>
   <bean class="jetbrains.buildServer.nuget.server.impl.ToolPathsImpl"/>

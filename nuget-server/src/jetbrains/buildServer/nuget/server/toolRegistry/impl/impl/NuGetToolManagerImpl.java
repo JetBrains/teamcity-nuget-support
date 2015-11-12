@@ -129,14 +129,14 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
       if (nuGetPath == null) {
         throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified version " + ref + " was not found");
       }
-      return nuGetPath.getPath().getPath();
+      return nuGetPath.getNuGetExePath().getPath();
     }
 
     final String id = NuGetToolReferenceUtils.getReferredToolId(path);
     if (id == null) return path;
     final InstalledTool nuGetPath = findTool(id);
     if (nuGetPath != null) {
-      return nuGetPath.getPath().getPath();
+      return nuGetPath.getNuGetExePath().getPath();
     }
     throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " version " + id);
   }
