@@ -80,10 +80,21 @@ public class NuGetToolsInstallerTest extends BaseTestCase {
   }
 
   @Test(expectedExceptions = ToolException.class)
-  public void testFeedFile_invalid() throws ToolException, IOException {
+  public void testFeedFile_invalidNupkgFile() throws ToolException, IOException {
     final File tempFile = createTempFile();
     FileUtil.writeFileAndReportErrors(tempFile, Strings.EXOTIC);
-    myInstaller.installNuGet("packageId", tempFile);
+    myInstaller.installNuGet("packageId.nupkg", tempFile);
+  }
+
+  @Test
+  public void testFeedFile_invalidExeFile() throws ToolException, IOException {
+    m.checking(new Expectations(){{
+      oneOf(myWatcher).checkNow();
+    }});
+
+    final File tempFile = createTempFile();
+    FileUtil.writeFileAndReportErrors(tempFile, Strings.EXOTIC);
+    myInstaller.installNuGet("packageId.exe", tempFile);
   }
 
   @NotNull
