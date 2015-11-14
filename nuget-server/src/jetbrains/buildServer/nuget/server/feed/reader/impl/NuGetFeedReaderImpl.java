@@ -112,7 +112,7 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
       os = new BufferedOutputStream(new FileOutputStream(file));
       resp.getEntity().writeTo(os);
     } catch (final IOException e) {
-      throw new IOException("Failed to download package from URL " + downloadUrl + ". " + e.getMessage()) {{ initCause(e); }};
+      throw new IOException("Failed to download package from URL " + downloadUrl + ". " + e.getMessage(), e);
     } finally {
       FileUtil.close(os);
     }
