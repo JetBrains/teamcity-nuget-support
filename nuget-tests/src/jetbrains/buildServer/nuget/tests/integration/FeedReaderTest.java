@@ -243,7 +243,7 @@ public class FeedReaderTest extends BaseTestCase {
     Assert.assertNotNull(latest, "there should be the latest package");
 
     final File pkd = createTempFile();
-    myReader.downloadPackage(myClient, latest, pkd);
+    myReader.downloadPackage(myClient, latest.getDownloadUrl(), pkd);
 
     Assert.assertTrue(pkd.length() > 100);
     boolean hasNuGetExe = false;

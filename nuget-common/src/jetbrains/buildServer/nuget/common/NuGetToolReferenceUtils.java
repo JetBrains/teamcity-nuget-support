@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_COMMANDLINE;
-import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
 
 /**
  * Created 27.12.12 15:46
@@ -30,7 +29,7 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
  */
 public class NuGetToolReferenceUtils {
   private static final String TOOL_REFERENCE_PREFIX = "?";
-  private static final String TOOL_DEFAULT_NAME = NUGET_COMMANDLINE + ".DEFAULT" + NUGET_EXTENSION;
+  private static final String TOOL_DEFAULT_NAME = NUGET_COMMANDLINE + ".DEFAULT";
 
   @NotNull
   public static String getToolReference(@NotNull final String id) {
@@ -42,17 +41,23 @@ public class NuGetToolReferenceUtils {
   }
 
   @Nullable
+  public static String normalizeToolReference(@Nullable String toolPath) {
+    final String referredToolId = getReferredToolId(toolPath);
+    if(referredToolId == null) return toolPath;
+    return getToolReference(referredToolId);
+  }
+
+  @Nullable
   public static String getReferredToolId(@Nullable final String toolPath) {
     if (toolPath == null || toolPath.length() == 0) return null;
-
     if (isToolReference(toolPath)) {
-      return toolPath.substring(TOOL_REFERENCE_PREFIX.length());
+      return ToolIdUtils.normalizeToolId(toolPath.substring(TOOL_REFERENCE_PREFIX.length()));
     }
     return null;
   }
 
-  public static boolean isDefaultToolPath(@Nullable String toolPath) {
-    return getDefaultToolPath().equals(toolPath);
+  public static boolean isDefaultToolReference(@Nullable String toolPath) {
+    return getDefaultToolId().equals(getReferredToolId(toolPath));
   }
 
   @NotNull
@@ -61,7 +66,7 @@ public class NuGetToolReferenceUtils {
   }
 
   @NotNull
-  public static String getDefaultToolPath() {
+  public static String getDefaultToolReference() {
     return getToolReference(getDefaultToolId());
   }
 }

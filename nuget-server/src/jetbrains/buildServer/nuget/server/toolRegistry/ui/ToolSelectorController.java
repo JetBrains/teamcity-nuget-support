@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class ToolSelectorController extends BaseController {
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
     final String name = safe(request.getParameter("name"));
-    final String value = parseValue(request, "value", name);
+    final String value = NuGetToolReferenceUtils.normalizeToolReference(parseValue(request, "value", name));
     final Collection<ToolInfo> tools = getTools();
     return !StringUtil.isEmptyOrSpaces(request.getParameter("view")) ? doHandleView(value, tools) : doHandleEdit(request, name, value, tools);
   }
@@ -74,7 +74,7 @@ public class ToolSelectorController extends BaseController {
     if(value.isEmpty()){
       final NuGetInstalledTool defaultTool = myToolManager.getDefaultTool();
       if(defaultTool != null){
-        value = NuGetToolReferenceUtils.getDefaultToolPath();
+        value = NuGetToolReferenceUtils.getDefaultToolReference();
       }
     }
     mv.getModel().put("value", value);
@@ -125,7 +125,7 @@ public class ToolSelectorController extends BaseController {
     }
 
     result.add(new ToolInfo(
-            NuGetToolReferenceUtils.getDefaultToolPath(),
+            NuGetToolReferenceUtils.getDefaultToolReference(),
             defaultToolName));
 
     for (NuGetInstalledTool nuGetInstalledTool : myToolManager.getInstalledTools()) {

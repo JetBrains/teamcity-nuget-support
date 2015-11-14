@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
       final String toolPath = myNuGetToolManager.getNuGetPath(buildParameters.get(PackagesConstants.NUGET_PATH));
       final NuGetInstalledTool referredTool = CollectionsUtil.findFirst(installedTools, new Filter<NuGetInstalledTool>() {
         public boolean accept(@NotNull NuGetInstalledTool data) {
-          return data.getPath().getAbsolutePath().equalsIgnoreCase(toolPath);
+          return data.getNuGetExePath().getAbsolutePath().equalsIgnoreCase(toolPath);
         }
       });
       if(referredTool == null) continue;

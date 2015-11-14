@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
-import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.ToolPaths;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -35,39 +35,19 @@ public class PluginNaming {
   }
 
   @NotNull
-  public String getNuGetCommandLinePackageName() {
-    return FeedConstants.NUGET_COMMANDLINE;
-  }
-
-  @NotNull
   public File getUnpackedFolder(@NotNull final File packageFile) {
     //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getNuGetToolsPath(), packageFile.getName());
+    return new File(myPaths.getNuGetToolsPath(), FilenameUtils.removeExtension(packageFile.getName()));
   }
 
   @NotNull
   public File getAgentFile(@NotNull final File packageFile) {
     //here we could take a look into .nuspec to fetch version and name
-    return new File(myPaths.getNuGetToolsAgentPluginsPath(), getAgentFileName(packageFile.getName()));
+    return new File(myPaths.getNuGetToolsAgentPluginsPath(), getAgentFileName(FilenameUtils.removeExtension(packageFile.getName())));
   }
 
   @NotNull
   public String getAgentFileName(@NotNull final String packageName) {
     return packageName + ".zip";
-  }
-
-  @NotNull
-  public String getVersion(@NotNull final File plugin) {
-    String name = plugin.getName();
-
-    if (name.toLowerCase().endsWith(FeedConstants.NUGET_EXTENSION.toLowerCase())) {
-      name = name.substring(0, name.length() - FeedConstants.NUGET_EXTENSION.length());
-
-      if (name.toLowerCase().startsWith(getNuGetCommandLinePackageName().toLowerCase() + ".")) {
-        name = name.substring(getNuGetCommandLinePackageName().length()+1);
-      }
-    }
-
-    return name;
   }
 }

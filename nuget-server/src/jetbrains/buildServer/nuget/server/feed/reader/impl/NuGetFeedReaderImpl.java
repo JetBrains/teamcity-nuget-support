@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,16 +96,15 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
   }
 
   public void downloadPackage(@NotNull FeedClient client,
-                              @NotNull FeedPackage pkg,
+                              @NotNull String downloadUrl,
                               @NotNull File file) throws IOException {
     FileUtil.createParentDirs(file);
-    final String url = pkg.getDownloadUrl();
 
-    final HttpGet get = myMethodFactory.createGet(url);
+    final HttpGet get = myMethodFactory.createGet(downloadUrl);
     final HttpResponse resp = client.execute(get);
     final StatusLine statusLine = resp.getStatusLine();
     if (statusLine.getStatusCode() != HttpStatus.SC_OK) {
-      throw new IOException("Failed to download package " + pkg + ". Server returned " + statusLine);
+      throw new IOException("Failed to download package from URL " + downloadUrl + ". Server returned " + statusLine);
     }
 
     OutputStream os = null;
@@ -113,7 +112,7 @@ public class NuGetFeedReaderImpl implements NuGetFeedReader {
       os = new BufferedOutputStream(new FileOutputStream(file));
       resp.getEntity().writeTo(os);
     } catch (final IOException e) {
-      throw new IOException("Failed to download package " + pkg + ". " + e.getMessage()) {{ initCause(e); }};
+      throw new IOException("Failed to download package from URL " + downloadUrl + ". " + e.getMessage(), e);
     } finally {
       FileUtil.close(os);
     }

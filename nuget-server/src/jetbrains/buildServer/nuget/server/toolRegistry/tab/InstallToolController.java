@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,15 @@ package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.*;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
+import jetbrains.buildServer.nuget.server.toolRegistry.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import org.apache.commons.io.FilenameUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
@@ -49,14 +48,17 @@ public class InstallToolController extends BaseFormXmlController {
 
   private final String myPath;
   private final NuGetToolManager myToolsManager;
+  private final NuGetToolDownloader myToolsDownloader;
   private final PluginDescriptor myDescriptor;
 
   public InstallToolController(@NotNull final AuthorizationInterceptor auth,
                                @NotNull final PermissionChecker checker,
                                @NotNull final WebControllerManager web,
                                @NotNull final NuGetToolManager toolsManager,
+                               @NotNull final NuGetToolDownloader toolsDownloader,
                                @NotNull final PluginDescriptor descriptor) {
     myToolsManager = toolsManager;
+    myToolsDownloader = toolsDownloader;
     myDescriptor = descriptor;
     myPath = descriptor.getPluginResourcesPath("tool/nuget-server-tab-install-tool.html");
     auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
@@ -129,9 +131,16 @@ public class InstallToolController extends BaseFormXmlController {
     try {
       switch (whatToDo) {
         case INSTALL:
-          final NuGetTool downloadedTool = myToolsManager.downloadTool(toolId);
-          updateDefault(request, downloadedTool);
+          final DownloadableNuGetTool tool = myToolsManager.findAvailableToolById(toolId);
+          if (tool == null) throw new ToolException("Failed to find available tool by Id " + toolId);
 
+          final File downloadedToolLocation = myToolsDownloader.downloadTool(tool);
+          try {
+            final NuGetTool downloadedTool = myToolsManager.installTool(tool.getId(), tool.getDestinationFileName(), downloadedToolLocation);
+            updateDefault(request, downloadedTool);
+          } finally {
+            FileUtil.delete(downloadedToolLocation);
+          }
           return;
 
         case DEFAULT:
@@ -148,7 +157,8 @@ public class InstallToolController extends BaseFormXmlController {
           final File tempFile = new File(file);
 
           try {
-            final NuGetTool uploadedTool = myToolsManager.installTool(tempFile.getName(), tempFile);
+            final String uploadedFileName = tempFile.getName();
+            final NuGetTool uploadedTool = myToolsManager.installTool(FilenameUtils.removeExtension(uploadedFileName), uploadedFileName, tempFile);
             updateDefault(request, uploadedTool);
           } finally {
             FileUtil.delete(tempFile);

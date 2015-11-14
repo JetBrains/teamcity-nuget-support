@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
+import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
@@ -47,10 +48,10 @@ public class NuGetToolsSettings {
 
   @Nullable
   public String getDefaultToolId() {
-    return mySettings.readSettings(NuGetSettingsComponent.NUGET, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
+    return ToolIdUtils.normalizeToolId(mySettings.readSettings(NuGetSettingsComponent.NUGET, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
       public String executeAction(@NotNull NuGetSettingsReader action) {
         return action.getStringParameter(DEFAULT_NUGET_KEY);
       }
-    });
+    }));
   }
 }

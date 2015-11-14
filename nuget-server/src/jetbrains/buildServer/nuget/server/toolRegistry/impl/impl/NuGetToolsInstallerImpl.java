@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.zip.ZipFile;
-
-import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_TOOL_REL_PATH;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -47,56 +44,20 @@ public class NuGetToolsInstallerImpl implements NuGetToolsInstaller {
     myWatcher = watcher;
   }
 
-  @NotNull
-  public String installNuGet(@NotNull final String toolName,
-                             @NotNull final File toolFile) throws ToolException {
-    LOG.info("Start installing package " + toolName + " from file: " + toolFile);
-
-    if (!FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(toolName)) {
-      throw new ToolException("NuGet package file must have extension .nupkg");
+  public void installNuGet(@NotNull final String toolFileName, @NotNull final File toolFile) throws ToolException {
+    LOG.info("Start installing package " + toolFileName + " from file: " + toolFile);
+    if (FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(toolFileName)) {
+      NuGetPackageValidationUtil.validatePackage(toolFile);
     }
-
-    final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolName);
-    validatePackage(toolFile);
-    publishDownloadedPackage(dest, toolFile);
-    return toolName;
-  }
-
-  private void publishDownloadedPackage(@NotNull final File dest, @NotNull final File tmp) throws ToolException {
-    if (dest.isFile()) {
-      throw new ToolException("Tool with such version already exists");
-    }
-
+    final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolFileName);
+    if (dest.isFile()) throw new ToolException("Tool with such version already exists");
     try {
-      FileUtil.copy(tmp, dest);
-      FileUtil.delete(tmp);
+      FileUtil.copy(toolFile, dest);
+      FileUtil.delete(toolFile);
     } catch (IOException e) {
-      LOG.debug("Failed to copy downloaded package from " + tmp + " to " + dest + ". " + e.getMessage(), e);
+      LOG.debug("Failed to copy downloaded package from " + toolFile + " to " + dest + ". " + e.getMessage(), e);
       throw new ToolException("Failed to copy downloaded package. " + e.getMessage());
     }
-
     myWatcher.checkNow();
-  }
-
-  public void validatePackage(@NotNull final File pkg) throws ToolException {
-    ZipFile file = null;
-    try {
-      file = new ZipFile(pkg);
-      if (file.getEntry(NUGET_TOOL_REL_PATH) == null) {
-        throw new ToolException("NuGet package must contain " + NUGET_TOOL_REL_PATH + " file");
-      }
-    } catch (IOException e) {
-      String msg = "Failed to read NuGet package file. " + e.getMessage();
-      LOG.warn(msg, e);
-      throw new ToolException(msg);
-    } finally {
-      if (file != null) {
-        try {
-          file.close();
-        } catch (IOException e) {
-          //NOP
-        }
-      }
-    }
   }
 }

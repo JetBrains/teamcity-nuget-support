@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FilesWatcher;
 import jetbrains.buildServer.nuget.server.ToolPaths;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher;
 import jetbrains.buildServer.serverSide.executors.ExecutorServices;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.ExceptionUtil;
-import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -36,23 +36,18 @@ import java.util.List;
  */
 public class ToolsWatcherImpl implements ToolsWatcher {
   private static final Logger LOG = Logger.getInstance(ToolsWatcherImpl.class.getName());
+  private static final int SLEEPING_PERIOD = 10000;
 
   private final ToolPaths myPaths;
-  private final ToolPacker myPacker;
-  private final ToolUnpacker myUnpacker;
   private final FilesWatcher myWatcher;
-  private final PluginNaming myNaming;
+  private final InstalledToolsFactory myInstalledToolsFactory;
   private final ExecutorServices myExecutors;
 
   public ToolsWatcherImpl(@NotNull final ToolPaths paths,
-                          @NotNull final PluginNaming naming,
-                          @NotNull final ToolPacker packer,
-                          @NotNull final ToolUnpacker unpacker,
+                          @NotNull final InstalledToolsFactory installedToolsFactory,
                           @NotNull final ExecutorServices executors) {
     myPaths = paths;
-    myPacker = packer;
-    myUnpacker = unpacker;
-    myNaming = naming;
+    myInstalledToolsFactory = installedToolsFactory;
     myExecutors = executors;
 
     myWatcher = new FilesWatcher(new FilesWatcher.WatchedFilesProvider() {
@@ -68,11 +63,7 @@ public class ToolsWatcherImpl implements ToolsWatcher {
                 myWatcher.getRemovedFiles());
       }
     });
-    myWatcher.setSleepingPeriod(10000);
-  }
-
-  public void setSleepingPeriod(int time) {
-    myWatcher.setSleepingPeriod(time);
+    myWatcher.setSleepingPeriod(SLEEPING_PERIOD);
   }
 
   public void start() {
@@ -87,11 +78,11 @@ public class ToolsWatcherImpl implements ToolsWatcher {
     myWatcher.checkForModifications();
   }
 
-  public void updatePackage(@NotNull final InstalledTool nupkg) {
-    myExecutors.getNormalExecutorService().submit(ExceptionUtil.catchAll("update installed package", new Runnable() {
+  public void updateTool(@NotNull final InstalledTool tool) {
+    myExecutors.getNormalExecutorService().submit(ExceptionUtil.catchAll("update installed tool", new Runnable() {
       public void run() {
         synchronized (ToolsWatcherImpl.this) {
-          installPackage(nupkg);
+          tool.install();
         }
       }
     }));
@@ -101,29 +92,13 @@ public class ToolsWatcherImpl implements ToolsWatcher {
                                            @NotNull final List<File> added,
                                            @NotNull final List<File> removed) {
     for (File file : CollectionsUtil.join(modified, removed)) {
-      removePackage(new InstalledToolImpl(myNaming, file));
+      final InstalledTool installedTool = myInstalledToolsFactory.createToolForPath(file);
+      if(installedTool != null) installedTool.delete();
     }
 
     for (File file : CollectionsUtil.join(modified, added)) {
-      installPackage(new InstalledToolImpl(myNaming, file));
+      final InstalledTool installedTool = myInstalledToolsFactory.createToolForPath(file);
+      if(installedTool != null) installedTool.install();
     }
-  }
-
-  private void installPackage(@NotNull final InstalledTool file) {
-    try {
-      file.removeUnpackedFiles();
-
-      FileUtil.createParentDirs(file.getAgentPluginFile());
-      FileUtil.createDir(file.getUnpackFolder());
-      myUnpacker.extractPackage(file.getPackageFile(), file.getUnpackFolder());
-      myPacker.packTool(file.getAgentPluginFile(), file.getUnpackFolder());
-    } catch (Throwable t) {
-      LOG.warn("Failed to unpack nuget commandline: " + file);
-      file.removeUnpackedFiles();
-    }
-  }
-
-  private void removePackage(@NotNull final InstalledTool file) {
-    file.delete();
   }
 }

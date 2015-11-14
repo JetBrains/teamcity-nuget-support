@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,5 @@ import java.io.File;
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
 public interface NuGetToolsInstaller {
-  @NotNull
-  String installNuGet(@NotNull String toolName, @NotNull File toolFile) throws ToolException;
-
-  void validatePackage(@NotNull File packageFile) throws ToolException;
+  void installNuGet(@NotNull String toolFileName, @NotNull File toolFile) throws ToolException;
 }
