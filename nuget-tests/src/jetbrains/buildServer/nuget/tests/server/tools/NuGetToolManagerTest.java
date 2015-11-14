@@ -145,7 +145,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
       allowing(myToolsRegistry).findTool("aaa"); will(returnValue(it));
     }});
 
-    assertEquals(myToolManager.getNuGetPath(NuGetToolReferenceUtils.getDefaultToolPath()), "some-path");
+    assertEquals(myToolManager.getNuGetPath(NuGetToolReferenceUtils.getDefaultToolReference()), "some-path");
   }
 
   @Test(expectedExceptions = RuntimeException.class)
@@ -156,7 +156,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
       allowing(myToolsRegistry).findTool("bbb"); will(returnValue(null));
     }});
 
-    myToolManager.getNuGetPath(NuGetToolReferenceUtils.getDefaultToolPath());
+    myToolManager.getNuGetPath(NuGetToolReferenceUtils.getDefaultToolReference());
   }
 
   @Test
@@ -168,7 +168,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
       allowing(myToolsRegistry).getTools(); will(returnValue(Collections.singletonList(it)));
     }});
 
-    final String defaultId = NuGetToolReferenceUtils.getDefaultToolPath();
+    final String defaultId = NuGetToolReferenceUtils.getDefaultToolReference();
     for (NuGetInstalledTool tool : myToolManager.getInstalledTools()) {
       assertFalse(tool.getId().equals(defaultId));
     }

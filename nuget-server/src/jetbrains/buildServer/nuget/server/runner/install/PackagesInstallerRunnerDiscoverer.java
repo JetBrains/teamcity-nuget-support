@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscove
 
   private DiscoveredObject discover(String slnPath) {
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(PackagesConstants.NUGET_PATH, NuGetToolReferenceUtils.getDefaultToolPath());
+    parameters.put(PackagesConstants.NUGET_PATH, NuGetToolReferenceUtils.getDefaultToolReference());
     parameters.put(PackagesConstants.SLN_PATH, slnPath);
     parameters.putAll(myDefaults.getRunnerProperties());
     return new DiscoveredObject(PackagesConstants.INSTALL_RUN_TYPE, parameters);

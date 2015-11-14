@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,7 @@ public class PackRunnerDiscoverer extends BreadthFirstRunnerDiscoveryExtension {
 
   private DiscoveredObject discover(String nuSpecFilePath, String outDirName) {
     Map<String, String> parameters = NuGetPackRunnerDefaults.getRunnerProperties();
-    parameters.put(PackagesConstants.NUGET_PATH, NuGetToolReferenceUtils.getDefaultToolPath());
+    parameters.put(PackagesConstants.NUGET_PATH, NuGetToolReferenceUtils.getDefaultToolReference());
     parameters.put(PackagesConstants.NUGET_PACK_SPEC_FILE, nuSpecFilePath);
     parameters.put(PackagesConstants.NUGET_PACK_OUTPUT_DIR, outDirName);
     return new DiscoveredObject(PackagesConstants.PACK_RUN_TYPE, parameters);

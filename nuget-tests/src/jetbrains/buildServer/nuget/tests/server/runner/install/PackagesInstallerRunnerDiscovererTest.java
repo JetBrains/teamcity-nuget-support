@@ -40,7 +40,7 @@ import java.util.Map;
  */
 public class PackagesInstallerRunnerDiscovererTest extends NuGetRunnerDiscovererTestBase {
 
-  private final String myDefaultToolPath = NuGetToolReferenceUtils.getDefaultToolPath();
+  private final String myDefaultToolPath = NuGetToolReferenceUtils.getDefaultToolReference();
   private PackagesInstallerRunnerDiscoverer myDiscoverer;
 
   public PackagesInstallerRunnerDiscovererTest() {

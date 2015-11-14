@@ -18,11 +18,11 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import jetbrains.buildServer.nuget.server.ToolPaths;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher;
-import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,28 +52,37 @@ public class ToolsRegistryImpl implements ToolsRegistry {
 
   @NotNull
   public Collection<? extends InstalledTool> getTools() {
-    return getToolsInternal();
+    return getInstalledToolsInternal();
   }
 
   @Nullable
-  public InstalledTool findTool(@Nullable String id) {
-    if (id == null || StringUtil.isEmptyOrSpaces(id)) return null;
-    for (InstalledTool tool : getToolsInternal()) {
-      if (tool.getId().equals(id)) {
+  public InstalledTool findTool(@Nullable String toolId) {
+    final String normalizedToolId = ToolIdUtils.normalizeToolId(toolId);
+    if (normalizedToolId == null) return null;
+    final Collection<InstalledTool> installedTools = getInstalledToolsInternal();
+    for (InstalledTool tool : installedTools) {
+      final String installedToolId = tool.getId();
+      if (installedToolId.equals(normalizedToolId)) {
         return tool;
       }
     }
     return null;
   }
 
-  private void handleToolInstallationError(@NotNull InstalledTool tool, @NotNull String error) {
-    if (!myInstallationErrors.add(tool.getId())) return;
-    LOG.warn(error);
-    myWatcher.updateTool(tool);
+  public void removeTool(@NotNull final String toolId) {
+    final String normalizedToolId = ToolIdUtils.normalizeToolId(toolId);
+    if (normalizedToolId == null) return;
+    for (InstalledTool tool : getInstalledToolsInternal()) {
+      if (tool.getId().equals(normalizedToolId)) {
+        LOG.info("Removing NuGet tool: " + tool);
+        tool.delete();
+      }
+    }
+    myWatcher.checkNow();
   }
 
   @NotNull
-  private Collection<InstalledTool> getToolsInternal() {
+  private Collection<InstalledTool> getInstalledToolsInternal() {
     final File[] tools = myPaths.getNuGetToolsPackages().listFiles(FeedConstants.NUGET_TOOL_FILE_FILTER);
     if (tools == null) return Collections.emptyList();
 
@@ -99,14 +108,10 @@ public class ToolsRegistryImpl implements ToolsRegistry {
     return result;
   }
 
-  public void removeTool(@NotNull final String toolId) {
-    for (InstalledTool tool : getToolsInternal()) {
-      if (tool.getId().equals(toolId)) {
-        LOG.info("Removing NuGet plugin: " + tool);
-        tool.delete();
-      }
-    }
-    myWatcher.checkNow();
+  private void handleToolInstallationError(@NotNull InstalledTool tool, @NotNull String error) {
+    if (!myInstallationErrors.add(tool.getId())) return;
+    LOG.warn(error);
+    myWatcher.updateTool(tool);
   }
 
   private final Comparator<InstalledTool> COMPATATOR = new Comparator<InstalledTool>() {

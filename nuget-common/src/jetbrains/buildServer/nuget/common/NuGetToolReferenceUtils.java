@@ -41,17 +41,23 @@ public class NuGetToolReferenceUtils {
   }
 
   @Nullable
+  public static String normalizeToolReference(@Nullable String toolPath) {
+    final String referredToolId = getReferredToolId(toolPath);
+    if(referredToolId == null) return toolPath;
+    return getToolReference(referredToolId);
+  }
+
+  @Nullable
   public static String getReferredToolId(@Nullable final String toolPath) {
     if (toolPath == null || toolPath.length() == 0) return null;
-
     if (isToolReference(toolPath)) {
-      return toolPath.substring(TOOL_REFERENCE_PREFIX.length());
+      return ToolIdUtils.normalizeToolId(toolPath.substring(TOOL_REFERENCE_PREFIX.length()));
     }
     return null;
   }
 
-  public static boolean isDefaultToolPath(@Nullable String toolPath) {
-    return getDefaultToolPath().equals(toolPath);
+  public static boolean isDefaultToolReference(@Nullable String toolPath) {
+    return getDefaultToolId().equals(getReferredToolId(toolPath));
   }
 
   @NotNull
@@ -60,7 +66,7 @@ public class NuGetToolReferenceUtils {
   }
 
   @NotNull
-  public static String getDefaultToolPath() {
+  public static String getDefaultToolReference() {
     return getToolReference(getDefaultToolId());
   }
 }

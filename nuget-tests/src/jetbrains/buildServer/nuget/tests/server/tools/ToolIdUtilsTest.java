@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.ToolIdUtils;
+import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import org.testng.annotations.Test;
 
 /**

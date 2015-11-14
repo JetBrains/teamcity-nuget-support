@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPacker;

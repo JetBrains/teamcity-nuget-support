@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
+package jetbrains.buildServer.nuget.common;
 
-import jetbrains.buildServer.nuget.common.FeedConstants;
+import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Evgeniy.Koshkin
@@ -29,5 +30,12 @@ public class ToolIdUtils {
       return id.substring(FeedConstants.NUGET_COMMANDLINE.length() + 1);
     }
     return id;
+  }
+
+  @Nullable
+  public static String normalizeToolId(@Nullable String toolId) {
+    if(StringUtil.isEmptyOrSpaces(toolId)) return null;
+    if(toolId.endsWith(FeedConstants.NUGET_EXTENSION)) return toolId.substring(0, toolId.length() - FeedConstants.NUGET_EXTENSION.length());
+    return toolId;
   }
 }
