@@ -21,7 +21,9 @@ import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
+import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolManagerImpl;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -42,17 +44,18 @@ public class NuGetToolManagerTest extends BaseTestCase {
   private NuGetToolsInstaller myInstaller;
   private ToolsRegistry myToolsRegistry;
   private NuGetToolManagerImpl myToolManager;
+  private AvailableToolsState myAvailables;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    AvailableToolsState availables = m.mock(AvailableToolsState.class);
+    myAvailables = m.mock(AvailableToolsState.class);
     myInstaller = m.mock(NuGetToolsInstaller.class);
     myToolsRegistry = m.mock(ToolsRegistry.class);
     myToolManager = new NuGetToolManagerImpl(
-            availables,
+            myAvailables,
             myInstaller,
             myToolsRegistry,
             new NuGetToolsSettings(new NuGetSettingsManagerImpl()));
@@ -171,5 +174,17 @@ public class NuGetToolManagerTest extends BaseTestCase {
     }
   }
 
+  @Test
+  public void test_GetAvailableTools_ShouldNotModifyRecievedAvailableToolsSet() throws Exception {
+    final DownloadableNuGetTool dt = m.mock(DownloadableNuGetTool.class);
+    final InstalledTool it = m.mock(InstalledTool.class);
+    m.checking(new Expectations(){{
+      allowing(dt).getVersion(); will(returnValue("v1"));
+      allowing(it).getVersion(); will(returnValue("v1"));
+      allowing(myAvailables).getAvailable(ToolsPolicy.FetchNew); will(returnValue(Collections.unmodifiableSet(Collections.singleton(dt))));
+      allowing(myToolsRegistry).getTools(); will(returnValue(Collections.singletonList(it)));
+    }});
+    myToolManager.getAvailableTools(ToolsPolicy.FetchNew);
+  }
 }
 

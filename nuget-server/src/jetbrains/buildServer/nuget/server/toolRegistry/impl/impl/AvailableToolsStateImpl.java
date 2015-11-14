@@ -26,10 +26,7 @@ import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -47,7 +44,7 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
   @NotNull private final TimeService myTime;
   @NotNull private final Collection<AvailableToolsFetcher> myFetchers;
 
-  private Collection<DownloadableNuGetTool> myTools;
+  private Set<DownloadableNuGetTool> myTools;
   private long lastRequest = 0;
 
   public AvailableToolsStateImpl(@NotNull final TimeService time, @NotNull Collection<AvailableToolsFetcher> fetchers) {
@@ -57,7 +54,7 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
 
   @Nullable
   public DownloadableNuGetTool findTool(@NotNull final String id) {
-    final Collection<DownloadableNuGetTool> tools = myTools;
+    final Set<DownloadableNuGetTool> tools = myTools;
     if (tools != null) {
       for (DownloadableNuGetTool tool : tools) {
         if(tool.getId().equals(id)) {
@@ -69,8 +66,8 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
   }
 
   @NotNull
-  public Collection<? extends NuGetTool> getAvailable(ToolsPolicy policy) throws FetchException {
-    Collection<DownloadableNuGetTool> nuGetTools = myTools;
+  public Set<DownloadableNuGetTool> getAvailable(ToolsPolicy policy) throws FetchException {
+    Set<DownloadableNuGetTool> nuGetTools = myTools;
     if (policy == ToolsPolicy.FetchNew
             || nuGetTools == null
             || lastRequest + TIMEOUT < myTime.now()) {
@@ -90,6 +87,6 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
         LOG.warn("Failed fetch available NuGet tools from " + fetcher.getSourceDisplayName(), e);
       }
     }
-    return available;
+    return Collections.unmodifiableSet(available);
   }
 }

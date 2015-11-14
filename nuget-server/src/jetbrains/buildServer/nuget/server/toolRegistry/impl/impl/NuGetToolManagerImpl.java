@@ -74,8 +74,8 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
       installed.add(tool.getVersion());
     }
     //This must be cached to make if work faster!
-    final Collection<NuGetTool> available = new ArrayList<NuGetTool>(myAvailableTools.getAvailable(policy));
-    final Iterator<NuGetTool> it = available.iterator();
+    final Collection<DownloadableNuGetTool> available = new ArrayList<DownloadableNuGetTool>(myAvailableTools.getAvailable(policy));
+    final Iterator<DownloadableNuGetTool> it = available.iterator();
     while (it.hasNext()) {
       NuGetTool next = it.next();
       if (installed.contains(next.getVersion())) {
