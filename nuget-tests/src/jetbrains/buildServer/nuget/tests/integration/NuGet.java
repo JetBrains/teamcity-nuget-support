@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ public enum NuGet {
   NuGet_2_5(2,5),
   NuGet_2_6(2,6),
   NuGet_2_7(2,7),
-  NuGet_2_8(2,8)
-  ;
+  NuGet_2_8(2,8),
+  NuGet_3_2(3,2);
 
   public final int major;
   public final int minor;
@@ -69,6 +69,8 @@ public enum NuGet {
         return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/2.7/NuGet.exe"));
       case NuGet_2_8:
         return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/2.8/NuGet.exe"));
+      case NuGet_3_2:
+        return FileUtil.getCanonicalFile(new File("./nuget-tests/testData/nuget/3.2/NuGet.exe"));
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }
