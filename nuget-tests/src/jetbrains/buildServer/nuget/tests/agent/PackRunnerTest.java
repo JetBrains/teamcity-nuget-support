@@ -356,6 +356,43 @@ public class PackRunnerTest extends BuildProcessTestCase {
   }
 
   @Test
+  public void test_packRunners_outputDirectory_clean_disabled() throws RunBuildException, IOException {
+    final File temp = createTempDir();
+    final File spec = createTempFile();
+    final MockPackParameters params2 = new MockPackParameters();
+
+    m.checking(new Expectations(){{
+      oneOf(myParametersFactory).loadPackParameters(myContext); will(returnValue(params2));
+
+      myPackParameters.setOutput(temp);
+      myPackParameters.setSpecFiles(spec);
+
+      params2.setCleanOutput(false);
+      params2.setOutput(temp);
+      params2.setSpecFiles(spec);
+
+      oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
+      oneOf(myActionFactory).createPack(myContext, spec, params2); will(returnValue(myProc));
+
+      oneOf(myProc).start();
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+
+      oneOf(myProc).start();
+      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+
+      exactly(0).of(myLogger).warning("Could not clean output directory, there were another NuGet Packages Pack runner with disabled clean");
+    }});
+
+    for(int i = 0; i < 2; i++) {
+      final PackRunner runner = createRunner();
+      final BuildProcess process = runner.createBuildProcess(myBuild, myContext);
+      assertRunSuccessfully(process, BuildFinishedStatus.FINISHED_SUCCESS);
+    }
+
+    m.assertIsSatisfied();
+  }
+
+  @Test
   public void test_packRunners_different_outputDirectory_cleaned() throws RunBuildException, IOException {
     final File temp1 = createTempDir();
     final File temp2 = createTempDir();
