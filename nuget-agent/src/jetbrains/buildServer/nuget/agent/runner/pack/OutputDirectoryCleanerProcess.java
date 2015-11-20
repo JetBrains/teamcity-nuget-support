@@ -35,46 +35,25 @@ public class OutputDirectoryCleanerProcess extends BuildProcessBase {
   private final NuGetPackParameters myParams;
   private final AgentRunningBuild myRunningBuild;
   private final SmartDirectoryCleaner myCleaner;
-  private final TrackState myState;
 
   public OutputDirectoryCleanerProcess(@NotNull final NuGetPackParameters params,
                                        @NotNull final AgentRunningBuild runningBuild,
-                                       @NotNull final SmartDirectoryCleaner cleaner,
-                                       @NotNull final TrackState state) {
+                                       @NotNull final SmartDirectoryCleaner cleaner) {
     myParams = params;
     myRunningBuild = runningBuild;
     myCleaner = cleaner;
-    myState = state;
   }
 
   @NotNull
   @Override
   protected BuildFinishedStatus waitForImpl() throws RunBuildException {
     final File output = myParams.getOutputDirectory();
-    final boolean clean = myParams.cleanOutputDirectory();
-
-    final TrackState.CleanOutcome outcome = myState.registerDirectoryClean(output, clean);
-    switch (outcome) {
-      case CLEAN:
-        cleanFiles(output);
-        break;
-      case CLEANED_BEFORE:
-        LOG.warn("Will not clean NuGet Pachages Pack runner output, output was cleaned by previous runners");
-        break;
-      case NO_CLEAN_REQUIRED:
-        //NOP
-        break;
-      case NOT_CLEANED_BEFORE:
-        final String message = "Could not clean output directory, there were another NuGet Packages Pack runner with disabled clean";
-        LOG.warn(message);
-        myRunningBuild.getBuildLogger().warning(message);
-        break;
-      default:
-        throw new IllegalStateException("Unsupported clean action: " + outcome);
+    if(myParams.cleanOutputDirectory()){
+      myRunningBuild.getBuildLogger().message("Cleaning output directory " + output.getAbsolutePath());
+      LOG.info("Cleaning output directory " + output.getAbsolutePath());
+      cleanFiles(output);
     }
-
     createOutputDirectory(output);
-
     return BuildFinishedStatus.FINISHED_SUCCESS;
   }
 

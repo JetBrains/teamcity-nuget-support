@@ -22,8 +22,6 @@ import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
-import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTracker;
-import jetbrains.buildServer.nuget.agent.runner.pack.PackRunnerOutputDirectoryTrackerImpl;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.tests.agent.mock.MockPackParameters;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
@@ -60,7 +58,6 @@ public class PackRunnerTest extends BuildProcessTestCase {
   private BuildProgressLogger myLogger;
   private File myCheckoutDir;
   private Map<String, String> myConfigParameters;
-  private PackRunnerOutputDirectoryTracker myTracker;
   private ArtifactsWatcher myPublisher;
   private List<List<File>> myDetectedFiles;
 
@@ -78,7 +75,6 @@ public class PackRunnerTest extends BuildProcessTestCase {
     myProc = m.mock(BuildProcess.class);
     myLogger = m.mock(BuildProgressLogger.class);
     myConfigParameters = new TreeMap<String, String>();
-    myTracker = new PackRunnerOutputDirectoryTrackerImpl();
     myPublisher = m.mock(ArtifactsWatcher.class);
     myDetectedFiles = new ArrayList<List<File>>();
 
@@ -131,7 +127,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   }
 
   private PackRunner createRunner() {
-    return new PackRunner(myActionFactory, myParametersFactory, myTracker, myPublisher, myCleaner);
+    return new PackRunner(myActionFactory, myParametersFactory, myPublisher, myCleaner);
   }
 
   @Test
@@ -297,16 +293,12 @@ public class PackRunnerTest extends BuildProcessTestCase {
       myPackParameters.setOutput(temp);
       myPackParameters.setSpecFiles(spec);
 
-      oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
-      oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
+      exactly(2).of(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
 
-      oneOf(myProc).start();
-      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+      exactly(2).of(myProc).start();
+      exactly(2).of(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
 
-      oneOf(myProc).start();
-      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
-
-      oneOf(myCleaner).cleanFolder(with(equal(temp)), with(any(SmartDirectoryCleanerCallback.class)));
+      exactly(2).of(myCleaner).cleanFolder(with(equal(temp)), with(any(SmartDirectoryCleanerCallback.class)));
     }});
 
     for(int i = 0; i < 2; i++) {
@@ -337,13 +329,10 @@ public class PackRunnerTest extends BuildProcessTestCase {
       oneOf(myActionFactory).createPack(myContext, spec, myPackParameters); will(returnValue(myProc));
       oneOf(myActionFactory).createPack(myContext, spec, params2); will(returnValue(myProc));
 
-      oneOf(myProc).start();
-      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+      exactly(2).of(myProc).start();
+      exactly(2).of(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
 
-      oneOf(myProc).start();
-      oneOf(myProc).waitFor(); will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
-
-      oneOf(myLogger).warning("Could not clean output directory, there were another NuGet Packages Pack runner with disabled clean");
+      oneOf(myCleaner).cleanFolder(with(equal(temp)), with(any(SmartDirectoryCleanerCallback.class)));
     }});
 
     for(int i = 0; i < 2; i++) {
@@ -588,5 +577,4 @@ public class PackRunnerTest extends BuildProcessTestCase {
 
     m.assertIsSatisfied();
   }
-
 }

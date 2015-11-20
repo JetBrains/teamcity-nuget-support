@@ -20,9 +20,7 @@ import com.intellij.util.Function;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
-import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FilesState;
-import jetbrains.buildServer.configuration.FilesWatcher;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPackParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
@@ -46,17 +44,14 @@ import java.util.TreeSet;
  *         Date: 23.08.11 12:11
  */
 public class PackRunner extends NuGetRunnerBase {
-  private final PackRunnerOutputDirectoryTracker myTracker;
   private final ArtifactsWatcher myPublisher;
   private final SmartDirectoryCleaner myCleaner;
 
   public PackRunner(@NotNull final NuGetActionFactory actionFactory,
                     @NotNull final PackagesParametersFactory parametersFactory,
-                    @NotNull final PackRunnerOutputDirectoryTracker tracker,
                     @NotNull final ArtifactsWatcher publisher,
                     @NotNull final SmartDirectoryCleaner cleaner) {
     super(actionFactory, parametersFactory);
-    myTracker = tracker;
     myPublisher = publisher;
     myCleaner = cleaner;
   }
@@ -70,7 +65,7 @@ public class PackRunner extends NuGetRunnerBase {
     final CompositeBuildProcess packRunners = new CompositeBuildProcessImpl();
     final Set<File> createdPackages = new TreeSet<File>();
 
-    process.pushBuildProcess(new OutputDirectoryCleanerProcess(params, runningBuild, myCleaner, myTracker.getState(runningBuild)));
+    process.pushBuildProcess(new OutputDirectoryCleanerProcess(params, runningBuild, myCleaner));
 
     final FilesState filesState = createFilesState(params.getOutputDirectory());
 
