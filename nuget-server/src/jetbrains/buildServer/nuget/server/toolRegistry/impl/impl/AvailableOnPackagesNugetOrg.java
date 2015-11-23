@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
@@ -36,8 +35,6 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.*;
  * @author Evgeniy.Koshkin
  */
 public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
-
-  private static final Logger LOG = Logger.getInstance(AvailableOnPackagesNugetOrg.class.getName());
 
   @NotNull private final FeedClient myFeed;
   @NotNull private final NuGetFeedReader myReader;
@@ -112,8 +109,7 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
                 }
         );
       } catch (IOException e) {
-        LOG.warn("Failed to fetch versions from: " + feedUrl + ". " + e.getMessage(), e);
-        exception = new FetchException(e.getMessage(), e);
+        exception = new FetchException("Failed to fetch versions from: " + feedUrl, e);
       }
     }
     throw exception;

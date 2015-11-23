@@ -17,9 +17,9 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.google.gson.Gson;
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.http.HttpUtil;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -30,7 +30,6 @@ import org.springframework.http.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static jetbrains.buildServer.nuget.common.FeedConstants.EXE_EXTENSION;
@@ -42,7 +41,6 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
   private static final int CONNECTION_TIMEOUT_SECONDS = 60;
   private final static String DIST_NUGET_ORG_INDEX_JSON_URL = "http://dist.nuget.org/index.json";
   private static final String NUGET_COMMANDLINE_ARTIFACT_NAME = "win-x86-commandline";
-  private static final Logger LOG = Logger.getInstance(AvailableOnDistNugetOrg.class.getName());
 
   @NotNull
   public String getSourceDisplayName() {
@@ -50,51 +48,48 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
   }
 
   @NotNull
-  public Collection<DownloadableNuGetTool> fetchAvailable() {
+  public Collection<DownloadableNuGetTool> fetchAvailable() throws FetchException {
     HttpClient client = HttpUtil.createHttpClient(CONNECTION_TIMEOUT_SECONDS);
     final GetMethod post = new GetMethod(DIST_NUGET_ORG_INDEX_JSON_URL);
     post.addRequestHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
     try {
       int status = client.executeMethod(post);
+      if (status != HttpStatus.SC_OK)
+        throw new FetchException(String.format("Recieved http status %d when fetching available nuget.exe versions from %s", status, DIST_NUGET_ORG_INDEX_JSON_URL));
+
       String respText = post.getResponseBodyAsString();
-      if (status == HttpStatus.SC_OK) {
-        final Gson gson = new Gson();
-        final AvailableArtifacts artifacts = gson.fromJson(respText, AvailableArtifacts.class);
-        final List<DownloadableNuGetTool> nugets = new ArrayList<DownloadableNuGetTool>();
-        for (final Artifact artifact : artifacts.getArtifacts()) {
-          if(!artifact.getName().equalsIgnoreCase(NUGET_COMMANDLINE_ARTIFACT_NAME)) continue;
-          for (final Version commandlineVersion : artifact.getVersions()) {
-            nugets.add(new DownloadableNuGetTool() {
-              @NotNull
-              public String getDownloadUrl() {
-                return commandlineVersion.getUrl();
-              }
+      final Gson gson = new Gson();
+      final AvailableArtifacts artifacts = gson.fromJson(respText, AvailableArtifacts.class);
+      final List<DownloadableNuGetTool> nugets = new ArrayList<DownloadableNuGetTool>();
+      for (final Artifact artifact : artifacts.getArtifacts()) {
+        if(!artifact.getName().equalsIgnoreCase(NUGET_COMMANDLINE_ARTIFACT_NAME)) continue;
+        for (final Version commandlineVersion : artifact.getVersions()) {
+          nugets.add(new DownloadableNuGetTool() {
+            @NotNull
+            public String getDownloadUrl() {
+              return commandlineVersion.getUrl();
+            }
 
-              @NotNull
-              public String getDestinationFileName() {
-                return FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion() + EXE_EXTENSION;
-              }
+            @NotNull
+            public String getDestinationFileName() {
+              return FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion() + EXE_EXTENSION;
+            }
 
-              @NotNull
-              public String getId() {
-                return FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion();
-              }
+            @NotNull
+            public String getId() {
+              return FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion();
+            }
 
-              @NotNull
-              public String getVersion() {
-                return commandlineVersion.getVersion();
-              }
-            });
-          }
+            @NotNull
+            public String getVersion() {
+              return commandlineVersion.getVersion();
+            }
+          });
         }
-        return nugets;
-      } else{
-        LOG.warn(String.format("Recieved http status %d when fetching available nuget.exe versions from %s", status, DIST_NUGET_ORG_INDEX_JSON_URL));
-        return Collections.emptyList();
       }
+      return nugets;
     } catch (IOException e) {
-      LOG.warn("Failed to fetch available nuget.exe versions from " + DIST_NUGET_ORG_INDEX_JSON_URL, e);
-      return Collections.emptyList();
+      throw new FetchException("Failed to fetch available nuget.exe versions from " + DIST_NUGET_ORG_INDEX_JSON_URL, e);
     }
   }
 
