@@ -88,10 +88,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
   @NotNull
   private Object[][] versionsFrom(@NotNull final NuGet lowerBound) {
-    final NuGet[] values =
-//            new NuGet[]{NuGet.NuGet_2_7};
-            NuGet.values();
-
+    final NuGet[] values =  NuGet.values();
     final List<Object[]> data = new ArrayList<Object[]>();
     for (NuGet value : values) {
       if (value.major < lowerBound.major) continue;
