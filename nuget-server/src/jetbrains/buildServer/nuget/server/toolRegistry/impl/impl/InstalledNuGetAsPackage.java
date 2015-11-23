@@ -77,7 +77,7 @@ public class InstalledNuGetAsPackage implements InstalledTool {
       myUnpacker.extractPackage(myPath, myUnpackFolder);
       myPacker.packTool(getAgentPluginFile(), myUnpackFolder);
     } catch (Throwable t) {
-      LOG.warn("Failed to unpack nuget commandline: " + this);
+      LOG.warnAndDebugDetails("Failed to unpack nuget commandline: " + this, t);
       removeUnpackedFiles();
     }
   }

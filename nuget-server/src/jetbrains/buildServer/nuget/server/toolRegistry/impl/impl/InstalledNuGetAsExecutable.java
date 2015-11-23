@@ -86,7 +86,7 @@ public class InstalledNuGetAsExecutable implements InstalledTool {
       FileUtil.createParentDirs(agentPluginFile);
       myPacker.packTool(agentPluginFile, myUnpackFolder);
     } catch (Throwable t) {
-      LOG.warn("Failed to install nuget tool: " + this);
+      LOG.warnAndDebugDetails("Failed to install nuget tool: " + this, t);
       FileUtil.delete(agentPluginFile);
       FileUtil.delete(myUnpackFolder);
     }

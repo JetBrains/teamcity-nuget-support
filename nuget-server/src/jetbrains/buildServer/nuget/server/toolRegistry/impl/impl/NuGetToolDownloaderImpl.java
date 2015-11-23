@@ -59,8 +59,7 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
     try {
       myClient.downloadPackage(myFeed, tool.getDownloadUrl(), tempFile);
     } catch (Exception e) {
-      LOG.warn("Failed to download package " + tool + " to " + tempFile + ". " + e.getMessage());
-      LOG.debug("Failed to download package " + tool + " to " + tempFile + ". " + e.getMessage(), e);
+      LOG.warnAndDebugDetails("Failed to download package " + tool + " to " + tempFile, e);
       throw new ToolException("Failed to download package " + tool.getId() + " " + tool.getVersion() + ". " + e.getMessage());
     }
 
