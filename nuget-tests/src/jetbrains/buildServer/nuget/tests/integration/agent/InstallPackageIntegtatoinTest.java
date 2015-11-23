@@ -25,13 +25,16 @@ import jetbrains.buildServer.nuget.tests.agent.StartsWithMatcher;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.ArchiveUtil;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.TestFor;
+import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -59,7 +62,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
@@ -80,7 +82,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packages.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_17p)
@@ -100,7 +101,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packages.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
@@ -121,7 +121,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packages.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
@@ -135,10 +134,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.10.11092").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(5, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
@@ -153,10 +150,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.10.11092").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(5, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
@@ -171,10 +166,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.10.11092").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(5, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
@@ -184,15 +177,12 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, true, nuget, null);
 
-
     List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.10.11092").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(5, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_17p)
@@ -211,7 +201,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertTrue(new File(myRoot, "packages/Elmah.1.2").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.3001").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.4001-beta").isDirectory());
-    Assert.assertEquals(3 + 1, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_17p)
@@ -247,10 +236,10 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
 
-    Assert.assertTrue(new File(myRoot, "packages/NUnit").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications").isDirectory());
-    Assert.assertEquals(4, packageses.size());
+    final File packagesRootDir = new File(myRoot, "packages");
+    assertDirectoryExist(packagesRootDir, "NUnit");
+    assertDirectoryExist(packagesRootDir, "NInject");
+    assertDirectoryExist(packagesRootDir, "Machine.Specifications");
   }
 
   @Test(enabled = false, dataProvider = NUGET_VERSIONS)
@@ -268,7 +257,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(4, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_15p)
@@ -285,13 +273,15 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     List<File> packageses = listFiles("lib");
     System.out.println("installed packageses = " + packageses);
-
-    Assert.assertTrue(new File(myRoot, "lib/NUnit").isDirectory());
-    Assert.assertTrue(new File(myRoot, "lib/Castle.Core").isDirectory());
-    Assert.assertTrue(new File(myRoot, "lib/jQuery").isDirectory());
-    Assert.assertTrue(new File(myRoot, "lib/Microsoft.Web.Infrastructure").isDirectory());
-    Assert.assertTrue(new File(myRoot, "lib/WebActivator").isDirectory());
     Assert.assertEquals(6, packageses.size());
+
+    final File libDir = new File(myRoot, "lib");
+
+    assertDirectoryExist(libDir, "NUnit");
+    assertDirectoryExist(libDir, "Castle.Core");
+    assertDirectoryExist(libDir, "jQuery");
+    assertDirectoryExist(libDir, "Microsoft.Web.Infrastructure");
+    assertDirectoryExist(libDir, "WebActivator");
   }
 
   @Test(dataProvider = NUGET_VERSIONS_15p)
@@ -318,7 +308,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertTrue(new File(myRoot, "lib/jQuery").isDirectory());
     Assert.assertTrue(new File(myRoot, "lib/Microsoft.Web.Infrastructure").isDirectory());
     Assert.assertTrue(new File(myRoot, "lib/WebActivator").isDirectory());
-    Assert.assertEquals(6, packageses.size());
   }
 
   @TestFor(issues = "TW-21061")
@@ -339,11 +328,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/Microsoft.Web.Infrastructure.1.0.0.0").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.10.11092").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/NInject.3.0.0.15").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/WebActivator.1.5").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/jQuery.1.7.2").isDirectory());
-    Assert.assertEquals(5 + 1 , packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_17p)
@@ -364,7 +351,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertTrue(new File(myRoot, "ClassLibrary1/packages/Ninject.3.0.1.10").isDirectory());
     Assert.assertTrue(new File(myRoot, "ClassLibrary1/packages/elmah.1.2.2").isDirectory());
     Assert.assertTrue(new File(myRoot, "ClassLibrary1/packages/elmah.corelibrary.1.2.2").isDirectory());
-    Assert.assertEquals(3, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
@@ -382,7 +368,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     List<File> packageses = listFiles("customizedPath");
     Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(2, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
@@ -400,7 +385,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     List<File> packageses = listFiles("customizedPath");
     Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(2, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
@@ -418,7 +402,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     List<File> packageses = listFiles("customizedPath");
     Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(2, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
@@ -436,7 +419,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     List<File> packageses = listFiles("customizedPath");
     Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(2, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
@@ -454,7 +436,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     List<File> packageses = listFiles("customizedPath");
     Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(2, packageses.size());
   }
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
@@ -472,7 +453,10 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     List<File> packageses = listFiles("customizedPath");
     Assert.assertTrue(new File(myRoot, "customizedPath/NUnit.2.5.7.10213").isDirectory());
     Assert.assertTrue(new File(myRoot, "customizedPath/Machine.Specifications.0.4.13.0").isDirectory());
-    Assert.assertEquals(2, packageses.size());
+  }
+
+  private void assertDirectoryExist(File root, final String directoryNamePrefix) {
+    assertNotNull("Direcotry not found by prefix " + directoryNamePrefix, CollectionsUtil.filterNulls(Arrays.asList(root.listFiles((FileFilter) new PrefixFileFilter(directoryNamePrefix)))));
   }
 
   @NotNull
