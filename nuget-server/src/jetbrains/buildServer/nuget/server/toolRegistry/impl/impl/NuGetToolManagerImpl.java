@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
+import com.google.common.collect.Sets;
 import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
@@ -68,13 +69,14 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   @NotNull
-  public Collection<? extends NuGetTool> getAvailableTools(@NotNull ToolsPolicy policy) throws FetchException {
+  public FetchAvailableToolsResult getAvailableTools(@NotNull ToolsPolicy policy) {
     final Set<String> installed = new HashSet<String>();
     for (NuGetInstalledTool tool : getInstalledTools()) {
       installed.add(tool.getVersion());
     }
-    //This must be cached to make if work faster!
-    final Collection<DownloadableNuGetTool> available = new ArrayList<DownloadableNuGetTool>(myAvailableTools.getAvailable(policy));
+
+    final FetchAvailableToolsResult fetchAvailableToolsResult = myAvailableTools.getAvailable(policy);
+    final Collection<DownloadableNuGetTool> available = new ArrayList<DownloadableNuGetTool>(fetchAvailableToolsResult.getFetchedTools());
     final Iterator<DownloadableNuGetTool> it = available.iterator();
     while (it.hasNext()) {
       NuGetTool next = it.next();
@@ -82,7 +84,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
         it.remove();
       }
     }
-    return available;
+    return new FetchAvailableToolsResult(Sets.newHashSet(available), fetchAvailableToolsResult.getErrors());
   }
 
   @Nullable

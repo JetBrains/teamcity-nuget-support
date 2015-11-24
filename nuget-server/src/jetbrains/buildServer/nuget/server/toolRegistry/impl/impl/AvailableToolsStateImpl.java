@@ -16,35 +16,28 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
-import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
-import jetbrains.buildServer.nuget.server.util.SemanticVersion;
+import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 15.08.11 16:33
  */
 public class AvailableToolsStateImpl implements AvailableToolsState {
-  private static final Logger LOG = Logger.getInstance(AvailableToolsStateImpl.class.getName());
   private static final long TIMEOUT = 1000 * 60 * 15; //15 min
-  private static final Comparator<? super NuGetTool> COMPARATOR = new Comparator<NuGetTool>() {
-    public int compare(NuGetTool o1, NuGetTool o2) {
-      return SemanticVersion.compareAsVersions(o2.getVersion(), o1.getVersion());
-    }
-  };
 
   @NotNull private final TimeService myTime;
   @NotNull private final Collection<AvailableToolsFetcher> myFetchers;
 
-  private Set<DownloadableNuGetTool> myTools;
+  private FetchAvailableToolsResult myFetchResult;
   private long lastRequest = 0;
 
   public AvailableToolsStateImpl(@NotNull final TimeService time, @NotNull Collection<AvailableToolsFetcher> fetchers) {
@@ -54,9 +47,9 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
 
   @Nullable
   public DownloadableNuGetTool findTool(@NotNull final String id) {
-    final Set<DownloadableNuGetTool> tools = myTools;
-    if (tools != null) {
-      for (DownloadableNuGetTool tool : tools) {
+    final FetchAvailableToolsResult fetchResult = myFetchResult;
+    if (fetchResult != null) {
+      for (DownloadableNuGetTool tool : fetchResult.getFetchedTools()) {
         if(tool.getId().equals(id)) {
           return tool;
         }
@@ -66,27 +59,23 @@ public class AvailableToolsStateImpl implements AvailableToolsState {
   }
 
   @NotNull
-  public Set<DownloadableNuGetTool> getAvailable(ToolsPolicy policy) throws FetchException {
-    Set<DownloadableNuGetTool> nuGetTools = myTools;
+  public FetchAvailableToolsResult getAvailable(ToolsPolicy policy) {
+    FetchAvailableToolsResult fetchResult = myFetchResult;
     if (policy == ToolsPolicy.FetchNew
-            || nuGetTools == null
+            || fetchResult == null
             || lastRequest + TIMEOUT < myTime.now()) {
-      myTools = null;
-      myTools = nuGetTools = fetchAvailable();
+      myFetchResult = null;
+      myFetchResult = fetchResult = fetchAvailable();
       lastRequest = myTime.now();
     }
-    return nuGetTools;
+    return fetchResult;
   }
 
-  private Set<DownloadableNuGetTool> fetchAvailable() {
-    final TreeSet<DownloadableNuGetTool> available = new TreeSet<DownloadableNuGetTool>(COMPARATOR);
-    for(AvailableToolsFetcher fetcher : myFetchers){
-      try {
-        available.addAll(fetcher.fetchAvailable());
-      } catch (FetchException e) {
-        LOG.warn("Failed fetch available NuGet tools from " + fetcher.getSourceDisplayName(), e);
+  private FetchAvailableToolsResult fetchAvailable() {
+    return FetchAvailableToolsResult.join(CollectionsUtil.convertCollection(myFetchers, new Converter<FetchAvailableToolsResult, AvailableToolsFetcher>() {
+      public FetchAvailableToolsResult createFrom(@NotNull AvailableToolsFetcher fetcher) {
+        return fetcher.fetchAvailable();
       }
-    }
-    return Collections.unmodifiableSet(available);
+    }));
   }
 }

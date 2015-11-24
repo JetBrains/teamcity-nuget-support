@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@ public class InstallToolBean {
     myWhatToDo = whatToDo;
   }
 
-  public void setErrorText(@NotNull String errorText) {
-    myErrorText = errorText;
-  }
-
   public void setTools(@NotNull Collection<? extends NuGetTool> tools) {
     myTools.clear();
     myTools.addAll(tools);
+  }
+
+  public void setErrorText(@Nullable String errorText) {
+    myErrorText = errorText;
   }
 
   @Nullable

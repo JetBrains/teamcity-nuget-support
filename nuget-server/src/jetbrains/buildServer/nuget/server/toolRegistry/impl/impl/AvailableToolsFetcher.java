@@ -16,19 +16,13 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public interface AvailableToolsFetcher {
-
   @NotNull
-  String getSourceDisplayName();
-
-  @NotNull
-  Collection<DownloadableNuGetTool> fetchAvailable() throws FetchException;
+  FetchAvailableToolsResult fetchAvailable();
 }

@@ -89,7 +89,9 @@ public class InstallToolController extends BaseFormXmlController {
                       : ToolsPolicy.FetchNew;
 
       try {
-        bean.setTools(myToolsManager.getAvailableTools(pol));
+        final FetchAvailableToolsResult fetchResult = myToolsManager.getAvailableTools(pol);
+        bean.setTools(fetchResult.getFetchedTools());
+        bean.setErrorText(fetchResult.getErrorsSummary());
       } catch (Exception e) {
         bean.setErrorText(e.getMessage());
         LOG.warn("Failed to fetch NuGet.Commandline package versions. " + e.getMessage(), e);

@@ -17,12 +17,9 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableOnDistNugetOrg;
 import org.testng.annotations.Test;
-
-import java.util.Collection;
 
 /**
  * @author Evgeniy.Koshkin
@@ -32,8 +29,9 @@ public class AvailableOnDistNugetOrgTest extends BaseTestCase {
   private final AvailableOnDistNugetOrg myFetcher = new AvailableOnDistNugetOrg();
 
   @Test
-  public void fetchAvailable() throws FetchException {
-    final Collection<? extends NuGetTool> availableNuGetExeVersions = myFetcher.fetchAvailable();
-    assertNotEmpty(availableNuGetExeVersions);
+  public void fetchAvailable() {
+    final FetchAvailableToolsResult result = myFetcher.fetchAvailable();
+    assertNotEmpty(result.getFetchedTools());
+    assertEmpty(result.getErrors());
   }
 }

@@ -36,11 +36,10 @@ public interface NuGetToolManager {
 
   /**
    * @param policy kind of packages to return
-   * @return fetches the full list of available and supported nuget tools
-   * @throws FetchException on fetch error if it was called
+   * @return fetches the full list of available and supported nuget tools and errors reported
    */
   @NotNull
-  Collection<? extends NuGetTool> getAvailableTools(@NotNull final ToolsPolicy policy) throws FetchException;
+  FetchAvailableToolsResult getAvailableTools(@NotNull final ToolsPolicy policy);
 
   @Nullable
   DownloadableNuGetTool findAvailableToolById(String toolId);

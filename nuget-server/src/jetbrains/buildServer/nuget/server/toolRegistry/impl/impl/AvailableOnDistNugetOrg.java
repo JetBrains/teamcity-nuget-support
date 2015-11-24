@@ -17,9 +17,10 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.google.gson.Gson;
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.http.HttpUtil;
 import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -30,7 +31,6 @@ import org.springframework.http.MediaType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static jetbrains.buildServer.nuget.common.FeedConstants.EXE_EXTENSION;
 
@@ -38,29 +38,28 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.EXE_EXTENSION;
  * @author Evgeniy.Koshkin
  */
 public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
+
+  private static final Logger LOG = Logger.getInstance(AvailableOnDistNugetOrg.class.getName());
+
   private static final int CONNECTION_TIMEOUT_SECONDS = 60;
   private final static String DIST_NUGET_ORG_INDEX_JSON_URL = "http://dist.nuget.org/index.json";
+  private final static String DIST_NUGET_ORG_URL = "http://dist.nuget.org";
   private static final String NUGET_COMMANDLINE_ARTIFACT_NAME = "win-x86-commandline";
 
   @NotNull
-  public String getSourceDisplayName() {
-    return "http://dist.nuget.org";
-  }
-
-  @NotNull
-  public Collection<DownloadableNuGetTool> fetchAvailable() throws FetchException {
+  public FetchAvailableToolsResult fetchAvailable() {
     HttpClient client = HttpUtil.createHttpClient(CONNECTION_TIMEOUT_SECONDS);
     final GetMethod post = new GetMethod(DIST_NUGET_ORG_INDEX_JSON_URL);
     post.addRequestHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
     try {
       int status = client.executeMethod(post);
       if (status != HttpStatus.SC_OK)
-        throw new FetchException(String.format("Recieved http status %d when fetching available nuget.exe versions from %s", status, DIST_NUGET_ORG_INDEX_JSON_URL));
+        return FetchAvailableToolsResult.createError(String.format("Recieved http status %d when fetching available nuget.exe versions from %s", status, DIST_NUGET_ORG_URL));
 
-      String respText = post.getResponseBodyAsString();
+      final String respText = post.getResponseBodyAsString();
       final Gson gson = new Gson();
       final AvailableArtifacts artifacts = gson.fromJson(respText, AvailableArtifacts.class);
-      final List<DownloadableNuGetTool> nugets = new ArrayList<DownloadableNuGetTool>();
+      final Collection<DownloadableNuGetTool> nugets = new ArrayList<DownloadableNuGetTool>();
       for (final Artifact artifact : artifacts.getArtifacts()) {
         if(!artifact.getName().equalsIgnoreCase(NUGET_COMMANDLINE_ARTIFACT_NAME)) continue;
         for (final Version commandlineVersion : artifact.getVersions()) {
@@ -87,9 +86,10 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
           });
         }
       }
-      return nugets;
+      return FetchAvailableToolsResult.createSuccessfull(nugets);
     } catch (IOException e) {
-      throw new FetchException("Failed to fetch available nuget.exe versions from " + DIST_NUGET_ORG_INDEX_JSON_URL, e);
+      LOG.debug(e);
+      return FetchAvailableToolsResult.createError("Failed to fetch available nuget.exe versions from " + DIST_NUGET_ORG_INDEX_JSON_URL, e);
     }
   }
 

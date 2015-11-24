@@ -16,18 +16,20 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 
 import static jetbrains.buildServer.nuget.common.FeedConstants.*;
 
@@ -35,6 +37,8 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.*;
  * @author Evgeniy.Koshkin
  */
 public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
+
+  private static final Logger LOG = Logger.getInstance(AvailableOnPackagesNugetOrg.class.getName());
 
   @NotNull private final FeedClient myFeed;
   @NotNull private final NuGetFeedReader myReader;
@@ -45,23 +49,12 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
   }
 
   @NotNull
-  public String getSourceDisplayName() {
-    return "http://packages.nuget.org";
-  }
-
-  @NotNull
-  public Collection<DownloadableNuGetTool> fetchAvailable() throws FetchException {
-    FetchException exception = null;
+  public FetchAvailableToolsResult fetchAvailable() {
+    FetchAvailableToolsResult error = null;
     for (String feedUrl : Arrays.asList(NUGET_FEED_V2, NUGET_FEED_V1)) {
       try {
-        final List<FeedPackage> packages = new ArrayList<FeedPackage>(myReader.queryPackageVersions(myFeed, feedUrl, FeedConstants.NUGET_COMMANDLINE));
-        Collections.sort(packages, new Comparator<FeedPackage>() {
-          public int compare(@NotNull final FeedPackage o1, @NotNull final FeedPackage o2) {
-            return -o1.compareTo(o2);
-          }
-        });
-        return CollectionsUtil.filterAndConvertCollection(
-                packages,
+        final Collection<DownloadableNuGetTool> fetchedTools = CollectionsUtil.filterAndConvertCollection(
+                myReader.queryPackageVersions(myFeed, feedUrl, FeedConstants.NUGET_COMMANDLINE),
                 new Converter<DownloadableNuGetTool, FeedPackage>() {
                   public DownloadableNuGetTool createFrom(@NotNull final FeedPackage source) {
                     return new DownloadableNuGetTool() {
@@ -86,8 +79,7 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
                       }
                     };
                   }
-                },
-                new Filter<FeedPackage>() {
+                }, new Filter<FeedPackage>() {
                   public boolean accept(@NotNull FeedPackage data) {
                     final String[] version = data.getInfo().getVersion().split("\\.");
                     if (version.length < 2) return false;
@@ -108,10 +100,12 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
                   }
                 }
         );
+        return FetchAvailableToolsResult.createSuccessfull(fetchedTools);
       } catch (IOException e) {
-        exception = new FetchException("Failed to fetch versions from: " + feedUrl, e);
+        LOG.debug(e);
+        error = FetchAvailableToolsResult.createError("Failed to fetch versions from: " + feedUrl, e);
       }
     }
-    throw exception;
+    return error;
   }
 }

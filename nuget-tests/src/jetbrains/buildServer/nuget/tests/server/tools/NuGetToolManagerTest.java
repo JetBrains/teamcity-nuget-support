@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.tools;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
@@ -181,7 +182,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
     m.checking(new Expectations(){{
       allowing(dt).getVersion(); will(returnValue("v1"));
       allowing(it).getVersion(); will(returnValue("v1"));
-      allowing(myAvailables).getAvailable(ToolsPolicy.FetchNew); will(returnValue(Collections.unmodifiableSet(Collections.singleton(dt))));
+      allowing(myAvailables).getAvailable(ToolsPolicy.FetchNew); will(returnValue(FetchAvailableToolsResult.createSuccessfull(Collections.singleton(dt))));
       allowing(myToolsRegistry).getTools(); will(returnValue(Collections.singletonList(it)));
     }});
     myToolManager.getAvailableTools(ToolsPolicy.FetchNew);

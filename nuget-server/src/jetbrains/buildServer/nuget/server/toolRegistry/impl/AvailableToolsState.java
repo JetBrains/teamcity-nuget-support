@@ -16,13 +16,11 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl;
 
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Set;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -33,5 +31,5 @@ public interface AvailableToolsState {
   DownloadableNuGetTool findTool(@NotNull String id);
 
   @NotNull
-  Set<DownloadableNuGetTool> getAvailable(ToolsPolicy policy) throws FetchException;
+  FetchAvailableToolsResult getAvailable(ToolsPolicy policy);
 }

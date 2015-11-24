@@ -19,9 +19,8 @@ package jetbrains.buildServer.nuget.tests.server.tools;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableOnPackagesNugetOrg;
-import junit.framework.Assert;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -63,17 +62,15 @@ public class AvailableOnPackagesNugetOrgTest extends BaseTestCase {
       oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
     }});
 
-    try {
-      myFetcher.fetchAvailable();
-      Assert.fail();
-    } catch (FetchException e) {
-    }
+    final FetchAvailableToolsResult result = myFetcher.fetchAvailable();
+    if(result.getErrors().isEmpty())
+      fail();
 
     m.assertIsSatisfied();
   }
 
   @Test
-  public void test_should_work_on_one_feed_error_1() throws IOException, FetchException {
+  public void test_should_work_on_one_feed_error_1() throws IOException {
 
     m.checking(new Expectations(){{
       allowing(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(throwException(new IOException("oops")));
@@ -85,7 +82,7 @@ public class AvailableOnPackagesNugetOrgTest extends BaseTestCase {
   }
 
   @Test
-  public void test_should_work_on_one_feed_error_2() throws IOException, FetchException {
+  public void test_should_work_on_one_feed_error_2() throws IOException {
 
     m.checking(new Expectations(){{
       oneOf(myReader).queryPackageVersions(myClient, "http://packages.nuget.org/api/v2", "NuGet.CommandLine"); will(returnValue(Collections.emptyList()));

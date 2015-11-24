@@ -17,8 +17,9 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchException;
+import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
@@ -61,20 +62,23 @@ public class AvailableToolStateTest extends BaseTestCase {
 
   @Test
   @TestFor(issues = "TW-30395")
-  public void test_should_return_newer_first() throws IOException, FetchException {
+  public void test_should_return_newer_first() throws IOException {
     final AvailableToolsFetcher fetcher1 = m.mock(AvailableToolsFetcher.class, "fetcher1");
     final AvailableToolsFetcher fetcher2 = m.mock(AvailableToolsFetcher.class, "fetcher2");
     final TimeService time = m.mock(TimeService.class);
 
     m.checking(new Expectations(){{
       allowing(time).now(); will(returnValue(1000234L));
-      allowing(fetcher1).fetchAvailable(); will(returnValue(Lists.newArrayList(toolOfVersion("1"), toolOfVersion("5"), toolOfVersion("3"))));
-      allowing(fetcher2).fetchAvailable(); will(returnValue(Lists.newArrayList(toolOfVersion("6"), toolOfVersion("2"), toolOfVersion("4"))));
+      allowing(fetcher1).fetchAvailable(); will(returnValue(FetchAvailableToolsResult.createSuccessfull(Sets.newHashSet(toolOfVersion("1"), toolOfVersion("5"), toolOfVersion("3")))));
+      allowing(fetcher2).fetchAvailable(); will(returnValue(FetchAvailableToolsResult.createSuccessfull(Sets.newHashSet(toolOfVersion("6"), toolOfVersion("2"), toolOfVersion("4")))));
     }});
 
     final AvailableToolsState state = new AvailableToolsStateImpl(time, Lists.newArrayList(fetcher1, fetcher2));
 
-    Iterator<? extends NuGetTool> tools = state.getAvailable(ToolsPolicy.FetchNew).iterator();
+    final FetchAvailableToolsResult result = state.getAvailable(ToolsPolicy.FetchNew);
+    assertEmpty(result.getErrors());
+
+    Iterator<? extends NuGetTool> tools = result.getFetchedTools().iterator();
     assertEquals("6", tools.next().getVersion());
     assertEquals("5", tools.next().getVersion());
     assertEquals("4", tools.next().getVersion());
@@ -103,11 +107,13 @@ public class AvailableToolStateTest extends BaseTestCase {
     final TimeService time = m.mock(TimeService.class);
     m.checking(new Expectations(){{
       allowing(time).now(); will(returnValue(1000234L));
-      allowing(fetcher).fetchAvailable(); will(returnValue(Lists.newArrayList(toolForId("knownId"))));
+      allowing(fetcher).fetchAvailable(); will(returnValue(FetchAvailableToolsResult.createSuccessfull(Sets.newHashSet(toolForId("knownId")))));
     }});
 
     final AvailableToolsState state = new AvailableToolsStateImpl(time, Lists.newArrayList(fetcher));
-    assertNotEmpty(state.getAvailable(ToolsPolicy.FetchNew));
+    final FetchAvailableToolsResult result = state.getAvailable(ToolsPolicy.FetchNew);
+    assertNotEmpty(result.getFetchedTools());
+    assertEmpty(result.getErrors());
 
     assertNull(state.findTool(toolForId("unknownId").getId()));
     assertNotNull(state.findTool(toolForId("knownId").getId()));
