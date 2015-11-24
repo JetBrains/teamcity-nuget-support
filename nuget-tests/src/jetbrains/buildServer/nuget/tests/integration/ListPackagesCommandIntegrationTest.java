@@ -79,7 +79,7 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
     final SourcePackageReference nunit_filter = new SourcePackageReference(null, "NUnit", "(1.1.1.1, 2.5.9.1)");
     final SourcePackageReference youTrackSharp = new SourcePackageReference(null, "YouTrackSharp", null);
     final Map<SourcePackageReference, ListPackagesResult> checkForUpdatesResults = myCommand.checkForChanges(
-            NuGet.NuGet_3_2.getPath(),
+            nuget.getPath(),
             Arrays.asList(
                     nunit_all,
                     nunit_filter,
