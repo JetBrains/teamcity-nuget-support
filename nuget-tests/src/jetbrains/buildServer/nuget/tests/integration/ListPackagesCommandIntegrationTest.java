@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,28 +78,29 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
     final SourcePackageReference nunit_all = new SourcePackageReference(null, "NUnit", null);
     final SourcePackageReference nunit_filter = new SourcePackageReference(null, "NUnit", "(1.1.1.1, 2.5.9.1)");
     final SourcePackageReference youTrackSharp = new SourcePackageReference(null, "YouTrackSharp", null);
-    final Map<SourcePackageReference,ListPackagesResult> m1 = myCommand.checkForChanges(
-            nuget.getPath(),
+    final Map<SourcePackageReference, ListPackagesResult> checkForUpdatesResults = myCommand.checkForChanges(
+            NuGet.NuGet_3_2.getPath(),
             Arrays.asList(
                     nunit_all,
                     nunit_filter,
                     youTrackSharp
             ));
 
-    Assert.assertTrue(m1.size() == 3);
-    System.out.println("m = " + m1);
+    assertEquals(3, checkForUpdatesResults.size());
+    System.out.println("m = " + checkForUpdatesResults);
 
-    for (ListPackagesResult infos : m1.values()) {
-      Assert.assertTrue(infos.getCollectedInfos().size() > 0);
+    for (ListPackagesResult infos : checkForUpdatesResults.values()) {
+      assertNull(infos.getErrorMessage());
+      assertNotEmpty(infos.getCollectedInfos());
     }
 
-    final Collection<SourcePackageInfo> nAll = m1.get(nunit_all).getCollectedInfos();
-    final Collection<SourcePackageInfo> nFilter = m1.get(nunit_filter).getCollectedInfos();
-    final Collection<SourcePackageInfo> nYouTrack = m1.get(youTrackSharp).getCollectedInfos();
+    final Collection<SourcePackageInfo> nAll = checkForUpdatesResults.get(nunit_all).getCollectedInfos();
+    final Collection<SourcePackageInfo> nFilter = checkForUpdatesResults.get(nunit_filter).getCollectedInfos();
+    final Collection<SourcePackageInfo> nYouTrack = checkForUpdatesResults.get(youTrackSharp).getCollectedInfos();
 
-    Assert.assertTrue(nAll.size() == 1, new ArrayList<SourcePackageInfo>(nAll).toString());
-    Assert.assertTrue(nYouTrack.size() == 1, new ArrayList<SourcePackageInfo>(nYouTrack).toString());
-    Assert.assertTrue(nFilter.size() > 0, new ArrayList<SourcePackageInfo>(nFilter).toString());
+    assertEquals(new ArrayList<SourcePackageInfo>(nAll).toString(), 1, nAll.size());
+    assertEquals(new ArrayList<SourcePackageInfo>(nYouTrack).toString(), 1, nYouTrack.size());
+    assertNotEmpty(nFilter);
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
