@@ -54,7 +54,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
     [XmlIgnore]
     public NuGetSource Feed
     {
-      get { return Source != null ?  this : FromFeedUrl(NuGetConstants.DefaultGalleryServerUrl); }
+      get { return Source != null ? this : FromFeedUrl(NuGetConstants.V2FeedUrl); }
     }
 
     [XmlIgnore]
