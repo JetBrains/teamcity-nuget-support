@@ -38,16 +38,21 @@ public class FetchAvailableToolsResult {
   @NotNull private Set<DownloadableNuGetTool> myFetchedTools;
   @NotNull private Collection<String> myErrors;
 
-  public FetchAvailableToolsResult(@NotNull Set<DownloadableNuGetTool> fetchedTools, @NotNull Collection<String> errors) {
+  private FetchAvailableToolsResult(@NotNull Set<DownloadableNuGetTool> fetchedTools, @NotNull Collection<String> errors) {
     myFetchedTools = fetchedTools;
     myErrors = errors;
   }
 
   @NotNull
-  public static FetchAvailableToolsResult createSuccessfull(@NotNull Collection<DownloadableNuGetTool> fetchedTools) {
+  public static FetchAvailableToolsResult create(@NotNull Collection<DownloadableNuGetTool> fetchedTools, @NotNull Collection<String> errors) {
     final TreeSet<DownloadableNuGetTool> tools = new TreeSet<DownloadableNuGetTool>(COMPARATOR);
     tools.addAll(fetchedTools);
-    return new FetchAvailableToolsResult(Collections.unmodifiableSet(tools), Collections.<String>emptyList());
+    return new FetchAvailableToolsResult(Collections.unmodifiableSet(tools), errors);
+  }
+
+  @NotNull
+  public static FetchAvailableToolsResult createSuccessfull(@NotNull Collection<DownloadableNuGetTool> fetchedTools) {
+    return create(fetchedTools, Collections.<String>emptyList());
   }
 
   @NotNull

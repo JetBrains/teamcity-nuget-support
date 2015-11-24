@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
-import com.google.common.collect.Sets;
 import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
@@ -84,7 +83,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
         it.remove();
       }
     }
-    return new FetchAvailableToolsResult(Sets.newHashSet(available), fetchAvailableToolsResult.getErrors());
+    return FetchAvailableToolsResult.create(available, fetchAvailableToolsResult.getErrors());
   }
 
   @Nullable

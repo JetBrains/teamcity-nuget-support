@@ -16,16 +16,15 @@
 
 package jetbrains.buildServer.nuget.tests.server.tools;
 
+import com.google.common.collect.Sets;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolsPolicy;
+import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolManagerImpl;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -34,6 +33,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * Created 27.12.12 18:34
@@ -186,6 +186,48 @@ public class NuGetToolManagerTest extends BaseTestCase {
       allowing(myToolsRegistry).getTools(); will(returnValue(Collections.singletonList(it)));
     }});
     myToolManager.getAvailableTools(ToolsPolicy.FetchNew);
+  }
+
+  @Test
+  public void test_GetAvailableTools_ShouldSortAvailableToolsSet() throws Exception {
+    final InstalledTool it = m.mock(InstalledTool.class);
+    m.checking(new Expectations(){{
+      allowing(it).getVersion(); will(returnValue("1"));
+      allowing(myAvailables).getAvailable(ToolsPolicy.FetchNew); will(returnValue(FetchAvailableToolsResult.createSuccessfull(Sets.newHashSet(toolOfVersion("1"), toolOfVersion("5"), toolOfVersion("3")))));
+      allowing(myToolsRegistry).getTools(); will(returnValue(Collections.singletonList(it)));
+    }});
+
+    final FetchAvailableToolsResult result = myToolManager.getAvailableTools(ToolsPolicy.FetchNew);
+    assertEmpty(result.getErrors());
+
+    Iterator<? extends NuGetTool> tools = result.getFetchedTools().iterator();
+    assertEquals("5", tools.next().getVersion());
+    assertEquals("3", tools.next().getVersion());
+    assertFalse(tools.hasNext());
+  }
+
+  private static DownloadableNuGetTool toolOfVersion(final String version){
+    return new DownloadableNuGetTool() {
+      @NotNull
+      public String getDownloadUrl() {
+        return "downloadUrl-for-" + getId();
+      }
+
+      @NotNull
+      public String getDestinationFileName() {
+        return "some_path";
+      }
+
+      @NotNull
+      public String getId() {
+        return "nuget-exe-" + version;
+      }
+
+      @NotNull
+      public String getVersion() {
+        return version;
+      }
+    };
   }
 }
 
