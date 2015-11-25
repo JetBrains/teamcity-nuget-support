@@ -259,7 +259,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
   }
 
-  @Test(dataProvider = NUGET_VERSIONS_15p)
+  @Test(dataProvider = NUGET_VERSIONS_17p)
   public void test_02_NuGetConfig_anoterPackagesPath(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-02.zip"), "", myRoot);
 
