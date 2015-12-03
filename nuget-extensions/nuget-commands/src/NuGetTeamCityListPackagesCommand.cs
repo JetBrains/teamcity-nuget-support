@@ -4,6 +4,7 @@ using System.IO;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 using NuGet;
 using System.Linq;
+using System.Text;
 using JetBrains.TeamCity.NuGetRunner;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands
@@ -52,10 +53,25 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         }
         catch (Exception e)
         {
-          foreach (var pkg in req.Data)
-            pkg.AddError(e.Message);
+          string message;
+          var aggregateException = e as AggregateException;
+          if (aggregateException != null)
+          {
+            var ae = aggregateException;
+            ae.Flatten();
+            var stringBuilder = new StringBuilder();
+            foreach (var exception in ae.InnerExceptions)
+              stringBuilder.AppendLine(exception.Message);
 
-          System.Console.Out.WriteLine("Failed to check package sources information for URI {0}. {1}", source, e.Message);
+            message = stringBuilder.ToString();
+          }
+          else
+            message = e.Message;
+
+          foreach (var pkg in req.Data)
+            pkg.AddError(message);
+
+          System.Console.Out.WriteLine("Failed to check package sources information for URI {0}. {1}", source, message);
           System.Console.Out.WriteLine(e);
         }
       }
