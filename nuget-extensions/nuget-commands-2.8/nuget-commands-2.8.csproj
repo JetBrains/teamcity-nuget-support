@@ -137,7 +137,9 @@
       <Link>src\Shared.2.0\CredentialsProviderUpdater.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\QueryBuilder.cs" />
+    <Compile Include="..\nuget-commands\src.2.8\QueryBuilder.cs">
+      <Link>src\Shared.2.8\QueryBuilder.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
