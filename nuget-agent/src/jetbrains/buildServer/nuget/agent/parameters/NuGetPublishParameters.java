@@ -37,4 +37,7 @@ public interface NuGetPublishParameters extends NuGetParameters {
   Collection<String> getFiles() throws RunBuildException;
 
   boolean getCreateOnly();
+
+  @NotNull
+  Collection<String> getCustomCommandline();
 }

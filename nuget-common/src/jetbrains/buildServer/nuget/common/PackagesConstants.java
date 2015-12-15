@@ -54,6 +54,7 @@ public interface PackagesConstants {
   public static final String NUGET_PUBLISH_CREATE_ONLY = "nuget.publish.create.only";
   public static final String NUGET_PUBLISH_FILES = "nuget.publish.files";
   public static final String NUGET_PUBLISH_SOURCE = "nuget.publish.source";
+  public static final String NUGET_PUSH_CUSTOM_COMMANDLINE= "nuget.push.commandline";
   public static final String NUGET_API_KEY = Constants.SECURE_PROPERTY_PREFIX + "nuget.api.key";
 
 

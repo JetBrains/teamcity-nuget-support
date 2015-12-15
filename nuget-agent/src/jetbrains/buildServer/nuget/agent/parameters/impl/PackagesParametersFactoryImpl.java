@@ -269,6 +269,11 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       }
 
       @NotNull
+      public Collection<String> getCustomCommandline() {
+        return getMultilineParameter(context, NUGET_PUSH_CUSTOM_COMMANDLINE);
+      }
+
+      @NotNull
       public File getNuGetExeFile() throws RunBuildException {
         return getPathToNuGet(context);
       }
