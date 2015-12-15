@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.trigger.impl.queue;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckEntry;
 import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageChecker;
@@ -34,6 +35,9 @@ import java.util.concurrent.TimeUnit;
  *         Date: 30.09.11 18:21
  */
 public class PackageChangesCheckerThreadTask {
+
+  private static final Logger LOG = Logger.getInstance(PackageChangesCheckerThreadTask.class.getName());
+
   private final PackageCheckQueue myHolder;
   private final ScheduledExecutorService myExecutor;
   private final Collection<PackageChecker> myCheckers;
@@ -53,15 +57,25 @@ public class PackageChangesCheckerThreadTask {
     if (myExecutor.isShutdown()) return;
 
     final Collection<PackageCheckEntry> allItems = myHolder.getItemsToCheckNow();
-    for (final PackageChecker checker : myCheckers) {
-      final List<CheckablePackage> items = getMatchedItems(checker, allItems);
-      if (myExecutor.isShutdown()) return;
+    if(allItems.isEmpty()) {
+      LOG.debug("NuGet package update skipped since there are no items to check.");
+      return;
+    }
 
-      if (items.isEmpty()) continue;
+    for (final PackageChecker checker : myCheckers) {
+      final List<CheckablePackage> matchedItems = getMatchedItems(checker, allItems);
+      if (myExecutor.isShutdown()) return;
+      if (matchedItems.isEmpty()){
+        LOG.debug(String.format("NuGet package update via %s skipped. No matched items to check found.", checker));
+        continue;
+      }
       myExecutor.submit(ExceptionUtil.catchAll("filter accessible sources", new Runnable() {
         public void run() {
-          final Collection<CheckablePackage> accessible = myPreCheckers.getAccessiblePackages(items);
-          if (accessible.isEmpty()) return;
+          final Collection<CheckablePackage> accessible = myPreCheckers.getAccessiblePackages(matchedItems);
+          if (accessible.isEmpty()) {
+            LOG.debug(String.format("NuGet package update via %s skipped. No accessible items to check found.", checker));
+            return;
+          }
           checker.update(myExecutor, accessible);
         }
       }));
