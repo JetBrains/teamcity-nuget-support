@@ -43,6 +43,7 @@ import java.util.*;
 public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProcessFactory {
 
   private static final String TEAMCITY_NUGET_FEEDS_ENV_VAR = "TEAMCITY_NUGET_FEEDS";
+  private static final String NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR = "NUGET_CREDENTIALPROVIDERS_PATH";
   private static final Logger LOG = Logger.getInstance(NuGetAuthCommandBuildProcessFactory.class.getName());
 
   private final CommandlineBuildProcessFactory myFactory;
@@ -104,6 +105,7 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
 
         final Map<String, String> additionalEnvironment = new HashMap<String, String>(_additionalEnvironment);
         additionalEnvironment.put(TEAMCITY_NUGET_FEEDS_ENV_VAR, mySourcesFile.getPath());
+        additionalEnvironment.put(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, myProvider.getNuGetRunnerPath().getAbsolutePath());
 
         return myFactory.executeCommandLine(
                 hostContext,

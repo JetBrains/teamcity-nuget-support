@@ -25,6 +25,6 @@ import java.io.File;
  * Date: 14.07.11 18:49
  */
 public interface NuGetTeamCityProvider {
-  @NotNull
-  File getNuGetRunnerPath();
+  @NotNull File getNuGetRunnerPath();
+  @NotNull File getCredentialProviderHomeDirectory();
 }

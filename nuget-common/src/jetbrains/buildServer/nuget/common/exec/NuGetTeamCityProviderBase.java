@@ -37,4 +37,9 @@ public class NuGetTeamCityProviderBase implements NuGetTeamCityProvider {
   public final File getNuGetRunnerPath() {
     return new File(myNugetBinariesRoot, "bin/JetBrains.TeamCity.NuGetRunner.exe");
   }
+
+  @NotNull
+  public File getCredentialProviderHomeDirectory() {
+    return new File(myNugetBinariesRoot, "bin");
+  }
 }
