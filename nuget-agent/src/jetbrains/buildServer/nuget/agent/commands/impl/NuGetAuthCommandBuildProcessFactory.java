@@ -105,7 +105,7 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
 
         final Map<String, String> additionalEnvironment = new HashMap<String, String>(_additionalEnvironment);
         additionalEnvironment.put(TEAMCITY_NUGET_FEEDS_ENV_VAR, mySourcesFile.getPath());
-        additionalEnvironment.put(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, myProvider.getNuGetRunnerPath().getAbsolutePath());
+        additionalEnvironment.put(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, myProvider.getCredentialProviderHomeDirectory().getAbsolutePath());
 
         return myFactory.executeCommandLine(
                 hostContext,

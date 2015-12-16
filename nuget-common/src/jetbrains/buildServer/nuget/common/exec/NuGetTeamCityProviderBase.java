@@ -40,6 +40,6 @@ public class NuGetTeamCityProviderBase implements NuGetTeamCityProvider {
 
   @NotNull
   public File getCredentialProviderHomeDirectory() {
-    return new File(myNugetBinariesRoot, "bin");
+    return new File(myNugetBinariesRoot, "bin/credential-provider");
   }
 }
