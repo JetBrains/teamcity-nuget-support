@@ -76,7 +76,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
               {
                 exec.AssertOutputContains("Feed authentication is only supported", "##teamcity");
               }
-              else
+              else if (version < NuGetVersion.NuGet_3_3)
               {
                 exec.AssertOutputContains("ENABLED:feed=http://localhost:1025/nuget/,user=u-WXjhnQSiZ1Ks3j3vqF2w11lCzeXJgqfS");
               }
