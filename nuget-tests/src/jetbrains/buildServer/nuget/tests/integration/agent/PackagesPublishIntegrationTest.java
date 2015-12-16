@@ -235,6 +235,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
       allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
       allowing(myPublishParameters).getPublishSource(); will(returnValue(source));
       allowing(myPublishParameters).getApiKey(); will(returnValue(getQ()));
+      allowing(myPublishParameters).getCustomCommandline(); will(returnValue(Collections.emptyList()));
 
       allowing(myParametersFactory).loadPublishParameters(myContext);will(returnValue(myPublishParameters));
     }});

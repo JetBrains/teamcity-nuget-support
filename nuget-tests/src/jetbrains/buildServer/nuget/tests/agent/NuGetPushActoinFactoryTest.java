@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -127,6 +128,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
       allowing(ps).getCreateOnly(); will(returnValue(false));
+      allowing(ps).getCustomCommandline(); will(returnValue(Collections.emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
               with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-Source", "push-feed")),
@@ -147,6 +149,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
       allowing(ps).getPublishSource(); will(returnValue(null));
       allowing(ps).getCreateOnly(); will(returnValue(false));
+      allowing(ps).getCustomCommandline(); will(returnValue(Collections.emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
               with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%")),
@@ -167,6 +170,7 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
       allowing(ps).getCreateOnly(); will(returnValue(true));
+      allowing(ps).getCustomCommandline(); will(returnValue(Collections.emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
               with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-CreateOnly", "-Source", "push-feed")),
