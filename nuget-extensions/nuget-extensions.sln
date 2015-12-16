@@ -34,7 +34,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-tests-3.2", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-3.3", "nuget-commands-3.3\nuget-commands-3.3.csproj", "{1FA7BE25-CC5B-4BA8-81D2-472E3617A1AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "credential-provider", "credential-provider\credential-provider.csproj", "{F2FD4F35-FE93-4573-9D6F-468DC8FA76CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-credential-provider", "credential-provider\nuget-credential-provider.csproj", "{F2FD4F35-FE93-4573-9D6F-468DC8FA76CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
