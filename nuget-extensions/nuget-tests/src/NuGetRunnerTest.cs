@@ -69,7 +69,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
                                         .Dump()
                                         .AssertExitedSuccessfully()
                                         .AssertNoErrorOutput()
-                                        .AssertOutputContains("CredentialsSetter")
                                         .AssertOutputContains("NuGetTeamCityInfo")
                                         ;
 
