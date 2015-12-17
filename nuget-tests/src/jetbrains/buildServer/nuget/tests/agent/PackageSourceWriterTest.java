@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetSourcesWriter;
-import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
+import jetbrains.buildServer.nuget.common.auth.PackageSource;
+import jetbrains.buildServer.nuget.common.auth.PackageSourceUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
@@ -37,14 +37,14 @@ import java.util.Collection;
  *
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
-public class NuGetSourcesWriterTest extends BaseTestCase {
-  private NuGetSourcesWriter myWriter = new NuGetSourcesWriter();
+public class PackageSourceWriterTest extends BaseTestCase {
+  private PackageSourceUtil myWriter = new PackageSourceUtil();
 
   @Test
   public void testSerialize_one() throws IOException {
     final File tmp = createTempFile();
 
-    myWriter.writeNuGetSources(tmp, t(source("a", "b", "c")));
+    myWriter.writeSources(tmp, t(source("a", "b", "c")));
 
     final String xml = new String(FileUtil.loadFileText(tmp, "utf-8"));
     final String reformatted = StringUtil.convertLineSeparators(XmlUtil.to_s(XmlUtil.from_s(xml)));
@@ -60,7 +60,7 @@ public class NuGetSourcesWriterTest extends BaseTestCase {
   public void testSerialize_some() throws IOException {
     final File tmp = createTempFile();
 
-    myWriter.writeNuGetSources(tmp, t(source("a", "b", "c"), source("qqq", null, null)));
+    myWriter.writeSources(tmp, t(source("a", "b", "c"), source("qqq", null, null)));
 
     final String xml = new String(FileUtil.loadFileText(tmp, "utf-8"));
     final String reformatted = StringUtil.convertLineSeparators(XmlUtil.to_s(XmlUtil.from_s(xml)));

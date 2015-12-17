@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,12 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.parameters;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+package jetbrains.buildServer.nuget.common.auth;
 
 /**
- * Represents NuGet package source
- * Created 04.01.13 19:12
- *
- * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
+ * Created by Evgeniy.Koshkin on 17.12.2015
  */
-public interface PackageSource {
-  @NotNull
-  String getSource();
-
-  @Nullable
-  String getUsername();
-
-  @Nullable
-  String getPassword();
+public class NuGetAuthConstants {
+  public static final String TEAMCITY_NUGET_FEEDS_ENV_VAR = "TEAMCITY_NUGET_FEEDS";
+  public static final String NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR = "NUGET_CREDENTIALPROVIDERS_PATH";
 }

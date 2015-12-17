@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,5 +39,10 @@ public class Paths {
   @NotNull
   public static File getNuGetRunnerPath() {
     return FileUtil.getCanonicalFile(new File("./nuget-extensions/bin/JetBrains.TeamCity.NuGetRunner.exe"));
+  }
+
+  @NotNull
+  public static File getCredentialProviderHomeDirectory() {
+    return FileUtil.getCanonicalFile(new File("./nuget-extensions/bin/credential-provider"));
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package jetbrains.buildServer.nuget.server.exec;
 
+import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -29,5 +31,6 @@ public interface NuGetExecutor {
   @NotNull
   <T> T executeNuGet(@NotNull File nugetExePath,
                      @NotNull List<String> arguments,
+                     @NotNull Collection<PackageSource> sources,
                      @NotNull NuGetOutputProcessor<T> listener) throws NuGetExecutionException;
 }

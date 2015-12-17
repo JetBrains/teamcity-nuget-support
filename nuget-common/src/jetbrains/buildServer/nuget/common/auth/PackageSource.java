@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.parameters;
+package jetbrains.buildServer.nuget.common.auth;
 
-import jetbrains.buildServer.agent.AgentRunningBuild;
-import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Created 04.01.13 19:18
+ * Represents NuGet package source
+ * Created 04.01.13 19:12
  *
  * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
  */
-public interface PackageSourceManager {
-  /**
-   * @param build running build
-   * @return returns collection of all build-wide package sources
-   */
+public interface PackageSource {
   @NotNull
-  Set<PackageSource> getGlobalPackageSources(@NotNull AgentRunningBuild build);
+  String getSource();
+
+  @Nullable
+  String getUsername();
+
+  @Nullable
+  String getPassword();
 }

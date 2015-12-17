@@ -22,19 +22,22 @@ import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.commands.impl.*;
+import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
+import jetbrains.buildServer.nuget.agent.commands.impl.LoggingNuGetActionFactoryImpl;
+import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
+import jetbrains.buildServer.nuget.agent.commands.impl.NuGetAuthCommandBuildProcessFactory;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSourceManager;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.common.PackageInfoLoader;
+import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jetbrains.annotations.NotNull;
@@ -187,6 +190,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       });
 
       allowing(myNuGetTeamCityProvider).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
+      allowing(myNuGetTeamCityProvider).getCredentialProviderHomeDirectory(); will(returnValue(Paths.getCredentialProviderHomeDirectory()));
       allowing(psm).getGlobalPackageSources(myBuild); will(returnValue(Collections.unmodifiableSet(myGlobalSources)));
     }});
 
@@ -203,8 +207,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
                     new NuGetAuthCommandBuildProcessFactory(
                             executingFactory(),
                             myNuGetTeamCityProvider,
-                            psm,
-                            new NuGetSourcesWriter()),
+                            psm),
                     pu,
                     new CommandFactoryImpl()
             )

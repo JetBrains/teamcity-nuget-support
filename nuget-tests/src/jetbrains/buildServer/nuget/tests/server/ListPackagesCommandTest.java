@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,16 @@ package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.TempFolderProvider;
-import jetbrains.buildServer.nuget.server.exec.*;
-import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
+import jetbrains.buildServer.nuget.common.auth.PackageSource;
+import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
+import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
+import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackageCommandProcessor;
+import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.util.StringUtil;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -41,6 +44,7 @@ import java.util.*;
 public class ListPackagesCommandTest extends BaseTestCase {
   private Mockery m;
   private NuGetExecutor exec;
+  private TempFolderProvider tmpFiles;
   private ListPackagesCommand cmd;
 
   @BeforeMethod
@@ -49,19 +53,11 @@ public class ListPackagesCommandTest extends BaseTestCase {
     super.setUp();
     m = new Mockery();
     exec = m.mock(NuGetExecutor.class);
-    cmd = new ListPackagesCommandImpl(exec, new TempFolderProvider() {
-      @NotNull
-      public File getTempDirectory() {
-        try {
-          return createTempDir();
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      }
-    });
+    tmpFiles = m.mock(TempFolderProvider.class);
+    cmd = new ListPackagesCommandImpl(exec, tmpFiles);
   }
 
-  private <T> void allowCommandLineCall(final T result, final String... cmd) throws NuGetExecutionException {
+  private <T> void allowCommandLineCall(final T result, final String... cmd) throws NuGetExecutionException, IOException {
     final List<String> list = new ArrayList<String>(Arrays.<String>asList(cmd));
     m.checking(new Expectations(){{
       oneOf(exec).executeNuGet(with(any(File.class)), with(new BaseMatcher<List<String>>() {
@@ -85,16 +81,15 @@ public class ListPackagesCommandTest extends BaseTestCase {
         public void describeTo(Description description) {
           description.appendText("Expected commandline: " + StringUtil.join(", ", list));
         }
-      }), with(any(ListPackageCommandProcessor.class)));
+      }), with(Collections.<PackageSource>emptyList()), with(any(ListPackageCommandProcessor.class)));
       will(returnValue(result));
+      allowing(tmpFiles).getTempDirectory(); will(returnValue(createTempDir()));
     }});
   }
 
   @Test
-  public void test_run_packages() throws NuGetExecutionException  {
-    allowCommandLineCall(Collections.emptyMap(),
-
-            "TeamCity.ListPackages", "-Request", null, "-Response", null);
+  public void test_run_packages() throws NuGetExecutionException, IOException {
+    allowCommandLineCall(Collections.emptyMap(), "TeamCity.ListPackages", "-Request", null, "-Response", null);
     cmd.checkForChanges(new File("nuget"), Arrays.asList(new SourcePackageReference("source", "package", "version"),new SourcePackageReference("source2", "package2", "version2")));
   }
 }
