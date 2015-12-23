@@ -179,9 +179,11 @@ public class NuGetToolManagerTest extends BaseTestCase {
   public void test_GetAvailableTools_ShouldNotModifyRecievedAvailableToolsSet() throws Exception {
     final DownloadableNuGetTool dt = m.mock(DownloadableNuGetTool.class);
     final InstalledTool it = m.mock(InstalledTool.class);
-    m.checking(new Expectations(){{
+    m.checking(new Expectations() {{
       allowing(dt).getVersion(); will(returnValue("v1"));
-      allowing(it).getVersion(); will(returnValue("v1"));
+      allowing(it).getVersion(); will(returnValue("v1"));}
+    });
+    m.checking(new Expectations(){{
       allowing(myAvailables).getAvailable(ToolsPolicy.FetchNew); will(returnValue(FetchAvailableToolsResult.createSuccessfull(Collections.singleton(dt))));
       allowing(myToolsRegistry).getTools(); will(returnValue(Collections.singletonList(it)));
     }});
