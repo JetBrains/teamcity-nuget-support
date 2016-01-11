@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,12 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 
+import jetbrains.buildServer.TempFolderProvider;
+import jetbrains.buildServer.nuget.common.auth.PackageSource;
+import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
-import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +32,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -41,6 +43,7 @@ public class NuGetExecutorTest extends IntegrationTestBase {
   private NuGetTeamCityProvider info;
   private NuGetExecutor exec;
   private SystemInfo mySystemInfo;
+  private TempFolderProvider myTempDir;
 
   @BeforeMethod
   @Override
@@ -49,10 +52,13 @@ public class NuGetExecutorTest extends IntegrationTestBase {
     m = new Mockery();
     info = m.mock(NuGetTeamCityProvider.class);
     mySystemInfo = m.mock(SystemInfo.class);
-    exec = new NuGetExecutorImpl(info, mySystemInfo);
+    myTempDir = m.mock(TempFolderProvider.class);
+    exec = new NuGetExecutorImpl(info, mySystemInfo, myTempDir);
 
     m.checking(new Expectations(){{
       allowing(info).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
+      allowing(info).getCredentialProviderHomeDirectory(); will(returnValue(Paths.getCredentialProviderHomeDirectory()));
+      allowing(myTempDir).getTempDirectory(); will(returnValue(Paths.getTestDataPath()));
     }});
   }
 
@@ -82,7 +88,7 @@ public class NuGetExecutorTest extends IntegrationTestBase {
   private void doPingTest(NuGet nuget) throws NuGetExecutionException {
     int code = exec.executeNuGet(
             nuget.getPath(),
-            Arrays.asList("TeamCity.Ping"),
+            Collections.singletonList("TeamCity.Ping"), Collections.<PackageSource>emptyList(),
             new NuGetOutputProcessor<Integer>() {
               private int myExitCode;
       public void onStdOutput(@NotNull String text) {

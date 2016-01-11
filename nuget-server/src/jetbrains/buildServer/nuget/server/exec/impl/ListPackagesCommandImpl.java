@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,29 @@
 package jetbrains.buildServer.nuget.server.exec.impl;
 
 import jetbrains.buildServer.TempFolderProvider;
+import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import jetbrains.buildServer.nuget.server.exec.*;
+import jetbrains.buildServer.nuget.server.util.TempFilesUtil;
+import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 14.07.11 13:10
  */
 public class ListPackagesCommandImpl implements ListPackagesCommand {
-  private final NuGetExecutor myExec;
-  private final TempFolderProvider myTempFiles;
+  @NotNull private final NuGetExecutor myExec;
+  @NotNull private final TempFolderProvider myTempFiles;
 
   public ListPackagesCommandImpl(@NotNull final NuGetExecutor exec,
                                  @NotNull final TempFolderProvider tempFiles) {
@@ -41,9 +49,10 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
 
   @NotNull
   public Map<SourcePackageReference, ListPackagesResult> checkForChanges(@NotNull File nugetPath,
-                                                                                    @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException {
-    final File spec = createTempFile("trigger.spec");
-    final File result = createTempFile("trigget.result");
+                                                                         @NotNull Collection<SourcePackageReference> refs) throws NuGetExecutionException {
+    final File tempDirectory = myTempFiles.getTempDirectory();
+    final File spec = TempFilesUtil.createTempFile(tempDirectory, "trigger-spec");
+    final File result = TempFilesUtil.createTempFile(tempDirectory, "trigget-result");
 
     final ListPackagesArguments argz = new ListPackagesArguments();
     try {
@@ -61,8 +70,7 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
       cmd.add("-Response");
       cmd.add(FileUtil.getCanonicalFile(result).getPath());
 
-
-      return myExec.executeNuGet(nugetPath, cmd, new NuGetOutputProcessorAdapter<Map<SourcePackageReference,ListPackagesResult>>(commandName) {
+      return myExec.executeNuGet(nugetPath, cmd, getSources(refs), new NuGetOutputProcessorAdapter<Map<SourcePackageReference,ListPackagesResult>>(commandName) {
         @NotNull
         public Map<SourcePackageReference, ListPackagesResult> getResult() throws NuGetExecutionException {
           try {
@@ -78,13 +86,27 @@ public class ListPackagesCommandImpl implements ListPackagesCommand {
     }
   }
 
-  private File createTempFile(@NotNull String infix) throws NuGetExecutionException {
-    final File tempDirectory = myTempFiles.getTempDirectory();
-    try {
-      tempDirectory.mkdirs();
-      return FileUtil.createTempFile(tempDirectory, "nuget", infix + ".xml", true);
-    } catch (IOException e) {
-      throw new NuGetExecutionException("Failed to create temp file at " + tempDirectory + ". " + e.getMessage(), e);
-    }
+  private Collection<PackageSource> getSources(Collection<SourcePackageReference> packageReferences) {
+    return CollectionsUtil.convertAndFilterNulls(packageReferences, new Converter<PackageSource, SourcePackageReference>() {
+      public PackageSource createFrom(@NotNull final SourcePackageReference source) {
+        if(source.getSource() == null || source.getCredentials() == null) return null;
+        return new PackageSource() {
+          @NotNull
+          public String getSource() {
+            return source.getSource();
+          }
+
+          @Nullable
+          public String getUsername() {
+            return source.getCredentials().getUsername();
+          }
+
+          @Nullable
+          public String getPassword() {
+            return source.getCredentials().getPassword();
+          }
+        };
+      }
+    });
   }
 }

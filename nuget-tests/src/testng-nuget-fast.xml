@@ -83,7 +83,7 @@
 
   <test name="fast tests">
     <classes>
-      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetSourcesWriterTest" />
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackageSourceWriterTest" />
 
       <!-- misc -->
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest"/>

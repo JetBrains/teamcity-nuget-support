@@ -20,10 +20,11 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSourceManager;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.agent.util.DelegatingBuildProcess;
+import jetbrains.buildServer.nuget.common.auth.PackageSource;
+import jetbrains.buildServer.nuget.common.auth.PackageSourceUtil;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
@@ -35,6 +36,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static jetbrains.buildServer.nuget.common.auth.NuGetAuthConstants.NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR;
+import static jetbrains.buildServer.nuget.common.auth.NuGetAuthConstants.TEAMCITY_NUGET_FEEDS_ENV_VAR;
+
 /**
  * Created 04.01.13 19:26
  *
@@ -42,22 +46,18 @@ import java.util.*;
  */
 public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProcessFactory {
 
-  private static final String TEAMCITY_NUGET_FEEDS_ENV_VAR = "TEAMCITY_NUGET_FEEDS";
   private static final Logger LOG = Logger.getInstance(NuGetAuthCommandBuildProcessFactory.class.getName());
 
   private final CommandlineBuildProcessFactory myFactory;
   private final NuGetTeamCityProvider myProvider;
   private final PackageSourceManager mySources;
-  private final NuGetSourcesWriter myWriter;
 
   public NuGetAuthCommandBuildProcessFactory(@NotNull final CommandlineBuildProcessFactory factory,
                                              @NotNull final NuGetTeamCityProvider provider,
-                                             @NotNull final PackageSourceManager sources,
-                                             @NotNull final NuGetSourcesWriter writer) {
+                                             @NotNull final PackageSourceManager sources) {
     myFactory = factory;
     myProvider = provider;
     mySources = sources;
-    myWriter = writer;
   }
 
   @NotNull
@@ -97,13 +97,14 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
 
         try {
           mySourcesFile = FileUtil.createTempFile(hostContext.getBuild().getAgentTempDirectory(), "nuget-sources", ".xml", true);
-          myWriter.writeNuGetSources(mySourcesFile, sources);
+          PackageSourceUtil.writeSources(mySourcesFile, sources);
         } catch (IOException e) {
           throw new RunBuildException("Failed to create temp file for NuGet sources. " + e.getMessage(), e);
         }
 
         final Map<String, String> additionalEnvironment = new HashMap<String, String>(_additionalEnvironment);
         additionalEnvironment.put(TEAMCITY_NUGET_FEEDS_ENV_VAR, mySourcesFile.getPath());
+        additionalEnvironment.put(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, myProvider.getCredentialProviderHomeDirectory().getAbsolutePath());
 
         return myFactory.executeCommandLine(
                 hostContext,

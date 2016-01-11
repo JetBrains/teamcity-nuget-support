@@ -64,7 +64,7 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
     }});
 
     Logger.getLogger(NuGetExecutorImpl.class.getName()).setLevel(Level.DEBUG);
-    return new ListPackagesCommandImpl(new NuGetExecutorImpl(provider, info), temp);
+    return new ListPackagesCommandImpl(new NuGetExecutorImpl(provider, info, temp), temp);
   }
 
   @AfterMethod

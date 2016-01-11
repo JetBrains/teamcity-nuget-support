@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.agent.commands.impl;
+package jetbrains.buildServer.nuget.common.auth;
 
-import jetbrains.buildServer.nuget.agent.parameters.PackageSource;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.jdom.Content;
@@ -30,11 +29,11 @@ import java.util.Collection;
 /**
  * Created 04.01.13 19:33
  *
- * @author Eugene Petrenko (eugene.petrenko@jetbrains.com)
+ * @author Eugene Petrenko (eugene.petrenko@jetbrains.com), evgeniy.koshkin (evgeniy.koshkin@jetbrains.com)
  */
-public class NuGetSourcesWriter {
-  public void writeNuGetSources(@NotNull final File file,
-                                @NotNull final Collection<PackageSource> sources) throws IOException {
+public class PackageSourceUtil {
+  public static void writeSources(@NotNull final File file,
+                           @NotNull final Collection<PackageSource> sources) throws IOException {
     final Element root = new Element("sources");
     for (PackageSource source : sources) {
       final Element sourceElement = new Element("source");
@@ -55,6 +54,5 @@ public class NuGetSourcesWriter {
     } finally {
       FileUtil.close(os);
     }
-
   }
 }

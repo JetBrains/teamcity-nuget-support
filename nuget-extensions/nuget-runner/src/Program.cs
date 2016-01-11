@@ -12,7 +12,8 @@ namespace JetBrains.TeamCity.NuGetRunner
       try
       {
         return Main2(args);
-      } catch(Exception e)
+      }
+      catch (Exception e)
       {
         Console.Error.Write("NuGet Runner Failed");
         Console.Error.Write(e);
@@ -22,16 +23,17 @@ namespace JetBrains.TeamCity.NuGetRunner
 
     static int Main2(string[] args)
     {
-      Console.Out.WriteLine("JetBrains TeamCity NuGet Runner " + typeof(Program).Assembly.GetName().Version);      
+      Console.Out.WriteLine("JetBrains TeamCity NuGet Runner " + typeof (Program).Assembly.GetName().Version);
       if (args.Length < 2) return Usage();
 
       string nuget = args[0];
       var runner = new NuGetRunner(nuget);
       ConfigureExtensions(runner);
 
-      Console.Out.WriteLine("Starting NuGet.exe {1} from {0}", runner.NuGetAssembly.GetAssemblyPath(), runner.NuGetVersion);
+      Console.Out.WriteLine("Starting NuGet.exe {1} from {0}", runner.NuGetAssembly.GetAssemblyPath(),
+        runner.NuGetVersion);
 
-      switch(args[1])
+      switch (args[1])
       {
         case "---TeamCity.DumpExtensionsPath":
           Console.Out.WriteLine("ExtensionsPath: {0}", runner.LocateNuGetExtensionsPath() ?? "null");
@@ -47,7 +49,7 @@ namespace JetBrains.TeamCity.NuGetRunner
           }
 
           return 0;
-        
+
         default:
           return runner.Run(args.Skip(1).ToArray());
       }
@@ -68,20 +70,24 @@ namespace JetBrains.TeamCity.NuGetRunner
 
     private static IEnumerable<string> Extensions(NuGetRunner runner)
     {
-      Func<string, string> path = p => Path.Combine(typeof(Program).GetAssemblyDirectory(), "plugins-" + p, "JetBrains.TeamCity.NuGet.ExtendedCommands." + p + ".dll");
+      Func<string, string> path = p => Path.Combine(typeof (Program).GetAssemblyDirectory(), "plugins-" + p, "JetBrains.TeamCity.NuGet.ExtendedCommands." + p + ".dll");
 
-        if (runner.NuGetVersion.Major >= 3 && runner.NuGetVersion.Minor >= 2)
-        {
-            yield return path("3.2");
-        }
-        else if (runner.NuGetVersion.Major >= 2 && runner.NuGetVersion.Minor >= 8)
+      if (runner.NuGetVersion.Major >= 3 && runner.NuGetVersion.Minor >= 3)
+      {
+        yield return path("3.3");
+      }
+      else if (runner.NuGetVersion.Major >= 3 && runner.NuGetVersion.Minor >= 2)
+      {
+        yield return path("3.2");
+      }
+      else if (runner.NuGetVersion.Major >= 2 && runner.NuGetVersion.Minor >= 8)
       {
         yield return path("2.8");
       }
       else if (runner.NuGetVersion.Major >= 2 && runner.NuGetVersion.Minor >= 5)
       {
         yield return path("2.5");
-      } 
+      }
       else if (runner.NuGetVersion.Major >= 2)
       {
         yield return path("2.0");

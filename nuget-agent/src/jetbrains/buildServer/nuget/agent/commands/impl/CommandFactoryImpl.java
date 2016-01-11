@@ -198,6 +198,12 @@ public class CommandFactoryImpl implements CommandFactory {
       arguments.add("-CreateOnly");
     }
 
+    for (String cmd : params.getCustomCommandline()) {
+      if (!arguments.contains(cmd) && !arguments.contains(cmd.toLowerCase())) {
+        arguments.add(cmd);
+      }
+    }
+
     final String source = params.getPublishSource();
     final List<String> sources = StringUtil.isEmptyOrSpaces(source)
             ? Collections.<String>emptyList()
