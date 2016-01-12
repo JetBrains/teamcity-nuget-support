@@ -128,7 +128,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
       final String ref = NuGetToolReferenceUtils.getToolReference(id);
       final InstalledTool nuGetPath = findTool(id);
       if (nuGetPath == null) {
-        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified version " + ref + " was not found");
+        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified id " + ref + " was not found");
       }
       return nuGetPath.getNuGetExePath().getPath();
     }
@@ -139,7 +139,35 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     if (nuGetPath != null) {
       return nuGetPath.getNuGetExePath().getPath();
     }
-    throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " version " + id);
+    throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " by id " + id);
+  }
+
+  @Nullable
+  @Override
+  public String getNuGetVersion(@Nullable String path) {
+    if (path == null || StringUtil.isEmptyOrSpaces(path)) return path;
+
+    if (NuGetToolReferenceUtils.isDefaultToolReference(path)) {
+      final String id = getDefaultToolId();
+      if (id == null || StringUtil.isEmptyOrSpaces(id)) {
+        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE + ". Default NuGet version is not selected");
+      }
+
+      final String ref = NuGetToolReferenceUtils.getToolReference(id);
+      final InstalledTool nuGetPath = findTool(id);
+      if (nuGetPath == null) {
+        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified version " + ref + " was not found");
+      }
+      return nuGetPath.getVersion();
+    }
+
+    final String id = NuGetToolReferenceUtils.getReferredToolId(path);
+    if (id == null) return path;
+    final InstalledTool nuGetPath = findTool(id);
+    if (nuGetPath != null) {
+      return nuGetPath.getVersion();
+    }
+    throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " by id " + id);
   }
 
   @Nullable

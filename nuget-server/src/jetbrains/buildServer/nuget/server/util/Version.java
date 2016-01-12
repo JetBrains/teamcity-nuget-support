@@ -49,7 +49,9 @@ public class Version implements Comparable<Version> {
   }
 
   @Nullable
-  public static Version valueOf(final String version) {
+  public static Version valueOf(@Nullable final String version) {
+    if(version == null) return null;
+
     final Matcher matcher = PATTERN.matcher( version );
     if (!matcher.matches())
       return null;

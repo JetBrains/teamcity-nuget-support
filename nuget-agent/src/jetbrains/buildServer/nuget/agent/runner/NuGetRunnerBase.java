@@ -25,6 +25,8 @@ import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.common.DotNetConstants;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 23.08.11 18:32
@@ -50,12 +52,15 @@ public abstract class NuGetRunnerBase implements AgentBuildRunner, AgentBuildRun
 
   public boolean canRun(@NotNull BuildAgentConfiguration agentConfiguration) {
     if (!agentConfiguration.getSystemInfo().isWindows()) {
-      LOG.warn("NuGet packages installer available only under windows");
+      LOG.warn("NuGet packages installer available only under Windows");
       return false;
     }
 
-    if (!agentConfiguration.getConfigurationParameters().containsKey(DotNetConstants.DOT_NET_FRAMEWORK_4_x86)) {
-      LOG.warn("NuGet requires .NET Framework 4.0 x86 installed");
+    Map<String, String> configurationParameters = agentConfiguration.getConfigurationParameters();
+    if (!configurationParameters.containsKey(DotNetConstants.DOT_NET_FRAMEWORK_4_x86) &&
+        !configurationParameters.containsKey(DotNetConstants.DOT_NET_FRAMEWORK_4_5_x86) &&
+        !configurationParameters.containsKey(DotNetConstants.DOT_NET_FRAMEWORK_4_6_x86)) {
+      LOG.warn("NuGet requires .NET Framework 4.0 (x86) or higher to be installed.");
       return false;
     }
 
