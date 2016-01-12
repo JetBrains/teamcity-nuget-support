@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.runner.install;
 
 import jetbrains.buildServer.nuget.server.runner.NuGetRunType;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
@@ -39,8 +40,9 @@ public class PackagesInstallerRunType extends NuGetRunType {
   @NotNull private final PackagesInstallerRunnerDefaults myDefaults;
 
   public PackagesInstallerRunType(@NotNull final PluginDescriptor descriptor,
-                                  @NotNull final PackagesInstallerRunnerDefaults defaults) {
-    super(descriptor);
+                                  @NotNull final PackagesInstallerRunnerDefaults defaults,
+                                  @NotNull final NuGetToolManager toolManager) {
+    super(descriptor, toolManager);
     myDefaults = defaults;
   }
 

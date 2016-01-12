@@ -68,6 +68,13 @@ public interface NuGetToolManager {
   @Nullable
   String getNuGetPath(@Nullable String path);
 
+  /**
+   * Resolves NuGet.exe tool version
+   * @param path path to tool
+   * @return resolved version of given path
+   */
+  @Nullable
+  String getNuGetVersion(@Nullable String path);
 
   /**
    * Sets tool as default NuGet tool

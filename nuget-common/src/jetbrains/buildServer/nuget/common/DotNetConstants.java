@@ -24,5 +24,6 @@ public interface DotNetConstants {
   //NOTE: This is an implicit dependency to .NET runners agent plugin.
   //NOTE: For now there is no chance to share classes between plugins.
   public static final String DOT_NET_FRAMEWORK_4_x86 = "DotNetFramework4.0_x86";
-  public static final String DOT_NET_FRAMEWORK_4_x64 = "DotNetFramework4.0_x64";
+  public static final String DOT_NET_FRAMEWORK_4_5_x86 = "DotNetFramework4.5_x86";
+  public static final String DOT_NET_FRAMEWORK_4_6_x86 = "DotNetFramework4.6_x86";
 }

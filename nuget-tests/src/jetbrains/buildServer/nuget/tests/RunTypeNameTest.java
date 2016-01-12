@@ -35,6 +35,7 @@ import org.testng.annotations.Test;
 public class RunTypeNameTest extends BaseTestCase {
   private PluginDescriptor myDescriptor;
   private PackagesInstallerRunnerDefaults myDefaults;
+  private NuGetToolManager myToolManager;
 
   @BeforeMethod
   @Override
@@ -42,24 +43,25 @@ public class RunTypeNameTest extends BaseTestCase {
     super.setUp();
     Mockery m = new Mockery();
     myDescriptor = m.mock(PluginDescriptor.class);
-    myDefaults = new PackagesInstallerRunnerDefaults(m.mock(NuGetToolManager.class));
+    myToolManager = m.mock(NuGetToolManager.class);
+    myDefaults = new PackagesInstallerRunnerDefaults(myToolManager);
   }
 
   @Test
   public void test_installPackagesRunTypeIdLendth() {
-    final String type = new PackagesInstallerRunType(myDescriptor, myDefaults).getType();
+    final String type = new PackagesInstallerRunType(myDescriptor, myDefaults, myToolManager).getType();
     Assert.assertTrue(type.length() < 30);
   }
 
   @Test
   public void test_packRunTypeIdLendth() {
-    final String type = new PackRunType(myDescriptor).getType();
+    final String type = new PackRunType(myDescriptor, myToolManager).getType();
     Assert.assertTrue(type.length() < 30);
   }
 
   @Test
   public void test_publishPackagesRunTypeIdLendth() {
-    final String type = new PublishRunType(myDescriptor).getType();
+    final String type = new PublishRunType(myDescriptor, myToolManager).getType();
     Assert.assertTrue(type.length() < 30);
   }
 }
