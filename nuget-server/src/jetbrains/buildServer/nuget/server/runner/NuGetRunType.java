@@ -87,7 +87,7 @@ public abstract class NuGetRunType extends RunType {
   @NotNull
   @Override
   public List<Requirement> getRunnerSpecificRequirements(@NotNull Map<String, String> runParameters) {
-    List<Requirement> list = new ArrayList<>(super.getRunnerSpecificRequirements(runParameters));
+    List<Requirement> list = new ArrayList<Requirement>(super.getRunnerSpecificRequirements(runParameters));
     String versionString = myToolManager.getNuGetVersion(runParameters.get(NUGET_PATH));
     final Version version = Version.valueOf(versionString);
     if(version != null){

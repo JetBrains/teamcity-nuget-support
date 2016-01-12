@@ -112,7 +112,6 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   @Nullable
-  @Override
   public String getNuGetVersion(@Nullable String toolRef) {
     final InstalledTool tool;
     try {
