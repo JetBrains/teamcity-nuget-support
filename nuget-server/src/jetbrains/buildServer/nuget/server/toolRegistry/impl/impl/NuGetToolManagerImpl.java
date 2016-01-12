@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
@@ -33,6 +34,9 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_COMMANDLINE
  * Date: 11.08.11 1:07
  */
 public class NuGetToolManagerImpl implements NuGetToolManager {
+
+  private static final Logger LOG = Logger.getInstance(NuGetToolManagerImpl.class.getName());
+
   private final AvailableToolsState myAvailableTools;
   private final ToolsRegistry myInstalledTools;
   private final NuGetToolsInstaller myInstaller;
@@ -94,21 +98,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   @NotNull
   public NuGetTool installTool(@NotNull String toolId, @NotNull String toolFileName, @NotNull File toolFile) throws ToolException {
     myInstaller.installNuGet(toolFileName, toolFile);
-    return findInstalledTool(toolId);
-  }
-
-  @NotNull
-  private InstalledTool findInstalledTool(@NotNull final String toolId) throws ToolException {
-    final InstalledTool tool = findTool(toolId);
-    if (tool == null) {
-      throw new ToolException("Failed to find installed tool " + toolId);
-    }
-    return tool;
-  }
-
-  @Nullable
-  private InstalledTool findTool(@Nullable final String toolId) {
-    return myInstalledTools.findTool(toolId);
+    return getInstalledTool(toolId);
   }
 
   public void removeTool(@NotNull String toolId) {
@@ -116,63 +106,27 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   @Nullable
-  public String getNuGetPath(@Nullable final String path) {
-    if (path == null || StringUtil.isEmptyOrSpaces(path)) return path;
-
-    if (NuGetToolReferenceUtils.isDefaultToolReference(path)) {
-      final String id = getDefaultToolId();
-      if (id == null || StringUtil.isEmptyOrSpaces(id)) {
-        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE + ". Default NuGet version is not selected");
-      }
-
-      final String ref = NuGetToolReferenceUtils.getToolReference(id);
-      final InstalledTool nuGetPath = findTool(id);
-      if (nuGetPath == null) {
-        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified id " + ref + " was not found");
-      }
-      return nuGetPath.getNuGetExePath().getPath();
-    }
-
-    final String id = NuGetToolReferenceUtils.getReferredToolId(path);
-    if (id == null) return path;
-    final InstalledTool nuGetPath = findTool(id);
-    if (nuGetPath != null) {
-      return nuGetPath.getNuGetExePath().getPath();
-    }
-    throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " by id " + id);
+  public String getNuGetPath(@Nullable final String toolRef) {
+    final InstalledTool tool = findToolByRef(toolRef);
+    return tool == null ? toolRef : tool.getNuGetExePath().getPath();
   }
 
   @Nullable
   @Override
-  public String getNuGetVersion(@Nullable String path) {
-    if (path == null || StringUtil.isEmptyOrSpaces(path)) return path;
-
-    if (NuGetToolReferenceUtils.isDefaultToolReference(path)) {
-      final String id = getDefaultToolId();
-      if (id == null || StringUtil.isEmptyOrSpaces(id)) {
-        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE + ". Default NuGet version is not selected");
-      }
-
-      final String ref = NuGetToolReferenceUtils.getToolReference(id);
-      final InstalledTool nuGetPath = findTool(id);
-      if (nuGetPath == null) {
-        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified version " + ref + " was not found");
-      }
-      return nuGetPath.getVersion();
+  public String getNuGetVersion(@Nullable String toolRef) {
+    final InstalledTool tool;
+    try {
+      tool = findToolByRef(toolRef);
+    } catch (RuntimeException ex){
+      LOG.warn(ex);
+      return null;
     }
-
-    final String id = NuGetToolReferenceUtils.getReferredToolId(path);
-    if (id == null) return path;
-    final InstalledTool nuGetPath = findTool(id);
-    if (nuGetPath != null) {
-      return nuGetPath.getVersion();
-    }
-    throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " by id " + id);
+    return tool == null ? null : tool.getVersion();
   }
 
   @Nullable
   public NuGetInstalledTool getDefaultTool() {
-    InstalledTool tool = findTool(getDefaultToolId());
+    InstalledTool tool = myInstalledTools.findTool(getDefaultToolId());
     if (tool == null) return null;
     return new DefaultTool(tool);
   }
@@ -184,5 +138,36 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   @Nullable
   public String getDefaultToolId() {
     return mySettings.getDefaultToolId();
+  }
+
+  @NotNull
+  private InstalledTool getInstalledTool(@NotNull final String toolId) throws ToolException {
+    final InstalledTool tool = myInstalledTools.findTool(toolId);
+    if (tool == null) {
+      throw new ToolException("Failed to find installed tool by id " + toolId);
+    }
+    return tool;
+  }
+
+  @Nullable
+  private InstalledTool findToolByRef(@Nullable final String toolRef) {
+    if (toolRef == null || StringUtil.isEmptyOrSpaces(toolRef)) return null;
+    if (NuGetToolReferenceUtils.isDefaultToolReference(toolRef)) {
+      final String defaultToolId = getDefaultToolId();
+      if (defaultToolId == null || StringUtil.isEmptyOrSpaces(defaultToolId)) {
+        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE + ". Default NuGet version is not selected.");
+      }
+      final InstalledTool tool = myInstalledTools.findTool(defaultToolId);
+      if (tool == null) {
+        final String ref = NuGetToolReferenceUtils.getToolReference(defaultToolId);
+        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified id " + ref + " was not found");
+      }
+      return tool;
+    }
+    final String toolId = NuGetToolReferenceUtils.getReferredToolId(toolRef);
+    if (toolId == null) return null;
+    final InstalledTool tool = myInstalledTools.findTool(toolId);
+    if (tool == null) throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " by id " + toolId);
+    else return tool;
   }
 }

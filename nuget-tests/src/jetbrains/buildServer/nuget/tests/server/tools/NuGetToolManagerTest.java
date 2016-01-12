@@ -122,7 +122,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
   @Test
   public void test_nuget_path_custom() throws IOException {
     File file = createTempFile();
-    assertEquals(myToolManager.getNuGetPath(file.getPath()), file.getPath());
+    assertEquals(file.getPath(), myToolManager.getNuGetPath(file.getPath()));
   }
 
   @Test
@@ -146,7 +146,7 @@ public class NuGetToolManagerTest extends BaseTestCase {
       allowing(myToolsRegistry).findTool("aaa"); will(returnValue(it));
     }});
 
-    assertEquals(myToolManager.getNuGetPath(NuGetToolReferenceUtils.getDefaultToolReference()), "some-path");
+    assertEquals("some-path", myToolManager.getNuGetPath(NuGetToolReferenceUtils.getDefaultToolReference()));
   }
 
   @Test(expectedExceptions = RuntimeException.class)
