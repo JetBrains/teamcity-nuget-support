@@ -36,5 +36,5 @@
   </bean>
 
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.ToolsWatcherImpl" init-method="start" destroy-method="dispose"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolType"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolProvider"/>
 </beans>
