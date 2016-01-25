@@ -27,6 +27,7 @@ import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -50,22 +51,27 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
       final String user = feature.getParameters().get(PackagesConstants.NUGET_AUTH_USERNAME);
       final String pass = feature.getParameters().get(PackagesConstants.NUGET_AUTH_PASSWORD);
 
-      result.put(feed, source(feed, user, pass));
+      result.put(normalizeUrl(feed), source(feed, user, pass));
     }
 
     final String agentProvidedTcFeedUrl = build.getSharedConfigParameters().get(NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED);
     if (StringUtil.isEmptyOrSpaces(agentProvidedTcFeedUrl))
       LOG.debug("Failed to resolve TeamCity internal NuGet feed url via config parameter " + NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED);
     else
-      result.put(agentProvidedTcFeedUrl, source(agentProvidedTcFeedUrl, build.getAccessUser(), build.getAccessCode()));
+      result.put(normalizeUrl(agentProvidedTcFeedUrl), source(agentProvidedTcFeedUrl, build.getAccessUser(), build.getAccessCode()));
 
     final String serverProvidedTcFeedUrl = build.getSharedBuildParameters().getSystemProperties().get(NuGetServerConstants.FEED_AUTH_REFERENCE_SERVER_PROVIDED);
     if (StringUtil.isEmptyOrSpaces(serverProvidedTcFeedUrl))
       LOG.debug("Failed to resolve TeamCity internal NuGet feed url via system property " + NuGetServerConstants.FEED_AUTH_REFERENCE_SERVER_PROVIDED);
     else
-      result.put(serverProvidedTcFeedUrl, source(serverProvidedTcFeedUrl, build.getAccessUser(), build.getAccessCode()));
+      result.put(normalizeUrl(serverProvidedTcFeedUrl), source(serverProvidedTcFeedUrl, build.getAccessUser(), build.getAccessCode()));
 
     return new HashSet<PackageSource>(result.values());
+  }
+
+  @Nullable
+  private String normalizeUrl(@NotNull String url) {
+    return URI.create(url).normalize().getPath();
   }
 
   @NotNull
