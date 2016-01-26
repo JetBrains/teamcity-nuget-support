@@ -60,7 +60,7 @@ public class SystemInfoImpl implements SystemInfo {
   @NotNull
   public String getNotAvailableMessage() {
     if (!isWindows()) return "TeamCity server is running under non-Windows OS.";
-    if (!isDotNetFrameworkAvailable()) return "TeamCity server has no Microsoft .NET Framework 4.0 installed.";
+    if (!isDotNetFrameworkAvailable()) return "TeamCity server has no Microsoft .NET Framework 4.0 or later installed."  ;
 
     return "System environment is compatible to start NuGet processes.";
   }
@@ -68,8 +68,8 @@ public class SystemInfoImpl implements SystemInfo {
   private boolean checkDotNetFramework4Installed() {
     for (NetFrameworkInfo info : enumFrameworkVersions()) {
       LOG.debug("Detected .NET Framework " + info);
-      if (info.getFullVersion().startsWith("4.0") && checkDotNetFrameworkFiles(info)) {
-        LOG.debug("Found .NET Framework 4.0: " + info);
+      if (info.getFullVersion().startsWith("4.") && checkDotNetFrameworkFiles(info)) {
+        LOG.debug("Found .NET Framework 4.0 or later: " + info);
         return true;
       }
     }
