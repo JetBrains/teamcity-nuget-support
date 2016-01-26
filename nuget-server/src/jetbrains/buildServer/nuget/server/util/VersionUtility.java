@@ -213,7 +213,7 @@ public class VersionUtility {
 
     String profilePart = frameworkStringParts.length > 1 ? frameworkStringParts[1].trim() : "";
     String identifierPart;
-    String versionPart = "";
+    String versionPart = null;
 
     final Matcher matcher = VERSION_MATCHING_PATTERN.matcher(frameworkNameAndVersion);
 
@@ -235,23 +235,28 @@ public class VersionUtility {
         profilePart = KNOWN_PROFILES.get(profilePart);
     }
 
-    try{
-      Integer.parseInt(versionPart);
-      if (versionPart.length() > 4){
-        versionPart = versionPart.substring(0, 4);
-      }
-      // Make sure it has at least 2 digits so it parses as a valid version
-      versionPart = join(splitByChar(rightPad(versionPart, 2, '0')), ".");
-    } catch (NumberFormatException ex){
-      LOG.debug(ex);
-    }
+    Version version = Version.EMPTY;
 
-    Version version = Version.valueOf(versionPart);
-    if(version == null){
-      if (StringUtil.isEmpty(identifierPart) || !StringUtil.isEmpty(versionPart)){
+    if(versionPart != null){
+      try{
+        Integer.parseInt(versionPart);
+        if (versionPart.length() > 4){
+          versionPart = versionPart.substring(0, 4);
+        }
+        // Make sure it has at least 2 digits so it parses as a valid version
+        versionPart = join(splitByChar(rightPad(versionPart, 2, '0')), ".");
+      } catch (NumberFormatException ex){
+        LOG.debug("Failed to parse framework version from string " + frameworkNameString, ex);
         return null;
       }
-      version = Version.EMPTY;
+
+      version = Version.valueOf(versionPart);
+      if(version == null){
+        if (StringUtil.isEmpty(identifierPart) || !StringUtil.isEmpty(versionPart)){
+          return null;
+        }
+        version = Version.EMPTY;
+      }
     }
 
     if (StringUtil.isEmpty(identifierPart)){
