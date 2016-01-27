@@ -36,6 +36,7 @@ import org.odata4j.producer.QueryInfo;
 import java.util.*;
 
 import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.IS_PRERELEASE;
+import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.VERSION;
 import static jetbrains.buildServer.nuget.server.feed.server.javaFeed.MetadataConstants.*;
 
 /**
@@ -98,8 +99,8 @@ public class SearchFunction implements NuGetFeedFunction {
       return null;
     }
     final OSimpleObject targetFrameworkCasted = (OSimpleObject) targetFrameworkParamValue;
-    final String targetFramework = targetFrameworkCasted.getValue().toString();
-    final Set<String> frameworkConstraints = FrameworkConstraints.convertFromString(targetFramework);
+    final String requestedTargetFramework = targetFrameworkCasted.getValue().toString();
+    final Set<String> requestedFrameworkConstraints = FrameworkConstraints.convertFromString(requestedTargetFramework);
 
     final OFunctionParameter includePreReleaseParam = params.get(INCLUDE_PRERELEASE);
     if(includePreReleaseParam == null){
@@ -117,28 +118,35 @@ public class SearchFunction implements NuGetFeedFunction {
 
     String format = String.format("Searching packages by term '%s'", searchTerm);
     if(includePreRelease) format += ", including pre-release packages";
-    if(!targetFramework.isEmpty()) format += ", with target framework constraints " + targetFramework;
+    if(!requestedTargetFramework.isEmpty()) format += ", with target framework constraints " + requestedTargetFramework;
     LOG.debug(format);
 
     final List<NuGetIndexEntry> result = new ArrayList<NuGetIndexEntry>();
     final Iterator<NuGetIndexEntry> entryIterator = myIndex.search(searchTerm);
     while (entryIterator.hasNext()){
-      final NuGetIndexEntry indexEntry = entryIterator.next();
-      if(matches(indexEntry, includePreRelease, frameworkConstraints)){
-        result.add(indexEntry);
+      final NuGetIndexEntry nugetPackage = entryIterator.next();
+      final Map<String, String> nugetPackageAttributes = nugetPackage.getAttributes();
+      final String id = nugetPackageAttributes.get(ID);
+      final String version = nugetPackageAttributes.get(VERSION);
+      final String isPrerelease = nugetPackageAttributes.get(IS_PRERELEASE);
+      final String frameworkConstraints = nugetPackageAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS);
+      if(!includePreRelease && Boolean.parseBoolean(isPrerelease)){
+        if(LOG.isDebugEnabled()) LOG.debug(String.format("Skipped package (id:%s, version:%s) since its pre-released.", id, version));
+        continue;
       }
+      final Set<String> packageFrameworkConstraints = FrameworkConstraints.convertFromString(frameworkConstraints);
+      if (!VersionUtility.isPackageCompatibleWithFrameworks(requestedFrameworkConstraints, packageFrameworkConstraints)) {
+        if(LOG.isDebugEnabled())
+          LOG.debug(String.format("Skipped package (id:%s, version:%s) since it doesn't match requested framework constraints.", id, version));
+        continue;
+      }
+      result.add(nugetPackage);
     }
+    LOG.debug(String.format("%d package(s) found when " + format, result.size()));
     return CollectionsUtil.convertCollection(result, new Converter<Object, NuGetIndexEntry>() {
       public Object createFrom(@NotNull NuGetIndexEntry source) {
         return new PackageEntityEx(source, myServerSettings);
       }
     });
-  }
-
-  private boolean matches(NuGetIndexEntry nugetPackage, boolean includePreRelease, Set<String> requestedFrameworks) {
-    final Map<String, String> nugetPackageAttributes = nugetPackage.getAttributes();
-    if(!includePreRelease && Boolean.parseBoolean(nugetPackageAttributes.get(IS_PRERELEASE))) return false;
-    final Set<String> packageFrameworkConstraints = FrameworkConstraints.convertFromString(nugetPackageAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS));
-    return VersionUtility.isPackageCompatibleWithFrameworks(requestedFrameworks, packageFrameworkConstraints);
   }
 }
