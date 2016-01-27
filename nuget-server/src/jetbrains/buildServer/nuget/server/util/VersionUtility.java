@@ -293,7 +293,6 @@ public class VersionUtility {
     final SemanticVersion semanticVersion = SemanticVersion.valueOf(versionString);
     if(semanticVersion == null) return null;
     final Version version = semanticVersion.getVersion();
-    if(version == null) return null;
     return String.format("%d.%d.%d%s%s",
             version.getMajor(),
             version.getMinor(),
