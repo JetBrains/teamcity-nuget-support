@@ -108,6 +108,11 @@ public class FrameworkConstraintsCalculatorTest extends BaseTestCase {
     assertPackageConstraints(Sets.newHashSet("net40-client"), "packages/subfoldersNamesCaseInsensitivity.nupkg");
   }
 
+  @Test
+  public void testDependencyGroup() throws Exception {
+    assertPackageConstraints(Sets.newHashSet("net45", "win", "wp80"), "packages/dependencyGroup.nupkg");
+  }
+
   private void assertPackageConstraints(Set<String> expectedConstraints, @NotNull String pathToPackage) throws IOException, PackageLoadException {
     final File pkg = Paths.getTestDataPath(pathToPackage);
     Assert.assertTrue(pkg.isFile(), "Package wasn't found on path " + pkg.getAbsolutePath());
