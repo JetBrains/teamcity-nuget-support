@@ -20,6 +20,7 @@ import jetbrains.buildServer.nuget.server.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsWriter;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import org.jetbrains.annotations.NotNull;
 
 import static jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent.SERVER;
@@ -30,6 +31,7 @@ import static jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent
  */
 public class NuGetServerFeedSettingsImpl implements NuGetServerJavaSettings {
   private static final String NUGET_SERVER_MODE = "feed.enabled";
+  private static final String TEAMCITY_NUGET_FEED_FILTER_TARGETFRAMEWORK_PROP_NAME = "teamcity.nuget.feed.filter.targetframework";
 
   private final NuGetSettingsManager mySettings;
 
@@ -39,6 +41,10 @@ public class NuGetServerFeedSettingsImpl implements NuGetServerJavaSettings {
 
   public void setNuGetJavaFeedEnabled(final boolean newValue) {
     setServerEnabled(newValue ? ServerMode.Java : ServerMode.Disabled);
+  }
+
+  public boolean isFilteringByTargetFrameworkEnabled() {
+    return TeamCityProperties.getBooleanOrTrue(TEAMCITY_NUGET_FEED_FILTER_TARGETFRAMEWORK_PROP_NAME);
   }
 
   private void setServerEnabled(@NotNull final ServerMode mode) {

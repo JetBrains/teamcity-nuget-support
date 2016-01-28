@@ -30,6 +30,11 @@ public interface  NuGetServerSettings {
   boolean isNuGetServerEnabled();
 
   /**
+   * @return true if feed filters responses by target framework requested
+   */
+  boolean isFilteringByTargetFrameworkEnabled();
+
+  /**
    * @return context based path of nuget feed OData service
    */
   @NotNull

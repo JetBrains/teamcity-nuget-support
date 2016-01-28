@@ -38,6 +38,10 @@ public class NuGetServerSettingsImpl implements NuGetServerSettings {
     return myDotNetSettings.isNuGetJavaFeedEnabled();
   }
 
+  public boolean isFilteringByTargetFrameworkEnabled() {
+    return myDotNetSettings.isFilteringByTargetFrameworkEnabled();
+  }
+
   @NotNull
   public String getNuGetFeedControllerPath() {
     //NOTE: Do not change it unless you want to break compatibility
