@@ -134,11 +134,13 @@ public class SearchFunction implements NuGetFeedFunction {
         if(LOG.isDebugEnabled()) LOG.debug(String.format("Skipped package (id:%s, version:%s) since its pre-released.", id, version));
         continue;
       }
-      final Set<String> packageFrameworkConstraints = FrameworkConstraints.convertFromString(frameworkConstraints);
-      if (!VersionUtility.isPackageCompatibleWithFrameworks(requestedFrameworkConstraints, packageFrameworkConstraints)) {
-        if(LOG.isDebugEnabled())
-          LOG.debug(String.format("Skipped package (id:%s, version:%s) since it doesn't match requested framework constraints.", id, version));
-        continue;
+      if(myServerSettings.isFilteringByTargetFrameworkEnabled()){
+        final Set<String> packageFrameworkConstraints = FrameworkConstraints.convertFromString(frameworkConstraints);
+        if (!VersionUtility.isPackageCompatibleWithFrameworks(requestedFrameworkConstraints, packageFrameworkConstraints)) {
+          if(LOG.isDebugEnabled())
+            LOG.debug(String.format("Skipped package (id:%s, version:%s) since it doesn't match requested framework constraints.", id, version));
+          continue;
+        }
       }
       result.add(nugetPackage);
     }
