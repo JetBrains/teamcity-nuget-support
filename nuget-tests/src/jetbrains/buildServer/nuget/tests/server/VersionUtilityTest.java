@@ -161,6 +161,15 @@ public class VersionUtilityTest extends BaseTestCase {
   }
 
   @Test
+  public void testParsePortable() throws Exception {
+    final FrameworkName frameworkName = VersionUtility.parseFrameworkName("portable-windows8+net45");
+    assertNotNull(frameworkName);
+    assertEquals(VersionUtility.PORTABLE_FRAMEWORK_IDENTIFIER, frameworkName.getIdentifier());
+    assertEquals(Version.EMPTY, frameworkName.getVersion());
+    assertEquals("windows8+net45", frameworkName.getProfile());
+  }
+
+  @Test
   public void testNormalizeVersion() throws Exception {
     assertEquals("1.0.0", VersionUtility.normalizeVersion("1"));
     assertEquals("2.0.0", VersionUtility.normalizeVersion("2.0"));

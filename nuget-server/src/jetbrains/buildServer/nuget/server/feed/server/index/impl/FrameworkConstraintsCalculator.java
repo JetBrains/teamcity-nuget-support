@@ -17,9 +17,12 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.nuspec.Dependencies;
+import jetbrains.buildServer.nuget.common.nuspec.DependencyGroup;
 import jetbrains.buildServer.nuget.common.nuspec.FrameworkAssembly;
 import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
 import jetbrains.buildServer.nuget.server.util.VersionUtility;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,8 +80,16 @@ public class FrameworkConstraintsCalculator implements NuGetPackageStructureAnal
     final Collection<String> targetFrameworks = new HashSet<String>();
     for(FrameworkAssembly frameworkAssembly : nuspecContent.getFrameworkAssemblies()){
       final String targetFramework = frameworkAssembly.getTargetFramework();
-      if(targetFramework != null)
+      if(!StringUtil.isEmptyOrSpaces(targetFramework))
         targetFrameworks.add(targetFramework.toLowerCase());
+    }
+    final Dependencies dependencies = nuspecContent.getDependencies();
+    if(dependencies != null){
+      for(DependencyGroup dependencyGroup : dependencies.getGroups()){
+        final String targetFramework = dependencyGroup.getTargetFramework();
+        if(!StringUtil.isEmptyOrSpaces(targetFramework))
+          targetFrameworks.add(targetFramework.toLowerCase());
+      }
     }
     return targetFrameworks;
   }

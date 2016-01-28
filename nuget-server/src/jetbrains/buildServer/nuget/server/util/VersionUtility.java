@@ -46,7 +46,7 @@ public class VersionUtility {
 
   private static final String NET_FRAMEWORK_IDENTIFIER = ".NETFramework";
   private static final String NET_CORE_FRAMEWORK_IDENTIFIER = ".NETCore";
-  private static final String PORTABLE_FRAMEWORK_IDENTIFIER = ".NETPortable";
+  public static final String PORTABLE_FRAMEWORK_IDENTIFIER = ".NETPortable";
   private static final String ASP_NET_FRAMEWORK_IDENTIFIER = "ASP.Net";
   private static final String ASP_NET_CORE_FRAMEWORK_IDENTIFIER = "ASP.NetCore";
   private static final String SILVERLIGHT_IDENTIFIER = "Silverlight";
