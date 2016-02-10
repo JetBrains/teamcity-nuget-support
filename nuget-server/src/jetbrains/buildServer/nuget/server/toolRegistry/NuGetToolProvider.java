@@ -68,17 +68,7 @@ public class NuGetToolProvider implements ToolProvider {
   public Collection<ToolVersion> getInstalledToolVersions() {
     return CollectionsUtil.convertCollection(myToolsRegistry.getTools(), new Converter<ToolVersion, InstalledTool>() {
       public ToolVersion createFrom(@NotNull final InstalledTool source) {
-        return new ToolVersion() {
-          @NotNull
-          public ToolType getType() {
-            return NUGET_TOOL_TYPE;
-          }
-
-          @Nullable
-          public String getVersion() {
-            return source.getVersion();
-          }
-        };
+        return new ToolVersion(NUGET_TOOL_TYPE, source.getVersion());
       }
     });
   }
