@@ -16,24 +16,30 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.ToolIdUtils;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
+import jetbrains.buildServer.util.filters.Filter;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * Created by Evgeniy.Koshkin on 15-Jan-16.
  */
 public class NuGetToolProvider implements ToolProvider {
+
+  private static final Logger LOG = Logger.getInstance(NuGetToolProvider.class.getName());
 
   private static final ToolTypeExtension NUGET_TOOL_TYPE = new ToolTypeExtension() {
     @NotNull
@@ -56,10 +62,17 @@ public class NuGetToolProvider implements ToolProvider {
 
   @NotNull private final ToolsRegistry myToolsRegistry;
   @NotNull private final NuGetToolsInstaller myToolInstaller;
+  @NotNull private final AvailableToolsState myAvailableTools;
+  @NotNull private final NuGetToolDownloader myToolDownloader;
 
-  public NuGetToolProvider(@NotNull ToolsRegistry toolsRegistry, @NotNull NuGetToolsInstaller toolInstaller) {
+  public NuGetToolProvider(@NotNull ToolsRegistry toolsRegistry,
+                           @NotNull NuGetToolsInstaller toolInstaller,
+                           @NotNull AvailableToolsState availableTools,
+                           @NotNull NuGetToolDownloader toolDownloader) {
     myToolsRegistry = toolsRegistry;
     myToolInstaller = toolInstaller;
+    myAvailableTools = availableTools;
+    myToolDownloader = toolDownloader;
   }
 
   @NotNull
@@ -70,6 +83,37 @@ public class NuGetToolProvider implements ToolProvider {
   @NotNull
   public Collection<ToolVersion> getInstalledToolVersions() {
     return CollectionsUtil.convertCollection(myToolsRegistry.getTools(), source -> new ToolVersion(NUGET_TOOL_TYPE, source.getVersion()));
+  }
+
+  @NotNull
+  @Override
+  public Collection<ToolVersion> getAvailableToolVersions() {
+
+    final Set<String> installed = new HashSet<String>();
+    for (NuGetInstalledTool tool : myToolsRegistry.getTools()) {
+      installed.add(tool.getVersion());
+    }
+
+    final Collection<DownloadableNuGetTool> available = new ArrayList<DownloadableNuGetTool>(myAvailableTools.getAvailable(ToolsPolicy.FetchNew).getFetchedTools());
+    final Iterator<DownloadableNuGetTool> it = available.iterator();
+    while (it.hasNext()) {
+      NuGetTool next = it.next();
+      if (installed.contains(next.getVersion())) {
+        it.remove();
+      }
+    }
+
+    return CollectionsUtil.convertCollection(available, source -> new ToolVersion(NUGET_TOOL_TYPE, source.getVersion())) ;
+  }
+
+  @Override
+  public void fetchAvailableToolVersion(@NotNull ToolVersion toolVersion, @NotNull File file) throws ToolException {
+    final DownloadableNuGetTool downloadableNuGetTool = CollectionsUtil.findFirst(myAvailableTools.getAvailable(ToolsPolicy.ReturnCached).getFetchedTools(), data -> data.getVersion().equalsIgnoreCase(toolVersion.getVersion()));
+    if(downloadableNuGetTool == null){
+      LOG.debug("Failed to fetch tool " + toolVersion + ". Download source info wasn't prefetched.");
+      return;
+    }
+    myToolDownloader.downloadTool(downloadableNuGetTool, file);
   }
 
   @Nullable

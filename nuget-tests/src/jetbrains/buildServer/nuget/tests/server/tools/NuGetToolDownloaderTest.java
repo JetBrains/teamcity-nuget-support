@@ -66,7 +66,7 @@ public class NuGetToolDownloaderTest extends BaseTestCase {
       oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal("download-url")), with(any(File.class))); will(throwException(new IOException("oops")));
     }});
 
-    myDownloader.downloadTool(tool("id", "version", "download-url"));
+    myDownloader.downloadTool(tool("id", "version", "download-url"), createTempFile());
   }
 
   private DownloadableNuGetTool tool(final String id, final String version, final String downloadUrl) {

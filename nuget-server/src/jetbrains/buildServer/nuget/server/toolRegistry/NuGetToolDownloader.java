@@ -26,5 +26,5 @@ import java.io.File;
  * @author Evgeniy.Koshkin
  */
 public interface NuGetToolDownloader {
-  @NotNull File downloadTool(@NotNull DownloadableNuGetTool tool) throws ToolException;
+  void downloadTool(@NotNull DownloadableNuGetTool tool, @NotNull File location) throws ToolException;
 }

@@ -42,27 +42,14 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
   }
 
   @NotNull
-  public File downloadTool(@NotNull DownloadableNuGetTool tool) throws ToolException {
+  public void downloadTool(@NotNull DownloadableNuGetTool tool, @NotNull File location) throws ToolException {
     LOG.info("Start installing package " + tool.getId());
     LOG.info("Downloading package from: " + tool.getDownloadUrl());
-    File tempFile;
     try {
-      tempFile = FileUtil.createTempFile(tool.getId(), ".tmp");
-      FileUtil.createParentDirs(tempFile);
-    } catch (IOException e) {
-      String msg = "Failed to create temp file";
-      LOG.debug(e);
-      throw new ToolException(msg);
-    }
-    FileUtil.delete(tempFile);
-
-    try {
-      myClient.downloadPackage(myFeed, tool.getDownloadUrl(), tempFile);
+      myClient.downloadPackage(myFeed, tool.getDownloadUrl(), location);
     } catch (Exception e) {
-      LOG.warnAndDebugDetails("Failed to download package " + tool + " to " + tempFile, e);
+      LOG.warnAndDebugDetails("Failed to download package " + tool + " to " + location, e);
       throw new ToolException("Failed to download package " + tool.getId() + " " + tool.getVersion() + ". " + e.getMessage());
     }
-
-    return tempFile;
   }
 }

@@ -35,6 +35,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import static jetbrains.buildServer.nuget.server.toolRegistry.tab.WhatToDo.INSTALL;
@@ -137,12 +138,23 @@ public class InstallToolController extends BaseFormXmlController {
           final DownloadableNuGetTool tool = myToolsManager.findAvailableToolById(toolId);
           if (tool == null) throw new ToolException("Failed to find available tool by Id " + toolId);
 
-          final File downloadedToolLocation = myToolsDownloader.downloadTool(tool);
+          File uploadTarget;
           try {
-            final NuGetTool downloadedTool = myToolsManager.installTool(tool.getId(), tool.getDestinationFileName(), downloadedToolLocation);
+            uploadTarget = FileUtil.createTempFile(tool.getId(), ".tmp");
+            FileUtil.createParentDirs(uploadTarget);
+          } catch (IOException e) {
+            String msg = "Failed to create temp file";
+            LOG.debug(e);
+            throw new ToolException(msg);
+          }
+          FileUtil.delete(uploadTarget);
+
+          myToolsDownloader.downloadTool(tool, uploadTarget);
+          try {
+            final NuGetTool downloadedTool = myToolsManager.installTool(tool.getId(), tool.getDestinationFileName(), uploadTarget);
             updateDefault(request, downloadedTool);
           } finally {
-            FileUtil.delete(downloadedToolLocation);
+            FileUtil.delete(uploadTarget);
           }
           return;
 
