@@ -16,17 +16,18 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
+import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry;
-import jetbrains.buildServer.tools.ToolProvider;
-import jetbrains.buildServer.tools.ToolType;
-import jetbrains.buildServer.tools.ToolTypeExtension;
-import jetbrains.buildServer.tools.ToolVersion;
+import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.Converter;
+import jetbrains.buildServer.util.StringUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.Collection;
 
 /**
@@ -52,11 +53,13 @@ public class NuGetToolProvider implements ToolProvider {
       return "Installed NuGet versions are automatically distributed to all build agents and can be used in NuGet-related runners.";
     }
   };
-  @NotNull
-  private final ToolsRegistry myToolsRegistry;
 
-  public NuGetToolProvider(@NotNull ToolsRegistry toolsRegistry) {
+  @NotNull private final ToolsRegistry myToolsRegistry;
+  @NotNull private final NuGetToolsInstaller myToolInstaller;
+
+  public NuGetToolProvider(@NotNull ToolsRegistry toolsRegistry, @NotNull NuGetToolsInstaller toolInstaller) {
     myToolsRegistry = toolsRegistry;
+    myToolInstaller = toolInstaller;
   }
 
   @NotNull
@@ -66,10 +69,37 @@ public class NuGetToolProvider implements ToolProvider {
 
   @NotNull
   public Collection<ToolVersion> getInstalledToolVersions() {
-    return CollectionsUtil.convertCollection(myToolsRegistry.getTools(), new Converter<ToolVersion, InstalledTool>() {
-      public ToolVersion createFrom(@NotNull final InstalledTool source) {
-        return new ToolVersion(NUGET_TOOL_TYPE, source.getVersion());
+    return CollectionsUtil.convertCollection(myToolsRegistry.getTools(), source -> new ToolVersion(NUGET_TOOL_TYPE, source.getVersion()));
+  }
+
+  @Nullable
+  @Override
+  public ToolVersion installTool(@Nullable String version, @NotNull File toolContent) throws jetbrains.buildServer.tools.ToolException {
+    if(StringUtil.isEmptyOrSpaces(version)){
+      version = getNuGetVersion(toolContent);
+    }
+    if(StringUtil.isEmptyOrSpaces(version)) return null;
+
+    try {
+      myToolInstaller.installNuGet(FilenameUtils.removeExtension(toolContent.getName()), toolContent);
+    } catch (ToolException e) {
+      throw new jetbrains.buildServer.tools.ToolException(e.getMessage(), e);
+    }
+
+    return new ToolVersion(NUGET_TOOL_TYPE, version);
+  }
+
+  @Override
+  public void removeTool(@Nullable String toolVersion) {
+    //TODO: simplify, skip ID processing, version is enough
+    for(InstalledTool installedTool : myToolsRegistry.getTools()){
+      if(installedTool.getVersion().equalsIgnoreCase(toolVersion)){
+        myToolsRegistry.removeTool(installedTool.getId());
       }
-    });
+    }
+  }
+
+  private String getNuGetVersion(File toolContent) {
+    return ToolIdUtils.getVersionFromId(FilenameUtils.removeExtension(toolContent.getName()));
   }
 }
