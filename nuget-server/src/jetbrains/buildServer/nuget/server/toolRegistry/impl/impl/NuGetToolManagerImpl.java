@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
+import jetbrains.buildServer.tools.ToolException;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

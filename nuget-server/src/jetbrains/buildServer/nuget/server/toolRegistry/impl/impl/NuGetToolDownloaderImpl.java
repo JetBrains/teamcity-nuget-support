@@ -20,7 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.FeedClient;
 import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolDownloader;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
+import jetbrains.buildServer.tools.ToolException;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 

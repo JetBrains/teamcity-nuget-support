@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
+import jetbrains.buildServer.tools.ToolException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

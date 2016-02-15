@@ -18,11 +18,11 @@ package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.ToolPaths;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsWatcher;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolsInstallerImpl;
 import jetbrains.buildServer.nuget.tests.Strings;
+import jetbrains.buildServer.tools.ToolException;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;

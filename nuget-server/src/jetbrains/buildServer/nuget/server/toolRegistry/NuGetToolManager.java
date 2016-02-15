@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
+import jetbrains.buildServer.tools.ToolException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

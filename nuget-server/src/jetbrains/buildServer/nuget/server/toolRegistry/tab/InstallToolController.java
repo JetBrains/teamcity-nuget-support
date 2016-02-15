@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
+import jetbrains.buildServer.tools.ToolException;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
