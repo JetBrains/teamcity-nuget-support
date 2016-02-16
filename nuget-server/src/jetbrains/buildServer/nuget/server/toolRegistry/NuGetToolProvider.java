@@ -25,8 +25,8 @@ import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.util.filters.Filter;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -88,22 +88,12 @@ public class NuGetToolProvider implements ToolProvider {
   @NotNull
   @Override
   public Collection<ToolVersion> getAvailableToolVersions() {
-
-    final Set<String> installed = new HashSet<String>();
-    for (NuGetInstalledTool tool : myToolsRegistry.getTools()) {
-      installed.add(tool.getVersion());
-    }
-
-    final Collection<DownloadableNuGetTool> available = new ArrayList<DownloadableNuGetTool>(myAvailableTools.getAvailable(ToolsPolicy.FetchNew).getFetchedTools());
-    final Iterator<DownloadableNuGetTool> it = available.iterator();
-    while (it.hasNext()) {
-      NuGetTool next = it.next();
-      if (installed.contains(next.getVersion())) {
-        it.remove();
+    return CollectionsUtil.convertCollection(myAvailableTools.getAvailable(ToolsPolicy.FetchNew).getFetchedTools(), new Converter<ToolVersion, DownloadableNuGetTool>() {
+      @Override
+      public ToolVersion createFrom(@NotNull DownloadableNuGetTool source) {
+        return new ToolVersion(NUGET_TOOL_TYPE, source.getVersion());
       }
-    }
-
-    return CollectionsUtil.convertCollection(available, source -> new ToolVersion(NUGET_TOOL_TYPE, source.getVersion())) ;
+    });
   }
 
   @Override
