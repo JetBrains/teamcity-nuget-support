@@ -103,7 +103,7 @@ public class MetadataLoaderTest {
   @Test
   public void test_feed_api_not_changed() throws JDOMException, IOException {
     MetadataParseResult result = fetchNuGetOrgMetadata_v2();
-    MetadataParseResult our = XmlFeedParsers.loadBeans_v5();
+    MetadataParseResult our = XmlFeedParsers.loadBeans_v6();
 
     assertSameDataReturned(result.getKey(), our.getKey());
     assertSameDataReturned(result.getData(), our.getData());

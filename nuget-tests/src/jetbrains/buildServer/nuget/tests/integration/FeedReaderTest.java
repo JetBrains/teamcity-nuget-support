@@ -219,10 +219,12 @@ public class FeedReaderTest extends BaseTestCase {
     final Collection<FeedPackage> feedPackages = myReader.queryPackageVersions(myClient, msRefFeed, "NuGet.CommandLine");
     Assert.assertTrue(feedPackages.size() > 0);
 
-    boolean hasLatest = false;
+    String latestVersion = null;
     for (FeedPackage feedPackage : feedPackages) {
-      Assert.assertFalse(hasLatest && feedPackage.isLatestVersion(), "There could be only one latest");
-      hasLatest |= feedPackage.isLatestVersion();
+      Assert.assertFalse((latestVersion != null) && feedPackage.isLatestVersion(), String.format("There could be only one latest version. But found two versions: %s, %s", latestVersion, feedPackage.getInfo().getVersion()));
+      if(feedPackage.isLatestVersion()){
+        latestVersion = feedPackage.getInfo().getVersion();
+      }
       System.out.println("feedPackage = " + feedPackage);
     }
   }
