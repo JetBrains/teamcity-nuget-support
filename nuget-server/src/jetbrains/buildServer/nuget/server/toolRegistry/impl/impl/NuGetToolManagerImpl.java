@@ -118,7 +118,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     try {
       tool = findToolByRef(toolRef);
     } catch (RuntimeException ex){
-      LOG.warn(ex);
+      LOG.debug(ex);
       return null;
     }
     return tool == null ? null : tool.getVersion();
