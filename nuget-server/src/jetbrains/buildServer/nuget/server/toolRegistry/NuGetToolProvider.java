@@ -58,6 +58,17 @@ public class NuGetToolProvider implements ToolProvider {
     public String getDescription() {
       return "Installed NuGet versions are automatically distributed to all build agents and can be used in NuGet-related runners.";
     }
+
+    @Nullable
+    @Override
+    public String getFileName() {
+      return "NuGet.exe";
+    }
+
+    @Override
+    public boolean isSupportDownload() {
+      return true;
+    }
   };
 
   @NotNull private final ToolsRegistry myToolsRegistry;

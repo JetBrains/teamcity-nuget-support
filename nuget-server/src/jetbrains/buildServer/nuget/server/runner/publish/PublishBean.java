@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.runner.publish;
 
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.nuget.server.toolRegistry.ToolConstants;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -29,4 +30,5 @@ public class PublishBean {
   public String getNuGetPublishFilesKey() {return PackagesConstants.NUGET_PUBLISH_FILES; }
   public String getNuGetPublishCreateOnlyKey() { return PackagesConstants.NUGET_PUBLISH_CREATE_ONLY; }
   public String getPushCustomCommandline() { return PackagesConstants.NUGET_PUSH_CUSTOM_COMMANDLINE; }
+  public String getNugetToolTypeName() {return ToolConstants.NUGET_TOOL_TYPE_ID;}
 }
