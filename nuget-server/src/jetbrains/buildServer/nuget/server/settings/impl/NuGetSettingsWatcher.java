@@ -26,6 +26,7 @@ import jetbrains.buildServer.serverSide.BuildServerListener;
 import jetbrains.buildServer.util.EventDispatcher;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -34,14 +35,17 @@ import java.io.IOException;
  */
 public class NuGetSettingsWatcher {
   private static final Logger LOG = Logger.getInstance(NuGetSettingsWatcher.class.getName());
+  private static final int SLEEPING_PERIOD_MSEC = 1000 * 15;
   private final FileWatcher myWatcher;
 
   public NuGetSettingsWatcher(@NotNull final NuGetSettingsManagerConfiguration configuration,
                               @NotNull final EventDispatcher<BuildServerListener> events,
                               @NotNull final NuGetSettingsPersistance persist,
                               @NotNull final NuGetSettingsManagerImpl settings) {
-    myWatcher = new FileWatcher(configuration.getNuGetConfigXml());
-    myWatcher.setSleepingPeriod(1000 * 15);
+    final File nuGetConfigXml = configuration.getNuGetConfigXml();
+    myWatcher = new FileWatcher(nuGetConfigXml);
+    LOG.debug("Registered file watcher for path " + nuGetConfigXml.getAbsolutePath());
+    myWatcher.setSleepingPeriod(SLEEPING_PERIOD_MSEC);
 
     events.addListener(new BuildServerAdapter() {
       @Override
@@ -57,6 +61,7 @@ public class NuGetSettingsWatcher {
 
     myWatcher.registerListener(new ChangeListener() {
       public void changeOccured(String requestor) {
+        LOG.debug("Settings reload event recieved. Requestor - " + requestor);
         reloadSettings(settings, persist);
       }
     });
