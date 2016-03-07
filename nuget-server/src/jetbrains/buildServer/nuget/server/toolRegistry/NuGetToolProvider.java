@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
@@ -126,7 +127,8 @@ public class NuGetToolProvider implements ToolProvider {
     if(StringUtil.isEmptyOrSpaces(version)) return null;
 
     try {
-      myToolInstaller.installNuGet(ToolIdUtils.getIdFromVersion(version), toolContent);
+      //TODO: do no form nuget file name explicitly
+      myToolInstaller.installNuGet(ToolIdUtils.getIdFromVersion(version) + FeedConstants.NUGET_EXTENSION, toolContent);
     } catch (ToolException e) {
       throw new ToolException(e.getMessage(), e);
     }
