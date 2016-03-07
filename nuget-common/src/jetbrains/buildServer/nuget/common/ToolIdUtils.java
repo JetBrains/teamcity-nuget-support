@@ -24,6 +24,12 @@ import org.jetbrains.annotations.Nullable;
  * @author Evgeniy.Koshkin
  */
 public class ToolIdUtils {
+
+  @NotNull
+  public static String getIdFromVersion(@NotNull final String version){
+    return FeedConstants.NUGET_COMMANDLINE.toLowerCase() + "." + version;
+  }
+
   @NotNull
   public static String getVersionFromId(@NotNull final String id){
     if (id.toLowerCase().startsWith(FeedConstants.NUGET_COMMANDLINE.toLowerCase() + ".")) {

@@ -119,16 +119,16 @@ public class NuGetToolProvider implements ToolProvider {
 
   @Nullable
   @Override
-  public ToolVersion installTool(@Nullable String version, @NotNull File toolContent) throws jetbrains.buildServer.tools.ToolException {
+  public ToolVersion installTool(@Nullable String version, @NotNull File toolContent) throws ToolException {
     if(StringUtil.isEmptyOrSpaces(version)){
       version = getNuGetVersion(toolContent);
     }
     if(StringUtil.isEmptyOrSpaces(version)) return null;
 
     try {
-      myToolInstaller.installNuGet(FilenameUtils.removeExtension(toolContent.getName()), toolContent);
+      myToolInstaller.installNuGet(ToolIdUtils.getIdFromVersion(version), toolContent);
     } catch (ToolException e) {
-      throw new jetbrains.buildServer.tools.ToolException(e.getMessage(), e);
+      throw new ToolException(e.getMessage(), e);
     }
 
     return new ToolVersion(NUGET_TOOL_TYPE, version);
