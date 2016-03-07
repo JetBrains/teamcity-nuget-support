@@ -50,7 +50,7 @@ public class NuGetToolsInstallerImpl implements NuGetToolsInstaller {
       NuGetPackageValidationUtil.validatePackage(toolFile);
     }
     final File dest = new File(myToolPaths.getNuGetToolsPackages(), toolFileName);
-    if (dest.isFile()) throw new ToolException("Tool with such version already exists");
+    if (dest.isFile()) throw new ToolException("Tool package with name " + toolFileName + " already exists");
     try {
       FileUtil.copy(toolFile, dest);
       FileUtil.delete(toolFile);
