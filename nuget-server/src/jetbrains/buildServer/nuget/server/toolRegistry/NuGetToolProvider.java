@@ -38,7 +38,7 @@ import java.util.*;
 /**
  * Created by Evgeniy.Koshkin on 15-Jan-16.
  */
-public class NuGetToolProvider implements ToolProvider {
+public class NuGetToolProvider extends ToolProviderAdapter {
   private static final ToolTypeExtension NUGET_TOOL_TYPE = new ToolTypeExtension() {
     @NotNull
     public String getType() {
