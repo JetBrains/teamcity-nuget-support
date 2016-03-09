@@ -16,8 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
-import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
@@ -27,21 +25,20 @@ import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuG
 import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
+import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
  * Created by Evgeniy.Koshkin on 15-Jan-16.
  */
 public class NuGetToolProvider implements ToolProvider {
-
-  private static final Logger LOG = Logger.getInstance(NuGetToolProvider.class.getName());
-
   private static final ToolTypeExtension NUGET_TOOL_TYPE = new ToolTypeExtension() {
     @NotNull
     public String getType() {
@@ -108,32 +105,40 @@ public class NuGetToolProvider implements ToolProvider {
     });
   }
 
+  @NotNull
   @Override
-  public void fetchAvailableToolVersion(@NotNull ToolVersion toolVersion, @NotNull File file) throws ToolException {
+  public void installTool(@NotNull ToolVersion toolVersion) throws ToolException {
     final DownloadableNuGetTool downloadableNuGetTool = CollectionsUtil.findFirst(myAvailableTools.getAvailable(ToolsPolicy.ReturnCached).getFetchedTools(), data -> data.getVersion().equalsIgnoreCase(toolVersion.getVersion()));
     if(downloadableNuGetTool == null){
-      LOG.debug("Failed to fetch tool " + toolVersion + ". Download source info wasn't prefetched.");
-      return;
+      throw new ToolException("Failed to fetch tool " + toolVersion + ". Download source info wasn't prefetched.");
     }
-    myToolDownloader.downloadTool(downloadableNuGetTool, file);
+
+    File uploadTarget;
+    try {
+      uploadTarget = FileUtil.createTempFile(toolVersion.toString(), ".tmp");
+      FileUtil.createParentDirs(uploadTarget);
+    } catch (IOException e) {
+      throw new ToolException("Failed to create temp file", e);
+    }
+    FileUtil.delete(uploadTarget);
+    try{
+      myToolDownloader.downloadTool(downloadableNuGetTool, uploadTarget);
+      myToolInstaller.installNuGet(downloadableNuGetTool.getDestinationFileName(), uploadTarget);
+    } finally {
+      FileUtil.delete(uploadTarget);
+    }
   }
 
-  @Nullable
+  @NotNull
   @Override
-  public ToolVersion installTool(@Nullable String version, @NotNull File toolContent) throws ToolException {
-    if(StringUtil.isEmptyOrSpaces(version)){
-      version = getNuGetVersion(toolContent);
+  public ToolVersion installTool(@NotNull File toolContent) throws ToolException {
+    final String toolContentFileName = toolContent.getName();
+    final String nugetVersion = ToolIdUtils.getVersionFromId(FilenameUtils.removeExtension(toolContentFileName));
+    if(StringUtil.isEmpty(nugetVersion)) {
+      throw new ToolException("Failed to determine NuGet version based on content of file " + toolContent.getAbsolutePath());
     }
-    if(StringUtil.isEmptyOrSpaces(version)) return null;
-
-    try {
-      //TODO: do no form nuget file name explicitly
-      myToolInstaller.installNuGet(ToolIdUtils.getIdFromVersion(version) + FeedConstants.NUGET_EXTENSION, toolContent);
-    } catch (ToolException e) {
-      throw new ToolException(e.getMessage(), e);
-    }
-
-    return new ToolVersion(NUGET_TOOL_TYPE, version);
+    myToolInstaller.installNuGet(toolContentFileName, toolContent);
+    return new ToolVersion(NUGET_TOOL_TYPE, nugetVersion);
   }
 
   @Override
@@ -144,9 +149,5 @@ public class NuGetToolProvider implements ToolProvider {
         myToolsRegistry.removeTool(installedTool.getId());
       }
     }
-  }
-
-  private String getNuGetVersion(File toolContent) {
-    return ToolIdUtils.getVersionFromId(FilenameUtils.removeExtension(toolContent.getName()));
   }
 }
