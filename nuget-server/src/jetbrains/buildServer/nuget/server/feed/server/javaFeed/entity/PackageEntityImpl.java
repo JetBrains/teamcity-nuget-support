@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joda.time.LocalDateTime;
 import org.odata4j.core.OAtomEntity;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 public abstract class PackageEntityImpl  implements PackageEntityV2, OAtomEntity {
 

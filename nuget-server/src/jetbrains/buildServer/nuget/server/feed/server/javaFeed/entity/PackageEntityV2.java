@@ -23,7 +23,7 @@
 *****/
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 
-import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
+import jetbrains.buildServer.nuget.feedReader.PackageAttributes;
 import org.jetbrains.annotations.NotNull;
 
 public interface PackageEntityV2  { 

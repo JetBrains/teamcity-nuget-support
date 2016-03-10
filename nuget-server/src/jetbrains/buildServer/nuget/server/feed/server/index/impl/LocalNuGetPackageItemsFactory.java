@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com), re-written by evgeniy.koshkin

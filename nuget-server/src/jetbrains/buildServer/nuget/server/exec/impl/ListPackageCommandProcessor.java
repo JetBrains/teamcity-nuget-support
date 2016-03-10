@@ -18,9 +18,9 @@ package jetbrains.buildServer.nuget.server.exec.impl;
 
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessage;
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessageParserCallback;
+import jetbrains.buildServer.nuget.feedReader.PackageAttributes;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessorAdapter;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
-import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

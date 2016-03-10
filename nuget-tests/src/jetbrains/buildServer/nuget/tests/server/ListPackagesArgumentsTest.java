@@ -17,11 +17,11 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesArguments;
-import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
@@ -94,7 +94,7 @@ public class ListPackagesArgumentsTest extends BaseTestCase {
 
     SourcePackageReference ref = new SourcePackageReference(
             "http://some-source",
-            new FeedCredentials("user", "pwww"),
+            new NuGetFeedCredentials("user", "pwww"),
             "package.id",
             "version-spec",
             true

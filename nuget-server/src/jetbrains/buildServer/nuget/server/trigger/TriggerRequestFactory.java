@@ -18,8 +18,8 @@ package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory;
@@ -63,9 +63,9 @@ public class TriggerRequestFactory {
     String password = descriptor.getProperties().get(PASSWORD);
     boolean isPrerelease = !StringUtil.isEmptyOrSpaces(descriptor.getProperties().get(INCLUDE_PRERELEASE));
 
-    FeedCredentials credentials = null;
+    NuGetFeedCredentials credentials = null;
     if (username != null && password != null && !StringUtil.isEmptyOrSpaces(username) && !StringUtil.isEmptyOrSpaces(password)) {
-      credentials = new FeedCredentials(username, password);
+      credentials = new NuGetFeedCredentials(username, password);
     }
 
     if (path == null || StringUtil.isEmptyOrSpaces(path)) {

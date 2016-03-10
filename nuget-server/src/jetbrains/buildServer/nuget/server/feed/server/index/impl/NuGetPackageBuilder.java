@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.*;
 
 /**

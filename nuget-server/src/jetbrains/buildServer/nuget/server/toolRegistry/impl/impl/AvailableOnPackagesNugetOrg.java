@@ -18,9 +18,9 @@ package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
-import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackage;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
@@ -40,10 +40,10 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
 
   private static final Logger LOG = Logger.getInstance(AvailableOnPackagesNugetOrg.class.getName());
 
-  @NotNull private final FeedClient myFeed;
+  @NotNull private final NuGetFeedClient myFeed;
   @NotNull private final NuGetFeedReader myReader;
 
-  public AvailableOnPackagesNugetOrg(@NotNull FeedClient feed, @NotNull NuGetFeedReader reader) {
+  public AvailableOnPackagesNugetOrg(@NotNull NuGetFeedClient feed, @NotNull NuGetFeedReader reader) {
     myFeed = feed;
     myReader = reader;
   }
@@ -55,8 +55,8 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
       try {
         final Collection<DownloadableNuGetTool> fetchedTools = CollectionsUtil.filterAndConvertCollection(
                 myReader.queryPackageVersions(myFeed, feedUrl, FeedConstants.NUGET_COMMANDLINE),
-                new Converter<DownloadableNuGetTool, FeedPackage>() {
-                  public DownloadableNuGetTool createFrom(@NotNull final FeedPackage source) {
+                new Converter<DownloadableNuGetTool, NuGetPackage>() {
+                  public DownloadableNuGetTool createFrom(@NotNull final NuGetPackage source) {
                     return new DownloadableNuGetTool() {
                       @NotNull
                       public String getDownloadUrl() {
@@ -79,8 +79,8 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
                       }
                     };
                   }
-                }, new Filter<FeedPackage>() {
-                  public boolean accept(@NotNull FeedPackage data) {
+                }, new Filter<NuGetPackage>() {
+                  public boolean accept(@NotNull NuGetPackage data) {
                     final String[] version = data.getInfo().getVersion().split("\\.");
                     if (version.length < 2) return false;
                     int major = parse(version[0]);

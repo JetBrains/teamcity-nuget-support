@@ -16,11 +16,12 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index;
 
-import jetbrains.buildServer.nuget.common.PackageInfo;
-import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -53,8 +54,8 @@ public class NuGetIndexEntry {
   }
 
   @NotNull
-  public PackageInfo getPackageInfo() {
-    return new PackageInfo(myAttributes.get(PackageAttributes.ID), myAttributes.get(PackageAttributes.VERSION));
+  public NuGetPackageInfo getPackageInfo() {
+    return new NuGetPackageInfo(myAttributes.get(ID), myAttributes.get(VERSION));
   }
 
   @Override

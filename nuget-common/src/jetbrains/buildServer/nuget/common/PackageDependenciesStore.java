@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.common;
 
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
@@ -62,27 +63,27 @@ public class PackageDependenciesStore {
   }
 
   @NotNull
-  private List<PackageInfo> readPackagesList(@Nullable final Element packagesElement) {
+  private List<NuGetPackageInfo> readPackagesList(@Nullable final Element packagesElement) {
     if (packagesElement == null) return Collections.emptyList();
 
-    final List<PackageInfo> infos = new ArrayList<PackageInfo>();
+    final List<NuGetPackageInfo> infos = new ArrayList<NuGetPackageInfo>();
     for (Object pkg : packagesElement.getChildren(PACKAGE_ELEMENT)) {
       Element el = (Element) pkg;
       final String id = el.getAttributeValue(PACKAGE_ID);
       final String version = el.getAttributeValue(PACKAGE_VERSION);
       if (id != null && version != null) {
-        infos.add(new PackageInfo(id, version));
+        infos.add(new NuGetPackageInfo(id, version));
       }
     }
 
     return infos;
   }
 
-  private void savePackagesList(@NotNull final Collection<PackageInfo> usedPackages,
+  private void savePackagesList(@NotNull final Collection<NuGetPackageInfo> usedPackages,
                                 @NotNull final Element root,
                                 @NotNull final String containerName) {
     final Element container = new Element(containerName);
-    for (PackageInfo info : usedPackages) {
+    for (NuGetPackageInfo info : usedPackages) {
       final Element pkg = new Element(PACKAGE_ELEMENT);
       pkg.setAttribute(PACKAGE_ID, info.getId());
       pkg.setAttribute(PACKAGE_VERSION, info.getVersion());
@@ -102,7 +103,7 @@ public class PackageDependenciesStore {
       final String version = el.getAttributeValue(PACKAGE_VERSION);
       final String source = el.getAttributeValue(PACKAGE_SOURCE);
       if (id != null && version != null) {
-        infos.add(new SourcePackageInfo(new PackageInfo(id, version), source));
+        infos.add(new SourcePackageInfo(new NuGetPackageInfo(id, version), source));
       }
     }
 

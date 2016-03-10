@@ -17,8 +17,8 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolDownloader;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolDownloaderImpl;
@@ -38,7 +38,7 @@ import java.io.IOException;
  */
 public class NuGetToolDownloaderTest extends BaseTestCase {
   private NuGetToolDownloader myDownloader;
-  private FeedClient myClient;
+  private NuGetFeedClient myClient;
   private NuGetFeedReader myFeed;
   private Mockery m;
 
@@ -47,7 +47,7 @@ public class NuGetToolDownloaderTest extends BaseTestCase {
   public void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    myClient = m.mock(FeedClient.class);
+    myClient = m.mock(NuGetFeedClient.class);
     myFeed = m.mock(NuGetFeedReader.class);
     myDownloader = new NuGetToolDownloaderImpl(myFeed, myClient);
   }

@@ -47,7 +47,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)

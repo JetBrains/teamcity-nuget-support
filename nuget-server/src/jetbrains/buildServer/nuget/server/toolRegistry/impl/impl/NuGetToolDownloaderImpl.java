@@ -17,15 +17,13 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolDownloader;
 import jetbrains.buildServer.tools.ToolException;
-import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * @author Evgeniy.Koshkin
@@ -34,9 +32,9 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
   private static final Logger LOG = Logger.getInstance(NuGetToolDownloaderImpl.class.getName());
 
   @NotNull private final NuGetFeedReader myClient;
-  @NotNull private final FeedClient myFeed;
+  @NotNull private final NuGetFeedClient myFeed;
 
-  public NuGetToolDownloaderImpl(@NotNull final NuGetFeedReader client, @NotNull final FeedClient feed) {
+  public NuGetToolDownloaderImpl(@NotNull final NuGetFeedReader client, @NotNull final NuGetFeedClient feed) {
     myClient = client;
     myFeed = feed;
   }

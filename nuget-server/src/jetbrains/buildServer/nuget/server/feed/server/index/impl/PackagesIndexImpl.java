@@ -20,7 +20,6 @@ import com.google.common.collect.Lists;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
-import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetServerStatisticsProvider;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
@@ -35,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
 
 /**
@@ -46,7 +45,7 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
 
   private static final Logger LOG = Logger.getInstance(PackagesIndexImpl.class.getName());
 
-  public static final Collection<String> PACKAGE_ATTRIBUTES_TO_SEARCH = Lists.newArrayList(PackageAttributes.ID, TITLE, TAGS, DESCRIPTION, AUTHORS);
+  public static final Collection<String> PACKAGE_ATTRIBUTES_TO_SEARCH = Lists.newArrayList(ID, TITLE, TAGS, DESCRIPTION, AUTHORS);
 
   private static final String TOTAL_NUMBER_OF_ITEMS_STAT = "Total number of items in index";
   private static final String NUMBER_OF_INDEXED_BUILDS_STAT = "Number of indexed builds";
@@ -176,7 +175,7 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
       final BuildMetadataEntry entry = entries.next();
       totalItemsNumber++;
       buildIds.add(entry.getBuildId());
-      packageIds.add(entry.getMetadata().get(PackageAttributes.ID));
+      packageIds.add(entry.getMetadata().get(ID));
     }
 
     final Map<String, Long> stats = new HashMap<String, Long>();

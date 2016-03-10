@@ -18,9 +18,9 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.google.common.collect.Lists;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
-import jetbrains.buildServer.nuget.server.feed.impl.FeedGetMethodFactory;
-import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
-import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
+import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedGetMethodFactory;
+import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedHttpClientHolder;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.FrameworkConstraintsCalculator;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureAnalyser;
@@ -56,16 +56,16 @@ import static org.apache.http.HttpStatus.*;
  */
 public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
   protected Collection<InputStream> myStreams;
-  protected FeedHttpClientHolder myHttpClient;
-  protected FeedGetMethodFactory myHttpMethods;
+  protected NuGetFeedHttpClientHolder myHttpClient;
+  protected NuGetFeedGetMethodFactory myHttpMethods;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
     myStreams = new ArrayList<InputStream>();
-    myHttpClient = new FeedHttpClientHolder();
-    myHttpMethods = new FeedGetMethodFactory();
+    myHttpClient = new NuGetFeedHttpClientHolder();
+    myHttpMethods = new NuGetFeedGetMethodFactory();
 
   }
 
@@ -141,7 +141,7 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
       map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
       map.put(TEAMCITY_BUILD_TYPE_ID, "bt_" + packageFile.getName());
       map.put("TeamCityDownloadUrl", "some-download-url/" + packageFile.getName());
-      map.put(PackageAttributes.IS_LATEST_VERSION, String.valueOf(isLatest));
+      map.put(NuGetPackageAttributes.IS_LATEST_VERSION, String.valueOf(isLatest));
       return map;
     } catch (PackageLoadException e) {
       throw new RuntimeException(e);

@@ -18,11 +18,11 @@ package jetbrains.buildServer.nuget.server.trigger.impl.checker;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackage;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.FeedPackage;
-import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
@@ -41,11 +41,11 @@ import java.util.concurrent.ExecutorService;
 public class PackageCheckerTeamCity implements PackageChecker {
   private static final Logger LOG = Logger.getInstance(PackageCheckerTeamCity.class.getName());
 
-  private final FeedClient myClient;
+  private final NuGetFeedClient myClient;
   private final NuGetFeedReader myReader;
 
 
-  public PackageCheckerTeamCity(@NotNull FeedClient client,
+  public PackageCheckerTeamCity(@NotNull NuGetFeedClient client,
                                 @NotNull NuGetFeedReader reader) {
     myClient = client;
     myReader = reader;
@@ -83,9 +83,9 @@ public class PackageCheckerTeamCity implements PackageChecker {
           }
 
           try {
-            final Collection<FeedPackage> packages = myReader.queryPackageVersions(myClient.withCredentials(entry.getPackage().getCredentials()), uri, packageId);
+            final Collection<NuGetPackage> packages = myReader.queryPackageVersions(myClient.withCredentials(entry.getPackage().getCredentials()), uri, packageId);
             final Collection<SourcePackageInfo> infos = new ArrayList<SourcePackageInfo>();
-            for (FeedPackage aPackage : packages) {
+            for (NuGetPackage aPackage : packages) {
               infos.add(new SourcePackageInfo(entry.getPackage().getSource(), packageId, aPackage.getInfo().getVersion()));
             }
 

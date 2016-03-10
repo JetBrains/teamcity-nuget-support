@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.tests.integration.http;
 
+import jetbrains.buildServer.util.HttpAuthServer;
+
 import java.io.IOException;
 
 /**

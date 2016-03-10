@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDateTime;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.TITLE;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
