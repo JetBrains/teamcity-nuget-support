@@ -93,12 +93,18 @@ public class ToolsWatcherImpl implements ToolsWatcher {
                                            @NotNull final List<File> removed) {
     for (File file : CollectionsUtil.join(modified, removed)) {
       final InstalledTool installedTool = myInstalledToolsFactory.createToolForPath(file);
-      if(installedTool != null) installedTool.delete();
+      if(installedTool != null) {
+        LOG.debug(String.format("NuGet version %s was being deleting because file %s was modified / removed.", installedTool.getId(), file.getAbsolutePath()));
+        installedTool.delete();
+      }
     }
 
     for (File file : CollectionsUtil.join(modified, added)) {
       final InstalledTool installedTool = myInstalledToolsFactory.createToolForPath(file);
-      if(installedTool != null) installedTool.install();
+      if(installedTool != null){
+        LOG.debug(String.format("NuGet version %s was being installing because file %s was modified / added.", installedTool.getId(), file.getAbsolutePath()));
+        installedTool.install();
+      }
     }
   }
 }

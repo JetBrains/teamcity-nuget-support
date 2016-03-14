@@ -22,10 +22,12 @@ import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
+import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
+import jetbrains.buildServer.web.util.SessionUser;
 import org.apache.commons.io.FilenameUtils;
 import org.jdom.Element;
 import org.jetbrains.annotations.NotNull;
@@ -169,6 +171,8 @@ public class InstallToolController extends BaseFormXmlController {
 
         case REMOVE:
           myToolsManager.removeTool(toolId);
+          final SUser user = SessionUser.getUser(request);
+          LOG.info(String.format("NuGet version %s was removed by %s", toolId, user.getDescriptiveName()));
       }
     } catch (ToolException e) {
       ae.addError("toolId", e.getMessage());
