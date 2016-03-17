@@ -29,7 +29,6 @@
             <element id="dir-copy" path="$PROJECT_DIR$/nuget-server/resources" />
           </element>
         </element>
-        <element id="library" level="project" name="commons-http" />
         <element id="library" level="project" name="odata4j" />
         <element id="library" level="project" name="jersey" />
         <element id="artifact" artifact-name="nuget-common" />
