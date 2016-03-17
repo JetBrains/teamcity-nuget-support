@@ -17,14 +17,14 @@
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
 import jetbrains.buildServer.nuget.common.ToolIdUtils;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.AvailableToolsState;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsInstaller;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolsRegistry;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.tools.*;
+import jetbrains.buildServer.tools.available.AvailableToolsState;
+import jetbrains.buildServer.tools.available.DownloadableToolVersion;
+import jetbrains.buildServer.tools.available.FetchToolsPolicy;
 import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.io.FilenameUtils;
@@ -39,7 +39,7 @@ import java.util.*;
  * Created by Evgeniy.Koshkin on 15-Jan-16.
  */
 public class NuGetToolProvider extends ToolProviderAdapter {
-  private static final ToolTypeExtension NUGET_TOOL_TYPE = new ToolTypeExtension() {
+  public static final ToolTypeExtension NUGET_TOOL_TYPE = new ToolTypeExtension() {
     @NotNull
     public String getType() {
       return ToolConstants.NUGET_TOOL_TYPE_ID;
@@ -90,25 +90,20 @@ public class NuGetToolProvider extends ToolProviderAdapter {
   }
 
   @NotNull
-  public Collection<ToolVersion> getInstalledToolVersions() {
+  public Collection<? extends ToolVersion> getInstalledToolVersions() {
     return CollectionsUtil.convertCollection(myToolsRegistry.getTools(), source -> new ToolVersion(NUGET_TOOL_TYPE, source.getVersion()));
   }
 
   @NotNull
   @Override
-  public Collection<ToolVersion> getAvailableToolVersions() {
-    return CollectionsUtil.convertCollection(myAvailableTools.getAvailable(ToolsPolicy.FetchNew).getFetchedTools(), new Converter<ToolVersion, DownloadableNuGetTool>() {
-      @Override
-      public ToolVersion createFrom(@NotNull DownloadableNuGetTool source) {
-        return new ToolVersion(NUGET_TOOL_TYPE, source.getVersion());
-      }
-    });
+  public Collection<? extends ToolVersion> getAvailableToolVersions() {
+    return myAvailableTools.getAvailable(FetchToolsPolicy.FetchNew).getFetchedTools();
   }
 
   @NotNull
   @Override
   public void installTool(@NotNull ToolVersion toolVersion) throws ToolException {
-    final DownloadableNuGetTool downloadableNuGetTool = CollectionsUtil.findFirst(myAvailableTools.getAvailable(ToolsPolicy.ReturnCached).getFetchedTools(), data -> data.getVersion().equalsIgnoreCase(toolVersion.getVersion()));
+    final DownloadableToolVersion downloadableNuGetTool = CollectionsUtil.findFirst(myAvailableTools.getAvailable(FetchToolsPolicy.ReturnCached).getFetchedTools(), data -> data.equals(toolVersion));
     if(downloadableNuGetTool == null){
       throw new ToolException("Failed to fetch tool " + toolVersion + ". Download source info wasn't prefetched.");
     }

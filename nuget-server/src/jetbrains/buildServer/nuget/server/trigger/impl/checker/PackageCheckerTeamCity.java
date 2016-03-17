@@ -86,7 +86,7 @@ public class PackageCheckerTeamCity implements PackageChecker {
             final Collection<NuGetPackage> packages = myReader.queryPackageVersions(myClient.withCredentials(entry.getPackage().getCredentials()), uri, packageId);
             final Collection<SourcePackageInfo> infos = new ArrayList<SourcePackageInfo>();
             for (NuGetPackage aPackage : packages) {
-              infos.add(new SourcePackageInfo(entry.getPackage().getSource(), packageId, aPackage.getInfo().getVersion()));
+              infos.add(new SourcePackageInfo(entry.getPackage().getSource(), packageId, aPackage.getPackageVersion()));
             }
 
             entry.setResult(CheckResult.fromResult(infos));

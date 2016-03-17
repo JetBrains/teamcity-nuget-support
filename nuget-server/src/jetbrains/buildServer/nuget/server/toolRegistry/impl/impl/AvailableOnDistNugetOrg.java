@@ -20,7 +20,10 @@ import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.http.HttpUtil;
 import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolProvider;
+import jetbrains.buildServer.tools.available.AvailableToolsFetcher;
+import jetbrains.buildServer.tools.available.DownloadableToolVersion;
+import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -59,31 +62,15 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
       final String respText = post.getResponseBodyAsString();
       final Gson gson = new Gson();
       final AvailableArtifacts artifacts = gson.fromJson(respText, AvailableArtifacts.class);
-      final Collection<DownloadableNuGetTool> nugets = new ArrayList<DownloadableNuGetTool>();
+      final Collection<DownloadableToolVersion> nugets = new ArrayList<DownloadableToolVersion>();
       for (final Artifact artifact : artifacts.getArtifacts()) {
         if(!artifact.getName().equalsIgnoreCase(NUGET_COMMANDLINE_ARTIFACT_NAME)) continue;
         for (final Version commandlineVersion : artifact.getVersions()) {
-          nugets.add(new DownloadableNuGetTool() {
-            @NotNull
-            public String getDownloadUrl() {
-              return commandlineVersion.getUrl();
-            }
-
-            @NotNull
-            public String getDestinationFileName() {
-              return FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion() + EXE_EXTENSION;
-            }
-
-            @NotNull
-            public String getId() {
-              return FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion();
-            }
-
-            @NotNull
-            public String getVersion() {
-              return commandlineVersion.getVersion();
-            }
-          });
+          nugets.add(new DownloadableToolVersion(
+                  NuGetToolProvider.NUGET_TOOL_TYPE,
+                  commandlineVersion.getVersion(),
+                  commandlineVersion.getUrl(),
+                  FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion() + EXE_EXTENSION));
         }
       }
       return FetchAvailableToolsResult.createSuccessfull(nugets);

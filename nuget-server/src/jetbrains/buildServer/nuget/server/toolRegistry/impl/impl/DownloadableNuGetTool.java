@@ -16,13 +16,28 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolProvider;
+import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Evgeniy.Koshkin
  */
-public interface DownloadableNuGetTool extends NuGetTool {
-  @NotNull String getDownloadUrl();
-  @NotNull String getDestinationFileName();
+public class DownloadableNuGetTool extends DownloadableToolVersion {
+  private final String myId;
+
+  public DownloadableNuGetTool(DownloadableToolVersion toolVersion) {
+    this(toolVersion.getVersion(), toolVersion.getDownloadUrl(), toolVersion.getDestinationFileName());
+  }
+
+  public DownloadableNuGetTool(@NotNull String version, @NotNull String downloadUrl, @Nullable String destinationFileName) {
+    super(NuGetToolProvider.NUGET_TOOL_TYPE, version, downloadUrl, destinationFileName);
+    myId = NuGetToolProvider.NUGET_TOOL_TYPE.getType() + "." + version;
+  }
+
+  @NotNull
+  public String getId(){
+    return myId;
+  }
 }

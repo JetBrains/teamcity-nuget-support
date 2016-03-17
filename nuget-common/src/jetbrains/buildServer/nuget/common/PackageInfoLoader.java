@@ -20,7 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.nuget.feedReader.PackageInfo;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public class PackageInfoLoader {
   private static final Logger LOG = Logger.getInstance(PackageInfoLoader.class.getName());
 
   @NotNull
-  public PackageInfo loadPackageInfo(@NotNull final File pkg) throws PackageLoadException {
+  public NuGetPackageInfo loadPackageInfo(@NotNull final File pkg) throws PackageLoadException {
 
     final Element root = parseNuSpec(pkg);
     if (root == null) {
@@ -59,7 +59,7 @@ public class PackageInfoLoader {
       throw new PackageLoadException("Invalid package. Failed to parse package Version for package: " + pkg.getPath());
     }
 
-    return new PackageInfo(id, version);
+    return new NuGetPackageInfo(id, version);
   }
 
   @Nullable

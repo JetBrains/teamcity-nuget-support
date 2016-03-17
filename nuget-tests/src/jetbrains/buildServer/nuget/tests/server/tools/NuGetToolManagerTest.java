@@ -25,6 +25,10 @@ import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolManagerImpl;
 import jetbrains.buildServer.tools.ToolException;
+import jetbrains.buildServer.tools.ToolVersion;
+import jetbrains.buildServer.tools.available.AvailableToolsState;
+import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
+import jetbrains.buildServer.tools.available.FetchToolsPolicy;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -178,17 +182,16 @@ public class NuGetToolManagerTest extends BaseTestCase {
 
   @Test
   public void test_GetAvailableTools_ShouldNotModifyRecievedAvailableToolsSet() throws Exception {
-    final DownloadableNuGetTool dt = m.mock(DownloadableNuGetTool.class);
+    final DownloadableNuGetTool dt = new DownloadableNuGetTool("v1", "some_url", "some_file_name");
     final InstalledTool it = m.mock(InstalledTool.class);
     m.checking(new Expectations() {{
-      allowing(dt).getVersion(); will(returnValue("v1"));
       allowing(it).getVersion(); will(returnValue("v1"));}
     });
     m.checking(new Expectations(){{
-      allowing(myAvailables).getAvailable(ToolsPolicy.FetchNew); will(returnValue(FetchAvailableToolsResult.createSuccessfull(Collections.singleton(dt))));
+      allowing(myAvailables).getAvailable(FetchToolsPolicy.FetchNew); will(returnValue(FetchAvailableToolsResult.createSuccessfull(Collections.singleton(dt))));
       allowing(myToolsRegistry).getTools(); will(returnValue(Collections.singletonList(it)));
     }});
-    myToolManager.getAvailableTools(ToolsPolicy.FetchNew);
+    myToolManager.getAvailableTools(FetchToolsPolicy.FetchNew);
   }
 
   @Test
@@ -196,41 +199,21 @@ public class NuGetToolManagerTest extends BaseTestCase {
     final InstalledTool it = m.mock(InstalledTool.class);
     m.checking(new Expectations(){{
       allowing(it).getVersion(); will(returnValue("1"));
-      allowing(myAvailables).getAvailable(ToolsPolicy.FetchNew); will(returnValue(FetchAvailableToolsResult.createSuccessfull(Sets.newHashSet(toolOfVersion("1"), toolOfVersion("5"), toolOfVersion("3")))));
+      allowing(myAvailables).getAvailable(FetchToolsPolicy.FetchNew); will(returnValue(FetchAvailableToolsResult.createSuccessfull(Sets.newHashSet(toolOfVersion("1"), toolOfVersion("5"), toolOfVersion("3")))));
       allowing(myToolsRegistry).getTools(); will(returnValue(Collections.singletonList(it)));
     }});
 
-    final FetchAvailableToolsResult result = myToolManager.getAvailableTools(ToolsPolicy.FetchNew);
+    final FetchAvailableToolsResult result = myToolManager.getAvailableTools(FetchToolsPolicy.FetchNew);
     assertEmpty(result.getErrors());
 
-    Iterator<? extends NuGetTool> tools = result.getFetchedTools().iterator();
+    Iterator<? extends ToolVersion> tools = result.getFetchedTools().iterator();
     assertEquals("5", tools.next().getVersion());
     assertEquals("3", tools.next().getVersion());
     assertFalse(tools.hasNext());
   }
 
   private static DownloadableNuGetTool toolOfVersion(final String version){
-    return new DownloadableNuGetTool() {
-      @NotNull
-      public String getDownloadUrl() {
-        return "downloadUrl-for-" + getId();
-      }
-
-      @NotNull
-      public String getDestinationFileName() {
-        return "some_path";
-      }
-
-      @NotNull
-      public String getId() {
-        return "nuget-exe-" + version;
-      }
-
-      @NotNull
-      public String getVersion() {
-        return version;
-      }
-    };
+    return new DownloadableNuGetTool(version, "downloadUrl-for-" + version, "nuget-exe-" + version);
   }
 }
 

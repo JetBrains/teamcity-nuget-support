@@ -32,7 +32,6 @@
       <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetPackageValidationUtilTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolUnpackerTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableToolStateTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolIdUtilsTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AgentToolsRegistrarTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableOnDistNugetOrgTest"/>
@@ -122,16 +121,10 @@
 
       <class name="jetbrains.buildServer.nuget.tests.agent.MatchFilesBuildProcessTest"/>
 
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.FeedPackagesParserTest"/>
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.FeedGetMethodFactoryTest"/>
-
-
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackRunnerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackageUsagesTest"/>
 
-
-      <class name="jetbrains.buildServer.nuget.tests.server.feed.reader.UrlResolverTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackagesInstallerRunTypeTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackagesInstallerRunnerDefaultsTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackagesInstallerRunnerDiscovererTest"/>

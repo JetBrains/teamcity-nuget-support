@@ -21,7 +21,10 @@ import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackage;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolProvider;
+import jetbrains.buildServer.tools.available.AvailableToolsFetcher;
+import jetbrains.buildServer.tools.available.DownloadableToolVersion;
+import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.filters.Filter;
@@ -53,35 +56,18 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
     FetchAvailableToolsResult error = null;
     for (String feedUrl : Arrays.asList(NUGET_FEED_V2, NUGET_FEED_V1)) {
       try {
-        final Collection<DownloadableNuGetTool> fetchedTools = CollectionsUtil.filterAndConvertCollection(
+        final Collection<DownloadableToolVersion> fetchedTools = CollectionsUtil.filterAndConvertCollection(
                 myReader.queryPackageVersions(myFeed, feedUrl, FeedConstants.NUGET_COMMANDLINE),
-                new Converter<DownloadableNuGetTool, NuGetPackage>() {
-                  public DownloadableNuGetTool createFrom(@NotNull final NuGetPackage source) {
-                    return new DownloadableNuGetTool() {
-                      @NotNull
-                      public String getDownloadUrl() {
-                        return source.getDownloadUrl();
-                      }
-
-                      @NotNull
-                      public String getDestinationFileName() {
-                        return source.getInfo().getId() + "." + source.getInfo().getVersion() + NUGET_EXTENSION;
-                      }
-
-                      @NotNull
-                      public String getId() {
-                        return source.getInfo().getId() + "." + source.getInfo().getVersion();
-                      }
-
-                      @NotNull
-                      public String getVersion() {
-                        return source.getInfo().getVersion();
-                      }
-                    };
+                new Converter<DownloadableToolVersion, NuGetPackage>() {
+                  public DownloadableToolVersion createFrom(@NotNull final NuGetPackage source) {
+                    return new DownloadableToolVersion(
+                            NuGetToolProvider.NUGET_TOOL_TYPE,
+                            source.getPackageVersion(),
+                            source.getDownloadUrl(), source.getPackageId() + "." + source.getPackageVersion() + NUGET_EXTENSION);
                   }
                 }, new Filter<NuGetPackage>() {
                   public boolean accept(@NotNull NuGetPackage data) {
-                    final String[] version = data.getInfo().getVersion().split("\\.");
+                    final String[] version = data.getPackageVersion().split("\\.");
                     if (version.length < 2) return false;
                     int major = parse(version[0]);
                     if (major < 1) return false;

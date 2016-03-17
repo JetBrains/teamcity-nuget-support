@@ -18,6 +18,8 @@ package jetbrains.buildServer.nuget.server.toolRegistry;
 
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.tools.ToolException;
+import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
+import jetbrains.buildServer.tools.available.FetchToolsPolicy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +42,7 @@ public interface NuGetToolManager {
    * @return fetches the full list of available and supported nuget tools and errors reported
    */
   @NotNull
-  FetchAvailableToolsResult getAvailableTools(@NotNull final ToolsPolicy policy);
+  FetchAvailableToolsResult getAvailableTools(@NotNull final FetchToolsPolicy policy);
 
   @Nullable
   DownloadableNuGetTool findAvailableToolById(String toolId);

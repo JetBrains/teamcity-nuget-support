@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import jetbrains.buildServer.tools.ToolException;
+import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -26,5 +26,5 @@ import java.io.File;
  * @author Evgeniy.Koshkin
  */
 public interface NuGetToolDownloader {
-  void downloadTool(@NotNull DownloadableNuGetTool tool, @NotNull File location) throws ToolException;
+  void downloadTool(@NotNull DownloadableToolVersion tool, @NotNull File location) throws ToolException;
 }

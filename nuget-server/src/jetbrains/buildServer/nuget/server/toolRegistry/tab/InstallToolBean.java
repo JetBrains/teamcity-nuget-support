@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.tab;
 
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,13 +31,13 @@ import java.util.Collection;
 public class InstallToolBean {
   private final WhatToDo myWhatToDo;
   private String myErrorText = null;
-  private final Collection<NuGetTool> myTools = new ArrayList<NuGetTool>();
+  private final Collection<DownloadableNuGetTool> myTools = new ArrayList<DownloadableNuGetTool>();
 
   public InstallToolBean(@NotNull WhatToDo whatToDo) {
     myWhatToDo = whatToDo;
   }
 
-  public void setTools(@NotNull Collection<? extends NuGetTool> tools) {
+  public void setTools(@NotNull Collection<DownloadableNuGetTool> tools) {
     myTools.clear();
     myTools.addAll(tools);
   }
@@ -51,7 +52,7 @@ public class InstallToolBean {
   }
 
   @NotNull
-  public Collection<NuGetTool> getTools() {
+  public Collection<DownloadableNuGetTool> getTools() {
     return myTools;
   }
 

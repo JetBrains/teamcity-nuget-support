@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolDownloader;
 import jetbrains.buildServer.tools.ToolException;
+import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -40,14 +41,14 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
   }
 
   @NotNull
-  public void downloadTool(@NotNull DownloadableNuGetTool tool, @NotNull File location) throws ToolException {
-    LOG.info("Start installing package " + tool.getId());
+  public void downloadTool(@NotNull DownloadableToolVersion tool, @NotNull File location) throws ToolException {
+    LOG.info("Start installing package " + tool.getDisplayName());
     LOG.info("Downloading package from: " + tool.getDownloadUrl());
     try {
       myClient.downloadPackage(myFeed, tool.getDownloadUrl(), location);
     } catch (Exception e) {
       LOG.warnAndDebugDetails("Failed to download package " + tool + " to " + location, e);
-      throw new ToolException("Failed to download package " + tool.getId() + " " + tool.getVersion() + ". " + e.getMessage());
+      throw new ToolException("Failed to download package " + tool.getDisplayName() + ". " + e.getMessage());
     }
   }
 }

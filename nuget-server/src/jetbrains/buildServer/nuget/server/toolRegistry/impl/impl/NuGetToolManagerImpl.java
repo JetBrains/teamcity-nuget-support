@@ -21,6 +21,11 @@ import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.*;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
 import jetbrains.buildServer.tools.ToolException;
+import jetbrains.buildServer.tools.ToolVersion;
+import jetbrains.buildServer.tools.available.AvailableToolsState;
+import jetbrains.buildServer.tools.available.DownloadableToolVersion;
+import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
+import jetbrains.buildServer.tools.available.FetchToolsPolicy;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,17 +78,17 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   @NotNull
-  public FetchAvailableToolsResult getAvailableTools(@NotNull ToolsPolicy policy) {
+  public FetchAvailableToolsResult getAvailableTools(@NotNull FetchToolsPolicy policy) {
     final Set<String> installed = new HashSet<String>();
     for (NuGetInstalledTool tool : getInstalledTools()) {
       installed.add(tool.getVersion());
     }
 
     final FetchAvailableToolsResult fetchAvailableToolsResult = myAvailableTools.getAvailable(policy);
-    final Collection<DownloadableNuGetTool> available = new ArrayList<DownloadableNuGetTool>(fetchAvailableToolsResult.getFetchedTools());
-    final Iterator<DownloadableNuGetTool> it = available.iterator();
+    final Collection<DownloadableToolVersion> available = new ArrayList<DownloadableToolVersion>(fetchAvailableToolsResult.getFetchedTools());
+    final Iterator<DownloadableToolVersion> it = available.iterator();
     while (it.hasNext()) {
-      NuGetTool next = it.next();
+      ToolVersion next = it.next();
       if (installed.contains(next.getVersion())) {
         it.remove();
       }
@@ -93,7 +98,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   @Nullable
   public DownloadableNuGetTool findAvailableToolById(String toolId) {
-    return myAvailableTools.findTool(toolId);
+    return new DownloadableNuGetTool(myAvailableTools.findTool(toolId));
   }
 
   @NotNull

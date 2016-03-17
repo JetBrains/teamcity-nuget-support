@@ -23,6 +23,11 @@ import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuG
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.tools.ToolException;
+import jetbrains.buildServer.tools.available.DownloadableToolVersion;
+import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
+import jetbrains.buildServer.tools.available.FetchToolsPolicy;
+import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -85,14 +90,19 @@ public class InstallToolController extends BaseFormXmlController {
       bean = new InstallToolBean(UPLOAD);
     } else {
       bean = new InstallToolBean(INSTALL);
-      final ToolsPolicy pol =
+      final FetchToolsPolicy pol =
               StringUtil.isEmptyOrSpaces(request.getParameter("fresh"))
-                      ? ToolsPolicy.ReturnCached
-                      : ToolsPolicy.FetchNew;
+                      ? FetchToolsPolicy.ReturnCached
+                      : FetchToolsPolicy.FetchNew;
 
       try {
         final FetchAvailableToolsResult fetchResult = myToolsManager.getAvailableTools(pol);
-        bean.setTools(fetchResult.getFetchedTools());
+        bean.setTools(CollectionsUtil.convertCollection(fetchResult.getFetchedTools(), new Converter<DownloadableNuGetTool, DownloadableToolVersion>() {
+          @Override
+          public DownloadableNuGetTool createFrom(@NotNull DownloadableToolVersion source) {
+            return new DownloadableNuGetTool(source);
+          }
+        }));
         bean.setErrorText(fetchResult.getErrorsSummary());
       } catch (Exception e) {
         bean.setErrorText(e.getMessage());

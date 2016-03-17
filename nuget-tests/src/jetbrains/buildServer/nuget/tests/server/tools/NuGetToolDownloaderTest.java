@@ -66,30 +66,10 @@ public class NuGetToolDownloaderTest extends BaseTestCase {
       oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal("download-url")), with(any(File.class))); will(throwException(new IOException("oops")));
     }});
 
-    myDownloader.downloadTool(tool("id", "version", "download-url"), createTempFile());
+    myDownloader.downloadTool(tool("version", "download-url"), createTempFile());
   }
 
-  private DownloadableNuGetTool tool(final String id, final String version, final String downloadUrl) {
-    return new DownloadableNuGetTool() {
-      @NotNull
-      public String getDownloadUrl() {
-        return downloadUrl;
-      }
-
-      @NotNull
-      public String getDestinationFileName() {
-        return "some_path";
-      }
-
-      @NotNull
-      public String getId() {
-        return id;
-      }
-
-      @NotNull
-      public String getVersion() {
-        return version;
-      }
-    };
+  private DownloadableNuGetTool tool(final String version, final String downloadUrl) {
+    return new DownloadableNuGetTool(version, downloadUrl, "some_path");
   }
 }
