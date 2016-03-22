@@ -21,7 +21,6 @@ import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackage;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolProvider;
 import jetbrains.buildServer.tools.available.AvailableToolsFetcher;
 import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
@@ -60,10 +59,10 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
                 myReader.queryPackageVersions(myFeed, feedUrl, FeedConstants.NUGET_COMMANDLINE),
                 new Converter<DownloadableToolVersion, NuGetPackage>() {
                   public DownloadableToolVersion createFrom(@NotNull final NuGetPackage source) {
-                    return new DownloadableToolVersion(
-                            NuGetToolProvider.NUGET_TOOL_TYPE,
+                    return new DownloadableNuGetTool(
                             source.getPackageVersion(),
-                            source.getDownloadUrl(), source.getPackageId() + "." + source.getPackageVersion() + NUGET_EXTENSION);
+                            source.getDownloadUrl(),
+                            source.getPackageId() + "." + source.getPackageVersion() + NUGET_EXTENSION);
                   }
                 }, new Filter<NuGetPackage>() {
                   public boolean accept(@NotNull NuGetPackage data) {

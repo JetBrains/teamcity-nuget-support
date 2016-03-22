@@ -17,27 +17,65 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolProvider;
+import jetbrains.buildServer.tools.ToolType;
 import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Evgeniy.Koshkin
  */
-public class DownloadableNuGetTool extends DownloadableToolVersion {
+public class DownloadableNuGetTool implements DownloadableToolVersion {
   private final String myId;
+  @NotNull
+  private final String myVersion;
+  @NotNull
+  private final String myDownloadUrl;
+  @NotNull
+  private final String myDestinationFileName;
 
   public DownloadableNuGetTool(DownloadableToolVersion toolVersion) {
     this(toolVersion.getVersion(), toolVersion.getDownloadUrl(), toolVersion.getDestinationFileName());
   }
 
-  public DownloadableNuGetTool(@NotNull String version, @NotNull String downloadUrl, @Nullable String destinationFileName) {
-    super(NuGetToolProvider.NUGET_TOOL_TYPE, version, downloadUrl, destinationFileName);
+  public DownloadableNuGetTool(@NotNull String version, @NotNull String downloadUrl, @NotNull String destinationFileName) {
+    myVersion = version;
+    myDownloadUrl = downloadUrl;
+    myDestinationFileName = destinationFileName;
     myId = NuGetToolProvider.NUGET_TOOL_TYPE.getType() + "." + version;
   }
 
   @NotNull
   public String getId(){
+    return myId;
+  }
+
+  @NotNull
+  @Override
+  public String getDownloadUrl() {
+    return myDownloadUrl;
+  }
+
+  @NotNull
+  @Override
+  public String getDestinationFileName() {
+    return myDestinationFileName;
+  }
+
+  @NotNull
+  @Override
+  public ToolType getType() {
+    return NuGetToolProvider.NUGET_TOOL_TYPE;
+  }
+
+  @NotNull
+  @Override
+  public String getVersion() {
+    return myVersion;
+  }
+
+  @NotNull
+  @Override
+  public String getDisplayName() {
     return myId;
   }
 }

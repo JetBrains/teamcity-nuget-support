@@ -26,6 +26,8 @@ import jetbrains.buildServer.tools.available.AvailableToolsState;
 import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
 import jetbrains.buildServer.tools.available.FetchToolsPolicy;
+import jetbrains.buildServer.tools.installed.ToolsRegistry;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,36 +47,34 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   private final AvailableToolsState myAvailableTools;
   private final ToolsRegistry myInstalledTools;
-  private final NuGetToolsInstaller myInstaller;
   private final NuGetToolsSettings mySettings;
 
   public NuGetToolManagerImpl(@NotNull final AvailableToolsState availableTools,
-                              @NotNull final NuGetToolsInstaller installer,
                               @NotNull final ToolsRegistry installedTools,
                               @NotNull final NuGetToolsSettings settings) {
     myAvailableTools = availableTools;
-    myInstaller = installer;
     myInstalledTools = installedTools;
     mySettings = settings;
   }
 
   @NotNull
   public Collection<? extends NuGetInstalledTool> getInstalledTools() {
-    final String defaultToolId = getDefaultToolId();
-    final Collection<? extends NuGetInstalledTool> tools = myInstalledTools.getTools();
-    if (defaultToolId == null || StringUtil.isEmptyOrSpaces(defaultToolId)) {
-      return tools;
-    }
-
-    final List<NuGetInstalledTool> toolsCopy = new ArrayList<NuGetInstalledTool>();
-    for (NuGetInstalledTool tool : tools) {
-      if (tool.getId().equals(defaultToolId)) {
-        toolsCopy.add(new DefaultTool(tool));
-      } else {
-        toolsCopy.add(tool);
-      }
-    }
-    return toolsCopy;
+//    final String defaultToolId = getDefaultToolId();
+//    final Collection<? extends NuGetInstalledTool> tools = myInstalledTools.getTools(NuGetToolProvider.NUGET_TOOL_TYPE);
+//    if (defaultToolId == null || StringUtil.isEmptyOrSpaces(defaultToolId)) {
+//      return tools;
+//    }
+//
+//    final List<NuGetInstalledTool> toolsCopy = new ArrayList<NuGetInstalledTool>();
+//    for (NuGetInstalledTool tool : tools) {
+//      if (tool.getId().equals(defaultToolId)) {
+//        toolsCopy.add(new DefaultTool(tool));
+//      } else {
+//        toolsCopy.add(tool);
+//      }
+//    }
+//    return toolsCopy;
+    return Collections.emptyList();
   }
 
   @NotNull
@@ -103,12 +103,17 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   @NotNull
   public NuGetTool installTool(@NotNull String toolId, @NotNull String toolFileName, @NotNull File toolFile) throws ToolException {
-    myInstaller.installNuGet(toolFileName, toolFile);
+//    myInstaller.installNuGet(toolFileName, toolFile);
+//    myWatcher.checkNow();
     return getInstalledTool(toolId);
   }
 
   public void removeTool(@NotNull String toolId) {
-    myInstalledTools.removeTool(toolId);
+    try {
+      myInstalledTools.removeTool(null);
+    } catch (ToolException e) {
+      LOG.error(e);
+    }
   }
 
   @Nullable
@@ -132,9 +137,10 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   @Nullable
   public NuGetInstalledTool getDefaultTool() {
-    InstalledTool tool = myInstalledTools.findTool(getDefaultToolId());
-    if (tool == null) return null;
-    return new DefaultTool(tool);
+//    InstalledTool tool = myInstalledTools.findTool(getDefaultToolId());
+//    if (tool == null) return null;
+//    return new DefaultTool(tool);
+    return null;
   }
 
   public void setDefaultTool(@NotNull final String toolId) {
@@ -148,11 +154,12 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   @NotNull
   private InstalledTool getInstalledTool(@NotNull final String toolId) throws ToolException {
-    final InstalledTool tool = myInstalledTools.findTool(toolId);
-    if (tool == null) {
-      throw new ToolException("Failed to find installed tool by id " + toolId);
-    }
-    return tool;
+    //final InstalledTool tool = myInstalledTools.findTool(toolId);
+//    if (tool == null) {
+//      throw new ToolException("Failed to find installed tool by id " + toolId);
+//    }
+//    return tool;
+    return null;
   }
 
   @Nullable
@@ -163,17 +170,19 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
       if (defaultToolId == null || StringUtil.isEmptyOrSpaces(defaultToolId)) {
         throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE + ". Default NuGet version is not selected.");
       }
-      final InstalledTool tool = myInstalledTools.findTool(defaultToolId);
-      if (tool == null) {
-        final String ref = NuGetToolReferenceUtils.getToolReference(defaultToolId);
-        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified id " + ref + " was not found");
-      }
-      return tool;
+//      final InstalledTool tool = myInstalledTools.findTool(defaultToolId);
+//      if (tool == null) {
+//        final String ref = NuGetToolReferenceUtils.getToolReference(defaultToolId);
+//        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified id " + ref + " was not found");
+//      }
+//      return tool;
+      return null;
     }
     final String toolId = NuGetToolReferenceUtils.getReferredToolId(toolRef);
     if (toolId == null) return null;
-    final InstalledTool tool = myInstalledTools.findTool(toolId);
-    if (tool == null) throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " by id " + toolId);
-    else return tool;
+//    final InstalledTool tool = myInstalledTools.findTool(toolId);
+//    if (tool == null) throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " by id " + toolId);
+//    else return tool;
+    return null;
   }
 }

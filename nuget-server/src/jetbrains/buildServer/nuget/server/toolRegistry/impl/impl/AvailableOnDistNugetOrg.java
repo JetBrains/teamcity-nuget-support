@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.http.HttpUtil;
 import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolProvider;
 import jetbrains.buildServer.tools.available.AvailableToolsFetcher;
 import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
@@ -66,8 +65,7 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
       for (final Artifact artifact : artifacts.getArtifacts()) {
         if(!artifact.getName().equalsIgnoreCase(NUGET_COMMANDLINE_ARTIFACT_NAME)) continue;
         for (final Version commandlineVersion : artifact.getVersions()) {
-          nugets.add(new DownloadableToolVersion(
-                  NuGetToolProvider.NUGET_TOOL_TYPE,
+          nugets.add(new DownloadableNuGetTool(
                   commandlineVersion.getVersion(),
                   commandlineVersion.getUrl(),
                   FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion() + EXE_EXTENSION));

@@ -38,6 +38,7 @@ public class FeedConstants {
   public static final String NUGET_SYMBOLS_EXTENSION = ".symbols.nupkg";
   public static final String NUSPEC_FILE_EXTENSION = ".nuspec";
 
+  public static final String NUGET_EXE_PACKAGE_VERSION = "3.2.0";
 
   public static final FileFilter PACKAGE_FILE_FILTER = new FileFilter() {
     public boolean accept(File pathname) {
