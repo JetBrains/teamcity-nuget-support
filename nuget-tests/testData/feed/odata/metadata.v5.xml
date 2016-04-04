@@ -7,10 +7,10 @@
           <PropertyRef Name="Id" />
           <PropertyRef Name="Version" />
         </Key>
-        <Property Name="Id" Type="Edm.String" Nullable="false" m:FC_TargetPath="SyndicationTitle" m:FC_ContentKind="text" m:FC_KeepInContent="false" />
+        <Property Name="Id" Type="Edm.String" Nullable="false" m:FC_KeepInContent="false" />
         <Property Name="Version" Type="Edm.String" Nullable="false" />
         <Property Name="NormalizedVersion" Type="Edm.String" />
-        <Property Name="Authors" Type="Edm.String" m:FC_TargetPath="SyndicationAuthorName" m:FC_ContentKind="text" m:FC_KeepInContent="false" />
+        <Property Name="Authors" Type="Edm.String" m:FC_KeepInContent="false" />
         <Property Name="Copyright" Type="Edm.String" />
         <Property Name="Created" Type="Edm.DateTime" Nullable="false" />
         <Property Name="Dependencies" Type="Edm.String" />
@@ -22,7 +22,7 @@
         <Property Name="IsAbsoluteLatestVersion" Type="Edm.Boolean" Nullable="false" />
         <Property Name="IsPrerelease" Type="Edm.Boolean" Nullable="false" />
         <Property Name="Language" Type="Edm.String" />
-        <Property Name="LastUpdated" Type="Edm.DateTime" Nullable="false" m:FC_TargetPath="SyndicationUpdated" m:FC_ContentKind="text" m:FC_KeepInContent="false" />
+        <Property Name="LastUpdated" Type="Edm.DateTime" Nullable="false" m:FC_KeepInContent="false" />
         <Property Name="Published" Type="Edm.DateTime" Nullable="false" />
         <Property Name="PackageHash" Type="Edm.String" />
         <Property Name="PackageHashAlgorithm" Type="Edm.String" />
@@ -31,7 +31,7 @@
         <Property Name="ReportAbuseUrl" Type="Edm.String" />
         <Property Name="ReleaseNotes" Type="Edm.String" />
         <Property Name="RequireLicenseAcceptance" Type="Edm.Boolean" Nullable="false" />
-        <Property Name="Summary" Type="Edm.String" m:FC_TargetPath="SyndicationSummary" m:FC_ContentKind="text" m:FC_KeepInContent="false" />
+        <Property Name="Summary" Type="Edm.String" m:FC_KeepInContent="false" />
         <Property Name="Tags" Type="Edm.String" />
         <Property Name="Title" Type="Edm.String" />
         <Property Name="VersionDownloadCount" Type="Edm.Int32" Nullable="false" />
