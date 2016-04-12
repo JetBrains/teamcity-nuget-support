@@ -22,7 +22,7 @@ import org.testng.annotations.Test;
 /**
  * Created by Evgeniy.Koshkin on 22-Mar-16.
  */
-public class NuGetToolProviderTest extends BaseTestCase {
+public class NuGetServerToolProviderTest extends BaseTestCase {
   @Test
   public void testFoo() throws Exception {
     fail();

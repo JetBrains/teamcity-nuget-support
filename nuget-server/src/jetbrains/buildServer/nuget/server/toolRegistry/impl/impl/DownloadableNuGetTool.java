@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolProvider;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetServerToolProvider;
 import jetbrains.buildServer.tools.ToolType;
 import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +41,7 @@ public class DownloadableNuGetTool implements DownloadableToolVersion {
     myVersion = version;
     myDownloadUrl = downloadUrl;
     myDestinationFileName = destinationFileName;
-    myId = NuGetToolProvider.NUGET_TOOL_TYPE.getType() + "." + version;
+    myId = NuGetServerToolProvider.NUGET_TOOL_TYPE.getType() + "." + version;
   }
 
   @NotNull
@@ -64,7 +64,7 @@ public class DownloadableNuGetTool implements DownloadableToolVersion {
   @NotNull
   @Override
   public ToolType getType() {
-    return NuGetToolProvider.NUGET_TOOL_TYPE;
+    return NuGetServerToolProvider.NUGET_TOOL_TYPE;
   }
 
   @NotNull

@@ -60,7 +60,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   @NotNull
   public Collection<? extends NuGetInstalledTool> getInstalledTools() {
 //    final String defaultToolId = getDefaultToolId();
-//    final Collection<? extends NuGetInstalledTool> tools = myInstalledTools.getTools(NuGetToolProvider.NUGET_TOOL_TYPE);
+//    final Collection<? extends NuGetInstalledTool> tools = myInstalledTools.getTools(NuGetServerToolProvider.NUGET_TOOL_TYPE);
 //    if (defaultToolId == null || StringUtil.isEmptyOrSpaces(defaultToolId)) {
 //      return tools;
 //    }

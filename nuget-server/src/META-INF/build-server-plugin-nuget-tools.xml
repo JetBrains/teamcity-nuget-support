@@ -19,5 +19,5 @@
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolDownloaderImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolUsageStatisticsProvider"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.NuGetServerToolProvider"/>
 </beans>

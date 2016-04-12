@@ -44,9 +44,9 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
 /**
  * Created by Evgeniy.Koshkin on 15-Jan-16.
  */
-public class NuGetToolProvider extends ToolProviderAdapter {
+public class NuGetServerToolProvider extends ToolProviderAdapter {
 
-  private static final Logger LOG = Logger.getInstance(NuGetToolProvider.class.getName());
+  private static final Logger LOG = Logger.getInstance(NuGetServerToolProvider.class.getName());
 
   public static final ToolTypeExtension NUGET_TOOL_TYPE = new ToolTypeExtension() {
     @NotNull
@@ -83,8 +83,8 @@ public class NuGetToolProvider extends ToolProviderAdapter {
 
   @NotNull private final ToolUnpacker myUnpacker = new ToolUnpacker();
 
-  public NuGetToolProvider(@NotNull AvailableToolsState availableTools,
-                           @NotNull NuGetToolDownloader toolDownloader) {
+  public NuGetServerToolProvider(@NotNull AvailableToolsState availableTools,
+                                 @NotNull NuGetToolDownloader toolDownloader) {
     myAvailableTools = availableTools;
     myToolDownloader = toolDownloader;
   }
