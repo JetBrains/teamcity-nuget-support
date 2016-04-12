@@ -29,5 +29,6 @@
     <orderEntry type="library" name="Agent-internal" level="project" />
     <orderEntry type="library" name="Common-Impl" level="project" />
     <orderEntry type="library" name="Idea-OpenApi" level="project" />
+    <orderEntry type="library" name="TeamCity agent runtime" level="project" />
   </component>
 </module>
