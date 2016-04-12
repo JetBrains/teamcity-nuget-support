@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.server.runner.publish;
 
 import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolConstants;
+import jetbrains.buildServer.nuget.common.ToolConstants;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)

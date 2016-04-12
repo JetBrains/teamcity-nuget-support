@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry;
+package jetbrains.buildServer.nuget.common;
 
 /**
  * Created by Evgeniy.Koshkin on 14-Jan-16.

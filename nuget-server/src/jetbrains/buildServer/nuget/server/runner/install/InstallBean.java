@@ -20,7 +20,7 @@ import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolConstants;
+import jetbrains.buildServer.nuget.common.ToolConstants;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 
 /**

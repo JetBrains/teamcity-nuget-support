@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.runner.pack;
 
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolConstants;
+import jetbrains.buildServer.nuget.common.ToolConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;

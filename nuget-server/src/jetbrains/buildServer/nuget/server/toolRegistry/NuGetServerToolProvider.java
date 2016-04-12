@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.toolRegistry;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.nuget.common.ToolConstants;
 import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolUnpacker;
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetPackageValidationUtil;
