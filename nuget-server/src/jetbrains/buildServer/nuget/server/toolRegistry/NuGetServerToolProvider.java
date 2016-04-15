@@ -38,14 +38,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.common.FeedConstants.EXE_EXTENSION;
-import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXE_PACKAGE_VERSION;
-import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
-
 /**
  * Created by Evgeniy.Koshkin on 15-Jan-16.
  */
-public class NuGetServerToolProvider extends ToolProviderAdapter {
+public class NuGetServerToolProvider extends ServerToolProviderAdapter {
 
   private static final Logger LOG = Logger.getInstance(NuGetServerToolProvider.class.getName());
 
@@ -131,7 +127,7 @@ public class NuGetServerToolProvider extends ToolProviderAdapter {
   }
 
   @Override
-  public void unpackTool(@NotNull File toolPackage, @NotNull File targetDirectory) throws ToolException {
+  public void unpackToolPackage(@NotNull File toolPackage, @NotNull File targetDirectory) throws ToolException {
     try {
       if(FeedConstants.EXE_FILE_FILTER.accept(toolPackage)){
         FileUtil.copy(toolPackage, new File(targetDirectory, PackagesConstants.NUGET_TOOL_REL_PATH));
@@ -141,13 +137,5 @@ public class NuGetServerToolProvider extends ToolProviderAdapter {
     } catch (IOException e) {
       throw new ToolException("Failed to unpack NuGet tool package " + toolPackage, e);
     }
-  }
-
-  @NotNull
-  @Override
-  public File getToolPackagesFile(@NotNull File homeDirectory, @NotNull ToolVersion toolVersion) {
-    final String version = toolVersion.getVersion();
-    final String packageFileExtension = version.equalsIgnoreCase(NUGET_EXE_PACKAGE_VERSION) ? EXE_EXTENSION : NUGET_EXTENSION;
-    return new File(homeDirectory, ToolIdUtils.getIdFromVersion(version) + packageFileExtension);
   }
 }
