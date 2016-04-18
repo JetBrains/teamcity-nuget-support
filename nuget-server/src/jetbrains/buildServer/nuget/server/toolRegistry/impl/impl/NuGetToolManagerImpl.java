@@ -17,25 +17,24 @@
 package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
-import jetbrains.buildServer.nuget.server.toolRegistry.*;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
-import jetbrains.buildServer.tools.ToolException;
-import jetbrains.buildServer.tools.ToolVersion;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetServerToolProvider;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.InstalledTool;
+import jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsSettings;
+import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.tools.available.AvailableToolsState;
 import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
 import jetbrains.buildServer.tools.available.FetchToolsPolicy;
 import jetbrains.buildServer.tools.installed.ToolsRegistry;
-import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
-
-import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_COMMANDLINE;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -47,13 +46,16 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   private final AvailableToolsState myAvailableTools;
   private final ToolsRegistry myInstalledTools;
+  private final DefaultToolVersions myDefaultToolVersions;
   private final NuGetToolsSettings mySettings;
 
   public NuGetToolManagerImpl(@NotNull final AvailableToolsState availableTools,
                               @NotNull final ToolsRegistry installedTools,
+                              @NotNull final DefaultToolVersions defaultToolVersions,
                               @NotNull final NuGetToolsSettings settings) {
     myAvailableTools = availableTools;
     myInstalledTools = installedTools;
+    myDefaultToolVersions = defaultToolVersions;
     mySettings = settings;
   }
 
@@ -117,22 +119,39 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
   }
 
   @Nullable
-  public String getNuGetPath(@Nullable final String toolRef) {
-    final InstalledTool tool = findToolByRef(toolRef);
-    return tool == null ? toolRef : tool.getNuGetExePath().getPath();
+  public File getNuGetPath(@Nullable final String toolRef, @NotNull final SProject scope) {
+    if (!ToolVersionReference.isToolReference(toolRef)) {
+      return new File(toolRef);
+    }
+    ToolVersion toolVersion;
+    if(ToolVersionReference.isDefaultVersionReference(toolRef)){
+      toolVersion = myDefaultToolVersions.getDefaultVersion(NuGetServerToolProvider.NUGET_TOOL_TYPE, scope);
+    } else {
+      toolVersion = new SimpleToolVersion(NuGetServerToolProvider.NUGET_TOOL_TYPE, ToolVersionReference.getToolVersionOfType(NuGetServerToolProvider.NUGET_TOOL_TYPE.getType(), toolRef));
+    }
+    if(toolVersion == null) return null;
+    final File unpackedContentLocation = myInstalledTools.getUnpackedContentLocation(toolVersion);
+    if(unpackedContentLocation == null){
+      LOG.debug(String.format("Failed to locate unpacked %s on server", toolVersion));
+      return null;
+    }
+    return new File(unpackedContentLocation, "");
   }
 
   @Nullable
   @Override
-  public String getNuGetVersion(@Nullable String toolRef) {
-    final InstalledTool tool;
-    try {
-      tool = findToolByRef(toolRef);
-    } catch (RuntimeException ex){
-      LOG.warn(ex);
+  public String getNuGetVersion(@Nullable final String toolRef, @NotNull final SProject scope) {
+    if (!ToolVersionReference.isToolReference(toolRef)) {
       return null;
     }
-    return tool == null ? null : tool.getVersion();
+    ToolVersion toolVersion;
+    if(ToolVersionReference.isDefaultVersionReference(toolRef)){
+      toolVersion = myDefaultToolVersions.getDefaultVersion(NuGetServerToolProvider.NUGET_TOOL_TYPE, scope);
+    } else {
+      toolVersion = new SimpleToolVersion(NuGetServerToolProvider.NUGET_TOOL_TYPE, ToolVersionReference.getToolVersionOfType(NuGetServerToolProvider.NUGET_TOOL_TYPE.getType(), toolRef));
+    }
+    if(toolVersion == null) return null;
+    return toolVersion.getVersion();
   }
 
   @Nullable
@@ -162,27 +181,4 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     return null;
   }
 
-  @Nullable
-  private InstalledTool findToolByRef(@Nullable final String toolRef) {
-    if (toolRef == null || StringUtil.isEmptyOrSpaces(toolRef)) return null;
-    if (NuGetToolReferenceUtils.isDefaultToolReference(toolRef)) {
-      final String defaultToolId = getDefaultToolId();
-      if (defaultToolId == null || StringUtil.isEmptyOrSpaces(defaultToolId)) {
-        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE + ". Default NuGet version is not selected.");
-      }
-//      final InstalledTool tool = myInstalledTools.findTool(defaultToolId);
-//      if (tool == null) {
-//        final String ref = NuGetToolReferenceUtils.getToolReference(defaultToolId);
-//        throw new RuntimeException("Failed to find default " + NUGET_COMMANDLINE  + ". Specified id " + ref + " was not found");
-//      }
-//      return tool;
-      return null;
-    }
-    final String toolId = NuGetToolReferenceUtils.getReferredToolId(toolRef);
-    if (toolId == null) return null;
-//    final InstalledTool tool = myInstalledTools.findTool(toolId);
-//    if (tool == null) throw new RuntimeException("Failed to find " + NUGET_COMMANDLINE + " by id " + toolId);
-//    else return tool;
-    return null;
-  }
 }

@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.util.BasePropertiesProcessor;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import jetbrains.buildServer.serverSide.InvalidProperty;
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -37,8 +38,10 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  *         Date: 22.08.11 21:05
  */
 public class PackRunType extends NuGetRunType {
-  public PackRunType(@NotNull final PluginDescriptor descriptor, @NotNull final NuGetToolManager toolManager) {
-    super(descriptor, toolManager);
+  public PackRunType(@NotNull final PluginDescriptor descriptor,
+                     @NotNull final NuGetToolManager toolManager,
+                     @NotNull final ProjectManager projectManager) {
+    super(descriptor, toolManager, projectManager);
   }
 
   @NotNull

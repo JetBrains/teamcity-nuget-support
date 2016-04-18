@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
 import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.tools.ToolException;
 import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
 import jetbrains.buildServer.tools.available.FetchToolsPolicy;
@@ -69,7 +70,7 @@ public interface NuGetToolManager {
    * @return resolved path of given path
    */
   @Nullable
-  String getNuGetPath(@Nullable String path);
+  File getNuGetPath(@Nullable String path, @NotNull SProject scope);
 
   /**
    * Resolves NuGet.exe tool version
@@ -77,7 +78,7 @@ public interface NuGetToolManager {
    * @return resolved version of given path
    */
   @Nullable
-  String getNuGetVersion(@Nullable String path);
+  String getNuGetVersion(@Nullable String path, @NotNull SProject scope);
 
   /**
    * Sets tool as default NuGet tool

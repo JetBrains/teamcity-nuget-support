@@ -31,9 +31,8 @@ public class PackagesInstallerRunTypeTest extends NuGetRunTypeTest<PackagesInsta
   @NotNull
   protected PackagesInstallerRunType createRunType() {
     final NuGetToolManager toolManager = (NuGetToolManager) mock(NuGetToolManager.class).proxy();
-    return new PackagesInstallerRunType(myDescriptor, new PackagesInstallerRunnerDefaults(toolManager), toolManager);
+    return new PackagesInstallerRunType(myDescriptor, new PackagesInstallerRunnerDefaults(toolManager), toolManager, myFixture.getProjectManager());
   }
-
 
   @Test
   @TestFor(issues = "TW-20702")

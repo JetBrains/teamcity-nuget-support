@@ -22,15 +22,16 @@ import jetbrains.buildServer.nuget.server.feed.server.NuGetFeedUsageStatisticsPr
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildServer;
 import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.usageStatistics.impl.providers.BaseExtensionUsageStatisticsProvider;
-import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.filters.Filter;
+import jetbrains.buildServer.util.MultiMap;
 import jetbrains.buildServer.util.positioning.PositionAware;
 import jetbrains.buildServer.util.positioning.PositionConstraint;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,11 +53,11 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
   };
 
   @NotNull private final SBuildServer myServer;
-  @NotNull private final NuGetToolManager myNuGetToolManager;
+  @NotNull private final NuGetToolManager myToolManager;
 
-  public NuGetToolUsageStatisticsProvider(@NotNull final SBuildServer server, @NotNull NuGetToolManager nuGetToolManager) {
+  public NuGetToolUsageStatisticsProvider(@NotNull final SBuildServer server, @NotNull NuGetToolManager toolManager) {
     myServer = server;
-    myNuGetToolManager = nuGetToolManager;
+    myToolManager = toolManager;
     myGroupName = "NuGet Versions";
     setIdFormat("jb.nuget.version.[%s]");
   }
@@ -75,37 +76,37 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
 
   @Override
   protected void collectUsages(@NotNull UsagesCollectorCallback usagesCollectorCallback) {
-    final Collection<? extends NuGetInstalledTool> installedTools = myNuGetToolManager.getInstalledTools();
-    if(installedTools.isEmpty()){
-      LOG.debug("There are no nuget.exe tools installed on the server.");
+    if(myToolManager.getInstalledTools().isEmpty()){
+      LOG.debug(String.format("There are no %s tools installed on the server.", NuGetServerToolProvider.NUGET_TOOL_TYPE.getDisplayName()));
       return;
     }
-    for(SBuildRunnerDescriptor buildRunner : getNuGetEnabledBuildRunners()){
-      final Map<String, String> buildParameters = buildRunner.getParameters();
-      final String toolPath = myNuGetToolManager.getNuGetPath(buildParameters.get(PackagesConstants.NUGET_PATH));
-      final NuGetInstalledTool referredTool = CollectionsUtil.findFirst(installedTools, new Filter<NuGetInstalledTool>() {
-        public boolean accept(@NotNull NuGetInstalledTool data) {
-          return data.getNuGetExePath().getAbsolutePath().equalsIgnoreCase(toolPath);
+    for(Map.Entry<SProject, List<SBuildRunnerDescriptor>> entry : getNuGetEnabledBuildRunners().entrySet()){
+      for(SBuildRunnerDescriptor buildRunner : entry.getValue()){
+        final Map<String, String> buildParameters = buildRunner.getParameters();
+        String referredToolVersion = myToolManager.getNuGetVersion(buildParameters.get(PackagesConstants.NUGET_PATH), entry.getKey());
+        if(referredToolVersion != null) {
+          usagesCollectorCallback.addUsage(referredToolVersion, referredToolVersion);
         }
-      });
-      if(referredTool == null) continue;
-      final String referredToolVersion = referredTool.getVersion();
-      usagesCollectorCallback.addUsage(referredToolVersion, referredToolVersion);
+      }
     }
   }
 
   @Override
   protected int getTotalUsagesCount(@NotNull Map<ExtensionType, Integer> extensionUsages) {
-    return getNuGetEnabledBuildRunners().size();
+    int size = 0;
+    for(Map.Entry<SProject, List<SBuildRunnerDescriptor>> entry : getNuGetEnabledBuildRunners().entrySet()){
+      size += entry.getValue().size();
+    }
+    return size;
   }
 
-  private Collection<SBuildRunnerDescriptor> getNuGetEnabledBuildRunners() {
-    Collection<SBuildRunnerDescriptor> result = new HashSet<SBuildRunnerDescriptor>();
+  private MultiMap<SProject, SBuildRunnerDescriptor> getNuGetEnabledBuildRunners() {
+    MultiMap<SProject, SBuildRunnerDescriptor> result = new MultiMap<SProject, SBuildRunnerDescriptor>();
     for(SBuildType buildType : myServer.getProjectManager().getActiveBuildTypes())
       for (SBuildRunnerDescriptor buildRunner : buildType.getResolvedSettings().getBuildRunners()) {
         Map<String,String> buildParameters = buildRunner.getParameters();
         if(buildParameters.containsKey(PackagesConstants.NUGET_PATH))
-          result.add(buildRunner);
+          result.putValue(buildType.getProject(), buildRunner);
       }
     return result;
   }

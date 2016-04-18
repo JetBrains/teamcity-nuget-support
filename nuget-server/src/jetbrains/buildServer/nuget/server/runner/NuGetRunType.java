@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.util.Version;
 import jetbrains.buildServer.requirements.Requirement;
 import jetbrains.buildServer.requirements.RequirementType;
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.serverSide.RunType;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -40,10 +41,12 @@ public abstract class NuGetRunType extends RunType {
   private static final Version LOWEST_VERSION_REQUIRED_4_5_DOT_NET = new Version(2, 8, 0);
   private final PluginDescriptor myDescriptor;
   private final NuGetToolManager myToolManager;
+  private final ProjectManager myProjectManager;
 
-  protected NuGetRunType(@NotNull final PluginDescriptor descriptor, @NotNull NuGetToolManager toolManager) {
+  protected NuGetRunType(@NotNull final PluginDescriptor descriptor, @NotNull NuGetToolManager toolManager, @NotNull ProjectManager projectManager) {
     myDescriptor = descriptor;
     myToolManager = toolManager;
+    myProjectManager = projectManager;
   }
 
   @NotNull
@@ -88,7 +91,7 @@ public abstract class NuGetRunType extends RunType {
   @Override
   public List<Requirement> getRunnerSpecificRequirements(@NotNull Map<String, String> runParameters) {
     List<Requirement> list = new ArrayList<>(super.getRunnerSpecificRequirements(runParameters));
-    String versionString = myToolManager.getNuGetVersion(runParameters.get(NUGET_PATH));
+    final String versionString = myToolManager.getNuGetVersion(runParameters.get(NUGET_PATH), myProjectManager.getRootProject());
     final Version version = Version.valueOf(versionString);
     if(version != null){
       if(version.compareTo(LOWEST_VERSION_REQUIRED_4_5_DOT_NET) >= 0)

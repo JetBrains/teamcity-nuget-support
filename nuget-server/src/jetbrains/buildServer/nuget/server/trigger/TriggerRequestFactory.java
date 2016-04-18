@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
+import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
@@ -30,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
 
 import static jetbrains.buildServer.nuget.server.trigger.TriggerConstants.*;
 
@@ -39,44 +41,45 @@ import static jetbrains.buildServer.nuget.server.trigger.TriggerConstants.*;
  */
 public class TriggerRequestFactory {
   private final CheckRequestModeFactory myModeFactory;
-  private final NuGetToolManager myManager;
+  private final NuGetToolManager myToolManager;
   private final PackageCheckRequestFactory myRequestFactory;
   private final Collection<TriggerUrlPostProcessor> myUrlPostProcessors;
 
   public TriggerRequestFactory(@NotNull final CheckRequestModeFactory modeFactory,
-                               @NotNull final NuGetToolManager manager,
+                               @NotNull final NuGetToolManager toolManager,
                                @NotNull final PackageCheckRequestFactory requestFactory,
                                @NotNull final Collection<TriggerUrlPostProcessor> urlPostProcessors) {
     myModeFactory = modeFactory;
-    myManager = manager;
+    myToolManager = toolManager;
     myRequestFactory = requestFactory;
     myUrlPostProcessors = urlPostProcessors;
   }
 
   @NotNull
-  public PackageCheckRequest createRequest(@NotNull BuildTriggerDescriptor descriptor) throws BuildTriggerException {
-    String path = myManager.getNuGetPath(descriptor.getProperties().get(NUGET_EXE));
-    String pkgId = descriptor.getProperties().get(PACKAGE);
-    String version = descriptor.getProperties().get(VERSION);
-    String source = descriptor.getProperties().get(SOURCE);
-    String username = descriptor.getProperties().get(USERNAME);
-    String password = descriptor.getProperties().get(PASSWORD);
-    boolean isPrerelease = !StringUtil.isEmptyOrSpaces(descriptor.getProperties().get(INCLUDE_PRERELEASE));
+  public PackageCheckRequest createRequest(@NotNull PolledTriggerContext context) throws BuildTriggerException {
+    final BuildTriggerDescriptor descriptor = context.getTriggerDescriptor();
+    final Map<String, String> descriptorProperties = descriptor.getProperties();
+    File nugetPath = myToolManager.getNuGetPath(descriptorProperties.get(NUGET_EXE), context.getBuildType().getProject());
+    String pkgId = descriptorProperties.get(PACKAGE);
+    String version = descriptorProperties.get(VERSION);
+    String source = descriptorProperties.get(SOURCE);
+    String username = descriptorProperties.get(USERNAME);
+    String password = descriptorProperties.get(PASSWORD);
+    boolean isPrerelease = !StringUtil.isEmptyOrSpaces(descriptorProperties.get(INCLUDE_PRERELEASE));
 
     NuGetFeedCredentials credentials = null;
     if (username != null && password != null && !StringUtil.isEmptyOrSpaces(username) && !StringUtil.isEmptyOrSpaces(password)) {
       credentials = new NuGetFeedCredentials(username, password);
     }
 
-    if (path == null || StringUtil.isEmptyOrSpaces(path)) {
-      throw new BuildTriggerException("The path to NuGet.exe must be specified");
-    }
-
     if (StringUtil.isEmptyOrSpaces(pkgId)) {
       throw new BuildTriggerException("The Package Id must be specified");
     }
 
-    final File nugetPath = new File(path);
+    if (nugetPath == null) {
+      throw new BuildTriggerException("The path to NuGet.exe must be specified");
+    }
+
     if (!nugetPath.isFile()) {
       throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
     }
