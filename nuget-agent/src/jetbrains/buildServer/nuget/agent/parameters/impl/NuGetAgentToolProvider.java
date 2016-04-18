@@ -21,6 +21,7 @@ import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.log.LogUtil;
 import jetbrains.buildServer.nuget.common.ToolConstants;
+import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import jetbrains.buildServer.tools.DefaultToolVersionParameters;
 import jetbrains.buildServer.tools.ToolVersionReference;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +69,7 @@ public class NuGetAgentToolProvider {
           }
           final String bundledCltVersion = ToolVersionReference.getToolVersionOfType(ToolConstants.NUGET_TOOL_TYPE_ID, cltPath);
           if(bundledCltVersion != null){
-            final BundledTool bundledTool = bundledTools.findTool(bundledCltVersion);
+            final BundledTool bundledTool = bundledTools.findTool(ToolIdUtils.getIdFromVersion(bundledCltVersion));
             if(bundledTool != null){
               final File bundledToolRootPath = bundledTool.getRootPath();
               if (bundledToolRootPath.isDirectory()) {
