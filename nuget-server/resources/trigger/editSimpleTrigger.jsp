@@ -26,7 +26,7 @@
   <td colspan="2"><em>The NuGet Dependency Trigger allows starting a new build if a NuGet packages update is detected in the NuGet repository.</em></td>
 </tr>
 
-<jsp:include page="/tools/editToolUsage.html?name=${ib.nuGetExeKey}&style=width:20em"/>
+<jsp:include page="/tools/editToolUsage.html?toolType=${ib.nuGetToolTypeKey}&versionParameterName=${ib.nuGetExeKey}&style=width:20em"/>
 
 <c:if test="${not canStartNuGetProcesses}">
   <tr>
