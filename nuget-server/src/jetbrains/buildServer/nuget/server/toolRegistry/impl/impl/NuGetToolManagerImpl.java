@@ -36,6 +36,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.*;
 
+import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_TOOL_REL_PATH;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 11.08.11 1:07
@@ -126,16 +128,16 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
     ToolVersion toolVersion;
     if(ToolVersionReference.isDefaultVersionReference(toolRef)){
       toolVersion = myDefaultToolVersions.getDefaultVersion(NuGetServerToolProvider.NUGET_TOOL_TYPE, scope);
+      if(toolVersion == null) return null;
     } else {
       toolVersion = new SimpleToolVersion(NuGetServerToolProvider.NUGET_TOOL_TYPE, ToolVersionReference.getToolVersionOfType(NuGetServerToolProvider.NUGET_TOOL_TYPE.getType(), toolRef));
     }
-    if(toolVersion == null) return null;
     final File unpackedContentLocation = myInstalledTools.getUnpackedContentLocation(toolVersion);
     if(unpackedContentLocation == null){
       LOG.debug(String.format("Failed to locate unpacked %s on server", toolVersion));
       return null;
     }
-    return new File(unpackedContentLocation, "");
+    return new File(unpackedContentLocation, NUGET_TOOL_REL_PATH);
   }
 
   @Nullable
