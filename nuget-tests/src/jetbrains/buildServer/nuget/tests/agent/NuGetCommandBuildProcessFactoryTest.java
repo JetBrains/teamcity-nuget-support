@@ -78,8 +78,9 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testSupportQuotes() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "program \" foo \"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "\" foo \"");
     }});
 
     myFactory.executeCommandLine(myRootContext, "program", Arrays.asList("\"", "foo", "\""), myWorkDir, Collections.<String, String>emptyMap());
@@ -90,8 +91,9 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testSupportQuotes2() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "program \" \" foo\" \"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "\" \" foo\" \"");
     }});
 
     myFactory.executeCommandLine(myRootContext, "program", Arrays.asList("\"", "\" foo\"", "\""), myWorkDir, Collections.<String, String>emptyMap());
@@ -102,8 +104,9 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testQuoteArguments() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "program \" \"f o o\" \"z e\" \"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "\" \"f o o\" \"z e\" \"");
     }});
 
     myFactory.executeCommandLine(myRootContext, "program", Arrays.asList("\"", "f o o", "z e", "\""), myWorkDir, Collections.<String, String>emptyMap());
@@ -114,8 +117,8 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testSupportEnv() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "program");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
       oneOf(mySubContext).addEnvironmentVariable("a", "b");
     }});
 
@@ -127,8 +130,8 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testQuoteCommand() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "\"p r o g r a m\"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "\"p r o g r a m\"");
       oneOf(mySubContext).addEnvironmentVariable("a", "b");
     }});
 
@@ -140,8 +143,9 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testQuoteCommandArgs() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "\"p r o g r a m\" a \"b c d e\" f");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "\"p r o g r a m\"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "a \"b c d e\" f");
       oneOf(mySubContext).addEnvironmentVariable("a", "b");
     }});
 
@@ -153,11 +157,12 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testNuGetCmdOptions() throws Exception {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, "nuget -Verbosity normal");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "nuget");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "-Verbosity normal");
     }});
 
-    myFactory.executeCommandLine(myRootContext, "nuget", Arrays.asList("-Verbosity normal"), myWorkDir, Collections.<String, String>emptyMap());
+    myFactory.executeCommandLine(myRootContext, "nuget", Collections.singletonList("-Verbosity normal"), myWorkDir, Collections.<String, String>emptyMap());
 
     m.assertIsSatisfied();
   }

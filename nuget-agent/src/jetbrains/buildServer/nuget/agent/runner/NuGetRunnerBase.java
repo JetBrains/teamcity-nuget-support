@@ -54,18 +54,13 @@ public abstract class NuGetRunnerBase implements AgentBuildRunner, AgentBuildRun
   public abstract String getType();
 
   public boolean canRun(@NotNull BuildAgentConfiguration agentConfiguration) {
-    if (!agentConfiguration.getSystemInfo().isWindows()) {
-      LOG.warn("NuGet runner " + getType() + " available only under Windows");
-      return false;
-    }
-
     if(CollectionsUtil.contains(agentConfiguration.getConfigurationParameters().keySet(), new Filter<String>() {
       public boolean accept(@NotNull String data) {
-        return data.startsWith("DotNetFramework4.");
+        return data.startsWith("DotNetFramework4.") || data.startsWith("Mono");
       }
     })) return true;
 
-    LOG.warn("NuGet requires .NET Framework 4.0 (x86) or higher to be installed.");
+    LOG.warn("NuGet requires .NET Framework (x86) 4.0 or higher or Mono to be installed.");
     return false;
   }
 }
