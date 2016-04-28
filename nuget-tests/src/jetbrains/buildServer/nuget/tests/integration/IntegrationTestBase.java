@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
@@ -257,10 +258,12 @@ public class IntegrationTestBase extends BuildProcessTestCase {
           @NotNull
           @Override
           protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+            if (!SystemInfo.isWindows) {
+              enableExecution(program, workingDir.getAbsolutePath());
+            }
+
             GeneralCommandLine cmd = new GeneralCommandLine();
-            cmd.setExePath("cmd");
-            cmd.addParameter("/c");
-            cmd.addParameter(program);
+            cmd.setExePath(program);
             for (String arg : argz) {
               cmd.addParameter(arg.replaceAll("%+", "%"));
             }
@@ -287,5 +290,19 @@ public class IntegrationTestBase extends BuildProcessTestCase {
         };
       }
     };
+  }
+
+  private static void enableExecution(@NotNull final String filePath, @NotNull final String baseDir) {
+    final GeneralCommandLine commandLine = new GeneralCommandLine();
+
+    commandLine.setExePath("chmod");
+    commandLine.addParameter("+x");
+    commandLine.addParameter(filePath);
+    commandLine.setWorkDirectory(baseDir);
+
+    final ExecResult execResult = SimpleCommandLineProcessRunner.runCommand(commandLine, null);
+    if (execResult.getExitCode() != 0) {
+      System.out.println("Failed to set executable attribute for " + filePath + ": chmod +x exit code is " + execResult.getExitCode());
+    }
   }
 }

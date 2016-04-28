@@ -25,10 +25,7 @@ import jetbrains.buildServer.runner.SimpleRunnerConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -61,17 +58,12 @@ public class NuGetCommandBuildProcessFactoryImpl implements CommandlineBuildProc
       context.addEnvironmentVariable(entry.getKey(), entry.getValue());
     }
 
-    final List<String> newArgz = new ArrayList<String>();
-    newArgz.add(program);
-    newArgz.addAll(argz);
-
-    final String commandLine = joinCommandLineArguments(newArgz);
-
-    hostContext.getBuild().getBuildLogger().message("NuGet command: " + commandLine);
-
-    context.addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
-    context.addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, commandLine);
-
+    final String executable = joinCommandLineArguments(Collections.singletonList(program));
+    final String args = joinCommandLineArguments(new ArrayList<String>(argz));
+    hostContext.getBuild().getBuildLogger().message("NuGet command: " + executable + " " + args);
+    context.addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
+    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, executable);
+    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, args);
     return myFacade.createExecutable(hostContext.getBuild(), context);
   }
 
