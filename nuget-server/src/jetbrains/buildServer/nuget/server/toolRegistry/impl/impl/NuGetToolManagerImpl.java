@@ -114,7 +114,7 @@ public class NuGetToolManagerImpl implements NuGetToolManager {
 
   public void removeTool(@NotNull String toolId) {
     try {
-      myInstalledTools.removeTool(null);
+      myInstalledTools.removeTool(toolId);
     } catch (ToolException e) {
       LOG.error(e);
     }
