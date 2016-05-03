@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.runner.install;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDefaults;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
@@ -64,7 +65,7 @@ public class PackagesInstallerRunnerDefaultsTest extends BaseTestCase {
       }
     };
     setUpDefaults(defaultTool);
-    assertMapping(myDefaults.getRunnerProperties(), NUGET_USE_RESTORE_COMMAND, PackagesInstallerRunnerDefaults.CHECKED);
+    assertEquals(PackagesInstallMode.VIA_RESTORE.getName(), myDefaults.getRunnerProperties().get(NUGET_USE_RESTORE_COMMAND));
   }
 
   @Test
@@ -90,7 +91,7 @@ public class PackagesInstallerRunnerDefaultsTest extends BaseTestCase {
       }
     };
     setUpDefaults(defaultTool);
-    assertFalse(myDefaults.getRunnerProperties().containsKey(NUGET_USE_RESTORE_COMMAND));
+    assertEquals(PackagesInstallMode.VIA_INSTALL.getName(), myDefaults.getRunnerProperties().get(NUGET_USE_RESTORE_COMMAND));
   }
 
   private void setUpDefaults(NuGetInstalledTool defaultTool) {
