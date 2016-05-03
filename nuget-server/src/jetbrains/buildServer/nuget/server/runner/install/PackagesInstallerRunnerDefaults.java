@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.runner.install;
 
+import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
 import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import org.jetbrains.annotations.NotNull;
@@ -42,8 +43,13 @@ public class PackagesInstallerRunnerDefaults {
   public Map<String,String> getRunnerProperties(){
     final TreeMap<String, String> map = new TreeMap<String, String>();
     final NuGetInstalledTool defaultNugetInstalled = myToolManager.getDefaultTool();
-    if(defaultNugetInstalled == null || defaultNugetInstalled.getVersion().compareTo(FIRST_NUGET_VERSION_WITH_RESTORE_CMD) >= 0)
+    if (defaultNugetInstalled == null) {
       map.put(NUGET_USE_RESTORE_COMMAND, CHECKED);
+    } else if (defaultNugetInstalled.getVersion().compareTo(FIRST_NUGET_VERSION_WITH_RESTORE_CMD) >= 0) {
+      map.put(NUGET_USE_RESTORE_COMMAND, PackagesInstallMode.VIA_RESTORE.getName());
+    } else {
+      map.put(NUGET_USE_RESTORE_COMMAND, PackagesInstallMode.VIA_INSTALL.getName());
+    }
 
     return map;
   }
