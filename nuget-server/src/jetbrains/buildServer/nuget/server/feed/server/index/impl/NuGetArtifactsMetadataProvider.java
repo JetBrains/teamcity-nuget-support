@@ -98,7 +98,12 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
       try {
         final Map<String, String> metadata = generateMetadataForPackage(build, aPackage);
         myReset.resetCache();
-        store.addParameters(metadata.get(PackageAttributes.ID), metadata);
+        final String key = metadata.get(PackageAttributes.ID);
+        if (key != null) {
+          store.addParameters(key, metadata);
+        } else {
+          LOG.warn("Failed to read NuGet package metadata, package ignored: " + aPackage);
+        }
       } catch (PackageLoadException e) {
         LOG.warn("Failed to read NuGet package: " + aPackage);
       }
