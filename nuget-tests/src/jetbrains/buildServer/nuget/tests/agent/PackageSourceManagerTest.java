@@ -124,6 +124,18 @@ public class PackageSourceManagerTest extends AgentServerFunctionalTestCase {
     assertContainsPackageSource("some_url", "user2", "password2", packageSources);
   }
 
+  @Test
+  public void shouldNotFailOnNetworkPaths() throws Exception {
+    addAuthBuildFeature("\\\\some\\path\\", "", "");
+
+    final AgentRunningBuildEx runningBuild = startBuild();
+    final List<PackageSource> packageSources = getPackageSourcesOfRunningBuild(runningBuild);
+
+    assertEquals(3, packageSources.size());
+
+    assertContainsPackageSource("\\\\some\\path\\", "", "", packageSources);
+  }
+
   private void assertContainsPackageSource(final String expectedUrl, final String expectedUser, final String expectedPassword, List<PackageSource> actualPackageSources) {
     assertTrue(CollectionsUtil.contains(actualPackageSources, new Filter<PackageSource>() {
       public boolean accept(@NotNull PackageSource data) {

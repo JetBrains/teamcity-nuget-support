@@ -71,7 +71,11 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
 
   @Nullable
   private String normalizeUrl(@NotNull String url) {
-    return URI.create(url).normalize().getPath();
+    try {
+      return URI.create(url).normalize().getPath();
+    } catch (Exception e) {
+      return url; // probably not URL, use as is
+    }
   }
 
   @NotNull
