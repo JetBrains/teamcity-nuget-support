@@ -22,9 +22,9 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
-import jetbrains.buildServer.serverSide.ServerSettings;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
+import jetbrains.buildServer.serverSide.auth.LoginConfiguration;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
@@ -41,21 +41,21 @@ public class FeedServerController extends BaseController {
   @NotNull private final FeedServerSettingsSection mySection;
   @NotNull private final PluginDescriptor myDescriptor;
   @NotNull private final NuGetServerSettings mySettings;
-  @NotNull private final ServerSettings myServerSettings;
   @NotNull private final RootUrlHolder myRootUrlHolder;
+  @NotNull private final LoginConfiguration myLoginConfiguration;
 
   public FeedServerController(@NotNull final AuthorizationInterceptor auth,
                               @NotNull final PermissionChecker checker,
                               @NotNull final FeedServerSettingsSection section,
                               @NotNull final WebControllerManager web,
                               @NotNull final PluginDescriptor descriptor,
-                              @NotNull final ServerSettings serverSettings,
+                              @NotNull final LoginConfiguration loginConfiguration,
                               @NotNull final NuGetServerSettings settings,
                               @NotNull final RootUrlHolder rootUrlHolder) {
     mySection = section;
     myDescriptor = descriptor;
     mySettings = settings;
-    myServerSettings = serverSettings;
+    myLoginConfiguration = loginConfiguration;
     myRootUrlHolder = rootUrlHolder;
     final String myPath = section.getIncludePath();
 
@@ -78,7 +78,7 @@ public class FeedServerController extends BaseController {
     mv.getModel().put("privateFeedUrl", mySettings.getNuGetHttpAuthFeedControllerPath());
     mv.getModel().put("publicFeedUrl", mySettings.getNuGetGuestAuthFeedControllerPath());
     mv.getModel().put("serverEnabled", mySettings.isNuGetServerEnabled());
-    mv.getModel().put("isGuestEnabled", myServerSettings.isGuestLoginAllowed());
+    mv.getModel().put("isGuestEnabled", myLoginConfiguration.isGuestLoginAllowed());
 
     return mv;
   }
