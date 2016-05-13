@@ -102,7 +102,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
         if (key != null) {
           store.addParameters(key, metadata);
         } else {
-          LOG.warn("Failed to read NuGet package metadata, package ignored: " + aPackage);
+          LOG.warn("Failed to resolve NuGet package Id, package ignored: " + aPackage);
         }
       } catch (PackageLoadException e) {
         LOG.warn("Failed to read NuGet package: " + aPackage);
