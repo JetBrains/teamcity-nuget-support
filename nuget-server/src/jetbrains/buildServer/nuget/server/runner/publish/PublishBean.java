@@ -27,6 +27,5 @@ public class PublishBean {
   public String getNuGetSourceKey() { return PackagesConstants.NUGET_PUBLISH_SOURCE; }
   public String getApiKey() { return PackagesConstants.NUGET_API_KEY; }
   public String getNuGetPublishFilesKey() {return PackagesConstants.NUGET_PUBLISH_FILES; }
-  public String getNuGetPublishCreateOnlyKey() { return PackagesConstants.NUGET_PUBLISH_CREATE_ONLY; }
   public String getPushCustomCommandline() { return PackagesConstants.NUGET_PUSH_CUSTOM_COMMANDLINE; }
 }

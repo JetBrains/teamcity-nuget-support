@@ -194,10 +194,6 @@ public class CommandFactoryImpl implements CommandFactory {
             ? Collections.<String, String>emptyMap()
             : Collections.singletonMap(apiKeyEnvVarName, apiKey);
 
-    if (params.getCreateOnly()) {
-      arguments.add("-CreateOnly");
-    }
-
     for (String cmd : params.getCustomCommandline()) {
       if (!arguments.contains(cmd) && !arguments.contains(cmd.toLowerCase())) {
         arguments.add(cmd);

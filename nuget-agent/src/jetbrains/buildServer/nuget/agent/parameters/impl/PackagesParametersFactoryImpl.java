@@ -264,10 +264,6 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
         return getMultilineParameter(context, NUGET_PUBLISH_FILES);
       }
 
-      public boolean getCreateOnly() {
-        return getBoolean(context, NUGET_PUBLISH_CREATE_ONLY);
-      }
-
       @NotNull
       public Collection<String> getCustomCommandline() {
         return getMultilineParameter(context, NUGET_PUSH_CUSTOM_COMMANDLINE);

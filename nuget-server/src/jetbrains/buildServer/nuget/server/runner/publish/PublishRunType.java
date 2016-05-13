@@ -112,11 +112,6 @@ public class PublishRunType extends NuGetRunType {
       }
     }
 
-    final String doNotPublish = parameters.get(NUGET_PUBLISH_CREATE_ONLY);
-    if (!StringUtil.isEmptyOrSpaces(doNotPublish)) {
-      sb.append("\nDo not pusblish uploaded package");
-    }
-
     return sb.toString();
   }
 }

@@ -32,7 +32,3 @@
 <div class="parameter">
   Packages to upload: <strong><props:displayValue name="${ib.nuGetPublishFilesKey}" showInPopup="${true}"/></strong>
 </div>
-
-<div class="parameter">
-  Publish package in feed: <strong><props:displayCheckboxValue name="${ib.nuGetPublishCreateOnlyKey}" checkedValue="False" uncheckedValue="True"/></strong>
-</div>

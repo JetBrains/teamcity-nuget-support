@@ -127,7 +127,6 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
-      allowing(ps).getCreateOnly(); will(returnValue(false));
       allowing(ps).getCustomCommandline(); will(returnValue(Collections.emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
@@ -148,7 +147,6 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
       allowing(ps).getPublishSource(); will(returnValue(null));
-      allowing(ps).getCreateOnly(); will(returnValue(false));
       allowing(ps).getCustomCommandline(); will(returnValue(Collections.emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
@@ -169,11 +167,10 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getNuGetExeFile(); will(returnValue(myNuGet));
       allowing(ps).getApiKey(); will(returnValue("api-key-guid"));
       allowing(ps).getPublishSource(); will(returnValue("push-feed"));
-      allowing(ps).getCreateOnly(); will(returnValue(true));
       allowing(ps).getCustomCommandline(); will(returnValue(Collections.emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
-              with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-CreateOnly", "-Source", "push-feed")),
+              with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-Source", "push-feed")),
               with(equal(myFile.getParentFile())),
               with(envApi("api-key-guid"))
       );

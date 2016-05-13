@@ -52,15 +52,6 @@
   </td>
 </tr>
 
-<tr class="advancedSetting">
-  <th class="noBorder"></th>
-  <td>
-    <props:checkboxProperty name="${ib.nuGetPublishCreateOnlyKey}"/>
-    <label for="${ib.nuGetPublishCreateOnlyKey}">Only upload packages but do not publish them to feed</label>
-    <span class="smallNote">Specifies if packages should be created and uploaded to the TeamCity server but not published to the NuGet feed.</span>
-  </td>
-</tr>
-
 <tr>
   <th>API key:</th>
   <td>

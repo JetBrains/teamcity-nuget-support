@@ -231,7 +231,6 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     }
     m.checking(new Expectations(){{
       allowing(myPublishParameters).getFiles(); will(returnValue(files));
-      allowing(myPublishParameters).getCreateOnly(); will(returnValue(false));
       allowing(myPublishParameters).getNuGetExeFile(); will(returnValue(nuget.getPath()));
       allowing(myPublishParameters).getPublishSource(); will(returnValue(source));
       allowing(myPublishParameters).getApiKey(); will(returnValue(getQ()));

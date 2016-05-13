@@ -50,8 +50,6 @@ public interface PackagesConstants {
   public static final String NUGET_USED_PACKAGES_DIR = ArtifactsConstants.TEAMCITY_ARTIFACTS_DIR + "/nuget";
   public static final String NUGET_USED_PACKAGES_FILE = "nuget.xml";
 
-
-  public static final String NUGET_PUBLISH_CREATE_ONLY = "nuget.publish.create.only";
   public static final String NUGET_PUBLISH_FILES = "nuget.publish.files";
   public static final String NUGET_PUBLISH_SOURCE = "nuget.publish.source";
   public static final String NUGET_PUSH_CUSTOM_COMMANDLINE= "nuget.push.commandline";
