@@ -72,12 +72,11 @@ public class NuGetFeedController extends BaseController {
     for (NuGetFeedHandler handler : myHandlers) {
       if (handler.isAvailable()) {
         handler.handleRequest(myNuGetPath, request, response);
+        myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
         return null;
       }
     }
-    final long actualTime = new Date().getTime() - startTime;
-    myRequestsList.reportFeedRequestFinished(pathAndQuery, actualTime);
-
+    myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
     return NuGetResponseUtil.noImplementationFoundError(response);
   }
 }
