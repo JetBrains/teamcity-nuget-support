@@ -39,6 +39,7 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
   public static final String GROUP_NAME = "NuGet Feed Usage";
 
   private static final String TOTAL_REQUESTS_STAT_ID = "jetbrains.nuget.feedDailyRequests";
+  private static final String AVG_RESPONSE_TIME_STAT_ID = "jetbrains.nuget.avgResponseTime";
   private static final String TOTAL_PACKAGES_STAT_ID = "jetbrains.nuget.totalPackages";
   private static final String DIFF_PACKAGES_STAT_ID = "jetbrains.nuget.packagesIds";
 
@@ -78,6 +79,9 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
     if (mySettings.isNuGetServerEnabled()) {
       publisher.publishStatistic(TOTAL_REQUESTS_STAT_ID, myRequests.getTotalRequests());
       presentationManager.applyPresentation(TOTAL_REQUESTS_STAT_ID, "Feed Requests Count per Day", myGroupName, null, null);
+
+      publisher.publishStatistic(AVG_RESPONSE_TIME_STAT_ID, myRequests.getAverageResponseTime());
+      presentationManager.applyPresentation(AVG_RESPONSE_TIME_STAT_ID, "Average Feed Response Time (ms)", myGroupName, null, null);
 
       final Pair<Integer, Integer> indexEntriesCount = countIndexEntries();
       publisher.publishStatistic(TOTAL_PACKAGES_STAT_ID, indexEntriesCount.first);

@@ -18,8 +18,8 @@ package jetbrains.buildServer.nuget.server.feed.server.controllers.requests;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.util.Dates;
+import jetbrains.buildServer.util.ItemProcessor;
 import jetbrains.buildServer.util.RecentEntriesCache;
-import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -32,39 +32,57 @@ import java.util.TreeSet;
  */
 public class RecentNuGetRequests {
   private static final Logger LOG = Logger.getInstance(RecentNuGetRequests.class.getName());
-  private final RecentEntriesCache<String, String> myFeedRequests = new RecentEntriesCache<String, String>(5000, false);
+  private final RecentEntriesCache<String, Long> myFeedRequests = new RecentEntriesCache<String, Long>(5000, false);
   private final RecentEntriesCache<Long, Long> myFeedRequestTimes = new RecentEntriesCache<Long, Long>(20000, false);
 
-  public void reportFeedRequest(@NotNull final String url) {
+  public synchronized void reportFeedRequest(@NotNull final String url) {
     LOG.debug("NuGet Feed request processing started for " + url);
-
     final long time = getTime();
     myFeedRequestTimes.put(time, time);
-    //TODO: trim identifiers in request to merge same trees
-    myFeedRequests.put(url, url);
+    myFeedRequests.put(url, time);
   }
 
-  public void reportFeedRequestFinished(@NotNull final String url, long time) {
-    LOG.debug("NuGet Feed Request request processing finsihed in " + time + "ms for " + url);
+  public synchronized void reportFeedRequestFinished(@NotNull final String url, long requestProcessingDuration) {
+    LOG.debug("NuGet Feed Request request processing finsihed in " + requestProcessingDuration + "ms for " + url);
+    final Long requestProcessingStartTime = myFeedRequests.get(url);
+    if(requestProcessingStartTime != null) {
+      myFeedRequestTimes.put(requestProcessingStartTime, requestProcessingDuration);
+    }
+  }
+
+  public synchronized int getTotalRequests() {
+    removeOldRequests();
+    return myFeedRequestTimes.size();
+  }
+
+  public synchronized long getAverageResponseTime(){
+    removeOldRequests();
+    int numberOfProcessedRequests = myFeedRequestTimes.size();
+    if(numberOfProcessedRequests == 0) return 0;
+
+    final Long[] overalDuration = {0L};
+    myFeedRequestTimes.forEach(new ItemProcessor<Long>() {
+      @Override
+      public boolean processItem(Long item) {
+        overalDuration[0] += item;
+        return true;
+      }
+    });
+    return overalDuration[0] / numberOfProcessedRequests;
   }
 
   @NotNull
-  public Collection<String> getRecentRequests() {
+  Collection<String> getRecentRequests() {
     return new TreeSet<String>(myFeedRequests.keySet());
   }
 
-  public int getTotalRequests() {
-    final long SPAN = Dates.ONE_DAY;
-
-    final long now = getTime();
-    final long startTime = now - SPAN;
-
-    myFeedRequestTimes.removeValues(new Filter<Long>() {
-      public boolean accept(@NotNull Long data) {
-        return data < startTime;
+  private void removeOldRequests() {
+    final long minStartTime = getTime() - Dates.ONE_DAY;
+    for (Long requestProcessingStartTime : myFeedRequestTimes.keySet()){
+      if(requestProcessingStartTime < minStartTime){
+        myFeedRequestTimes.remove(requestProcessingStartTime);
       }
-    });
-    return myFeedRequestTimes.size();
+    }
   }
 
   private long getTime() {
