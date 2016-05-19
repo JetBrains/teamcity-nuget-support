@@ -62,7 +62,7 @@ public class NuGetFeedRequestsController extends BaseController {
     response.setCharacterEncoding("utf-8");
     final PrintWriter writer = response.getWriter();
     final Collection<String> data = myRequests.getRecentRequests();
-    writer.write("Recently called " + data.size() + " NuGet requests: ");
+    writer.write("Recently called " + data.size() + " NuGet requests:\r\n");
     for (String req : data) {
       writer.write(req);
       writer.write("\r\n");
