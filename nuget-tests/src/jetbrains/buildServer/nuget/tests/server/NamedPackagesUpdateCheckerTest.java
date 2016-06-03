@@ -24,7 +24,6 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.*;
 import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestMode;
@@ -35,6 +34,8 @@ import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSe
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.tools.ServerToolManager;
+import jetbrains.buildServer.tools.ToolType;
 import jetbrains.buildServer.util.TestFor;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -64,7 +65,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   private PolledTriggerContext context;
   private BuildTriggerDescriptor desr;
   private CustomDataStorage store;
-  private NuGetToolManager toolManager;
+  private ServerToolManager toolManager;
   private PackageChangesManager chk;
   private Map<String, String> params;
   private File nugetFakePath;
@@ -84,7 +85,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     desr = m.mock(BuildTriggerDescriptor.class);
     store = m.mock(CustomDataStorage.class);
     params = new TreeMap<String, String>();
-    toolManager = m.mock(NuGetToolManager.class);
+    toolManager = m.mock(ServerToolManager.class);
     chk = m.mock(PackageChangesManager.class);
     myRootUrlHolder = m.mock(RootUrlHolder.class);
 
@@ -92,8 +93,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     checker = new NamedPackagesUpdateChecker(chk, new TriggerRequestFactory(
             new CheckRequestModeFactory(si),
-            toolManager,
-            new PackageCheckRequestFactory(
+            toolManager, new PackageCheckRequestFactory(
                     new PackageCheckerSettingsImpl()),
                     Arrays.<TriggerUrlPostProcessor>asList(new TriggerUrlRootPostProcessor(myRootUrlHolder))),
             new PackagesHashCalculator());
@@ -104,7 +104,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       allowing(context).getTriggerDescriptor(); will(returnValue(desr));
       allowing(context).getCustomDataStorage(); will(returnValue(store));
       allowing(desr).getProperties(); will(returnValue(params));
-      allowing(toolManager).getNuGetPath(path, with(any(SProject.class))); will(returnValue(path));
+      allowing(toolManager).getUnpackedToolPath(with(any(ToolType.class)), path, with(any(SProject.class))); will(returnValue(path));
 
       allowing(si).canStartNuGetProcesses(); will(new CustomAction("Return myIsWindows") {
         public Object invoke(Invocation invocation) throws Throwable {
