@@ -17,22 +17,21 @@
 package jetbrains.buildServer.nuget.server.toolRegistry;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetFeedUsageStatisticsProvider;
-import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.SBuildServer;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.tools.ToolVersion;
+import jetbrains.buildServer.tools.installed.ToolsRegistry;
+import jetbrains.buildServer.tools.usage.ToolUsageCalculator;
+import jetbrains.buildServer.tools.usage.ToolVersionUsage;
 import jetbrains.buildServer.usageStatistics.impl.providers.BaseExtensionUsageStatisticsProvider;
-import jetbrains.buildServer.util.MultiMap;
 import jetbrains.buildServer.util.positioning.PositionAware;
 import jetbrains.buildServer.util.positioning.PositionConstraint;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
+
+import static jetbrains.buildServer.nuget.server.toolRegistry.NuGetServerToolProvider.NUGET_TOOL_TYPE;
 
 /**
  * @author Evgeniy.Koshkin
@@ -52,12 +51,14 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
     }
   };
 
-  @NotNull private final SBuildServer myServer;
-  @NotNull private final NuGetToolManager myToolManager;
+  @NotNull private final ToolsRegistry myToolsRegistry;
+  @NotNull private final ToolUsageCalculator myToolUsageCalculator;
 
-  public NuGetToolUsageStatisticsProvider(@NotNull final SBuildServer server, @NotNull NuGetToolManager toolManager) {
-    myServer = server;
-    myToolManager = toolManager;
+  public NuGetToolUsageStatisticsProvider(@NotNull final SBuildServer server,
+                                          @NotNull ToolsRegistry toolsRegistry,
+                                          @NotNull ToolUsageCalculator toolUsageCalculator) {
+    myToolsRegistry = toolsRegistry;
+    myToolUsageCalculator = toolUsageCalculator;
     myGroupName = "NuGet Versions";
     setIdFormat("jb.nuget.version.[%s]");
   }
@@ -76,38 +77,25 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
 
   @Override
   protected void collectUsages(@NotNull UsagesCollectorCallback usagesCollectorCallback) {
-    if(myToolManager.getInstalledTools().isEmpty()){
-      LOG.debug(String.format("There are no %s tools installed on the server.", NuGetServerToolProvider.NUGET_TOOL_TYPE.getDisplayName()));
+    final Collection<? extends ToolVersion> nugetVersions = myToolsRegistry.getTools(NUGET_TOOL_TYPE);
+    if(nugetVersions.isEmpty()){
+      LOG.debug(String.format("There are no %s tools installed on the server.", NUGET_TOOL_TYPE.getDisplayName()));
       return;
     }
-    for(Map.Entry<SProject, List<SBuildRunnerDescriptor>> entry : getNuGetEnabledBuildRunners().entrySet()){
-      for(SBuildRunnerDescriptor buildRunner : entry.getValue()){
-        final Map<String, String> buildParameters = buildRunner.getParameters();
-        String referredToolVersion = myToolManager.getNuGetVersion(buildParameters.get(PackagesConstants.NUGET_PATH), entry.getKey());
-        if(referredToolVersion != null) {
-          usagesCollectorCallback.addUsage(referredToolVersion, referredToolVersion);
-        }
+    for (ToolVersion nugetVersion : nugetVersions){
+      for (ToolVersionUsage usage : myToolUsageCalculator.getUsages(nugetVersion)){
+        final String version = usage.getToolVersion().getVersion();
+        usagesCollectorCallback.addUsage(version, version);
       }
     }
   }
 
   @Override
   protected int getTotalUsagesCount(@NotNull Map<ExtensionType, Integer> extensionUsages) {
-    int size = 0;
-    for(Map.Entry<SProject, List<SBuildRunnerDescriptor>> entry : getNuGetEnabledBuildRunners().entrySet()){
-      size += entry.getValue().size();
+    int result = 0;
+    for (ToolVersion nugetVersion : myToolsRegistry.getTools(NUGET_TOOL_TYPE)){
+      result += myToolUsageCalculator.getUsages(nugetVersion).size();
     }
-    return size;
-  }
-
-  private MultiMap<SProject, SBuildRunnerDescriptor> getNuGetEnabledBuildRunners() {
-    MultiMap<SProject, SBuildRunnerDescriptor> result = new MultiMap<SProject, SBuildRunnerDescriptor>();
-    for(SBuildType buildType : myServer.getProjectManager().getActiveBuildTypes())
-      for (SBuildRunnerDescriptor buildRunner : buildType.getResolvedSettings().getBuildRunners()) {
-        Map<String,String> buildParameters = buildRunner.getParameters();
-        if(buildParameters.containsKey(PackagesConstants.NUGET_PATH))
-          result.putValue(buildType.getProject(), buildRunner);
-      }
     return result;
   }
 }
