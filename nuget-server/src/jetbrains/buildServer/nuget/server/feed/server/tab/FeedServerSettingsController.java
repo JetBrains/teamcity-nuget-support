@@ -22,10 +22,11 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetPackagesIndexer;
-import jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker;
+import jetbrains.buildServer.nuget.server.PermissionChecker;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.util.StringUtil;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -46,22 +47,23 @@ public class FeedServerSettingsController extends BaseController {
   @NotNull private final NuGetPackagesIndexer myPackagesIndexer;
 
   public FeedServerSettingsController(@NotNull final AuthorizationInterceptor auth,
+                                      @NotNull final PluginDescriptor pluginDescriptor,
                                       @NotNull final PermissionChecker checker,
-                                      @NotNull final FeedServerSettingsSection section,
                                       @NotNull final WebControllerManager web,
                                       @NotNull final NuGetServerJavaSettings settings,
                                       @NotNull final NuGetPackagesIndexer packagesIndexer) {
     mySettings = settings;
     myPackagesIndexer = packagesIndexer;
-    final String myPath = section.getSettingsPath();
 
-    auth.addPathBasedPermissionsChecker(myPath, new RequestPermissionsChecker() {
+    final String path = pluginDescriptor.getPluginResourcesPath("feed/settings.html");
+
+    auth.addPathBasedPermissionsChecker(path, new RequestPermissionsChecker() {
       public void checkPermissions(@NotNull AuthorityHolder authorityHolder,
                                    @NotNull HttpServletRequest request) throws AccessDeniedException {
         checker.assertAccess(authorityHolder);
       }
     });
-    web.registerController(myPath, this);
+    web.registerController(path, this);
   }
 
   @Override
