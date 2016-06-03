@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry;
+package jetbrains.buildServer.nuget.server.tool;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.common.ToolConstants;
 import jetbrains.buildServer.nuget.common.ToolIdUtils;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolUnpacker;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetPackageValidationUtil;
+import jetbrains.buildServer.nuget.server.tool.impl.ToolUnpacker;
+import jetbrains.buildServer.nuget.server.tool.impl.NuGetPackageValidationUtil;
 import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.tools.available.AvailableToolsState;
 import jetbrains.buildServer.tools.available.DownloadableToolVersion;

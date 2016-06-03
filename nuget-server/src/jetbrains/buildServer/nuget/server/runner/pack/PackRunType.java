@@ -18,12 +18,12 @@ package jetbrains.buildServer.nuget.server.runner.pack;
 
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.runner.NuGetRunType;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.util.BasePropertiesProcessor;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
+import jetbrains.buildServer.tools.ServerToolManager;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
  */
 public class PackRunType extends NuGetRunType {
   public PackRunType(@NotNull final PluginDescriptor descriptor,
-                     @NotNull final NuGetToolManager toolManager,
+                     @NotNull final ServerToolManager toolManager,
                      @NotNull final ProjectManager projectManager) {
     super(descriptor, toolManager, projectManager);
   }

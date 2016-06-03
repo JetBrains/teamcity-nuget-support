@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableOnDistNugetOrg;
+import jetbrains.buildServer.nuget.server.tool.impl.AvailableOnDistNugetOrg;
 import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
 import org.testng.annotations.Test;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2015 JetBrains s.r.o.
+ * Copyright 2000-2014 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry;
+package jetbrains.buildServer.nuget.server.tool.impl;
 
-import jetbrains.buildServer.tools.ToolException;
-import jetbrains.buildServer.tools.available.DownloadableToolVersion;
+import jetbrains.buildServer.util.ArchiveUtil;
+import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
- * @author Evgeniy.Koshkin
+ * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 16.08.11 15:11
  */
-public interface NuGetToolDownloader {
-  void downloadTool(@NotNull DownloadableToolVersion tool, @NotNull File location) throws ToolException;
+public class ToolUnpacker {
+  public void extractPackage(@NotNull final File pkg,
+                             @NotNull final File dest) throws IOException {
+    FileUtil.createDir(dest);
+    if (!ArchiveUtil.unpackZip(pkg, "", dest)) {
+      throw new IOException("Failed to unpack package " + pkg + " to " + dest);
+    }
+  }
 }

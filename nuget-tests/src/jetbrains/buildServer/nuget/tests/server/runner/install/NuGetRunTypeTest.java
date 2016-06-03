@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.tests.server.runner.install;
 
 import jetbrains.buildServer.nuget.server.runner.NuGetRunType;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.impl.BaseServerTestCase;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;

@@ -16,12 +16,9 @@
 
 package jetbrains.buildServer.nuget.tests.server.runner.install;
 
-import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDefaults;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDiscoverer;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.serverSide.discovery.DiscoveredObject;
 import jetbrains.buildServer.serverSide.impl.SBuildRunnerDescriptorImpl;
 import org.jetbrains.annotations.NotNull;

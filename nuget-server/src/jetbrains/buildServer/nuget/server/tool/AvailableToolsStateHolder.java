@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry;
+package jetbrains.buildServer.nuget.server.tool;
 
 import jetbrains.buildServer.tools.available.*;
 import jetbrains.buildServer.util.TimeService;
@@ -22,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Created by Evgeniy.Koshkin on 17-Mar-16.

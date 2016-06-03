@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.tests.server.runner.install;
 
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunType;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDefaults;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.Test;

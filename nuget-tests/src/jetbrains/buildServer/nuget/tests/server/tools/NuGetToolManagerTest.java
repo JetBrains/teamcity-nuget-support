@@ -20,10 +20,10 @@
 //import jetbrains.buildServer.BaseTestCase;
 //import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 //import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
-//import jetbrains.buildServer.nuget.server.toolRegistry.*;
-//import jetbrains.buildServer.nuget.server.toolRegistry.impl.*;
-//import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
-//import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolManagerImpl;
+//import jetbrains.buildServer.nuget.server.tool.*;
+//import jetbrains.buildServer.nuget.server.tool.impl.*;
+//import jetbrains.buildServer.nuget.server.tool.impl.impl.DownloadableNuGetTool;
+//import jetbrains.buildServer.nuget.server.tool.impl.impl.NuGetToolManagerImpl;
 //import jetbrains.buildServer.tools.ToolException;
 //import jetbrains.buildServer.tools.ToolVersion;
 //import jetbrains.buildServer.tools.available.AvailableToolsState;

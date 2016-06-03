@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry;
+package jetbrains.buildServer.nuget.server.tool;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetFeedUsageStatisticsProvider;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.server.toolRegistry.NuGetServerToolProvider.NUGET_TOOL_TYPE;
+import static jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider.NUGET_TOOL_TYPE;
 
 /**
  * @author Evgeniy.Koshkin

@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.tools;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableOnPackagesNugetOrg;
+import jetbrains.buildServer.nuget.server.tool.impl.AvailableOnPackagesNugetOrg;
 import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
 import org.jmock.Expectations;
 import org.jmock.Mockery;

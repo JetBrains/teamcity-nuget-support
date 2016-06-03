@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2015 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
+package jetbrains.buildServer.nuget.server.tool.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolDownloader;
+import jetbrains.buildServer.nuget.server.tool.NuGetToolDownloader;
 import jetbrains.buildServer.tools.ToolException;
 import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,6 @@ public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
     myFeed = feed;
   }
 
-  @NotNull
   public void downloadTool(@NotNull DownloadableToolVersion tool, @NotNull File location) throws ToolException {
     LOG.info("Start installing package " + tool.getDisplayName());
     LOG.info("Downloading package from: " + tool.getDownloadUrl());

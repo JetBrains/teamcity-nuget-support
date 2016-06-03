@@ -18,8 +18,6 @@ package jetbrains.buildServer.nuget.tests.server.runner.install;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDefaults;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Mock;
 import org.jmock.core.matcher.AnyArgumentsMatcher;
@@ -38,7 +36,7 @@ public class PackagesInstallerRunnerDefaultsTest extends BaseTestCase {
   @Test
   public void doNotUseRestoreCommandIfNoDefaultToolSpecified() throws Exception {
     setUpDefaults(null);
-    assertMapping(myDefaults.getRunnerProperties(), NUGET_USE_RESTORE_COMMAND, PackagesInstallerRunnerDefaults.CHECKED);
+    assertMapping(myDefaults.getRunnerProperties(scope), NUGET_USE_RESTORE_COMMAND, PackagesInstallerRunnerDefaults.CHECKED);
   }
 
   @Test
@@ -64,7 +62,7 @@ public class PackagesInstallerRunnerDefaultsTest extends BaseTestCase {
       }
     };
     setUpDefaults(defaultTool);
-    assertMapping(myDefaults.getRunnerProperties(), NUGET_USE_RESTORE_COMMAND, PackagesInstallerRunnerDefaults.CHECKED);
+    assertMapping(myDefaults.getRunnerProperties(scope), NUGET_USE_RESTORE_COMMAND, PackagesInstallerRunnerDefaults.CHECKED);
   }
 
   @Test
@@ -90,7 +88,7 @@ public class PackagesInstallerRunnerDefaultsTest extends BaseTestCase {
       }
     };
     setUpDefaults(defaultTool);
-    assertFalse(myDefaults.getRunnerProperties().containsKey(NUGET_USE_RESTORE_COMMAND));
+    assertFalse(myDefaults.getRunnerProperties(scope).containsKey(NUGET_USE_RESTORE_COMMAND));
   }
 
   private void setUpDefaults(NuGetInstalledTool defaultTool) {

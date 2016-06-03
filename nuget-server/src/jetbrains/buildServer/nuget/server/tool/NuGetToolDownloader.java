@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2015 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.runner.install;
+package jetbrains.buildServer.nuget.server.tool;
 
-import java.util.Map;
-import java.util.TreeMap;
+import jetbrains.buildServer.tools.ToolException;
+import jetbrains.buildServer.tools.available.DownloadableToolVersion;
+import org.jetbrains.annotations.NotNull;
 
-import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_USE_RESTORE_COMMAND;
+import java.io.File;
 
 /**
  * @author Evgeniy.Koshkin
  */
-public class PackagesInstallerRunnerDefaults {
-  public static final String CHECKED = "checked";
-
-  public Map<String,String> getRunnerProperties(){
-    final TreeMap<String, String> map = new TreeMap<String, String>();
-    map.put(NUGET_USE_RESTORE_COMMAND, CHECKED);
-    return map;
-  }
+public interface NuGetToolDownloader {
+  void downloadTool(@NotNull DownloadableToolVersion tool, @NotNull File location) throws ToolException;
 }

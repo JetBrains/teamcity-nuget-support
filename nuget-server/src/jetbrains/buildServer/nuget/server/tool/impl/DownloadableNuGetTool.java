@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2015 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.toolRegistry.impl.impl;
+package jetbrains.buildServer.nuget.server.tool.impl;
 
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetServerToolProvider;
+import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
 import jetbrains.buildServer.tools.ToolType;
 import jetbrains.buildServer.tools.available.DownloadableToolVersion;
 import org.jetbrains.annotations.NotNull;
@@ -32,10 +32,6 @@ public class DownloadableNuGetTool implements DownloadableToolVersion {
   private final String myDownloadUrl;
   @NotNull
   private final String myDestinationFileName;
-
-  public DownloadableNuGetTool(DownloadableToolVersion toolVersion) {
-    this(toolVersion.getVersion(), toolVersion.getDownloadUrl(), toolVersion.getDestinationFileName());
-  }
 
   public DownloadableNuGetTool(@NotNull String version, @NotNull String downloadUrl, @NotNull String destinationFileName) {
     myVersion = version;

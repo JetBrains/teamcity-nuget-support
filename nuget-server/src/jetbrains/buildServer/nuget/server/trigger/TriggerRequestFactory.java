@@ -21,7 +21,7 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetServerToolProvider;
+import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeFactory;
@@ -76,7 +76,7 @@ public class TriggerRequestFactory {
     }
 
     final String nugetVersionRef = descriptorProperties.get(NUGET_EXE);
-    final File nugetPath = myToolManager.getUnpackedToolPath(NuGetServerToolProvider.NUGET_TOOL_TYPE, nugetVersionRef, context.getBuildType().getProject());
+    final File nugetPath = myToolManager.getUnpackedToolVersionPath(NuGetServerToolProvider.NUGET_TOOL_TYPE, nugetVersionRef, context.getBuildType().getProject());
     if(nugetPath == null) throw new BuildTriggerException("Failed to find NuGet.exe by tool reference: " + nugetVersionRef);
     if (!nugetPath.isFile()) {
       throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
