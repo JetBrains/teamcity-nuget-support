@@ -45,7 +45,7 @@ public class RunTypeNameTest extends BaseServerTestCase {
     myDescriptor = m.mock(PluginDescriptor.class);
     myToolManager = m.mock(ServerToolManager.class);
     myProjectManager = myFixture.getProjectManager();
-    myDefaults = new PackagesInstallerRunnerDefaults(myToolManager);
+    myDefaults = new PackagesInstallerRunnerDefaults();
   }
 
   @Test

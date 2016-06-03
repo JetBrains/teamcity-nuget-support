@@ -104,7 +104,6 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       allowing(context).getTriggerDescriptor(); will(returnValue(desr));
       allowing(context).getCustomDataStorage(); will(returnValue(store));
       allowing(desr).getProperties(); will(returnValue(params));
-      allowing(toolManager).getUnpackedToolPath(with(any(ToolType.class)), path, with(any(SProject.class))); will(returnValue(path));
 
       allowing(si).canStartNuGetProcesses(); will(new CustomAction("Return myIsWindows") {
         public Object invoke(Invocation invocation) throws Throwable {
