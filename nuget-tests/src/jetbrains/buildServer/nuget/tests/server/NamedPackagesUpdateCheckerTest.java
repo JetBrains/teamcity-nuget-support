@@ -25,7 +25,9 @@ import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.*;
-import jetbrains.buildServer.nuget.server.trigger.impl.*;
+import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestMode;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeFactory;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeNuGet;
@@ -33,7 +35,10 @@ import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeTeam
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettingsImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.impl.BaseServerTestCase;
+import jetbrains.buildServer.serverSide.impl.DummyBuildType;
 import jetbrains.buildServer.tools.ServerToolManager;
 import jetbrains.buildServer.tools.ToolType;
 import jetbrains.buildServer.util.TestFor;
@@ -59,13 +64,12 @@ import java.util.TreeMap;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 14.07.11 18:57
  */
-public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
+public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
   private Mockery m;
   private NamedPackagesUpdateChecker checker;
   private PolledTriggerContext context;
   private BuildTriggerDescriptor desr;
   private CustomDataStorage store;
-  private ServerToolManager toolManager;
   private PackageChangesManager chk;
   private Map<String, String> params;
   private File nugetFakePath;
@@ -85,7 +89,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     desr = m.mock(BuildTriggerDescriptor.class);
     store = m.mock(CustomDataStorage.class);
     params = new TreeMap<String, String>();
-    toolManager = m.mock(ServerToolManager.class);
+    final ServerToolManager toolManager = m.mock(ServerToolManager.class);
     chk = m.mock(PackageChangesManager.class);
     myRootUrlHolder = m.mock(RootUrlHolder.class);
 
@@ -103,7 +107,9 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     m.checking(new Expectations(){{
       allowing(context).getTriggerDescriptor(); will(returnValue(desr));
       allowing(context).getCustomDataStorage(); will(returnValue(store));
+      allowing(context).getBuildType(); will(returnValue(myBuildType));
       allowing(desr).getProperties(); will(returnValue(params));
+      allowing(toolManager).getUnpackedToolVersionPath(with(any(ToolType.class)), with(any(String.class)), with(any(SProject.class))); will(returnValue(nugetFakePath));
 
       allowing(si).canStartNuGetProcesses(); will(new CustomAction("Return myIsWindows") {
         public Object invoke(Invocation invocation) throws Throwable {
