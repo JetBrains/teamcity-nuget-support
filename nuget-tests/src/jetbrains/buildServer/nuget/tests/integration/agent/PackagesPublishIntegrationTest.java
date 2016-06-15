@@ -219,7 +219,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
   private BuildProcess callPublishRunnerEx(@NotNull final NuGet nuget,
                                            @NotNull final File... pkg) throws RunBuildException {
-    return callPublishRunnerEx(nuget, "http://preview.nuget.org/api/v2", pkg);
+    return callPublishRunnerEx(nuget, "http://nuget.org/api/v2", pkg);
   }
 
   private BuildProcess callPublishRunnerEx(@NotNull final NuGet nuget,
