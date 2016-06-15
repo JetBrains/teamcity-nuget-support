@@ -20,6 +20,7 @@ import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
 import jetbrains.buildServer.nuget.server.util.Version;
 import jetbrains.buildServer.requirements.Requirement;
+import jetbrains.buildServer.requirements.RequirementQualifier;
 import jetbrains.buildServer.requirements.RequirementType;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;

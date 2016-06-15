@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
@@ -125,7 +126,7 @@ public class SearchFunction implements NuGetFeedFunction {
     while (entryIterator.hasNext()){
       final NuGetIndexEntry nugetPackage = entryIterator.next();
       final Map<String, String> nugetPackageAttributes = nugetPackage.getAttributes();
-      final String id = nugetPackageAttributes.get(ID);
+      final String id = nugetPackageAttributes.get(NuGetPackageAttributes.ID);
       final String version = nugetPackageAttributes.get(VERSION);
       final String isPrerelease = nugetPackageAttributes.get(IS_PRERELEASE);
       final String frameworkConstraints = nugetPackageAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS);
