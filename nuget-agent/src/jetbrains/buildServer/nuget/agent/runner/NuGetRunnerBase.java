@@ -23,8 +23,11 @@ import jetbrains.buildServer.agent.BuildAgentConfiguration;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
 import jetbrains.buildServer.nuget.common.DotNetConstants;
+import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -56,14 +59,13 @@ public abstract class NuGetRunnerBase implements AgentBuildRunner, AgentBuildRun
       return false;
     }
 
-    Map<String, String> configurationParameters = agentConfiguration.getConfigurationParameters();
-    if (!configurationParameters.containsKey(DotNetConstants.DOT_NET_FRAMEWORK_4_x86) &&
-        !configurationParameters.containsKey(DotNetConstants.DOT_NET_FRAMEWORK_4_5_x86) &&
-        !configurationParameters.containsKey(DotNetConstants.DOT_NET_FRAMEWORK_4_6_x86)) {
-      LOG.warn("NuGet requires .NET Framework 4.0 (x86) or higher to be installed.");
-      return false;
-    }
+    if(CollectionsUtil.contains(agentConfiguration.getConfigurationParameters().keySet(), new Filter<String>() {
+      public boolean accept(@NotNull String data) {
+        return data.startsWith("DotNetFramework4.");
+      }
+    })) return true;
 
-    return true;
+    LOG.warn("NuGet requires .NET Framework 4.0 (x86) or higher to be installed.");
+    return false;
   }
 }

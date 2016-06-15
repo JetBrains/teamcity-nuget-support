@@ -156,9 +156,18 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
 
   private boolean match(@NotNull NuGetIndexEntry indexEntry, @NotNull SemanticVersion requestedVersion, boolean includePreRelease, @NotNull Set<String> targetFrameworks, @Nullable VersionConstraint versionConstraint) {
     final Map<String, String> indexEntryAttributes = indexEntry.getAttributes();
-    if(!includePreRelease && Boolean.parseBoolean(indexEntryAttributes.get(IS_PRERELEASE))) return false;
-    final Set<String> packageFrameworkConstraints = FrameworkConstraints.convertFromString(indexEntryAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS));
-    if(!targetFrameworks.isEmpty() && !VersionUtility.isPackageCompatibleWithFrameworks(targetFrameworks, packageFrameworkConstraints)) return false;
+
+    if(!includePreRelease && Boolean.parseBoolean(indexEntryAttributes.get(IS_PRERELEASE))){
+      return false;
+    }
+
+    if(myServerSettings.isFilteringByTargetFrameworkEnabled()){
+      final Set<String> packageFrameworkConstraints = FrameworkConstraints.convertFromString(indexEntryAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS));
+      if(!targetFrameworks.isEmpty() && !VersionUtility.isPackageCompatibleWithFrameworks(targetFrameworks, packageFrameworkConstraints)){
+        return false;
+      }
+    }
+
     final SemanticVersion entryVersion = SemanticVersion.valueOf(indexEntry.getPackageInfo().getVersion());
     return entryVersion != null && (versionConstraint == null || versionConstraint.satisfies(entryVersion)) && requestedVersion.compareTo(entryVersion) < 0;
   }

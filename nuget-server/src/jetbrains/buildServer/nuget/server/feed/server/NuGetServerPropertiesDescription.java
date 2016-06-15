@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 public class NuGetServerPropertiesDescription extends AbstractParameterDescriptionProvider {
   @Override
   public String describe(@NotNull String paramName) {
-    if (NuGetServerConstants.FEED_REFERENCE.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed";
+    if (NuGetServerConstants.FEED_REFERENCE_AGENT_PROVIDED.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed";
     if (NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED.equals(paramName)) return "Contains URL to TeamCity provided NuGet feed with basic authentication";
     return null;
   }

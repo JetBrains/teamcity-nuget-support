@@ -189,6 +189,8 @@ public class NuGetSettingsManagerPersitedTest extends NuGetSettingsManagerTest {
 
   @Test
   public void testFileWatcherReload_event() throws IOException, InterruptedException {
+    enableDebug();
+
     testReadWrite();
     File tmp = createTempFile();
     FileUtil.copy(myFile, tmp);
@@ -225,7 +227,9 @@ public class NuGetSettingsManagerPersitedTest extends NuGetSettingsManagerTest {
       protected boolean condition() {
         return mySettings.readSettings(NuGetSettingsComponent.SERVER, new NuGetSettingsManager.Func<NuGetSettingsReader, Boolean>() {
           public Boolean executeAction(@NotNull NuGetSettingsReader action) {
-            return "zzz".equals(action.getStringParameter("string1"));
+            String stringParameter = action.getStringParameter("string1");
+            log("Reading string1 parameter. Value - " + stringParameter);
+            return "zzz".equals(stringParameter);
           }
         });
       }

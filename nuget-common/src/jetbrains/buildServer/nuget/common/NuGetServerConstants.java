@@ -21,7 +21,7 @@ package jetbrains.buildServer.nuget.common;
  * Date: 23.11.11 19:05
  */
 public class NuGetServerConstants {
-  public static final String FEED_REFERENCE = "teamcity.nuget.feed.server";
+  public static final String FEED_REFERENCE_AGENT_PROVIDED = "teamcity.nuget.feed.server";
   public static final String FEED_AUTH_REFERENCE_AGENT_PROVIDED = "teamcity.nuget.feed.auth.server";
   public static final String FEED_AUTH_REFERENCE_SERVER_PROVIDED = "teamcity.nuget.feed.auth.serverRootUrlBased.server";
 }

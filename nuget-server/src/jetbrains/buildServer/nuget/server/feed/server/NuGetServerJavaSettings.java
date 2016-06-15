@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface NuGetServerJavaSettings {
   boolean isNuGetJavaFeedEnabled();
-
   void setNuGetJavaFeedEnabled(boolean newValue);
+
+  boolean isFilteringByTargetFrameworkEnabled();
 }

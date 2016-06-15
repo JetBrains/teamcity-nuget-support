@@ -90,6 +90,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       });
       allowing(myIndex).getNuGetEntries(); will(returnIterator(myFeed));
       allowing(mySettings).getNuGetFeedControllerPath(); will(returnValue(NuGetServerSettingsImpl.PATH));
+      allowing(mySettings).isFilteringByTargetFrameworkEnabled(); will(returnValue(true));
 
       allowing(myMetadataStorage).getAllEntries(NUGET_PROVIDER_ID); will(new CustomAction("transform entries") {
         public Object invoke(Invocation invocation) throws Throwable {

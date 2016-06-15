@@ -42,7 +42,7 @@ public class InstallBean {
   public String getUpdateModeKey() { return PackagesConstants.NUGET_UPDATE_MODE;}
   public String getUpdatePerSolutionValue() { return PackagesUpdateMode.FOR_SLN.getName();}
   public String getUpdatePerConfigValue() { return PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG.getName();}
-  public String getNuGetFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_REFERENCE); }
+  public String getNuGetFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_REFERENCE_AGENT_PROVIDED); }
   public String getNuGetAuthFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED); }
   public String getRestoreCustomCommandline() { return PackagesConstants.NUGET_RESTORE_CUSOM_COMMANDLINE; }
   public String getUpdateCustomCommandline() { return PackagesConstants.NUGET_UPDATE_CUSOM_COMMANDLINE; }

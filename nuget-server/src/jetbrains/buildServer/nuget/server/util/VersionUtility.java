@@ -46,7 +46,7 @@ public class VersionUtility {
 
   private static final String NET_FRAMEWORK_IDENTIFIER = ".NETFramework";
   private static final String NET_CORE_FRAMEWORK_IDENTIFIER = ".NETCore";
-  private static final String PORTABLE_FRAMEWORK_IDENTIFIER = ".NETPortable";
+  public static final String PORTABLE_FRAMEWORK_IDENTIFIER = ".NETPortable";
   private static final String ASP_NET_FRAMEWORK_IDENTIFIER = "ASP.Net";
   private static final String ASP_NET_CORE_FRAMEWORK_IDENTIFIER = "ASP.NetCore";
   private static final String SILVERLIGHT_IDENTIFIER = "Silverlight";
@@ -213,7 +213,7 @@ public class VersionUtility {
 
     String profilePart = frameworkStringParts.length > 1 ? frameworkStringParts[1].trim() : "";
     String identifierPart;
-    String versionPart = "";
+    String versionPart = null;
 
     final Matcher matcher = VERSION_MATCHING_PATTERN.matcher(frameworkNameAndVersion);
 
@@ -235,23 +235,28 @@ public class VersionUtility {
         profilePart = KNOWN_PROFILES.get(profilePart);
     }
 
-    try{
-      Integer.parseInt(versionPart);
-      if (versionPart.length() > 4){
-        versionPart = versionPart.substring(0, 4);
-      }
-      // Make sure it has at least 2 digits so it parses as a valid version
-      versionPart = join(splitByChar(rightPad(versionPart, 2, '0')), ".");
-    } catch (NumberFormatException ex){
-      LOG.debug(ex);
-    }
+    Version version = Version.EMPTY;
 
-    Version version = Version.valueOf(versionPart);
-    if(version == null){
-      if (StringUtil.isEmpty(identifierPart) || !StringUtil.isEmpty(versionPart)){
+    if(versionPart != null){
+      try{
+        Integer.parseInt(versionPart);
+        if (versionPart.length() > 4){
+          versionPart = versionPart.substring(0, 4);
+        }
+        // Make sure it has at least 2 digits so it parses as a valid version
+        versionPart = join(splitByChar(rightPad(versionPart, 2, '0')), ".");
+      } catch (NumberFormatException ex){
+        LOG.debug("Failed to parse framework version from string " + frameworkNameString, ex);
         return null;
       }
-      version = Version.EMPTY;
+
+      version = Version.valueOf(versionPart);
+      if(version == null){
+        if (StringUtil.isEmpty(identifierPart) || !StringUtil.isEmpty(versionPart)){
+          return null;
+        }
+        version = Version.EMPTY;
+      }
     }
 
     if (StringUtil.isEmpty(identifierPart)){
@@ -288,7 +293,6 @@ public class VersionUtility {
     final SemanticVersion semanticVersion = SemanticVersion.valueOf(versionString);
     if(semanticVersion == null) return null;
     final Version version = semanticVersion.getVersion();
-    if(version == null) return null;
     return String.format("%d.%d.%d%s%s",
             version.getMajor(),
             version.getMinor(),
