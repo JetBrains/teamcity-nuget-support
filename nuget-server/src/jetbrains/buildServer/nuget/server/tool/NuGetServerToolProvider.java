@@ -101,15 +101,17 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
   @Override
   public ToolVersion tryGetPackageVersion(@NotNull File toolPackage) {
     final String toolContentFileName = toolPackage.getName();
-    if (!FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(toolContentFileName)) {
+    if (!FeedConstants.NUGET_TOOL_FILE_FILTER.accept(toolPackage)) {
       LOG.debug(String.format("File %s is not a valid NuGet redistributable package since its name do not suite.", toolPackage.getAbsolutePath()));
       return null;
     }
-    try {
-      NuGetPackageValidationUtil.validatePackage(toolPackage);
-    } catch (ToolException e) {
-      LOG.debug(e);
-      return null;
+    if(FeedConstants.PACKAGE_FILE_FILTER.accept(toolPackage)){
+      try {
+        NuGetPackageValidationUtil.validatePackage(toolPackage);
+      } catch (ToolException e) {
+        LOG.debug(e);
+        return null;
+      }
     }
     final String nugetVersion = ToolIdUtils.getVersionFromId(FilenameUtils.removeExtension(toolContentFileName));
     if(StringUtil.isEmpty(nugetVersion)){
