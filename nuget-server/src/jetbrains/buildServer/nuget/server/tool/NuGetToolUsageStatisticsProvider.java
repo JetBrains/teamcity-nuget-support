@@ -77,7 +77,7 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
 
   @Override
   protected void collectUsages(@NotNull UsagesCollectorCallback usagesCollectorCallback) {
-    final Collection<? extends ToolVersion> nugetVersions = myToolsRegistry.getTools(NUGET_TOOL_TYPE);
+    final Collection<? extends ToolVersion> nugetVersions = myToolsRegistry.getInstalledTools(NUGET_TOOL_TYPE);
     if(nugetVersions.isEmpty()){
       LOG.debug(String.format("There are no %s tools installed on the server.", NUGET_TOOL_TYPE.getDisplayName()));
       return;
@@ -93,7 +93,7 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
   @Override
   protected int getTotalUsagesCount(@NotNull Map<ExtensionType, Integer> extensionUsages) {
     int result = 0;
-    for (ToolVersion nugetVersion : myToolsRegistry.getTools(NUGET_TOOL_TYPE)){
+    for (ToolVersion nugetVersion : myToolsRegistry.getInstalledTools(NUGET_TOOL_TYPE)){
       result += myToolUsageCalculator.getUsages(nugetVersion).size();
     }
     return result;
