@@ -10,4 +10,5 @@
   <bean class="jetbrains.buildServer.nuget.server.tool.NuGetToolUsageStatisticsProvider"/>
 
   <bean class="jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.NuGetServerToolPreProcessor"/>
 </beans>
