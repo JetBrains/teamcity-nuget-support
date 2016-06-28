@@ -20,8 +20,8 @@ import com.google.common.collect.Lists;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
-import jetbrains.buildServer.nuget.server.feed.server.PackageAttributes;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.*;
 
 /**
@@ -98,7 +98,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
       try {
         final Map<String, String> metadata = generateMetadataForPackage(build, aPackage);
         myReset.resetCache();
-        final String key = metadata.get(PackageAttributes.ID);
+        final String key = metadata.get(NuGetPackageAttributes.ID);
         if (key != null) {
           store.addParameters(key, metadata);
         } else {
