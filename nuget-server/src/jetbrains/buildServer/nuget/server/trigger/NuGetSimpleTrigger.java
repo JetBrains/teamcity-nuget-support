@@ -97,8 +97,7 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
 
       @Override
       public void triggerBuild(@NotNull PolledTriggerContext context) throws BuildTriggerException {
-        final BuildStartReason result = myChecker.checkChanges(context.getTriggerDescriptor(), context.getCustomDataStorage());
-
+        final BuildStartReason result = myChecker.checkChanges(context);
         if (result != null) {
           context.getBuildType().addToQueue(result.getReason());
         }

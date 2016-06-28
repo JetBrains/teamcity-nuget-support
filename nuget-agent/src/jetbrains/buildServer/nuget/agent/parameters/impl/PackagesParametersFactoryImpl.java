@@ -16,13 +16,9 @@
 
 package jetbrains.buildServer.nuget.agent.parameters.impl;
 
-import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
-import jetbrains.buildServer.agent.BundledTool;
-import jetbrains.buildServer.agent.BundledToolsRegistry;
 import jetbrains.buildServer.nuget.agent.parameters.*;
-import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
@@ -38,20 +34,13 @@ import java.util.Collections;
 import java.util.List;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
+import static jetbrains.buildServer.nuget.common.ToolConstants.NUGET_TOOL_TYPE_ID;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.07.11 18:09
  */
 public class PackagesParametersFactoryImpl implements PackagesParametersFactory {
-  private static final Logger LOG = Logger.getInstance(PackagesParametersFactoryImpl.class.getName());
-
-  private final BundledToolsRegistry myBundledTools;
-
-  public PackagesParametersFactoryImpl(@NotNull final BundledToolsRegistry bundledTools) {
-    myBundledTools = bundledTools;
-  }
-
   @NotNull
   public NuGetFetchParameters loadNuGetFetchParameters(@NotNull final BuildRunnerContext context) throws RunBuildException {
     return new NuGetFetchParameters() {
@@ -83,31 +72,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   }
 
   private File getPathToNuGet(BuildRunnerContext context) throws RunBuildException {
-    String path = getParameter(context, NUGET_PATH);
-    if (path == null || StringUtil.isEmptyOrSpaces(path)) {
-      throw new RunBuildException("Runner parameter '" + NUGET_PATH + "' was not found");
-    }
-
-    final String version = NuGetToolReferenceUtils.getReferredToolId(path);
-    if (version != null) {
-      final BundledTool tool = myBundledTools.findTool(version);
-      if (tool != null) {
-        final File bundledPath = new File(tool.getRootPath(), NUGET_TOOL_REL_PATH);
-        LOG.info("Checking bundled NuGet at path: " + bundledPath);
-        if (bundledPath.isFile()) {
-          return bundledPath;
-        }
-      }
-
-      throw new RunBuildException("Failed to find NuGet executable " + version + ". Check the version is listed in NuGet server settings tab.");
-    }
-
-    final File file = FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), path);
-    if (!file.isFile()) {
-      throw new RunBuildException("Failed to find NuGet executable at " + file);
-    }
-
-    return file;
+    return FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), context.getToolPath(NUGET_TOOL_TYPE_ID));
   }
 
   @NotNull
@@ -174,16 +139,6 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   private String getParameter(@NotNull BuildRunnerContext context, @NotNull String key) {
     return context.getRunnerParameters().get(key);
   }
-
-  @NotNull
-  private String getParameter(@NotNull BuildRunnerContext context, @NotNull String key, @NotNull String errorMessage) throws RunBuildException {
-    final String value = getParameter(context, key);
-    if (value == null || StringUtil.isEmptyOrSpaces(value)) {
-      throw new RunBuildException("Parameter '" + key + "' is not found. " + errorMessage);
-    }
-    return value;
-  }
-
 
   public PackagesInstallParameters loadInstallPackagesParameters(@NotNull final BuildRunnerContext context,
                                                                  @NotNull final NuGetFetchParameters nuget) throws RunBuildException {

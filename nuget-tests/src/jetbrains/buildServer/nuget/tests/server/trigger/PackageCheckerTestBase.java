@@ -16,11 +16,11 @@
 
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
-import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageChecker;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,7 @@ import java.util.concurrent.ExecutorService;
  *         Date: 04.10.11 21:07
  */
 public abstract class PackageCheckerTestBase<T extends PackageChecker> extends TriggerTestBase {
-  protected FeedClient myFeed;
+  protected NuGetFeedClient myFeed;
   protected NuGetFeedReader myReader;
   protected ListPackagesCommand myCommand;
   protected PackageCheckerSettings mySettings;
@@ -53,7 +53,7 @@ public abstract class PackageCheckerTestBase<T extends PackageChecker> extends T
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    myFeed = m.mock(FeedClient.class);
+    myFeed = m.mock(NuGetFeedClient.class);
     myCommand = m.mock(ListPackagesCommand.class);
     mySettings = m.mock(PackageCheckerSettings.class);
     myExecutor = m.mock(ExecutorService.class);

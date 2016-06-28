@@ -17,10 +17,10 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.toolRegistry.FetchAvailableToolsResult;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableOnPackagesNugetOrg;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
+import jetbrains.buildServer.nuget.server.tool.impl.AvailableOnPackagesNugetOrg;
+import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -35,7 +35,7 @@ import java.util.Collections;
 public class AvailableOnPackagesNugetOrgTest extends BaseTestCase {
 
   private Mockery m;
-  private FeedClient myClient;
+  private NuGetFeedClient myClient;
   private NuGetFeedReader myReader;
   private AvailableOnPackagesNugetOrg myFetcher;
 
@@ -44,7 +44,7 @@ public class AvailableOnPackagesNugetOrgTest extends BaseTestCase {
   protected void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    myClient = m.mock(FeedClient.class);
+    myClient = m.mock(NuGetFeedClient.class);
     myReader = m.mock(NuGetFeedReader.class);
 
     myFetcher = new AvailableOnPackagesNugetOrg(myClient, myReader);

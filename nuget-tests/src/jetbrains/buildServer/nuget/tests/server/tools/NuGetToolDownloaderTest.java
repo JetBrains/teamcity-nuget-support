@@ -17,13 +17,12 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.reader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolDownloader;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.DownloadableNuGetTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolDownloaderImpl;
-import org.jetbrains.annotations.NotNull;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
+import jetbrains.buildServer.nuget.server.tool.NuGetToolDownloader;
+import jetbrains.buildServer.nuget.server.tool.impl.DownloadableNuGetTool;
+import jetbrains.buildServer.nuget.server.tool.impl.NuGetToolDownloaderImpl;
+import jetbrains.buildServer.tools.ToolException;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.AfterMethod;
@@ -38,7 +37,7 @@ import java.io.IOException;
  */
 public class NuGetToolDownloaderTest extends BaseTestCase {
   private NuGetToolDownloader myDownloader;
-  private FeedClient myClient;
+  private NuGetFeedClient myClient;
   private NuGetFeedReader myFeed;
   private Mockery m;
 
@@ -47,7 +46,7 @@ public class NuGetToolDownloaderTest extends BaseTestCase {
   public void setUp() throws Exception {
     super.setUp();
     m = new Mockery();
-    myClient = m.mock(FeedClient.class);
+    myClient = m.mock(NuGetFeedClient.class);
     myFeed = m.mock(NuGetFeedReader.class);
     myDownloader = new NuGetToolDownloaderImpl(myFeed, myClient);
   }
@@ -66,30 +65,10 @@ public class NuGetToolDownloaderTest extends BaseTestCase {
       oneOf(myFeed).downloadPackage(with(equal(myClient)), with(equal("download-url")), with(any(File.class))); will(throwException(new IOException("oops")));
     }});
 
-    myDownloader.downloadTool(tool("id", "version", "download-url"));
+    myDownloader.downloadTool(tool("version", "download-url"), createTempFile());
   }
 
-  private DownloadableNuGetTool tool(final String id, final String version, final String downloadUrl) {
-    return new DownloadableNuGetTool() {
-      @NotNull
-      public String getDownloadUrl() {
-        return downloadUrl;
-      }
-
-      @NotNull
-      public String getDestinationFileName() {
-        return "some_path";
-      }
-
-      @NotNull
-      public String getId() {
-        return id;
-      }
-
-      @NotNull
-      public String getVersion() {
-        return version;
-      }
-    };
+  private DownloadableNuGetTool tool(final String version, final String downloadUrl) {
+    return new DownloadableNuGetTool(version, downloadUrl, "some_path");
   }
 }

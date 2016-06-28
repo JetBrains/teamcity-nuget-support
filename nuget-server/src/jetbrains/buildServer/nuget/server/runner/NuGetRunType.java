@@ -17,13 +17,16 @@
 package jetbrains.buildServer.nuget.server.runner;
 
 import jetbrains.buildServer.nuget.common.DotNetConstants;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
+import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
 import jetbrains.buildServer.nuget.server.util.Version;
 import jetbrains.buildServer.requirements.Requirement;
 import jetbrains.buildServer.requirements.RequirementQualifier;
 import jetbrains.buildServer.requirements.RequirementType;
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.serverSide.RunType;
+import jetbrains.buildServer.tools.ServerToolManager;
+import jetbrains.buildServer.tools.ToolVersion;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,11 +43,13 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_PATH;
 public abstract class NuGetRunType extends RunType {
   private static final Version LOWEST_VERSION_REQUIRED_4_5_DOT_NET = new Version(2, 8, 0);
   private final PluginDescriptor myDescriptor;
-  private final NuGetToolManager myToolManager;
+  private final ServerToolManager myToolManager;
+  private final ProjectManager myProjectManager;
 
-  protected NuGetRunType(@NotNull final PluginDescriptor descriptor, @NotNull NuGetToolManager toolManager) {
+  protected NuGetRunType(@NotNull final PluginDescriptor descriptor, @NotNull ServerToolManager toolManager, @NotNull ProjectManager projectManager) {
     myDescriptor = descriptor;
     myToolManager = toolManager;
+    myProjectManager = projectManager;
   }
 
   @NotNull
@@ -89,13 +94,15 @@ public abstract class NuGetRunType extends RunType {
   @Override
   public List<Requirement> getRunnerSpecificRequirements(@NotNull Map<String, String> runParameters) {
     List<Requirement> list = new ArrayList<>(super.getRunnerSpecificRequirements(runParameters));
-    String versionString = myToolManager.getNuGetVersion(runParameters.get(NUGET_PATH));
-    final Version version = Version.valueOf(versionString);
-    if(version != null){
-      if(version.compareTo(LOWEST_VERSION_REQUIRED_4_5_DOT_NET) >= 0)
-        list.add(new Requirement(RequirementQualifier.EXISTS_QUALIFIER + DotNetConstants.DOT_NET_FRAMEWORK + "(" + DotNetConstants.v4_5 + "|" + DotNetConstants.v4_5_1 + "|" + DotNetConstants.v4_5_2 + "|" + DotNetConstants.v4_6 + "|" + DotNetConstants.v4_6_1 + ")_x86", null, RequirementType.EXISTS));
-      else
-        list.add(new Requirement(DotNetConstants.DOT_NET_FRAMEWORK_4_x86, null, RequirementType.EXISTS));
+    final ToolVersion toolVersion = myToolManager.resolveToolVersionReference(NuGetServerToolProvider.NUGET_TOOL_TYPE, runParameters.get(NUGET_PATH), myProjectManager.getRootProject());
+    if(toolVersion != null){
+      final Version version = Version.valueOf(toolVersion.getVersion());
+      if(version != null){
+        if(version.compareTo(LOWEST_VERSION_REQUIRED_4_5_DOT_NET) >= 0)
+          list.add(new Requirement(RequirementQualifier.EXISTS_QUALIFIER + DotNetConstants.DOT_NET_FRAMEWORK + "(" + DotNetConstants.v4_5 + "|" + DotNetConstants.v4_5_1 + "|" + DotNetConstants.v4_5_2 + "|" + DotNetConstants.v4_6 + "|" + DotNetConstants.v4_6_1 + ")_x86", null, RequirementType.EXISTS));
+        else
+          list.add(new Requirement(DotNetConstants.DOT_NET_FRAMEWORK_4_x86, null, RequirementType.EXISTS));
+      }
     }
     return list;
   }

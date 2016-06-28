@@ -19,8 +19,8 @@ package jetbrains.buildServer.nuget.server.show;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
-import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.SourcePackageInfo;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -87,7 +87,7 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
     if (build == null) return;
     model.put("packages", loadDependencies(build));
 
-    Set<PackageInfo> infos = new TreeSet<PackageInfo>();
+    Set<NuGetPackageInfo> infos = new TreeSet<NuGetPackageInfo>();
     for(Iterator<NuGetIndexEntry> entries = myPackageFeed.getNuGetEntries(build.getBuildId());entries.hasNext();) {
       infos.add(entries.next().getPackageInfo());
     }
@@ -110,8 +110,8 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
       }
     }
     return new PackageDependencies(
-            Collections.<PackageInfo>emptyList(),
-            Collections.<PackageInfo>emptyList(),
+            Collections.<NuGetPackageInfo>emptyList(),
+            Collections.<NuGetPackageInfo>emptyList(),
             Collections.<SourcePackageInfo>emptyList());
   }
 }

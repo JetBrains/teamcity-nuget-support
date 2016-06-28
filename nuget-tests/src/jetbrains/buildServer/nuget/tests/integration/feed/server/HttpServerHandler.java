@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import jetbrains.buildServer.nuget.tests.integration.http.SimpleHttpServerBase;
+import jetbrains.buildServer.util.SimpleHttpServerBase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

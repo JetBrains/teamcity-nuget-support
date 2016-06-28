@@ -16,9 +16,9 @@
 
 package jetbrains.buildServer.nuget.tests.integration;
 
-import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
-import jetbrains.buildServer.nuget.tests.integration.http.HttpAuthServer;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.HttpAuthServer;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +26,7 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -57,8 +58,8 @@ public class MockNuGetAuthHTTP {
   }
 
   @NotNull
-  public FeedCredentials getCredentials() {
-    return new FeedCredentials(getUsername(),  getPassword());
+  public NuGetFeedCredentials getCredentials() {
+    return new NuGetFeedCredentials(getUsername(),  getPassword());
   }
 
   @NotNull
@@ -95,8 +96,8 @@ public class MockNuGetAuthHTTP {
         if (path == null) return createStreamResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found".getBytes("utf-8"));
         System.out.println("NuGet request path: " + path);
 
-        final Collection<String> xml = Arrays.asList("DataServiceVersion: 1.0;", "Content-Type: application/xml;charset=utf-8");
-        final Collection<String> atom = Arrays.asList("DataServiceVersion: 2.0;", "Content-Type: application/atom+xml;charset=utf-8");
+        final List<String> xml = Arrays.asList("DataServiceVersion: 1.0;", "Content-Type: application/xml;charset=utf-8");
+        final List<String> atom = Arrays.asList("DataServiceVersion: 2.0;", "Content-Type: application/atom+xml;charset=utf-8");
 
         if (path.endsWith("$metadata")) {
           return createStringResponse(STATUS_LINE_200, xml, loadMockODataFiles("feed/mock/feed.metadata.xml"));

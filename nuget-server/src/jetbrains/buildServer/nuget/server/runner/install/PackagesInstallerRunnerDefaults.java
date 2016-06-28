@@ -16,11 +16,6 @@
 
 package jetbrains.buildServer.nuget.server.runner.install;
 
-import jetbrains.buildServer.nuget.common.PackagesInstallMode;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetInstalledTool;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -30,27 +25,11 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_USE_RES
  * @author Evgeniy.Koshkin
  */
 public class PackagesInstallerRunnerDefaults {
-
-  private static final String FIRST_NUGET_VERSION_WITH_RESTORE_CMD = "2.7";
   public static final String CHECKED = "checked";
-
-  @NotNull private final NuGetToolManager myToolManager;
-
-  public PackagesInstallerRunnerDefaults(@NotNull final NuGetToolManager toolManager) {
-    myToolManager = toolManager;
-  }
 
   public Map<String,String> getRunnerProperties(){
     final TreeMap<String, String> map = new TreeMap<String, String>();
-    final NuGetInstalledTool defaultNugetInstalled = myToolManager.getDefaultTool();
-    if (defaultNugetInstalled == null) {
-      map.put(NUGET_USE_RESTORE_COMMAND, CHECKED);
-    } else if (defaultNugetInstalled.getVersion().compareTo(FIRST_NUGET_VERSION_WITH_RESTORE_CMD) >= 0) {
-      map.put(NUGET_USE_RESTORE_COMMAND, PackagesInstallMode.VIA_RESTORE.getName());
-    } else {
-      map.put(NUGET_USE_RESTORE_COMMAND, PackagesInstallMode.VIA_INSTALL.getName());
-    }
-
+    map.put(NUGET_USE_RESTORE_COMMAND, CHECKED);
     return map;
   }
 }

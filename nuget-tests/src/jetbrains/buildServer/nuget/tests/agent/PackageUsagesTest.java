@@ -24,9 +24,9 @@ import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollecto
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
-import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackageInfoLoader;
 import jetbrains.buildServer.nuget.common.SourcePackageInfo;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.StringUtil;
 import junit.framework.Assert;
@@ -156,9 +156,9 @@ public class PackageUsagesTest extends BaseTestCase {
     Assert.assertEquals(actualPublished, expectedPublished);
   }
 
-  private String toString(Collection<PackageInfo> info) {
-    return StringUtil.join(info, new Function<PackageInfo, String>() {
-      public String fun(PackageInfo packageInfo) {
+  private String toString(Collection<NuGetPackageInfo> info) {
+    return StringUtil.join(info, new Function<NuGetPackageInfo, String>() {
+      public String fun(NuGetPackageInfo packageInfo) {
         return packageInfo.getId() + "@" + packageInfo.getVersion();
       }
     }, ", ");

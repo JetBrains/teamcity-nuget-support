@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.exec;
 
-import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +29,7 @@ public class SourcePackageReference {
   @Nullable
   private final String mySource;
   @Nullable
-  private final FeedCredentials myCredentials;
+  private final NuGetFeedCredentials myCredentials;
   @NotNull
   private final String myPackageId;
   @Nullable
@@ -50,7 +50,7 @@ public class SourcePackageReference {
   }
 
   public SourcePackageReference(@Nullable final String source,
-                                @Nullable final FeedCredentials credentials,
+                                @Nullable final NuGetFeedCredentials credentials,
                                 @NotNull final String packageId,
                                 @Nullable final String versionSpec,
                                           final boolean includePrerelease) {
@@ -68,7 +68,7 @@ public class SourcePackageReference {
   }
 
   @Nullable
-  public FeedCredentials getCredentials() {
+  public NuGetFeedCredentials getCredentials() {
     return myCredentials;
   }
 

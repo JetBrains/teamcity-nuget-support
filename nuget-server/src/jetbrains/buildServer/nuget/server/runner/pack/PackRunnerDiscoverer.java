@@ -17,12 +17,13 @@
 package jetbrains.buildServer.nuget.server.runner.pack;
 
 import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.common.NuGetToolReferenceUtils;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
+import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
 import jetbrains.buildServer.serverSide.BuildTypeSettings;
 import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.discovery.BreadthFirstRunnerDiscoveryExtension;
 import jetbrains.buildServer.serverSide.discovery.DiscoveredObject;
+import jetbrains.buildServer.tools.ToolVersionReference;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.browser.Browser;
@@ -100,7 +101,7 @@ public class PackRunnerDiscoverer extends BreadthFirstRunnerDiscoveryExtension {
 
   private DiscoveredObject discover(String nuSpecFilePath, String outDirName) {
     Map<String, String> parameters = NuGetPackRunnerDefaults.getRunnerProperties();
-    parameters.put(PackagesConstants.NUGET_PATH, NuGetToolReferenceUtils.getDefaultToolReference());
+    parameters.put(PackagesConstants.NUGET_PATH, ToolVersionReference.getDefaultToolReference(NuGetServerToolProvider.NUGET_TOOL_TYPE).getReference());
     parameters.put(PackagesConstants.NUGET_PACK_SPEC_FILE, nuSpecFilePath);
     parameters.put(PackagesConstants.NUGET_PACK_OUTPUT_DIR, outDirName);
     return new DiscoveredObject(PackagesConstants.PACK_RUN_TYPE, parameters);

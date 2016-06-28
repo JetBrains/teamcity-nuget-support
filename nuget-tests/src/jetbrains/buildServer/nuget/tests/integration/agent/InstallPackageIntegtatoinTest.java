@@ -18,9 +18,9 @@ package jetbrains.buildServer.nuget.tests.integration.agent;
 
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.TestNGUtil;
-import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.tests.agent.StartsWithMatcher;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
@@ -50,9 +50,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213"),
-                    new PackageInfo("Ninject", "2.2.1.4"))
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213"),
+                    new NuGetPackageInfo("Ninject", "2.2.1.4"))
     );
 
     String packages = "packages";
@@ -71,9 +71,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213"),
-                    new PackageInfo("Ninject", "2.2.1.4"))
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213"),
+                    new NuGetPackageInfo("Ninject", "2.2.1.4"))
     );
 
     List<File> packages = listFiles("packages");
@@ -90,9 +90,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213"),
-                    new PackageInfo("Ninject", "2.2.1.4"))
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213"),
+                    new NuGetPackageInfo("Ninject", "2.2.1.4"))
     );
 
     List<File> packages = listFiles("packages");
@@ -110,9 +110,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213"),
-                    new PackageInfo("Ninject", "2.2.1.4"))
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213"),
+                    new NuGetPackageInfo("Ninject", "2.2.1.4"))
     );
 
     List<File> packages = listFiles("packages");
@@ -192,8 +192,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "ClassLibrary1.sln"), Arrays.asList(new File(myRoot, "feed").getPath()), false, false, true, nuget,
             Arrays.asList(
-                    new PackageInfo("Jonnyz.Package", "3.0.4001-beta"),
-                    new PackageInfo("Elmah", "1.2")));
+                    new NuGetPackageInfo("Jonnyz.Package", "3.0.4001-beta"),
+                    new NuGetPackageInfo("Elmah", "1.2")));
 
     List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
@@ -229,9 +229,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), true, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213"),
-                    new PackageInfo("Ninject", "2.2.1.4")));
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213"),
+                    new NuGetPackageInfo("Ninject", "2.2.1.4")));
 
     List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
@@ -265,11 +265,11 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "ConsoleApplication1/ConsoleApplication1.sln"), Collections.<String>emptyList(), true, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Castle.Core", "3.0.0.3001"),
-                    new PackageInfo("NUnit", "2.5.10.11092"),
-                    new PackageInfo("jQuery", "1.7.1"),
-                    new PackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
-                    new PackageInfo("WebActivator", "1.5")));
+                    new NuGetPackageInfo("Castle.Core", "3.0.0.3001"),
+                    new NuGetPackageInfo("NUnit", "2.5.10.11092"),
+                    new NuGetPackageInfo("jQuery", "1.7.1"),
+                    new NuGetPackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
+                    new NuGetPackageInfo("WebActivator", "1.5")));
 
     List<File> packageses = listFiles("lib");
     System.out.println("installed packageses = " + packageses);
@@ -294,11 +294,11 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
             new File(myRoot, "nuget-nopackages/ConsoleApplication1.sln"),
             Collections.<String>emptyList(), true, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Castle.Core", "3.0.0.3001"),
-                    new PackageInfo("NUnit", "2.5.10.11092"),
-                    new PackageInfo("jQuery", "1.7.1"),
-                    new PackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
-                    new PackageInfo("WebActivator", "1.5")));
+                    new NuGetPackageInfo("Castle.Core", "3.0.0.3001"),
+                    new NuGetPackageInfo("NUnit", "2.5.10.11092"),
+                    new NuGetPackageInfo("jQuery", "1.7.1"),
+                    new NuGetPackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
+                    new NuGetPackageInfo("WebActivator", "1.5")));
 
     List<File> packageses = listFiles("lib");
     System.out.println("installed packageses = " + packageses);
@@ -317,11 +317,11 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "ConsoleApplication1.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
-                    new PackageInfo("NUnit", "2.5.10.11092"),
-                    new PackageInfo("Ninject", "3.0.0.15"),
-                    new PackageInfo("WebActivator", "1.5"),
-                    new PackageInfo("jQuery", "1.7.2"))
+                    new NuGetPackageInfo("Microsoft.Web.Infrastructure", "1.0.0.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.10.11092"),
+                    new NuGetPackageInfo("Ninject", "3.0.0.15"),
+                    new NuGetPackageInfo("WebActivator", "1.5"),
+                    new NuGetPackageInfo("jQuery", "1.7.2"))
     );
 
     List<File> packageses = listFiles("packages");
@@ -339,9 +339,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "ClassLibrary1/ClassLibrary1.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Ninject", "3.0.1.10"),
-                    new PackageInfo("elmah", "1.2.2"),
-                    new PackageInfo("elmah.corelibrary", "1.2.2")
+                    new NuGetPackageInfo("Ninject", "3.0.1.10"),
+                    new NuGetPackageInfo("elmah", "1.2.2"),
+                    new NuGetPackageInfo("elmah.corelibrary", "1.2.2")
                     )
     );
 
@@ -361,8 +361,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "Apps/FirstApp/FirstApp.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213")
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213")
                     ));
 
     List<File> packageses = listFiles("customizedPath");
@@ -378,8 +378,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "App.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213")
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213")
             ));
 
     List<File> packageses = listFiles("customizedPath");
@@ -395,8 +395,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "App.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213")
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213")
             ));
 
     List<File> packageses = listFiles("customizedPath");
@@ -412,8 +412,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "Apps/FirstApp/FirstApp.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213")
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213")
             ));
 
     List<File> packageses = listFiles("customizedPath");
@@ -429,8 +429,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "App.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213")
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213")
             ));
 
     List<File> packageses = listFiles("customizedPath");
@@ -446,8 +446,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     fetchPackages(new File(myRoot, "App.sln"), Collections.<String>emptyList(), false, false, false, nuget,
             Arrays.asList(
-                    new PackageInfo("Machine.Specifications", "0.4.13.0"),
-                    new PackageInfo("NUnit", "2.5.7.10213")
+                    new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+                    new NuGetPackageInfo("NUnit", "2.5.7.10213")
             ));
 
     List<File> packageses = listFiles("customizedPath");

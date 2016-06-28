@@ -17,9 +17,10 @@
 package jetbrains.buildServer.nuget.server.trigger;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
-import jetbrains.buildServer.nuget.server.trigger.impl.*;
+import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
+import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,9 +48,8 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
   }
 
   @Nullable
-  public BuildStartReason checkChanges(@NotNull BuildTriggerDescriptor descriptor,
-                                       @NotNull CustomDataStorage storage) throws BuildTriggerException {
-    final PackageCheckRequest checkRequest = myRequestFactory.createRequest(descriptor);
+  public BuildStartReason checkChanges(@NotNull PolledTriggerContext context) throws BuildTriggerException {
+    final PackageCheckRequest checkRequest = myRequestFactory.createRequest(context);
 
     CheckResult result;
     try {
@@ -65,6 +65,8 @@ public class NamedPackagesUpdateChecker implements TriggerUpdateChecker {
     if (error != null) {
       throw new BuildTriggerException("Failed to check for package versions. " + error);
     }
+
+    final CustomDataStorage storage = context.getCustomDataStorage();
 
     @NotNull  final String newHash = myCalculator.serializeHashcode(result.getInfos());
     @Nullable final String oldHash = storage.getValue(KEY);

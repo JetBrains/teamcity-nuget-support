@@ -17,8 +17,8 @@
 package jetbrains.buildServer.nuget.agent.dependencies.impl;
 
 import jetbrains.buildServer.nuget.common.PackageDependencies;
-import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.SourcePackageInfo;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,21 +29,21 @@ import java.util.TreeSet;
  * Date: 18.07.11 22:52
  */
 public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
-  private final TreeSet<PackageInfo> myUsedPackages = new TreeSet<PackageInfo>();
-  private final TreeSet<PackageInfo> myCreatedPackages = new TreeSet<PackageInfo>();
+  private final TreeSet<NuGetPackageInfo> myUsedPackages = new TreeSet<NuGetPackageInfo>();
+  private final TreeSet<NuGetPackageInfo> myCreatedPackages = new TreeSet<NuGetPackageInfo>();
   private final TreeSet<SourcePackageInfo> myPublishedPackages = new TreeSet<SourcePackageInfo>();
 
 
   public void addDependenyPackage(@NotNull String packageId, @NotNull String version, @Nullable String allowedVersions) {
-    myUsedPackages.add(new PackageInfo(packageId, version));
+    myUsedPackages.add(new NuGetPackageInfo(packageId, version));
   }
 
   public void addCreatedPackage(@NotNull String packageId, @NotNull String version) {
-    myCreatedPackages.add(new PackageInfo(packageId, version));
+    myCreatedPackages.add(new NuGetPackageInfo(packageId, version));
   }
 
   public void addPublishedPackage(@NotNull String packageId, @NotNull String version, @Nullable String source) {
-    myPublishedPackages.add(new SourcePackageInfo(new PackageInfo(packageId, version), source));
+    myPublishedPackages.add(new SourcePackageInfo(new NuGetPackageInfo(packageId, version), source));
   }
 
   @NotNull

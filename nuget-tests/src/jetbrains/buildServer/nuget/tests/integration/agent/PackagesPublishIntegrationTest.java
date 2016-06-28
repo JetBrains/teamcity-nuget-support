@@ -27,9 +27,9 @@ import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
-import jetbrains.buildServer.nuget.tests.integration.http.HttpAuthServer;
-import jetbrains.buildServer.nuget.tests.integration.http.SimpleThreadedHttpServer;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.HttpAuthServer;
+import jetbrains.buildServer.util.SimpleThreadedHttpServer;
 import jetbrains.buildServer.util.StringUtil;
 import org.hamcrest.text.StringContains;
 import org.jetbrains.annotations.NotNull;
@@ -219,7 +219,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
   private BuildProcess callPublishRunnerEx(@NotNull final NuGet nuget,
                                            @NotNull final File... pkg) throws RunBuildException {
-    return callPublishRunnerEx(nuget, "http://preview.nuget.org/api/v2", pkg);
+    return callPublishRunnerEx(nuget, "http://nuget.org/api/v2", pkg);
   }
 
   private BuildProcess callPublishRunnerEx(@NotNull final NuGet nuget,

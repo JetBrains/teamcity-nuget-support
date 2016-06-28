@@ -39,7 +39,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="commons-http" level="project" />
+    <orderEntry type="library" name="commons-codec" level="project" />
     <orderEntry type="library" name="log4j" level="project" />
     <orderEntry type="library" name="idea annotations.jar" level="project" />
     <orderEntry type="library" name="Idea-OpenApi" level="project" />
@@ -52,6 +52,6 @@
     <orderEntry type="library" name="TeamCity server runtime" level="project" />
     <orderEntry type="library" name="odata4j" level="project" />
     <orderEntry type="library" name="jersey" level="project" />
+    <orderEntry type="library" name="nuget-utils" level="project" />
   </component>
 </module>
-

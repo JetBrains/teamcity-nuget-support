@@ -16,9 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.trigger;
 
-import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
-import jetbrains.buildServer.serverSide.CustomDataStorage;
+import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,13 +32,10 @@ public interface TriggerUpdateChecker {
    * Update is called for different trigger settings and thus there should
    * be nothing cached in instance
    *
-   * @param descriptor build trigger desciptor to check for parameters
-   * @param storage    trigger state
    * @return null or StartReason instance to start a build
    * @throws jetbrains.buildServer.buildTriggers.BuildTriggerException
    *          on error
    */
   @Nullable
-  BuildStartReason checkChanges(@NotNull BuildTriggerDescriptor descriptor,
-                                @NotNull CustomDataStorage storage) throws BuildTriggerException;
+  BuildStartReason checkChanges(@NotNull PolledTriggerContext context) throws BuildTriggerException;
 }

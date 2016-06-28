@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.tests.server.entity;
 
-import jetbrains.buildServer.nuget.server.feed.FeedClient;
-import jetbrains.buildServer.nuget.server.feed.impl.FeedHttpClientHolder;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
+import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedHttpClientHolder;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.XmlUtil;
 import org.apache.http.HttpEntity;
@@ -63,7 +63,7 @@ public class MetadataLoaderTest {
 
   @Test
   public void generateEntitries_v1() throws IOException, JDOMException {
-    final FeedClient fc = new FeedHttpClientHolder();
+    final NuGetFeedClient fc = new NuGetFeedHttpClientHolder();
     final HttpGet get = new HttpGet("https://nuget.org/api/v1/$metadata");
     try {
       final HttpResponse execute = fc.execute(get);
@@ -144,7 +144,7 @@ public class MetadataLoaderTest {
 
   @NotNull
   private MetadataParseResult fetchNuGetMetadata(String uri) throws IOException, JDOMException {
-    final FeedClient fc = new FeedHttpClientHolder();
+    final NuGetFeedClient fc = new NuGetFeedHttpClientHolder();
     final HttpGet get = new HttpGet(uri);
     try {
       final HttpResponse execute = fc.execute(get);

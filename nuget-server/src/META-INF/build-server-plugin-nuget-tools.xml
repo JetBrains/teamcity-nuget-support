@@ -3,37 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.ui.ToolSelectorController"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.ui.EditNugetExeSettingsGroupController"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.AvailableToolsStateHolder"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.impl.AvailableOnPackagesNugetOrg"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.impl.AvailableOnDistNugetOrg"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.impl.NuGetToolDownloaderImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.NuGetToolUsageStatisticsProvider"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.PermissionChecker"/>
-  <bean class="jetbrains.buildServer.nuget.server.settings.tab.ServerSettingsTab"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstalledToolsController"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.tab.InstallToolController"/>
-
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableToolsStateImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableOnPackagesNugetOrg"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.AvailableOnDistNugetOrg"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.NuGetToolsSettings"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolManagerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolsInstallerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetToolDownloaderImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolUsageStatisticsProvider"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.ToolsRegistryImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.InstalledToolsFactory"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolPacker"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolUnpacker"/>
-  <bean class="jetbrains.buildServer.nuget.server.impl.ToolPathsImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.PluginNaming"/>
-
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.plugins.AgentToolsRegistrar">
-    <constructor-arg>
-      <list>
-        <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.plugins.NuGetAgentToolHolder"/>
-        <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.plugins.NuGetDefaultToolHolder"/>
-      </list>
-    </constructor-arg>
-  </bean>
-
-  <bean class="jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.ToolsWatcherImpl" init-method="start" destroy-method="dispose"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.NuGetServerToolPreProcessor"/>
 </beans>

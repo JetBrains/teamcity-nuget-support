@@ -23,7 +23,7 @@
 
 
 <div class="parameter">
-  Path to NuGet.exe: <jsp:include page="../tool/runnerSettings.html?name=${ib.nuGetPathKey}&class=longField&view=1"/>
+  Path to NuGet.exe: <jsp:include page="/tools/selector.html?name=${ib.nuGetPathKey}&class=longField&view=1"/>
 </div>
 
 <div class="parameter">

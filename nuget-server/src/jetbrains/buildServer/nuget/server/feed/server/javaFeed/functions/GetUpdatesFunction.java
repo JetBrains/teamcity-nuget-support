@@ -45,7 +45,7 @@ import org.odata4j.producer.QueryInfo;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.IS_PRERELEASE;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**
  * @author Evgeniy.Koshkin

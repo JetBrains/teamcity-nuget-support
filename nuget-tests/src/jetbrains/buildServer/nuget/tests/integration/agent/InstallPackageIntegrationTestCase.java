@@ -29,9 +29,9 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.ResourcesCon
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionPackagesScanner;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionWidePackagesConfigScanner;
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
-import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import org.jetbrains.annotations.NotNull;
@@ -94,7 +94,7 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
                              final boolean noCache,
                              final boolean update,
                              @NotNull final NuGet nuget,
-                             @Nullable Collection<PackageInfo> detectedPackages) throws RunBuildException {
+                             @Nullable Collection<NuGetPackageInfo> detectedPackages) throws RunBuildException {
     fetchPackages(sln, sources, excludeVersion, noCache, update, nuget, detectedPackages, BuildFinishedStatus.FINISHED_SUCCESS);
   }
 
@@ -104,7 +104,7 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
                              final boolean noCache,
                              final boolean update,
                              @NotNull final NuGet nuget,
-                             @Nullable Collection<PackageInfo> detectedPackages,
+                             @Nullable Collection<NuGetPackageInfo> detectedPackages,
                              @Nullable BuildFinishedStatus status) throws RunBuildException {
 
     m.checking(new Expectations() {{
@@ -149,8 +149,8 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
     System.out.println(myCollector.getUsedPackages());
     if (detectedPackages != null) {
       Assert.assertEquals(
-              new TreeSet<PackageInfo>(myCollector.getUsedPackages().getUsedPackages()),
-              new TreeSet<PackageInfo>(detectedPackages));
+              new TreeSet<NuGetPackageInfo>(myCollector.getUsedPackages().getUsedPackages()),
+              new TreeSet<NuGetPackageInfo>(detectedPackages));
     }
 
     m.assertIsSatisfied();

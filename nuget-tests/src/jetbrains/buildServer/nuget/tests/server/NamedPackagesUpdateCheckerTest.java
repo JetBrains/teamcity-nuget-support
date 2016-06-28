@@ -21,11 +21,13 @@ import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
+import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
 import jetbrains.buildServer.nuget.server.trigger.*;
-import jetbrains.buildServer.nuget.server.trigger.impl.*;
+import jetbrains.buildServer.nuget.server.trigger.impl.CheckResult;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
+import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestMode;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeFactory;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeNuGet;
@@ -33,6 +35,12 @@ import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeTeam
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettingsImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
+import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.impl.BaseServerTestCase;
+import jetbrains.buildServer.serverSide.impl.DummyBuildType;
+import jetbrains.buildServer.tools.ServerToolManager;
+import jetbrains.buildServer.tools.ToolType;
 import jetbrains.buildServer.util.TestFor;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -56,12 +64,12 @@ import java.util.TreeMap;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 14.07.11 18:57
  */
-public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
+public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
   private Mockery m;
   private NamedPackagesUpdateChecker checker;
+  private PolledTriggerContext context;
   private BuildTriggerDescriptor desr;
   private CustomDataStorage store;
-  private NuGetToolManager manager;
   private PackageChangesManager chk;
   private Map<String, String> params;
   private File nugetFakePath;
@@ -77,10 +85,11 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     myIsWindows = true;
     m = new Mockery();
+    context = m.mock(PolledTriggerContext.class);
     desr = m.mock(BuildTriggerDescriptor.class);
     store = m.mock(CustomDataStorage.class);
     params = new TreeMap<String, String>();
-    manager = m.mock(NuGetToolManager.class);
+    final ServerToolManager toolManager = m.mock(ServerToolManager.class);
     chk = m.mock(PackageChangesManager.class);
     myRootUrlHolder = m.mock(RootUrlHolder.class);
 
@@ -88,8 +97,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     checker = new NamedPackagesUpdateChecker(chk, new TriggerRequestFactory(
             new CheckRequestModeFactory(si),
-            manager,
-            new PackageCheckRequestFactory(
+            toolManager, new PackageCheckRequestFactory(
                     new PackageCheckerSettingsImpl()),
                     Arrays.<TriggerUrlPostProcessor>asList(new TriggerUrlRootPostProcessor(myRootUrlHolder))),
             new PackagesHashCalculator());
@@ -97,8 +105,11 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     final String path = nugetFakePath.getPath();
 
     m.checking(new Expectations(){{
+      allowing(context).getTriggerDescriptor(); will(returnValue(desr));
+      allowing(context).getCustomDataStorage(); will(returnValue(store));
+      allowing(context).getBuildType(); will(returnValue(myBuildType));
       allowing(desr).getProperties(); will(returnValue(params));
-      allowing(manager).getNuGetPath(path); will(returnValue(path));
+      allowing(toolManager).getUnpackedToolVersionPath(with(any(ToolType.class)), with(any(String.class)), with(any(SProject.class))); will(returnValue(nugetFakePath));
 
       allowing(si).canStartNuGetProcesses(); will(new CustomAction("Return myIsWindows") {
         public Object invoke(Invocation invocation) throws Throwable {
@@ -125,7 +136,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).putValue(with(equal("hash")), with(any(String.class)));
       oneOf(store).flush();
     }});
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNull(checker.checkChanges(context));
 
     m.assertIsSatisfied();
   }
@@ -140,7 +151,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).putValue(with(equal("hash")), with(any(String.class)));
       oneOf(store).flush();
     }});
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNull(checker.checkChanges(context));
 
     m.assertIsSatisfied();
   }
@@ -156,7 +167,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).putValue(with(equal("hash")), with(any(String.class)));
       oneOf(store).flush();
     }});
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNull(checker.checkChanges(context));
 
     m.assertIsSatisfied();
   }
@@ -189,10 +200,10 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
 
     }});
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNull(checker.checkChanges(context));
 
 
-    Assert.assertNotNull(checker.checkChanges(desr, store));
+    Assert.assertNotNull(checker.checkChanges(context));
 
     m.assertIsSatisfied();
   }
@@ -222,10 +233,10 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
 
     }});
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNull(checker.checkChanges(context));
 
 
-    Assert.assertNotNull(checker.checkChanges(desr, store));
+    Assert.assertNotNull(checker.checkChanges(context));
 
     m.assertIsSatisfied();
   }
@@ -254,7 +265,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
 
     }});
-    Assert.assertNotNull(checker.checkChanges(desr, store));
+    Assert.assertNotNull(checker.checkChanges(context));
 
     m.assertIsSatisfied();
   }
@@ -274,8 +285,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
     }});
 
-    Assert.assertNotNull(checker.checkChanges(desr, store));
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNotNull(checker.checkChanges(context));
+    Assert.assertNull(checker.checkChanges(context));
 
     m.assertIsSatisfied();
   }
@@ -294,7 +305,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     //error should be reported
     try {
-      checker.checkChanges(desr, store);
+      checker.checkChanges(context);
       Assert.fail("Exception is expected");
     } catch (BuildTriggerException e) {
       Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
@@ -311,7 +322,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     }});
 
     //no build is expected
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNull(checker.checkChanges(context));
     m.assertIsSatisfied();
   }
 
@@ -329,7 +340,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     }});
 
     try {
-      checker.checkChanges(desr, store);
+      checker.checkChanges(context);
       Assert.fail("Exception is expected");
     } catch (BuildTriggerException e) {
       Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
@@ -352,7 +363,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     }});
 
     try {
-      checker.checkChanges(desr, store);
+      checker.checkChanges(context);
       Assert.fail("Exception is expected");
     } catch (BuildTriggerException e) {
       Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
@@ -375,7 +386,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     }});
 
     try {
-      checker.checkChanges(desr, store);
+      checker.checkChanges(context);
       Assert.fail("Exception is expected");
     } catch (BuildTriggerException e) {
       Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
@@ -396,7 +407,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
     }});
 
-    Assert.assertNotNull(checker.checkChanges(desr, store));
+    Assert.assertNotNull(checker.checkChanges(context));
     m.assertIsSatisfied();
   }
 
@@ -413,7 +424,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     }});
 
     try {
-      checker.checkChanges(desr, store);
+      checker.checkChanges(context);
       Assert.fail("Exception is expected");
     } catch (BuildTriggerException e) {
       Assert.assertTrue(e.getMessage().contains("Package NUnit was not found in the feed"));
@@ -430,7 +441,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
     }});
 
-    Assert.assertNotNull(checker.checkChanges(desr, store));
+    Assert.assertNotNull(checker.checkChanges(context));
     m.assertIsSatisfied();
   }
 
@@ -443,7 +454,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     }});
 
     try {
-      checker.checkChanges(desr, store);
+      checker.checkChanges(context);
       Assert.fail("Exception is expected");
     } catch (BuildTriggerException e) {
       Assert.assertTrue(e.getMessage().contains("something5555"));
@@ -467,8 +478,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
     }});
 
-    Assert.assertNull(checker.checkChanges(desr, store));
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNull(checker.checkChanges(context));
+    Assert.assertNull(checker.checkChanges(context));
 
     m.assertIsSatisfied();
   }
@@ -489,8 +500,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
     }});
 
-    Assert.assertNotNull(checker.checkChanges(desr, store));
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNotNull(checker.checkChanges(context));
+    Assert.assertNull(checker.checkChanges(context));
 
     m.assertIsSatisfied();
   }
@@ -513,14 +524,14 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
     }});
 
-    Assert.assertNotNull(checker.checkChanges(desr, store));
+    Assert.assertNotNull(checker.checkChanges(context));
     try {
-      checker.checkChanges(desr, store);
+      checker.checkChanges(context);
       Assert.fail("should throw an exception");
     } catch (BuildTriggerException e) {
       //NOP
     }
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNull(checker.checkChanges(context));
 
     m.assertIsSatisfied();
   }
@@ -532,7 +543,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       will(throwException(new RuntimeException("Failed to execute command")));
     }});
     try {
-      checker.checkChanges(desr, store);
+      checker.checkChanges(context);
       Assert.fail("should throw an exception");
     } catch (BuildTriggerException e) {
       //NOP
@@ -548,7 +559,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       will(returnValue(CheckResult.failed("Failed to execute command")));
     }});
     try {
-      checker.checkChanges(desr, store);
+      checker.checkChanges(context);
       Assert.fail("should throw an exception");
     } catch (BuildTriggerException e) {
       //NOP
@@ -568,7 +579,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       oneOf(store).flush();
     }});
 
-    Assert.assertNull(checker.checkChanges(desr, store));
+    Assert.assertNull(checker.checkChanges(context));
     m.assertIsSatisfied();
   }
 

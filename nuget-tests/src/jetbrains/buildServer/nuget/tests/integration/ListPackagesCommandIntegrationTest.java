@@ -19,10 +19,10 @@ package jetbrains.buildServer.nuget.tests.integration;
 import jetbrains.buildServer.TempFolderProvider;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
-import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -138,7 +138,7 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
       public void runTest(@NotNull MockNuGetAuthHTTP http) throws Throwable {
 
         final List<SourcePackageReference> allRefs = Arrays.asList(
-                new SourcePackageReference(http.getSourceUrl(), new FeedCredentials("aaa", "bbb"), http.getPackageId(), null, false)
+                new SourcePackageReference(http.getSourceUrl(), new NuGetFeedCredentials("aaa", "bbb"), http.getPackageId(), null, false)
         );
 
         Map<SourcePackageReference, ListPackagesResult> result = myCommand.checkForChanges(nuget.getPath(), allRefs);

@@ -22,7 +22,7 @@ import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.testng.annotations.Test;
 
-import static jetbrains.buildServer.nuget.server.feed.server.PackageAttributes.*;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS;
 
 /**

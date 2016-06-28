@@ -16,10 +16,10 @@
 
 package jetbrains.buildServer.nuget.server.exec.impl;
 
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.XmlUtil;
@@ -55,7 +55,7 @@ public class ListPackagesArguments {
       final Element pkg = new Element(PACKAGE);
       pkg.setAttribute("id", ref.getPackageId());
       final String source = ref.getSource();
-      final FeedCredentials credentials = ref.getCredentials();
+      final NuGetFeedCredentials credentials = ref.getCredentials();
 
       if (source != null) {
         pkg.setAttribute(SOURCE_ATTRIBUTE, source);
@@ -150,11 +150,11 @@ public class ListPackagesArguments {
   }
 
   @Nullable
-  private FeedCredentials parseCredentials(@NotNull Element pkg) {
+  private NuGetFeedCredentials parseCredentials(@NotNull Element pkg) {
     final String username = trim(pkg.getAttributeValue(USERNAME));
     final String password = trim(pkg.getAttributeValue(PASSWORD));
     if (StringUtil.isEmptyOrSpaces(username)) return null;
 
-    return new FeedCredentials(username, password);
+    return new NuGetFeedCredentials(username, password);
   }
 }

@@ -38,7 +38,6 @@ public class FeedConstants {
   public static final String NUGET_SYMBOLS_EXTENSION = ".symbols.nupkg";
   public static final String NUSPEC_FILE_EXTENSION = ".nuspec";
 
-
   public static final FileFilter PACKAGE_FILE_FILTER = new FileFilter() {
     public boolean accept(File pathname) {
       return pathname.isFile() && PACKAGE_FILE_NAME_FILTER.accept(pathname.getName());
@@ -53,7 +52,8 @@ public class FeedConstants {
 
   public static final FileFilter NUGET_TOOL_FILE_FILTER = new FileFilter() {
     public boolean accept(File pathname) {
-      return pathname.isFile() && PACKAGE_FILE_NAME_FILTER.accept(pathname.getName()) || EXE_FILE_NAME_FILTER.accept(pathname.getName());
+      final String name = pathname.getName();
+      return pathname.isFile() && name.startsWith(NUGET_COMMANDLINE) && (PACKAGE_FILE_NAME_FILTER.accept(name) || EXE_FILE_NAME_FILTER.accept(name));
     }
   };
 

@@ -17,8 +17,8 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.toolRegistry.ToolException;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.impl.NuGetPackageValidationUtil;
+import jetbrains.buildServer.nuget.server.tool.impl.NuGetPackageValidationUtil;
+import jetbrains.buildServer.tools.ToolException;
 import jetbrains.buildServer.util.FileUtil;
 import org.testng.annotations.Test;
 

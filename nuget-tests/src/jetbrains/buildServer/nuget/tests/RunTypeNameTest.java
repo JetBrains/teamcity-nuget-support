@@ -16,12 +16,12 @@
 
 package jetbrains.buildServer.nuget.tests;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunType;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDefaults;
 import jetbrains.buildServer.nuget.server.runner.pack.PackRunType;
 import jetbrains.buildServer.nuget.server.runner.publish.PublishRunType;
-import jetbrains.buildServer.nuget.server.toolRegistry.NuGetToolManager;
+import jetbrains.buildServer.serverSide.impl.BaseServerTestCase;
+import jetbrains.buildServer.tools.ServerToolManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jmock.Mockery;
 import org.testng.Assert;
@@ -32,10 +32,10 @@ import org.testng.annotations.Test;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 21.07.11 19:03
  */
-public class RunTypeNameTest extends BaseTestCase {
+public class RunTypeNameTest extends BaseServerTestCase {
   private PluginDescriptor myDescriptor;
   private PackagesInstallerRunnerDefaults myDefaults;
-  private NuGetToolManager myToolManager;
+  private ServerToolManager myToolManager;
 
   @BeforeMethod
   @Override
@@ -43,25 +43,26 @@ public class RunTypeNameTest extends BaseTestCase {
     super.setUp();
     Mockery m = new Mockery();
     myDescriptor = m.mock(PluginDescriptor.class);
-    myToolManager = m.mock(NuGetToolManager.class);
-    myDefaults = new PackagesInstallerRunnerDefaults(myToolManager);
+    myToolManager = m.mock(ServerToolManager.class);
+    myProjectManager = myFixture.getProjectManager();
+    myDefaults = new PackagesInstallerRunnerDefaults();
   }
 
   @Test
   public void test_installPackagesRunTypeIdLendth() {
-    final String type = new PackagesInstallerRunType(myDescriptor, myDefaults, myToolManager).getType();
+    final String type = new PackagesInstallerRunType(myDescriptor, myDefaults, myToolManager, myProjectManager).getType();
     Assert.assertTrue(type.length() < 30);
   }
 
   @Test
   public void test_packRunTypeIdLendth() {
-    final String type = new PackRunType(myDescriptor, myToolManager).getType();
+    final String type = new PackRunType(myDescriptor, myToolManager, myProjectManager).getType();
     Assert.assertTrue(type.length() < 30);
   }
 
   @Test
   public void test_publishPackagesRunTypeIdLendth() {
-    final String type = new PublishRunType(myDescriptor, myToolManager).getType();
+    final String type = new PublishRunType(myDescriptor, myToolManager, myProjectManager).getType();
     Assert.assertTrue(type.length() < 30);
   }
 }

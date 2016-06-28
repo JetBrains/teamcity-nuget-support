@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.tests.server.trigger;
 
+import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
-import jetbrains.buildServer.nuget.server.feed.FeedCredentials;
 import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageCheckerTeamCity;
@@ -137,7 +137,7 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
   public void test_http_auth_supported() throws Throwable {
     final SourcePackageReference ref = new SourcePackageReference(
             "http://foo.bar",
-            new FeedCredentials("username","password"),
+            new NuGetFeedCredentials("username","password"),
             "foo.bar",
             null,
             false);
@@ -152,7 +152,7 @@ public class PackageCheckerTeamCityTest extends PackageCheckerTestBase<PackageCh
       oneOf(task).setExecuting();
       oneOf(task).setResult(with(failed("foo.bar", "Failed. Error")));
 
-      oneOf(myFeed).withCredentials(new FeedCredentials("username", "password"));
+      oneOf(myFeed).withCredentials(new NuGetFeedCredentials("username", "password"));
       will(returnValue(myFeed));
 
       oneOf(myReader).queryPackageVersions(myFeed, "http://foo.bar", "foo.bar");

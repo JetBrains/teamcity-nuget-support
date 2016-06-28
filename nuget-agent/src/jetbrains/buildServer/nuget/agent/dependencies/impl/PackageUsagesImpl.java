@@ -19,9 +19,9 @@ package jetbrains.buildServer.nuget.agent.dependencies.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
-import jetbrains.buildServer.nuget.common.PackageInfo;
 import jetbrains.buildServer.nuget.common.PackageInfoLoader;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +64,7 @@ public class PackageUsagesImpl implements PackageUsages {
   public void reportCreatedPackages(@NotNull final Collection<File> packageFiles) {
     for (File file : packageFiles) {
       try {
-        PackageInfo info = myLoader.loadPackageInfo(file);
+        NuGetPackageInfo info = myLoader.loadPackageInfo(file);
         myCollector.addCreatedPackage(info.getId(), info.getVersion());
       } catch (PackageLoadException e) {
         LOG.warn("Failed to parse create NuGet package: " + file);
@@ -74,7 +74,7 @@ public class PackageUsagesImpl implements PackageUsages {
 
   public void reportPublishedPackage(@NotNull final File packageFile, @Nullable String source) {
     try {
-      PackageInfo info = myLoader.loadPackageInfo(packageFile);
+      NuGetPackageInfo info = myLoader.loadPackageInfo(packageFile);
       myCollector.addPublishedPackage(info.getId(), info.getVersion(), source);
     } catch (PackageLoadException e) {
       LOG.warn("Failed to parse create NuGet package: " + packageFile);

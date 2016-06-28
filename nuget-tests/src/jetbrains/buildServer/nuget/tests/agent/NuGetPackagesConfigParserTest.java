@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser;
-import jetbrains.buildServer.nuget.common.PackageInfo;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
@@ -37,32 +37,32 @@ public class NuGetPackagesConfigParserTest extends BaseTestCase {
 
   @Test
   public void test_01() throws IOException {
-    doTest("test-01.xml", new PackageInfo("elmah", "1.1"));
+    doTest("test-01.xml", new NuGetPackageInfo("elmah", "1.1"));
   }
 
   @Test
   public void test_02() throws IOException {
-    doTest("test-02.xml", new PackageInfo("elmah", "1.1"));
+    doTest("test-02.xml", new NuGetPackageInfo("elmah", "1.1"));
   }
 
   @Test
   public void test_03() throws IOException {
     doTest("test-03.xml",
-            new PackageInfo("Machine.Specifications", "0.4.13.0"),
-            new PackageInfo("NUnit", "2.5.7.10213")
+            new NuGetPackageInfo("Machine.Specifications", "0.4.13.0"),
+            new NuGetPackageInfo("NUnit", "2.5.7.10213")
             )    ;
   }
 
   @Test
   public void test_04() throws IOException {
     doTest("test-04.xml",
-            new PackageInfo("EasyHttp", "1.0.6"),
-            new PackageInfo("JsonFx", "2.0.1106.2610"),
-            new PackageInfo("structuremap", "2.6.2"));
+            new NuGetPackageInfo("EasyHttp", "1.0.6"),
+            new NuGetPackageInfo("JsonFx", "2.0.1106.2610"),
+            new NuGetPackageInfo("structuremap", "2.6.2"));
   }
 
   public void doTest(@NotNull String testData,
-                     @NotNull PackageInfo... packages) throws IOException {
+                     @NotNull NuGetPackageInfo... packages) throws IOException {
     NuGetPackagesConfigParser p = new NuGetPackagesConfigParser();
     NuGetPackagesCollectorImpl i = new NuGetPackagesCollectorImpl();
     p.parseNuGetPackages(Paths.getTestDataPath("config/" + testData), i);
@@ -72,7 +72,7 @@ public class NuGetPackagesConfigParserTest extends BaseTestCase {
     }
 
     Assert.assertEquals(
-            new TreeSet<PackageInfo>(i.getUsedPackages().getUsedPackages()),
-            new TreeSet<PackageInfo>(Arrays.asList(packages)));
+            new TreeSet<NuGetPackageInfo>(i.getUsedPackages().getUsedPackages()),
+            new TreeSet<NuGetPackageInfo>(Arrays.asList(packages)));
   }
 }

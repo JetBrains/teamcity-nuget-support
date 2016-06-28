@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.common;
 
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,17 +25,17 @@ import org.jetbrains.annotations.Nullable;
  *         Date: 26.06.12 14:50
  */
 public class SourcePackageInfo implements Comparable<SourcePackageInfo> {
-  private final PackageInfo myPackageInfo;
+  private final NuGetPackageInfo myPackageInfo;
   private final String mySource;
 
-  public SourcePackageInfo(@NotNull final PackageInfo packageInfo,
+  public SourcePackageInfo(@NotNull final NuGetPackageInfo packageInfo,
                            @Nullable final String source) {
     myPackageInfo = packageInfo;
     mySource = source;
   }
 
   @NotNull
-  public PackageInfo getPackageInfo() {
+  public NuGetPackageInfo getPackageInfo() {
     return myPackageInfo;
   }
 

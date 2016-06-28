@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.toolRegistry.impl.ToolUnpacker;
+import jetbrains.buildServer.nuget.server.tool.impl.ToolUnpacker;
 import jetbrains.buildServer.util.TestFor;
 import junit.framework.Assert;
 import org.testng.annotations.Test;
