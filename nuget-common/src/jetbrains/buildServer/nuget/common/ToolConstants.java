@@ -20,5 +20,5 @@ package jetbrains.buildServer.nuget.common;
  * Created by Evgeniy.Koshkin on 14-Jan-16.
  */
 public class ToolConstants {
-  public static final String NUGET_TOOL_TYPE_ID = "jetbrains.nuget";
+  public static final String NUGET_TOOL_TYPE_ID = FeedConstants.NUGET_COMMANDLINE;
 }
