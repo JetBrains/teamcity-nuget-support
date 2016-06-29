@@ -45,7 +45,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
 
   private static final Logger LOG = Logger.getInstance(NuGetServerToolProvider.class.getName());
 
-  public static final ToolTypeExtension NUGET_TOOL_TYPE = new ToolTypeExtension() {
+  public static final ToolTypeAdapter NUGET_TOOL_TYPE = new ToolTypeAdapter() {
     @NotNull
     public String getType() {
       return ToolConstants.NUGET_TOOL_TYPE_ID;
@@ -60,7 +60,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
     @Nullable
     @Override
     public String getDescription() {
-      return "Installed NuGet versions are automatically distributed to all build agents and can be used in NuGet-related runners.";
+      return "Is used in NuGet specific build steps and NuGet Dependency Trigger.";
     }
 
     @Nullable
