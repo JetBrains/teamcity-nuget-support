@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.server.trigger;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
@@ -75,7 +76,7 @@ public class TriggerRequestFactory {
       throw new BuildTriggerException("The Package Id must be specified");
     }
 
-    final String nugetVersionRef = descriptorProperties.get(NUGET_EXE);
+    final String nugetVersionRef = descriptorProperties.get(FeedConstants.NUGET_EXE);
     final File nugetPath = myToolManager.getUnpackedToolVersionPath(NuGetServerToolProvider.NUGET_TOOL_TYPE, nugetVersionRef, context.getBuildType().getProject());
     if(nugetPath == null) throw new BuildTriggerException("Failed to find NuGet.exe by tool reference: " + nugetVersionRef);
     if (!nugetPath.isFile()) {

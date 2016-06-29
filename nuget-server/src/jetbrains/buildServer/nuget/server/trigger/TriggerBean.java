@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.trigger;
 
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.ToolConstants;
 
 /**
@@ -24,7 +25,7 @@ import jetbrains.buildServer.nuget.common.ToolConstants;
  */
 public class TriggerBean {
   public String getNuGetToolTypeKey() {  return ToolConstants.NUGET_TOOL_TYPE_ID; }
-  public String getNuGetExeKey() {  return TriggerConstants.NUGET_EXE; }
+  public String getNuGetExeKey() {  return FeedConstants.NUGET_EXE; }
   public String getSourceKey() {  return TriggerConstants.SOURCE;   }
   public String getPackageKey() {  return TriggerConstants.PACKAGE;   }
   public String getVersionKey() {  return TriggerConstants.VERSION;   }
