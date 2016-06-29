@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
-import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
+import jetbrains.buildServer.nuget.spec.NuspecFileContent;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.FileUtil;
 import org.jdom.Element;

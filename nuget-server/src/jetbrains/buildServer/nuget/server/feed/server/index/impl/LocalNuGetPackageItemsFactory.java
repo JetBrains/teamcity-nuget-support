@@ -17,11 +17,11 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import com.intellij.openapi.util.text.StringUtil;
-import jetbrains.buildServer.nuget.common.nuspec.Dependencies;
-import jetbrains.buildServer.nuget.common.nuspec.Dependency;
-import jetbrains.buildServer.nuget.common.nuspec.DependencyGroup;
-import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
 import jetbrains.buildServer.nuget.server.util.VersionUtility;
+import jetbrains.buildServer.nuget.spec.Dependencies;
+import jetbrains.buildServer.nuget.spec.Dependency;
+import jetbrains.buildServer.nuget.spec.DependencyGroup;
+import jetbrains.buildServer.nuget.spec.NuspecFileContent;
 import jetbrains.buildServer.serverSide.SBuild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,7 +67,7 @@ public class LocalNuGetPackageItemsFactory implements NuGetPackageStructureAnaly
     addItem(ID, nuspec.getId());
     final String version = nuspec.getVersion();
     addItem(VERSION, version);
-    addItem(NORMALIZED_VERSION, VersionUtility.normalizeVersion(version));
+    addItem(NORMALIZED_VERSION, version == null ? null : VersionUtility.normalizeVersion(version));
     addItem(TITLE, nuspec.getTitle());
     addItem(RELEASE_NOTES, nuspec.getReleaseNotes());
     addItem(AUTHORS, nuspec.getAuthors());

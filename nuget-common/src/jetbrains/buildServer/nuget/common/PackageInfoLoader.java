@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.common;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
+import jetbrains.buildServer.nuget.spec.NuspecFileContent;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;

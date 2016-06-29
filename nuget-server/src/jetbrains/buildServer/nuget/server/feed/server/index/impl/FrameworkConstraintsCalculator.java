@@ -17,11 +17,11 @@
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.common.nuspec.Dependencies;
-import jetbrains.buildServer.nuget.common.nuspec.DependencyGroup;
-import jetbrains.buildServer.nuget.common.nuspec.FrameworkAssembly;
-import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
 import jetbrains.buildServer.nuget.server.util.VersionUtility;
+import jetbrains.buildServer.nuget.spec.Dependencies;
+import jetbrains.buildServer.nuget.spec.DependencyGroup;
+import jetbrains.buildServer.nuget.spec.FrameworkAssembly;
+import jetbrains.buildServer.nuget.spec.NuspecFileContent;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

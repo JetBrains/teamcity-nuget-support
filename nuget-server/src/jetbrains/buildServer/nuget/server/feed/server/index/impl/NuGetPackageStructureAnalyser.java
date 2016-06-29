@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index.impl;
 
-import jetbrains.buildServer.nuget.common.nuspec.NuspecFileContent;
+import jetbrains.buildServer.nuget.spec.NuspecFileContent;
 import org.jetbrains.annotations.NotNull;
 
 /**
