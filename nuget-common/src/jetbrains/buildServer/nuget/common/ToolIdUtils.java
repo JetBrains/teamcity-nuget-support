@@ -27,21 +27,14 @@ public class ToolIdUtils {
 
   @NotNull
   public static String getIdFromVersion(@NotNull final String version){
-    return FeedConstants.NUGET_COMMANDLINE.toLowerCase() + "." + version;
+    return FeedConstants.NUGET_COMMANDLINE + "." + version;
   }
 
   @NotNull
   public static String getVersionFromId(@NotNull final String id){
-    if (id.toLowerCase().startsWith(FeedConstants.NUGET_COMMANDLINE.toLowerCase() + ".")) {
+    if (id.startsWith(FeedConstants.NUGET_COMMANDLINE + ".")) {
       return id.substring(FeedConstants.NUGET_COMMANDLINE.length() + 1);
     }
     return id;
-  }
-
-  @Nullable
-  public static String normalizeToolId(@Nullable String toolId) {
-    if(StringUtil.isEmptyOrSpaces(toolId)) return null;
-    if(toolId.endsWith(FeedConstants.NUGET_EXTENSION)) return toolId.substring(0, toolId.length() - FeedConstants.NUGET_EXTENSION.length());
-    return toolId;
   }
 }
