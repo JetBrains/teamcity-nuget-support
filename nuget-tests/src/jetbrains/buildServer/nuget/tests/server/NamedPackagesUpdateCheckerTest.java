@@ -16,12 +16,12 @@
 
 package jetbrains.buildServer.nuget.tests.server;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.*;
@@ -35,10 +35,8 @@ import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeTeam
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettingsImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
-import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.impl.BaseServerTestCase;
-import jetbrains.buildServer.serverSide.impl.DummyBuildType;
 import jetbrains.buildServer.tools.ServerToolManager;
 import jetbrains.buildServer.tools.ToolType;
 import jetbrains.buildServer.util.TestFor;
@@ -118,7 +116,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
       });
     }});
 
-    params.put(TriggerConstants.NUGET_EXE, path);
+    params.put(FeedConstants.NUGET_EXE, path);
     params.put(TriggerConstants.PACKAGE, "NUnit");
   }
 
