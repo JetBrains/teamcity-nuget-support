@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -46,9 +47,9 @@ public class FeedServerSettingsTab extends SimpleCustomTab {
             NUGET);
     myPluginDescriptor = pluginDescriptor;
     myChecker = checker;
-    setPosition(PositionConstraint.between(Arrays.asList("pluginsTab"), Arrays.asList("mavenSettings", "toolLoadTab", "usage-statistics")));
+    setPosition(PositionConstraint.between(Collections.singletonList("pluginsTab"), Arrays.asList("mavenSettings", "toolLoadTab", "usage-statistics")));
     addJsFile(pluginDescriptor.getPluginResourcesPath("server/feedServer.js"));
-    addJsFile(pluginDescriptor.getPluginResourcesPath("server/feedServer.css"));
+    addCssFile(pluginDescriptor.getPluginResourcesPath("server/feedServer.css"));
     register();
   }
 
