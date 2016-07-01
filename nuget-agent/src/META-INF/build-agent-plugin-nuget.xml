@@ -24,10 +24,6 @@
   <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackagesParametersFactoryImpl"/>
   <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.PackageSourceManagerImpl"/>
 
-  <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.NuGetAgentToolProvider"/>
-  <bean class="jetbrains.buildServer.nuget.agent.parameters.impl.NuGetAgentToolProviderRegister"/>
-
-
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl"/>
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser" />
   <bean class="jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl"/>

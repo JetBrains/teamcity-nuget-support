@@ -125,8 +125,6 @@
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackRunTypeTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackRunnerDiscovererTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.SolutionWidePackagesConfigScannerTest"/>
-
-      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetAgentToolProviderTest"/>
     </classes>
   </test>
 </suite>
