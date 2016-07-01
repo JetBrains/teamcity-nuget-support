@@ -35,6 +35,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
+import static jetbrains.buildServer.nuget.common.FeedConstants.PATH_TO_NUGET_EXE;
 import static jetbrains.buildServer.nuget.server.trigger.TriggerConstants.*;
 
 /**
@@ -77,8 +78,9 @@ public class TriggerRequestFactory {
     }
 
     final String nugetVersionRef = descriptorProperties.get(FeedConstants.NUGET_EXE);
-    final File nugetPath = myToolManager.getUnpackedToolVersionPath(NuGetServerToolProvider.NUGET_TOOL_TYPE, nugetVersionRef, context.getBuildType().getProject());
-    if(nugetPath == null) throw new BuildTriggerException("Failed to find NuGet.exe by tool reference: " + nugetVersionRef);
+    final File nugetToolRootPath = myToolManager.getUnpackedToolVersionPath(NuGetServerToolProvider.NUGET_TOOL_TYPE, nugetVersionRef, context.getBuildType().getProject());
+    if(nugetToolRootPath == null) throw new BuildTriggerException("Failed to find NuGet.exe by tool reference: " + nugetVersionRef);
+    final File nugetPath = new File(nugetToolRootPath, PATH_TO_NUGET_EXE);
     if (!nugetPath.isFile()) {
       throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
     }
