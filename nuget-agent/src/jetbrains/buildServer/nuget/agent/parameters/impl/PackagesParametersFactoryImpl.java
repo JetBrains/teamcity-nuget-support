@@ -19,9 +19,7 @@ package jetbrains.buildServer.nuget.agent.parameters.impl;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildRunnerContext;
 import jetbrains.buildServer.nuget.agent.parameters.*;
-import jetbrains.buildServer.nuget.common.PackagesInstallMode;
-import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
-import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
+import jetbrains.buildServer.nuget.common.*;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +32,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
-import static jetbrains.buildServer.nuget.common.ToolConstants.NUGET_TOOL_TYPE_ID;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -72,7 +69,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   }
 
   private File getPathToNuGet(BuildRunnerContext context) throws RunBuildException {
-    return FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), context.getToolPath(NUGET_TOOL_TYPE_ID));
+    return new File(context.getRunnerParameters().get(PackagesConstants.NUGET_PATH), FeedConstants.PATH_TO_NUGET_EXE);
   }
 
   @NotNull

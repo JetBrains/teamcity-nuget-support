@@ -18,8 +18,6 @@ package jetbrains.buildServer.nuget.server.tool;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.nuget.common.ToolConstants;
 import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import jetbrains.buildServer.nuget.server.tool.impl.ToolUnpacker;
 import jetbrains.buildServer.nuget.server.tool.impl.NuGetPackageValidationUtil;
@@ -48,7 +46,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
   public static final ToolTypeAdapter NUGET_TOOL_TYPE = new ToolTypeAdapter() {
     @NotNull
     public String getType() {
-      return ToolConstants.NUGET_TOOL_TYPE_ID;
+      return FeedConstants.NUGET_COMMANDLINE;
     }
 
     @NotNull
@@ -137,7 +135,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
   public void unpackToolPackage(@NotNull File toolPackage, @NotNull File targetDirectory) throws ToolException {
     try {
       if(FeedConstants.EXE_FILE_FILTER.accept(toolPackage)){
-        FileUtil.copy(toolPackage, new File(targetDirectory, PackagesConstants.NUGET_TOOL_REL_PATH));
+        FileUtil.copy(toolPackage, new File(targetDirectory, FeedConstants.PATH_TO_NUGET_EXE));
       } else {
         myUnpacker.extractPackage(toolPackage, targetDirectory);
       }

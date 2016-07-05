@@ -16,11 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.runner.install;
 
-import jetbrains.buildServer.nuget.common.NuGetServerConstants;
-import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.nuget.common.PackagesInstallMode;
-import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
-import jetbrains.buildServer.nuget.common.ToolConstants;
+import jetbrains.buildServer.nuget.common.*;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 
 /**
@@ -46,5 +42,5 @@ public class InstallBean {
   public String getNuGetAuthFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED); }
   public String getRestoreCustomCommandline() { return PackagesConstants.NUGET_RESTORE_CUSOM_COMMANDLINE; }
   public String getUpdateCustomCommandline() { return PackagesConstants.NUGET_UPDATE_CUSOM_COMMANDLINE; }
-  public String getNugetToolTypeName() {return ToolConstants.NUGET_TOOL_TYPE_ID;}
+  public String getNugetToolTypeName() {return FeedConstants.NUGET_COMMANDLINE;}
 }

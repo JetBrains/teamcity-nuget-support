@@ -55,11 +55,6 @@ public interface PackagesConstants {
   public static final String NUGET_PUSH_CUSTOM_COMMANDLINE= "nuget.push.commandline";
   public static final String NUGET_API_KEY = Constants.SECURE_PROPERTY_PREFIX + "nuget.api.key";
 
-
-  public static final String NUGET_TOOL_NAME_PREFIX = "nuget-commnadline-";
-  public static final String NUGET_TOOL_REL_PATH = "tools/NuGet.exe";
-
-
   public static final String NUGET_PACK_OUTPUT_CLEAR = "nuget.pack.output.clean";
   public static final String NUGET_PACK_OUTPUT_DIR = "nuget.pack.output.directory";
   public static final String NUGET_PACK_PUBLISH_ARTIFACT = "nuget.pack.as.artifact";

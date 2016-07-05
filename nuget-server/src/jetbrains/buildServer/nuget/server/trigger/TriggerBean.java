@@ -17,14 +17,13 @@
 package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.common.ToolConstants;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 12.07.11 14:56
  */
 public class TriggerBean {
-  public String getNuGetToolTypeKey() {  return ToolConstants.NUGET_TOOL_TYPE_ID; }
+  public String getNuGetToolTypeKey() {  return FeedConstants.NUGET_COMMANDLINE; }
   public String getNuGetExeKey() {  return FeedConstants.NUGET_EXE; }
   public String getSourceKey() {  return TriggerConstants.SOURCE;   }
   public String getPackageKey() {  return TriggerConstants.PACKAGE;   }

@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.runner.publish;
 
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
-import jetbrains.buildServer.nuget.common.ToolConstants;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -29,5 +29,5 @@ public class PublishBean {
   public String getApiKey() { return PackagesConstants.NUGET_API_KEY; }
   public String getNuGetPublishFilesKey() {return PackagesConstants.NUGET_PUBLISH_FILES; }
   public String getPushCustomCommandline() { return PackagesConstants.NUGET_PUSH_CUSTOM_COMMANDLINE; }
-  public String getNugetToolTypeName() {return ToolConstants.NUGET_TOOL_TYPE_ID;}
+  public String getNugetToolTypeName() {return FeedConstants.NUGET_COMMANDLINE;}
 }

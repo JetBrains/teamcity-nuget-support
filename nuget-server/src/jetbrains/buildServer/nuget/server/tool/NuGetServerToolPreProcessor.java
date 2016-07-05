@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.server.tool;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.common.ToolConstants;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.tools.ServerToolPreProcessor;
 import jetbrains.buildServer.tools.ToolException;
@@ -55,7 +54,7 @@ public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
 
   @Override
   public void preProcess() throws ToolException {
-    final File nugetPluginDataDir = new File(myServerPaths.getPluginDataDirectory(), ToolConstants.NUGET_TOOL_TYPE_ID);
+    final File nugetPluginDataDir = new File(myServerPaths.getPluginDataDirectory(), FeedConstants.NUGET_COMMANDLINE);
 
     final File oldNuGetPackagesLocation = new File(nugetPluginDataDir, NUPKG);
     final File oldNuGetPackedToolsLocation = new File(nugetPluginDataDir, AGENT);
