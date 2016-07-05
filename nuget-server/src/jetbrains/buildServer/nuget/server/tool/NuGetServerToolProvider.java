@@ -63,9 +63,9 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
       return "Is used in NuGet specific build steps and NuGet Dependency Trigger.";
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public String getFileName() {
+    public String getShortDisplayName() {
       return "NuGet.exe";
     }
 
