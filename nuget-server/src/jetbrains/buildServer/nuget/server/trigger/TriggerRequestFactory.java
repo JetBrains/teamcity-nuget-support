@@ -77,9 +77,14 @@ public class TriggerRequestFactory {
       throw new BuildTriggerException("The Package Id must be specified");
     }
 
-    final String nugetVersionRef = descriptorProperties.get(FeedConstants.NUGET_EXE);
+    final String nugetVersionRef = descriptorProperties.get(FeedConstants.NUGET_PATH_TRIGGER_PARAM_NAME);
+    if(nugetVersionRef == null) {
+      throw new BuildTriggerException("Trigger descriptor doesn't provide path to nuget.exe via parameter " + FeedConstants.NUGET_PATH_TRIGGER_PARAM_NAME);
+    }
     final File nugetToolRootPath = myToolManager.getUnpackedToolVersionPath(NuGetServerToolProvider.NUGET_TOOL_TYPE, nugetVersionRef, context.getBuildType().getProject());
-    if(nugetToolRootPath == null) throw new BuildTriggerException("Failed to find NuGet.exe by tool reference: " + nugetVersionRef);
+    if(nugetToolRootPath == null) {
+      throw new BuildTriggerException("Failed to find NuGet.exe by tool reference: " + nugetVersionRef);
+    }
     final File nugetPath = new File(nugetToolRootPath, PATH_TO_NUGET_EXE);
     if (!nugetPath.isFile()) {
       throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
