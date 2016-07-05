@@ -20,6 +20,6 @@
     <orderEntry type="library" name="Idea-OpenApi" level="project" />
     <orderEntry type="library" name="Common-Api" level="project" />
     <orderEntry type="library" name="Common-Impl" level="project" />
-    <orderEntry type="library" name="nuget-utils" level="project" />
+    <orderEntry type="library" exported="" name="nuget-utils" level="project" />
   </component>
 </module>
