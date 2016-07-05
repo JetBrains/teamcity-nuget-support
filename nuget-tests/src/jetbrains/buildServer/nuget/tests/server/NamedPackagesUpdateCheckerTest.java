@@ -99,7 +99,11 @@ public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
                     new PackageCheckerSettingsImpl()),
                     Arrays.<TriggerUrlPostProcessor>asList(new TriggerUrlRootPostProcessor(myRootUrlHolder))),
             new PackagesHashCalculator());
-    nugetFakePath = createTempFile();
+
+    final File nugetHome = createTempDir();
+    nugetFakePath = new File(nugetHome, "/tools/nuget.exe");
+    assertTrue(nugetFakePath.getParentFile().mkdirs());
+    assertTrue(nugetFakePath.createNewFile());
     final String path = nugetFakePath.getPath();
 
     m.checking(new Expectations(){{
@@ -107,7 +111,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
       allowing(context).getCustomDataStorage(); will(returnValue(store));
       allowing(context).getBuildType(); will(returnValue(myBuildType));
       allowing(desr).getProperties(); will(returnValue(params));
-      allowing(toolManager).getUnpackedToolVersionPath(with(any(ToolType.class)), with(any(String.class)), with(any(SProject.class))); will(returnValue(nugetFakePath));
+      allowing(toolManager).getUnpackedToolVersionPath(with(any(ToolType.class)), with(any(String.class)), with(any(SProject.class))); will(returnValue(nugetHome));
 
       allowing(si).canStartNuGetProcesses(); will(new CustomAction("Return myIsWindows") {
         public Object invoke(Invocation invocation) throws Throwable {
