@@ -101,6 +101,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
         final String key = metadata.get(NuGetPackageAttributes.ID);
         if (key != null) {
           store.addParameters(key, metadata);
+          LOG.debug("Added entry to NuGet package index with a key " + key);
         } else {
           LOG.warn("Failed to resolve NuGet package Id, package ignored: " + aPackage);
         }
