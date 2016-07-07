@@ -33,6 +33,8 @@ import java.io.IOException;
  */
 public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
   private static final Logger LOG = Logger.getInstance(NuGetServerToolPreProcessor.class.getName());
+
+  private static final String JETBRAINS_NUGET = "jetbrains.nuget";
   private static final String NUPKG = "nupkg";
   private static final String AGENT = "agent";
   private static final String TOOLS = "tools";
@@ -54,7 +56,7 @@ public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
 
   @Override
   public void preProcess() throws ToolException {
-    final File nugetPluginDataDir = new File(myServerPaths.getPluginDataDirectory(), FeedConstants.NUGET_COMMANDLINE);
+    final File nugetPluginDataDir = new File(myServerPaths.getPluginDataDirectory(), JETBRAINS_NUGET);
 
     final File oldNuGetPackagesLocation = new File(nugetPluginDataDir, NUPKG);
     final File oldNuGetPackedToolsLocation = new File(nugetPluginDataDir, AGENT);
