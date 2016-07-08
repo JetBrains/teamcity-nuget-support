@@ -18,9 +18,13 @@ package jetbrains.buildServer.nuget.server.tool;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsManager;
+import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
+import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.ServerPaths;
-import jetbrains.buildServer.tools.ServerToolPreProcessor;
-import jetbrains.buildServer.tools.ToolException;
+import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.tools.installed.ToolPaths;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +38,8 @@ import java.io.IOException;
 public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
   private static final Logger LOG = Logger.getInstance(NuGetServerToolPreProcessor.class.getName());
 
+  private static final String DEFAULT_NUGET_VERSION_SETTINGS_KEY = "default-nuget";
+
   private static final String JETBRAINS_NUGET = "jetbrains.nuget";
   private static final String NUPKG = "nupkg";
   private static final String AGENT = "agent";
@@ -41,11 +47,23 @@ public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
 
   private final ServerPaths myServerPaths;
   private final ToolPaths myToolPaths;
+  @NotNull
+  private final NuGetSettingsManager myNugetSettings;
+  @NotNull
+  private final DefaultToolVersions myDefaultToolVersions;
+  @NotNull
+  private final ProjectManager myProjectManager;
 
   public NuGetServerToolPreProcessor(@NotNull final ServerPaths serverPaths,
-                                     @NotNull final ToolPaths toolPaths) {
+                                     @NotNull final ToolPaths toolPaths,
+                                     @NotNull final NuGetSettingsManager nugetSettings,
+                                     @NotNull final DefaultToolVersions defaultToolVersions,
+                                     @NotNull final ProjectManager projectManager) {
     myServerPaths = serverPaths;
     myToolPaths = toolPaths;
+    myNugetSettings = nugetSettings;
+    myDefaultToolVersions = defaultToolVersions;
+    myProjectManager = projectManager;
   }
 
   @NotNull
@@ -56,6 +74,41 @@ public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
 
   @Override
   public void preProcess() throws ToolException {
+    moveOldInstalledNugets();
+    restoreDefaultVersion();
+  }
+
+  private void restoreDefaultVersion() {
+    final ToolType nugetToolType = NuGetServerToolProvider.NUGET_TOOL_TYPE;
+    final SProject rootProject = myProjectManager.getRootProject();
+    if(myDefaultToolVersions.getDefaultVersion(nugetToolType, rootProject) != null){
+      LOG.debug("Default NuGet version is already set.");
+      return;
+    }
+    final String defaultNuGetToolName = myNugetSettings.readSettings(NuGetSettingsComponent.NUGET, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
+      @Override
+      public String executeAction(@NotNull NuGetSettingsReader action) {
+        return action.getStringParameter(DEFAULT_NUGET_VERSION_SETTINGS_KEY);
+      }
+    });
+    if(defaultNuGetToolName == null){
+      LOG.debug("Can't restore default NuGet version since it is not set in NuGet settings file.");
+      return;
+    }
+
+    LOG.debug("Default NuGet tool name read is " + defaultNuGetToolName);
+    if(!defaultNuGetToolName.startsWith("NuGet.CommandLine.")){
+      LOG.debug("Default NuGet tool name is invalid, should start with 'NuGet.CommandLine.'");
+      return;
+    }
+
+    final String defaultNuGetVersion = defaultNuGetToolName.substring("NuGet.CommandLine.".length());
+    LOG.debug("Default NuGet tool version read is " + defaultNuGetVersion);
+    myDefaultToolVersions.setDefaultVersion(new SimpleToolVersion(nugetToolType, defaultNuGetVersion), rootProject);
+    LOG.debug("Succesfully restore NuGet default version " + defaultNuGetVersion);
+  }
+
+  private void moveOldInstalledNugets() throws ToolException {
     final File nugetPluginDataDir = new File(myServerPaths.getPluginDataDirectory(), JETBRAINS_NUGET);
 
     final File oldNuGetPackagesLocation = new File(nugetPluginDataDir, NUPKG);

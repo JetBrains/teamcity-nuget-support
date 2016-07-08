@@ -38,7 +38,7 @@ public class NuGetServerToolPreProcessorTest extends BaseTestCase {
     super.setUp();
     m = new Mockery();
     final ToolPaths toolPaths = m.mock(ToolPaths.class);
-    myToolPreProcessor = new NuGetServerToolPreProcessor(new ServerPaths(createTempDir()), toolPaths);
+    myToolPreProcessor = new NuGetServerToolPreProcessor(new ServerPaths(createTempDir()), toolPaths, null, null, null);
   }
 
   @Test

@@ -43,7 +43,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
 
   private static final Logger LOG = Logger.getInstance(NuGetServerToolProvider.class.getName());
 
-  public static final ToolTypeAdapter NUGET_TOOL_TYPE = new ToolTypeAdapter() {
+  public static final ToolType NUGET_TOOL_TYPE = new ToolTypeAdapter() {
     @NotNull
     public String getType() {
       return FeedConstants.NUGET_COMMANDLINE;
