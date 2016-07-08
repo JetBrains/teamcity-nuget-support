@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.buildTriggers.*;
-import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.InvalidProperty;
@@ -117,8 +116,8 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
       public Collection<InvalidProperty> process(Map<String, String> properties) {
         Collection<InvalidProperty> err = new ArrayList<InvalidProperty>();
 
-        if (StringUtil.isEmptyOrSpaces(properties.get(FeedConstants.NUGET_EXE))) {
-          err.add(new InvalidProperty(FeedConstants.NUGET_EXE, "NuGet.exe path must be specified"));
+        if (StringUtil.isEmptyOrSpaces(properties.get(TriggerConstants.NUGET_PATH_PARAM_NAME))) {
+          err.add(new InvalidProperty(TriggerConstants.NUGET_PATH_PARAM_NAME, "NuGet.exe path must be specified"));
         }
 
         if (StringUtil.isEmptyOrSpaces(properties.get(TriggerConstants.PACKAGE))) {

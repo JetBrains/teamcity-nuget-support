@@ -21,12 +21,13 @@ package jetbrains.buildServer.nuget.server.trigger;
  * Date: 12.07.11 15:00
  */
 public interface TriggerConstants {
-  public static final String TRIGGER_ID = "nuget.simple";
+  String TRIGGER_ID = "nuget.simple";
+  String NUGET_PATH_PARAM_NAME = "nuget.exe";
   
-  public static final String SOURCE = "nuget.source";
-  public static final String PACKAGE = "nuget.package";
-  public static final String VERSION = "nuget.version";
-  public static final String INCLUDE_PRERELEASE = "nuget.include.prerelease";
-  public static final String USERNAME = "nuget.username";
-  public static final String PASSWORD = "nuget.password";
+  String SOURCE = "nuget.source";
+  String PACKAGE = "nuget.package";
+  String VERSION = "nuget.version";
+  String INCLUDE_PRERELEASE = "nuget.include.prerelease";
+  String USERNAME = "nuget.username";
+  String PASSWORD = "nuget.password";
 }

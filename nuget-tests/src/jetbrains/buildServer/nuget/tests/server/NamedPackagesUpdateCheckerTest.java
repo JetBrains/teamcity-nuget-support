@@ -120,7 +120,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
       });
     }});
 
-    params.put(FeedConstants.NUGET_PATH_TRIGGER_PARAM_NAME, path);
+    params.put(TriggerConstants.NUGET_PATH_PARAM_NAME, path);
     params.put(TriggerConstants.PACKAGE, "NUnit");
   }
 

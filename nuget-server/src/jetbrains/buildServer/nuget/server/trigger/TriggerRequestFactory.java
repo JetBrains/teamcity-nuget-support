@@ -19,7 +19,6 @@ package jetbrains.buildServer.nuget.server.trigger;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
-import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
@@ -77,9 +76,9 @@ public class TriggerRequestFactory {
       throw new BuildTriggerException("The Package Id must be specified");
     }
 
-    final String nugetVersionRef = descriptorProperties.get(FeedConstants.NUGET_PATH_TRIGGER_PARAM_NAME);
-    if(nugetVersionRef == null) {
-      throw new BuildTriggerException("Trigger descriptor doesn't provide path to nuget.exe via parameter " + FeedConstants.NUGET_PATH_TRIGGER_PARAM_NAME);
+    final String nugetVersionRef = descriptorProperties.get(TriggerConstants.NUGET_PATH_PARAM_NAME);
+    if(StringUtil.isEmpty(nugetVersionRef)) {
+      throw new BuildTriggerException("Trigger descriptor doesn't provide path to nuget.exe via parameter " + TriggerConstants.NUGET_PATH_PARAM_NAME);
     }
     final File nugetToolRootPath = myToolManager.getUnpackedToolVersionPath(NuGetServerToolProvider.NUGET_TOOL_TYPE, nugetVersionRef, context.getBuildType().getProject());
     if(nugetToolRootPath == null) {
