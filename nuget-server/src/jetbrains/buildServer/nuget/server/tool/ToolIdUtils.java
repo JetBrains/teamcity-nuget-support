@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2015 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,31 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.common;
+package jetbrains.buildServer.nuget.server.tool;
 
 import com.intellij.openapi.util.text.StringUtil;
+import jetbrains.buildServer.nuget.common.FeedConstants;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class ToolIdUtils {
-
   @NotNull
-  public static String getIdFromVersion(@NotNull final String version){
-    return FeedConstants.NUGET_COMMANDLINE + "." + version;
+  public static String getIdForPackage(@NotNull File toolPackage) {
+    return FilenameUtils.removeExtension(toolPackage.getName());
   }
 
   @NotNull
-  public static String getVersionFromId(@NotNull final String id){
-    if (id.startsWith(FeedConstants.NUGET_COMMANDLINE + ".")) {
-      return id.substring(FeedConstants.NUGET_COMMANDLINE.length() + 1);
+  public static String getPackageVersion(@NotNull File toolPackage) {
+    final String toolPackageNameWithoutExtension = FilenameUtils.removeExtension(toolPackage.getName());
+    if (toolPackageNameWithoutExtension.startsWith(FeedConstants.NUGET_COMMANDLINE + ".")) {
+      return toolPackageNameWithoutExtension.substring(FeedConstants.NUGET_COMMANDLINE.length() + 1);
     }
-    return id;
+    return toolPackageNameWithoutExtension;
   }
 }

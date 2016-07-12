@@ -38,8 +38,8 @@ import java.io.IOException;
 public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
   private static final Logger LOG = Logger.getInstance(NuGetServerToolPreProcessor.class.getName());
 
+  private static final String NUGET_TOOL_ID_PREFIX = "NuGet.CommandLine.";
   private static final String DEFAULT_NUGET_VERSION_SETTINGS_KEY = "default-nuget";
-
   private static final String JETBRAINS_NUGET = "jetbrains.nuget";
   private static final String NUPKG = "nupkg";
   private static final String AGENT = "agent";
@@ -81,30 +81,30 @@ public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
   private void restoreDefaultVersion() {
     final ToolType nugetToolType = NuGetServerToolProvider.NUGET_TOOL_TYPE;
     final SProject rootProject = myProjectManager.getRootProject();
-    if(myDefaultToolVersions.getDefaultVersion(nugetToolType, rootProject) != null){
+    if(myDefaultToolVersions.getDefaultVersionId(nugetToolType, rootProject) != null){
       LOG.debug("Default NuGet version is already set.");
       return;
     }
-    final String defaultNuGetToolName = myNugetSettings.readSettings(NuGetSettingsComponent.NUGET, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
+    final String defaultNuGetToolId = myNugetSettings.readSettings(NuGetSettingsComponent.NUGET, new NuGetSettingsManager.Func<NuGetSettingsReader, String>() {
       @Override
       public String executeAction(@NotNull NuGetSettingsReader action) {
         return action.getStringParameter(DEFAULT_NUGET_VERSION_SETTINGS_KEY);
       }
     });
-    if(defaultNuGetToolName == null){
+    if(defaultNuGetToolId == null){
       LOG.debug("Can't restore default NuGet version since it is not set in NuGet settings file.");
       return;
     }
 
-    LOG.debug("Default NuGet tool name read is " + defaultNuGetToolName);
-    if(!defaultNuGetToolName.startsWith("NuGet.CommandLine.")){
-      LOG.debug("Default NuGet tool name is invalid, should start with 'NuGet.CommandLine.'");
+    LOG.debug("Default NuGet tool name read is " + defaultNuGetToolId);
+    if(!defaultNuGetToolId.startsWith(NUGET_TOOL_ID_PREFIX)){
+      LOG.debug("Default NuGet tool name is invalid, should start with " + NUGET_TOOL_ID_PREFIX);
       return;
     }
 
-    final String defaultNuGetVersion = defaultNuGetToolName.substring("NuGet.CommandLine.".length());
+    final String defaultNuGetVersion = defaultNuGetToolId.substring(NUGET_TOOL_ID_PREFIX.length());
     LOG.debug("Default NuGet tool version read is " + defaultNuGetVersion);
-    myDefaultToolVersions.setDefaultVersion(new SimpleToolVersion(nugetToolType, defaultNuGetVersion), rootProject);
+    myDefaultToolVersions.setDefaultVersion(new SimpleToolVersion(nugetToolType, defaultNuGetVersion, defaultNuGetToolId), rootProject);
     LOG.debug("Succesfully restore NuGet default version " + defaultNuGetVersion);
   }
 

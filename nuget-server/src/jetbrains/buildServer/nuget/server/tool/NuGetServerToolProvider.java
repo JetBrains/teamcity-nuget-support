@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.server.tool;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.common.ToolIdUtils;
 import jetbrains.buildServer.nuget.server.tool.impl.ToolUnpacker;
 import jetbrains.buildServer.nuget.server.tool.impl.NuGetPackageValidationUtil;
 import jetbrains.buildServer.tools.*;
@@ -28,7 +27,6 @@ import jetbrains.buildServer.tools.available.FetchToolsPolicy;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
-import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,7 +96,6 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
   @Nullable
   @Override
   public ToolVersion tryGetPackageVersion(@NotNull File toolPackage) {
-    final String toolContentFileName = toolPackage.getName();
     if (!FeedConstants.NUGET_TOOL_FILE_FILTER.accept(toolPackage)) {
       LOG.debug(String.format("File %s is not a valid NuGet redistributable package since its name do not suite.", toolPackage.getAbsolutePath()));
       return null;
@@ -111,18 +108,21 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
         return null;
       }
     }
-    final String nugetVersion = ToolIdUtils.getVersionFromId(FilenameUtils.removeExtension(toolContentFileName));
+
+    final String toolId = ToolIdUtils.getIdForPackage(toolPackage);
+    final String nugetVersion = ToolIdUtils.getPackageVersion(toolPackage);
     if(StringUtil.isEmpty(nugetVersion)){
-      LOG.debug(String.format("Failed to determine NuGet version based on its package file name %s. Checked package %s", toolContentFileName, toolPackage.getAbsolutePath()));
+      LOG.debug(String.format("Failed to determine NuGet version based on its package file name %s. Checked package %s", toolPackage.getName(), toolPackage.getAbsolutePath()));
       return null;
     }
-    return new SimpleToolVersion(NUGET_TOOL_TYPE, nugetVersion);
+    return new SimpleToolVersion(NUGET_TOOL_TYPE, nugetVersion, toolId);
   }
 
   @NotNull
   @Override
   public File fetchToolPackage(@NotNull ToolVersion toolVersion, @NotNull File targetDirectory) throws ToolException {
-    final DownloadableToolVersion downloadableNuGetTool = CollectionsUtil.findFirst(myAvailableTools.getAvailable(FetchToolsPolicy.ReturnCached).getFetchedTools(), data -> data.getVersion().equals(toolVersion.getVersion()));
+    final String id = toolVersion.getId();
+    final DownloadableToolVersion downloadableNuGetTool = CollectionsUtil.findFirst(myAvailableTools.getAvailable(FetchToolsPolicy.ReturnCached).getFetchedTools(), data -> data.getId().equals(id));
     if(downloadableNuGetTool == null){
       throw new ToolException("Failed to fetch tool " + toolVersion + ". Download source info wasn't prefetched.");
     }
