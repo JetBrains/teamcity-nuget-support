@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.common;
 
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

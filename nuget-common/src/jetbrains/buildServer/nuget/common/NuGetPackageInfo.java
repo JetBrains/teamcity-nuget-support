@@ -1,4 +1,4 @@
-package jetbrains.buildServer.nuget.feedReader;
+package jetbrains.buildServer.nuget.common;
 
 import org.jetbrains.annotations.NotNull;
 

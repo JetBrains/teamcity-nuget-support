@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.feed.server.index;
 
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
+import jetbrains.buildServer.nuget.common.NuGetPackageInfo;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;

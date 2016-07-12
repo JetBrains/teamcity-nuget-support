@@ -16,9 +16,9 @@
 
 package jetbrains.buildServer.nuget.agent.dependencies.impl;
 
+import jetbrains.buildServer.nuget.common.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.SourcePackageInfo;
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

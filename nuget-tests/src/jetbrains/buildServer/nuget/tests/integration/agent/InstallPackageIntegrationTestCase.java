@@ -29,9 +29,9 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.ResourcesCon
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionPackagesScanner;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionWidePackagesConfigScanner;
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
+import jetbrains.buildServer.nuget.common.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import org.jetbrains.annotations.NotNull;

@@ -17,10 +17,10 @@
 package jetbrains.buildServer.nuget.tests.common;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.common.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
 import jetbrains.buildServer.nuget.common.SourcePackageInfo;
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;

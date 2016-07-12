@@ -20,7 +20,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.spec.NuspecFileContent;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageInfo;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;

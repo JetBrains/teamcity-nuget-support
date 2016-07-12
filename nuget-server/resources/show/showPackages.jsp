@@ -21,7 +21,7 @@
   --%>
 
 <jsp:useBean id="packages" scope="request" type="jetbrains.buildServer.nuget.common.PackageDependencies"/>
-<jsp:useBean id="feedPackages" scope="request" type="java.util.Set<jetbrains.buildServer.nuget.common.PackageInfo>"/>
+<jsp:useBean id="feedPackages" scope="request" type="java.util.Set<jetbrains.buildServer.nuget.common.NuGetPackageInfo>"/>
 
 <h3>Used Packages</h3>
 <c:set var="numberOfUsedPackages" value="${fn:length(packages.usedPackages)}"/>
