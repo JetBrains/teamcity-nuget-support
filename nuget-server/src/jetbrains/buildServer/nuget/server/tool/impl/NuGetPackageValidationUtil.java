@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 
-import static jetbrains.buildServer.nuget.common.FeedConstants.PATH_TO_NUGET_EXE;
+import static jetbrains.buildServer.nuget.common.FeedConstants.PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE;
 
 /**
  * @author Evgeniy.Koshkin
@@ -37,8 +37,8 @@ public class NuGetPackageValidationUtil {
     ZipFile file = null;
     try {
       file = new ZipFile(pkg);
-      if (file.getEntry(PATH_TO_NUGET_EXE) == null) {
-        throw new ToolException("NuGet package must contain " + PATH_TO_NUGET_EXE + " file");
+      if (file.getEntry(PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE) == null) {
+        throw new ToolException("NuGet package must contain " + PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE + " file");
       }
     } catch (IOException e) {
       String msg = "Failed to read NuGet package file. " + e.getMessage();
