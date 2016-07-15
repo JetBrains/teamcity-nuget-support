@@ -68,8 +68,14 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
     };
   }
 
+  @NotNull
   private File getPathToNuGet(BuildRunnerContext context) throws RunBuildException {
-    return new File(context.getRunnerParameters().get(PackagesConstants.NUGET_PATH), FeedConstants.PATH_TO_NUGET_EXE);
+    final String nugetPathParamValue = context.getRunnerParameters().get(PackagesConstants.NUGET_PATH);
+    if(StringUtil.isEmpty(nugetPathParamValue)) {
+      throw new RunBuildException("Path to NuGet.exe is not provided via runner parameter " + PackagesConstants.NUGET_PATH);
+    }
+    final File nugetPathProvided = new File(nugetPathParamValue);
+    return !nugetPathProvided.isDirectory() ? nugetPathProvided : new File(nugetPathProvided, FeedConstants.PATH_TO_NUGET_EXE);
   }
 
   @NotNull
