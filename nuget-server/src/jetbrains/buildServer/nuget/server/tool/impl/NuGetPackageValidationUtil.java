@@ -24,20 +24,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.zip.ZipFile;
 
-import static jetbrains.buildServer.nuget.common.FeedConstants.PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE;
-
 /**
  * @author Evgeniy.Koshkin
  */
 public class NuGetPackageValidationUtil {
-
   private static final Logger LOG = Logger.getInstance(NuGetPackageValidationUtil.class.getName());
+
+  private static final String PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE = "tools/nuget.exe";
+  private static final String PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE_OLD = "tools/NuGet.exe";
 
   public static void validatePackage(@NotNull final File pkg) throws ToolException {
     ZipFile file = null;
     try {
       file = new ZipFile(pkg);
-      if (file.getEntry(PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE) == null) {
+      if (file.getEntry(PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE) == null && file.getEntry(PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE_OLD) == null) {
         throw new ToolException("NuGet package must contain " + PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE + " file");
       }
     } catch (IOException e) {

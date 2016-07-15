@@ -31,7 +31,6 @@ public class FeedConstants {
   public static final String NUGET_FEED_V2 = "http://packages.nuget.org/api/v2";
 
   public static final String PATH_TO_NUGET_EXE = "tools/NuGet.exe";
-  public static final String PATH_TO_NUGET_EXE_IN_DISTRIB_PACKAGE = "tools/nuget.exe";
   public static final String NUGET_COMMANDLINE = "NuGet.CommandLine";
   public static final String NUGET_EXTENSION = ".nupkg";
   public static final String EXE_EXTENSION = ".exe";
