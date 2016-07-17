@@ -75,7 +75,9 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       throw new RunBuildException("Path to NuGet.exe is not provided via runner parameter " + PackagesConstants.NUGET_PATH);
     }
     final File nugetPathProvided = new File(nugetPathParamValue);
-    return !nugetPathProvided.isDirectory() ? nugetPathProvided : new File(nugetPathProvided, FeedConstants.PATH_TO_NUGET_EXE);
+    return !nugetPathProvided.isDirectory()
+            ? FileUtil.resolvePath(context.getBuild().getCheckoutDirectory(), nugetPathParamValue)
+            : new File(nugetPathProvided, FeedConstants.PATH_TO_NUGET_EXE);
   }
 
   @NotNull
