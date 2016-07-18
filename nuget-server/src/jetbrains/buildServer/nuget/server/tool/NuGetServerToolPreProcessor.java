@@ -27,10 +27,13 @@ import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.tools.installed.ToolPaths;
 import jetbrains.buildServer.util.FileUtil;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+
+import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
 
 /**
  * Created by Evgeniy.Koshkin.
@@ -102,9 +105,12 @@ public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
       return;
     }
 
-    final String defaultNuGetVersion = defaultNuGetToolId.substring(NUGET_TOOL_ID_PREFIX.length());
-    LOG.debug("Default NuGet tool version read is " + defaultNuGetVersion);
-    myDefaultToolVersions.setDefaultVersion(new SimpleToolVersion(nugetToolType, defaultNuGetVersion, defaultNuGetToolId), rootProject);
+    final String defaultNuGetToolIdNormalized = StringUtils.removeEnd(defaultNuGetToolId, NUGET_EXTENSION);
+    LOG.debug("Normalized default NuGet tool name is " + defaultNuGetToolIdNormalized);
+    final String defaultNuGetVersion = defaultNuGetToolIdNormalized.substring(NUGET_TOOL_ID_PREFIX.length());
+    LOG.debug("Default NuGet tool version resolved is " + defaultNuGetVersion);
+
+    myDefaultToolVersions.setDefaultVersion(new SimpleToolVersion(nugetToolType, defaultNuGetVersion, defaultNuGetToolIdNormalized), rootProject);
     LOG.debug("Succesfully restore NuGet default version " + defaultNuGetVersion);
   }
 
