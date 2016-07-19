@@ -51,6 +51,7 @@ import org.testng.annotations.DataProvider;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -212,6 +213,27 @@ public class IntegrationTestBase extends BuildProcessTestCase {
                     new CommandFactoryImpl()
             )
     );
+
+    enshureRunningArainstNuGetOrgAPIv2();
+  }
+
+  private void enshureRunningArainstNuGetOrgAPIv2() {
+    final GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(NuGet.NuGet_2_8.getPath().getPath());
+    cmd.addParameter("sources");
+    cmd.addParameter("update");
+    cmd.addParameter("-Name");
+    cmd.addParameter("nuget.org");
+    cmd.addParameter("-Source");
+    cmd.addParameter("https://www.nuget.org/api/v2");
+    final Process process;
+    try {
+      process = cmd.createProcess();
+      assertTrue("Failed to wait for command to finish " + cmd.getCommandLineString(), process.waitFor(1000, TimeUnit.MILLISECONDS));
+      assertEquals("Failed to update nuget.org package source using command " + cmd.getCommandLineString(), 0, process.exitValue());
+    } catch (Exception e) {
+      fail(e.getMessage());
+    }
   }
 
   protected void addGlobalSource(@NotNull final String feed) {
