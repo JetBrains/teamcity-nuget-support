@@ -12,12 +12,10 @@
           <file>file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerPluginsSupportWeb.xml</file>
           <file>file://$TeamCityDistribution$/webapps/ROOT/WEB-INF/buildServerConfigurator.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-tools.xml</file>
-          <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-feed.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-pack-runner.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-install-runner.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-publish-runner.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-trigger.xml</file>
-          <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-server.xml</file>
           <file>jar://$TeamCityDistribution$/webapps/ROOT/WEB-INF/lib/server.jar!/META-INF/buildServerSpringMetadata.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-settings.xml</file>
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-auth.xml</file>
@@ -50,7 +48,5 @@
     <orderEntry type="module" module-name="nuget-common" />
     <orderEntry type="library" name="Common-Impl" level="project" />
     <orderEntry type="library" name="TeamCity server runtime" level="project" />
-    <orderEntry type="library" name="odata4j" level="project" />
-    <orderEntry type="library" name="jersey" level="project" />
   </component>
 </module>
