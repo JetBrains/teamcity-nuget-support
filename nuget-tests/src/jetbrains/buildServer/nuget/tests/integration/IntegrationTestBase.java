@@ -229,7 +229,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     final Process process;
     try {
       process = cmd.createProcess();
-      assertTrue("Failed to wait for command to finish " + cmd.getCommandLineString(), process.waitFor(1000, TimeUnit.MILLISECONDS));
+      assertTrue("Failed to wait for command to finish " + cmd.getCommandLineString(), process.waitFor(5, TimeUnit.SECONDS));
       assertEquals("Failed to update nuget.org package source using command " + cmd.getCommandLineString(), 0, process.exitValue());
     } catch (Exception e) {
       fail(e.getMessage());
