@@ -47,7 +47,8 @@ public class TriggerRequestFactory {
   private final CheckRequestModeFactory myModeFactory;
   private final ServerToolManager myToolManager;
   private final PackageCheckRequestFactory myRequestFactory;
-  private final Collection<TriggerUrlPostProcessor> myUrlPostProcessors;
+  @NotNull
+  private final ExtensionHolder myExtensionHolder;
 
   public TriggerRequestFactory(@NotNull final CheckRequestModeFactory modeFactory,
                                @NotNull final ServerToolManager toolManager,
@@ -56,7 +57,7 @@ public class TriggerRequestFactory {
     myModeFactory = modeFactory;
     myToolManager = toolManager;
     myRequestFactory = requestFactory;
-    myUrlPostProcessors = extensionHolder.getExtensions(TriggerUrlPostProcessor.class);
+    myExtensionHolder = extensionHolder;
   }
 
   @NotNull
@@ -96,7 +97,7 @@ public class TriggerRequestFactory {
       source = null;
     }
     else {
-      for (TriggerUrlPostProcessor urlPostProcessor : myUrlPostProcessors) {
+      for (TriggerUrlPostProcessor urlPostProcessor : myExtensionHolder.getExtensions(TriggerUrlPostProcessor.class)) {
         source = urlPostProcessor.updateTriggerUrl(descriptor, source);
       }
     }
