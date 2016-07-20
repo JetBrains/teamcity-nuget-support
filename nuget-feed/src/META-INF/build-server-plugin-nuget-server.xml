@@ -4,45 +4,46 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetFeedController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.NuGetPackageDownloadController"/>
-  <bean class="jetbrains.buildServer.nuget.server.PermissionChecker"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetPackageDownloadController"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesDescription"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.NuGetServerPropertiesProvider"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.NuGetServerPropertiesDescription"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.requests.RecentNuGetRequests"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.controllers.requests.NuGetFeedRequestsController"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.requests.NuGetFeedRequestsController"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerFeedSettingsImpl"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsImpl"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.impl.NuGetServerFeedSettingsImpl"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl">
+  <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl">
     <constructor-arg>
       <list>
-        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.SamePackagesFilterTransformation"/>
-        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.OldFormatConvertTransformation"/>
-        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.AccessCheckTransformation"/>
-        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation"/>
-        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.ComputeExternalBuildIdTransformation"/>
-        <bean class="jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.transform.SamePackagesFilterTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.transform.OldFormatConvertTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.transform.AccessCheckTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.transform.IsPrereleaseTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.transform.ComputeExternalBuildIdTransformation"/>
+        <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.transform.DownloadUrlComputationTransformation"/>
       </list>
     </constructor-arg>
   </bean>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.index.NuGetPackagesIndexer"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.index.NuGetPackagesIndexer"/>
 
   <!-- UI -->
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerSettingsController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.tab.FeedServerMyTools"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerSettingsController"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerController"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerMyTools"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.NuGetDownloadedPackagesTab"/>
 
   <!--stats -->
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.NuGetFeedUsageStatisticsProvider"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.NuGetFeedUsageStatisticsProvider"/>
 
+  <bean class="jetbrains.buildServer.nuget.feed.server.javaFeed.cache.ResponseCache"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.javaFeed.ODataPackagesFeedController"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.javaFeed.NuGetProducerHolder"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.javaFeed.functions.NuGetFeedFunctions"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.cache.ResponseCache"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.ODataPackagesFeedController"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducerHolder"/>
-  <bean class="jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunctions"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerSettingsTab"/>
 </beans>
