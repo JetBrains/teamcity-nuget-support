@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
+import jetbrains.buildServer.nuget.server.TriggerUrlPostProcessor;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.trigger;
+package jetbrains.buildServer.nuget.feed.server;
 
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerPropertiesProvider;
+import jetbrains.buildServer.nuget.server.TriggerUrlPostProcessor;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import org.jetbrains.annotations.NotNull;
 

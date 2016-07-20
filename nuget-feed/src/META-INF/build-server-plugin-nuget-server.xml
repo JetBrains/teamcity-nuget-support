@@ -48,4 +48,6 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerSettingsTab"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.PermissionChecker"/>
+
+  <bean class="jetbrains.buildServer.nuget.feed.server.TriggerUrlSelfPostProcessor"/>
 </beans>
