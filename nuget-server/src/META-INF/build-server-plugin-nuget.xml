@@ -13,4 +13,7 @@
   <bean class="jetbrains.buildServer.nuget.server.runner.NuGetRunTypesRegistrar"/>
 
   <bean class="jetbrains.buildServer.nuget.server.util.SystemInfoImpl"/>
+
+  <bean class="jetbrains.buildServer.nuget.server.feedReader.NuGetFeedClientHolder" destroy-method="dispose"/>
+  <bean class="jetbrains.buildServer.nuget.server.feedReader.NuGetFeedReaderHolder"/>
 </beans>

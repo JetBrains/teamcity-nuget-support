@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.reader;
+package jetbrains.buildServer.nuget.server.feedReader;
 
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
