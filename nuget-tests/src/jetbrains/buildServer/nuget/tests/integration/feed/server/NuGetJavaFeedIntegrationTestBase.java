@@ -18,16 +18,16 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.intellij.util.containers.SortedList;
 import jetbrains.buildServer.NetworkUtil;
-import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
-import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsImpl;
-import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackagesIndexImpl;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.SemanticVersionsComparators;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.transform.IsPrereleaseTransformation;
-import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetProducerHolder;
-import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunctions;
+import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
+import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
+import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
+import jetbrains.buildServer.nuget.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
+import jetbrains.buildServer.nuget.feed.server.index.impl.transform.IsPrereleaseTransformation;
+import jetbrains.buildServer.nuget.feed.server.javaFeed.NuGetProducerHolder;
+import jetbrains.buildServer.nuget.feed.server.javaFeed.functions.NuGetFeedFunctions;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
@@ -46,7 +46,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
-import static jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
+import static jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)

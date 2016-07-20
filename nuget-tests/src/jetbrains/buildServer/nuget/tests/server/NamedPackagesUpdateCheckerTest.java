@@ -16,12 +16,14 @@
 
 package jetbrains.buildServer.nuget.tests.server;
 
+import jetbrains.buildServer.ExtensionHolder;
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.server.TriggerUrlPostProcessor;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.trigger.*;
@@ -93,12 +95,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
 
     final SystemInfo si = m.mock(SystemInfo.class);
 
-    checker = new NamedPackagesUpdateChecker(chk, new TriggerRequestFactory(
-            new CheckRequestModeFactory(si),
-            toolManager, new PackageCheckRequestFactory(
-                    new PackageCheckerSettingsImpl()),
-                    Arrays.<TriggerUrlPostProcessor>asList(new TriggerUrlRootPostProcessor(myRootUrlHolder))),
-            new PackagesHashCalculator());
+    ExtensionHolder extensionHolder = m.mock(ExtensionHolder.class);
+    checker = new NamedPackagesUpdateChecker(chk, new TriggerRequestFactory(new CheckRequestModeFactory(si), toolManager, new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()), extensionHolder), new PackagesHashCalculator());
 
     final File nugetHome = createTempDir();
     nugetFakePath = new File(nugetHome, "/tools/nuget.exe");
@@ -112,6 +110,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
       allowing(context).getBuildType(); will(returnValue(myBuildType));
       allowing(desr).getProperties(); will(returnValue(params));
       allowing(toolManager).getUnpackedToolVersionPath(with(any(ToolType.class)), with(any(String.class)), with(any(SProject.class))); will(returnValue(nugetHome));
+      allowing(extensionHolder).getExtensions(TriggerUrlPostProcessor.class); will(returnValue(Collections.<TriggerUrlPostProcessor>singletonList(new TriggerUrlRootPostProcessor(myRootUrlHolder))));
 
       allowing(si).canStartNuGetProcesses(); will(new CustomAction("Return myIsWindows") {
         public Object invoke(Invocation invocation) throws Throwable {

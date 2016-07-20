@@ -21,11 +21,11 @@ import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedGetMethodFactory;
 import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedHttpClientHolder;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.FrameworkConstraintsCalculator;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureAnalyser;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureVisitor;
-import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
+import jetbrains.buildServer.nuget.feed.server.index.impl.FrameworkConstraintsCalculator;
+import jetbrains.buildServer.nuget.feed.server.index.impl.LocalNuGetPackageItemsFactory;
+import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageStructureAnalyser;
+import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageStructureVisitor;
+import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
@@ -47,7 +47,7 @@ import org.testng.annotations.BeforeMethod;
 import java.io.*;
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.*;
+import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.*;
 import static org.apache.http.HttpStatus.*;
 
 /**

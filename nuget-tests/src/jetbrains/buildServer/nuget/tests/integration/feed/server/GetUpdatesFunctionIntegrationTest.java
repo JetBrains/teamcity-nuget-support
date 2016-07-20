@@ -17,13 +17,13 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.google.common.collect.Lists;
-import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.testng.annotations.Test;
 
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
-import static jetbrains.buildServer.nuget.server.feed.server.index.PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS;
+import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS;
 
 /**
  * @author Evgeniy.Koshkin

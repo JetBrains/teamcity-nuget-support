@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageBuilder;
-import jetbrains.buildServer.nuget.server.feed.server.index.impl.PackageTransformation;
+import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageBuilder;
+import jetbrains.buildServer.nuget.feed.server.index.impl.PackageTransformation;
 import org.jetbrains.annotations.NotNull;
 
 /**
