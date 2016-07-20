@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Spring" name="Spring">
+      <configuration>
+        <fileset id="fileset" name="Spring Application Context" removed="false">
+          <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-settings.xml</file>
+        </fileset>
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -12,5 +21,6 @@
     <orderEntry type="library" name="Common-Api" level="project" />
     <orderEntry type="library" exported="" name="guava" level="project" />
     <orderEntry type="library" exported="" name="commons-lang" level="project" />
+    <orderEntry type="library" name="Server-Api" level="project" />
   </component>
 </module>
