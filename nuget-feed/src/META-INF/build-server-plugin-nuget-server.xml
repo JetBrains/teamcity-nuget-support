@@ -46,4 +46,6 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.javaFeed.functions.NuGetFeedFunctions"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerSettingsTab"/>
+
+  <bean class="jetbrains.buildServer.nuget.feed.server.PermissionChecker"/>
 </beans>

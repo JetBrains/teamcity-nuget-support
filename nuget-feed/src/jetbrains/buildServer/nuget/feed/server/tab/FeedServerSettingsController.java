@@ -22,7 +22,7 @@ import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetPackagesIndexer;
-import jetbrains.buildServer.nuget.server.PermissionChecker;
+import jetbrains.buildServer.nuget.feed.server.PermissionChecker;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.util.StringUtil;

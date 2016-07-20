@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.tab;
 
-import jetbrains.buildServer.nuget.server.PermissionChecker;
+import jetbrains.buildServer.nuget.feed.server.PermissionChecker;
 import jetbrains.buildServer.web.openapi.*;
 import org.jetbrains.annotations.NotNull;
 

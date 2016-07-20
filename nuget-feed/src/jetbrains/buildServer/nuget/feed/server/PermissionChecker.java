@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server;
+package jetbrains.buildServer.nuget.feed.server;
 
 import jetbrains.buildServer.serverSide.auth.*;
 import org.jetbrains.annotations.NotNull;
