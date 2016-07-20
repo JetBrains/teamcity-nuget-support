@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.server.runner;
 
 import jetbrains.buildServer.nuget.common.DotNetConstants;
 import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
-import jetbrains.buildServer.nuget.server.util.Version;
+import jetbrains.buildServer.nuget.server.version.Version;
 import jetbrains.buildServer.requirements.Requirement;
 import jetbrains.buildServer.requirements.RequirementQualifier;
 import jetbrains.buildServer.requirements.RequirementType;

@@ -23,5 +23,6 @@
     <orderEntry type="library" name="TeamCity server runtime" level="project" />
     <orderEntry type="library" name="Servlet Api" level="project" />
     <orderEntry type="module" module-name="nuget-common" />
+    <orderEntry type="module" module-name="nuget-server-common" />
   </component>
 </module>

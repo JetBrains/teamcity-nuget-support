@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.util;
+package jetbrains.buildServer.nuget.server.version;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.util.CaseInsensitiveMap;
@@ -22,6 +22,7 @@ import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.filters.Filter;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,9 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.apache.commons.lang.StringUtils.join;
-import static org.apache.commons.lang.StringUtils.rightPad;
 
 /**
  * Snapshot of http://nuget.codeplex.com/SourceControl/latest#src/Core/Utility/VersionUtility.cs
@@ -244,7 +242,7 @@ public class VersionUtility {
           versionPart = versionPart.substring(0, 4);
         }
         // Make sure it has at least 2 digits so it parses as a valid version
-        versionPart = join(splitByChar(rightPad(versionPart, 2, '0')), ".");
+        versionPart = StringUtils.join(splitByChar(StringUtils.rightPad(versionPart, 2, '0')), ".");
       } catch (NumberFormatException ex){
         LOG.debug("Failed to parse framework version from string " + frameworkNameString, ex);
         return null;

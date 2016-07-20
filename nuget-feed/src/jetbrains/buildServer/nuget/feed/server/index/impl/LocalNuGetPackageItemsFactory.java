@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.feed.server.index.impl;
 
 import com.intellij.openapi.util.text.StringUtil;
-import jetbrains.buildServer.nuget.server.util.VersionUtility;
+import jetbrains.buildServer.nuget.server.version.VersionUtility;
 import jetbrains.buildServer.nuget.spec.Dependencies;
 import jetbrains.buildServer.nuget.spec.Dependency;
 import jetbrains.buildServer.nuget.spec.DependencyGroup;

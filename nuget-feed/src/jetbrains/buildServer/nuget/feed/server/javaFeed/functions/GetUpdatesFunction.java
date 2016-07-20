@@ -25,10 +25,10 @@ import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsCompar
 import jetbrains.buildServer.nuget.feed.server.javaFeed.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.javaFeed.PackageEntityEx;
 import jetbrains.buildServer.nuget.feed.server.javaFeed.PackagesEntitySet;
-import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
-import jetbrains.buildServer.nuget.server.util.SemanticVersion;
-import jetbrains.buildServer.nuget.server.util.VersionConstraint;
-import jetbrains.buildServer.nuget.server.util.VersionUtility;
+import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
+import jetbrains.buildServer.nuget.server.version.SemanticVersion;
+import jetbrains.buildServer.nuget.server.version.VersionConstraint;
+import jetbrains.buildServer.nuget.server.version.VersionUtility;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.StringUtil;

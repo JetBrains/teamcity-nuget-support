@@ -33,6 +33,11 @@
         <element id="library" level="project" name="jersey" />
         <element id="artifact" artifact-name="nuget-common" />
         <element id="library" level="project" name="commons-codec" />
+        <element id="archive" name="nuget-feed.jar">
+          <element id="module-output" name="nuget-feed" />
+        </element>
+        <element id="library" level="project" name="guava" />
+        <element id="library" level="project" name="commons-lang" />
       </element>
       <element id="file-copy" path="$PROJECT_DIR$/nuget-server/teamcity-server-plugin.xml" output-file-name="teamcity-plugin.xml" />
       <element id="directory" name="licenses">

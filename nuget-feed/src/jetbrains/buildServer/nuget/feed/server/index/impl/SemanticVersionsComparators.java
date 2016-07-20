@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.feed.server.index.impl;
 
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.util.SemanticVersion;
+import jetbrains.buildServer.nuget.server.version.SemanticVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;

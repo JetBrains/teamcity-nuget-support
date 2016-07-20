@@ -23,7 +23,7 @@ import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.javaFeed.cache.ResponseCacheReset;
-import jetbrains.buildServer.nuget.server.util.FrameworkConstraints;
+import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.TeamCityProperties;

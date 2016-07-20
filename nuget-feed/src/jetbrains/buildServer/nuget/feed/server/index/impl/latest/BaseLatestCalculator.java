@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.feed.server.index.impl.latest;
 
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageBuilder;
-import jetbrains.buildServer.nuget.server.util.SemanticVersion;
+import jetbrains.buildServer.nuget.server.version.SemanticVersion;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

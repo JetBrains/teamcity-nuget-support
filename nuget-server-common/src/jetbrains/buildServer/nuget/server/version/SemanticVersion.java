@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.util;
+package jetbrains.buildServer.nuget.server.version;
 
-import com.google.common.base.Strings;
+import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,7 +41,7 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
 
   @Nullable
   public static SemanticVersion valueOf(@NotNull String versionString) {
-    if (Strings.isNullOrEmpty(versionString)) return null;
+    if (StringUtil.isEmpty(versionString)) return null;
 
     final Matcher match = VERSION_STRING_MATCHING_PATTERN.matcher(versionString.trim());
     if (!match.find()) return null;
@@ -82,8 +82,8 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
   public int compareTo(@NotNull SemanticVersion other) {
     int result = myVersion.compareTo(other.myVersion);
     if (result != 0) return result;
-    boolean empty = Strings.isNullOrEmpty(mySpecialVersion);
-    boolean otherEmpty = Strings.isNullOrEmpty(other.mySpecialVersion);
+    boolean empty = StringUtil.isEmpty(mySpecialVersion);
+    boolean otherEmpty = StringUtil.isEmpty(other.mySpecialVersion);
     if (empty && otherEmpty) return 0;
     else if (empty) return 1;
     else if (otherEmpty) return -1;
