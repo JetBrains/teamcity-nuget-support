@@ -60,14 +60,14 @@ public class Version implements Comparable<Version> {
     final int minor = Integer.valueOf( matcher.group( 2 ) );
     final int patch;
     final String patchMatch = matcher.group( 3 );
-    if (StringUtil.isEmpty(patchMatch))
+    if (!StringUtil.isEmpty(patchMatch))
       patch = Integer.valueOf(patchMatch);
     else
       patch = 0;
 
     final int build;
     final String buildMatch = matcher.group( 4 );
-    if (StringUtil.isEmpty(buildMatch) )
+    if (!StringUtil.isEmpty(buildMatch) )
       build = Integer.valueOf(buildMatch);
     else
       build = 0;
