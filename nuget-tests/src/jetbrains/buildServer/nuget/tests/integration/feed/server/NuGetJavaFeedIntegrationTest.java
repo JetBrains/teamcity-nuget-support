@@ -65,7 +65,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(nuget.getPath().getPath());
     cmd.addParameter("list");
-    cmd.addParameter("-Verbose");
+    nuget.makeOutputVerbose(cmd);
     cmd.addParameter("-AllVersions");
     cmd.addParameter("-Source");
     cmd.addParameter(getNuGetServerUrl());
@@ -87,7 +87,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     cmd.setExePath(nuget.getPath().getPath());
     cmd.addParameter("list");
     cmd.addParameter("Common");
-    cmd.addParameter("-Verbose");
+    nuget.makeOutputVerbose(cmd);
     cmd.addParameter("-AllVersions");
     cmd.addParameter("-Source");
     cmd.addParameter(getNuGetServerUrl());
