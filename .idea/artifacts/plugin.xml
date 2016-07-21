@@ -23,7 +23,6 @@
       <element id="directory" name="server">
         <element id="archive" name="nuget-server.jar">
           <element id="module-output" name="nuget-server" />
-          <element id="module-output" name="nuget-server-common" />
         </element>
         <element id="archive" name="nuget-server-resources.jar">
           <element id="directory" name="buildServerResources">
@@ -38,11 +37,13 @@
         <element id="library" level="project" name="commons-lang" />
         <element id="archive" name="nuget-feed.jar">
           <element id="module-output" name="nuget-feed" />
-          <element id="module-output" name="nuget-server-common" />
         </element>
         <element id="archive" name="nuget-feed-resources.jar">
-          <element id="dir-copy" path="$PROJECT_DIR$/nuget-feed/resources" />
+          <element id="directory" name="buildServerResources">
+            <element id="dir-copy" path="$PROJECT_DIR$/nuget-feed/resources" />
+          </element>
         </element>
+        <element id="artifact" artifact-name="nuget-server-common" />
       </element>
       <element id="file-copy" path="$PROJECT_DIR$/nuget-server/teamcity-server-plugin.xml" output-file-name="teamcity-plugin.xml" />
       <element id="directory" name="licenses">
