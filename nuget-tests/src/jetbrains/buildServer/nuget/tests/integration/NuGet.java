@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration;
 
+import com.intellij.execution.configurations.GeneralCommandLine;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -85,5 +86,12 @@ public enum NuGet {
     }
   }
 
-
+  public void makeOutputVerbose(GeneralCommandLine cmd){
+    if(this.major >= 2 && this.minor > 0){
+      cmd.addParameter("-Verbosity");
+      cmd.addParameter("detailed");
+    } else{
+      cmd.addParameter("-Verbose");
+    }
+  }
 }

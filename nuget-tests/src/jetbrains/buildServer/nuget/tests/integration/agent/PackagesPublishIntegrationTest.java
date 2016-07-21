@@ -204,7 +204,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
       time /= max;
     }
     cmd.addParameter(build);
-    cmd.addParameter("-Verbose");
+    nuget.makeOutputVerbose(cmd);
 
     final ExecResult result = SimpleCommandLineProcessRunner.runCommand(cmd, new byte[0]);
     System.out.println(result.getStdout());
