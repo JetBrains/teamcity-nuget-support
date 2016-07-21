@@ -61,7 +61,7 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
     super("NuGet Packages", "nugetPackagesBuildTab", pagePlaces, server);
     myStore = store;
     myPackageFeed = packageFeed;
-    setIncludeUrl(descriptor.getPluginResourcesPath("show/showPackages.jsp"));
+    setIncludeUrl(descriptor.getPluginResourcesPath("showPackages.jsp"));
     register();
   }
 

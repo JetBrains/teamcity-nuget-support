@@ -43,7 +43,7 @@ public class FeedServerMyTools extends SimplePageExtension {
             pagePlaces,
             PlaceId.MY_TOOLS_SECTION,
             descriptor.getPluginName() + "-myTools",
-            descriptor.getPluginResourcesPath("server/feedMyTools.jsp")
+            descriptor.getPluginResourcesPath("feedMyTools.jsp")
     );
     myDescriptor = descriptor;
     mySettings = settings;
@@ -53,7 +53,7 @@ public class FeedServerMyTools extends SimplePageExtension {
   @NotNull
   @Override
   public List<String> getCssPaths() {
-    return Collections.singletonList(myDescriptor.getPluginResourcesPath("server/feedServer.css"));
+    return Collections.singletonList(myDescriptor.getPluginResourcesPath("feedServer.css"));
   }
 
   @Override
@@ -61,7 +61,7 @@ public class FeedServerMyTools extends SimplePageExtension {
     super.fillModel(model, request);
     model.put("nugetPrivateUrl", mySettings.getNuGetHttpAuthFeedControllerPath());
     model.put("nugetPublicUrl", mySettings.getNuGetGuestAuthFeedControllerPath());
-    model.put("imagesUrl", myDescriptor.getPluginResourcesPath("server/img"));
+    model.put("imagesUrl", myDescriptor.getPluginResourcesPath("img"));
   }
 
   @Override

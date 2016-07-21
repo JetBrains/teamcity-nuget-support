@@ -71,7 +71,7 @@ public class FeedServerController extends BaseController {
   @Override
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
-    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsWindows.jsp"));
+    final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("feedServerSettingsWindows.jsp"));
 
     mv.getModel().put("actualServerUrl", myRootUrlHolder.getRootUrl());
     mv.getModel().put("nugetStatusRefreshUrl", myIncludePath);

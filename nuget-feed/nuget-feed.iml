@@ -8,6 +8,13 @@
         </fileset>
       </configuration>
     </facet>
+    <facet type="web" name="nuget-feed">
+      <configuration>
+        <webroots>
+          <root url="file://$MODULE_DIR$/resources" relative="/plugins/nuget" />
+        </webroots>
+      </configuration>
+    </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />

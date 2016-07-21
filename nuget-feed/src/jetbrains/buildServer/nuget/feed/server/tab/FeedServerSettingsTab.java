@@ -43,13 +43,13 @@ public class FeedServerSettingsTab extends SimpleCustomTab {
     super(pagePlaces,
             PlaceId.ADMIN_SERVER_CONFIGURATION_TAB,
             TAB_ID,
-            pluginDescriptor.getPluginResourcesPath("server/feedSettingsTab.jsp"),
+            pluginDescriptor.getPluginResourcesPath("feedSettingsTab.jsp"),
             NUGET);
     myPluginDescriptor = pluginDescriptor;
     myChecker = checker;
     setPosition(PositionConstraint.between(Collections.singletonList("pluginsTab"), Arrays.asList("mavenSettings", "toolLoadTab", "usage-statistics")));
-    addJsFile(pluginDescriptor.getPluginResourcesPath("server/feedServer.js"));
-    addCssFile(pluginDescriptor.getPluginResourcesPath("server/feedServer.css"));
+    addJsFile(pluginDescriptor.getPluginResourcesPath("feedServer.js"));
+    addCssFile(pluginDescriptor.getPluginResourcesPath("feedServer.css"));
     register();
   }
 
