@@ -3,7 +3,7 @@
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
       <configuration>
-        <fileset id="fileset" name="Spring Application Context" removed="false">
+        <fileset id="fileset" name="nuget-server-common" removed="false">
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-settings.xml</file>
         </fileset>
       </configuration>
@@ -22,5 +22,6 @@
     <orderEntry type="library" exported="" name="guava" level="project" />
     <orderEntry type="library" exported="" name="commons-lang" level="project" />
     <orderEntry type="library" name="Server-Api" level="project" />
+    <orderEntry type="library" name="TeamCity server runtime" level="project" />
   </component>
 </module>

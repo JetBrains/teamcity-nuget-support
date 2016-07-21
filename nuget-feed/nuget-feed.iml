@@ -3,7 +3,7 @@
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
       <configuration>
-        <fileset id="fileset" name="Spring Application Context" removed="false">
+        <fileset id="fileset" name="nuget-feed" removed="false">
           <file>file://$MODULE_DIR$/src/META-INF/build-server-plugin-nuget-server.xml</file>
         </fileset>
       </configuration>
