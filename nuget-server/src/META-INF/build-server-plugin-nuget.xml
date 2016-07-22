@@ -5,21 +5,15 @@
        default-autowire="constructor">
 
   <import resource="classpath*:META-INF/spring-nuget-common.xml"/>
-<!--
-  <bean class="jetbrains.buildServer.nuget.server.NuGetPublishRunType"/>
-  <bean class="jetbrains.buildServer.nuget.server.show.NuGetDownloadedPackagesTab"/>
-  <bean class="jetbrains.buildServer.nuget.server.NuGetDownloadFeature"/>
--->
 
   <bean class="jetbrains.buildServer.nuget.server.exec.impl.ServerNuGetTeamCityProviderImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl"/>
   <bean class="jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl"/>
 
-  <bean class="jetbrains.buildServer.nuget.server.show.NuGetDownloadedPackagesTab"/>
-
-
   <bean class="jetbrains.buildServer.nuget.server.runner.NuGetRunTypesRegistrar"/>
 
-
   <bean class="jetbrains.buildServer.nuget.server.util.SystemInfoImpl"/>
+
+  <bean class="jetbrains.buildServer.nuget.server.feedReader.NuGetFeedClientHolder" destroy-method="dispose"/>
+  <bean class="jetbrains.buildServer.nuget.server.feedReader.NuGetFeedReaderHolder"/>
 </beans>

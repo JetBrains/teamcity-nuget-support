@@ -17,9 +17,9 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.util.FrameworkName;
-import jetbrains.buildServer.nuget.server.util.Version;
-import jetbrains.buildServer.nuget.server.util.VersionUtility;
+import jetbrains.buildServer.nuget.server.version.FrameworkName;
+import jetbrains.buildServer.nuget.server.version.Version;
+import jetbrains.buildServer.nuget.server.version.VersionUtility;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 

@@ -16,10 +16,12 @@
 
 package jetbrains.buildServer.nuget.server.trigger;
 
+import jetbrains.buildServer.ExtensionHolder;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
+import jetbrains.buildServer.nuget.server.TriggerUrlPostProcessor;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
 import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
@@ -45,16 +47,17 @@ public class TriggerRequestFactory {
   private final CheckRequestModeFactory myModeFactory;
   private final ServerToolManager myToolManager;
   private final PackageCheckRequestFactory myRequestFactory;
-  private final Collection<TriggerUrlPostProcessor> myUrlPostProcessors;
+  @NotNull
+  private final ExtensionHolder myExtensionHolder;
 
   public TriggerRequestFactory(@NotNull final CheckRequestModeFactory modeFactory,
                                @NotNull final ServerToolManager toolManager,
                                @NotNull final PackageCheckRequestFactory requestFactory,
-                               @NotNull final Collection<TriggerUrlPostProcessor> urlPostProcessors) {
+                               @NotNull final ExtensionHolder extensionHolder) {
     myModeFactory = modeFactory;
     myToolManager = toolManager;
     myRequestFactory = requestFactory;
-    myUrlPostProcessors = urlPostProcessors;
+    myExtensionHolder = extensionHolder;
   }
 
   @NotNull
@@ -94,7 +97,7 @@ public class TriggerRequestFactory {
       source = null;
     }
     else {
-      for (TriggerUrlPostProcessor urlPostProcessor : myUrlPostProcessors) {
+      for (TriggerUrlPostProcessor urlPostProcessor : myExtensionHolder.getExtensions(TriggerUrlPostProcessor.class)) {
         source = urlPostProcessor.updateTriggerUrl(descriptor, source);
       }
     }

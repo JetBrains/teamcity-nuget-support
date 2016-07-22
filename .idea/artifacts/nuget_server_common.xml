@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact name="nuget-server-common">
+    <output-path>$PROJECT_DIR$/out/artifacts/nuget_server_common</output-path>
+    <root id="root">
+      <element id="archive" name="nuget-server-common.jar">
+        <element id="module-output" name="nuget-server-common" />
+      </element>
+    </root>
+  </artifact>
+</component>
