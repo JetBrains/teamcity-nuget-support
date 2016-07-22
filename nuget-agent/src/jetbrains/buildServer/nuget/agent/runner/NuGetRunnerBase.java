@@ -55,7 +55,7 @@ public abstract class NuGetRunnerBase implements AgentBuildRunner, AgentBuildRun
 
   public boolean canRun(@NotNull BuildAgentConfiguration agentConfiguration) {
     if (!agentConfiguration.getSystemInfo().isWindows()) {
-      LOG.warn("NuGet packages installer available only under Windows");
+      LOG.warn("NuGet runner " + getType() + " available only under Windows");
       return false;
     }
 
