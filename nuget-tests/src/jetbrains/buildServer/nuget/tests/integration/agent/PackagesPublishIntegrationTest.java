@@ -51,6 +51,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Date: 22.07.11 1:25
  */
 public class PackagesPublishIntegrationTest extends IntegrationTestBase {
+  private static final String STATUS_LINE_100 = "HTTP/1.1 100 Continue";
   protected NuGetPublishParameters myPublishParameters;
 
   @BeforeMethod
@@ -106,12 +107,25 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
       @Override
       protected Response getResponse(String request) {
-        System.out.println(">>" + request);
+        System.out.println(">> " + request);
+        String responseStatusLine;
+        String responseContent;
         if (request.startsWith("PUT")) {
           hasPUT.set(true);
-          return createStringResponse(STATUS_LINE_201, Collections.<String>emptyList(), "Created");
+          if (request.contains("Expect: 100-continue")){
+            responseStatusLine = STATUS_LINE_100;
+            responseContent = "Continue";
+          }
+          else{
+            responseStatusLine = STATUS_LINE_201;
+            responseContent = "Created";
+          }
+        } else {
+          responseStatusLine = STATUS_LINE_200;
+          responseContent = "Ok";
         }
-        return createStringResponse(STATUS_LINE_200,Collections.<String>emptyList(), "Ok");
+        System.out.println(String.format("<< %s %s", responseStatusLine, responseContent));
+        return createStringResponse(responseStatusLine, Collections.<String>emptyList(), responseContent);
       }
     };
 
@@ -153,12 +167,25 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
       @Override
       protected Response getAuthorizedResponse(String request) throws IOException {
-        System.out.println(">>" + request);
+        System.out.println(">> " + request);
+        String responseStatusLine;
+        String responseContent;
         if (request.startsWith("PUT")) {
           hasPUT.set(true);
-          return createStringResponse(STATUS_LINE_201, Collections.<String>emptyList(), "Created");
+          if (request.contains("Expect: 100-continue")){
+            responseStatusLine = STATUS_LINE_100;
+            responseContent = "Continue";
+          }
+          else{
+            responseStatusLine = STATUS_LINE_201;
+            responseContent = "Created";
+          }
+        } else {
+          responseStatusLine = STATUS_LINE_200;
+          responseContent = "Ok";
         }
-        return createStringResponse(STATUS_LINE_200,Collections.<String>emptyList(), "Ok");
+        System.out.println(String.format("<< %s %s", responseStatusLine, responseContent));
+        return createStringResponse(responseStatusLine, Collections.<String>emptyList(), responseContent);
       }
     };
 
