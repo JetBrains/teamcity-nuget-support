@@ -41,9 +41,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.*;
@@ -90,10 +88,10 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
 
     LOG.debug("Looking for NuGet packages in " + LogUtil.describe(build));
 
-    final List<BuildArtifact> packages = new ArrayList<BuildArtifact>();
+    final Set<BuildArtifact> packages = new HashSet<>();
     visitArtifacts(build.getArtifacts(BuildArtifactsViewMode.VIEW_ALL).getRootArtifact(), packages);
 
-    for (BuildArtifact aPackage : packages) {
+    for (final BuildArtifact aPackage : packages) {
       LOG.info("Indexing NuGet package from artifact " + aPackage.getRelativePath() + " of build " + LogUtil.describe(build));
       try {
         final Map<String, String> metadata = generateMetadataForPackage(build, aPackage);
@@ -111,7 +109,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
     }
   }
 
-  public Map<String, String> generateMetadataForPackage(SBuild build, BuildArtifact aPackage) throws PackageLoadException {
+  private Map<String, String> generateMetadataForPackage(@NotNull SBuild build, @NotNull BuildArtifact aPackage) throws PackageLoadException {
     final LocalNuGetPackageItemsFactory packageItemsFactory = LocalNuGetPackageItemsFactory.createForBuild(build);
     final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
     final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
@@ -134,7 +132,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
     return Boolean.valueOf(indexEnabledConfigParamValue);
   }
 
-  private void visitArtifacts(@NotNull final BuildArtifact artifact, @NotNull final List<BuildArtifact> packages) {
+  private void visitArtifacts(@NotNull final BuildArtifact artifact, @NotNull final Set<BuildArtifact> packages) {
     if (!artifact.isDirectory()) {
       if (FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(artifact.getName())) {
         packages.add(artifact);
