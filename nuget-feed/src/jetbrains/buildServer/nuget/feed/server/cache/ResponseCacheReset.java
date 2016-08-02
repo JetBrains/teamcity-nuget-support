@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed.entity;
-
-import org.odata4j.core.OAtomStreamEntity;
+package jetbrains.buildServer.nuget.feed.server.cache;
 
 /**
- * Marker interface to implement V1 and V2 ccmpatible feed
- * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 23.04.13 9:34
  */
-public interface PackageEntity extends PackageEntityV2, OAtomStreamEntity {
-
-  String[] KeyPropertyNames = PackageEntityV2.KeyPropertyNames;
+public interface ResponseCacheReset {
+  void resetCache();
 }

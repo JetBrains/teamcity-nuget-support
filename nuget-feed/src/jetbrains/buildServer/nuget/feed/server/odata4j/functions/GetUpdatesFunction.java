@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed.functions;
+package jetbrains.buildServer.nuget.feed.server.odata4j.functions;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.containers.SortedList;
@@ -22,9 +22,9 @@ import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
-import jetbrains.buildServer.nuget.feed.server.javaFeed.MetadataConstants;
-import jetbrains.buildServer.nuget.feed.server.javaFeed.PackageEntityEx;
-import jetbrains.buildServer.nuget.feed.server.javaFeed.PackagesEntitySet;
+import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
+import jetbrains.buildServer.nuget.feed.server.odata4j.PackageEntityEx;
+import jetbrains.buildServer.nuget.feed.server.odata4j.PackagesEntitySet;
 import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
 import jetbrains.buildServer.nuget.server.version.SemanticVersion;
 import jetbrains.buildServer.nuget.server.version.VersionConstraint;

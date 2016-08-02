@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed;
+package jetbrains.buildServer.nuget.feed.server.odata4j;
 
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;

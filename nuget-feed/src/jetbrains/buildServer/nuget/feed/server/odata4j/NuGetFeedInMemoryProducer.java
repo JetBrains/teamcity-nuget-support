@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed;
+package jetbrains.buildServer.nuget.feed.server.odata4j;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.feed.server.javaFeed.entity.PackageEntity;
-import jetbrains.buildServer.nuget.feed.server.javaFeed.functions.NuGetFeedFunction;
-import jetbrains.buildServer.nuget.feed.server.javaFeed.functions.NuGetFeedFunctions;
+import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
+import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
+import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntity;
+import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunction;
+import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
 import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;

@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed;
+package jetbrains.buildServer.nuget.feed.server.odata4j.entity;
 
-import org.jetbrains.annotations.NotNull;
-import org.odata4j.edm.EdmEntitySet;
+import org.odata4j.core.OAtomStreamEntity;
 
 /**
- * @author Evgeniy.Koshkin
+ * Marker interface to implement V1 and V2 ccmpatible feed
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  */
-public class PackagesEntitySet {
-  @NotNull
-  private static final EdmEntitySet.Builder myPackagesEntitySetBuilder
-          = new EdmEntitySet.Builder().setName(MetadataConstants.ENTITY_SET_NAME);
+public interface PackageEntity extends PackageEntityV2, OAtomStreamEntity {
 
-  public static EdmEntitySet.Builder getBuilder() {
-    return myPackagesEntitySetBuilder;
-  }
+  String[] KeyPropertyNames = PackageEntityV2.KeyPropertyNames;
 }

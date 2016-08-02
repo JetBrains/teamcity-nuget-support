@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed;
+package jetbrains.buildServer.nuget.feed.server.odata4j;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerJavaSettings;
+import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
-import jetbrains.buildServer.nuget.feed.server.javaFeed.cache.ResponseCache;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.util.FuncThrow;
 import jetbrains.buildServer.util.Util;
@@ -42,8 +42,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
-
-import static jetbrains.buildServer.nuget.feed.server.javaFeed.cache.ResponseCache.ComputeAction;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -121,7 +119,7 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
       return;
     }
 
-    final ComputeAction action = new ComputeAction() {
+    final ResponseCache.ComputeAction action = new ResponseCache.ComputeAction() {
       public void compute(@NotNull final HttpServletRequest request,
                           @NotNull final HttpServletResponse response) throws Exception {
         processFeedRequest(baseMappingPath, request, response);

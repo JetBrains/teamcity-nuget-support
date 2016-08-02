@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed;
+package jetbrains.buildServer.nuget.feed.server.odata4j;
 
 import org.odata4j.stax2.QName2;
 import org.odata4j.stax2.XMLWriter2;

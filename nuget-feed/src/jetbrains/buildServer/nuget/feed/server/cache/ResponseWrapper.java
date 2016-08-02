@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed.cache;
+package jetbrains.buildServer.nuget.feed.server.cache;
 
 import org.jetbrains.annotations.NotNull;
 

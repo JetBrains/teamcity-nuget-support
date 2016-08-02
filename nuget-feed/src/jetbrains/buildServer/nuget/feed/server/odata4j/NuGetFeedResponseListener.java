@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed;
+package jetbrains.buildServer.nuget.feed.server.odata4j;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.sun.jersey.spi.container.ContainerResponse;

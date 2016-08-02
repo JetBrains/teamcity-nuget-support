@@ -21,7 +21,7 @@
 **** Generated with class jetbrains.buildServer.nuget.tests.server.entity.EntityGenerator
 **** 
 *****/
-package jetbrains.buildServer.nuget.feed.server.javaFeed.entity;
+package jetbrains.buildServer.nuget.feed.server.odata4j.entity;
 
 import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
 import org.jetbrains.annotations.NotNull;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed.functions;
+package jetbrains.buildServer.nuget.feed.server.odata4j.functions;
 
 import com.google.common.collect.Lists;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;

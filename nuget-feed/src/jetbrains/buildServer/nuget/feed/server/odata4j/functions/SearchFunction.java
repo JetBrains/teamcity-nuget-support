@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed.functions;
+package jetbrains.buildServer.nuget.feed.server.odata4j.functions;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.feed.server.javaFeed.PackageEntityEx;
+import jetbrains.buildServer.nuget.feed.server.odata4j.PackageEntityEx;
 import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
 import jetbrains.buildServer.nuget.server.version.VersionUtility;
 import jetbrains.buildServer.util.CollectionsUtil;
@@ -37,7 +37,7 @@ import org.odata4j.producer.QueryInfo;
 import java.util.*;
 
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
-import static jetbrains.buildServer.nuget.feed.server.javaFeed.MetadataConstants.*;
+import static jetbrains.buildServer.nuget.feed.server.MetadataConstants.*;
 
 /**
  * @author Evgeniy.Koshkin

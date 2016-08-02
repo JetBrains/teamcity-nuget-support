@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed;
+package jetbrains.buildServer.nuget.feed.server.odata4j;
 
 import jetbrains.buildServer.dataStructures.DecoratingIterator;
 import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.feed.server.javaFeed.entity.PackageEntity;
-import jetbrains.buildServer.nuget.feed.server.javaFeed.functions.NuGetFeedFunctions;
+import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntity;
+import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;

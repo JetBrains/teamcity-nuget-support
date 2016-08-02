@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.javaFeed.cache;
+package jetbrains.buildServer.nuget.feed.server.cache;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.containers.SoftValueHashMap;

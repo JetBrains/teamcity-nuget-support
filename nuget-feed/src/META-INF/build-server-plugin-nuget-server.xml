@@ -40,10 +40,10 @@
   <!--stats -->
   <bean class="jetbrains.buildServer.nuget.feed.server.NuGetFeedUsageStatisticsProvider"/>
 
-  <bean class="jetbrains.buildServer.nuget.feed.server.javaFeed.cache.ResponseCache"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.javaFeed.ODataPackagesFeedController"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.javaFeed.NuGetProducerHolder"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.javaFeed.functions.NuGetFeedFunctions"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.cache.ResponseCache"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.ODataPackagesFeedController"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.NuGetProducerHolder"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerSettingsTab"/>
 
