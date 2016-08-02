@@ -58,7 +58,7 @@ public class NuGetFeedInMemoryEdmGenerator extends InMemoryEdmGenerator {
         if(schemaBuilder.getNamespace().equalsIgnoreCase(MetadataConstants.NUGET_GALLERY_NAMESPACE)){
           final EdmEntityType.Builder entityTypeBuilder = CollectionsUtil.findFirst(schemaBuilder.getEntityTypes(), new Filter<EdmEntityType.Builder>() {
             public boolean accept(@NotNull EdmEntityType.Builder data) {
-              return data.getName().equalsIgnoreCase(MetadataConstants.ENTITY_TYPE_NAME);
+              return data.getName().equalsIgnoreCase(NuGetAPIVersion.V2 + MetadataConstants.ENTITY_TYPE_NAME);
             }
           });
           if(entityTypeBuilder != null) {

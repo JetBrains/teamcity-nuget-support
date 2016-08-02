@@ -21,8 +21,9 @@ package jetbrains.buildServer.nuget.feed.server;
  */
 public class MetadataConstants {
   public static final String NUGET_GALLERY_NAMESPACE = "NuGetGallery";
+  public static final String ENTITY_NAMESPACE = "NuGetGallery.OData";
   public static final String ENTITY_SET_NAME = "Packages";
-  public static final String ENTITY_TYPE_NAME = "V2FeedPackage";
+  public static final String ENTITY_TYPE_NAME = "FeedPackage";
   public static final String CONTAINER_NAME = "V2FeedContext";
   public static final String HTTP_METHOD_GET = "GET";
   public static final String SEARCH_FUNCTION_NAME = "Search";
@@ -39,4 +40,6 @@ public class MetadataConstants {
   public static final String INCLUDE_ALL_VERSIONS = "includeAllVersions";
   public static final String TARGET_FRAMEWORKS = "targetFrameworks";
   public static final String VERSION_CONSTRAINTS = "versionConstraints";
+
+  public static final String CONTENT_TYPE = "ContentType";
 }

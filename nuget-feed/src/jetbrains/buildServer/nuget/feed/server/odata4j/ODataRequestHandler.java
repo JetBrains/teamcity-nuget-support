@@ -47,17 +47,17 @@ import java.util.Vector;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 30.12.11 17:49
  */
-public class ODataPackagesFeedController implements NuGetFeedHandler {
-  private static final Logger LOG = Logger.getInstance(ODataPackagesFeedController.class.getName());
+public class ODataRequestHandler implements NuGetFeedHandler {
+  private static final Logger LOG = Logger.getInstance(ODataRequestHandler.class.getName());
 
   private ServletContainer myContainer;
   private final NuGetServerJavaSettings mySettings;
   private final ResponseCache myCache;
 
-  public ODataPackagesFeedController(@NotNull final NuGetProducerHolder producer,
-                                     @NotNull final ServletConfig config,
-                                     @NotNull final NuGetServerJavaSettings settings,
-                                     @NotNull final ResponseCache cache) {
+  public ODataRequestHandler(@NotNull final NuGetProducerHolder producer,
+                             @NotNull final ServletConfig config,
+                             @NotNull final NuGetServerJavaSettings settings,
+                             @NotNull final ResponseCache cache) {
     mySettings = settings;
     myCache = cache;
     try {

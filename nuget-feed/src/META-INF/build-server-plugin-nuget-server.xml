@@ -5,6 +5,7 @@
        default-autowire="constructor">
 
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetPackageDownloadController"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.NuGetServerPropertiesProvider"/>
@@ -41,9 +42,13 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.NuGetFeedUsageStatisticsProvider"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.cache.ResponseCache"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.ODataPackagesFeedController"/>
+
+  <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.NuGetProducerHolder"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions"/>
+
+  <bean class="jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSourceFactory"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerSettingsTab"/>
 

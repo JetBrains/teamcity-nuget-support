@@ -56,7 +56,7 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   public void register(Func<Iterable<PackageEntity>> getFunc){
     register(PackageEntity.class,
             MetadataConstants.ENTITY_SET_NAME,
-            MetadataConstants.ENTITY_TYPE_NAME,
+            NuGetAPIVersion.getVersionToUse() + MetadataConstants.ENTITY_TYPE_NAME,
             getFunc,
             PackageEntity.KeyPropertyNames);
   }

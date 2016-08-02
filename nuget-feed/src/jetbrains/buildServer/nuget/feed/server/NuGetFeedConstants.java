@@ -16,23 +16,10 @@
 
 package jetbrains.buildServer.nuget.feed.server;
 
-import jetbrains.buildServer.serverSide.TeamCityProperties;
-import org.jetbrains.annotations.NotNull;
-
 /**
- * @author Evgeniy.Koshkin
+ * NuGet feed constants.
  */
-public class NuGetAPIVersion {
-
-  public static final String V1 = "V1";
-  public static final String V2 = "V2";
-
-  public static boolean shouldUseV2() {
-    return getVersionToUse().equalsIgnoreCase(V2);
-  }
-
-  @NotNull
-  public static String getVersionToUse() {
-    return TeamCityProperties.getProperty(NuGetFeedConstants.PROP_NUGET_API_VERSION, V2);
-  }
+public class NuGetFeedConstants {
+  public static final String PROP_NUGET_API_VERSION = "teamcity.nuget.api.version";
+  public static final String PROP_NUGET_FEED_NEW_SERIALIZER = "teamcity.nuget.feed.new.serializer";
 }

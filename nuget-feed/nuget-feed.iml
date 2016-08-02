@@ -31,5 +31,6 @@
     <orderEntry type="library" name="TeamCity server runtime" level="project" />
     <orderEntry type="module" module-name="nuget-common" />
     <orderEntry type="module" module-name="nuget-server-common" />
+    <orderEntry type="library" name="olingo" level="project" />
   </component>
 </module>

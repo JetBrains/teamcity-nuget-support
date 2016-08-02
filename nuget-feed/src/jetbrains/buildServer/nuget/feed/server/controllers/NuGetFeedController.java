@@ -25,29 +25,30 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Collection;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
- * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 17.01.12 17:40
+ * Entry point for nuget feed.
  */
 public class NuGetFeedController extends BaseController {
 
+  private static final Pattern QUERY_ID = Pattern.compile("^(id=)(.*)", Pattern.CASE_INSENSITIVE);
   private final String myNuGetPath;
+  private final NuGetFeedProvider myFeedProvider;
   private final NuGetServerSettings mySettings;
   private final RecentNuGetRequests myRequestsList;
-  private final Collection<NuGetFeedHandler> myHandlers;
 
   public NuGetFeedController(@NotNull final WebControllerManager web,
                              @NotNull final NuGetServerSettings settings,
                              @NotNull final RecentNuGetRequests requestsList,
-                             @NotNull final Collection<NuGetFeedHandler> handlers) {
+                             @NotNull final NuGetFeedProvider feedProvider) {
     mySettings = settings;
     myRequestsList = requestsList;
-    myHandlers = handlers;
     myNuGetPath = settings.getNuGetFeedControllerPath();
+    myFeedProvider = feedProvider;
 
     web.registerController(myNuGetPath + "/**", this);
   }
@@ -60,23 +61,38 @@ public class NuGetFeedController extends BaseController {
       return NuGetResponseUtil.nugetFeedIsDisabled(response);
     }
 
-    String requestPath = WebUtil.getPathWithoutAuthenticationType(request);
+    final HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(request) {
+      @Override
+      public String getQueryString() {
+        final String queryString = super.getQueryString();
+
+        if (super.getRequestURI().endsWith("FindPackagesById()")) {
+          // NuGet client in VS 2015 Update 2 introduced breaking change where
+          // instead of `id` parameter passed `Id` while OData is case sensitive
+          return queryString != null ? QUERY_ID.matcher(queryString).replaceFirst("id=$2") : null;
+        }
+
+        return queryString;
+      }
+    };
+
+    String requestPath = WebUtil.getPathWithoutAuthenticationType(requestWrapper);
     if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
 
     final String path = requestPath.substring(myNuGetPath.length());
-    final String query = request.getQueryString();
+    final String query = requestWrapper.getQueryString();
     final String pathAndQuery = path + (query != null ? ("?" + query) : "");
     myRequestsList.reportFeedRequest(pathAndQuery);
 
+    final NuGetFeedHandler feedHandler = myFeedProvider.getHandler();
     final long startTime = new Date().getTime();
-    for (NuGetFeedHandler handler : myHandlers) {
-      if (handler.isAvailable()) {
-        handler.handleRequest(myNuGetPath, request, response);
-        myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
-        return null;
-      }
+    if (feedHandler.isAvailable()) {
+      feedHandler.handleRequest(myNuGetPath, requestWrapper, response);
+      myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
+      return null;
+    } else {
+      myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
+      return NuGetResponseUtil.noImplementationFoundError(response);
     }
-    myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
-    return NuGetResponseUtil.noImplementationFoundError(response);
   }
 }
