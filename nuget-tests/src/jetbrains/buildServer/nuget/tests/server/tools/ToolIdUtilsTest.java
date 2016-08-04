@@ -37,6 +37,8 @@ public class ToolIdUtilsTest extends BaseTestCase {
     assertEquals("win-x86-commandline.3.2.0-rc", ToolIdUtils.getPackageVersion(packageOfName("win-x86-commandline.3.2.0-rc")));
     assertEquals("2.3.4.5-alpha", ToolIdUtils.getPackageVersion(packageOfName("NuGet.CommandLine.2.3.4.5-alpha")));
     assertEquals("NuGet.Hack.2.3.4.5-alpha", ToolIdUtils.getPackageVersion(packageOfName("NuGet.Hack.2.3.4.5-alpha")));
+    assertEquals("1.2.3", ToolIdUtils.getPackageVersion(packageOfName("nuget.commandline.1.2.3")));
+    assertEquals("1.2.3", ToolIdUtils.getPackageVersion(packageOfName("NUGET.COMMANDLINE.1.2.3")));
   }
 
   private File packageOfName(String packageName) {

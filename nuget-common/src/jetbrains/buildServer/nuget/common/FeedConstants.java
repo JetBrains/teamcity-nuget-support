@@ -32,6 +32,7 @@ public class FeedConstants {
 
   public static final String PATH_TO_NUGET_EXE = "tools/NuGet.exe";
   public static final String NUGET_COMMANDLINE = "NuGet.CommandLine";
+  public static final String NUGET_COMMANDLINE_TO_LOWER_CASE = "nuget.commandline";
   public static final String NUGET_EXTENSION = ".nupkg";
   public static final String EXE_EXTENSION = ".exe";
   public static final String NUGET_SUPPORTED_PROJECTS[] = {".csproj", ".vbproj", ".fsproj", ".nproj"}; //see PackCommand.cs
@@ -53,7 +54,7 @@ public class FeedConstants {
   public static final FileFilter NUGET_TOOL_FILE_FILTER = new FileFilter() {
     public boolean accept(File pathname) {
       final String name = pathname.getName();
-      return pathname.isFile() && name.startsWith(NUGET_COMMANDLINE) && (PACKAGE_FILE_NAME_FILTER.accept(name) || EXE_FILE_NAME_FILTER.accept(name));
+      return pathname.isFile() && name.toLowerCase().startsWith(NUGET_COMMANDLINE_TO_LOWER_CASE) && (PACKAGE_FILE_NAME_FILTER.accept(name) || EXE_FILE_NAME_FILTER.accept(name));
     }
   };
 
