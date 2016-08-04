@@ -29,15 +29,11 @@ import java.io.File;
  */
 public class ToolIdUtils {
   @NotNull
-  public static String getIdForPackage(@NotNull File toolPackage) {
-    return FilenameUtils.removeExtension(toolPackage.getName());
-  }
-
-  @NotNull
   public static String getPackageVersion(@NotNull File toolPackage) {
     final String toolPackageNameWithoutExtension = FilenameUtils.removeExtension(toolPackage.getName());
-    if (toolPackageNameWithoutExtension.startsWith(FeedConstants.NUGET_COMMANDLINE + ".")) {
-      return toolPackageNameWithoutExtension.substring(FeedConstants.NUGET_COMMANDLINE.length() + 1);
+    final String toolPackageNameWithoutExtensionToLowerCase = toolPackageNameWithoutExtension.toLowerCase();
+    if (toolPackageNameWithoutExtensionToLowerCase.startsWith(FeedConstants.NUGET_COMMANDLINE_TO_LOWER_CASE + ".")) {
+      return toolPackageNameWithoutExtensionToLowerCase.substring(FeedConstants.NUGET_COMMANDLINE_TO_LOWER_CASE.length() + 1);
     }
     return toolPackageNameWithoutExtension;
   }

@@ -27,12 +27,16 @@ import jetbrains.buildServer.tools.available.FetchToolsPolicy;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
+import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
+import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_COMMANDLINE;
+import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_COMMANDLINE_TO_LOWER_CASE;
 
 /**
  * Created by Evgeniy.Koshkin on 15-Jan-16.
@@ -44,7 +48,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
   public static final ToolType NUGET_TOOL_TYPE = new ToolTypeAdapter() {
     @NotNull
     public String getType() {
-      return FeedConstants.NUGET_COMMANDLINE;
+      return NUGET_COMMANDLINE;
     }
 
     @NotNull
@@ -117,7 +121,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
       }
     }
 
-    final String toolId = ToolIdUtils.getIdForPackage(toolPackage);
+    final String toolId = FilenameUtils.removeExtension(normalizeToolPackageName(toolPackage.getName()));
     final String nugetVersion = ToolIdUtils.getPackageVersion(toolPackage);
     if(StringUtil.isEmpty(nugetVersion)){
       LOG.debug(String.format("Failed to determine NuGet version based on its package file name %s. Checked package %s", toolPackage.getName(), toolPackage.getAbsolutePath()));
@@ -150,5 +154,13 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
     } catch (IOException e) {
       throw new ToolException("Failed to unpack NuGet tool package " + toolPackage, e);
     }
+  }
+
+  @NotNull
+  @Override
+  public String normalizeToolPackageName(@NotNull String toolPackageName) {
+    if(toolPackageName.startsWith(NUGET_COMMANDLINE)) return toolPackageName;
+    if(!toolPackageName.toLowerCase().startsWith(NUGET_COMMANDLINE_TO_LOWER_CASE)) return toolPackageName;
+    return NUGET_COMMANDLINE + toolPackageName.substring(NUGET_COMMANDLINE.length());
   }
 }
