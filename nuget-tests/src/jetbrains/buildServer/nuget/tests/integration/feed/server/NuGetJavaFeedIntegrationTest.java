@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,10 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.sun.jersey.api.container.httpserver.HttpServerFactory;
+import com.sun.jersey.api.core.ClassNamesResourceConfig;
+import com.sun.jersey.api.core.ResourceConfig;
+import com.sun.net.httpserver.HttpServer;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
@@ -27,10 +31,12 @@ import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.URI;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -39,6 +45,13 @@ import java.io.IOException;
 public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBase {
   private final String packageId_1 = "CommonServiceLocator";
   private final String packageId_2 = "NuGet.Core";
+  private URI myServerUrl;
+  private HttpServer myServer;
+
+  @Override
+  protected String getNuGetServerUrl() {
+    return myServerUrl.toString() + NuGetJavaFeedIntegrationTestBase.SERVLET_PATH.substring(1);
+  }
 
   @BeforeMethod
   @Override
@@ -47,6 +60,16 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
 
     addPackage(Paths.getTestDataPath("/packages/" + packageId_1 + ".1.0.nupkg"), true);
     addPackage(Paths.getTestDataPath("/packages/" + packageId_2 + ".1.5.20902.9026.nupkg"), true);
+
+    NuGetJavaFeedControllerIoC.setFeedProvider(myFeedProvider);
+    startServer();
+  }
+
+  @AfterMethod
+  @Override
+  protected void tearDown() throws Exception {
+    stopServer();
+    super.tearDown();
   }
 
   @Test(enabled = false)
@@ -59,7 +82,8 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
-  public void testNuGetClientReadsFeed(@NotNull final NuGet nuget) throws Exception{
+  public void testNuGetClientReadsFeed(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+    setODataSerializer(library);
     enableDebug();
 
     GeneralCommandLine cmd = new GeneralCommandLine();
@@ -80,7 +104,8 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
-  public void testNuGetClientReadsFeedQuery(@NotNull final NuGet nuget) throws Exception{
+  public void testNuGetClientReadsFeedQuery(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+    setODataSerializer(library);
     enableDebug();
 
     GeneralCommandLine cmd = new GeneralCommandLine();
@@ -101,7 +126,8 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
 
   @TestFor(issues = "TW-24051")
   @Test(dataProvider = NUGET_VERSIONS)
-  public void testNuGetClientReadsPrereleaseFeedQuery(@NotNull final NuGet nuget) throws Exception{
+  public void testNuGetClientReadsPrereleaseFeedQuery(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+    setODataSerializer(library);
     enableDebug();
     enablePackagesIndexSorting();
 
@@ -128,18 +154,66 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
-  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x1(@NotNull final NuGet nuget) throws NuGetExecutionException, IOException {
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x1(final NugetFeedLibrary library, @NotNull final NuGet nuget)
+          throws NuGetExecutionException, IOException {
+    setODataSerializer(library);
     doTriggerTest(nuget, packageId_1);
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
-  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x2(@NotNull final NuGet nuget) throws NuGetExecutionException, IOException {
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x2(final NugetFeedLibrary library, @NotNull final NuGet nuget)
+          throws NuGetExecutionException, IOException {
+    setODataSerializer(library);
     doTriggerTest(nuget, packageId_1.toLowerCase(), packageId_2.toUpperCase());
   }
 
-  protected void doTriggerTest(@NotNull final NuGet nuget, @NotNull String... packageNames) throws NuGetExecutionException, IOException {
+  private void doTriggerTest(@NotNull final NuGet nuget, @NotNull String... packageNames) throws NuGetExecutionException, IOException {
     ListPackagesCommand cmd = ListPackagesCommandIntegrationTest.createMockCommand(myNuGetTeamCityProvider, createTempDir());
     ListPackagesCommandIntegrationTest.doTriggerTest(cmd, nuget, getNuGetServerUrl(), packageNames);
+  }
+
+  private void startServer() throws Exception {
+    myServerUrl = getServerURI();
+    myServer = createHttpServer(myServerUrl);
+    myServer.start();
+  }
+
+  private HttpServer createHttpServer(final URI serverURI) throws IOException {
+    final ResourceConfig resourceConfig = new ClassNamesResourceConfig(NuGetJavaFeedTestController.class);
+    return HttpServerFactory.create(serverURI, resourceConfig);
+  }
+
+  private static URI getServerURI() throws IOException {
+    ServerSocket socket = null;
+    try {
+      socket = new ServerSocket(0);
+      return UriBuilder.fromUri("http://localhost/").port(socket.getLocalPort()).build();
+    } finally {
+      if (socket != null) {
+        socket.close();
+      }
+    }
+  }
+
+  private void stopServer() {
+    if (myServer != null) {
+      myServer.stop(0);
+      myServer = null;
+    }
+  }
+
+  @Override
+  @DataProvider(name = NUGET_VERSIONS)
+  public Object[][] dataProviderNuGetVersions() {
+    Object[][] versions = super.dataProviderNuGetVersions();
+    Object[][] objects = new Object[versions.length * 2][];
+    for (int i = 0; i < versions.length; i++) {
+      Object nuget = versions[i][0];
+      objects[i * 2] = new Object[]{NugetFeedLibrary.OData4j, nuget};
+      objects[i * 2 + 1] = new Object[]{NugetFeedLibrary.Olingo, nuget};
+    }
+
+    return objects;
   }
 
 }

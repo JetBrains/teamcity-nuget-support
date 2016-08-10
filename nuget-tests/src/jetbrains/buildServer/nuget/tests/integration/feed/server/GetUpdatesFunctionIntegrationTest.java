@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2015 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,16 @@ import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.TEAMCI
  */
 public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationTestBase {
 
-  @Test
-  public void testVSRequest() throws Exception {
-    assert204("GetUpdates()?packageIds='Microsoft.Web.Infrastructure%7CRouteMagic%7Celmah%7Celmah.corelibrary%7Cxunit%7Cxunit.extensions%7CWebActivatorEx%7CNinject%7CMoq'&versions='1.0.0.0%7C1.2%7C1.2.2%7C1.2.2%7C1.9.2%7C1.9.2%7C2.0.2%7C2.2.1.4%7C4.1.1309.0919'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''").run();
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testVSRequest(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    assert200("GetUpdates()?packageIds='Microsoft.Web.Infrastructure%7CRouteMagic%7Celmah%7Celmah.corelibrary%7Cxunit%7Cxunit.extensions%7CWebActivatorEx%7CNinject%7CMoq'&versions='1.0.0.0%7C1.2%7C1.2.2%7C1.2.2%7C1.9.2%7C1.9.2%7C2.0.2%7C2.2.1.4%7C4.1.1309.0919'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''").run();
   }
 
-  @Test
-  public void shouldHandleIncludePreReleaseParameter() throws Exception {
-    addMockPackage(new NuGetIndexEntry("old", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "1")));
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void shouldHandleIncludePreReleaseParameter(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    addMockPackage(new NuGetIndexEntry("old", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "1", PACKAGE_SIZE, "0")));
     addMockPackage(new NuGetIndexEntry("current", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "2")));
     addMockPackage(new NuGetIndexEntry("new-stable", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "3")));
     addMockPackage(new NuGetIndexEntry("newest-pre-release", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.TRUE.toString(), VERSION, "4")));
@@ -55,8 +57,9 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     assertNotContainsPackageVersion(stableResponse, "4.0");
   }
 
-  @Test
-  public void shouldHandleVersionConstraintsParameter() throws Exception {
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void shouldHandleVersionConstraintsParameter(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
     addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.2")));
     addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.3")));
     addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.4")));
@@ -69,8 +72,9 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     assertContainsPackageVersion(response, "3.4.1.0");
   }
 
-  @Test
-  public void shouldHandleTargetFrameworksParameter() throws Exception {
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void shouldHandleTargetFrameworksParameter(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
     addMockPackage(new NuGetIndexEntry("old-foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, "", VERSION, "1")));
     addMockPackage(new NuGetIndexEntry("current-foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net40")), VERSION, "2.0.0.0")));
     addMockPackage(new NuGetIndexEntry("new-foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net45")), VERSION, "3")));
@@ -84,8 +88,9 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     assertNotContainsPackageVersion(response, "4.0");
   }
 
-  @Test
-  public void shouldHandleIncludeAllVersionsParameter() throws Exception {
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void shouldHandleIncludeAllVersionsParameter(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
     addMockPackage(new NuGetIndexEntry("old", CollectionsUtil.asMap(ID, "foo", VERSION, "1")));
     addMockPackage(new NuGetIndexEntry("current", CollectionsUtil.asMap(ID, "foo", VERSION, "2")));
     addMockPackage(new NuGetIndexEntry("new", CollectionsUtil.asMap(ID, "foo", VERSION, "3")));
@@ -104,10 +109,11 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     assertContainsPackageVersion(includeSingleVersionResponse, "4.0");
   }
 
-  @Test
-  public void shouldResponseWithNoContentWhenNumberOfPackageIdsAndVersionsDoNotMatch() throws Exception {
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void shouldResponseWithNoContentWhenNumberOfPackageIdsAndVersionsDoNotMatch(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
     addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, "", VERSION, "2.0.0.1")));
     addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "boo", TEAMCITY_FRAMEWORK_CONSTRAINTS, "", VERSION, "2.0.0.2")));
-    assert204("GetUpdates()?packageIds='foo%7Cboo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''").run();
+    assert200("GetUpdates()?packageIds='foo%7Cboo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''").run();
   }
 }

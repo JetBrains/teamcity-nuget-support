@@ -81,8 +81,12 @@ public class XmlFeedParsers {
   @NotNull
   public static MetadataParseResult loadMetadataBeans(@NotNull final Element root) throws JDOMException {
     final Namespace edmx = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/06/edmx");
-    final Namespace edm = Namespace.getNamespace("http://schemas.microsoft.com/ado/2006/04/edm");
     final Namespace m = Namespace.getNamespace("http://schemas.microsoft.com/ado/2007/08/dataservices/metadata");
+
+    final XPath edmSchema = XPath.newInstance("/x:Edmx/x:DataServices/*[local-name()='Schema'][1]");
+    edmSchema.addNamespace("x", edmx.getURI());
+    final Element schema = (Element) edmSchema.selectSingleNode(root);
+    final Namespace edm = schema.getNamespace();
 
     final XPath xKeys = XPath.newInstance("/x:Edmx/x:DataServices/m:Schema/m:EntityType[@Name='V2FeedPackage' or @Name='V1FeedPackage']/m:Key/m:PropertyRef/@Name");
     xKeys.addNamespace("m", edm.getURI());

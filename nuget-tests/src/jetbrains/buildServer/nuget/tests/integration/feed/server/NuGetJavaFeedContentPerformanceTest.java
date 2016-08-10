@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,18 +42,21 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
     return c;
   }
 
-  @Test
-  public void test_list_no_query_5000() throws IOException {
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void test_list_no_query_5000(final NugetFeedLibrary library) throws IOException {
+    setODataSerializer(library);
     do_test_list_packages(5000, 100, "");
   }
 
-  @Test
-  public void test_list_query_by_id_5000() throws IOException {
-    do_test_list_packages(5000, 0.4, "?$filter=Id+eq+'Foo'");
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void test_list_query_by_id_5000(final NugetFeedLibrary library) throws IOException {
+    setODataSerializer(library);
+    do_test_list_packages(5000, 0.4, "?$filter=Id%20eq%20'Foo'");
   }
 
-  @Test
-  public void test_list_query_search_5000() throws IOException {
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void test_list_query_search_5000(final NugetFeedLibrary library) throws IOException {
+    setODataSerializer(library);
     do_test_list_packages(
             5000,
             0.4,
@@ -63,19 +66,21 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
                     "&$top=30");
   }
 
-  @Test
-  public void test_list_query_search_50000() throws IOException {
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void test_list_query_search_50000(final NugetFeedLibrary library) throws IOException {
+    setODataSerializer(library);
     do_test_list_packages(
             50000,
-            0.4,
+            0.6,
             "?$filter=(((Id%20ne%20null)%20and%20substringof('mm',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('mm',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20mm%20',tolower(Tags)))" +
                     "&$orderby=Id" +
                     "&$skip=0" +
                     "&$top=30");
   }
 
-  @Test
-  public void test_list_isLatestVersion_50000() throws IOException {
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void test_list_isLatestVersion_50000(final NugetFeedLibrary library) throws IOException {
+    setODataSerializer(library);
     do_test_list_packages(
             50000,
             0.4,
@@ -86,7 +91,7 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
   }
 
 
-  public void do_test_list_packages(int sz, double time, @NotNull final String query) throws IOException {
+  private void do_test_list_packages(int sz, double time, @NotNull final String query) throws IOException {
     NuGetIndexEntry base = addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"), true);
     for(int i = 1; i < sz; i ++) {
       addMockPackage(base, false);
@@ -94,12 +99,10 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
 
     Assert.assertEquals(count(myIndex.getNuGetEntries()), sz);
 
-    final AtomicReference<String> s = new AtomicReference<String>();
-    assertTime(time, "aaa", 5, new Runnable() {
-      public void run() {
-        String req = openRequest("Packages()" + query);
-        s.set(req);
-      }
+    final AtomicReference<String> s = new AtomicReference<>();
+    assertTime(time, "aaa", 5, () -> {
+      String req = openRequest("Packages()" + query);
+      s.set(req);
     });
 
     final String req = s.get();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,15 +55,15 @@ import static org.apache.http.HttpStatus.*;
  * Date: 05.01.12 0:57
  */
 public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
-  protected Collection<InputStream> myStreams;
-  protected NuGetFeedHttpClientHolder myHttpClient;
-  protected NuGetFeedGetMethodFactory myHttpMethods;
+  private Collection<InputStream> myStreams;
+  private NuGetFeedHttpClientHolder myHttpClient;
+  private NuGetFeedGetMethodFactory myHttpMethods;
 
   @BeforeMethod
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    myStreams = new ArrayList<InputStream>();
+    myStreams = new ArrayList<>();
     myHttpClient = new NuGetFeedHttpClientHolder();
     myHttpMethods = new NuGetFeedGetMethodFactory();
 
@@ -73,9 +73,7 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
-    for (InputStream stream : myStreams) {
-      FileUtil.close(stream);
-    }
+    myStreams.forEach(FileUtil::close);
   }
 
   protected abstract String getNuGetServerUrl();
@@ -109,10 +107,14 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
     final BuildArtifact artifact = m.mock(BuildArtifact.class, "artifact-" + packageFile.getPath() + "#" + buildId);
 
     m.checking(new Expectations() {{
-      allowing(build).getBuildId(); will(returnValue(buildId));
-      allowing(build).getBuildTypeId();  will(returnValue("bt"));
-      allowing(build).getBuildTypeName(); will(returnValue("buidldzzz"));
-      allowing(build).getFinishDate(); will(returnValue(new Date(1319214849319L)));
+      allowing(build).getBuildId();
+      will(returnValue(buildId));
+      allowing(build).getBuildTypeId();
+      will(returnValue("bt"));
+      allowing(build).getBuildTypeName();
+      will(returnValue("buidldzzz"));
+      allowing(build).getFinishDate();
+      will(returnValue(new Date(1319214849319L)));
 
       allowing(artifact).getInputStream();
       will(new CustomAction("open file") {
@@ -123,10 +125,14 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
         }
       });
 
-      allowing(artifact).getTimestamp(); will(returnValue(packageFile.lastModified()));
-      allowing(artifact).getSize(); will(returnValue(packageFile.length()));
-      allowing(artifact).getRelativePath(); will(returnValue(packageFile.getPath()));
-      allowing(artifact).getName(); will(returnValue(packageFile.getName()));
+      allowing(artifact).getTimestamp();
+      will(returnValue(packageFile.lastModified()));
+      allowing(artifact).getSize();
+      will(returnValue(packageFile.length()));
+      allowing(artifact).getRelativePath();
+      will(returnValue(packageFile.getPath()));
+      allowing(artifact).getName();
+      will(returnValue(packageFile.getName()));
     }});
 
     try {
@@ -136,7 +142,7 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
 
       new NuGetPackageStructureVisitor(analysers).visit(artifact);
 
-      final Map<String,String> map = packageItemsFactory.getItems();
+      final Map<String, String> map = packageItemsFactory.getItems();
       map.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints()));
       map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
       map.put(TEAMCITY_BUILD_TYPE_ID, "bt_" + packageFile.getName());
@@ -150,98 +156,62 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
 
   @NotNull
   protected String openRequest(@NotNull final String req,
-                               @NotNull final NameValuePair... reqs) {
+                               @NotNull final NameValuePair... reqs) throws Exception {
     final HttpGet get = createGetQuery(req, reqs);
-    return execute(get, new ExecuteAction<String>() {
-      public String processResult(@NotNull HttpResponse response) throws IOException {
-        final HttpEntity entity = response.getEntity();
-        System.out.println("Request: " + get.getRequestLine());
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        entity.writeTo(bos);
-        String enc = null;
-        final Header encE = entity.getContentEncoding();
-        if (encE != null) {
-           enc = encE.getValue();
-        }
-        if (StringUtil.isEmptyOrSpaces(enc)) {
-          enc = "utf-8";
-        }
-        
-        return bos.toString(enc);
+    return execute(get, response -> {
+      final HttpEntity entity = response.getEntity();
+      System.out.println("Request: " + get.getRequestLine());
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      entity.writeTo(bos);
+      String enc = null;
+      final Header encE = entity.getContentEncoding();
+      if (encE != null) {
+        enc = encE.getValue();
       }
+      if (StringUtil.isEmptyOrSpaces(enc)) {
+        enc = "utf-8";
+      }
+
+      return bos.toString(enc);
     });
   }
 
   @NotNull
   protected Runnable assert200(@NotNull final String req,
                                @NotNull final NameValuePair... reqs) {
-    return new Runnable() {
-      public void run() {
-        final HttpGet get = createGetQuery(req, reqs);
-        execute(get, new ExecuteAction<Object>() {
-          public Object processResult(@NotNull HttpResponse response) throws IOException {
-            System.out.println("Request: " + get.getRequestLine());
-            final HttpEntity entity = response.getEntity();
-            if(entity != null){
-              entity.writeTo(System.out);
-              System.out.println();
-            }
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_OK);
-            return null;
-          }
-        });
-      }
-    };
-  }
-
-  @NotNull
-  protected Runnable assert204(@NotNull final String req,
-                               @NotNull final NameValuePair... reqs) {
-    return new Runnable() {
-      public void run() {
-        final HttpGet get = createGetQuery(req, reqs);
-        execute(get, new ExecuteAction<Object>() {
-          public Object processResult(@NotNull HttpResponse response) throws IOException {
-            System.out.println("Request: " + get.getRequestLine());
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_NO_CONTENT);
-            return null;
-          }
-        });
-      }
-    };
+    return assertStatusCode(SC_OK, req, reqs);
   }
 
   @NotNull
   protected Runnable assert400(@NotNull final String req,
                                @NotNull final NameValuePair... reqs) {
-    return new Runnable() {
-      public void run() {
-        final HttpGet get = createGetQuery(req, reqs);
-        execute(get, new ExecuteAction<Object>() {
-          public Object processResult(@NotNull HttpResponse response) throws IOException {
-            System.out.println("Request: " + get.getRequestLine());
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_BAD_REQUEST);
-            return null;
-          }
-        });
-      }
-    };
+    return assertStatusCode(SC_BAD_REQUEST, req, reqs);
   }
 
   @NotNull
   protected Runnable assert404(@NotNull final String req,
                                @NotNull final NameValuePair... reqs) {
-    return new Runnable() {
-      public void run() {
-        final HttpGet get = createGetQuery(req, reqs);
-        execute(get, new ExecuteAction<Object>() {
-          public Object processResult(@NotNull HttpResponse response) throws IOException {
-            System.out.println("Request: " + get.getRequestLine());
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_NOT_FOUND);
-            return null;
-          }
-        });
-      }
+    return assertStatusCode(SC_NOT_FOUND, req, reqs);
+  }
+
+  @NotNull
+  private Runnable assertStatusCode(final int statusCode,
+                                    @NotNull final String req,
+                                    @NotNull final NameValuePair... reqs) {
+    return () -> {
+      final HttpGet get = createGetQuery(req, reqs);
+      execute(get, response -> {
+        System.out.println("Request: " + get.getRequestLine());
+
+        final HttpEntity entity = response.getEntity();
+        if (entity != null) {
+          entity.writeTo(System.out);
+          System.out.println();
+        }
+
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), statusCode);
+        return null;
+      });
     };
   }
 }

@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl;
-import jetbrains.buildServer.nuget.feed.server.odata4j.RequestWrapper;
+import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;

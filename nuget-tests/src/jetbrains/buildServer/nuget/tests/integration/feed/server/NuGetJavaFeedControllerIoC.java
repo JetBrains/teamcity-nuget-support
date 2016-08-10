@@ -16,20 +16,22 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import org.testng.annotations.Test;
+import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
 
 /**
- * @author Evgeniy.Koshkin
+ * @author Dmitry.Tretyakov
+ *         Date: 10.08.2016
+ *         Time: 2:08
  */
-public class FindPackagesByIdFunctionIntegrationTest extends NuGetJavaFeedIntegrationTestBase {
+public final class NuGetJavaFeedControllerIoC {
 
-  @Test(dataProvider = "nugetFeedLibrariesData")
-  public void testFindPackageById(final NugetFeedLibrary library) throws Exception {
-    setODataSerializer(library);
-    enableDebug();
-    addMockPackage("MyPackage", "1.0.0.0");
+  private static NuGetFeedProvider ourFeedProvider;
 
-    assertContainsPackageVersion(openRequest("FindPackagesById()?id='MyPackage'"), "1.0.0.0");
-    assert200("FindPackagesById()?id='MyPackage2'").run();
+  public static void setFeedProvider(final NuGetFeedProvider feedProvider){
+    ourFeedProvider = feedProvider;
+  }
+
+  public static NuGetFeedProvider getFeedProvider() {
+    return ourFeedProvider;
   }
 }
