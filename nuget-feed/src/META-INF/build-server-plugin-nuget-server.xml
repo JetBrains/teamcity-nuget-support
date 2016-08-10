@@ -41,14 +41,15 @@
   <!--stats -->
   <bean class="jetbrains.buildServer.nuget.feed.server.NuGetFeedUsageStatisticsProvider"/>
 
-  <bean class="jetbrains.buildServer.nuget.feed.server.cache.ResponseCache"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.NuGetProducerHolder"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions"/>
 
-  <bean class="jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSourceFactory"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSource"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerSettingsTab"/>
 

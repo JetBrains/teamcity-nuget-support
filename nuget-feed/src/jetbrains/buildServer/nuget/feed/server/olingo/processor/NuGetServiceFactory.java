@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSource;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.util.Action;
+import jetbrains.buildServer.util.CaseInsensitiveStringComparator;
 import org.apache.olingo.odata2.api.*;
 import org.apache.olingo.odata2.api.edm.EdmTargetPath;
 import org.apache.olingo.odata2.api.edm.FullQualifiedName;
@@ -33,6 +34,7 @@ import org.apache.olingo.odata2.core.edm.provider.EdmxProvider;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Creates a new NuGet service.
@@ -41,6 +43,7 @@ public class NuGetServiceFactory extends ODataServiceFactory {
 
   private final NuGetDataSource myDataSource;
   private static final Map<String, Action<Property>> PROPERTY_CONFIGS;
+  private static final Map<String, EdmxProvider> EDMX_PROVIDERS;
 
   public NuGetServiceFactory(NuGetDataSource dataSource) {
     myDataSource = dataSource;
@@ -48,11 +51,11 @@ public class NuGetServiceFactory extends ODataServiceFactory {
 
   @Override
   public ODataService createService(final ODataContext context) throws ODataException {
-    return createODataSingleProcessorService(getEdmProvider(), new NuGetPackagesProcessor(myDataSource));
+    final EdmxProvider edmxProvider = EDMX_PROVIDERS.get(NuGetAPIVersion.getVersionToUse());
+    return createODataSingleProcessorService(edmxProvider, new NuGetPackagesProcessor(myDataSource));
   }
 
-  private static EdmxProvider getEdmProvider() throws ODataException {
-    final String version = NuGetAPIVersion.getVersionToUse();
+  private static EdmxProvider getEdmProvider(final String version) throws ODataException {
     final String metadataPath = String.format("/resources/metadata/NuGet-%s.xml", version);
 
     final InputStream inputStream = NuGetServiceFactory.class.getResourceAsStream(metadataPath);
@@ -99,5 +102,13 @@ public class NuGetServiceFactory extends ODataServiceFactory {
             new CustomizableFeedMappings().setFcTargetPath(EdmTargetPath.SYNDICATION_UPDATED)));
     PROPERTY_CONFIGS.put(NuGetPackageAttributes.AUTHORS, property -> property.setCustomizableFeedMappings(
             new CustomizableFeedMappings().setFcTargetPath(EdmTargetPath.SYNDICATION_AUTHORNAME)));
+
+    EDMX_PROVIDERS = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    try {
+      EDMX_PROVIDERS.put(NuGetAPIVersion.V1, getEdmProvider(NuGetAPIVersion.V1));
+      EDMX_PROVIDERS.put(NuGetAPIVersion.V2, getEdmProvider(NuGetAPIVersion.V2));
+    } catch (ODataException e) {
+      throw new RuntimeException(e);
+    }
   }
 }

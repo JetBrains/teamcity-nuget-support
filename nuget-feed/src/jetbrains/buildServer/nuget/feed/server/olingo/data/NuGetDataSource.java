@@ -24,24 +24,21 @@ import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
-import jetbrains.buildServer.nuget.feed.server.olingo.model.NuGetMapper;
-import jetbrains.buildServer.nuget.feed.server.olingo.model.V2FeedPackage;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
 import jetbrains.buildServer.nuget.server.version.SemanticVersion;
 import jetbrains.buildServer.nuget.server.version.VersionConstraint;
 import jetbrains.buildServer.nuget.server.version.VersionUtility;
-import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.edm.EdmFunctionImport;
+import org.apache.olingo.odata2.api.exception.ODataHttpException;
 import org.apache.olingo.odata2.api.exception.ODataNotFoundException;
 import org.apache.olingo.odata2.api.exception.ODataNotImplementedException;
+import org.apache.olingo.odata2.api.uri.UriSyntaxException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.net.URI;
 import java.util.*;
 
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.IS_PRERELEASE;
@@ -55,14 +52,11 @@ public class NuGetDataSource {
   private static final Logger LOG = Logger.getInstance(NuGetDataSource.class.getName());
   private final PackagesIndex myIndex;
   private final NuGetServerSettings myServerSettings;
-  private final URI myRequestUri;
 
   public NuGetDataSource(@NotNull final PackagesIndex index,
-                         @NotNull final NuGetServerSettings serverSettings,
-                         @NotNull final URI requestUri) {
+                         @NotNull final NuGetServerSettings serverSettings) {
     myIndex = index;
     myServerSettings = serverSettings;
-    myRequestUri = requestUri;
   }
 
   /**
@@ -71,15 +65,14 @@ public class NuGetDataSource {
    * @param entitySet is a target entity set.
    * @return data
    */
-  public List<?> readData(final EdmEntitySet entitySet)
-          throws ODataNotImplementedException, ODataNotFoundException, EdmException {
+  @NotNull
+  public List<?> readData(@NotNull final EdmEntitySet entitySet) throws ODataHttpException, EdmException {
     if (MetadataConstants.ENTITY_SET_NAME.equals(entitySet.getName())) {
-      final List<V2FeedPackage> packages = new ArrayList<>();
+      final List<NuGetIndexEntry> packages = new ArrayList<>();
       final Iterator<NuGetIndexEntry> indexEntries = myIndex.getNuGetEntries();
 
       while (indexEntries.hasNext()) {
-        final NuGetIndexEntry indexEntry = indexEntries.next();
-        packages.add(NuGetMapper.mapPackage(indexEntry, myRequestUri));
+        packages.add(indexEntries.next());
       }
 
       return packages;
@@ -95,15 +88,15 @@ public class NuGetDataSource {
    * @param keys      required proeprties.
    * @return data
    */
-  public Object readData(final EdmEntitySet entitySet, final Map<String, Object> keys)
-          throws ODataNotImplementedException, ODataNotFoundException, EdmException {
+  @NotNull
+  public Object readData(@NotNull final EdmEntitySet entitySet,
+                         @NotNull final Map<String, Object> keys) throws ODataHttpException, EdmException {
     if (MetadataConstants.ENTITY_SET_NAME.equals(entitySet.getName())) {
       final Iterator<NuGetIndexEntry> indexEntries = myIndex.getNuGetEntries();
-      if (keys.isEmpty()){
-        final List<V2FeedPackage> packages = new ArrayList<>();
+      if (keys.isEmpty()) {
+        final List<NuGetIndexEntry> packages = new ArrayList<>();
         while (indexEntries.hasNext()) {
-          final NuGetIndexEntry indexEntry = indexEntries.next();
-          packages.add(NuGetMapper.mapPackage(indexEntry, myRequestUri));
+          packages.add(indexEntries.next());
         }
 
         return packages;
@@ -115,18 +108,18 @@ public class NuGetDataSource {
         final NuGetIndexEntry indexEntry = indexEntries.next();
         final Map<String, String> attributes = indexEntry.getAttributes();
         if (id != null) {
-          if (!attributes.get(NuGetPackageAttributes.ID).equalsIgnoreCase(id)){
+          if (!attributes.get(NuGetPackageAttributes.ID).equalsIgnoreCase(id)) {
             continue;
           }
         }
 
         if (version != null) {
-          if (!attributes.get(NuGetPackageAttributes.VERSION).equalsIgnoreCase(version)){
+          if (!attributes.get(NuGetPackageAttributes.VERSION).equalsIgnoreCase(version)) {
             continue;
           }
         }
 
-        return NuGetMapper.mapPackage(indexEntry, myRequestUri);
+        return indexEntry;
       }
 
       throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
@@ -143,8 +136,10 @@ public class NuGetDataSource {
    * @param keys       is a list of keys to select.
    * @return data.
    */
-  public Object readData(final EdmFunctionImport function, final Map<String, Object> parameters, final Map<String, Object> keys)
-          throws ODataNotImplementedException, ODataNotFoundException, EdmException {
+  @NotNull
+  public Object readData(@NotNull final EdmFunctionImport function,
+                         @NotNull final Map<String, Object> parameters,
+                         @NotNull final Map<String, Object> keys) throws ODataHttpException, EdmException {
     if (function.getName().equals(MetadataConstants.SEARCH_FUNCTION_NAME)) {
       return search(parameters, keys);
     } else if (function.getName().equals(MetadataConstants.FIND_PACKAGES_BY_ID_FUNCTION_NAME)) {
@@ -163,12 +158,12 @@ public class NuGetDataSource {
    * @param keys       is a required keys.
    * @return data.
    */
-  @NotNull
-  private Object search(Map<String, Object> parameters, Map<String, Object> keys) throws ODataNotFoundException {
+  private Object search(final Map<String, Object> parameters,
+                        final Map<String, Object> keys) throws ODataHttpException {
     final String searchTerm = (String) parameters.get(MetadataConstants.SEARCH_TERM);
     final String targetFramework = (String) parameters.get(MetadataConstants.TARGET_FRAMEWORK);
     if (searchTerm == null || targetFramework == null) {
-      throw new ODataNotFoundException(null);
+      throw new UriSyntaxException(UriSyntaxException.MISSINGPARAMETER);
     }
 
     boolean includePrerelease = NuGetAPIVersion.shouldUseV2() && (Boolean) parameters.get(MetadataConstants.INCLUDE_PRERELEASE);
@@ -204,8 +199,8 @@ public class NuGetDataSource {
       packages.add(nugetPackage);
     }
 
-    LOG.debug(String.format("%d package(s) found when " + format, packages.size()));
-    return CollectionsUtil.convertCollection(packages, (indexEntry) -> NuGetMapper.mapPackage(indexEntry, myRequestUri));
+    LOG.debug(String.format("Found %d packages while " + format, packages.size()));
+    return packages;
   }
 
   /**
@@ -215,25 +210,20 @@ public class NuGetDataSource {
    * @param keys       is a list of keys to select.
    * @return data.
    */
-  @NotNull
-  private Object findPackagesById(Map<String, Object> parameters, Map<String, Object> keys) throws ODataNotFoundException {
+  private Object findPackagesById(final Map<String, Object> parameters,
+                                  final Map<String, Object> keys) throws ODataHttpException {
     final String id = (String) parameters.get(MetadataConstants.ID);
     if (id == null) {
-      throw new ODataNotFoundException(null);
+      throw new UriSyntaxException(UriSyntaxException.MISSINGPARAMETER);
     }
 
     final Iterator<NuGetIndexEntry> indexEntries = myIndex.getNuGetEntries(id);
-    if (!indexEntries.hasNext()) {
-      LOG.debug("No packages found for id " + id);
-      return Collections.emptyList();
-    }
-
-    final List<V2FeedPackage> packages = new ArrayList<>();
+    final List<NuGetIndexEntry> packages = new ArrayList<>();
     while (indexEntries.hasNext()) {
-      final NuGetIndexEntry indexEntry = indexEntries.next();
-      packages.add(NuGetMapper.mapPackage(indexEntry, myRequestUri));
+      packages.add(indexEntries.next());
     }
 
+    LOG.debug(String.format("Found %s packages for id %s", packages.size(), id));
     return packages;
   }
 
@@ -244,8 +234,7 @@ public class NuGetDataSource {
    * @param parameters is a parameters.
    * @return data.
    */
-  @NotNull
-  private Object getUpdates(Map<String, Object> parameters) {
+  private Object getUpdates(final Map<String, Object> parameters) throws ODataHttpException {
     final List<String> packageIds = StringUtil.split((String) parameters.get(MetadataConstants.PACKAGE_IDS), "|");
     final List<String> versions = StringUtil.split((String) parameters.get(MetadataConstants.VERSIONS), "|");
     final List<String> versionConstraints = StringUtil.split((String) parameters.get(MetadataConstants.VERSION_CONSTRAINTS), "|");
@@ -253,7 +242,11 @@ public class NuGetDataSource {
     final boolean includePrerelease = (Boolean) parameters.get(MetadataConstants.INCLUDE_PRERELEASE);
     final boolean includeAllVersions = (Boolean) parameters.get(MetadataConstants.INCLUDE_ALL_VERSIONS);
 
-    final List<NuGetIndexEntry> result = new ArrayList<>();
+    if (packageIds.size() != versions.size() || !versionConstraints.isEmpty() && packageIds.size() != versionConstraints.size()) {
+      return Collections.emptyList();
+    }
+
+    final List<NuGetIndexEntry> packages = new ArrayList<>();
     for (int i = 0; i < packageIds.size(); i++) {
       final String requestedPackageId = packageIds.get(i);
       final String versionString = versions.get(i);
@@ -274,20 +267,19 @@ public class NuGetDataSource {
         }
       }
 
-      result.addAll(getUpdateOfPackageWithId(includeAllVersions, includePrerelease, targetFrameworks, requestedPackageId, requestedVersion, versionConstraint));
+      packages.addAll(getUpdateOfPackageWithId(includeAllVersions, includePrerelease, targetFrameworks, requestedPackageId, requestedVersion, versionConstraint));
     }
 
-    LOG.debug(String.format("%d updated package(s) found", result.size()));
-    return CollectionsUtil.convertCollection(result, (indexEntry) -> NuGetMapper.mapPackage(indexEntry, myRequestUri));
+    LOG.debug(String.format("%d updated package(s) found", packages.size()));
+    return packages;
   }
 
-  @NotNull
-  private Collection<NuGetIndexEntry> getUpdateOfPackageWithId(boolean includeAllVersions,
-                                                               boolean includePreRelease,
-                                                               Set<String> frameworkConstraints,
-                                                               String requestedPackageId,
-                                                               SemanticVersion requestedVersion,
-                                                               VersionConstraint versionConstraint) {
+  private Collection<NuGetIndexEntry> getUpdateOfPackageWithId(final boolean includeAllVersions,
+                                                               final boolean includePreRelease,
+                                                               final Set<String> frameworkConstraints,
+                                                               final String requestedPackageId,
+                                                               final SemanticVersion requestedVersion,
+                                                               final VersionConstraint versionConstraint) {
     final Iterator<NuGetIndexEntry> entryIterator = myIndex.getNuGetEntries(requestedPackageId);
     final Comparator<NuGetIndexEntry> comparator = Collections.reverseOrder(SemanticVersionsComparators.getEntriesComparator());
     final List<NuGetIndexEntry> result = new SortedList<>(comparator);
@@ -311,11 +303,11 @@ public class NuGetDataSource {
     return Collections.singletonList(result.get(0));
   }
 
-  private boolean match(@NotNull NuGetIndexEntry indexEntry,
-                        @NotNull SemanticVersion requestedVersion,
-                        boolean includePreRelease,
-                        @NotNull Set<String> targetFrameworks,
-                        @Nullable VersionConstraint versionConstraint) {
+  private boolean match(final NuGetIndexEntry indexEntry,
+                        final SemanticVersion requestedVersion,
+                        final boolean includePreRelease,
+                        final Set<String> targetFrameworks,
+                        final VersionConstraint versionConstraint) {
     final Map<String, String> indexEntryAttributes = indexEntry.getAttributes();
     if (!includePreRelease && Boolean.parseBoolean(indexEntryAttributes.get(IS_PRERELEASE))) {
       return false;

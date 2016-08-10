@@ -16,23 +16,14 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo;
 
-import jetbrains.buildServer.util.CollectionsUtil;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import java.util.Enumeration;
-import java.util.Map;
 
 /**
  * Configuration for ODataService.
  */
 public class ODataServletConfig implements ServletConfig {
-  private final Map<String, String> myParameters;
-
-  public ODataServletConfig() {
-    myParameters = CollectionsUtil.asMap("org.apache.olingo.odata2.path.split", "4");
-  }
-
   @Override
   public String getServletName() {
     return "NuGet Feed";
@@ -45,7 +36,7 @@ public class ODataServletConfig implements ServletConfig {
 
   @Override
   public String getInitParameter(String name) {
-    return myParameters.get(name);
+    return null;
   }
 
   @Override

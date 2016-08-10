@@ -16,7 +16,11 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 
+import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSource;
+import jetbrains.buildServer.nuget.feed.server.olingo.model.NuGetMapper;
+import jetbrains.buildServer.nuget.feed.server.olingo.model.V2FeedPackage;
+import jetbrains.buildServer.util.CollectionsUtil;
 import org.apache.olingo.odata2.api.batch.*;
 import org.apache.olingo.odata2.api.commons.HttpStatusCodes;
 import org.apache.olingo.odata2.api.commons.InlineCount;
@@ -33,6 +37,7 @@ import org.apache.olingo.odata2.api.uri.info.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -42,7 +47,6 @@ import java.util.*;
  */
 public class NuGetPackagesProcessor extends ODataSingleProcessor {
 
-  // TODO: Paging size should be configurable.
   private static final int SERVER_PAGING_SIZE = 100;
   private final BeanPropertyAccess valueAccess;
   private final NuGetDataSource dataSource;
@@ -59,14 +63,17 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
   @Override
   public ODataResponse readEntitySet(final GetEntitySetUriInfo uriInfo, final String contentType)
           throws ODataException {
-    final ArrayList<Object> data = new ArrayList<>();
+    final ODataContext context = getContext();
+    final PathInfo pathInfo = context.getPathInfo();
+    final ArrayList<V2FeedPackage> data = new ArrayList<>();
+
     try {
-      data.addAll((List<?>) retrieveData(
+      data.addAll(CollectionsUtil.convertCollection((List<?>) retrieveData(
               uriInfo.getStartEntitySet(),
               uriInfo.getKeyPredicates(),
               uriInfo.getFunctionImport(),
               mapFunctionParameters(uriInfo.getFunctionImportParameters())
-      ));
+      ), source -> NuGetMapper.mapPackage((NuGetIndexEntry) source, pathInfo.getServiceRoot())));
     } catch (final ODataNotFoundException e) {
       data.clear();
     }
@@ -83,7 +90,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
             uriInfo.getSkip(),
             uriInfo.getTop());
 
-    final ODataContext context = getContext();
+
     String nextLink = null;
 
     // Limit the number of returned entities and provide a "next" link
@@ -99,7 +106,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
         sortInDefaultOrder(entitySet, data);
       }
 
-      nextLink = context.getPathInfo().getServiceRoot().relativize(context.getPathInfo().getRequestUri()).toString();
+      nextLink = pathInfo.getServiceRoot().relativize(pathInfo.getRequestUri()).toString();
       nextLink = percentEncodeNextLink(nextLink);
 
       nextLink += (nextLink.contains("?") ? "&" : "?")
@@ -117,7 +124,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     }
 
     final EntityProviderWriteProperties feedProperties = EntityProviderWriteProperties
-            .serviceRoot(context.getPathInfo().getServiceRoot())
+            .serviceRoot(pathInfo.getServiceRoot())
             .inlineCountType(inlineCountType)
             .inlineCount(count)
             .expandSelectTree(UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand()))
@@ -145,14 +152,15 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
   @Override
   public ODataResponse countEntitySet(final GetEntitySetCountUriInfo uriInfo, final String contentType)
           throws ODataException {
-    ArrayList<Object> data = new ArrayList<>();
+    final URI serviceRoot = getContext().getPathInfo().getServiceRoot();
+    final List<V2FeedPackage> data = new ArrayList<>();
     try {
-      data.addAll((List<?>) retrieveData(
+      data.addAll(CollectionsUtil.convertCollection((List<?>) retrieveData(
               uriInfo.getStartEntitySet(),
               uriInfo.getKeyPredicates(),
               uriInfo.getFunctionImport(),
               mapFunctionParameters(uriInfo.getFunctionImportParameters())
-      ));
+      ), source -> NuGetMapper.mapPackage((NuGetIndexEntry) source, serviceRoot)));
     } catch (final ODataNotFoundException e) {
       data.clear();
     }
@@ -261,12 +269,13 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
   @Override
   public ODataResponse readEntityComplexProperty(final GetComplexPropertyUriInfo uriInfo, final String contentType)
           throws ODataException {
-    final Object data = retrieveData(
+    final ODataContext context = getContext();
+    final V2FeedPackage data = NuGetMapper.mapPackage((NuGetIndexEntry) retrieveData(
             uriInfo.getStartEntitySet(),
             uriInfo.getKeyPredicates(),
             uriInfo.getFunctionImport(),
             mapFunctionParameters(uriInfo.getFunctionImportParameters())
-    );
+    ), context.getPathInfo().getServiceRoot());
 
     // if (!appliesFilter(data, uriInfo.getFilter()))
     if (data == null) {
@@ -284,8 +293,6 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       value = getStructuralTypeValueMap(getPropertyValue(data, propertyPath), (EdmStructuralType) property.getType());
     }
 
-    final ODataContext context = getContext();
-
     final int timingHandle = context.startRuntimeMeasurement("EntityProvider", "writeProperty");
     final ODataResponse response = EntityProvider.writeProperty(contentType, property, value);
     context.stopRuntimeMeasurement(timingHandle);
@@ -302,12 +309,13 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
   @Override
   public ODataResponse readEntitySimplePropertyValue(final GetSimplePropertyUriInfo uriInfo, final String contentType)
           throws ODataException {
-    final Object data = retrieveData(
+    final ODataContext context = getContext();
+    final V2FeedPackage data = NuGetMapper.mapPackage((NuGetIndexEntry) retrieveData(
             uriInfo.getStartEntitySet(),
             uriInfo.getKeyPredicates(),
             uriInfo.getFunctionImport(),
             mapFunctionParameters(uriInfo.getFunctionImportParameters())
-    );
+    ), context.getPathInfo().getServiceRoot());
 
     // if (!appliesFilter(data, uriInfo.getFilter()))
     if (data == null) {
@@ -368,6 +376,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
   @Override
   public ODataResponse executeFunctionImport(final GetFunctionImportUriInfo uriInfo, final String contentType)
           throws ODataException {
+    final ODataContext context = getContext();
+    final URI serviceRoot = context.getPathInfo().getServiceRoot();
     final EdmFunctionImport functionImport = uriInfo.getFunctionImport();
     final EdmType type = functionImport.getReturnType().getType();
 
@@ -382,20 +392,21 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
 
     Object value;
     if (type.getKind() == EdmTypeKind.SIMPLE) {
-      value = data;
+      value = NuGetMapper.mapPackage((NuGetIndexEntry) data, serviceRoot);
     } else if (functionImport.getReturnType().getMultiplicity() == EdmMultiplicity.MANY) {
       final List<Map<String, Object>> values = new ArrayList<>();
       for (final Object typeData : (List<?>) data) {
-        values.add(getStructuralTypeValueMap(typeData, (EdmStructuralType) type));
+        Object entry = NuGetMapper.mapPackage((NuGetIndexEntry) typeData, serviceRoot);
+        values.add(getStructuralTypeValueMap(entry, (EdmStructuralType) type));
       }
       value = values;
     } else {
-      value = getStructuralTypeValueMap(data, (EdmStructuralType) type);
+      Object entry = NuGetMapper.mapPackage((NuGetIndexEntry) data, serviceRoot);
+      value = getStructuralTypeValueMap(entry, (EdmStructuralType) type);
     }
 
-    final ODataContext context = getContext();
     final EntityProviderWriteProperties entryProperties = EntityProviderWriteProperties
-            .serviceRoot(context.getPathInfo().getServiceRoot()).build();
+            .serviceRoot(serviceRoot).build();
 
     final int timingHandle = context.startRuntimeMeasurement("EntityProvider", "writeFunctionImport");
     final ODataResponse response = EntityProvider.writeFunctionImport(contentType, functionImport, value, entryProperties);
@@ -407,13 +418,14 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
   @Override
   public ODataResponse executeFunctionImportValue(final GetFunctionImportUriInfo uriInfo, final String contentType)
           throws ODataException {
+    final ODataContext context = getContext();
     final EdmFunctionImport functionImport = uriInfo.getFunctionImport();
     final EdmSimpleType type = (EdmSimpleType) functionImport.getReturnType().getType();
 
-    final Object data = dataSource.readData(
+    final Object data = NuGetMapper.mapPackage((NuGetIndexEntry) dataSource.readData(
             functionImport,
             mapFunctionParameters(uriInfo.getFunctionImportParameters()),
-            null);
+            null), context.getPathInfo().getServiceRoot());
 
     if (data == null) {
       throw new ODataNotFoundException(ODataHttpException.COMMON);

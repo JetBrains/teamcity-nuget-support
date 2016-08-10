@@ -18,11 +18,8 @@ package jetbrains.buildServer.nuget.feed.server.olingo;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.nuget.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
-import jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSource;
-import jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSourceFactory;
 import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.web.util.WebUtil;
@@ -31,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.URI;
 
 /**
  * Request handler based on Olingo library.
@@ -39,25 +35,17 @@ import java.net.URI;
 public class OlingoRequestHandler implements NuGetFeedHandler {
 
   private static final Logger LOG = Logger.getInstance(OlingoRequestHandler.class.getName());
-  private final NuGetServerJavaSettings mySettings;
-  private final NuGetDataSourceFactory myDataSourceFactory;
+  private final NuGetServiceFactory myServiceFactory;
   private final ResponseCache myCache;
 
-  public OlingoRequestHandler(@NotNull final NuGetServerJavaSettings settings,
-                              @NotNull final NuGetDataSourceFactory dataSourceFactory,
+  public OlingoRequestHandler(@NotNull final NuGetServiceFactory serviceFactory,
                               @NotNull final ResponseCache cache) {
-    mySettings = settings;
-    myDataSourceFactory = dataSourceFactory;
+    myServiceFactory = serviceFactory;
     myCache = cache;
   }
 
   @Override
-  public boolean isAvailable() {
-    return mySettings.isNuGetJavaFeedEnabled();
-  }
-
-  @Override
-  public void handleRequest(@NotNull String baseMappingPath, @NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+  public void handleRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
     if (!BaseController.isGet(request)) {
       //error response according to OData spec for unsupported operations (modification operations)
       response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, "TeamCity provided feed is readonly.");
@@ -74,10 +62,7 @@ public class OlingoRequestHandler implements NuGetFeedHandler {
   private void processFeedRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
     LOG.debug("NuGet Feed: " + WebUtil.getRequestDump(request) + "|" + request.getRequestURI());
 
-    final String requestUrl = String.format("%s://%s:%s", request.getScheme(), request.getServerName(), request.getServerPort());
-    final NuGetDataSource dataSource = myDataSourceFactory.create(new URI(requestUrl));
-    final NuGetServiceFactory serviceFactory = new NuGetServiceFactory(dataSource);
-    request.setAttribute("org.apache.olingo.odata2.service.factory.instance", serviceFactory);
+    request.setAttribute("org.apache.olingo.odata2.service.factory.instance", myServiceFactory);
 
     ODataServlet servlet = new ODataServlet();
     servlet.init(new ODataServletConfig());
