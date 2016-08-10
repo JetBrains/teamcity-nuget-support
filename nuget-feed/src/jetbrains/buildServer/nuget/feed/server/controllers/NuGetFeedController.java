@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,13 @@ package jetbrains.buildServer.nuget.feed.server.controllers;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests;
+import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -53,7 +53,6 @@ public class NuGetFeedController extends BaseController {
     web.registerController(myNuGetPath + "/**", this);
   }
 
-
   @Override
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
@@ -61,18 +60,17 @@ public class NuGetFeedController extends BaseController {
       return NuGetResponseUtil.nugetFeedIsDisabled(response);
     }
 
-    final HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(request) {
+    final RequestWrapper requestWrapper = new RequestWrapper(request, myNuGetPath) {
       @Override
       public String getQueryString() {
         final String queryString = super.getQueryString();
-
-        if (super.getRequestURI().endsWith("FindPackagesById()")) {
-          // NuGet client in VS 2015 Update 2 introduced breaking change where
-          // instead of `id` parameter passed `Id` while OData is case sensitive
-          return queryString != null ? QUERY_ID.matcher(queryString).replaceFirst("id=$2") : null;
+        if (queryString == null || !queryString.endsWith("FindPackagesById()")) {
+          return queryString;
         }
 
-        return queryString;
+        // NuGet client in VS 2015 Update 2 introduced breaking change where
+        // instead of `id` parameter passed `Id` while OData is case sensitive
+        return QUERY_ID.matcher(queryString).replaceFirst("id=$2");
       }
     };
 
@@ -84,15 +82,11 @@ public class NuGetFeedController extends BaseController {
     final String pathAndQuery = path + (query != null ? ("?" + query) : "");
     myRequestsList.reportFeedRequest(pathAndQuery);
 
-    final NuGetFeedHandler feedHandler = myFeedProvider.getHandler();
     final long startTime = new Date().getTime();
-    if (feedHandler.isAvailable()) {
-      feedHandler.handleRequest(myNuGetPath, requestWrapper, response);
-      myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
-      return null;
-    } else {
-      myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
-      return NuGetResponseUtil.noImplementationFoundError(response);
-    }
+    final NuGetFeedHandler feedHandler = myFeedProvider.getHandler();
+    feedHandler.handleRequest(requestWrapper, response);
+    myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
+
+    return null;
   }
 }

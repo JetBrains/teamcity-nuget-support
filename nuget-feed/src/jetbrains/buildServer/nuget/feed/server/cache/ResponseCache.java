@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2014 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,97 +16,20 @@
 
 package jetbrains.buildServer.nuget.feed.server.cache;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.util.containers.SoftValueHashMap;
-import jetbrains.buildServer.serverSide.BuildServerAdapter;
-import jetbrains.buildServer.serverSide.BuildServerListener;
-import jetbrains.buildServer.users.SUser;
-import jetbrains.buildServer.util.EventDispatcher;
-import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.web.impl.TeamCityInternalKeys;
-import jetbrains.buildServer.web.util.SessionUser;
-import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 /**
- * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
- * Date: 22.04.13 22:41
+ * HTTP cache for popular requests.
  */
-public class ResponseCache implements ResponseCacheReset {
-  private static final Logger LOG = Logger.getInstance(ResponseCache.class.getName());
-  private final Map<String, ResponseCacheEntry> myCache = new SoftValueHashMap<String, ResponseCacheEntry>();
+public interface ResponseCache extends ResponseCacheReset {
+  void getOrCompute(@NotNull HttpServletRequest request,
+                    @NotNull HttpServletResponse response,
+                    @NotNull ComputeAction action) throws Exception;
 
-  public ResponseCache(@NotNull EventDispatcher<BuildServerListener> dispatcher) {
-    dispatcher.addListener(new BuildServerAdapter() {
-      @Override
-      public void cleanupFinished() {
-        super.cleanupFinished();
-        resetCache();
-      }
-    });
-  }
-
-  public void resetCache() {
-    synchronized (myCache) {
-      myCache.clear();
-    }
-  }
-
-  @NotNull
-  private String key(@NotNull final HttpServletRequest request) {
-    StringBuilder builder = new StringBuilder();
-    builder.append(request.getMethod());
-    builder.append(" ");
-    builder.append(request.getRequestURL());
-    builder.append("@ '").append(WebUtil.getPathWithoutAuthenticationType(request));
-    builder.append("?").append(WebUtil.createRequestParameters(request)).append("' ");
-
-    final SUser user = SessionUser.getUser(request);
-    if (user != null) {
-      final String username = user.getUsername();
-      builder.append(" as ").append(user.getId()).append(username != null ? username : "<null>");
-    } else {
-      builder.append("as no auth/user");
-    }
-
-    final String pageUrl = (String) request.getAttribute(TeamCityInternalKeys.PAGE_URL_KEY);
-    if (!StringUtil.isEmpty(pageUrl)) {
-      builder.append("URL: ").append(pageUrl);
-    }
-    return builder.toString();
-  }
-
-  public void getOrCompute(@NotNull final HttpServletRequest request,
-                           @NotNull final HttpServletResponse response,
-                           @NotNull final ComputeAction action) throws Exception {
-    final String key = key(request);
-    final ResponseCacheEntry cached;
-    synchronized (myCache) {
-      cached = myCache.get(key);
-    }
-    if (cached != null) {
-      cached.handleRequest(request, response);
-      return;
-    }
-
-    LOG.debug("NuGet cache miss for: " + WebUtil.getRequestDump(request));
-    final ResponseWrapper wrapped = new ResponseWrapper(response);
-
-    action.compute(request, wrapped);
-
-    final ResponseCacheEntry entry = wrapped.build();
-    synchronized (myCache) {
-      myCache.put(key, entry);
-    }
-
-    entry.handleRequest(request, response);
-  }
-
-  public interface ComputeAction {
+  interface ComputeAction {
     void compute(@NotNull final HttpServletRequest request,
                  @NotNull final HttpServletResponse response) throws Exception;
   }
