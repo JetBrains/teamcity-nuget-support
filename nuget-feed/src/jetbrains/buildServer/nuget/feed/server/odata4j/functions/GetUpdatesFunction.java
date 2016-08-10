@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2015 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package jetbrains.buildServer.nuget.feed.server.odata4j.functions;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.containers.SortedList;
+import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
-import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.odata4j.PackageEntityEx;
 import jetbrains.buildServer.nuget.feed.server.odata4j.PackagesEntitySet;
 import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
@@ -30,7 +30,6 @@ import jetbrains.buildServer.nuget.server.version.SemanticVersion;
 import jetbrains.buildServer.nuget.server.version.VersionConstraint;
 import jetbrains.buildServer.nuget.server.version.VersionUtility;
 import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +44,7 @@ import org.odata4j.producer.QueryInfo;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.IS_PRERELEASE;
 
 /**
  * @author Evgeniy.Koshkin
@@ -86,9 +85,13 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
   @Nullable
   public Iterable<Object> call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
     final List<String> packageIds = extractListOfStringsFromParamValue(params, MetadataConstants.PACKAGE_IDS);
-    if(packageIds.isEmpty()) return null;
+    if(packageIds.isEmpty()) {
+      return Collections.emptyList();
+    }
     final List<String> versions = extractListOfStringsFromParamValue(params, MetadataConstants.VERSIONS);
-    if(versions.isEmpty()) return null;
+    if(versions.isEmpty()) {
+      return Collections.emptyList();
+    }
 
     final List<String> versionConstraints = extractListOfStringsFromParamValue(params, MetadataConstants.VERSION_CONSTRAINTS);
     final boolean versionConstraintsProvided = !versionConstraints.isEmpty();
@@ -96,14 +99,14 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
     if(packageIds.size() != versions.size()){
       LOG.debug(String.format("Bad %s function call. Number of requested package IDs (%d) is not consistent with number of package versions (%d).",
               getName(), packageIds.size(), versions.size()));
-      return null;
+      return Collections.emptyList();
     }
 
     final boolean includeAllVersions = extractBooleanParameterValue(params, MetadataConstants.INCLUDE_ALL_VERSIONS);
     final boolean includePreRelease = extractBooleanParameterValue(params, MetadataConstants.INCLUDE_PRERELEASE);
     final Set<String> frameworkConstraints = FrameworkConstraints.convertFromString(extractStringParameterValue(params, MetadataConstants.TARGET_FRAMEWORKS));
 
-    final List<NuGetIndexEntry> result = new ArrayList<NuGetIndexEntry>();
+    final List<NuGetIndexEntry> result = new ArrayList<>();
 
     for(int i = 0; i < packageIds.size(); i++){
       final String requestedPackageId = packageIds.get(i);
@@ -126,16 +129,8 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
       result.addAll(getUpdateOfPackageWithId(includeAllVersions, includePreRelease, frameworkConstraints, requestedPackageId, requestedVersion, versionConstraint));
     }
 
-    if(result.isEmpty()){
-      LOG.debug("No package updates found.");
-      return null;
-    }
-
-    return CollectionsUtil.convertCollection(result, new Converter<Object, NuGetIndexEntry>() {
-      public Object createFrom(@NotNull NuGetIndexEntry source) {
-        return new PackageEntityEx(source, myServerSettings);
-      }
-    });
+    LOG.debug(String.format("Found %s updated package(s)", result.size()));
+    return CollectionsUtil.convertCollection(result, source -> new PackageEntityEx(source, myServerSettings));
   }
 
   @NotNull

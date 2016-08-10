@@ -19,29 +19,18 @@ package jetbrains.buildServer.nuget.feed.server.odata4j;
 import com.intellij.openapi.diagnostic.Logger;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.nuget.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
-import jetbrains.buildServer.util.FuncThrow;
 import jetbrains.buildServer.util.Util;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.stax2.XMLFactoryProvider2;
-import org.odata4j.stax2.XMLWriter2;
 import org.odata4j.stax2.XMLWriterFactory2;
 import org.odata4j.stax2.domimpl.DomXMLFactoryProvider2;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.Writer;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Vector;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -51,61 +40,23 @@ public class ODataRequestHandler implements NuGetFeedHandler {
   private static final Logger LOG = Logger.getInstance(ODataRequestHandler.class.getName());
 
   private ServletContainer myContainer;
-  private final NuGetServerJavaSettings mySettings;
   private final ResponseCache myCache;
 
   public ODataRequestHandler(@NotNull final NuGetProducerHolder producer,
-                             @NotNull final ServletConfig config,
-                             @NotNull final NuGetServerJavaSettings settings,
                              @NotNull final ResponseCache cache) {
-    mySettings = settings;
     myCache = cache;
     try {
-      myContainer = Util.doUnderContextClassLoader(getClass().getClassLoader(), new FuncThrow<ServletContainer, ServletException>() {
-        public ServletContainer apply() throws ServletException {
-          ServletContainer sc = new ServletContainer(new NuGetODataApplication(producer));
-          sc.init(createServletConfig(config));
-          return sc;
-        }
+      myContainer = Util.doUnderContextClassLoader(getClass().getClassLoader(), () -> {
+        ServletContainer sc = new ServletContainer(new NuGetODataApplication(producer));
+        sc.init(new ODataServletConfig());
+        return sc;
       });
     } catch (Throwable e) {
       LOG.warn("Failed to initialize NuGet Feed container. " + e.getMessage(), e);
     }
   }
 
-  private ServletConfig createServletConfig(@NotNull final ServletConfig config) {
-    final Map<String, String> myInit = new HashMap<String, String>();
-    final Enumeration<String> it = config.getInitParameterNames();
-    while (it.hasMoreElements()) {
-      final String key = it.nextElement();
-      myInit.put(key, config.getInitParameter(key));
-    }
-    myInit.put("com.sun.jersey.config.property.packages", "jetbrains.buildServer.nuget");
-    return new ServletConfig() {
-      public String getServletName() {
-        return config.getServletName();
-      }
-
-      public ServletContext getServletContext() {
-        return config.getServletContext();
-      }
-
-      public String getInitParameter(String s) {
-        return myInit.get(s);
-      }
-
-      public Enumeration<String> getInitParameterNames() {
-        return new Vector<String>(myInit.keySet()).elements();
-      }
-    };
-  }
-
-  public boolean isAvailable() {
-    return mySettings.isNuGetJavaFeedEnabled();
-  }
-
-  public void handleRequest(@NotNull final String baseMappingPath,
-                            @NotNull final HttpServletRequest request,
+  public void handleRequest(@NotNull final HttpServletRequest request,
                             @NotNull final HttpServletResponse response) throws Exception {
     if (myContainer == null) {
       //error response according to OData spec for unsupported oprtaions (modification operations)
@@ -119,13 +70,7 @@ public class ODataRequestHandler implements NuGetFeedHandler {
       return;
     }
 
-    final ResponseCache.ComputeAction action = new ResponseCache.ComputeAction() {
-      public void compute(@NotNull final HttpServletRequest request,
-                          @NotNull final HttpServletResponse response) throws Exception {
-        processFeedRequest(baseMappingPath, request, response);
-      }
-    };
-
+    final ResponseCache.ComputeAction action = this::processFeedRequest;
     if (TeamCityProperties.getBoolean("teamcity.nuget.feed.use.cache")) {
       myCache.getOrCompute(request, response, action);
     } else {
@@ -133,26 +78,20 @@ public class ODataRequestHandler implements NuGetFeedHandler {
     }
   }
 
-  private void processFeedRequest(final String baseMappingPath, final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+  private void processFeedRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
     XMLFactoryProvider2.setInstance(DOM_XML_FACTORY_PROVIDER_2);
     LOG.debug("NuGet Feed: " + WebUtil.getRequestDump(request) + "|" + request.getRequestURI());
 
-    Util.doUnderContextClassLoader(getClass().getClassLoader(), new FuncThrow<Object, Exception>() {
-      public Object apply() throws Exception {
-        myContainer.service(new RequestWrapper(request, baseMappingPath), response);
-        return null;
-      }
+    Util.doUnderContextClassLoader(getClass().getClassLoader(), () -> {
+      myContainer.service(request, response);
+      return null;
     });
   }
 
   private static final DomXMLFactoryProvider2 DOM_XML_FACTORY_PROVIDER_2 = new DomXMLFactoryProvider2() {
     @Override
     public XMLWriterFactory2 newXMLWriterFactory2() {
-      return new XMLWriterFactory2() {
-        public XMLWriter2 createXMLWriter(Writer writer) {
-          return new ManualXMLWriter3(writer);
-        }
-      };
+      return ManualXMLWriter3::new;
     }
   };
 }

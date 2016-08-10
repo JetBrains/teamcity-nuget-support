@@ -17,27 +17,28 @@
 package jetbrains.buildServer.nuget.feed.server.odata4j.functions;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.odata4j.PackageEntityEx;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
 import jetbrains.buildServer.nuget.server.version.VersionUtility;
 import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.Converter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OObject;
 import org.odata4j.core.OSimpleObject;
 import org.odata4j.edm.*;
+import org.odata4j.exceptions.BadRequestException;
 import org.odata4j.producer.QueryInfo;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 import static jetbrains.buildServer.nuget.feed.server.MetadataConstants.*;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.IS_PRERELEASE;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.VERSION;
 
 /**
  * @author Evgeniy.Koshkin
@@ -76,13 +77,13 @@ public class SearchFunction implements NuGetFeedFunction {
     final OFunctionParameter searchTermParam = params.get(SEARCH_TERM);
     if(searchTermParam == null){
       LOG.debug(String.format("Bad %s function call. searchTerm parameter is not specified.", getName()));
-      return null;
+      throw new BadRequestException(SEARCH_TERM + " parameter is not specified.");
     }
     final OObject searchTermParamValue = searchTermParam.getValue();
     if(!(searchTermParamValue instanceof OSimpleObject))
     {
       LOG.debug(String.format("Bad %s function call. searchTerm parameter type is invalid.", getName()));
-      return null;
+      throw new BadRequestException(SEARCH_TERM + " parameter type is invalid.");
     }
     final OSimpleObject searchTermCasted = (OSimpleObject) searchTermParamValue;
     final String searchTerm = searchTermCasted.getValue().toString();
@@ -90,13 +91,13 @@ public class SearchFunction implements NuGetFeedFunction {
     final OFunctionParameter targetFrameworkParam = params.get(TARGET_FRAMEWORK);
     if(targetFrameworkParam == null){
       LOG.debug(String.format("Bad %s function call. targetFramework parameter is not specified.", getName()));
-      return null;
+      throw new BadRequestException(TARGET_FRAMEWORK + " parameter is not specified.");
     }
     final OObject targetFrameworkParamValue = targetFrameworkParam.getValue();
     if(!(targetFrameworkParamValue instanceof OSimpleObject))
     {
       LOG.debug(String.format("Bad %s function call. targetFramework parameter type is invalid.", getName()));
-      return null;
+      throw new BadRequestException(TARGET_FRAMEWORK + " parameter type is invalid.");
     }
     final OSimpleObject targetFrameworkCasted = (OSimpleObject) targetFrameworkParamValue;
     final String requestedTargetFramework = targetFrameworkCasted.getValue().toString();
@@ -105,13 +106,13 @@ public class SearchFunction implements NuGetFeedFunction {
     final OFunctionParameter includePreReleaseParam = params.get(INCLUDE_PRERELEASE);
     if(includePreReleaseParam == null){
       LOG.debug(String.format("Bad %s function call. 'includePrerelease' parameter is not specified.", getName()));
-      return null;
+      throw new BadRequestException(INCLUDE_PRERELEASE + " parameter is not specified.");
     }
     final OObject includePreReleaseParamValue = includePreReleaseParam.getValue();
     if(!(includePreReleaseParamValue instanceof OSimpleObject))
     {
       LOG.debug(String.format("Bad %s function call. 'includePrerelease' parameter type is invalid.", getName()));
-      return null;
+      throw new BadRequestException(INCLUDE_PRERELEASE + " parameter type is invalid.");
     }
     final OSimpleObject includePreReleaseCasted = (OSimpleObject) includePreReleaseParamValue;
     final boolean includePreRelease = Boolean.parseBoolean(includePreReleaseCasted.getValue().toString());
@@ -121,7 +122,7 @@ public class SearchFunction implements NuGetFeedFunction {
     if(!requestedTargetFramework.isEmpty()) format += ", with target framework constraints " + requestedTargetFramework;
     LOG.debug(format);
 
-    final List<NuGetIndexEntry> result = new ArrayList<NuGetIndexEntry>();
+    final List<NuGetIndexEntry> result = new ArrayList<>();
     final Iterator<NuGetIndexEntry> entryIterator = myIndex.search(searchTerm);
     while (entryIterator.hasNext()){
       final NuGetIndexEntry nugetPackage = entryIterator.next();
@@ -144,11 +145,8 @@ public class SearchFunction implements NuGetFeedFunction {
       }
       result.add(nugetPackage);
     }
-    LOG.debug(String.format("%d package(s) found when " + format, result.size()));
-    return CollectionsUtil.convertCollection(result, new Converter<Object, NuGetIndexEntry>() {
-      public Object createFrom(@NotNull NuGetIndexEntry source) {
-        return new PackageEntityEx(source, myServerSettings);
-      }
-    });
+
+    LOG.debug(String.format("Found %d package(s) while " + format, result.size()));
+    return CollectionsUtil.convertCollection(result, source -> new PackageEntityEx(source, myServerSettings));
   }
 }
