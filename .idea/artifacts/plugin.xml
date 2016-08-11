@@ -43,6 +43,7 @@
           </element>
         </element>
         <element id="artifact" artifact-name="nuget-server-common" />
+        <element id="library" level="project" name="olingo" />
       </element>
       <element id="file-copy" path="$PROJECT_DIR$/nuget-server/teamcity-server-plugin.xml" output-file-name="teamcity-plugin.xml" />
       <element id="directory" name="licenses">

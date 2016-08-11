@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2015 JetBrains s.r.o.
+ * Copyright 2000-2016 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,14 @@ import org.testng.annotations.Test;
  * @author Evgeniy.Koshkin
  */
 public class FindPackagesByIdFunctionIntegrationTest extends NuGetJavaFeedIntegrationTestBase {
-  @Test
-  public void testIdParameterCaseInsensitivity() throws Exception {
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testFindPackageById(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
     enableDebug();
     addMockPackage("MyPackage", "1.0.0.0");
+
     assertContainsPackageVersion(openRequest("FindPackagesById()?id='MyPackage'"), "1.0.0.0");
-    assertContainsPackageVersion(openRequest("FindPackagesById()?Id='MyPackage'"), "1.0.0.0");
-    assert204("FindPackagesById()?ID='MyPackage'");
+    assert200("FindPackagesById()?id='MyPackage2'").run();
   }
 }
