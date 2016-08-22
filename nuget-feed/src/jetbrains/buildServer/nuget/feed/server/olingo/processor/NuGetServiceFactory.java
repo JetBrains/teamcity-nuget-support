@@ -56,7 +56,7 @@ public class NuGetServiceFactory extends ODataServiceFactory {
   }
 
   private static EdmxProvider getEdmProvider(final String version) throws ODataException {
-    final String metadataPath = String.format("/resources/metadata/NuGet-%s.xml", version);
+    final String metadataPath = String.format("/feed-metadata/NuGet-%s.xml", version);
 
     final InputStream inputStream = NuGetServiceFactory.class.getResourceAsStream(metadataPath);
     final EdmxProvider provider = new EdmxProvider().parse(inputStream, true);

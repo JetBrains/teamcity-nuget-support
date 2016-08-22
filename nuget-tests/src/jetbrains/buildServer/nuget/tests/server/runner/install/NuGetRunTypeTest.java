@@ -16,9 +16,10 @@
 
 package jetbrains.buildServer.nuget.tests.server.runner.install;
 
+import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.runner.NuGetRunType;
 import jetbrains.buildServer.serverSide.InvalidProperty;
-import jetbrains.buildServer.serverSide.impl.BaseServerTestCase;
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.tools.ServerToolManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import junit.framework.Assert;
@@ -32,10 +33,11 @@ import java.util.*;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 16.03.12 18:54
  */
-public abstract class NuGetRunTypeTest<TRunType extends NuGetRunType> extends BaseServerTestCase {
+public abstract class NuGetRunTypeTest<TRunType extends NuGetRunType> extends BaseTestCase {
   protected Mockery m;
   protected PluginDescriptor myDescriptor;
   protected ServerToolManager myToolManager;
+  protected ProjectManager myProjectManager;
   protected TRunType myRunType;
 
   @BeforeMethod
@@ -45,6 +47,7 @@ public abstract class NuGetRunTypeTest<TRunType extends NuGetRunType> extends Ba
     m = new Mockery();
     myDescriptor = m.mock(PluginDescriptor.class);
     myToolManager = m.mock(ServerToolManager.class);
+    myProjectManager = m.mock(ProjectManager.class);
     myRunType = createRunType();
   }
 

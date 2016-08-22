@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.odata4j</groupId>
+  <artifactId>odata4j-core</artifactId>
+  <versioning>
+    <release>0.8-SNAPSHOT</release>
+    <versions>
+      <version>0.8-SNAPSHOT</version>
+    </versions>
+    <lastUpdated>20160720113750</lastUpdated>
+  </versioning>
+</metadata>

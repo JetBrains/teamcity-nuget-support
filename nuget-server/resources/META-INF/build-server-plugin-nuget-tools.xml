@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+       default-autowire="constructor">
+  <bean class="jetbrains.buildServer.nuget.server.tool.AvailableToolsStateHolder"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.impl.AvailableOnPackagesNugetOrg"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.impl.AvailableOnDistNugetOrg"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.impl.NuGetToolDownloaderImpl"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.NuGetToolUsageStatisticsProvider"/>
+
+  <bean class="jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider"/>
+  <bean class="jetbrains.buildServer.nuget.server.tool.NuGetServerToolPreProcessor"/>
+</beans>

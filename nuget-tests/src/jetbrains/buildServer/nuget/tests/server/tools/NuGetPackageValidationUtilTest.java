@@ -32,14 +32,14 @@ public class NuGetPackageValidationUtilTest extends BaseTestCase {
   @Test
   public void testPackageValidationOldPackage() throws ToolException, IOException {
     File testPackage = createTempFile();
-    FileUtil.copy(new File("./nuget-tests/testData/nuget/NuGet.CommandLine.1.8.40002.nupkg"), testPackage);
+    FileUtil.copy(new File("testData/nuget/NuGet.CommandLine.1.8.40002.nupkg"), testPackage);
     NuGetPackageValidationUtil.validatePackage(testPackage);
   }
 
   @Test
   public void testPackageValidation() throws ToolException, IOException {
     File testPackage = createTempFile();
-    FileUtil.copy(new File("./nuget-tests/testData/nuget/NuGet.CommandLine.3.5.1-beta1-1597.nupkg"), testPackage);
+    FileUtil.copy(new File("testData/nuget/NuGet.CommandLine.3.5.1-beta1-1597.nupkg"), testPackage);
     NuGetPackageValidationUtil.validatePackage(testPackage);
   }
 

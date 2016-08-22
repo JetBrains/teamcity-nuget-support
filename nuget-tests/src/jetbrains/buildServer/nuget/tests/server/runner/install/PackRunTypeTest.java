@@ -28,7 +28,7 @@ public class PackRunTypeTest extends NuGetRunTypeTest<PackRunType> {
   @NotNull
   @Override
   protected PackRunType createRunType() {
-    return new PackRunType(myDescriptor, myToolManager, myFixture.getProjectManager());
+    return new PackRunType(myDescriptor, myToolManager, myProjectManager);
   }
 
   @Test

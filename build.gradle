@@ -1,0 +1,53 @@
+ext {
+    versionNumber = System.getenv('versionNumber') != null ? System.getenv('versionNumber') : 'SNAPSHOT'
+    projectIds = ['group': 'teamcity-nuget-support', 'version': versionNumber]
+    teamcityVersion = project.hasProperty('teamcityVersion') ? project.getProperty('teamcityVersion') : '10.0'
+}
+
+group = projectIds.group
+version = projectIds.version
+
+allprojects {
+    group = projectIds.group
+    version = projectIds.version
+}
+
+subprojects { subproject ->
+    if (!subproject.name.endsWith("extensions")) {
+        apply plugin: 'java'
+
+        sourceSets {
+            main {
+                java {
+                    srcDirs = ['src']
+                }
+
+                resources {
+                    srcDirs = ['resources']
+                }
+            }
+
+            test {
+                java {
+                    srcDirs = ['test']
+                }
+
+                resources {
+                    srcDirs = ['testResources']
+                }
+            }
+        }
+
+        repositories {
+            maven { url '../local-repo' }
+        }
+
+        test.useTestNG()
+        jar.version = null
+
+        tasks.withType(JavaCompile) {
+            sourceCompatibility = "1.8"
+            targetCompatibility = "1.8"
+        }
+    }
+}

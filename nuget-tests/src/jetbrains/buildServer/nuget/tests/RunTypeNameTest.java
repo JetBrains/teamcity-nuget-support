@@ -16,11 +16,12 @@
 
 package jetbrains.buildServer.nuget.tests;
 
+import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunType;
 import jetbrains.buildServer.nuget.server.runner.install.PackagesInstallerRunnerDefaults;
 import jetbrains.buildServer.nuget.server.runner.pack.PackRunType;
 import jetbrains.buildServer.nuget.server.runner.publish.PublishRunType;
-import jetbrains.buildServer.serverSide.impl.BaseServerTestCase;
+import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.tools.ServerToolManager;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jmock.Mockery;
@@ -32,10 +33,11 @@ import org.testng.annotations.Test;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 21.07.11 19:03
  */
-public class RunTypeNameTest extends BaseServerTestCase {
+public class RunTypeNameTest extends BaseTestCase {
   private PluginDescriptor myDescriptor;
   private PackagesInstallerRunnerDefaults myDefaults;
   private ServerToolManager myToolManager;
+  protected ProjectManager myProjectManager;
 
   @BeforeMethod
   @Override
@@ -44,7 +46,7 @@ public class RunTypeNameTest extends BaseServerTestCase {
     Mockery m = new Mockery();
     myDescriptor = m.mock(PluginDescriptor.class);
     myToolManager = m.mock(ServerToolManager.class);
-    myProjectManager = myFixture.getProjectManager();
+    myProjectManager = m.mock(ProjectManager.class);
     myDefaults = new PackagesInstallerRunnerDefaults();
   }
 

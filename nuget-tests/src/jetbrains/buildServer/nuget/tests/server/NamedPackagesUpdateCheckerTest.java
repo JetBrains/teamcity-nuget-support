@@ -16,13 +16,13 @@
 
 package jetbrains.buildServer.nuget.tests.server;
 
+import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.ExtensionHolder;
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
-import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.TriggerUrlPostProcessor;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
@@ -36,9 +36,10 @@ import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeNuGe
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeTeamCity;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettingsImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
+import jetbrains.buildServer.serverSide.BuildTypeEx;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.impl.BaseServerTestCase;
+import jetbrains.buildServer.serverSide.impl.ProjectEx;
 import jetbrains.buildServer.tools.ServerToolManager;
 import jetbrains.buildServer.tools.ToolType;
 import jetbrains.buildServer.util.TestFor;
@@ -64,7 +65,7 @@ import java.util.TreeMap;
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 14.07.11 18:57
  */
-public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
+public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   private Mockery m;
   private NamedPackagesUpdateChecker checker;
   private PolledTriggerContext context;
@@ -74,7 +75,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
   private Map<String, String> params;
   private File nugetFakePath;
   private RootUrlHolder myRootUrlHolder;
-
+  private BuildTypeEx myBuildType;
+  private ProjectEx myProject;
 
   private boolean myIsWindows;
 
@@ -92,6 +94,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
     final ServerToolManager toolManager = m.mock(ServerToolManager.class);
     chk = m.mock(PackageChangesManager.class);
     myRootUrlHolder = m.mock(RootUrlHolder.class);
+    myBuildType = m.mock(BuildTypeEx.class);
+    myProject = m.mock(ProjectEx.class);
 
     final SystemInfo si = m.mock(SystemInfo.class);
 
@@ -111,6 +115,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseServerTestCase {
       allowing(desr).getProperties(); will(returnValue(params));
       allowing(toolManager).getUnpackedToolVersionPath(with(any(ToolType.class)), with(any(String.class)), with(any(SProject.class))); will(returnValue(nugetHome));
       allowing(extensionHolder).getExtensions(TriggerUrlPostProcessor.class); will(returnValue(Collections.<TriggerUrlPostProcessor>singletonList(new TriggerUrlRootPostProcessor(myRootUrlHolder))));
+      allowing(myBuildType).getProject(); will(returnValue(myProject));
 
       allowing(si).canStartNuGetProcesses(); will(new CustomAction("Return myIsWindows") {
         public Object invoke(Invocation invocation) throws Throwable {

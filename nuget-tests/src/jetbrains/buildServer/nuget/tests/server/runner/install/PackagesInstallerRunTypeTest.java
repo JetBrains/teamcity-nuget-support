@@ -31,7 +31,7 @@ public class PackagesInstallerRunTypeTest extends NuGetRunTypeTest<PackagesInsta
   @NotNull
   protected PackagesInstallerRunType createRunType() {
     final ServerToolManager toolManager = (ServerToolManager) mock(ServerToolManager.class).proxy();
-    return new PackagesInstallerRunType(myDescriptor, new PackagesInstallerRunnerDefaults(), toolManager, myFixture.getProjectManager());
+    return new PackagesInstallerRunType(myDescriptor, new PackagesInstallerRunnerDefaults(), toolManager, myProjectManager);
   }
 
   @Test

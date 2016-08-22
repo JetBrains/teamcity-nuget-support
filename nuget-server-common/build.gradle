@@ -1,0 +1,11 @@
+plugins {
+    id 'com.github.rodm.teamcity-server' version "0.9.1"
+}
+
+teamcity {
+    version = teamcityVersion
+}
+
+dependencies {
+    compile 'commons-lang:commons-lang:2.6'
+}

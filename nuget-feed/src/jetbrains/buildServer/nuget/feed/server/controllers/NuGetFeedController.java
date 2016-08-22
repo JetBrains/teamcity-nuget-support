@@ -64,7 +64,7 @@ public class NuGetFeedController extends BaseController {
       @Override
       public String getQueryString() {
         final String queryString = super.getQueryString();
-        if (queryString == null || !queryString.endsWith("FindPackagesById()")) {
+        if (queryString == null || !super.getRequestURI().endsWith("FindPackagesById()")) {
           return queryString;
         }
 

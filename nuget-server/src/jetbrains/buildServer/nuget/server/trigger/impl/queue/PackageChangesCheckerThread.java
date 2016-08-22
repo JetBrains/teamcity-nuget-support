@@ -20,7 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageChecker;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceChecker;
-import jetbrains.buildServer.util.NamedDeamonThreadFactory;
+import jetbrains.buildServer.util.NamedDaemonThreadFactory;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -47,7 +47,7 @@ public class PackageChangesCheckerThread {
     myHolder = holder;
     myCheckers = checkers;
     myPreChecker = preChecker;
-    myExecutor = Executors.newScheduledThreadPool(settings.getCheckerThreads(), new NamedDeamonThreadFactory("NuGet Packages Version Checker"));
+    myExecutor = Executors.newScheduledThreadPool(settings.getCheckerThreads(), new NamedDaemonThreadFactory("NuGet Packages Version Checker"));
   }
 
   public void stopPackagesCheck() {

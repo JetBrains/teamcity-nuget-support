@@ -1,0 +1,23 @@
+plugins {
+    id 'com.github.rodm.teamcity-server' version "0.9.1"
+}
+
+teamcity {
+    version = teamcityVersion
+}
+
+dependencies {
+    compile 'org.core4j:core4j:0.5'
+    compile 'org.odata4j:odata4j-core:0.8-SNAPSHOT'
+    compile 'org.odata4j:odata4j-jersey:0.8-SNAPSHOT'
+    compile 'commons-codec:commons-codec:1.4'
+    compile 'com.sun.jersey:jersey-client:1.11'
+    compile 'com.sun.jersey:jersey-core:1.11'
+    compile 'com.sun.jersey:jersey-server:1.11'
+    compile 'com.sun.jersey:jersey-servlet:1.11'
+    compile 'org.apache.olingo:olingo-odata2-api:2.0.7'
+    compile 'org.apache.olingo:olingo-odata2-api-annotation:2.0.7'
+    compile 'org.apache.olingo:olingo-odata2-core:2.0.8'
+    provided project(':nuget-common')
+    provided project(':nuget-server-common')
+}

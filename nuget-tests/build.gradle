@@ -1,0 +1,49 @@
+plugins {
+    id 'com.github.rodm.teamcity-server' version "0.9.1"
+}
+
+teamcity {
+    version = teamcityVersion
+}
+
+dependencies {
+    compile project(':nuget-agent')
+    compile project(':nuget-feed')
+    compile project(':nuget-server')
+    compile project(':nuget-server-common')
+    testCompile 'org.hamcrest:hamcrest-all:1.1'
+    testCompile 'org.testng:testng:6.8'
+    testCompile 'org.jmock:jmock:2.5.1'
+    testCompile 'org.jmock:jmock-legacy:2.5.1'
+    testCompile "org.jetbrains.teamcity:db:$teamcityVersion"
+    testCompile "org.jetbrains.teamcity:tests-support:$teamcityVersion"
+    testCompile "org.jetbrains.teamcity:tests-integration:$teamcityVersion"
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = []
+        }
+    }
+
+    test {
+        java {
+            srcDirs = ['src']
+        }
+
+        resources {
+            srcDirs = ['testData']
+        }
+    }
+}
+
+tasks.withType(Test) {
+    scanForTestClasses = false
+}
+
+test {
+    useTestNG() {
+        suites 'src/testng-nuget-fast.xml'
+    }
+}

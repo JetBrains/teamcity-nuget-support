@@ -1,0 +1,26 @@
+plugins {
+    id 'com.ullink.nuget' version '2.14'
+    id 'com.ullink.msbuild' version '2.15'
+    id 'com.ullink.nunit' version '1.6'
+}
+nugetRestore {
+    solutionFile = file('nuget-extensions.sln')
+}
+
+msbuild.dependsOn nugetRestore
+msbuild {
+    solutionFile = file('nuget-extensions.sln')
+    configuration = 'Release'
+
+    // MsBuild project name (/p:Project=...)
+    projectName = project.name
+
+    // targets to execute (/t:Clean;Rebuild, no default)
+    targets = ['Clean', 'Rebuild']
+}
+
+nunit.dependsOn msbuild
+nunit {
+    nunitVersion = '3.0.1'
+    useX86 = true
+}

@@ -1,0 +1,48 @@
+plugins {
+    id 'com.github.rodm.teamcity-server' version "0.9.1"
+}
+
+teamcity {
+    version = teamcityVersion
+
+    server {
+        descriptor = project.file('teamcity-server-plugin.xml')
+        tokens = [Plugin_Version: project.version]
+
+        files {
+            into('bin') {
+                from (project(':nuget-extensions').file('bin')) {
+                    include 'plugins-*/**'
+                }
+            }
+
+            into('licenses') {
+                from (project.file('../licenses'))
+            }
+        }
+    }
+}
+
+dependencies {
+    agent project(path: ':nuget-agent', configuration: 'plugin')
+
+    compile project(':nuget-common')
+    compile project(':nuget-feed')
+    compile project(':nuget-server-common')
+
+    provided 'com.google.code.gson:gson:2.4'
+    provided 'org.apache.httpcomponents:httpcore:4.3.3'
+    provided 'org.apache.httpcomponents:httpclient:4.3.6'
+    provided 'javax.ws.rs:javax.ws.rs-api:2.0'
+    provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
+    provided "org.jetbrains.teamcity:common-impl:$teamcityVersion"
+    provided "org.jetbrains.teamcity:common-tools:$teamcityVersion"
+    provided "org.jetbrains.teamcity:nuget-utils:$teamcityVersion"
+    provided "org.jetbrains.teamcity:server-tools:$teamcityVersion"
+}
+
+serverPlugin.version = null
+serverPlugin.baseName = 'dotNetPackagesSupport'
+
+//test.dependsOn(":nuget-extensions:nunit")
+test.dependsOn(":nuget-tests:test")
