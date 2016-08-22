@@ -44,5 +44,5 @@ dependencies {
 serverPlugin.version = null
 serverPlugin.baseName = 'dotNetPackagesSupport'
 
-//test.dependsOn(":nuget-extensions:nunit")
+build.dependsOn(":nuget-extensions:msbuild")
 test.dependsOn(":nuget-tests:test")

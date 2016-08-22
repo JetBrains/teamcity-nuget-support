@@ -24,7 +24,6 @@ teamcity {
 
 dependencies {
     compile project(':nuget-common')
-    compile project(':nuget-extensions')
     provided "org.jetbrains.teamcity.internal:agent:$teamcityVersion"
     provided "org.jetbrains.teamcity:common-impl:$teamcityVersion"
     provided "org.jetbrains.teamcity:nuget-utils:$teamcityVersion"
@@ -36,6 +35,8 @@ dependencies {
 
 agentPlugin.version = null
 agentPlugin.baseName = 'nuget-agent'
+
+build.dependsOn(":nuget-extensions:msbuild")
 
 tasks.withType(JavaCompile) {
     sourceCompatibility = "1.6"
