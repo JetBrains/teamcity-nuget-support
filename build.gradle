@@ -1,7 +1,9 @@
 ext {
-    versionNumber = System.getenv('versionNumber') != null ? System.getenv('versionNumber') : 'SNAPSHOT'
+    versionNumber = hasProperty('versionNumber') ? property('versionNumber') : 'SNAPSHOT'
     projectIds = ['group': 'teamcity-nuget-support', 'version': versionNumber]
-    teamcityVersion = project.hasProperty('teamcityVersion') ? project.getProperty('teamcityVersion') : '10.0'
+
+    teamcityVersion = hasProperty('teamcityVersion') ? property('teamcityVersion') : '10.0'
+    teamcityDir = hasProperty('teamcityDir') ? property('teamcityDir') : "$rootDir/teamcity/servers/TeamCity-${teamcityVersion}"
 }
 
 group = projectIds.group

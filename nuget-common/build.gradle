@@ -7,7 +7,7 @@ teamcity {
 }
 
 dependencies {
-    provided "org.jetbrains.teamcity:nuget-utils:$teamcityVersion"
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
 }
 
 tasks.withType(JavaCompile) {

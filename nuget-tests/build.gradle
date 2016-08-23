@@ -15,9 +15,9 @@ dependencies {
     testCompile 'org.testng:testng:6.8'
     testCompile 'org.jmock:jmock:2.5.1'
     testCompile 'org.jmock:jmock-legacy:2.5.1'
-    testCompile "org.jetbrains.teamcity:db:$teamcityVersion"
     testCompile "org.jetbrains.teamcity:tests-support:$teamcityVersion"
-    testCompile "org.jetbrains.teamcity:tests-integration:$teamcityVersion"
+    testCompile files("${teamcityDir}/devPackage/tests/tests-integration.jar")
+    testRuntime files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/db.jar")
 }
 
 sourceSets {
