@@ -15,7 +15,7 @@ teamcity {
         files {
             into('bin') {
                 from (project(':nuget-extensions').file('bin')) {
-                    include 'plugins-*/JetBrains*.dll'
+                    include 'plugins-*/JetBrains*'
                 }
             }
         }
