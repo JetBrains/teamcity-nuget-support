@@ -126,6 +126,12 @@
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackRunTypeTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackRunnerDiscovererTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.SolutionWidePackagesConfigScannerTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedContentTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.SearchFunctionIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.GetUpdatesFunctionIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.FindPackagesByIdFunctionIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedBatchTest"/>
     </classes>
   </test>
 </suite>

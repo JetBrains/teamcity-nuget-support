@@ -43,7 +43,7 @@ import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.http.NameValuePair;
 import org.apache.http.ProtocolVersion;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.jetbrains.annotations.NotNull;
@@ -264,15 +264,18 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   @Override
   @NotNull
-  protected String openRequest(@NotNull final String req,
-                               @NotNull final NameValuePair... reqs) {
-    final TestFeedRequestWrapper request = new TestFeedRequestWrapper(SERVLET_PATH, req);
+  protected String openRequest(@NotNull final String requestUrl, @NotNull final NameValuePair... reqs) {
+    return executeRequest(new TestFeedRequestWrapper(SERVLET_PATH, requestUrl));
+  }
+
+  @NotNull
+  protected String executeRequest(@NotNull final HttpServletRequest request) {
     return processRequest(request).toString();
   }
 
   @Override
   @Nullable
-  protected <T> T execute(@NotNull final HttpGet get, @NotNull final ExecuteAction<T> action) {
+  protected <T> T execute(@NotNull final HttpRequestBase get, @NotNull final ExecuteAction<T> action) {
     final URI uri = get.getURI();
     final String path = uri.getRawPath() + (StringUtil.isEmpty(uri.getRawQuery()) ? StringUtil.EMPTY : "?" + uri.getRawQuery());
     final TestFeedRequestWrapper request = new TestFeedRequestWrapper(SERVLET_PATH, path.substring(SERVLET_PATH.length() + 1));

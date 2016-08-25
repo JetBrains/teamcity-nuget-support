@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.feed.server.olingo;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory;
@@ -46,12 +45,6 @@ public class OlingoRequestHandler implements NuGetFeedHandler {
 
   @Override
   public void handleRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
-    if (!BaseController.isGet(request)) {
-      //error response according to OData spec for unsupported operations (modification operations)
-      response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, "TeamCity provided feed is readonly.");
-      return;
-    }
-
     if (TeamCityProperties.getBoolean("teamcity.nuget.feed.use.cache")) {
       myCache.getOrCompute(request, response, this::processFeedRequest);
     } else {

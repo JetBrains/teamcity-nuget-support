@@ -36,6 +36,10 @@ public class TestFeedRequestWrapper implements HttpServletRequest {
   private final String myPath;
   private final String myServletPath;
   private final Map<String, Object> myAttributes = new HashMap<>();
+  private final Map<String, String> myHeaders = new HashMap<>();
+  private String myMethod = "GET";
+  private String myContentType;
+  private byte[] myBody;
 
   public TestFeedRequestWrapper(final String servletPath, String request) {
     request = request.startsWith("/") ? request.substring(1) : request;
@@ -62,7 +66,11 @@ public class TestFeedRequestWrapper implements HttpServletRequest {
 
   @Override
   public String getHeader(String s) {
-    return null;
+    return myHeaders.get(s);
+  }
+
+  public void setHeader(String header, String value) {
+    myHeaders.put(header, value);
   }
 
   @Override
@@ -72,7 +80,7 @@ public class TestFeedRequestWrapper implements HttpServletRequest {
 
   @Override
   public Enumeration<String> getHeaderNames() {
-    return Collections.emptyEnumeration();
+    return new Vector<>(myHeaders.keySet()).elements();
   }
 
   @Override
@@ -82,7 +90,11 @@ public class TestFeedRequestWrapper implements HttpServletRequest {
 
   @Override
   public String getMethod() {
-    return "GET";
+    return myMethod;
+  }
+
+  public void setMethod(String method) {
+    myMethod = method;
   }
 
   @Override
@@ -217,17 +229,31 @@ public class TestFeedRequestWrapper implements HttpServletRequest {
 
   @Override
   public int getContentLength() {
-    return 0;
+    return myBody.length;
   }
 
   @Override
   public String getContentType() {
-    return null;
+    return myContentType;
+  }
+
+  public void setContentType(String contentType) {
+    myContentType = contentType;
   }
 
   @Override
   public ServletInputStream getInputStream() throws IOException {
-    return null;
+    final int[] position = {0};
+    return new ServletInputStream() {
+      @Override
+      public int read() throws IOException {
+        return position[0] < myBody.length ? myBody[position[0]++] : -1;
+      }
+    };
+  }
+
+  public void setBody(final byte[] body) {
+    myBody = body;
   }
 
   @Override
