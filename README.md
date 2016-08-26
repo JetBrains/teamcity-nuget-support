@@ -16,7 +16,7 @@ The plugin is bundled from TeamCity 7.0. If you need a latest build download and
 | 0.10 | <a href="https://teamcity.jetbrains.com/viewType.html?buildTypeId=TeamCityPluginsByJetBrains_NuGetSupportV010for80&guest=1"><img src="https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:TeamCityPluginsByJetBrains_NuGetSupportV010for80)/statusIcon.svg" alt=""/></a> | [Download](https://teamcity.jetbrains.com/repository/download/TeamCityPluginsByJetBrains_NuGetSupportV010for80/.lastSuccessful/dotNetPackagesSupport.zip?guest=1)| 8.0.x |
 
 # Building the plugin
-This project uses gradle as a build system. You can easily open it in [IntelliJ IDEA](https://www.jetbrains.com/idea/help/importing-project-from-gradle-model.html) or [Eclipse](http://gradle.org/eclipse/).
+This project uses gradle as a build system. To resolve non-public libraries you need to have local TeamCity installation and define `teamcityDir` in the [gradle properties](https://docs.gradle.org/current/userguide/build_environment.html). After that You can open it in [IntelliJ IDEA](https://www.jetbrains.com/idea/help/importing-project-from-gradle-model.html) or [Eclipse](http://gradle.org/eclipse/).
 
 # Contributions
 We appreciate all kinds of feedback, so please feel free to send a PR or write [an issue](https://github.com/JetBrains/teamcity-nuget-support/issues).
