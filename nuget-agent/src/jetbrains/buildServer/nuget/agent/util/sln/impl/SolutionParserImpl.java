@@ -73,8 +73,9 @@ public class SolutionParserImpl implements SolutionFileParser {
   private void resolveAndAddFile(@NotNull final BuildProgressLogger logger,
                                  @NotNull final File root,
                                  @NotNull final String line,
-                                 @NotNull final String relPath,
+                                 @NotNull final String relativePath,
                                  @NotNull final List<File> files) {
+    final String relPath = relativePath.replace("\\", File.separator);
     if (relPath.contains("://") || relPath.trim().startsWith("\\\\")) {
       String msg = "Failed to resolve project reference from solution file: " + line;
       LOG.warn(msg);
