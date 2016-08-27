@@ -122,19 +122,19 @@ public class PackageUsagesTest extends BaseTestCase {
   public void testCreatedPackages_packages() throws IOException {
     myUsages.reportCreatedPackages(Arrays.asList(
             Paths.getTestDataPath("packages/WebActivator.1.4.4.nupkg"),
-            Paths.getTestDataPath("nuget/NuGet.CommandLine.1.8.40002.nupkg"),
+            Paths.getPackagesPath("NuGet.CommandLine.1.8.0/NuGet.CommandLine.1.8.0.nupkg"),
             Paths.getTestDataPath("packages/NuGet.Core.1.5.20902.9026.nupkg")
     ));
-    assertCollected(t(), t("NuGet.CommandLine@1.8.40002", "NuGet.Core@1.5.20902.9026", "WebActivator@1.4.4"));
+    assertCollected(t(), t("NuGet.CommandLine@1.8.0", "NuGet.Core@1.5.20902.9026", "WebActivator@1.4.4"));
   }
 
   @Test
   public void testPublishedPackages_packages() throws IOException {
     myUsages.reportPublishedPackage(Paths.getTestDataPath("packages/WebActivator.1.4.4.nupkg"), "aaa");
-    myUsages.reportPublishedPackage(Paths.getTestDataPath("nuget/NuGet.CommandLine.1.8.40002.nupkg"), "bbb");
+    myUsages.reportPublishedPackage(Paths.getPackagesPath("NuGet.CommandLine.1.8.0/NuGet.CommandLine.1.8.0.nupkg"), "bbb");
     myUsages.reportPublishedPackage(Paths.getTestDataPath("packages/NuGet.Core.1.5.20902.9026.nupkg"), null);
 
-    assertCollected(t(), t(), t("NuGet.CommandLine@1.8.40002@bbb", "NuGet.Core@1.5.20902.9026@null", "WebActivator@1.4.4@aaa"));
+    assertCollected(t(), t(), t("NuGet.CommandLine@1.8.0@bbb", "NuGet.Core@1.5.20902.9026@null", "WebActivator@1.4.4@aaa"));
   }
 
   private void assertCollected(@NotNull Collection<String> used, @NotNull Collection<String> created) {

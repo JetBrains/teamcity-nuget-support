@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
-import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -54,33 +53,33 @@ public enum NuGet {
   public File getPath() {
     switch (this) {
       case NuGet_1_6:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/1.6/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.1.4.20615.182/tools/NuGet.exe");
       case NuGet_1_7:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/1.7/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.1.7.0/tools/NuGet.exe");
       case NuGet_1_8:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/1.8/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.1.8.0/tools/NuGet.exe");
       case NuGet_2_0:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/2.0/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.2.0.0/tools/NuGet.exe");
       case NuGet_2_1:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/2.1/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.2.1.0/tools/NuGet.exe");
       case NuGet_2_2:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/2.2/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.2.2.0/tools/NuGet.exe");
       case NuGet_2_5:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/2.5/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.2.5.0/tools/NuGet.exe");
       case NuGet_2_6:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/2.6/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.2.6.0/tools/NuGet.exe");
       case NuGet_2_7:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/2.7/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.2.7.0/tools/NuGet.exe");
       case NuGet_2_8:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/2.8/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.2.8.0/tools/NuGet.exe");
       case NuGet_3_2:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/3.2/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.3.2.0/tools/NuGet.exe");
       case NuGet_3_3:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/3.3/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.3.3.0/tools/NuGet.exe");
       case NuGet_3_4:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/3.4/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.3.4.3/tools/NuGet.exe");
       case NuGet_3_5:
-        return FileUtil.getCanonicalFile(new File("testData/nuget/3.5/NuGet.exe"));
+        return Paths.getPackagesPath("NuGet.CommandLine.3.5.0-rc1-1723/tools/NuGet.exe");
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }

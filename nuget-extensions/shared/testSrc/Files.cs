@@ -9,20 +9,21 @@ namespace JetBrains.TeamCity.NuGet.Tests
 {
   public static class Files
   {
-    private static readonly Lazy<string> ourCachedNuGetExe_1_4 = PathSearcher.SearchFile("lib/nuget/1.4/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_1_5 = PathSearcher.SearchFile("lib/nuget/1.5/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_1_6 = PathSearcher.SearchFile("lib/nuget/1.6/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_1_7 = PathSearcher.SearchFile("lib/nuget/1.7/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_1_8 = PathSearcher.SearchFile("lib/nuget/1.8/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_2_0 = PathSearcher.SearchFile("lib/nuget/2.0/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_2_1 = PathSearcher.SearchFile("lib/nuget/2.1/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_2_2 = PathSearcher.SearchFile("lib/nuget/2.2/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_2_5 = PathSearcher.SearchFile("lib/nuget/2.5/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_2_6 = PathSearcher.SearchFile("lib/nuget/2.6/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_2_7 = PathSearcher.SearchFile("lib/nuget/2.7/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_2_8 = PathSearcher.SearchFile("lib/nuget/2.8/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_3_2 = PathSearcher.SearchFile("lib/nuget/3.2/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_3_3 = PathSearcher.SearchFile("lib/nuget/3.3/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_1_4 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.4.20615.182/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_1_5 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.5.21005.9019/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_1_6 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.6.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_1_7 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.7.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_1_8 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.8.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_0 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.0.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_1 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.1.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_2 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.2.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_5 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.5.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_6 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.6.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_7 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.7.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_8 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.8.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_3_2 = PathSearcher.SearchFile("packages/NuGet.CommandLine.3.2.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_3_3 = PathSearcher.SearchFile("packages/NuGet.CommandLine.3.3.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_3_4 = PathSearcher.SearchFile("packages/NuGet.CommandLine.3.4.3/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetRunnerPath = PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
@@ -58,6 +59,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string NuGetExe_2_8 { get { return ourCachedNuGetExe_2_8.Value; } }
     public static string NuGetExe_3_2 { get { return ourCachedNuGetExe_3_2.Value; } }
     public static string NuGetExe_3_3 { get { return ourCachedNuGetExe_3_3.Value; } }
+    public static string NuGetExe_3_4 { get { return ourCachedNuGetExe_3_4.Value; } }
     public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
 
     public static string GetNuGetExe(NuGetVersion version)
@@ -92,6 +94,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return NuGetExe_3_2;
         case NuGetVersion.NuGet_3_3:
           return NuGetExe_3_3;
+        case NuGetVersion.NuGet_3_4:
+          return NuGetExe_3_4;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
           return ourCachedNuGet_CommandLinePackage_Last.Value;
         default:
@@ -116,7 +120,6 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.IsTrue(File.Exists(nugetPath));
       return nugetPath;
     }
-
 
     public static NuGetVersion[] NuGetVersions
     {
@@ -161,6 +164,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     NuGet_2_8 = 15,
     NuGet_3_2 = 16,
     NuGet_3_3 = 17,
+    NuGet_3_4 = 18,
     
     
     NuGet_CommandLine_Package_Latest = 999

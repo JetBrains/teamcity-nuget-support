@@ -47,13 +47,13 @@ build
 
 # .NET
 .idea/workspace.xml
-.idea/dictionaries/**
+.idea/dictionaries/*
 nuget-extensions/bin*
-nuget-extensions/**/bin
-nuget-extensions/**/obj
-nuget-extensions/**.suo
-nuget-extensions/**/*.user
+nuget-extensions/*/bin
+nuget-extensions/*/obj
+nuget-extensions/*.suo
+nuget-extensions/*/*.user
 nuget-extensions/*.user
 nuget-extensions/*.cache
 nuget-extensions/_ReSharper*
-nuget-extensions/packages/**/*
+nuget-extensions/packages/*

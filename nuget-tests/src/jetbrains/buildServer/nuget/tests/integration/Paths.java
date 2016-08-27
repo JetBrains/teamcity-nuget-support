@@ -37,8 +37,13 @@ public class Paths {
   }
 
   @NotNull
+  public static File getPackagesPath(@NotNull final String p) {
+    return FileUtil.getCanonicalFile(new File("../nuget-extensions/packages", p));
+  }
+
+  @NotNull
   public static File getNuGetRunnerPath() {
-    return FileUtil.getCanonicalFile(new File("./nuget-extensions/bin/JetBrains.TeamCity.NuGetRunner.exe"));
+    return FileUtil.getCanonicalFile(new File("../nuget-extensions/bin/JetBrains.TeamCity.NuGetRunner.exe"));
   }
 
   @NotNull

@@ -17,6 +17,8 @@ msbuild {
 
     // targets to execute (/t:Clean;Rebuild, no default)
     targets = ['Clean', 'Rebuild']
+
+    verbosity = 'detailed'
 }
 
 nunit.dependsOn msbuild
