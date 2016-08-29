@@ -55,8 +55,8 @@ public class SolutionParserTest extends BaseTestCase {
   @Test
   public void test_vs2008() throws IOException, RunBuildException {
     doTest("vs2008.sln",
-            "SystemCoreReferenced\\SystemCoreReferenced.csproj",
-            "SystemCoreNotReferenced\\SystemCoreNotReferenced.csproj");
+            "SystemCoreReferenced" + File.separator + "SystemCoreReferenced.csproj",
+            "SystemCoreNotReferenced" + File.separator + "SystemCoreNotReferenced.csproj");
   }
 
   @Test
@@ -71,20 +71,20 @@ public class SolutionParserTest extends BaseTestCase {
   @Test
   public void test_vs2010_maxi() throws IOException, RunBuildException {
     doTest( "Lunochod1.sln",
-            "Lunochod1\\Lunochod1.csproj",
-            "Lunochod2\\Lunochod2.vcxproj",
-            "Lunochod3\\Lunochod3.vbproj",
-            "Lunochod5\\Lunochod5.csproj",
-            "Lunochod6\\Lunochod6.csproj",
-            "Lunochod6.Tests\\Lunochod6.Tests.csproj"
+            "Lunochod1" + File.separator + "Lunochod1.csproj",
+            "Lunochod2" + File.separator + "Lunochod2.vcxproj",
+            "Lunochod3" + File.separator + "Lunochod3.vbproj",
+            "Lunochod5" + File.separator + "Lunochod5.csproj",
+            "Lunochod6" + File.separator + "Lunochod6.csproj",
+            "Lunochod6.Tests" + File.separator + "Lunochod6.Tests.csproj"
             );
   }
 
   @Test
   public void test_webSite() throws IOException, RunBuildException {
     doTest( "WebSiteReferencedProjects.sln",
-            "..\\..\\WebSites\\WebSite2",
-            "ClassLibrary1\\ClassLibrary1.csproj"
+            ".." + File.separator + ".." + File.separator + "WebSites" + File.separator + "WebSite2",
+            "ClassLibrary1" + File.separator + "ClassLibrary1.csproj"
             );
   }
 
@@ -95,7 +95,7 @@ public class SolutionParserTest extends BaseTestCase {
     }});
 
     doTest("VS11Website.sln",
-            "e:\\temp\\VS11Website"
+            "e:" + File.separator + "temp" + File.separator + "VS11Website"
     );
   }
 
@@ -106,24 +106,24 @@ public class SolutionParserTest extends BaseTestCase {
     }});
 
     doTest( "VS11Website2.sln",
-            "..\\..\\WebSites\\WebSite1\\",
+            ".." + File.separator + ".." + File.separator + "WebSites" + File.separator + "WebSite1" + File.separator + "",
             "Test",
-            "WebApplication1\\WebApplication1.csproj"
+            "WebApplication1" + File.separator + "WebApplication1.csproj"
             );
   }
 
   @Test
   public void test_webSite11_ts() throws IOException, RunBuildException {
     doTest( "IncorrectTreeSectionStructure.sln",
-            "CSSL4MusicPlayer\\CSSL4MusicPlayer.Web\\CSSL4MusicPlayer.Web.csproj",
-            "CSSL4MusicPlayer\\CSSL4MusicPlayer\\CSSL4MusicPlayer.csproj"
+            "CSSL4MusicPlayer" + File.separator + "CSSL4MusicPlayer.Web" + File.separator + "CSSL4MusicPlayer.Web.csproj",
+            "CSSL4MusicPlayer" + File.separator + "CSSL4MusicPlayer" + File.separator + "CSSL4MusicPlayer.csproj"
             );
   }
 
   @Test
   public void test_webSite11_base() throws IOException, RunBuildException {
     doTest( "webProject2010.sln",
-            "e:\\Temp\\x44"
+            "e:" + File.separator + "Temp" + File.separator + "x44"
             );
   }
 
@@ -131,8 +131,8 @@ public class SolutionParserTest extends BaseTestCase {
   public void test_projectData() throws IOException, RunBuildException {
     doTest( "ProjectsData.sln",
             "WebSite",
-            "MVC_WebApp\\MVC_WebApp.csproj",
-            "MVC2_WebApp\\MVC2_WebApp.csproj"
+            "MVC_WebApp" + File.separator + "MVC_WebApp.csproj",
+            "MVC2_WebApp" + File.separator + "MVC2_WebApp.csproj"
             );
   }
 
