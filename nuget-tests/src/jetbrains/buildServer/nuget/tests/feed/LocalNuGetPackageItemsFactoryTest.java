@@ -145,7 +145,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
         return key.startsWith("Dependencies");
       }
     });
-    Assert.assertEquals(dependencies.size(), 15);
+    Assert.assertEquals(dependencies.size(), 4);
   }
 
   @Test
