@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo.model;
 
+import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import org.jetbrains.annotations.NotNull;
@@ -46,37 +47,41 @@ public final class NuGetMapper {
     }
 
     final Map<String, String> attributes = indexEntry.getAttributes();
-    final V2FeedPackage feedPackage = new V2FeedPackage(attributes.get(ID), attributes.get(VERSION));
-    feedPackage.setNormalizedVersion(attributes.get(NORMALIZED_VERSION));
-    feedPackage.setAuthors(attributes.get(AUTHORS));
-    feedPackage.setCopyright(attributes.get(COPYRIGHT));
-    feedPackage.setDependencies(attributes.get(DEPENDENCIES));
-    feedPackage.setDescription(attributes.get(DESCRIPTION));
-    feedPackage.setIconUrl(attributes.get(ICON_URL));
-    feedPackage.setIsLatestVersion(Boolean.parseBoolean(attributes.get(IS_LATEST_VERSION)));
-    feedPackage.setIsAbsoluteLatestVersion(Boolean.parseBoolean(attributes.get(IS_ABSOLUTE_LATEST_VERSION)));
-    feedPackage.setIsPrerelease(Boolean.parseBoolean(attributes.get(IS_PRERELEASE)));
-    feedPackage.setLanguage(attributes.get(LANGUAGE));
-    feedPackage.setPackageHash(attributes.get(PACKAGE_HASH));
-    feedPackage.setPackageHashAlgorithm(attributes.get(PACKAGE_HASH_ALGORITHM));
-    final String packageSize = attributes.get(PACKAGE_SIZE);
+    final V2FeedPackage feedPackage = new V2FeedPackage(getValue(attributes, ID), getValue(attributes, VERSION));
+    feedPackage.setNormalizedVersion(getValue(attributes, NORMALIZED_VERSION));
+    feedPackage.setAuthors(getValue(attributes, AUTHORS));
+    feedPackage.setCopyright(getValue(attributes, COPYRIGHT));
+    feedPackage.setDependencies(getValue(attributes, DEPENDENCIES));
+    feedPackage.setDescription(getValue(attributes, DESCRIPTION));
+    feedPackage.setIconUrl(getValue(attributes, ICON_URL));
+    feedPackage.setIsLatestVersion(Boolean.parseBoolean(getValue(attributes, IS_LATEST_VERSION)));
+    feedPackage.setIsAbsoluteLatestVersion(Boolean.parseBoolean(getValue(attributes, IS_ABSOLUTE_LATEST_VERSION)));
+    feedPackage.setIsPrerelease(Boolean.parseBoolean(getValue(attributes, IS_PRERELEASE)));
+    feedPackage.setLanguage(getValue(attributes, LANGUAGE));
+    feedPackage.setPackageHash(getValue(attributes, PACKAGE_HASH));
+    feedPackage.setPackageHashAlgorithm(getValue(attributes, PACKAGE_HASH_ALGORITHM));
+    final String packageSize = getValue(attributes, PACKAGE_SIZE);
     feedPackage.setPackageSize(packageSize != null ? Long.parseLong(packageSize) : 0);
-    feedPackage.setProjectUrl(attributes.get(PROJECT_URL));
-    feedPackage.setReportAbuseUrl(attributes.get(REPORT_ABUSE_URL));
-    feedPackage.setReleaseNotes(attributes.get(RELEASE_NOTES));
-    feedPackage.setRequireLicenseAcceptance(Boolean.parseBoolean(attributes.get(REQUIRE_LICENSE_ACCEPTANCE)));
-    feedPackage.setTags(attributes.get(TAGS));
-    feedPackage.setTitle(attributes.get(TITLE));
+    feedPackage.setProjectUrl(getValue(attributes, PROJECT_URL));
+    feedPackage.setReportAbuseUrl(getValue(attributes, REPORT_ABUSE_URL));
+    feedPackage.setReleaseNotes(getValue(attributes, RELEASE_NOTES));
+    feedPackage.setRequireLicenseAcceptance(Boolean.parseBoolean(getValue(attributes, REQUIRE_LICENSE_ACCEPTANCE)));
+    feedPackage.setTags(getValue(attributes, TAGS));
+    feedPackage.setTitle(getValue(attributes, TITLE));
     feedPackage.setTeamCityDownloadUrl(UriBuilder
             .fromUri(requestUri)
-            .replacePath(attributes.get(PackagesIndex.TEAMCITY_DOWNLOAD_URL))
+            .replacePath(getValue(attributes, PackagesIndex.TEAMCITY_DOWNLOAD_URL))
             .build()
             .toString());
-    feedPackage.setMinClientVersion(attributes.get(MIN_CLIENT_VERSION));
-    feedPackage.setLicenseUrl(attributes.get(LICENSE_URL));
-    feedPackage.setLicenseNames(attributes.get(LICENSE_NAMES));
-    feedPackage.setLicenseReportUrl(attributes.get(LICENSE_REPORT_URL));
+    feedPackage.setMinClientVersion(getValue(attributes, MIN_CLIENT_VERSION));
+    feedPackage.setLicenseUrl(getValue(attributes, LICENSE_URL));
+    feedPackage.setLicenseNames(getValue(attributes, LICENSE_NAMES));
+    feedPackage.setLicenseReportUrl(getValue(attributes, LICENSE_REPORT_URL));
 
     return feedPackage;
+  }
+
+  private static String getValue(@NotNull final Map<String, String> attributes, @NotNull final String key) {
+    return NuGetUtils.getValue(attributes, key);
   }
 }

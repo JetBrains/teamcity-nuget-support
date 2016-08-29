@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.feed.server.odata4j;
 
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntityAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -53,6 +54,6 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
 
   @Override
   protected String getValue(@NotNull String key) {
-    return myEntry.getAttributes().get(key);
+    return NuGetUtils.getValue(myEntry.getAttributes(), key);
   }
 }
