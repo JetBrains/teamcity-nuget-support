@@ -22,10 +22,13 @@ import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureAnalyser;
 import jetbrains.buildServer.nuget.server.feed.server.index.impl.NuGetPackageStructureVisitor;
+import jetbrains.buildServer.nuget.server.feed.server.javaFeed.NuGetUtils;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
+import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -126,9 +129,23 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   public void test_dependencies_20() throws InvocationTargetException, IllegalAccessException, PackageLoadException, IOException {
     final File pkg = Paths.getTestDataPath("packages/PackageWithPlatformDependencies.3.0.0.nupkg");
     Assert.assertTrue(pkg.isFile());
-    final String dependencies = loadPackage(pkg).get("Dependencies");
+    final String dependencies = NuGetUtils.getValue(loadPackage(pkg), "Dependencies");
     Assert.assertNotNull(dependencies);
     Assert.assertEquals(dependencies, "Ninject:[2.2.0.0, 2.3.0.0)|WebActivator:1.4|jQuery:1.2.4:net40|WebActivator:1.3.4:net40|RouteMagic:1.1.0|Microsoft.Net.Http:2.0.20710.0:net40-client|Endjeeeeore:3.0.0.0:net40-client|Endjtttttmposition:3.0.0.0:net40-client|Entttre:3.0.0.0:net40-full|Endjittttosition:3.0.0.0:net40-full|Endeeeeore:3.0.0.0:Net45|Endjttre:3.0.0.0:portable-windows8+net45|EnqqqweCore:3.0.0.0:WinRT45|Endjbcvbcvore:3.0.0.0:WP8");
+  }
+
+  @Test
+  @TestFor(issues = "TW-43254")
+  public void test_longDependenciesList() throws IOException, PackageLoadException {
+    final File pkg = Paths.getTestDataPath("packages/LongDependenciesList.1.2.3.nupkg");
+    final Map<String, String> attributes = loadPackage(pkg);
+    final List<String> dependencies = CollectionsUtil.filterCollection(attributes.keySet(), new Filter<String>() {
+      @Override
+      public boolean accept(@NotNull String key) {
+        return key.startsWith("Dependencies");
+      }
+    });
+    Assert.assertEquals(dependencies.size(), 4);
   }
 
   @Test

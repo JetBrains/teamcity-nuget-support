@@ -38,6 +38,7 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
  * Date: 06.09.11 22:03
  */
 public class LocalNuGetPackageItemsFactory implements NuGetPackageStructureAnalyser {
+  private final static int MAX_VALUE_LENGTH = 1024;
   private final Date myFinishDate;
   private final Map<String, String> myItems = new LinkedHashMap<String, String>();
 
@@ -87,7 +88,13 @@ public class LocalNuGetPackageItemsFactory implements NuGetPackageStructureAnaly
 
   private void addItem(@NotNull final String key, @Nullable final String value) {
     if (!StringUtil.isEmptyOrSpaces(value)) {
-      myItems.put(key, value);
+      final int chunks = (int)Math.ceil((double) value.length() / MAX_VALUE_LENGTH);
+      for (int i = 0; i < chunks; i++) {
+        int index = i * MAX_VALUE_LENGTH;
+        String chunkKey = i == 0 ? key : key + i;
+        String chunkValue = value.substring(index, Math.min(value.length(), index + MAX_VALUE_LENGTH));
+        myItems.put(chunkKey, chunkValue);
+      }
     }
   }
 

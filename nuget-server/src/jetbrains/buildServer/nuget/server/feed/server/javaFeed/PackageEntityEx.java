@@ -53,6 +53,6 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
 
   @Override
   protected String getValue(@NotNull String key) {
-    return myEntry.getAttributes().get(key);
+    return NuGetUtils.getValue(myEntry.getAttributes(), key);
   }
 }
