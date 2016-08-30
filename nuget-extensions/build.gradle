@@ -16,7 +16,7 @@ msbuild {
     projectName = project.name
 
     // targets to execute (/t:Clean;Rebuild, no default)
-    targets = ['Build']
+    targets = ['Clean', 'Rebuild']
 
     verbosity = 'detailed'
 }

@@ -35,8 +35,6 @@ dependencies {
 agentPlugin.version = null
 agentPlugin.baseName = 'nuget-agent'
 
-build.dependsOn(":nuget-extensions:msbuild")
-
 tasks.withType(JavaCompile) {
     sourceCompatibility = "1.6"
     targetCompatibility = "1.6"
