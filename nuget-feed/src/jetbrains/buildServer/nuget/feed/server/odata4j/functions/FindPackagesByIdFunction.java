@@ -89,16 +89,14 @@ public class FindPackagesByIdFunction implements NuGetFeedFunction {
     final OSimpleObject idObjectCasted = (OSimpleObject) id;
     final String packageId = idObjectCasted.getValue().toString();
     final Iterator<NuGetIndexEntry> indexEntries = myIndex.getNuGetEntries(packageId);
-    if(!indexEntries.hasNext()){
-      LOG.debug("No packages found for id " + packageId);
-      return null;
-    }
 
     final List<Object> entitiesList = new ArrayList<Object>();
     while (indexEntries.hasNext()){
       final NuGetIndexEntry indexEntry = indexEntries.next();
       entitiesList.add(new PackageEntityEx(indexEntry, myServerSettings));
     }
+
+    LOG.debug(String.format("%s packages found for id %s", entitiesList.size(), packageId));
     return entitiesList;
   }
 }
