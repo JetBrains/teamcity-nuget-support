@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.intellij.util.containers.SortedList;
+import com.sun.jersey.api.container.filter.LoggingFilter;
 import jetbrains.buildServer.NetworkUtil;
 import jetbrains.buildServer.nuget.server.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.server.feed.server.impl.NuGetServerSettingsImpl;
@@ -35,8 +36,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.CustomAction;
+import org.odata4j.jersey.producer.server.ODataJerseyServer;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.producer.resources.RootApplication;
 import org.odata4j.producer.server.ODataServer;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -165,9 +168,11 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   protected void startNuGetFeedServer() {
     // register the producer as the static instance, then launch the http server
+    final String serverUrl = getNuGetServerUrl();
     final ODataProducer producer = myProducer.getProducer();
     DefaultODataProducerProvider.setInstance(producer);
-    myServer = ODataProducerUtil.hostODataServer(getNuGetServerUrl());
+    myServer = new ODataJerseyServer(serverUrl, NuGetTestODataApplication.class, RootApplication.class)
+            .addJerseyRequestFilter(LoggingFilter.class).start();
   }
 
   protected NuGetIndexEntry addPackage(@NotNull final File file, boolean isLatest) throws IOException {

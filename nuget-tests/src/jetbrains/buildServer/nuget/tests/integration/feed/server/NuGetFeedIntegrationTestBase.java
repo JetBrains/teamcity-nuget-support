@@ -175,73 +175,45 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
   @NotNull
   protected Runnable assert200(@NotNull final String req,
                                @NotNull final NameValuePair... reqs) {
-    return new Runnable() {
-      public void run() {
-        final HttpGet get = createGetQuery(req, reqs);
-        execute(get, new ExecuteAction<Object>() {
-          public Object processResult(@NotNull HttpResponse response) throws IOException {
-            System.out.println("Request: " + get.getRequestLine());
-            final HttpEntity entity = response.getEntity();
-            if(entity != null){
-              entity.writeTo(System.out);
-              System.out.println();
-            }
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_OK);
-            return null;
-          }
-        });
-      }
-    };
+    return assertStatusCode(SC_OK, req, reqs);
   }
 
   @NotNull
   protected Runnable assert204(@NotNull final String req,
                                @NotNull final NameValuePair... reqs) {
-    return new Runnable() {
-      public void run() {
-        final HttpGet get = createGetQuery(req, reqs);
-        execute(get, new ExecuteAction<Object>() {
-          public Object processResult(@NotNull HttpResponse response) throws IOException {
-            System.out.println("Request: " + get.getRequestLine());
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_NO_CONTENT);
-            return null;
-          }
-        });
-      }
-    };
+    return assertStatusCode(SC_NO_CONTENT, req, reqs);
   }
 
   @NotNull
   protected Runnable assert400(@NotNull final String req,
                                @NotNull final NameValuePair... reqs) {
-    return new Runnable() {
-      public void run() {
-        final HttpGet get = createGetQuery(req, reqs);
-        execute(get, new ExecuteAction<Object>() {
-          public Object processResult(@NotNull HttpResponse response) throws IOException {
-            System.out.println("Request: " + get.getRequestLine());
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_BAD_REQUEST);
-            return null;
-          }
-        });
-      }
-    };
+    return assertStatusCode(SC_BAD_REQUEST, req, reqs);
   }
 
   @NotNull
   protected Runnable assert404(@NotNull final String req,
                                @NotNull final NameValuePair... reqs) {
-    return new Runnable() {
-      public void run() {
-        final HttpGet get = createGetQuery(req, reqs);
-        execute(get, new ExecuteAction<Object>() {
-          public Object processResult(@NotNull HttpResponse response) throws IOException {
-            System.out.println("Request: " + get.getRequestLine());
-            Assert.assertEquals(response.getStatusLine().getStatusCode(), SC_NOT_FOUND);
-            return null;
-          }
-        });
-      }
+    return assertStatusCode(SC_NOT_FOUND, req, reqs);
+  }
+
+  @NotNull
+  protected Runnable assertStatusCode(final int statusCode,
+                                      @NotNull final String req,
+                                      @NotNull final NameValuePair... reqs) {
+    return () -> {
+      final HttpGet get = createGetQuery(req, reqs);
+      execute(get, response -> {
+        System.out.println("Request: " + get.getRequestLine());
+
+        final HttpEntity entity = response.getEntity();
+        if (entity != null) {
+          entity.writeTo(System.out);
+          System.out.println();
+        }
+
+        Assert.assertEquals(response.getStatusLine().getStatusCode(), statusCode);
+        return null;
+      });
     };
   }
 }
