@@ -196,7 +196,7 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
   }
 
   @NotNull
-  private Runnable assertStatusCode(final int statusCode,
+  protected Runnable assertStatusCode(final int statusCode,
                                     @NotNull final String req,
                                     @NotNull final NameValuePair... reqs) {
     return () -> {

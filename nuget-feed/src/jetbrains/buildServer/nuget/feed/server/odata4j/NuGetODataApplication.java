@@ -50,6 +50,7 @@ public class NuGetODataApplication extends AbstractODataApplication {
   @Override
   public Set<Class<?>> getClasses() {
     final Set<Class<?>> classes = super.getClasses();
+    classes.add(NuGetExceptionMappingProvider.class);
     classes.add(NuGetFeedResponseListener.class);
     return classes;
   }

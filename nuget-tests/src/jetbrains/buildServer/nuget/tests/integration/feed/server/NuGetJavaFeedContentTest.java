@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.tests.server.entity.XmlFeedParsers;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
 import jetbrains.buildServer.util.XmlUtil;
+import org.apache.http.HttpStatus;
 import org.jdom.*;
 import org.jdom.xpath.XPath;
 import org.jetbrains.annotations.NotNull;
@@ -144,6 +145,19 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     Assert.assertEquals(s, "1");
   }
 
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testGetById(final NugetFeedLibrary library) throws JDOMException, IOException {
+    setODataSerializer(library);
+    addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"), false);
+    final String s = openRequest("Packages(Id='CommonServiceLocator',Version='1.0')");
+    Assert.assertTrue(s.contains("<title type=\"text\">CommonServiceLocator</title>"));
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testGetByInvalidPath(final NugetFeedLibrary library) throws JDOMException, IOException {
+    setODataSerializer(library);
+    assertStatusCode(HttpStatus.SC_BAD_REQUEST, "Packages/CommonServiceLocator/1.0").run();
+  }
 
   @Test(dataProvider = "nugetFeedLibrariesData")
   public void testVSRequests(final NugetFeedLibrary library) {
