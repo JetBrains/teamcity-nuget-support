@@ -30,4 +30,17 @@ public class FindPackagesByIdFunctionIntegrationTest extends NuGetJavaFeedIntegr
     assertContainsPackageVersion(openRequest("FindPackagesById()?Id='MyPackage'"), "1.0.0.0");
     assert204("FindPackagesById()?ID='MyPackage'");
   }
+
+  @Test
+  public void testFindPackageById() throws Exception {
+    enableDebug();
+    addMockPackage("MyPackage", "1.0.0.0");
+
+    assertContainsPackageVersion(openRequest("FindPackagesById()?id='MyPackage'"), "1.0.0.0");
+  }
+
+  @Test
+  public void testFindNotExistingPackage() throws Exception {
+    assert200("FindPackagesById()?id='MyPackage2'").run();
+  }
 }
