@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.producer.resources.AbstractODataApplication;
 import org.odata4j.producer.resources.DefaultODataProducerProvider;
+import org.odata4j.producer.resources.ExceptionMappingProvider;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -50,6 +51,7 @@ public class NuGetODataApplication extends AbstractODataApplication {
   @Override
   public Set<Class<?>> getClasses() {
     final Set<Class<?>> classes = super.getClasses();
+    classes.remove(ExceptionMappingProvider.class);
     classes.add(NuGetExceptionMappingProvider.class);
     classes.add(NuGetFeedResponseListener.class);
     return classes;
