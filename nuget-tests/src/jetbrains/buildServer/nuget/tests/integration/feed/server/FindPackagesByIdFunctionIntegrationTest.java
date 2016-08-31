@@ -38,4 +38,11 @@ public class FindPackagesByIdFunctionIntegrationTest extends NuGetJavaFeedIntegr
 
     assert200("FindPackagesById()?id='MyPackage2'").run();
   }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testFindPackageWithQuota(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+
+    assert200("FindPackagesById()?id=''MyTestLibrary'").run();
+  }
 }
