@@ -115,4 +115,10 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
   public void shouldHandleParameterWithQuota() throws Exception {
     assert200("GetUpdates()?packageIds='foo'&versions='3.3''&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='(3.4,)'").run();
   }
+
+  @Test
+  public void shouldReturnHttp200WhenNoPackageUpdatesAvailable() throws Exception {
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.2")));
+    assert200("GetUpdates()?packageIds='foo'&versions='3.2'&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints=''").run();
+  }
 }
