@@ -122,4 +122,11 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     setODataSerializer(library);
     assert200("GetUpdates()?packageIds='foo'&versions='3.3''&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='(3.4,)'").run();
   }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void shouldReturnHttp200WhenNoPackageUpdatesAvailable(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.2")));
+    assert200("GetUpdates()?packageIds='foo'&versions='3.2'&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints=''").run();
+  }
 }
