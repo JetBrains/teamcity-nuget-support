@@ -43,4 +43,9 @@ public class FindPackagesByIdFunctionIntegrationTest extends NuGetJavaFeedIntegr
   public void testFindNotExistingPackage() throws Exception {
     assert200("FindPackagesById()?id='MyPackage2'").run();
   }
+
+  @Test
+  public void testFindPackageWithQuota() throws Exception {
+    assert200("FindPackagesById()?id=''MyTestLibrary'").run();
+  }
 }

@@ -110,4 +110,9 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "boo", TEAMCITY_FRAMEWORK_CONSTRAINTS, "", VERSION, "2.0.0.2")));
     assert204("GetUpdates()?packageIds='foo%7Cboo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''").run();
   }
+
+  @Test
+  public void shouldHandleParameterWithQuota() throws Exception {
+    assert200("GetUpdates()?packageIds='foo'&versions='3.3''&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='(3.4,)'").run();
+  }
 }

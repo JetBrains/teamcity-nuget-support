@@ -86,9 +86,9 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
   @Nullable
   public Iterable<Object> call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
     final List<String> packageIds = extractListOfStringsFromParamValue(params, MetadataConstants.PACKAGE_IDS);
-    if(packageIds.isEmpty()) return null;
+    if(packageIds.isEmpty()) return Collections.emptyList();
     final List<String> versions = extractListOfStringsFromParamValue(params, MetadataConstants.VERSIONS);
-    if(versions.isEmpty()) return null;
+    if(versions.isEmpty()) return Collections.emptyList();
 
     final List<String> versionConstraints = extractListOfStringsFromParamValue(params, MetadataConstants.VERSION_CONSTRAINTS);
     final boolean versionConstraintsProvided = !versionConstraints.isEmpty();
@@ -96,7 +96,7 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
     if(packageIds.size() != versions.size()){
       LOG.debug(String.format("Bad %s function call. Number of requested package IDs (%d) is not consistent with number of package versions (%d).",
               getName(), packageIds.size(), versions.size()));
-      return null;
+      return Collections.emptyList();
     }
 
     final boolean includeAllVersions = extractBooleanParameterValue(params, MetadataConstants.INCLUDE_ALL_VERSIONS);
@@ -126,11 +126,7 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
       result.addAll(getUpdateOfPackageWithId(includeAllVersions, includePreRelease, frameworkConstraints, requestedPackageId, requestedVersion, versionConstraint));
     }
 
-    if(result.isEmpty()){
-      LOG.debug("No package updates found.");
-      return null;
-    }
-
+    LOG.debug(result.size() + " package updates found");
     return CollectionsUtil.convertCollection(result, new Converter<Object, NuGetIndexEntry>() {
       public Object createFrom(@NotNull NuGetIndexEntry source) {
         return new PackageEntityEx(source, myServerSettings);
