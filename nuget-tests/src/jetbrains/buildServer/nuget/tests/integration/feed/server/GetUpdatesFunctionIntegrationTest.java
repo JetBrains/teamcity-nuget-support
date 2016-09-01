@@ -32,7 +32,7 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
 
   @Test
   public void testVSRequest() throws Exception {
-    assert204("GetUpdates()?packageIds='Microsoft.Web.Infrastructure%7CRouteMagic%7Celmah%7Celmah.corelibrary%7Cxunit%7Cxunit.extensions%7CWebActivatorEx%7CNinject%7CMoq'&versions='1.0.0.0%7C1.2%7C1.2.2%7C1.2.2%7C1.9.2%7C1.9.2%7C2.0.2%7C2.2.1.4%7C4.1.1309.0919'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''").run();
+    assert200("GetUpdates()?packageIds='Microsoft.Web.Infrastructure%7CRouteMagic%7Celmah%7Celmah.corelibrary%7Cxunit%7Cxunit.extensions%7CWebActivatorEx%7CNinject%7CMoq'&versions='1.0.0.0%7C1.2%7C1.2.2%7C1.2.2%7C1.9.2%7C1.9.2%7C2.0.2%7C2.2.1.4%7C4.1.1309.0919'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''").run();
   }
 
   @Test
@@ -108,12 +108,12 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
   public void shouldResponseWithNoContentWhenNumberOfPackageIdsAndVersionsDoNotMatch() throws Exception {
     addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, "", VERSION, "2.0.0.1")));
     addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "boo", TEAMCITY_FRAMEWORK_CONSTRAINTS, "", VERSION, "2.0.0.2")));
-    assert204("GetUpdates()?packageIds='foo%7Cboo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''").run();
+    assert200("GetUpdates()?packageIds='foo%7Cboo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''").run();
   }
 
   @Test
   public void shouldHandleParameterWithQuota() throws Exception {
-    assert200("GetUpdates()?packageIds='foo'&versions='3.3''&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='(3.4,)'").run();
+    assert400("GetUpdates()?packageIds='foo'&versions='3.3''&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='(3.4,)'").run();
   }
 
   @Test
