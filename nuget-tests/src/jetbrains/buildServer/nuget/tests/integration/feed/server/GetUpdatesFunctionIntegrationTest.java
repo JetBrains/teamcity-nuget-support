@@ -20,6 +20,7 @@ import com.google.common.collect.Lists;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
 import jetbrains.buildServer.util.CollectionsUtil;
+import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
@@ -120,7 +121,9 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
   @Test(dataProvider = "nugetFeedLibrariesData")
   public void shouldHandleParameterWithQuota(final NugetFeedLibrary library) throws Exception {
     setODataSerializer(library);
-    assert200("GetUpdates()?packageIds='foo'&versions='3.3''&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='(3.4,)'").run();
+
+    int statusCode = library == NugetFeedLibrary.OData4j ? HttpStatus.SC_BAD_REQUEST : HttpStatus.SC_OK;
+    assertStatusCode(statusCode, "GetUpdates()?packageIds='foo'&versions='3.3''&includePrerelease=true&includeAllVersions=true&targetFrameworks=''&versionConstraints='(3.4,)'").run();
   }
 
   @Test(dataProvider = "nugetFeedLibrariesData")

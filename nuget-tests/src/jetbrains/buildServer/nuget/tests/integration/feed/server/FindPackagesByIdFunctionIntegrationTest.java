@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 
 /**
@@ -43,6 +44,7 @@ public class FindPackagesByIdFunctionIntegrationTest extends NuGetJavaFeedIntegr
   public void testFindPackageWithQuota(final NugetFeedLibrary library) throws Exception {
     setODataSerializer(library);
 
-    assert200("FindPackagesById()?id=''MyTestLibrary'").run();
+    int statusCode = library == NugetFeedLibrary.OData4j ? HttpStatus.SC_BAD_REQUEST : HttpStatus.SC_OK;
+    assertStatusCode(statusCode, "FindPackagesById()?id=''MyTestLibrary'").run();
   }
 }
