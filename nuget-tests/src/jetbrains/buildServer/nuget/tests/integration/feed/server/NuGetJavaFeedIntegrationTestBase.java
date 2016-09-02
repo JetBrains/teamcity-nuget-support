@@ -215,6 +215,17 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     return e;
   }
 
+  protected NuGetIndexEntry addMockPackage(@NotNull final Map<String, String> attributes) {
+    attributes.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
+
+    final String id = attributes.get(ID);
+    final String ver = attributes.get(VERSION);
+    NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, attributes);
+
+    myFeed.add(e);
+    return e;
+  }
+
   @NotNull
   protected NuGetIndexEntry addMockPackage(@NotNull final String id, @NotNull final String ver) throws IOException {
     final Map<String, String> map = new TreeMap<>(indexPackage(Paths.getTestDataPath("packages/NuGet.Core.1.5.20902.9026.nupkg"), true));

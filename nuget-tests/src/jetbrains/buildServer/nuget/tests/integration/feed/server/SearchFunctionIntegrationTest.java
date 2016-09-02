@@ -205,4 +205,33 @@ public class SearchFunctionIntegrationTest extends NuGetJavaFeedIntegrationTestB
     assertEquals("1", openRequest("Search()/$count?$filter=IsAbsoluteLatestVersion&searchTerm=''&targetFramework='net45'&includePrerelease=true"));
   }
 
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testSearchVersions(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    addMockPackage(CollectionsUtil.asMap(
+            ID, "aaa",
+            VERSION, "1.0.0",
+            IS_PRERELEASE, "false",
+            IS_LATEST_VERSION, "false",
+            IS_ABSOLUTE_LATEST_VERSION, "false"));
+    addMockPackage(CollectionsUtil.asMap(
+            ID, "aaa",
+            VERSION, "1.1.0",
+            IS_PRERELEASE, "false",
+            IS_LATEST_VERSION, "true",
+            IS_ABSOLUTE_LATEST_VERSION, "false"));
+    addMockPackage(CollectionsUtil.asMap(
+            ID, "aaa",
+            VERSION, "1.2.0-beta",
+            IS_PRERELEASE, "true",
+            IS_LATEST_VERSION, "false",
+            IS_ABSOLUTE_LATEST_VERSION, "true"));
+
+    String response = openRequest("Search()?$filter=IsLatestVersion&searchTerm='aaa'&targetFramework='net45'&includePrerelease=false");
+    assertContainsPackageVersion(response, "1.1.0");
+
+    response = openRequest("Search()?$filter=IsAbsoluteLatestVersion&searchTerm='NuGet.CommandLine'&targetFramework='net45'&includePrerelease=true");
+    assertContainsPackageVersion(response, "1.2.0-beta");
+  }
+
 }
