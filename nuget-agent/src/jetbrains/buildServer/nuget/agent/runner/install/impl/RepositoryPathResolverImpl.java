@@ -35,7 +35,7 @@ import java.util.*;
  */
 public class RepositoryPathResolverImpl implements RepositoryPathResolver {
   private static final Logger LOG = Logger.getInstance(RepositoryPathResolverImpl.class.getName());
-  private static final String NUGET_CONFIG = "nuget.config";
+  private static final String NUGET_CONFIG = "NuGet.Config";
   private static final String DOT_NUGET = ".nuget";
   private static final String PACKAGES = "packages";
 

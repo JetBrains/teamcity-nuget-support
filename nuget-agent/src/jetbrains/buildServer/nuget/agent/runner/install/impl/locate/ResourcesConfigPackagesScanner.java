@@ -61,7 +61,7 @@ public class ResourcesConfigPackagesScanner implements PackagesConfigScanner {
         protected List<XmlHandler> getRootHandlers() {
           return Arrays.asList(elementsPath(new Handler() {
             public XmlReturn processElement(@NotNull XmlElementInfo xmlElementInfo) {
-              final String relPath = xmlElementInfo.getAttribute("path");
+              final String relPath = PathUtils.normalize(xmlElementInfo.getAttribute("path"));
               if (relPath != null && !StringUtil.isEmptyOrSpaces(relPath)) {
                 files.add(FileUtil.resolvePath(repositoriesConfig.getParentFile(), relPath));
               }
