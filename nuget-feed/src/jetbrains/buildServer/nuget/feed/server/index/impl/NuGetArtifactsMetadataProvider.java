@@ -105,6 +105,8 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
         }
       } catch (PackageLoadException e) {
         LOG.warn("Failed to read NuGet package: " + aPackage);
+      } catch (Throwable e) {
+        LOG.warnAndDebugDetails(String.format("Unexpected error while indexing NuGet package %s: %s", aPackage, e.getMessage()), e);
       }
     }
   }
