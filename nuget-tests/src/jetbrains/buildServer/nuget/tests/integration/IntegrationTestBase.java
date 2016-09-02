@@ -215,12 +215,17 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             )
     );
 
-    enshureRunningArainstNuGetOrgAPIv2();
+    enshureRunningAgainstNuGetOrgAPIv2();
   }
 
-  private void enshureRunningArainstNuGetOrgAPIv2() {
+  private void enshureRunningAgainstNuGetOrgAPIv2() {
+    final String nuGet = NuGet.NuGet_2_8.getPath().getPath();
+    if (!SystemInfo.isWindows) {
+      enableExecution(nuGet, null);
+    }
+
     final GeneralCommandLine cmd = new GeneralCommandLine();
-    cmd.setExePath(NuGet.NuGet_2_8.getPath().getPath());
+    cmd.setExePath(nuGet);
     cmd.addParameter("sources");
     cmd.addParameter("update");
     cmd.addParameter("-Name");

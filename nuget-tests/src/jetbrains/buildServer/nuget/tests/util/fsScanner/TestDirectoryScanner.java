@@ -150,6 +150,7 @@ public class TestDirectoryScanner extends BaseTestCase {
 
   @Test
   public void TestCaseSensitive() throws IOException {
+    if (SystemInfo.isWindows) return;
 
     AssertScannerResult(
             new String[]
@@ -161,6 +162,26 @@ public class TestDirectoryScanner extends BaseTestCase {
             new String[]{},
             new String[]{"a/b/c/d/e/f/g/h/i/p/g/aAa.txt"});
   }
+
+  @Test
+  public void TestCaseInSensitive() throws IOException {
+    if (!SystemInfo.isWindows) return;
+
+    AssertScannerResult(
+            new String[]
+                    {
+                            "f:a/b/c/d/e/f/g/h/i/p/g/aAa.txt",
+                            "f:a/r/e/a/l/f/g/h/i/p/g/aaa.txt",
+                    },
+            new String[]{"**/*A*.txt"},
+            new String[]{},
+            new String[]
+                    {
+                            "a/b/c/d/e/f/g/h/i/p/g/aAa.txt",
+                            "a/r/e/a/l/f/g/h/i/p/g/aaa.txt",
+                    });
+  }
+
 
   @Test
   @TestFor(issues = "TW-20436")

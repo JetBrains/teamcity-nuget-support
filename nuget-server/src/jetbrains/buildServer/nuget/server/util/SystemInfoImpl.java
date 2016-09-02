@@ -43,7 +43,7 @@ public class SystemInfoImpl implements SystemInfo {
   }
 
   public boolean canStartNuGetProcesses() {
-    return isWindows() && isDotNetFrameworkAvailable();
+    return (isWindows() && isDotNetFrameworkAvailable()) || !isWindows();
   }
 
   public boolean isWindows() {

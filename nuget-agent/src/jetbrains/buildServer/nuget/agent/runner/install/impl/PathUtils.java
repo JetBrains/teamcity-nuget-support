@@ -1,4 +1,4 @@
-package jetbrains.buildServer.nuget.agent.runner.install.impl.locate;
+package jetbrains.buildServer.nuget.agent.runner.install.impl;
 
 import java.io.File;
 

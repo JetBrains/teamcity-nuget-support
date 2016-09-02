@@ -66,26 +66,26 @@ public class RepositoryPathResolverTest extends BaseTestCase {
 
   @Test
   public void testResolveWithConfig_01() throws IOException, RunBuildException {
-    FileUtil.copy(Paths.getTestDataPath("config/NuGet-01.config"), new File(myHome, "NuGet.config"));
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-01.config"), new File(myHome, "NuGet.Config"));
     doResolveTest(PROJECT_SLN, "../lib");
   }
 
   @Test
   public void testResolveWithConfig_02() throws IOException, RunBuildException {
-    FileUtil.copy(Paths.getTestDataPath("config/NuGet-02.Config"), new File(myHome, "nuget.config"));
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-02.Config"), new File(myHome, "NuGet.Config"));
     doResolveTest(PROJECT_SLN, "packages");
   }
 
   @Test
   public void testResolveWithConfig_03() throws IOException, RunBuildException {
-    FileUtil.copy(Paths.getTestDataPath("config/NuGet-03.Config"), new File(myHome, "nuget.config"));
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-03.Config"), new File(myHome, "NuGet.Config"));
     doResolveTest(PROJECT_SLN, "../lib");
   }
 
   @Test
   public void testResolveWithConfig_04() throws IOException, RunBuildException {
-    FileUtil.copy(Paths.getTestDataPath("config/NuGet-04.Config"), new File(myHome, "nuget.config"));
-    doResolveTest(PROJECT_SLN, "C:\\myteam\\teampackages");
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-04.Config"), new File(myHome, "NuGet.Config"));
+    doResolveTest(PROJECT_SLN, "C:" + File.separator + "myteam" + File.separator + "teampackages");
   }
 
   @Test
@@ -125,19 +125,19 @@ public class RepositoryPathResolverTest extends BaseTestCase {
 
   @Test
   public void testCaseSensitivity_1() throws Exception {
-    FileUtil.copy(Paths.getTestDataPath("config/NuGet-case-01.config"), new File(myHome, "NuGet.config"));
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-case-01.config"), new File(myHome, "NuGet.Config"));
     doResolveTest(PROJECT_SLN, "customizedPath");
   }
 
   @Test
   public void testCaseSensitivity_2() throws Exception {
-    FileUtil.copy(Paths.getTestDataPath("config/NuGet-case-02.config"), new File(myHome, "NuGet.config"));
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-case-02.config"), new File(myHome, "NuGet.Config"));
     doResolveTest(PROJECT_SLN, "customizedPath");
   }
 
   @Test
   public void testCaseSensitivity_3() throws Exception {
-    FileUtil.copy(Paths.getTestDataPath("config/NuGet-case-03.config"), new File(myHome, "NuGet.config"));
+    FileUtil.copy(Paths.getTestDataPath("config/NuGet-case-03.config"), new File(myHome, "NuGet.Config"));
     doResolveTest(PROJECT_SLN, "customizedPath");
   }
 

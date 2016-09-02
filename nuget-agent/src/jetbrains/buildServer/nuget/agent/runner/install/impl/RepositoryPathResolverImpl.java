@@ -42,7 +42,7 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
   @NotNull
   public File resolveRepositoryPath(@NotNull final BuildProgressLogger logger,
                                     @NotNull final File solutionFile,
-                                    @NotNull final File workingDirectory) {
+                                    @NotNull  final File workingDirectory) {
     final File repositoryPath = resolveRepositoryPathImpl(solutionFile, workingDirectory, logger);
     //noinspection ResultOfMethodCallIgnored
     repositoryPath.mkdirs();
@@ -127,7 +127,7 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
         for(Object child : config.getChildren("add")){
           final Attribute key = ((Element)child).getAttribute("key");
           if(key != null && key.getValue().equalsIgnoreCase("repositoryPath")){
-            String text = ((Element)child).getAttribute("value").getValue().trim();
+            String text = PathUtils.normalize(((Element)child).getAttribute("value").getValue().trim());
             LOG.info("Found packages path: " + text);
             return text;
           }
@@ -136,7 +136,7 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
 
       for (Object child : element.getChildren()){
         if(((Element)child).getName().equalsIgnoreCase("repositoryPath")){
-          final String text = ((Element)child).getValue().trim();
+          final String text = PathUtils.normalize(((Element)child).getValue().trim());
           LOG.info("Found repositoryPath: " + text);
           return text;
         }
@@ -145,7 +145,7 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
     } else if(elementName.equalsIgnoreCase("settings")){
       for (Object child : element.getChildren()){
         if(((Element)child).getName().equalsIgnoreCase("repositoryPath")){
-          final String text = ((Element)child).getValue().trim();
+          final String text = PathUtils.normalize(((Element)child).getValue().trim());
           LOG.info("Found repositoryPath: " + text);
           return text;
         }

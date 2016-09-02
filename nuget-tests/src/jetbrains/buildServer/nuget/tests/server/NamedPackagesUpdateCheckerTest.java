@@ -23,6 +23,7 @@ import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
+import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.server.TriggerUrlPostProcessor;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
@@ -103,7 +104,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     checker = new NamedPackagesUpdateChecker(chk, new TriggerRequestFactory(new CheckRequestModeFactory(si), toolManager, new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()), extensionHolder), new PackagesHashCalculator());
 
     final File nugetHome = createTempDir();
-    nugetFakePath = new File(nugetHome, "/tools/nuget.exe");
+    nugetFakePath = new File(nugetHome, FeedConstants.PATH_TO_NUGET_EXE);
     assertTrue(nugetFakePath.getParentFile().mkdirs());
     assertTrue(nugetFakePath.createNewFile());
     final String path = nugetFakePath.getPath();
