@@ -52,11 +52,19 @@ public class SystemInfoTest extends BaseTestCase {
 
   @Test
   public void testNet4IsDetected() throws IOException {
+    if(!com.intellij.openapi.util.SystemInfo.isWindows) {
+      return;
+    }
+
     Assert.assertTrue(myInfo.isDotNetFrameworkAvailable());
   }
 
   @Test
   public void testNet4FlagCahced() throws IOException {
+    if(!com.intellij.openapi.util.SystemInfo.isWindows) {
+      return;
+    }
+
     testNet4IsDetected();
 
     assertTime(0.1, "Check value is cached", new Runnable() {
