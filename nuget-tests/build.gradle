@@ -48,13 +48,13 @@ test {
     }
 }
 
-task integrationTest(type: Test, dependsOn: 'test') {
+task integrationTest(type: Test) {
 	useTestNG() {
  		suites 'src/testng-nuget-integration.xml'
 	}
 }
 
-task performanceTest(type: Test, dependsOn: 'test') {
+task performanceTest(type: Test) {
 	useTestNG() {
  		suites 'src/testng-nuget-performance.xml'
 	}
