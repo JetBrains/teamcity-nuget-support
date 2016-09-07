@@ -215,15 +215,19 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             )
     );
 
+    if (!SystemInfo.isWindows) {
+      // Add an acccess to run NuGet.exe
+      for (NuGet nuGetVersion : NuGet.values()) {
+        final String nuGet = nuGetVersion.getPath().getPath();
+        enableExecution(nuGet, null);
+      }
+    }
+
     enshureRunningAgainstNuGetOrgAPIv2();
   }
 
   private void enshureRunningAgainstNuGetOrgAPIv2() {
     final String nuGet = NuGet.NuGet_2_8.getPath().getPath();
-    if (!SystemInfo.isWindows) {
-      enableExecution(nuGet, null);
-    }
-
     final GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(nuGet);
     cmd.addParameter("sources");
@@ -319,13 +323,15 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     };
   }
 
-  private static void enableExecution(@NotNull final String filePath, @NotNull final String baseDir) {
+  private static void enableExecution(@NotNull final String filePath, @Nullable final String baseDir) {
     final GeneralCommandLine commandLine = new GeneralCommandLine();
 
     commandLine.setExePath("chmod");
     commandLine.addParameter("+x");
     commandLine.addParameter(filePath);
-    commandLine.setWorkDirectory(baseDir);
+    if (baseDir != null) {
+      commandLine.setWorkDirectory(baseDir);
+    }
 
     final ExecResult execResult = SimpleCommandLineProcessRunner.runCommand(commandLine, null);
     if (execResult.getExitCode() != 0) {
