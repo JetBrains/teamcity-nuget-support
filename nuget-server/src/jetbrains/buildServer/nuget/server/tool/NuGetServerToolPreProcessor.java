@@ -38,7 +38,7 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
 /**
  * Created by Evgeniy.Koshkin.
  */
-public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
+public class NuGetServerToolPreProcessor extends ServerToolPreProcessorAdapter {
   private static final Logger LOG = Logger.getInstance(NuGetServerToolPreProcessor.class.getName());
 
   private static final String NUGET_TOOL_ID_PREFIX = "NuGet.CommandLine.";
@@ -76,8 +76,12 @@ public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
   }
 
   @Override
-  public void preProcess() throws ToolException {
+  public void doBeforeServerStartup() throws ToolException {
     moveOldInstalledNugets();
+  }
+
+  @Override
+  public void doAfterServerStartup() throws ToolException {
     restoreDefaultVersion();
   }
 
