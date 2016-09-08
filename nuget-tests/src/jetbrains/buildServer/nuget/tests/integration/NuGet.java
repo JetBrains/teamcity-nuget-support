@@ -53,7 +53,7 @@ public enum NuGet {
   public File getPath() {
     switch (this) {
       case NuGet_1_6:
-        return Paths.getPackagesPath("NuGet.CommandLine.1.4.20615.182/tools/NuGet.exe");
+        return Paths.getPackagesPath("NuGet.CommandLine.1.6.0/tools/NuGet.exe");
       case NuGet_1_7:
         return Paths.getPackagesPath("NuGet.CommandLine.1.7.0/tools/NuGet.exe");
       case NuGet_1_8:
@@ -73,13 +73,13 @@ public enum NuGet {
       case NuGet_2_8:
         return Paths.getPackagesPath("NuGet.CommandLine.2.8.0/tools/NuGet.exe");
       case NuGet_3_2:
-        return Paths.getPackagesPath("NuGet.CommandLine.3.2.0/tools/NuGet.exe");
+        return Paths.getPackagesPath("NuGet.CommandLine.3.2.0/tools/nuget.exe");
       case NuGet_3_3:
         return Paths.getPackagesPath("NuGet.CommandLine.3.3.0/tools/NuGet.exe");
       case NuGet_3_4:
         return Paths.getPackagesPath("NuGet.CommandLine.3.4.3/tools/NuGet.exe");
       case NuGet_3_5:
-        return Paths.getPackagesPath("NuGet.CommandLine.3.5.0-rc1-1723/tools/NuGet.exe");
+        return Paths.getPackagesPath("NuGet.CommandLine.3.5.0-rc1-1723/tools/nuget.exe");
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }

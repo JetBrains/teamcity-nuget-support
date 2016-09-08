@@ -47,3 +47,15 @@ test {
         suites 'src/testng-nuget-fast.xml'
     }
 }
+
+task integrationTest(type: Test) {
+	useTestNG() {
+ 		suites 'src/testng-nuget-integration.xml'
+	}
+}
+
+task performanceTest(type: Test) {
+	useTestNG() {
+ 		suites 'src/testng-nuget-performance.xml'
+	}
+}

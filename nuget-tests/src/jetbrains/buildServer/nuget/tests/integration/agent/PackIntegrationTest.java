@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.agent;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.openapi.util.SystemInfo;
 import com.intellij.util.io.ZipUtil;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
@@ -208,14 +209,23 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
   private void msbuild(File spec) {
     GeneralCommandLine cmd = new GeneralCommandLine();
-    cmd.setExePath("cmd.exe");
-    cmd.addParameter("/c");
-    cmd.addParameter("%SYSTEMROOT%\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe");
-    cmd.addParameter(spec.getPath());
-    cmd.addParameter("/t:Rebuild");
+    if(SystemInfo.isWindows) {
+      cmd.setExePath("cmd.exe");
+      cmd.addParameter("/c");
+      cmd.addParameter("%SYSTEMROOT%\\Microsoft.NET\\Framework\\v4.0.30319\\msbuild.exe");
+      cmd.addParameter(spec.getPath());
+      cmd.addParameter("/t:Rebuild");
+    }
+    else {
+      cmd.setExePath("xbuild");
+      cmd.addParameter(spec.getPath());
+      cmd.addParameter("/t:Rebuild");
+    }
 
     final ExecResult result = SimpleCommandLineProcessRunner.runCommand(cmd, new byte[0]);
-    Assert.assertEquals(0, result.getExitCode());
+    if(SystemInfo.isWindows) {
+      Assert.assertEquals(0, result.getExitCode());
+    }
   }
 
   private void callRunner(@NotNull final NuGet nuget, @NotNull final File spec, final boolean packAsTool, final boolean symbols, final boolean cleanOutput) throws RunBuildException {
