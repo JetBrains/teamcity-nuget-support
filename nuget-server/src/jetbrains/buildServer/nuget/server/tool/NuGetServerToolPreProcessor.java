@@ -76,8 +76,12 @@ public class NuGetServerToolPreProcessor implements ServerToolPreProcessor {
   }
 
   @Override
-  public void preProcess() throws ToolException {
+  public void doBeforeServerStartup() throws ToolException {
     moveOldInstalledNugets();
+  }
+
+  @Override
+  public void doAfterServerStartup() throws ToolException {
     restoreDefaultVersion();
   }
 

@@ -43,7 +43,8 @@ public class NuGetServerToolPreProcessorTest extends BaseTestCase {
 
   @Test
   public void testNoTools() throws Exception {
-    myToolPreProcessor.preProcess();
+    myToolPreProcessor.doBeforeServerStartup();
+    myToolPreProcessor.doAfterServerStartup();
   }
 
   @Test
