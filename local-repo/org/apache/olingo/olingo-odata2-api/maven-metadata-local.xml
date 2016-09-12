@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata>
   <groupId>org.apache.olingo</groupId>
-  <artifactId>olingo-odata2-core</artifactId>
+  <artifactId>olingo-odata2-api</artifactId>
   <versioning>
     <release>2.0.8-SNAPSHOT</release>
     <versions>
