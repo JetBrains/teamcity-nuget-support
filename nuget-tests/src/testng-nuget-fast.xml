@@ -133,6 +133,7 @@
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.GetUpdatesFunctionIntegrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.FindPackagesByIdFunctionIntegrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedBatchTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetFeedControllerTest"/>
     </classes>
   </test>
 </suite>

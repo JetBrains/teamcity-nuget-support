@@ -64,12 +64,6 @@ public class ODataRequestHandler implements NuGetFeedHandler {
       return;
     }
 
-    if (!BaseController.isGet(request)) {
-      //error response according to OData spec for unsupported oprtaions (modification operations)
-      response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, "TeamCity provided feed is readonly.");
-      return;
-    }
-
     final ResponseCache.ComputeAction action = this::processFeedRequest;
     if (TeamCityProperties.getBoolean("teamcity.nuget.feed.use.cache")) {
       myCache.getOrCompute(request, response, action);

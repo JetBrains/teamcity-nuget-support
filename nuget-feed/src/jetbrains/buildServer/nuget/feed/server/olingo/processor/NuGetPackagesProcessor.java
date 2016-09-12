@@ -924,7 +924,11 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
             throws ODataException {
         final List<BatchResponsePart> batchResponseParts = new ArrayList<>();
         final PathInfo pathInfo = getContext().getPathInfo();
-        final EntityProviderBatchProperties batchProperties = EntityProviderBatchProperties.init().pathInfo(pathInfo).build();
+        final EntityProviderBatchProperties batchProperties = EntityProviderBatchProperties.init()
+                .pathInfo(pathInfo)
+                .setStrict(false)
+                .build();
+
         final List<BatchRequestPart> batchParts = EntityProvider.parseBatchRequest(contentType, content, batchProperties);
         for (BatchRequestPart batchPart : batchParts) {
             batchResponseParts.add(handler.handleBatchPart(batchPart));

@@ -92,7 +92,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   public static final String NUGET_VERSIONS_28p = "nuget_versions_28p";
 
   @NotNull
-  private Object[][] versionsFrom(@NotNull final NuGet lowerBound) {
+  protected Object[][] versionsFrom(@NotNull final NuGet lowerBound) {
     final NuGet[] values =  NuGet.values();
     final List<Object[]> data = new ArrayList<Object[]>();
     for (NuGet value : values) {

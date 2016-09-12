@@ -27,6 +27,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.HttpMethod;
 import java.util.Date;
 import java.util.regex.Pattern;
 
@@ -50,6 +51,7 @@ public class NuGetFeedController extends BaseController {
     myNuGetPath = settings.getNuGetFeedControllerPath();
     myFeedProvider = feedProvider;
 
+    setSupportedMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE);
     web.registerController(myNuGetPath + "/**", this);
   }
 
@@ -76,6 +78,13 @@ public class NuGetFeedController extends BaseController {
 
     String requestPath = WebUtil.getPathWithoutAuthenticationType(requestWrapper);
     if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
+
+    // Allow to use GET requests and POST batch requests
+    if (!isGet(request) && (!isPost(request) || !requestWrapper.getPathInfo().startsWith("/$batch"))) {
+      // error response according to OData spec for unsupported operations (modification operations)
+      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "TeamCity nuget feed is readonly");
+      return null;
+    }
 
     final String path = requestPath.substring(myNuGetPath.length());
     final String query = requestWrapper.getQueryString();

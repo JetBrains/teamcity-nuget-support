@@ -26,11 +26,11 @@ import java.io.StringWriter;
 /**
  * Serializable http response.
  */
-public class SerializableHttpServletResponseWrapper extends HttpServletResponseWrapper {
+public class ResponseWrapper extends HttpServletResponseWrapper {
 
   private StringWriter sw = new StringWriter();
 
-  public SerializableHttpServletResponseWrapper(HttpServletResponse response) {
+  public ResponseWrapper(HttpServletResponse response) {
     super(response);
   }
 

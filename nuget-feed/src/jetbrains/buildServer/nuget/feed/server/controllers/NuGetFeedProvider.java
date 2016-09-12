@@ -16,33 +16,12 @@
 
 package jetbrains.buildServer.nuget.feed.server.controllers;
 
-import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
-import jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler;
-import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
-import jetbrains.buildServer.serverSide.TeamCityProperties;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Provides a concrete NuGet feed handler.
+ * Manages nuget request handler.
  */
-public class NuGetFeedProvider {
-
-  private final ODataRequestHandler myODataRequestHandler;
-  private final OlingoRequestHandler myOlingoRequestHandler;
-
-  public NuGetFeedProvider(@NotNull final ODataRequestHandler oDataRequestHandler,
-                           @NotNull final OlingoRequestHandler olingoRequestHandler) {
-
-    myODataRequestHandler = oDataRequestHandler;
-    myOlingoRequestHandler = olingoRequestHandler;
-  }
-
-  @NotNull
-  public NuGetFeedHandler getHandler() {
-    if (TeamCityProperties.getBooleanOrTrue(NuGetFeedConstants.PROP_NUGET_FEED_NEW_SERIALIZER)) {
-      return myOlingoRequestHandler;
-    } else {
-      return myODataRequestHandler;
-    }
-  }
+public interface NuGetFeedProvider {
+    @NotNull
+    NuGetFeedHandler getHandler();
 }

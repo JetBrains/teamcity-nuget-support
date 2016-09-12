@@ -16,7 +16,8 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import org.testng.SkipException;
+import org.apache.http.HttpStatus;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -26,14 +27,10 @@ public class NuGetJavaFeedBatchTest extends NuGetJavaFeedIntegrationTestBase {
 
     @Test(dataProvider = "nugetFeedLibrariesData")
     public void testBatchRequest(final NugetFeedLibrary library) throws Exception {
-        if (library == NugetFeedLibrary.OData4j) {
-            throw new SkipException("OData4j does not support batch requests.");
-        }
-
         setODataSerializer(library);
         addMockPackage("MyPackage", "1.0.0.0");
 
-        final TestFeedRequestWrapper request = new TestFeedRequestWrapper(SERVLET_PATH, "$batch");
+        final RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/$batch");
         request.setMethod("POST");
         request.setContentType("multipart/mixed; boundary=batch_e3b6819b-13c3-43bb-85b2-24b14122fed1");
         request.setBody((
@@ -46,7 +43,11 @@ public class NuGetJavaFeedBatchTest extends NuGetJavaFeedIntegrationTestBase {
                         "\r\n" +
                         "--batch_e3b6819b-13c3-43bb-85b2-24b14122fed1--\r\n").getBytes());
 
-        assertContainsPackageVersion(executeRequest(request), "1.0.0.0");
-        assert200("FindPackagesById()?id='MyPackage2'").run();
+        ResponseWrapper response = processRequest(request);
+        Assert.assertEquals(response.getStatus(), HttpStatus.SC_ACCEPTED);
+
+        String body = response.toString();
+        assertContainsPackageVersion(body, "1.0.0.0");
+        Assert.assertTrue(body.contains("HTTP/1.1 200"));
     }
 }

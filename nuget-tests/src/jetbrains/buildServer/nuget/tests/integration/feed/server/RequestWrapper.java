@@ -31,22 +31,22 @@ import java.util.*;
  *         Date: 05.08.2016
  *         Time: 16:13
  */
-public class TestFeedRequestWrapper implements HttpServletRequest {
+public class RequestWrapper implements HttpServletRequest {
   private final String myQueryString;
   private final String myPath;
   private final String myServletPath;
   private final Map<String, Object> myAttributes = new HashMap<>();
   private final Map<String, String> myHeaders = new HashMap<>();
   private String myMethod = "GET";
-  private String myContentType;
+  private int myServerPort = -1;
   private byte[] myBody;
 
-  public TestFeedRequestWrapper(final String servletPath, String request) {
-    request = request.startsWith("/") ? request.substring(1) : request;
-    final int queryStringIndex = request.indexOf("?");
+  public RequestWrapper(final String servletPath, String request) {
+    final String path = request.length() > servletPath.length() ? request.substring(servletPath.length() + 1) : "";
+    final int queryStringIndex = path.indexOf("?");
     myServletPath = servletPath;
-    myQueryString = queryStringIndex < 0 ? StringUtil.EMPTY : request.substring(queryStringIndex + 1);
-    myPath = queryStringIndex < 0 ? request : request.substring(0, queryStringIndex);
+    myQueryString = queryStringIndex < 0 ? StringUtil.EMPTY : path.substring(queryStringIndex + 1);
+    myPath = queryStringIndex < 0 ? path : path.substring(0, queryStringIndex);
   }
 
   @Override
@@ -65,8 +65,8 @@ public class TestFeedRequestWrapper implements HttpServletRequest {
   }
 
   @Override
-  public String getHeader(String s) {
-    return myHeaders.get(s);
+  public String getHeader(String name) {
+    return myHeaders.get(name);
   }
 
   public void setHeader(String header, String value) {
@@ -74,8 +74,13 @@ public class TestFeedRequestWrapper implements HttpServletRequest {
   }
 
   @Override
-  public Enumeration<String> getHeaders(String s) {
-    return null;
+  public Enumeration<String> getHeaders(String name) {
+    final Vector<String> values = new Vector<>();
+    final String header = getHeader(name);
+    if (header != null) {
+      values.add(header);
+    }
+    return values.elements();
   }
 
   @Override
@@ -149,7 +154,7 @@ public class TestFeedRequestWrapper implements HttpServletRequest {
 
   @Override
   public String getServletPath() {
-    return StringUtil.EMPTY;
+    return myServletPath;
   }
 
   @Override
@@ -234,11 +239,11 @@ public class TestFeedRequestWrapper implements HttpServletRequest {
 
   @Override
   public String getContentType() {
-    return myContentType;
+    return myHeaders.get("Content-Type");
   }
 
   public void setContentType(String contentType) {
-    myContentType = contentType;
+    myHeaders.put("Content-Type", contentType);
   }
 
   @Override
@@ -293,7 +298,11 @@ public class TestFeedRequestWrapper implements HttpServletRequest {
 
   @Override
   public int getServerPort() {
-    return -1;
+    return myServerPort;
+  }
+
+  public void setServerPort(final int port) {
+    myServerPort = port;
   }
 
   @Override

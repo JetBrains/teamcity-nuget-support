@@ -19,11 +19,10 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 import jetbrains.buildServer.controllers.MockResponse;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -35,20 +34,51 @@ public class NuGetJavaFeedTestController {
   @GET
   @Path(NuGetJavaFeedIntegrationTestBase.SERVLET_PATH + "{query: .*}")
   @Consumes("*/*")
-  public Response getCommandResponse(@Context UriInfo uriInfo, @PathParam("query") String userName) throws Exception {
-    final NuGetFeedHandler handler = NuGetJavaFeedControllerIoC.getFeedProvider().getHandler();
-
-    // Request
-    final URI uri = uriInfo.getRequestUri();
-    final String path = uri.getRawPath() + (StringUtil.isEmpty(uri.getRawQuery()) ? StringUtil.EMPTY : "?" + uri.getRawQuery());
-    final TestFeedRequestWrapper request = new TestFeedRequestWrapper("", path.substring(NuGetJavaFeedIntegrationTestBase.SERVLET_PATH.length()));
-
-    // Response
-    final MockResponse response = new MockResponse();
-    final SerializableHttpServletResponseWrapper responseWrapper = new SerializableHttpServletResponseWrapper(response);
-
-    handler.handleRequest(request, responseWrapper);
-
-    return Response.status(Response.Status.OK).entity(responseWrapper.toString()).build();
+  public Response getCommandResponse(@Context UriInfo uriInfo, @PathParam("query") String query) throws Exception {
+    return getResponse(getRequest(uriInfo));
   }
+
+  @POST
+  @Path(NuGetJavaFeedIntegrationTestBase.SERVLET_PATH + "{query: .*}")
+  @Consumes("*/*")
+  public Response processBatch(@Context UriInfo uriInfo,
+                               @PathParam("query") String query,
+                               @HeaderParam("Content-Type") String contentType,
+                               byte[] body) throws Exception {
+    RequestWrapper request = getRequest(uriInfo);
+    request.setMethod(HttpMethod.POST);
+    request.setContentType(contentType);
+    request.setBody(body);
+
+    return getResponse(request);
+  }
+
+  @NotNull
+  private RequestWrapper getRequest(@NotNull UriInfo uriInfo) {
+    final URI uri = uriInfo.getRequestUri();
+    final String query = StringUtil.isEmpty(uri.getRawQuery()) ? StringUtil.EMPTY : "?" + uri.getRawQuery();
+    RequestWrapper request = new RequestWrapper(NuGetJavaFeedIntegrationTestBase.SERVLET_PATH, uri.getRawPath() + query);
+    request.setServerPort(uri.getPort());
+    return request;
+  }
+
+  @NotNull
+  private Response getResponse(@NotNull HttpServletRequest request) throws Exception {
+    final NuGetFeedHandler handler = NuGetJavaFeedControllerIoC.getFeedProvider().getHandler();
+    final ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+    handler.handleRequest(request, response);
+
+    Response.ResponseBuilder responseBuilder = Response
+            .status(response.getStatus())
+            .entity(response.toString());
+
+    for (String name : response.getHeaderNames()) {
+      responseBuilder.header(name, response.getHeader(name));
+    }
+
+    return responseBuilder.build();
+  }
+
+
 }
