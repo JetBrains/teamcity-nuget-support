@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.tests.integration.ListPackagesCommandIntegrationTest;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
@@ -89,6 +90,26 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     cmd.addParameter("Common");
     nuget.makeOutputVerbose(cmd);
     cmd.addParameter("-AllVersions");
+    cmd.addParameter("-Source");
+    cmd.addParameter(getNuGetServerUrl());
+
+    final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
+    Assert.assertEquals(exec.getExitCode(), 0);
+    final String stdout = exec.getStdout();
+    System.out.println(stdout);
+    Assert.assertTrue(stdout.contains(packageId_1), stdout);
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
+  public void testNuGetClientBatchQueryForList(@NotNull final NuGet nuget) throws Exception {
+    enableDebug();
+
+    String packageName = StringUtil.repeat("Common", " ", 256);
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("list");
+    cmd.addParameter(packageName);
+    nuget.makeOutputVerbose(cmd);
     cmd.addParameter("-Source");
     cmd.addParameter(getNuGetServerUrl());
 

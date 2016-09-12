@@ -36,6 +36,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.api.Invocation;
@@ -66,7 +67,6 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
     myStreams = new ArrayList<InputStream>();
     myHttpClient = new NuGetFeedHttpClientHolder();
     myHttpMethods = new NuGetFeedGetMethodFactory();
-
   }
 
   @AfterMethod
@@ -89,7 +89,7 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
     T processResult(@NotNull HttpResponse response) throws IOException;
   }
 
-  protected <T> T execute(@NotNull final HttpGet get, @NotNull final ExecuteAction<T> action) {
+  protected <T> T execute(@NotNull final HttpRequestBase get, @NotNull final ExecuteAction<T> action) {
     try {
       final HttpResponse execute = myHttpClient.execute(get);
       return action.processResult(execute);

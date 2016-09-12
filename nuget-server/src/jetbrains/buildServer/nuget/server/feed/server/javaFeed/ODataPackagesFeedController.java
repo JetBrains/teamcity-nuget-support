@@ -115,12 +115,6 @@ public class ODataPackagesFeedController implements NuGetFeedHandler {
       return;
     }
 
-    if (!BaseController.isGet(request)) {
-      //error response according to OData spec for unsupported oprtaions (modification operations)
-      response.sendError(HttpServletResponse.SC_NOT_ACCEPTABLE, "TeamCity provided feed is readonly.");
-      return;
-    }
-
     final ComputeAction action = new ComputeAction() {
       public void compute(@NotNull final HttpServletRequest request,
                           @NotNull final HttpServletResponse response) throws Exception {
