@@ -44,7 +44,7 @@ public class NuGetServerFeedSettingsImpl implements NuGetServerJavaSettings {
   }
 
   public boolean isFilteringByTargetFrameworkEnabled() {
-    return TeamCityProperties.getBooleanOrTrue(TEAMCITY_NUGET_FEED_FILTER_TARGETFRAMEWORK_PROP_NAME);
+    return TeamCityProperties.getBoolean(TEAMCITY_NUGET_FEED_FILTER_TARGETFRAMEWORK_PROP_NAME);
   }
 
   private void setServerEnabled(@NotNull final ServerMode mode) {
