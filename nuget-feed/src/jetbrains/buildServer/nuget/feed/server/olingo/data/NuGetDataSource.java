@@ -242,7 +242,7 @@ public class NuGetDataSource {
     final boolean includePrerelease = (Boolean) parameters.get(MetadataConstants.INCLUDE_PRERELEASE);
     final boolean includeAllVersions = (Boolean) parameters.get(MetadataConstants.INCLUDE_ALL_VERSIONS);
 
-    if (packageIds.size() != versions.size() || !versionConstraints.isEmpty() && packageIds.size() != versionConstraints.size()) {
+    if (packageIds.size() != versions.size()) {
       return Collections.emptyList();
     }
 
@@ -256,10 +256,8 @@ public class NuGetDataSource {
         continue;
       }
 
-      final VersionConstraint versionConstraint;
-      if (versionConstraints.isEmpty()) {
-        versionConstraint = null;
-      } else {
+      VersionConstraint versionConstraint = null;
+      if (i < versionConstraints.size()) {
         final String versionConstraintString = versionConstraints.get(i);
         versionConstraint = VersionConstraint.valueOf(versionConstraintString);
         if (versionConstraint == null) {

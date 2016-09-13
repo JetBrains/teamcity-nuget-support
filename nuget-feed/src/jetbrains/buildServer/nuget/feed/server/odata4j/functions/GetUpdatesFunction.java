@@ -94,8 +94,6 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
     }
 
     final List<String> versionConstraints = extractListOfStringsFromParamValue(params, MetadataConstants.VERSION_CONSTRAINTS);
-    final boolean versionConstraintsProvided = !versionConstraints.isEmpty();
-
     if(packageIds.size() != versions.size()){
       LOG.debug(String.format("Bad %s function call. Number of requested package IDs (%d) is not consistent with number of package versions (%d).",
               getName(), packageIds.size(), versions.size()));
@@ -116,9 +114,9 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
         LOG.warn("Failed to create valid semantic version from string " + versionString);
         continue;
       }
-      final VersionConstraint versionConstraint;
-      if (!versionConstraintsProvided) versionConstraint = null;
-      else {
+
+      VersionConstraint versionConstraint = null;
+      if (i < versionConstraints.size()) {
         final String versionConstraintString = versionConstraints.get(i);
         versionConstraint = VersionConstraint.valueOf(versionConstraintString);
         if(versionConstraint == null) {
