@@ -25,6 +25,7 @@ import org.apache.olingo.odata2.api.exception.ODataNotFoundException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Data access.
@@ -48,6 +49,17 @@ public class BeanPropertyAccess {
 
   public <T> Object getPropertyValue(final T data, final String propertyName) throws ODataException {
     return propertyName != null ? getValue(data, "get" + propertyName) : null;
+  }
+
+  public  <T> Object getPropertyValue(final T data, final List<EdmProperty> propertyPath) throws ODataException {
+    Object dataObject = data;
+    for (final EdmProperty property : propertyPath) {
+      if (dataObject != null) {
+        dataObject = getPropertyValue(dataObject, property);
+      }
+    }
+
+    return dataObject;
   }
 
   private String getGetterMethodName(final EdmProperty property) throws EdmException {

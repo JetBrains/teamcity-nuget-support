@@ -38,6 +38,7 @@ import org.apache.olingo.odata2.api.exception.ODataNotFoundException;
 import org.apache.olingo.odata2.api.exception.ODataNotImplementedException;
 import org.apache.olingo.odata2.api.uri.UriSyntaxException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -139,7 +140,7 @@ public class NuGetDataSource {
   @NotNull
   public Object readData(@NotNull final EdmFunctionImport function,
                          @NotNull final Map<String, Object> parameters,
-                         @NotNull final Map<String, Object> keys) throws ODataHttpException, EdmException {
+                         @Nullable final Map<String, Object> keys) throws ODataHttpException, EdmException {
     if (function.getName().equals(MetadataConstants.SEARCH_FUNCTION_NAME)) {
       return search(parameters, keys);
     } else if (function.getName().equals(MetadataConstants.FIND_PACKAGES_BY_ID_FUNCTION_NAME)) {
