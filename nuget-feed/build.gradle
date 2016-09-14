@@ -8,8 +8,8 @@ teamcity {
 
 dependencies {
     compile 'org.core4j:core4j:0.5'
-    compile 'org.odata4j:odata4j-core:0.8-SNAPSHOT'
-    compile 'org.odata4j:odata4j-jersey:0.8-SNAPSHOT'
+    compile 'org.odata4j:odata4j-core:0.8.0-SNAPSHOT'
+    compile 'org.odata4j:odata4j-jersey:0.8.0-SNAPSHOT'
     compile 'commons-codec:commons-codec:1.10'
     compile 'com.sun.jersey:jersey-client:1.11'
     compile 'com.sun.jersey:jersey-core:1.11'
