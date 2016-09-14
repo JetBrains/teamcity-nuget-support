@@ -1,19 +1,22 @@
 package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 
+import jetbrains.buildServer.nuget.server.version.SemanticVersion;
 import org.apache.olingo.odata2.api.edm.*;
 import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.exception.ODataNotImplementedException;
 import org.apache.olingo.odata2.api.uri.expression.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.time.*;
+import java.util.*;
+
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**
  * Evaluates OData query expressions.
  */
 public class ExpressionEvaluator {
 
+    private final static Map<String, Comparator> COMPARATORS;
     private final BeanPropertyAccess valueAccess;
 
     public ExpressionEvaluator(BeanPropertyAccess valueAccess) {
@@ -37,8 +40,8 @@ public class ExpressionEvaluator {
 
             case BINARY:
                 final BinaryExpression binaryExpression = (BinaryExpression) expression;
-                final EdmSimpleType type = (EdmSimpleType) binaryExpression.getLeftOperand().getEdmType();
-                final String left = evaluateExpression(data, binaryExpression.getLeftOperand());
+                CommonExpression leftOperand = binaryExpression.getLeftOperand();
+                final String left = evaluateExpression(data, leftOperand);
                 final String right = evaluateExpression(data, binaryExpression.getRightOperand());
 
                 switch (binaryExpression.getOperator()) {
@@ -82,49 +85,17 @@ public class ExpressionEvaluator {
                     case OR:
                         return Boolean.toString(left.equals("true") || right.equals("true"));
                     case EQ:
-                        return Boolean.toString(left.equals(right));
+                        return Boolean.toString(compare(leftOperand, left, right) == 0);
                     case NE:
-                        return Boolean.toString(!left.equals(right));
+                        return Boolean.toString(compare(leftOperand, left, right) != 0);
                     case LT:
-                        if (type == EdmSimpleTypeKind.String.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.DateTime.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.DateTimeOffset.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.Guid.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.Time.getEdmSimpleTypeInstance()) {
-                            return Boolean.toString(left.compareTo(right) < 0);
-                        } else {
-                            return Boolean.toString(Double.valueOf(left) < Double.valueOf(right));
-                        }
+                        return Boolean.toString(compare(leftOperand, left, right) < 0);
                     case LE:
-                        if (type == EdmSimpleTypeKind.String.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.DateTime.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.DateTimeOffset.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.Guid.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.Time.getEdmSimpleTypeInstance()) {
-                            return Boolean.toString(left.compareTo(right) <= 0);
-                        } else {
-                            return Boolean.toString(Double.valueOf(left) <= Double.valueOf(right));
-                        }
+                        return Boolean.toString(compare(leftOperand, left, right) <= 0);
                     case GT:
-                        if (type == EdmSimpleTypeKind.String.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.DateTime.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.DateTimeOffset.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.Guid.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.Time.getEdmSimpleTypeInstance()) {
-                            return Boolean.toString(left.compareTo(right) > 0);
-                        } else {
-                            return Boolean.toString(Double.valueOf(left) > Double.valueOf(right));
-                        }
+                        return Boolean.toString(compare(leftOperand, left, right) > 0);
                     case GE:
-                        if (type == EdmSimpleTypeKind.String.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.DateTime.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.DateTimeOffset.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.Guid.getEdmSimpleTypeInstance()
-                                || type == EdmSimpleTypeKind.Time.getEdmSimpleTypeInstance()) {
-                            return Boolean.toString(left.compareTo(right) >= 0);
-                        } else {
-                            return Boolean.toString(Double.valueOf(left) >= Double.valueOf(right));
-                        }
+                        return Boolean.toString(compare(leftOperand, left, right) >= 0);
                     case PROPERTY_ACCESS:
                         throw new ODataNotImplementedException();
                     default:
@@ -228,5 +199,55 @@ public class ExpressionEvaluator {
             default:
                 throw new ODataNotImplementedException();
         }
+    }
+
+    private static int compare(final CommonExpression expression, final String o1, final String o2) {
+        //noinspection unchecked
+        return COMPARATORS.get(getType(expression)).compare(o1, o2);
+    }
+
+    private static String getType(final CommonExpression expression) {
+        final EdmSimpleType edmType = (EdmSimpleType) expression.getEdmType();
+        final String literal = expression.getUriLiteral();
+        if (VERSION.equals(literal) || NORMALIZED_VERSION.equals(literal)) {
+            return VERSION;
+        } else {
+            try {
+                return edmType.getName();
+            } catch (EdmException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    static {
+        COMPARATORS = new HashMap<>();
+        COMPARATORS.put("Binary", (o1, o2) -> Boolean.valueOf((String) o1).compareTo(Boolean.valueOf((String) o2)));
+        COMPARATORS.put("Boolean", (o1, o2) -> Boolean.valueOf((String) o1).compareTo(Boolean.valueOf((String) o2)));
+        COMPARATORS.put("Byte", (o1, o2) -> Byte.valueOf((String) o1).compareTo(Byte.valueOf((String) o2)));
+        COMPARATORS.put("DateTime", (o1, o2) -> LocalDateTime.parse((String) o1).compareTo(LocalDateTime.parse((String) o2)));
+        COMPARATORS.put("DateTimeOffset", (o1, o2) -> Duration.parse((String) o1).compareTo(Duration.parse((String) o2)));
+        COMPARATORS.put("Decimal", (o1, o2) -> Double.valueOf((String) o1).compareTo(Double.valueOf((String) o2)));
+        COMPARATORS.put("Double", (o1, o2) -> Double.valueOf((String) o1).compareTo(Double.valueOf((String) o2)));
+        COMPARATORS.put("Guid", (o1, o2) -> UUID.fromString((String) o1).compareTo(UUID.fromString((String) o2)));
+        COMPARATORS.put("Int16", (o1, o2) -> Short.valueOf((String) o1).compareTo(Short.valueOf((String) o2)));
+        COMPARATORS.put("Int32", (o1, o2) -> Integer.valueOf((String) o1).compareTo(Integer.valueOf((String) o2)));
+        COMPARATORS.put("Int64", (o1, o2) -> Long.valueOf((String) o1).compareTo(Long.valueOf((String) o2)));
+        COMPARATORS.put("Null", (o1, o2) -> o1.equals(o2) ? 0 : -1);
+        COMPARATORS.put("SByte", (o1, o2) -> Byte.valueOf((String) o1).compareTo(Byte.valueOf((String) o2)));
+        COMPARATORS.put("Single", (o1, o2) -> Double.valueOf((String) o1).compareTo(Double.valueOf((String) o2)));
+        COMPARATORS.put("String", (o1, o2) -> ((String) o1).compareTo((String) o2));
+        COMPARATORS.put("Time", (o1, o2) -> LocalDateTime.parse((String) o1).compareTo(LocalDateTime.parse((String) o2)));
+        COMPARATORS.put(VERSION, (o1, o2) -> {
+            SemanticVersion v1 = SemanticVersion.valueOf((String) o1);
+            SemanticVersion v2 = SemanticVersion.valueOf((String) o2);
+            if (v1 != null && v2 != null) {
+                return v1.compareTo(v2);
+            } else if (v1 == null) {
+                return 1;
+            } else {
+                return -1;
+            }
+        });
     }
 }

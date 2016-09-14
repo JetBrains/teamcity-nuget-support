@@ -51,6 +51,7 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   public NuGetFeedInMemoryProducer(@NotNull final NuGetFeedFunctions functions) {
     super(MetadataConstants.NUGET_GALLERY_NAMESPACE);
     myFunctions = functions;
+    evaluation = new NuGetExpressionEvaluator();
   }
 
   public void register(Func<Iterable<PackageEntity>> getFunc){

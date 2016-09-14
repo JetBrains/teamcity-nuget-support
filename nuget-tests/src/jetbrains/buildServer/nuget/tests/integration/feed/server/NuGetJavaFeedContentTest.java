@@ -180,18 +180,23 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     }
   }
 
-  @Test(enabled = false) @TestFor(issues = "TW-36083")
-  public void testSemanticVersioning() throws Exception {
+  @Test(dataProvider = "nugetFeedLibrariesData") @TestFor(issues = "TW-36083")
+  public void testSemanticVersioning(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+
     addMockPackage("foo", "1.0.0-Beta6");
     addMockPackage("foo", "1.0.0-Beta7");
     addMockPackage("foo", "1.0.0");
 
-    final String response = openRequest("Packages()?$filter=(Version%20gt%20%271.0.0-Beta1%27)");
+    String response = openRequest("Packages()?$filter=(Version%20gt%20%271.0.0-Beta1%27)");
     assertContainsPackageVersion(response, "1.0.0-Beta6");
     assertContainsPackageVersion(response, "1.0.0-Beta7");
     assertContainsPackageVersion(response, "1.0.0");
 
-    assert400("Packages()?$filter=(Version gt '1.0.0')").run();
+    response = openRequest("Packages()?$filter=(Version gt '1.0.0')");
+    assertNotContainsPackageVersion(response, "1.0.0-Beta6");
+    assertNotContainsPackageVersion(response, "1.0.0-Beta7");
+    assertNotContainsPackageVersion(response, "1.0.0");
   }
 
   private String replaceXml(@NotNull final String text) {
