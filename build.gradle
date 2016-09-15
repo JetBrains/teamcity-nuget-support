@@ -1,5 +1,5 @@
 ext {
-    versionNumber = project.hasProperty('versionNumber') ? property('versionNumber') : 'SNAPSHOT'
+    versionNumber = project.hasProperty('versionNumber') ? property('versionNumber') : 'SNAPSHOT-' + new Date().format('yyyyMMddHHmmss')
     projectIds = ['group': 'teamcity-nuget-support', 'version': versionNumber]
 
     teamcityVersion = project.hasProperty('teamcityVersion') ? property('teamcityVersion') : '10.0'
