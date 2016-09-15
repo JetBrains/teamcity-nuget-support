@@ -163,6 +163,11 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   }
 
   @Test
+  public void testGetPackageByInvalidKey() throws JDOMException, IOException {
+    assertStatusCode(HttpStatus.SC_BAD_REQUEST, "Packages(Id='Fixie')").run();
+  }
+
+  @Test
   public void testVSRequests() {
     String[] reqs = {
             "Packages()",

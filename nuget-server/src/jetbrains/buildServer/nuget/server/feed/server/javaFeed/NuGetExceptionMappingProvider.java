@@ -28,11 +28,6 @@ public class NuGetExceptionMappingProvider extends ExceptionMappingProvider {
 
     @Override
     public Response toResponse(RuntimeException e) {
-        if (e instanceof com.sun.jersey.api.NotFoundException) {
-            // Return bad request exception when request handler not found
-            e = new BadRequestException(e.getMessage());
-        }
-
-        return super.toResponse(e);
+        return super.toResponse(new BadRequestException(e.getMessage()));
     }
 }
