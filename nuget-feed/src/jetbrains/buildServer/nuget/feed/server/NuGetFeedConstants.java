@@ -23,4 +23,5 @@ public class NuGetFeedConstants {
   public static final String PROP_NUGET_API_VERSION = "teamcity.nuget.api.version";
   public static final String PROP_NUGET_FEED_NEW_SERIALIZER = "teamcity.nuget.feed.new.serializer";
   public static final String PROP_NUGET_FEED_FILTER_TARGETFRAMEWORK = "teamcity.nuget.feed.filter.targetframework";
+  public static final int NUGET_FEED_PACKAGE_SIZE = 100;
 }

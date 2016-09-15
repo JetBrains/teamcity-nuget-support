@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo.model;
 
+import jetbrains.buildServer.nuget.server.version.SemanticVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,7 +25,7 @@ import java.util.Date;
 /**
  * NuGet feed package v1.
  */
-public class V1FeedPackage {
+public class V1FeedPackage implements Comparable<V1FeedPackage> {
   private final String myId;
   private final String myVersion;
   private String myAuthors;
@@ -311,5 +312,19 @@ public class V1FeedPackage {
   @NotNull
   public String getContentType() {
     return myContentType;
+  }
+
+  @Override
+  public int compareTo(@NotNull V1FeedPackage o) {
+    int idCompare = getId().compareTo(o.getId());
+    if (idCompare != 0) return idCompare;
+
+    SemanticVersion v1 = SemanticVersion.valueOf(getVersion());
+    SemanticVersion v2 = SemanticVersion.valueOf(o.getVersion());
+    if (v1 != null && v2 != null) {
+      return v1.compareTo(v2);
+    }
+
+    return 0;
   }
 }

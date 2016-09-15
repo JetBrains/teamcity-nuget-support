@@ -23,6 +23,7 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.net.httpserver.HttpServer;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
 import jetbrains.buildServer.nuget.tests.integration.ListPackagesCommandIntegrationTest;
@@ -173,6 +174,35 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     final String stdout = exec.getStdout();
     System.out.println(stdout);
     Assert.assertTrue(stdout.contains("foo 2.1.0-alpha"));
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS_27p)
+  public void testSkiptoken(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+    setODataSerializer(library);
+    enableDebug();
+    enablePackagesIndexSorting();
+
+    int size = NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE + 2;
+    for (int i = 0; i <= size; i++) {
+      addMockPackage("skiptoken", "1.0." + i);
+    }
+
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("list");
+    cmd.addParameter("skiptoken");
+    cmd.addParameter("-AllVersions");
+    cmd.addParameter("-Source");
+    cmd.addParameter(getNuGetServerUrl());
+
+    final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
+    Assert.assertEquals(exec.getExitCode(), 0, exec.getStderr());
+    final String stdout = exec.getStdout();
+    System.out.println(stdout);
+
+    for (int i = 0; i <= size; i++) {
+      Assert.assertTrue(stdout.contains("skiptoken 1.0." + i));
+    }
   }
 
   @Test(dataProvider = NUGET_VERSIONS)

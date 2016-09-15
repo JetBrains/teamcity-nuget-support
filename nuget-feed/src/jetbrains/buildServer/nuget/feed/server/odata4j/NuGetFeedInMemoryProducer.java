@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.feed.server.odata4j;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntity;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunction;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
@@ -49,7 +50,7 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   private String myApiVersion;
 
   public NuGetFeedInMemoryProducer(@NotNull final NuGetFeedFunctions functions) {
-    super(MetadataConstants.NUGET_GALLERY_NAMESPACE);
+    super(MetadataConstants.NUGET_GALLERY_NAMESPACE, NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE);
     myFunctions = functions;
     evaluation = new NuGetExpressionEvaluator();
   }

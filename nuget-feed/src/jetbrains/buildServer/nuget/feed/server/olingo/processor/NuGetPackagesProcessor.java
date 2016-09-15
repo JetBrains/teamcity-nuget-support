@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSource;
 import jetbrains.buildServer.nuget.feed.server.olingo.model.NuGetMapper;
@@ -47,7 +48,7 @@ import java.util.*;
  */
 public class NuGetPackagesProcessor extends ODataSingleProcessor {
 
-    private static final int SERVER_PAGING_SIZE = 100;
+    private static final int SERVER_PAGING_SIZE = NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE;
     private final BeanPropertyAccess valueAccess;
     private final NuGetDataSource dataSource;
     private final ExpressionEvaluator evaluator;
@@ -523,7 +524,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
         return response;
     }
 
-    private <T> Integer applySystemQueryOptions(final EdmEntitySet entitySet, final List<T> data,
+    private <T extends Comparable> Integer applySystemQueryOptions(final EdmEntitySet entitySet, final List<T> data,
                                                 final FilterExpression filter, final InlineCount inlineCount, final OrderByExpression orderBy,
                                                 final String skipToken, final Integer skip, final Integer top) throws ODataException {
         final ODataContext context = getContext();
@@ -605,14 +606,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
         });
     }
 
-    private <T> void sortInDefaultOrder(final EdmEntitySet entitySet, final List<T> data) {
-        Collections.sort(data, (entity1, entity2) -> {
-            try {
-                return getSkipToken(entitySet, entity1).compareTo(getSkipToken(entitySet, entity2));
-            } catch (final ODataException e) {
-                return 0;
-            }
-        });
+    private <T extends Comparable> void sortInDefaultOrder(final EdmEntitySet entitySet, final List<T> data) {
+        Collections.sort(data, Comparable::compareTo);
     }
 
     private <T> boolean appliesFilter(final T data, final FilterExpression filter) throws ODataException {
@@ -631,14 +626,20 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
 
 
     private <T> String getSkipToken(final EdmEntitySet entitySet, final T data) throws ODataException {
-        String skipToken = "";
+        StringBuilder skipToken = new StringBuilder();
         for (final EdmProperty property : entitySet.getEntityType().getKeyProperties()) {
             final EdmSimpleType type = (EdmSimpleType) property.getType();
             final Object value = valueAccess.getPropertyValue(data, property);
-            skipToken = skipToken.concat(type.valueToString(value, EdmLiteralKind.DEFAULT, property.getFacets()));
+            skipToken = skipToken.append("'");
+            skipToken.append(type.valueToString(value, EdmLiteralKind.DEFAULT, property.getFacets()));
+            skipToken.append("',");
         }
 
-        return skipToken;
+        if (skipToken.length() > 0) {
+            skipToken.setLength(skipToken.length() - 1);
+        }
+
+        return skipToken.toString();
     }
 
     private void handleMapping(final Object data, final EdmMapping mapping, final Map<String, Object> valueMap)
