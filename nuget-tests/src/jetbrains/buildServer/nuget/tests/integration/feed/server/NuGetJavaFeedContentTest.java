@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.tests.server.entity.XmlFeedParsers;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
 import jetbrains.buildServer.util.XmlUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.HttpStatus;
 import org.jdom.*;
 import org.jdom.xpath.XPath;
@@ -34,7 +35,10 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -42,6 +46,7 @@ import java.util.*;
  */
 public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   private static final boolean LOCAL_DIFF_GOLD_AND_GENERATED = false;
+  private static final Pattern NEXT_PAGE = Pattern.compile("<link rel=\"next\" href=\"([^\"]+)\"");
 
   @BeforeMethod
   protected void setUp() throws Exception {
@@ -193,6 +198,29 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     assertNotContainsPackageVersion(response, "1.0.0-Beta6");
     assertNotContainsPackageVersion(response, "1.0.0-Beta7");
     assertNotContainsPackageVersion(response, "1.0.0");
+  }
+
+  @Test
+  @TestFor(issues = "TW-40215")
+  public void testSkipToken() throws Exception {
+    int count = 100;
+    for (int i = 0; i <= count; i++) {
+      addMockPackage("foo", "1.0." + i);
+    }
+
+    String response = openRequest("Packages()");
+    Matcher matcher = NEXT_PAGE.matcher(response);
+    Assert.assertTrue(matcher.find());
+
+    String link = StringEscapeUtils.unescapeXml(matcher.group(1));
+    String serverUrl = getNuGetServerUrl();
+    if (link.startsWith(serverUrl)) {
+      link = new URI(link).toString();
+      link = link.substring(serverUrl.length());
+    }
+
+    response = openRequest(link);
+    assertContainsPackageVersion(response, "1.0." + count);
   }
 
   private String replaceXml(@NotNull final String text) {

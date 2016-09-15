@@ -149,6 +149,34 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
+  public void testSkiptoken(@NotNull final NuGet nuget) throws Exception {
+    enableDebug();
+    enablePackagesIndexSorting();
+
+    int size = 102;
+    for (int i = 0; i <= size; i++) {
+      addMockPackage("skiptoken", "1.0." + i);
+    }
+
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("list");
+    cmd.addParameter("skiptoken");
+    cmd.addParameter("-AllVersions");
+    cmd.addParameter("-Source");
+    cmd.addParameter(getNuGetServerUrl());
+
+    final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
+    Assert.assertEquals(exec.getExitCode(), 0, exec.getStderr());
+    final String stdout = exec.getStdout();
+    System.out.println(stdout);
+
+    for (int i = 0; i <= size; i++) {
+      Assert.assertTrue(stdout.contains("skiptoken 1.0." + i));
+    }
+  }
+
+  @Test(dataProvider = NUGET_VERSIONS)
   public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x1(@NotNull final NuGet nuget) throws NuGetExecutionException, IOException {
     doTriggerTest(nuget, packageId_1);
   }
