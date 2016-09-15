@@ -166,6 +166,12 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   }
 
   @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testGetPackageByInvalidKey(final NugetFeedLibrary library) throws JDOMException, IOException {
+    setODataSerializer(library);
+    assertStatusCode(HttpStatus.SC_BAD_REQUEST, "Packages(Id='Fixie')").run();
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
   public void testVSRequests(final NugetFeedLibrary library) {
     setODataSerializer(library);
     String[] reqs = {
