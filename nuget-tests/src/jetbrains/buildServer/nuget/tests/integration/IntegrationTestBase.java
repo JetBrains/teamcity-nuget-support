@@ -230,6 +230,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     final String nuGet = NuGet.NuGet_2_8.getPath().getPath();
     final GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(nuGet);
+    cmd.setWorkDirectory(new File(nuGet).getParent());
     cmd.addParameter("sources");
     cmd.addParameter("update");
     cmd.addParameter("-Name");
