@@ -115,7 +115,9 @@ public class NuGetDataSource {
         }
 
         if (version != null) {
-          if (!attributes.get(NuGetPackageAttributes.VERSION).equalsIgnoreCase(version)) {
+          final SemanticVersion version1 = SemanticVersion.valueOf(version);
+          final SemanticVersion version2 = SemanticVersion.valueOf(attributes.get(NuGetPackageAttributes.VERSION));
+          if (version1 == null || version2 == null || version1.compareTo(version2) != 0) {
             continue;
           }
         }

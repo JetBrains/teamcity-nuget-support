@@ -17,11 +17,13 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.server.entity.FeedParseResult;
 import jetbrains.buildServer.nuget.tests.server.entity.MetadataBeanProperty;
 import jetbrains.buildServer.nuget.tests.server.entity.MetadataParseResult;
 import jetbrains.buildServer.nuget.tests.server.entity.XmlFeedParsers;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
 import jetbrains.buildServer.util.XmlUtil;
@@ -40,6 +42,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.ID;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.VERSION;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -157,6 +162,19 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"), false);
     final String s = openRequest("Packages(Id='CommonServiceLocator',Version='1.0')");
     Assert.assertTrue(s.contains("<title type=\"text\">CommonServiceLocator</title>"));
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testGetByNormalizedVersion(final NugetFeedLibrary library) throws JDOMException, IOException {
+    setODataSerializer(library);
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "1.0.0")));
+
+    final String s = openRequest("Packages(Id='foo',Version='1.0.0.0')");
+    Assert.assertTrue(s.contains("<title type=\"text\">foo</title>"));
+
+    assertStatusCode(HttpStatus.SC_OK, "Packages(Id='foo',Version='1.0')").run();
+    assertStatusCode(HttpStatus.SC_OK, "Packages(Id='foo',Version='1.0.0')").run();
+    assertStatusCode(HttpStatus.SC_OK, "Packages(Id='foo',Version='1.0.0.0')").run();
   }
 
   @Test(dataProvider = "nugetFeedLibrariesData")
