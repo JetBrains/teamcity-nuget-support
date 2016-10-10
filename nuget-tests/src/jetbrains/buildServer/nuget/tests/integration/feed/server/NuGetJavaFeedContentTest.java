@@ -168,6 +168,11 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   }
 
   @Test
+  public void testGetNonExistingPackage() throws JDOMException, IOException {
+    assertStatusCode(HttpStatus.SC_NOT_FOUND, "Packages(Id='Fixie',Version='1.0.0')").run();
+  }
+
+  @Test
   public void testVSRequests() {
     String[] reqs = {
             "Packages()",
