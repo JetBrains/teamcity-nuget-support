@@ -16,11 +16,13 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import jetbrains.buildServer.nuget.server.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.server.entity.FeedParseResult;
 import jetbrains.buildServer.nuget.tests.server.entity.MetadataBeanProperty;
 import jetbrains.buildServer.nuget.tests.server.entity.MetadataParseResult;
 import jetbrains.buildServer.nuget.tests.server.entity.XmlFeedParsers;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
 import jetbrains.buildServer.util.XmlUtil;
@@ -40,6 +42,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 06.01.12 22:23
@@ -47,11 +51,6 @@ import java.util.regex.Pattern;
 public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   private static final boolean LOCAL_DIFF_GOLD_AND_GENERATED = false;
   private static final Pattern NEXT_PAGE = Pattern.compile("<link rel=\"next\" href=\"([^\"]+)\"");
-
-  @BeforeMethod
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
 
   @Test
   public void testMetadata_v1() throws JDOMException, IOException {
@@ -155,6 +154,18 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     addPackage(Paths.getTestDataPath("/packages/CommonServiceLocator.1.0.nupkg"), false);
     final String s = openRequest("Packages(Id='CommonServiceLocator',Version='1.0')");
     Assert.assertTrue(s.contains("<title type=\"text\">CommonServiceLocator</title>"));
+  }
+
+  @Test
+  public void testGetByNormalizedVersion() throws JDOMException, IOException {
+    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "1.0.0")));
+
+    final String s = openRequest("Packages(Id='foo',Version='1.0.0.0')");
+    Assert.assertTrue(s.contains("<title type=\"text\">foo</title>"));
+
+    assertStatusCode(HttpStatus.SC_OK, "Packages(Id='foo',Version='1.0')").run();
+    assertStatusCode(HttpStatus.SC_OK, "Packages(Id='foo',Version='1.0.0')").run();
+    assertStatusCode(HttpStatus.SC_OK, "Packages(Id='foo',Version='1.0.0.0')").run();
   }
 
   @Test

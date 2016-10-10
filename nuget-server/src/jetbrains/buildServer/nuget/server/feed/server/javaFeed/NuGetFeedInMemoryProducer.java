@@ -17,6 +17,8 @@
 package jetbrains.buildServer.nuget.server.feed.server.javaFeed;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
+import jetbrains.buildServer.nuget.server.util.SemanticVersion;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.entity.PackageEntity;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunction;
 import jetbrains.buildServer.nuget.server.feed.server.javaFeed.functions.NuGetFeedFunctions;
@@ -100,5 +102,16 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   @Override
   protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis, Map<String, InMemoryComplexTypeInfo<?>> complexTypesInfo) {
     return new NuGetFeedInMemoryEdmGenerator(namespace, MetadataConstants.CONTAINER_NAME, typeMapping, idPropName, eis, complexTypesInfo, myFunctions);
+  }
+
+  @Override
+  protected boolean comparePropertyValue(final String name, final Object v1, final Object v2) {
+    if (NuGetPackageAttributes.VERSION.equals(name) || NuGetPackageAttributes.VERSION.equals(name)) {
+      final SemanticVersion version1 = SemanticVersion.valueOf((String) v1);
+      final SemanticVersion version2 = SemanticVersion.valueOf((String) v2);
+      return !(version1 == null || version2 == null) && version1.compareTo(version2) == 0;
+    }
+
+    return super.comparePropertyValue(name, v1, v2);
   }
 }
