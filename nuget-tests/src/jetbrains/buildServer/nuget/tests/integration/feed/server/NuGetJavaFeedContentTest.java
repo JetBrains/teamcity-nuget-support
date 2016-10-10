@@ -172,6 +172,12 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   }
 
   @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testGetNonExistingPackage(final NugetFeedLibrary library) throws JDOMException, IOException {
+    setODataSerializer(library);
+    assertStatusCode(HttpStatus.SC_NOT_FOUND, "Packages(Id='Fixie',Version='1.0.0')").run();
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
   public void testVSRequests(final NugetFeedLibrary library) {
     setODataSerializer(library);
     String[] reqs = {
