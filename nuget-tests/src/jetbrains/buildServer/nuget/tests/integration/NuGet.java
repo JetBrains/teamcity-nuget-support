@@ -39,7 +39,7 @@ public enum NuGet {
   NuGet_3_2(3,2),
   NuGet_3_3(3,3),
   NuGet_3_4(3,4),
-  NuGet_3_6(3,5);
+  NuGet_3_5(3,5);
 
   public final int major;
   public final int minor;
@@ -77,9 +77,9 @@ public enum NuGet {
       case NuGet_3_3:
         return Paths.getPackagesPath("NuGet.CommandLine.3.3.0/tools/NuGet.exe");
       case NuGet_3_4:
-        return Paths.getPackagesPath("NuGet.CommandLine.3.4.3/tools/NuGet.exe");
-      case NuGet_3_6:
-        return Paths.getPackagesPath("NuGet.CommandLine.3.6.0-rc-1974/tools/nuget.exe");
+        return Paths.getPackagesPath("NuGet.CommandLine.3.4.4-rtm-final/tools/NuGet.exe");
+      case NuGet_3_5:
+        return Paths.getPackagesPath("NuGet.CommandLine.3.5.0-rtm-1938/tools/nuget.exe");
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }
