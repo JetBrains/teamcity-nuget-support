@@ -48,6 +48,6 @@ public class Paths {
 
   @NotNull
   public static File getCredentialProviderHomeDirectory() {
-    return FileUtil.getCanonicalFile(new File("./nuget-extensions/bin/credential-provider"));
+    return FileUtil.getCanonicalFile(new File("../nuget-extensions/bin/credential-provider"));
   }
 }

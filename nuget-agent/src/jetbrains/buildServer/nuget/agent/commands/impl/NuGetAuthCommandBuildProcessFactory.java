@@ -78,7 +78,9 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
     }
 
     final Map<String, String> additionalEnvironment = new HashMap<String, String>(_additionalEnvironment);
-    additionalEnvironment.put(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, myProvider.getCredentialProviderHomeDirectory().getAbsolutePath());
+    final String credentialsProviderPath = myProvider.getCredentialProviderHomeDirectory().getAbsolutePath();
+    LOG.debug("Set credentials provider location to " + credentialsProviderPath);
+    additionalEnvironment.put(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, credentialsProviderPath);
 
     if (sources.isEmpty() || hostContext.getConfigParameters().containsKey("teamcity.nuget.disableTeamCityRunner"))  {
       return myFactory.executeCommandLine(
