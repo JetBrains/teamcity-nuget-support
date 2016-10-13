@@ -16,6 +16,7 @@ dependencies {
     testCompile 'org.jmock:jmock:2.5.1'
     testCompile 'org.jmock:jmock-legacy:2.5.1'
     testCompile "org.jetbrains.teamcity:tests-support:$teamcityVersion"
+    testCompile 'org.apache.httpcomponents:httpcore:4.4.3'
     testCompile files("${teamcityDir}/devPackage/tests/tests-integration.jar")
     testRuntime files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/db.jar")
 }

@@ -28,9 +28,18 @@ import jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.util.FileUtil;
-import jetbrains.buildServer.util.HttpAuthServer;
-import jetbrains.buildServer.util.SimpleThreadedHttpServer;
 import jetbrains.buildServer.util.StringUtil;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.Header;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.impl.bootstrap.HttpServer;
+import org.apache.http.impl.bootstrap.ServerBootstrap;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpRequestHandler;
 import org.hamcrest.text.StringContains;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -38,9 +47,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -93,46 +102,27 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_publish_packages_mock_http(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     final AtomicBoolean hasPUT = new AtomicBoolean();
-    final SimpleThreadedHttpServer server = new SimpleThreadedHttpServer(){
-      @Override
-      protected void postProcessSocketData(String httpHeader, @NotNull InputStream is) throws IOException {
-        if (httpHeader.startsWith("PUT")) {
-          while(is.available() > 0) {
-            //noinspection ResultOfMethodCallIgnored
-            is.read();
-          }
-        }
-        super.postProcessSocketData(httpHeader, is);
-      }
+    final SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(3000).build();
+    ServerBootstrap bootstrap = ServerBootstrap.bootstrap().setSocketConfig(socketConfig).setServerInfo("TEST/1.1")
+            .registerHandler("/*", new HttpRequestHandler() {
+              @Override
+              public void handle(HttpRequest httpRequest, HttpResponse httpResponse, HttpContext httpContext) throws HttpException, IOException {
+                if (httpRequest.getRequestLine().getMethod().equals("PUT")) {
+                  hasPUT.set(true);
+                  if (httpRequest.containsHeader("Expect: 100-continue"))
+                    httpResponse.setStatusCode(100);
+                  else
+                    httpResponse.setStatusCode(201);
+                } else
+                  httpResponse.setStatusCode(200);
+              }
+            });
 
-      @Override
-      protected Response getResponse(String request) {
-        System.out.println(">> " + request);
-        String responseStatusLine;
-        String responseContent;
-        if (request.startsWith("PUT")) {
-          hasPUT.set(true);
-          if (request.contains("Expect: 100-continue")){
-            responseStatusLine = STATUS_LINE_100;
-            responseContent = "Continue";
-          }
-          else{
-            responseStatusLine = STATUS_LINE_201;
-            responseContent = "Created";
-          }
-        } else {
-          responseStatusLine = STATUS_LINE_200;
-          responseContent = "Ok";
-        }
-        System.out.println(String.format("<< %s %s", responseStatusLine, responseContent));
-        return createStringResponse(responseStatusLine, Collections.<String>emptyList(), responseContent);
-      }
-    };
-
+    HttpServer server = bootstrap.create();
     server.start();
     try {
       final File pkg = preparePackage(nuget);
-      BuildProcess p = callPublishRunnerEx(nuget, "http://localhost:" + server.getPort() + "/nuget", pkg);
+      BuildProcess p = callPublishRunnerEx(nuget, "http://localhost:" + server.getLocalPort() + "/nuget", pkg);
       assertRunSuccessfully(p, BuildFinishedStatus.FINISHED_SUCCESS);
 
       Assert.assertTrue(getCommandsOutput().contains("Your package was uploaded") || getCommandsOutput().contains("Your package was pushed."));
@@ -144,53 +134,57 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_publish_packages_mock_http_auth(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    enableDebug();
+
     final String username = "u-" + StringUtil.generateUniqueHash();
     final String password = "p-" + StringUtil.generateUniqueHash();
-
     final AtomicBoolean hasPUT = new AtomicBoolean();
-    final SimpleThreadedHttpServer server = new HttpAuthServer(){
-      @Override
-      protected void postProcessSocketData(String httpHeader, @NotNull InputStream is) throws IOException {
-        if (httpHeader.startsWith("PUT")) {
-          while(is.available() > 0) {
-            //noinspection ResultOfMethodCallIgnored
-            is.read();
-          }
-        }
-        super.postProcessSocketData(httpHeader, is);
-      }
 
-      @Override
-      protected boolean authorizeUser(@NotNull String loginPassword) {
-        return (username + ":" + password).equals(loginPassword);
-      }
+    final SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(3000).build();
+    ServerBootstrap bootstrap = ServerBootstrap.bootstrap().setSocketConfig(socketConfig).setServerInfo("TEST/1.1")
+            .registerHandler("/*", new HttpRequestHandler() {
+              @Override
+              public void handle(HttpRequest httpRequest, HttpResponse httpResponse, HttpContext httpContext) throws HttpException, IOException {
+                final Header authHeader = httpRequest.getFirstHeader("Authorization");
 
-      @Override
-      protected Response getAuthorizedResponse(String request) throws IOException {
-        System.out.println(">> " + request);
-        String responseStatusLine;
-        String responseContent;
-        if (request.startsWith("PUT")) {
-          hasPUT.set(true);
-          if (request.contains("Expect: 100-continue")){
-            responseStatusLine = STATUS_LINE_100;
-            responseContent = "Continue";
-          }
-          else{
-            responseStatusLine = STATUS_LINE_201;
-            responseContent = "Created";
-          }
-        } else {
-          responseStatusLine = STATUS_LINE_200;
-          responseContent = "Ok";
-        }
-        System.out.println(String.format("<< %s %s", responseStatusLine, responseContent));
-        return createStringResponse(responseStatusLine, Collections.<String>emptyList(), responseContent);
-      }
-    };
+                if (authHeader != null) {
+                  final String auth = authHeader.getValue();
+                  if (auth.startsWith("Basic")) {
+                    try {
+                      final String encoded = auth.substring("Basic".length()).trim();
+                      final String up = new String(new Base64().decode(encoded.getBytes("utf-8")), "utf-8");
+                      System.out.println("Login with: " + up);
+                      if ((username + ":" + password).equals(up)) {
+                        if (httpRequest.getRequestLine().getMethod().equals("PUT")) {
+                          hasPUT.set(true);
+                          if (httpRequest.containsHeader("Expect: 100-continue"))
+                            httpResponse.setStatusCode(100);
+                          else
+                            httpResponse.setStatusCode(201);
+                        } else
+                          httpResponse.setStatusCode(200);
 
+                        return;
+                      }
+                    } catch (IOException e) {
+                      e.printStackTrace();
+                    }
+                  }
+                }
+
+                httpResponse.setStatusCode(401);
+                httpResponse.setHeader("WWW-Authenticate", "Basic realm=\"Secure Area\"");
+                httpResponse.setHeader("Content-Type", "text/plain");
+                final BasicHttpEntity entity = new BasicHttpEntity();
+                entity.setContentLength(0);
+                entity.setContent(new ByteArrayInputStream("Authentication is required".getBytes()));
+                httpResponse.setEntity(entity);
+              }
+            });
+
+    HttpServer server = bootstrap.create();
     server.start();
-    final String feed = "http://localhost:" + server.getPort() + "/nuget";
+    final String feed = "http://localhost:" + server.getLocalPort() + "/nuget";
 
     addGlobalSource(feed, username, password);
     try {
