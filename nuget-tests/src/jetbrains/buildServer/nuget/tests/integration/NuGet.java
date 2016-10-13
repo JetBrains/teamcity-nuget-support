@@ -59,7 +59,7 @@ public enum NuGet {
       case NuGet_1_8:
         return Paths.getPackagesPath("NuGet.CommandLine.1.8.0/tools/NuGet.exe");
       case NuGet_2_0:
-        return Paths.getPackagesPath("NuGet.CommandLine.2.0.0/tools/NuGet.exe");
+        return Paths.getPackagesPath("NuGet.CommandLine.2.0.40001/tools/NuGet.exe");
       case NuGet_2_1:
         return Paths.getPackagesPath("NuGet.CommandLine.2.1.0/tools/NuGet.exe");
       case NuGet_2_2:
@@ -71,7 +71,7 @@ public enum NuGet {
       case NuGet_2_7:
         return Paths.getPackagesPath("NuGet.CommandLine.2.7.0/tools/NuGet.exe");
       case NuGet_2_8:
-        return Paths.getPackagesPath("NuGet.CommandLine.2.8.0/tools/NuGet.exe");
+        return Paths.getPackagesPath("NuGet.CommandLine.2.8.6/tools/NuGet.exe");
       case NuGet_3_2:
         return Paths.getPackagesPath("NuGet.CommandLine.3.2.0/tools/nuget.exe");
       case NuGet_3_3:

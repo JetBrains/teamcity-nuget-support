@@ -14,13 +14,13 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourCachedNuGetExe_1_6 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.6.0/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_1_7 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.7.0/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_1_8 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.8.0/tools/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_2_0 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.0.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_0 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.0.40001/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_2_1 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.1.0/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_2_2 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.2.0/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_2_5 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.5.0/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_2_6 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.6.0/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_2_7 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.7.0/tools/nuget.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_2_8 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.8.0/tools/nuget.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_2_8 = PathSearcher.SearchFile("packages/NuGet.CommandLine.2.8.6/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_3_2 = PathSearcher.SearchFile("packages/NuGet.CommandLine.3.2.0/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_3_3 = PathSearcher.SearchFile("packages/NuGet.CommandLine.3.3.0/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_3_4 = PathSearcher.SearchFile("packages/NuGet.CommandLine.3.4.4-rtm-final/tools/nuget.exe");
