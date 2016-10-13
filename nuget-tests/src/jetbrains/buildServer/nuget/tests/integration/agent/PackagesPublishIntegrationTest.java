@@ -30,14 +30,12 @@ import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.Header;
-import org.apache.http.HttpException;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
+import org.apache.http.*;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
+import org.apache.http.message.BasicStatusLine;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.hamcrest.text.StringContains;
@@ -60,7 +58,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Date: 22.07.11 1:25
  */
 public class PackagesPublishIntegrationTest extends IntegrationTestBase {
-  private static final String STATUS_LINE_100 = "HTTP/1.1 100 Continue";
+  public static final ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion("HTTP", 1, 1);
   protected NuGetPublishParameters myPublishParameters;
 
   @BeforeMethod
@@ -110,11 +108,11 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
                 if (httpRequest.getRequestLine().getMethod().equals("PUT")) {
                   hasPUT.set(true);
                   if (httpRequest.containsHeader("Expect: 100-continue"))
-                    httpResponse.setStatusCode(100);
+                    httpResponse.setStatusLine(new BasicStatusLine(PROTOCOL_VERSION, 100, "Continue"));
                   else
-                    httpResponse.setStatusCode(201);
+                    httpResponse.setStatusLine(new BasicStatusLine(PROTOCOL_VERSION, 201, "Created"));
                 } else
-                  httpResponse.setStatusCode(200);
+                  httpResponse.setStatusLine(new BasicStatusLine(PROTOCOL_VERSION, 200, "Ok"));
               }
             });
 
@@ -134,7 +132,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_publish_packages_mock_http_auth(@NotNull final NuGet nuget) throws IOException, RunBuildException {
-    enableDebug();
+    //enableDebug();
 
     final String username = "u-" + StringUtil.generateUniqueHash();
     final String password = "p-" + StringUtil.generateUniqueHash();
@@ -146,7 +144,6 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
               @Override
               public void handle(HttpRequest httpRequest, HttpResponse httpResponse, HttpContext httpContext) throws HttpException, IOException {
                 final Header authHeader = httpRequest.getFirstHeader("Authorization");
-
                 if (authHeader != null) {
                   final String auth = authHeader.getValue();
                   if (auth.startsWith("Basic")) {
@@ -155,24 +152,36 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
                       final String up = new String(new Base64().decode(encoded.getBytes("utf-8")), "utf-8");
                       System.out.println("Login with: " + up);
                       if ((username + ":" + password).equals(up)) {
-                        if (httpRequest.getRequestLine().getMethod().equals("PUT")) {
-                          hasPUT.set(true);
-                          if (httpRequest.containsHeader("Expect: 100-continue"))
-                            httpResponse.setStatusCode(100);
-                          else
-                            httpResponse.setStatusCode(201);
-                        } else
-                          httpResponse.setStatusCode(200);
-
+                        handleAuth(httpRequest, httpResponse);
                         return;
                       }
                     } catch (IOException e) {
                       e.printStackTrace();
+                      handleServerError(httpResponse);
+                      return;
                     }
                   }
                 }
+                handleNotAuth(httpResponse);
+              }
 
-                httpResponse.setStatusCode(401);
+              private void handleServerError(HttpResponse httpResponse) {
+                httpResponse.setStatusCode(500);
+              }
+
+              private void handleAuth(HttpRequest httpRequest, HttpResponse httpResponse) {
+                if (httpRequest.getRequestLine().getMethod().equals("PUT")) {
+                  hasPUT.set(true);
+                  if(httpRequest.containsHeader("Expect: 100-continue"))
+                    httpResponse.setStatusLine(new BasicStatusLine(PROTOCOL_VERSION, 100, "Continue"));
+                  else
+                    httpResponse.setStatusLine(new BasicStatusLine(PROTOCOL_VERSION, 201, "Created"));
+                } else
+                  httpResponse.setStatusLine(new BasicStatusLine(PROTOCOL_VERSION, 200, "Ok"));
+              }
+
+              private void handleNotAuth(HttpResponse httpResponse) {
+                httpResponse.setStatusLine(new BasicStatusLine(PROTOCOL_VERSION, 401, "Authorization Required"));
                 httpResponse.setHeader("WWW-Authenticate", "Basic realm=\"Secure Area\"");
                 httpResponse.setHeader("Content-Type", "text/plain");
                 final BasicHttpEntity entity = new BasicHttpEntity();
