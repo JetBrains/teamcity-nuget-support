@@ -17,8 +17,6 @@
 package jetbrains.buildServer.nuget.tests.integration.agent;
 
 import jetbrains.buildServer.RunBuildException;
-import jetbrains.buildServer.agent.BuildFinishedStatus;
-import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.integration.MockNuGetAuthHTTP;
@@ -32,8 +30,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -52,15 +48,15 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
 
     myHttp = new MockNuGetAuthHTTP();
     myHttp.start();
-    myAuthSource = Arrays.asList(myHttp.getSourceUrl());
+    myAuthSource = Collections.singletonList(myHttp.getSourceUrl());
     addGlobalSource(myHttp.getSourceUrl(), myHttp.getUsername(), myHttp.getPassword());
   }
 
   @AfterMethod
   @Override
   protected void tearDown() throws Exception {
-    super.tearDown();
     myHttp.stop();
+    super.tearDown();
   }
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
