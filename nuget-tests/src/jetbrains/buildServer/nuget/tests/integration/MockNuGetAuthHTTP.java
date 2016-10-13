@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
+import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.HttpAuthServer;
 import jetbrains.buildServer.util.StringUtil;
@@ -24,7 +25,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -94,7 +94,7 @@ public class MockNuGetAuthHTTP {
       protected Response getAuthorizedResponse(String request) throws IOException {
         final String path = getRequestPath(request);
         if (path == null) return createStreamResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found".getBytes("utf-8"));
-        System.out.println("NuGet request path: " + path);
+        log("NuGet request path: " + path);
 
         final List<String> xml = Arrays.asList("DataServiceVersion: 1.0;", "Content-Type: application/xml;charset=utf-8");
         final List<String> atom = Arrays.asList("DataServiceVersion: 2.0;", "Content-Type: application/atom+xml;charset=utf-8");
@@ -125,7 +125,7 @@ public class MockNuGetAuthHTTP {
       @NotNull
       @Override
       protected Response getNotAuthorizedResponse(String request) {
-        System.out.println("Not authorized: " + request);
+        log("Not authorized: " + request);
         return super.getNotAuthorizedResponse(request);
       }
 
@@ -133,8 +133,10 @@ public class MockNuGetAuthHTTP {
       protected boolean authorizeUser(@NotNull String loginPassword) {
         if ((myUsername + ":" + myPassword).equals(loginPassword)) {
           myIsAuthorized.set(true);
+          log("Authorized user with password: " + loginPassword);
           return true;
         }
+        log("Can't authorize user. Password is incorrect.");
         return false;
       }
 
@@ -171,6 +173,10 @@ public class MockNuGetAuthHTTP {
     myHttp.start();
     mySourceUrl = "http://localhost:" + myHttp.getPort() + "/nuget/";
     myDownloadUrl = "http://localhost:" + myHttp.getPort() + "/download/";
+  }
+
+  private void log(String message) {
+    System.out.println("[mock feed] " + message);
   }
 
   public static interface Action {
