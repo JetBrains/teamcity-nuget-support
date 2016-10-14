@@ -117,7 +117,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static string FetchLatestNuGetCommandline()
     {
       var temp = CreateTempPath();
-      ProcessExecutor.ExecuteProcess(NuGetExe_3_3, "install", "NuGet.commandline", "-Source", NuGetConstants.NuGetDevFeed, "-ExcludeVersion", "-OutputDirectory",
+      ProcessExecutor.ExecuteProcess(NuGetExe_3_4, "install", "NuGet.Commandline", "-Source", NuGetConstants.NuGetDevFeed, "-ExcludeVersion", "-OutputDirectory",
                                      temp).Dump().AssertNoErrorOutput().AssertExitedSuccessfully();
       string nugetPath = Path.Combine(temp, "NuGet.CommandLine/tools/NuGet.Exe");
       Assert.IsTrue(File.Exists(nugetPath));
