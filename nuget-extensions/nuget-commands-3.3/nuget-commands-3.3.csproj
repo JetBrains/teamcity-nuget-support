@@ -113,7 +113,9 @@
       <Link>src\Shared.3.2\NuGetTeamCityInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\ListCommandBase.cs" />
+    <Compile Include="..\nuget-commands\src.3.3\ListCommandBase.cs">
+      <Link>src\Shared.3.3\ListCommandBase.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Xml.Serialization;
 using JetBrains.Annotations;
 using NuGet;
-using NuGet.Configuration;
 
 namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
 {
@@ -12,6 +11,8 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
   [XmlRoot("package")]
   public class NuGetPackage : NuGetSource, INuGetPackage
   {
+    public static readonly string V2FeedUrl = "https://www.nuget.org/api/v2/";
+
     [XmlIgnore] private readonly Lazy<Func<IPackage, bool>> myVersionSpec;
     [XmlIgnore] private readonly List<NuGetPackageEntry> myEntries = new List<NuGetPackageEntry>();
 
@@ -54,7 +55,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
     [XmlIgnore]
     public NuGetSource Feed
     {
-      get { return Source != null ? this : FromFeedUrl(NuGetConstants.V2FeedUrl); }
+      get { return Source != null ? this : FromFeedUrl(V2FeedUrl); }
     }
 
     [XmlIgnore]

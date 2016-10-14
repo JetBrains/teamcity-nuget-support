@@ -72,7 +72,11 @@ namespace JetBrains.TeamCity.NuGetRunner
     {
       Func<string, string> path = p => Path.Combine(typeof (Program).GetAssemblyDirectory(), "plugins-" + p, "JetBrains.TeamCity.NuGet.ExtendedCommands." + p + ".dll");
 
-      if (runner.NuGetVersion.Major >= 3 && runner.NuGetVersion.Minor >= 3)
+      if (runner.NuGetVersion.Major >= 3 && runner.NuGetVersion.Minor >= 5)
+      {
+        yield return path("3.5");
+      }
+      else if (runner.NuGetVersion.Major >= 3 && runner.NuGetVersion.Minor >= 3)
       {
         yield return path("3.3");
       }

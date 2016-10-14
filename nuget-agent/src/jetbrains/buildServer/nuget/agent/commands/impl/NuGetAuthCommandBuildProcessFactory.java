@@ -77,13 +77,18 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
       })));
     }
 
+    final Map<String, String> additionalEnvironment = new HashMap<String, String>(_additionalEnvironment);
+    final String credentialsProviderPath = myProvider.getCredentialProviderHomeDirectory().getAbsolutePath();
+    LOG.debug("Set credentials provider location to " + credentialsProviderPath);
+    additionalEnvironment.put(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, credentialsProviderPath);
+
     if (sources.isEmpty() || hostContext.getConfigParameters().containsKey("teamcity.nuget.disableTeamCityRunner"))  {
       return myFactory.executeCommandLine(
               hostContext,
               program,
               _argz,
               workingDir,
-              _additionalEnvironment
+              additionalEnvironment
       );
     }
 
@@ -102,9 +107,7 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
           throw new RunBuildException("Failed to create temp file for NuGet sources. " + e.getMessage(), e);
         }
 
-        final Map<String, String> additionalEnvironment = new HashMap<String, String>(_additionalEnvironment);
         additionalEnvironment.put(TEAMCITY_NUGET_FEEDS_ENV_VAR, mySourcesFile.getPath());
-        additionalEnvironment.put(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, myProvider.getCredentialProviderHomeDirectory().getAbsolutePath());
 
         return myFactory.executeCommandLine(
                 hostContext,

@@ -26,5 +26,6 @@
     <orderEntry type="library" name="Servlet Api" level="project" />
     <orderEntry type="library" name="odata4j" level="project" />
     <orderEntry type="library" name="jersey" level="project" />
+    <orderEntry type="library" name="httpcore-4.4.3" level="project" />
   </component>
 </module>
