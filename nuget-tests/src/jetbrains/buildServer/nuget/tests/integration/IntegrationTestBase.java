@@ -51,6 +51,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -215,12 +216,10 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             )
     );
 
-    if (!SystemInfo.isWindows) {
-      // Add an acccess to run NuGet.exe
-      for (NuGet nuGetVersion : NuGet.values()) {
-        final String nuGet = nuGetVersion.getPath().getPath();
-        enableExecution(nuGet, null);
-      }
+    // Add an access to run NuGet.exe
+    for (NuGet nuGetVersion : NuGet.values()) {
+      final String nuGet = nuGetVersion.getPath().getPath();
+      enableExecution(nuGet, null);
     }
 
     enshureRunningAgainstNuGetOrgAPIv2();
@@ -324,19 +323,29 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     };
   }
 
-  private static void enableExecution(@NotNull final String filePath, @Nullable final String baseDir) {
+  protected static void enableExecution(@NotNull final String filePath, @Nullable final String baseDir) {
+    if(SystemInfo.isWindows) {
+      return;
+    }
+
     final GeneralCommandLine commandLine = new GeneralCommandLine();
 
+    String canonicalFilePath = null;
+    try {
+      canonicalFilePath = new File(filePath).getCanonicalPath();
+    } catch (IOException e) {
+      canonicalFilePath = filePath;
+    }
     commandLine.setExePath("chmod");
     commandLine.addParameter("+x");
-    commandLine.addParameter(filePath);
+    commandLine.addParameter(canonicalFilePath);
     if (baseDir != null) {
       commandLine.setWorkDirectory(baseDir);
     }
 
     final ExecResult execResult = SimpleCommandLineProcessRunner.runCommand(commandLine, null);
     if (execResult.getExitCode() != 0) {
-      System.out.println("Failed to set executable attribute for " + filePath + ": chmod +x exit code is " + execResult.getExitCode());
+      System.out.println("Failed to set executable attribute for " + canonicalFilePath + ": chmod +x exit code is " + execResult.getExitCode());
     }
   }
 }

@@ -50,6 +50,7 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
     super.setUp();
 
     myCommand = createMockCommand(myNuGetTeamCityProvider, createTempDir());
+    enableExecution("./../nuget-extensions/bin/JetBrains.TeamCity.NuGetRunner.exe", null);
   }
 
   @NotNull
