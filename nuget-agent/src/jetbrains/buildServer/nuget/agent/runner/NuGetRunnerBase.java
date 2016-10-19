@@ -27,14 +27,14 @@ import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 23.08.11 18:32
  */
 public abstract class NuGetRunnerBase implements AgentBuildRunner, AgentBuildRunnerInfo {
+  private final Pattern ourRequirementsPattern = Pattern.compile("^(" + DotNetConstants.DOTNET4VERSION_PATTERN + "|" + DotNetConstants.MONO_VERSION_PATTERN + ")$");
   protected final Logger LOG = Logger.getInstance(getClass().getName());
 
   protected final NuGetActionFactory myActionFactory;
@@ -56,11 +56,11 @@ public abstract class NuGetRunnerBase implements AgentBuildRunner, AgentBuildRun
   public boolean canRun(@NotNull BuildAgentConfiguration agentConfiguration) {
     if(CollectionsUtil.contains(agentConfiguration.getConfigurationParameters().keySet(), new Filter<String>() {
       public boolean accept(@NotNull String data) {
-        return data.startsWith("DotNetFramework4.") || data.startsWith("Mono");
+        return ourRequirementsPattern.matcher(data).find();
       }
     })) return true;
 
-    LOG.warn("NuGet requires .NET Framework (x86) 4.0 or higher or Mono to be installed.");
+    LOG.warn("NuGet requires .NET Framework (x86) 4.0 and higher or Mono 3.2 and higher to be installed.");
     return false;
   }
 }

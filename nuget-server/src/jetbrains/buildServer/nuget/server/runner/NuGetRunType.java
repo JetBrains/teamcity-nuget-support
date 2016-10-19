@@ -100,10 +100,13 @@ public abstract class NuGetRunType extends RunType {
       if(toolVersion != null){
         final Version version = Version.valueOf(toolVersion.getVersion());
         if(version != null){
+          final String dotNetPattern;
           if(version.compareTo(LOWEST_VERSION_REQUIRED_4_5_DOT_NET) >= 0)
-            list.add(new Requirement(RequirementQualifier.EXISTS_QUALIFIER + "(Mono|" + DotNetConstants.DOT_NET_FRAMEWORK + "(" + DotNetConstants.v4_5 + "|" + DotNetConstants.v4_5_1 + "|" + DotNetConstants.v4_5_2 + "|" + DotNetConstants.v4_6 + "|" + DotNetConstants.v4_6_1 + ")_x86)", null, RequirementType.EXISTS));
+            dotNetPattern = DotNetConstants.DOTNET4_5VERSION_PATTERN;
           else
-            list.add(new Requirement("(Mono|\"" + DotNetConstants.DOT_NET_FRAMEWORK_4_x86 + ")", null, RequirementType.EXISTS));
+            dotNetPattern = DotNetConstants.DOTNET4VERSION_PATTERN;
+
+          list.add(new Requirement(RequirementQualifier.EXISTS_QUALIFIER + "(" + dotNetPattern + "|" + DotNetConstants.MONO_VERSION_PATTERN + ")", null, RequirementType.EXISTS));
         }
       }
     }
