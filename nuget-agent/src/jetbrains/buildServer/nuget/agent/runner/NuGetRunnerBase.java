@@ -27,14 +27,14 @@ import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.filters.Filter;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 23.08.11 18:32
  */
 public abstract class NuGetRunnerBase implements AgentBuildRunner, AgentBuildRunnerInfo {
+  private final Pattern ourRequirementsPattern = Pattern.compile("^" + DotNetConstants.DOTNET4VERSION_PATTERN + "$");
   protected final Logger LOG = Logger.getInstance(getClass().getName());
 
   protected final NuGetActionFactory myActionFactory;
@@ -61,7 +61,7 @@ public abstract class NuGetRunnerBase implements AgentBuildRunner, AgentBuildRun
 
     if(CollectionsUtil.contains(agentConfiguration.getConfigurationParameters().keySet(), new Filter<String>() {
       public boolean accept(@NotNull String data) {
-        return data.startsWith("DotNetFramework4.");
+        return ourRequirementsPattern.matcher(data).find();
       }
     })) return true;
 
