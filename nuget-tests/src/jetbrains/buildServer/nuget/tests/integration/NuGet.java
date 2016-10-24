@@ -79,7 +79,7 @@ public enum NuGet {
       case NuGet_3_4:
         return Paths.getPackagesPath("NuGet.CommandLine.3.4.4-rtm-final/tools/NuGet.exe");
       case NuGet_3_5:
-        return Paths.getPackagesPath("NuGet.CommandLine.3.5.0-rtm-1938/tools/nuget.exe");
+        return Paths.getPackagesPath("NuGet.CommandLine.3.5.0-rtm-1938/tools/NuGet.exe");
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }
