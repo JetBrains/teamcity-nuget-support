@@ -41,7 +41,7 @@ import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_PATH;
  *         Date: 23.08.11 18:47
  */
 public abstract class NuGetRunType extends RunType {
-  private static final Version LOWEST_VERSION_REQUIRED_4_5_DOT_NET = new Version(2, 8, 0);
+  private static final Version LOWEST_VERSION_REQUIRED_4_5_DOT_NET = new Version(2, 8, 6);
   private final PluginDescriptor myDescriptor;
   private final ServerToolManager myToolManager;
   private final ProjectManager myProjectManager;
