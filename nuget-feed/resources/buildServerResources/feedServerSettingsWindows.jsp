@@ -24,7 +24,6 @@
 <jsp:useBean id="nugetSettingsPostUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="privateFeedUrl" scope="request" type="java.lang.String" />
 <jsp:useBean id="publicFeedUrl" scope="request" type="java.lang.String" />
-<jsp:useBean id="actualServerUrl" scope="request" type="java.lang.String" />
 
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerContants"/>
 
@@ -50,7 +49,7 @@
       <tr>
         <th>Authenticated Feed URL:</th>
         <td>
-          <c:set var="url"><c:url value="${actualServerUrl}${privateFeedUrl}"/></c:set>
+          <c:set var="url"><c:url value="${privateFeedUrl}"/></c:set>
           <div><a href="${url}">${url}</a></div>
           <span class="smallNote">Lists all packages available for the currently authenticated user (user should have view project permission). Uses HTTP BASIC authentication</span>
         </td>
@@ -68,7 +67,7 @@
             </span>
           </c:when>
           <c:otherwise>
-            <c:set var="url"><c:url value="${actualServerUrl}${publicFeedUrl}"/></c:set>
+            <c:set var="url"><c:url value="${publicFeedUrl}"/></c:set>
             <div><a href="${url}">${url}</a></div>
             <span class="smallNote">Lists all packages from builds available for the guest<bs:help file="Guest+User"/> user</span>
           </c:otherwise>
