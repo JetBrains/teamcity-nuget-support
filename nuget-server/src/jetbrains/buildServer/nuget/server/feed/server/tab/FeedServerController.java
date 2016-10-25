@@ -32,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.UriBuilder;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -72,12 +73,14 @@ public class FeedServerController extends BaseController {
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request,
                                   @NotNull final HttpServletResponse response) throws Exception {
     final ModelAndView mv = new ModelAndView(myDescriptor.getPluginResourcesPath("server/feedServerSettingsWindows.jsp"));
+    final UriBuilder uriBuilder = UriBuilder.fromUri(myRootUrlHolder.getRootUrl());
+    final String privateFeedUrl = uriBuilder.replacePath(mySettings.getNuGetHttpAuthFeedControllerPath()).build().toString();
+    final String publicFeedUrl = uriBuilder.replacePath(mySettings.getNuGetGuestAuthFeedControllerPath()).build().toString();
 
-    mv.getModel().put("actualServerUrl", myRootUrlHolder.getRootUrl());
     mv.getModel().put("nugetStatusRefreshUrl", myIncludePath);
     mv.getModel().put("nugetSettingsPostUrl", mySettingsPath);
-    mv.getModel().put("privateFeedUrl", mySettings.getNuGetHttpAuthFeedControllerPath());
-    mv.getModel().put("publicFeedUrl", mySettings.getNuGetGuestAuthFeedControllerPath());
+    mv.getModel().put("privateFeedUrl", privateFeedUrl);
+    mv.getModel().put("publicFeedUrl", publicFeedUrl);
     mv.getModel().put("serverEnabled", mySettings.isNuGetServerEnabled());
     mv.getModel().put("isGuestEnabled", myLoginConfiguration.isGuestLoginAllowed());
 
