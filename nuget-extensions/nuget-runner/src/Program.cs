@@ -84,7 +84,11 @@ namespace JetBrains.TeamCity.NuGetRunner
       {
         yield return path("3.2");
       }
-      else if (runner.NuGetVersion.Major >= 2 && runner.NuGetVersion.Minor >= 8)
+      else if (runner.NuGetVersion.Major >= 2 && runner.NuGetVersion.Minor >= 8 && runner.NuGetVersion.Build >= 60717) // from 2.8.6
+      {
+        yield return path("2.8.6");
+      }
+      else if (runner.NuGetVersion.Major >= 2 && runner.NuGetVersion.Minor >= 8) // to 2.8.5
       {
         yield return path("2.8");
       }

@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CCB125CA-D44A-478D-9177-A64BBB84FA79}</ProjectGuid>
+    <ProjectGuid>{43E81EB7-993F-4DFE-A036-11EE9981DFA3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>JetBrains.TeamCity.NuGet.ExtendedCommands</RootNamespace>
-    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.2.8</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.2.8.6</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\bin\plugins-2.8\</OutputPath>
+    <OutputPath>..\bin\plugins-2.8.6\</OutputPath>
     <DefineConstants>TRACE;DEBUG;NUGET_2_8</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,8 +27,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\bin\plugins-2.8\</OutputPath>
-    <DefineConstants>TRACE;NUGET_2_8</DefineConstants>
+    <OutputPath>..\bin\plugins-2.8.6\</OutputPath>
+    <DefineConstants>TRACE;NUGET_2_8_6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NuGet">
-      <HintPath>..\lib\nuget\2.8\NuGet.exe</HintPath>
+      <HintPath>..\lib\nuget\2.8.6\NuGet.exe</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
