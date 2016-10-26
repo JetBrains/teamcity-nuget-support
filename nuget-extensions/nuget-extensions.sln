@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-tests-2.5", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-2.8", "nuget-commands-2.8\nuget-commands-2.8.csproj", "{CCB125CA-D44A-478D-9177-A64BBB84FA79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-2.8.6", "nuget-commands-2.8.6\nuget-commands-2.8.6.csproj", "{43E81EB7-993F-4DFE-A036-11EE9981DFA3}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-tests-2.8", "nuget-commands-tests-2.8\nuget-commands-tests-2.8.csproj", "{38C50C5D-6EB9-4CBF-88A1-150F4CCCAB78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-3.2", "nuget-commands-3.2\nuget-commands-3.2.csproj", "{B9249A11-BB64-46E0-A6F8-50D42817A71D}"
@@ -143,6 +145,18 @@ Global
 		{CCB125CA-D44A-478D-9177-A64BBB84FA79}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{CCB125CA-D44A-478D-9177-A64BBB84FA79}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{CCB125CA-D44A-478D-9177-A64BBB84FA79}.Release|x86.ActiveCfg = Release|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Debug|x86.Build.0 = Debug|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Release|x86.ActiveCfg = Release|Any CPU
+		{43E81EB7-993F-4DFE-A036-11EE9981DFA3}.Release|x86.Build.0 = Release|Any CPU
 		{38C50C5D-6EB9-4CBF-88A1-150F4CCCAB78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{38C50C5D-6EB9-4CBF-88A1-150F4CCCAB78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38C50C5D-6EB9-4CBF-88A1-150F4CCCAB78}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
