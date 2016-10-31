@@ -40,6 +40,8 @@ public interface  NuGetServerSettings {
   @NotNull
   //TODO: Allow to register minor NuGet Feed urls, will be used to migrated to new feed url
   String getNuGetFeedControllerPath();
+
+  String getNuGetFeedControllerPathWithEndSlash();
   
   @NotNull
   String getNuGetHttpAuthFeedControllerPath();
