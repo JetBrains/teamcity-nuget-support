@@ -53,9 +53,9 @@ public class NuGetServerPropertiesProvider extends AbstractBuildParametersProvid
   public Map<String, String> getProperties() {
     final Map<String, String> map = new HashMap<String, String>();
     if (mySettings.isNuGetServerEnabled()) {
-      map.put(FEED_REFERENCE_AGENT_PROVIDED, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
-      map.put(FEED_AUTH_REFERENCE_AGENT_PROVIDED, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
-      map.put(Constants.SYSTEM_PREFIX + FEED_AUTH_REFERENCE_SERVER_PROVIDED, myRootUrlHolder.getRootUrl() + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPath()));
+      map.put(FEED_REFERENCE_AGENT_PROVIDED, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPathWithEndSlash()));
+      map.put(FEED_AUTH_REFERENCE_AGENT_PROVIDED, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPathWithEndSlash()));
+      map.put(Constants.SYSTEM_PREFIX + FEED_AUTH_REFERENCE_SERVER_PROVIDED, myRootUrlHolder.getRootUrl() + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPathWithEndSlash()));
     }
     return map;
   }

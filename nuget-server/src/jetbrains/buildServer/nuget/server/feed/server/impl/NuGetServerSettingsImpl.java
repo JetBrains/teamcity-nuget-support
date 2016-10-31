@@ -28,6 +28,7 @@ import static jetbrains.buildServer.nuget.server.feed.server.impl.UrlUtil.join;
  */
 public class NuGetServerSettingsImpl implements NuGetServerSettings {
   public static final String PATH = "/app/nuget/v1/FeedService.svc";
+  public static final String PATH_END_SLASH = "/app/nuget/v1/FeedService.svc/";
   private final NuGetServerFeedSettingsImpl myDotNetSettings;
 
   public NuGetServerSettingsImpl(@NotNull final NuGetServerFeedSettingsImpl dotNetSettings) {
@@ -48,13 +49,18 @@ public class NuGetServerSettingsImpl implements NuGetServerSettings {
     return PATH;
   }
 
+  @Override
+  public String getNuGetFeedControllerPathWithEndSlash() {
+    return PATH_END_SLASH;
+  }
+
   @NotNull
   public String getNuGetHttpAuthFeedControllerPath() {
-    return join(WebUtil.HTTP_AUTH_PREFIX, getNuGetFeedControllerPath() + "/");
+    return join(WebUtil.HTTP_AUTH_PREFIX, PATH_END_SLASH);
   }
 
   @NotNull
   public String getNuGetGuestAuthFeedControllerPath() {
-    return join(WebUtil.GUEST_AUTH_PREFIX, getNuGetFeedControllerPath() + "/");
+    return join(WebUtil.GUEST_AUTH_PREFIX, PATH_END_SLASH);
   }
 }
