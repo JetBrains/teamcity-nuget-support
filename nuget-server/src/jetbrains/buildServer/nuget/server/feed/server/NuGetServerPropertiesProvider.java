@@ -22,6 +22,7 @@ import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider;
 import org.jetbrains.annotations.NotNull;
 
+import javax.ws.rs.core.UriBuilder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class NuGetServerPropertiesProvider extends AbstractBuildParametersProvid
     if (mySettings.isNuGetServerEnabled()) {
       map.put(FEED_REFERENCE_AGENT_PROVIDED, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPathWithEndSlash()));
       map.put(FEED_AUTH_REFERENCE_AGENT_PROVIDED, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPathWithEndSlash()));
-      map.put(Constants.SYSTEM_PREFIX + FEED_AUTH_REFERENCE_SERVER_PROVIDED, myRootUrlHolder.getRootUrl() + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPathWithEndSlash()));
+      map.put(Constants.SYSTEM_PREFIX + FEED_AUTH_REFERENCE_SERVER_PROVIDED, UriBuilder.fromUri(myRootUrlHolder.getRootUrl()).replacePath(mySettings.getNuGetHttpAuthFeedControllerPath()).build().toString());
     }
     return map;
   }
