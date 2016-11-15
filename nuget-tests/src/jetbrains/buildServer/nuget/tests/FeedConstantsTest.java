@@ -35,15 +35,15 @@ public class FeedConstantsTest extends BaseTestCase {
   @Test
   @TestFor(issues = "TW-25512")
   public void test_does_not_accept_symbols_package() throws IOException {
-    doFilterTest("a.b.c.3.4.5.nupkg", true);
-    doFilterTest("a.b.c.3.4.5.symbols.nupkg", false);
+    doFilterTest("a.b.c.3.4.5.nupkg", false);
+    doFilterTest("a.b.c.3.4.5.symbols.nupkg", true);
   }
 
   private void doFilterTest(@NotNull final String name, final boolean expectedResult) throws IOException {
-    Assert.assertEquals(FeedConstants.PACKAGE_FILE_NAME_FILTER.accept(name), expectedResult);
+    Assert.assertEquals(FeedConstants.SYMBOLS_PACKAGE_FILE_NAME_FILTER.accept(name), expectedResult);
     final File tmp = new File(createTempDir(), name);
     tmp.createNewFile();
-    Assert.assertEquals(FeedConstants.PACKAGE_FILE_FILTER.accept(tmp), expectedResult);
+    Assert.assertEquals(FeedConstants.SYMBOLS_PACKAGE_FILE_FILTER.accept(tmp), expectedResult);
   }
 
 }

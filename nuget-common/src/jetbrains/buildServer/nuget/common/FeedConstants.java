@@ -45,6 +45,12 @@ public class FeedConstants {
     }
   };
 
+  public static final FileFilter SYMBOLS_PACKAGE_FILE_FILTER = new FileFilter() {
+    public boolean accept(File pathname) {
+      return pathname.isFile() && SYMBOLS_PACKAGE_FILE_NAME_FILTER.accept(pathname.getName());
+    }
+  };
+
   public static final FileFilter EXE_FILE_FILTER = new FileFilter() {
     public boolean accept(File pathname) {
       return pathname.isFile() && EXE_FILE_NAME_FILTER.accept(pathname.getName());
@@ -67,7 +73,13 @@ public class FeedConstants {
   public static final Filter<String> PACKAGE_FILE_NAME_FILTER = new Filter<String>() {
     public boolean accept(@NotNull String data) {
       data = data.toLowerCase();
-      return data.endsWith(FeedConstants.NUGET_EXTENSION.toLowerCase()) && !data.endsWith(FeedConstants.NUGET_SYMBOLS_EXTENSION.toLowerCase());
+      return data.endsWith(FeedConstants.NUGET_EXTENSION.toLowerCase());
+    }
+  };
+
+  public static final Filter<String> SYMBOLS_PACKAGE_FILE_NAME_FILTER = new Filter<String>() {
+    public boolean accept(@NotNull String data) {
+      return data.toLowerCase().endsWith(FeedConstants.NUGET_SYMBOLS_EXTENSION.toLowerCase());
     }
   };
 }
