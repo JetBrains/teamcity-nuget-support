@@ -105,29 +105,27 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
     return myAvailableTools.getAvailable(FetchToolsPolicy.FetchNew).getFetchedTools();
   }
 
-  @Nullable
+  @NotNull
   @Override
-  public ToolVersion tryGetPackageVersion(@NotNull File toolPackage) {
+  public GetPackageVersionResult tryGetPackageVersion(@NotNull File toolPackage) {
     if (!FeedConstants.NUGET_TOOL_FILE_FILTER.accept(toolPackage)) {
-      LOG.debug(String.format("File %s is not a valid NuGet redistributable package since its name do not suite.", toolPackage.getAbsolutePath()));
-      return null;
+      return GetPackageVersionResult.error(String.format("File %s is not a valid NuGet redistributable package since its name do not suite.", toolPackage.getAbsolutePath()));
     }
     if(FeedConstants.PACKAGE_FILE_FILTER.accept(toolPackage)){
       try {
         NuGetPackageValidationUtil.validatePackage(toolPackage);
       } catch (ToolException e) {
         LOG.debug(e);
-        return null;
+        return GetPackageVersionResult.error(e.getMessage());
       }
     }
 
     final String toolId = FilenameUtils.removeExtension(normalizeToolPackageName(toolPackage.getName()));
     final String nugetVersion = ToolIdUtils.getPackageVersion(toolPackage);
     if(StringUtil.isEmpty(nugetVersion)){
-      LOG.debug(String.format("Failed to determine NuGet version based on its package file name %s. Checked package %s", toolPackage.getName(), toolPackage.getAbsolutePath()));
-      return null;
+      return GetPackageVersionResult.error(String.format("Failed to determine NuGet version based on its package file name %s. Checked package %s", toolPackage.getName(), toolPackage.getAbsolutePath()));
     }
-    return new SimpleToolVersion(NUGET_TOOL_TYPE, nugetVersion, toolId);
+    return GetPackageVersionResult.version(new SimpleToolVersion(NUGET_TOOL_TYPE, nugetVersion, toolId));
   }
 
   @NotNull
