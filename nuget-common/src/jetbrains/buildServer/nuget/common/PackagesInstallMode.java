@@ -20,6 +20,9 @@ import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_USE_RESTORE_COMMAND_INSTALL_MODE;
+import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_USE_RESTORE_COMMAND_RESTORE_MODE;
+
 /**
  * Created 13.08.13 13:48
  *
@@ -29,12 +32,12 @@ public enum PackagesInstallMode {
   /**
    * This method calls one NuGet command to update all packages
    */
-  VIA_RESTORE("restore"),
+  VIA_RESTORE(NUGET_USE_RESTORE_COMMAND_RESTORE_MODE),
 
   /**
    * This methos must call a NuGet udpate command per packages.config
    */
-  VIA_INSTALL("install"),
+  VIA_INSTALL(NUGET_USE_RESTORE_COMMAND_INSTALL_MODE),
   ;
   private final String myName;
 
