@@ -17,11 +17,10 @@
 package jetbrains.buildServer.nuget.server.tool.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
-import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.tool.NuGetToolDownloader;
 import jetbrains.buildServer.tools.ToolException;
 import jetbrains.buildServer.tools.available.DownloadableToolVersion;
+import jetbrains.buildServer.tools.utils.URLDownloader;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -32,22 +31,14 @@ import java.io.File;
 public class NuGetToolDownloaderImpl implements NuGetToolDownloader {
   private static final Logger LOG = Logger.getInstance(NuGetToolDownloaderImpl.class.getName());
 
-  @NotNull private final NuGetFeedReader myClient;
-  @NotNull private final NuGetFeedClient myFeed;
-
-  public NuGetToolDownloaderImpl(@NotNull final NuGetFeedReader client, @NotNull final NuGetFeedClient feed) {
-    myClient = client;
-    myFeed = feed;
-  }
-
   public void downloadTool(@NotNull DownloadableToolVersion tool, @NotNull File location) throws ToolException {
     LOG.info("Start installing package " + tool.getDisplayName());
     LOG.info("Downloading package from: " + tool.getDownloadUrl());
     try {
-      myClient.downloadPackage(myFeed, tool.getDownloadUrl(), location);
-    } catch (Exception e) {
-      LOG.warnAndDebugDetails("Failed to download package " + tool + " to " + location, e);
-      throw new ToolException("Failed to download package " + tool.getDisplayName() + ". " + e.getMessage());
+      URLDownloader.download(tool.getDownloadUrl(), location);
+    } catch (Throwable e) {
+      throw new ToolException("Failed to download package " + tool + " to " + location + e.getMessage(), e);
     }
+    LOG.debug("Successfully downloaded package " + tool + " to " + location);
   }
 }

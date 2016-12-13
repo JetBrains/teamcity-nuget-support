@@ -26,8 +26,6 @@
 
   <test name="tools">
     <classes>
-      <!--<class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetServerToolPreProcessorTest"/>-->
-      <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetToolDownloaderTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetPackageValidationUtilTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolUnpackerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolIdUtilsTest"/>
