@@ -100,7 +100,7 @@ public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscove
 
   private DiscoveredObject discover(String slnPath) {
     Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put(PackagesConstants.NUGET_PATH, ToolVersionReference.getDefaultToolReference(NuGetServerToolProvider.NUGET_TOOL_TYPE).getReference());
+    parameters.put(PackagesConstants.NUGET_PATH, ToolVersionReference.getDefaultToolReference(NuGetServerToolProvider.NUGET_TOOL_TYPE.getType()).getReference());
     parameters.put(PackagesConstants.SLN_PATH, slnPath);
     parameters.putAll(myDefaults.getRunnerProperties());
     return new DiscoveredObject(PackagesConstants.INSTALL_RUN_TYPE, parameters);
