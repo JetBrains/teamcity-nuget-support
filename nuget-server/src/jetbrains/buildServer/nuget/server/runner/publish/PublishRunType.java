@@ -69,7 +69,7 @@ public class PublishRunType extends NuGetRunType {
         }
 
         if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PUBLISH_FILES))) {
-          checks.add(new InvalidProperty(NUGET_PUBLISH_FILES, "Specify at least one package to pusblish"));
+          checks.add(new InvalidProperty(NUGET_PUBLISH_FILES, "Specify at least one package to publish"));
         }
 
         return checks;
