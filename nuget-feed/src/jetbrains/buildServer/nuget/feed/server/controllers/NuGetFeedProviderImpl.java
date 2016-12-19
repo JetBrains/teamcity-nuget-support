@@ -21,29 +21,58 @@ import jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Provides a concrete NuGet feed handler.
  */
 public class NuGetFeedProviderImpl implements NuGetFeedProvider {
 
-  private final ODataRequestHandler myODataRequestHandler;
-  private final OlingoRequestHandler myOlingoRequestHandler;
+    private final ODataRequestHandler myODataRequestHandler;
+    private final OlingoRequestHandler myOlingoRequestHandler;
+    private final Map<String, NuGetFeedProvider> myHandlers;
 
-  public NuGetFeedProviderImpl(@NotNull final ODataRequestHandler oDataRequestHandler,
-                               @NotNull final OlingoRequestHandler olingoRequestHandler) {
+    public NuGetFeedProviderImpl(@NotNull final ODataRequestHandler oDataRequestHandler,
+                                 @NotNull final OlingoRequestHandler olingoRequestHandler,
+                                 @NotNull final PackageUploadHandler uploadHandler) {
+        myODataRequestHandler = oDataRequestHandler;
+        myOlingoRequestHandler = olingoRequestHandler;
 
-    myODataRequestHandler = oDataRequestHandler;
-    myOlingoRequestHandler = olingoRequestHandler;
-  }
-
-  @Override
-  @NotNull
-  public NuGetFeedHandler getHandler() {
-    if (TeamCityProperties.getBooleanOrTrue(NuGetFeedConstants.PROP_NUGET_FEED_NEW_SERIALIZER)) {
-      return myOlingoRequestHandler;
-    } else {
-      return myODataRequestHandler;
+        myHandlers = new HashMap<>();
+        myHandlers.put("get", request -> getFeedHandler());
+        myHandlers.put("put", request -> {
+            if ("/".equals(request.getPathInfo())) {
+                return uploadHandler;
+            } else {
+                return null;
+            }
+        });
+        myHandlers.put("post", request -> {
+            if (request.getPathInfo().startsWith("/$batch")) {
+                return getFeedHandler();
+            } else {
+                return null;
+            }
+        });
     }
-  }
+
+    @Override
+    @Nullable
+    public NuGetFeedHandler getHandler(@NotNull final HttpServletRequest request) {
+        final NuGetFeedProvider provider = myHandlers.get(request.getMethod().toLowerCase());
+        if (provider == null) return null;
+        return provider.getHandler(request);
+    }
+
+    private NuGetFeedHandler getFeedHandler() {
+        if (TeamCityProperties.getBooleanOrTrue(NuGetFeedConstants.PROP_NUGET_FEED_NEW_SERIALIZER)) {
+            return myOlingoRequestHandler;
+        } else {
+            return myODataRequestHandler;
+        }
+    }
 }

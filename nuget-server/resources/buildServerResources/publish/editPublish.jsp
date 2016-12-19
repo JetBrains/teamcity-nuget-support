@@ -57,7 +57,9 @@
   <td>
     <props:passwordProperty name="${ib.apiKey}" className="longField"/>
       <span class="smallNote">
-        Specify the API key to access a NuGet packages feed.
+        Specify the API key to access a NuGet packages feed.<br />
+        For built-in TeamCity NuGet server, specify
+        <em><c:out value="${ib.nuGetFeedApiKeyReference}"/></em>
       </span>
     <span class="error" id="error_${ib.apiKey}"></span>
   </td>
@@ -68,7 +70,12 @@
   <td>
     <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
       <span class="smallNote">
-        Specify the NuGet packages feed URL to push packages to. Leave blank to let NuGet decide what package repository to use.
+        Specify the NuGet packages feed URL to push packages to. Leave blank to let NuGet decide what package repository to use.<br />
+        To use TeamCity as a NuGet server, specify <em><c:out value="${ib.nuGetFeedReference}"/></em>
+        to refer to the TeamCity-provided guest-visible packages source<br />
+        Specify <em><c:out value="${ib.nuGetAuthFeedReference}"/></em> to refer to the TeamCity-provided authenticated
+        NuGet feed and configure the <em>NuGet Feed Credentials</em> build feature
+        <bs:help file="NuGet+Feed+Credentials"/>
       </span>
     <span class="error" id="error_${ib.nuGetSourceKey}"></span>
   </td>

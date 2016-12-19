@@ -48,12 +48,17 @@ public class NuGetPackageStructureVisitor {
   }
 
   public void visit(@NotNull BuildArtifact artifact) throws PackageLoadException {
+    try {
+      visit(artifact.getName(), artifact.getInputStream());
+    } catch (IOException e) {
+      throw new PackageLoadException(e.getMessage(), e);
+    }
+  }
+
+  public void visit(@NotNull String nugetPackageName, @NotNull InputStream stream) throws PackageLoadException {
     if(myAnalysers.isEmpty()) return;
     ZipInputStream zipInputStream = null;
-    InputStream stream = null;
-    final String nugetPackageName = artifact.getName();
     try {
-      stream = artifact.getInputStream();
       zipInputStream = new ZipInputStream(new BufferedInputStream(stream));
       ZipEntry zipEntry;
       while ((zipEntry = zipInputStream.getNextEntry()) != null) {
@@ -77,13 +82,7 @@ public class NuGetPackageStructureVisitor {
       }
     } catch (IOException e) {
       LOG.warn("Failed to read content of NuGet package " + nugetPackageName);
-      if(zipInputStream != null){
-        try {
-          zipInputStream.close();
-        } catch (IOException ex) {
-          //NOP
-        }
-      }
+      FileUtil.close(zipInputStream);
     } finally {
       FileUtil.close(stream);
     }

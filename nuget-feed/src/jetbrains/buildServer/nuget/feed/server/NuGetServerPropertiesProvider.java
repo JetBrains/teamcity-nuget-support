@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.feed.server;
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.agent.Constants;
 import jetbrains.buildServer.serverSide.SBuild;
+import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
 import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,12 +48,17 @@ public class NuGetServerPropertiesProvider extends AbstractBuildParametersProvid
   @NotNull
   @Override
   public Map<String, String> getParameters(@NotNull SBuild build, boolean emulationMode) {
-    return getProperties();
+    final Map<String, String> properties = getProperties();
+    if (mySettings.isNuGetServerEnabled()) {
+      final String buildToken = NuGetFeedConstants.BUILD_TOKEN_PREFIX + build.getBuildId();
+      properties.put(FEED_REFERENCE_AGENT_API_KEY_PROVIDED, EncryptUtil.scramble(buildToken));
+    }
+    return properties;
   }
 
   @NotNull
   public Map<String, String> getProperties() {
-    final Map<String, String> map = new HashMap<String, String>();
+    final Map<String, String> map = new HashMap<>();
     if (mySettings.isNuGetServerEnabled()) {
       map.put(FEED_REFERENCE_AGENT_PROVIDED, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, mySettings.getNuGetFeedControllerPathWithEndSlash()));
       map.put(FEED_AUTH_REFERENCE_AGENT_PROVIDED, makeReference(TEAMCITY_SERVER_URL) + combineContextPath(HTTP_AUTH_PREFIX, mySettings.getNuGetFeedControllerPathWithEndSlash()));

@@ -64,7 +64,7 @@ public class NuGetJavaFeedTestController {
 
   @NotNull
   private Response getResponse(@NotNull HttpServletRequest request) throws Exception {
-    final NuGetFeedHandler handler = NuGetJavaFeedControllerIoC.getFeedProvider().getHandler();
+    final NuGetFeedHandler handler = NuGetJavaFeedControllerIoC.getFeedProvider().getHandler(request);
     final ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     handler.handleRequest(request, response);

@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.feed.server;
 
+import jetbrains.buildServer.web.util.WebAuthUtil;
+
 /**
  * NuGet feed constants.
  */
@@ -24,4 +26,5 @@ public class NuGetFeedConstants {
   public static final String PROP_NUGET_FEED_NEW_SERIALIZER = "teamcity.nuget.feed.new.serializer";
   public static final String PROP_NUGET_FEED_FILTER_TARGETFRAMEWORK = "teamcity.nuget.feed.filter.targetframework";
   public static final int NUGET_FEED_PACKAGE_SIZE = 100;
+  public static final String BUILD_TOKEN_PREFIX = WebAuthUtil.TEAM_CITY_AUTHENTICATED_BUILD + ":";
 }

@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProviderImpl;
+import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
 import jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
@@ -38,8 +39,11 @@ import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSource;
 import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.serverSide.RunningBuildsCollection;
+import jetbrains.buildServer.serverSide.ServerSettings;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
+import jetbrains.buildServer.util.EventDispatcher;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.http.NameValuePair;
 import org.apache.http.ProtocolVersion;
@@ -49,8 +53,10 @@ import org.apache.http.message.BasicHttpResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.jmock.api.Invocation;
 import org.jmock.lib.action.CustomAction;
+import org.jmock.lib.legacy.ClassImposteriser;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 
@@ -84,6 +90,9 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   @Override
   protected void setUp() throws Exception {
     super.setUp();
+    final Mockery mockery = new Mockery() {{
+      setImposteriser(ClassImposteriser.INSTANCE);
+    }};
     myCount = 0;
     myFeed = new SortedList<>(SemanticVersionsComparators.getEntriesComparator());
     myIndex = m.mock(PackagesIndex.class);
@@ -92,6 +101,9 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     mySettings = m.mock(NuGetServerSettings.class);
     myMetadataStorage = m.mock(MetadataStorage.class);
     final ResponseCache responseCache = m.mock(ResponseCache.class);
+    final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
+    final ServerSettings serverSettings = m.mock(ServerSettings.class);
+    final EventDispatcher eventDispatcher = mockery.mock(EventDispatcher.class);
 
     m.checking(new Expectations() {{
       allowing(myIndexProxy).getNuGetEntries();
@@ -130,7 +142,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myProducer, responseCache);
     final NuGetServiceFactory serviceFactory = new NuGetServiceFactory(new NuGetDataSource(myIndexProxy, mySettings));
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(serviceFactory, responseCache);
-    myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler);
+    final PackageUploadHandler uploadHandler = new PackageUploadHandler(eventDispatcher, runningBuilds, serverSettings);
+    myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, uploadHandler);
   }
 
   @NotNull
@@ -299,7 +312,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   @NotNull
   protected ResponseWrapper processRequest(@NotNull final HttpServletRequest request) {
-    final NuGetFeedHandler handler = myFeedProvider.getHandler();
+    final NuGetFeedHandler handler = myFeedProvider.getHandler(request);
     final MockResponse response = new MockResponse();
     final ResponseWrapper responseWrapper = new ResponseWrapper(response);
 

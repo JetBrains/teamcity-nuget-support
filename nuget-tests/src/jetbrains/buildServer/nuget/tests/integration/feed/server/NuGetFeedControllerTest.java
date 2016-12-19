@@ -28,25 +28,20 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.springframework.web.servlet.mvc.Controller;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.HttpMethod;
 
 /**
  * Feed controller tests
  */
-public class NuGetFeedControllerTest extends NuGetJavaFeedIntegrationTestBase {
+@Test
+public class NuGetFeedControllerTest {
 
-    private NuGetFeedController myController;
+    private static final String SERVLET_PATH = "/app/nuget/v1/FeedService.svc";
 
-    @BeforeMethod
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
+    public void testWithHandler() throws Exception {
         Mockery m = new Mockery();
         WebControllerManager web = m.mock(WebControllerManager.class);
         NuGetServerSettings settings = m.mock(NuGetServerSettings.class);
@@ -59,58 +54,42 @@ public class NuGetFeedControllerTest extends NuGetJavaFeedIntegrationTestBase {
 
             allowing(web).registerController(with(any(String.class)), with(any(Controller.class)));
 
-            allowing(provider).getHandler(); will(returnValue(handler));
+            allowing(provider).getHandler(with(any(HttpServletRequest.class))); will(returnValue(handler));
 
             allowing(handler).handleRequest(with(any(HttpServletRequest.class)), with(any(HttpServletResponse.class)));
         }});
 
-        myController = new NuGetFeedController(web, settings, new RecentNuGetRequests(), provider);
-    }
-
-    @Test
-    public void testCreatePackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
-        ResponseWrapper response = new ResponseWrapper(new MockResponse());
-        request.setMethod(HttpMethod.POST);
-
-        myController.handleRequest(request, response);
-        Assert.assertEquals(response.getStatus(), HttpStatus.SC_METHOD_NOT_ALLOWED);
-    }
-
-    @Test
-    public void testUpdatePackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages(Id='id',Version='1.0.0')");
-        ResponseWrapper response = new ResponseWrapper(new MockResponse());
-        request.setMethod(HttpMethod.PUT);
-
-        myController.handleRequest(request, response);
-        Assert.assertEquals(response.getStatus(), HttpStatus.SC_METHOD_NOT_ALLOWED);
-    }
-
-    @Test
-    public void testDeletePackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages(Id='id',Version='1.0.0')");
-        ResponseWrapper response = new ResponseWrapper(new MockResponse());
-        request.setMethod(HttpMethod.DELETE);
-
-        myController.handleRequest(request, response);
-        Assert.assertEquals(response.getStatus(), HttpStatus.SC_METHOD_NOT_ALLOWED);
-    }
-
-    @Test
-    public void testGetPackages() throws Exception {
+        Controller controller = new NuGetFeedController(web, settings, new RecentNuGetRequests(), provider);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
-        myController.handleRequest(request, response);
+        controller.handleRequest(request, response);
+
+        m.assertIsSatisfied();
     }
 
-    @Test
-    public void testBatchRequest() throws Exception {
-        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/$batch");
-        ResponseWrapper response = new ResponseWrapper(new MockResponse());
-        request.setMethod(HttpMethod.POST);
+    public void testWithoutHandler() throws Exception {
+        Mockery m = new Mockery();
+        WebControllerManager web = m.mock(WebControllerManager.class);
+        NuGetServerSettings settings = m.mock(NuGetServerSettings.class);
+        NuGetFeedProvider provider = m.mock(NuGetFeedProvider.class);
 
-        myController.handleRequest(request, response);
+        m.checking(new Expectations(){{
+            allowing(settings).getNuGetFeedControllerPath(); will(returnValue("/path"));
+            allowing(settings).isNuGetServerEnabled(); will(returnValue(true));
+
+            allowing(web).registerController(with(any(String.class)), with(any(Controller.class)));
+
+            allowing(provider).getHandler(with(any(HttpServletRequest.class))); will(returnValue(null));
+        }});
+
+        Controller controller = new NuGetFeedController(web, settings, new RecentNuGetRequests(), provider);
+        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
+        ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+        controller.handleRequest(request, response);
+        Assert.assertEquals(response.getStatus(), HttpStatus.SC_METHOD_NOT_ALLOWED);
+
+        m.assertIsSatisfied();
     }
 }

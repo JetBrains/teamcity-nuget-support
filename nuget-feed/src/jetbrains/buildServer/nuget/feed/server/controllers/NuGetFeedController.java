@@ -79,22 +79,20 @@ public class NuGetFeedController extends BaseController {
     String requestPath = WebUtil.getPathWithoutAuthenticationType(requestWrapper);
     if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
 
-    // Allow to use GET requests and POST batch requests
-    if (!isGet(request) && (!isPost(request) || !requestWrapper.getPathInfo().startsWith("/$batch"))) {
-      // error response according to OData spec for unsupported operations (modification operations)
-      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "TeamCity nuget feed is readonly");
-      return null;
-    }
-
     final String path = requestPath.substring(myNuGetPath.length());
     final String query = requestWrapper.getQueryString();
     final String pathAndQuery = path + (query != null ? ("?" + query) : "");
     myRequestsList.reportFeedRequest(pathAndQuery);
 
-    final long startTime = new Date().getTime();
-    final NuGetFeedHandler feedHandler = myFeedProvider.getHandler();
-    feedHandler.handleRequest(requestWrapper, response);
-    myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
+    final NuGetFeedHandler feedHandler = myFeedProvider.getHandler(requestWrapper);
+    if (feedHandler == null) {
+      // error response according to OData spec for unsupported operations (modification operations)
+      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Unsupported NuGet feed request");
+    } else {
+      final long startTime = new Date().getTime();
+      feedHandler.handleRequest(requestWrapper, response);
+      myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
+    }
 
     return null;
   }
