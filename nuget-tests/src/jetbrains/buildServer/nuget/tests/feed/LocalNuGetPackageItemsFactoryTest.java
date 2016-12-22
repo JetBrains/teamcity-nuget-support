@@ -115,7 +115,6 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
                     "Description = Extension for Ninject providing integration with ASP.NET MVC3\n" +
                     "IconUrl = https://github.com/ninject/ninject/raw/master/logos/Ninject-Logo32.png\n" +
                     "Id = Ninject.MVC3\n" +
-                    "LastUpdated = ddd\n" +
                     "LicenseUrl = https://github.com/ninject/ninject.web.mvc/raw/master/mvc3/LICENSE.txt\n" +
                     "NormalizedVersion = 2.2.2\n" +
                     "ProjectUrl = http://www.ninject.org\n" +
@@ -166,7 +165,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
 
   @NotNull
   private Map<String, String> loadPackage(@NotNull File artifact) throws PackageLoadException, IOException {
-    final LocalNuGetPackageItemsFactory packageItemsFactory = new LocalNuGetPackageItemsFactory(new Date());
+    final LocalNuGetPackageItemsFactory packageItemsFactory = new LocalNuGetPackageItemsFactory();
     new NuGetPackageStructureVisitor(Lists.<NuGetPackageStructureAnalyser>newArrayList(packageItemsFactory)).visit(artifact(artifact));
     return packageItemsFactory.getItems();
   }

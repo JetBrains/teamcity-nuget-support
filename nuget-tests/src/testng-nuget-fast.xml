@@ -134,6 +134,7 @@
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedBatchTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetFeedControllerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetFeedProviderTests"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.PackageUploadHandlerTests"/>
     </classes>
   </test>
 </suite>

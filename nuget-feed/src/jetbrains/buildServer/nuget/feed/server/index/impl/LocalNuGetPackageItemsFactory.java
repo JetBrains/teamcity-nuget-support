@@ -22,12 +22,10 @@ import jetbrains.buildServer.nuget.spec.Dependencies;
 import jetbrains.buildServer.nuget.spec.Dependency;
 import jetbrains.buildServer.nuget.spec.DependencyGroup;
 import jetbrains.buildServer.nuget.spec.NuspecFileContent;
-import jetbrains.buildServer.serverSide.SBuild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,19 +37,7 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
  */
 public class LocalNuGetPackageItemsFactory implements NuGetPackageStructureAnalyser {
   private final static int MAX_VALUE_LENGTH = 1024;
-  private final Date myFinishDate;
-  private final Map<String, String> myItems = new LinkedHashMap<String, String>();
-
-  public LocalNuGetPackageItemsFactory(@NotNull Date finishDate) {
-    myFinishDate = finishDate;
-  }
-
-  @NotNull
-  public static LocalNuGetPackageItemsFactory createForBuild(@NotNull SBuild build){
-    Date finishDate = build.getFinishDate();
-    if(finishDate == null) finishDate = new Date();
-    return new LocalNuGetPackageItemsFactory(finishDate);
-  }
+  private final Map<String, String> myItems = new LinkedHashMap<>();
 
   @NotNull
   public Map<String, String> getItems() {
@@ -80,9 +66,6 @@ public class LocalNuGetPackageItemsFactory implements NuGetPackageStructureAnaly
     addItem(ICON_URL, nuspec.getIconUrl());
     addItem(LICENSE_URL, nuspec.getLicenseUrl());
     addItem(REQUIRE_LICENSE_ACCEPTANCE, nuspec.getRequireLicenseAcceptance());
-    //addItem("IsLatestVersion", "");
-    addItem(LAST_UPDATED, ODataDataFormat.formatDate(myFinishDate));
-    //addItem("Updated", formatDate(updated));
     addItem(MIN_CLIENT_VERSION, nuspec.getMinClientVersion());
   }
 

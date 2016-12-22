@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.controllers;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.BaseController;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests;
@@ -36,7 +37,9 @@ import java.util.regex.Pattern;
  */
 public class NuGetFeedController extends BaseController {
 
+  private static final Logger LOG = Logger.getInstance(NuGetFeedController.class.getName());
   private static final Pattern QUERY_ID = Pattern.compile("^(id=)(.*)", Pattern.CASE_INSENSITIVE);
+  private static final String UNSUPPORTED_REQUEST = "Unsupported NuGet feed request";
   private final String myNuGetPath;
   private final NuGetFeedProvider myFeedProvider;
   private final NuGetServerSettings mySettings;
@@ -86,8 +89,9 @@ public class NuGetFeedController extends BaseController {
 
     final NuGetFeedHandler feedHandler = myFeedProvider.getHandler(requestWrapper);
     if (feedHandler == null) {
+      LOG.debug(String.format("%s: %s", UNSUPPORTED_REQUEST, pathAndQuery));
       // error response according to OData spec for unsupported operations (modification operations)
-      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Unsupported NuGet feed request");
+      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, UNSUPPORTED_REQUEST);
     } else {
       final long startTime = new Date().getTime();
       feedHandler.handleRequest(requestWrapper, response);

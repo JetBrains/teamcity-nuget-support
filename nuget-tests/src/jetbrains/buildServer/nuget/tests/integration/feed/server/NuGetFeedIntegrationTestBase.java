@@ -137,7 +137,7 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
     }});
 
     try {
-      final LocalNuGetPackageItemsFactory packageItemsFactory = LocalNuGetPackageItemsFactory.createForBuild(build);
+      final LocalNuGetPackageItemsFactory packageItemsFactory = new LocalNuGetPackageItemsFactory();
       final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
       final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
 

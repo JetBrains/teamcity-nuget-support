@@ -48,14 +48,18 @@ public class NuGetPackageStructureVisitor {
   }
 
   public void visit(@NotNull BuildArtifact artifact) throws PackageLoadException {
+    InputStream inputStream = null;
     try {
-      visit(artifact.getName(), artifact.getInputStream());
+      inputStream = artifact.getInputStream();
+      visit(inputStream);
     } catch (IOException e) {
       throw new PackageLoadException(e.getMessage(), e);
+    } finally {
+      FileUtil.close(inputStream);
     }
   }
 
-  public void visit(@NotNull String nugetPackageName, @NotNull InputStream stream) throws PackageLoadException {
+  public void visit(@NotNull InputStream stream) throws PackageLoadException {
     if(myAnalysers.isEmpty()) return;
     ZipInputStream zipInputStream = null;
     try {
@@ -68,10 +72,10 @@ public class NuGetPackageStructureVisitor {
           analyser.analyseEntry(zipEntryName);
         }
         if (zipEntryName.endsWith(FeedConstants.NUSPEC_FILE_EXTENSION)) {
-          LOG.debug(String.format("Nuspec file found on path %s in NuGet package %s", zipEntryName, nugetPackageName));
+          LOG.debug(String.format("Nuspec file found on path %s in NuGet package", zipEntryName));
           final NuspecFileContent nuspecContent = readNuspecFileContent(zipInputStream);
           if (nuspecContent == null)
-            LOG.warn("Failed to read .nuspec file content from NuGet package " + nugetPackageName);
+            LOG.warn("Failed to read .nuspec file content from NuGet package");
           else {
             for(NuGetPackageStructureAnalyser analyser : myAnalysers){
               analyser.analyseNuspecFile(nuspecContent);
@@ -81,10 +85,8 @@ public class NuGetPackageStructureVisitor {
         }
       }
     } catch (IOException e) {
-      LOG.warn("Failed to read content of NuGet package " + nugetPackageName);
+      LOG.warn("Failed to read content of NuGet package");
       FileUtil.close(zipInputStream);
-    } finally {
-      FileUtil.close(stream);
     }
   }
 

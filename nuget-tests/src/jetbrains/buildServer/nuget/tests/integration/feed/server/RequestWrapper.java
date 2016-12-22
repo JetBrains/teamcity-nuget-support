@@ -37,7 +37,7 @@ public class RequestWrapper implements HttpServletRequest {
     private final String myPath;
     private final String myServletPath;
     private final Map<String, Object> myAttributes = new HashMap<>();
-    private final Map<String, String> myHeaders = new HashMap<>();
+    private final Map<String, String> myHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private String myMethod = "GET";
     private int myServerPort = -1;
     private byte[] myBody;

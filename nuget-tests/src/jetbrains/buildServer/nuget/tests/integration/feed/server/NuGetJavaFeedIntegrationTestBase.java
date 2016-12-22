@@ -21,12 +21,14 @@ import jetbrains.buildServer.controllers.MockResponse;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
+import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProviderImpl;
 import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
 import jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
@@ -43,7 +45,7 @@ import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.ServerSettings;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
-import jetbrains.buildServer.util.EventDispatcher;
+import jetbrains.buildServer.serverSide.metadata.impl.MetadataStorageEx;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.http.NameValuePair;
 import org.apache.http.ProtocolVersion;
@@ -103,7 +105,9 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final ResponseCache responseCache = m.mock(ResponseCache.class);
     final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     final ServerSettings serverSettings = m.mock(ServerSettings.class);
-    final EventDispatcher eventDispatcher = mockery.mock(EventDispatcher.class);
+    final MetadataStorageEx metadataStorage = mockery.mock(MetadataStorageEx.class);
+    final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
+    final ResponseCacheReset cacheReset = mockery.mock(ResponseCacheReset.class);
 
     m.checking(new Expectations() {{
       allowing(myIndexProxy).getNuGetEntries();
@@ -142,7 +146,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myProducer, responseCache);
     final NuGetServiceFactory serviceFactory = new NuGetServiceFactory(new NuGetDataSource(myIndexProxy, mySettings));
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(serviceFactory, responseCache);
-    final PackageUploadHandler uploadHandler = new PackageUploadHandler(eventDispatcher, runningBuilds, serverSettings);
+    final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, serverSettings, metadataStorage,
+            packageAnalyzer, cacheReset);
     myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, uploadHandler);
   }
 

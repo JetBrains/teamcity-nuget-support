@@ -16,14 +16,13 @@
 
 package jetbrains.buildServer.nuget.feed.server.index.impl;
 
-import com.google.common.collect.Lists;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
-import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
+import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
@@ -33,12 +32,9 @@ import jetbrains.buildServer.serverSide.impl.LogUtil;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataProvider;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorageWriter;
 import jetbrains.buildServer.util.FileUtil;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -56,15 +52,17 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
 
   public static final String NUGET_PROVIDER_ID = "nuget";
   private static final String TEAMCITY_NUGET_INDEX_PACKAGES_PROP_NAME = "teamcity.nuget.index.packages";
-  private static final String SHA512 = "SHA512";
 
   private final ResponseCacheReset myReset;
-  @NotNull
   private final NuGetServerSettings myFeedSettings;
+  private final PackageAnalyzer myPackageAnalyzer;
 
-  public NuGetArtifactsMetadataProvider(@NotNull final ResponseCacheReset reset, @NotNull final NuGetServerSettings feedSettings) {
+  public NuGetArtifactsMetadataProvider(@NotNull final ResponseCacheReset reset,
+                                        @NotNull final NuGetServerSettings feedSettings,
+                                        @NotNull final PackageAnalyzer packageAnalyzer) {
     myReset = reset;
     myFeedSettings = feedSettings;
+    myPackageAnalyzer = packageAnalyzer;
   }
 
   @NotNull
@@ -111,19 +109,23 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
     }
   }
 
-  private Map<String, String> generateMetadataForPackage(@NotNull SBuild build, @NotNull BuildArtifact aPackage) throws PackageLoadException {
-    final LocalNuGetPackageItemsFactory packageItemsFactory = LocalNuGetPackageItemsFactory.createForBuild(build);
-    final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
-    final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
-    new NuGetPackageStructureVisitor(analysers).visit(aPackage);
+  private Map<String, String> generateMetadataForPackage(@NotNull SBuild build, @NotNull BuildArtifact artifact) throws PackageLoadException {
+    final Map<String,String> metadata;
+    InputStream inputStream = null;
 
-    final Map<String,String> metadata = packageItemsFactory.getItems();
-    metadata.put(PACKAGE_HASH, sha512(aPackage));
-    metadata.put(PACKAGE_HASH_ALGORITHM, SHA512);
-    metadata.put(PACKAGE_SIZE, String.valueOf(aPackage.getSize()));
-    metadata.put(TEAMCITY_ARTIFACT_RELPATH, aPackage.getRelativePath());
+    try {
+      inputStream = artifact.getInputStream();
+      metadata = myPackageAnalyzer.analyzePackage(inputStream);
+    } catch (IOException e) {
+      throw new PackageLoadException("Failed to read build artifact data");
+    } finally {
+      FileUtil.close(inputStream);
+    }
+
+    metadata.put(PACKAGE_SIZE, String.valueOf(artifact.getSize()));
+    metadata.put(TEAMCITY_ARTIFACT_RELPATH, artifact.getRelativePath());
     metadata.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
-    metadata.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints()));
+
     return metadata;
   }
 
@@ -144,21 +146,6 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
 
     for (BuildArtifact children : artifact.getChildren()) {
       visitArtifacts(children, packages);
-    }
-  }
-
-  @NotNull
-  private String sha512(@NotNull final BuildArtifact aPackage) throws PackageLoadException {
-    InputStream is = null;
-    try {
-      is = new BufferedInputStream(aPackage.getInputStream());
-      final byte[] hash = DigestUtils.sha512(is);
-      //Buggy commons.codes added unnecessary newlines
-      return Base64.encodeBase64String(hash).replaceAll("[\r\n]+", "");
-    } catch (IOException e) {
-      throw new PackageLoadException("Failed to compute SHA-512 for " + aPackage);
-    } finally {
-      FileUtil.close(is);
     }
   }
 }
