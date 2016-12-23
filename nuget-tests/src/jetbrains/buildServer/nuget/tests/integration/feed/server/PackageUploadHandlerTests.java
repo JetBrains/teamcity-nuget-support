@@ -15,6 +15,7 @@ import org.jmock.Mockery;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -187,7 +188,7 @@ public class PackageUploadHandlerTests {
 
         handler.handleRequest(request, response);
 
-        Assert.assertEquals(response.getStatus(), 400);
+        Assert.assertEquals(response.getStatus(), 413);
         m.assertIsSatisfied();
     }
 
@@ -228,6 +229,58 @@ public class PackageUploadHandlerTests {
         m.assertIsSatisfied();
     }
 
+    public void testInternalFailureWhileUpload() throws Exception {
+        Mockery m = new Mockery();
+        RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
+        RunningBuildEx build = m.mock(RunningBuildEx.class);
+        ServerSettings settings = m.mock(ServerSettings.class);
+        MetadataStorageEx metadataStorage = m.mock(MetadataStorageEx.class);
+        PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
+        ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
+        Map<String, String> metadata = CollectionsUtil.asMap(
+                NuGetPackageAttributes.ID, "Id",
+                NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
+
+        m.checking(new Expectations() {{
+            allowing(runningBuilds).findRunningBuildById(3641L);
+            will(returnValue(build));
+            allowing(settings).getMaximumAllowedArtifactSize();
+            will(returnValue(123L));
+            allowing(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
+            will(returnValue(metadata));
+            allowing(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
+            will(returnValue("hash"));
+            allowing(build).getBuildTypeId();
+            will(returnValue("type"));
+            allowing(build).getBuildId();
+            will(returnValue(3641L));
+            allowing(build).isPersonal();
+            will(returnValue(false));
+            allowing(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
+            will(throwException(new IOException("Failure")));
+        }});
+
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+                packageAnalyzer, cacheReset);
+        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+        ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+        request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
+        request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+        request.setBody((
+                "--3576595b-8e57-4d70-91bb-701d5aab54ea\r\n" +
+                        "Content-Type: application/octet-stream\r\n" +
+                        "Content-Disposition: form-data; name=package; filename=package.nupkg; filename*=utf-8''package.nupkg\r\n" +
+                        "\r\n" +
+                        "Hello\r\n" +
+                        "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n").getBytes());
+
+        handler.handleRequest(request, response);
+
+        Assert.assertEquals(response.getStatus(), 500);
+        m.assertIsSatisfied();
+    }
+
     public void testUploadValidPackage() throws Exception {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
@@ -247,6 +300,8 @@ public class PackageUploadHandlerTests {
             will(returnValue(123L));
             allowing(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
             will(returnValue(metadata));
+            allowing(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
+            will(returnValue("hash"));
             allowing(build).getBuildTypeId();
             will(returnValue("type"));
             allowing(build).getBuildId();

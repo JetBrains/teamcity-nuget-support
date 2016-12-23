@@ -10,6 +10,11 @@ import java.util.Map;
  * Analyzes package contents.
  */
 public interface PackageAnalyzer {
+    String SHA512 = "SHA512";
+
     @NotNull
     Map<String, String> analyzePackage(@NotNull InputStream content) throws PackageLoadException;
+
+    @NotNull
+    String getSha512Hash(@NotNull InputStream content) throws PackageLoadException;
 }

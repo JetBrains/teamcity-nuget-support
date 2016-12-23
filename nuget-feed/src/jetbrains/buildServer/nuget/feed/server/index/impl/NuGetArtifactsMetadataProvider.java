@@ -126,6 +126,16 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
     metadata.put(TEAMCITY_ARTIFACT_RELPATH, artifact.getRelativePath());
     metadata.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
 
+    try {
+      inputStream = artifact.getInputStream();
+      metadata.put(PACKAGE_HASH, myPackageAnalyzer.getSha512Hash(inputStream));
+      metadata.put(PACKAGE_HASH_ALGORITHM, PackageAnalyzer.SHA512);
+    } catch (IOException e) {
+      throw new PackageLoadException("Failed to read build artifact data");
+    } finally {
+      FileUtil.close(inputStream);
+    }
+
     return metadata;
   }
 
