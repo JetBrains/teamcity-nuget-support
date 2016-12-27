@@ -45,7 +45,6 @@ import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.ServerSettings;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
-import jetbrains.buildServer.serverSide.metadata.impl.MetadataStorageEx;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.http.NameValuePair;
 import org.apache.http.ProtocolVersion;
@@ -105,7 +104,6 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final ResponseCache responseCache = m.mock(ResponseCache.class);
     final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     final ServerSettings serverSettings = m.mock(ServerSettings.class);
-    final MetadataStorageEx metadataStorage = mockery.mock(MetadataStorageEx.class);
     final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
     final ResponseCacheReset cacheReset = mockery.mock(ResponseCacheReset.class);
 
@@ -146,7 +144,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myProducer, responseCache);
     final NuGetServiceFactory serviceFactory = new NuGetServiceFactory(new NuGetDataSource(myIndexProxy, mySettings));
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(serviceFactory, responseCache);
-    final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, serverSettings, metadataStorage,
+    final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, serverSettings, myMetadataStorage,
             packageAnalyzer, cacheReset);
     myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, uploadHandler);
   }

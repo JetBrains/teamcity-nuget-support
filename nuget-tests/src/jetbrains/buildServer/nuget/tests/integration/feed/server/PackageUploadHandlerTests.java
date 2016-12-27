@@ -7,8 +7,7 @@ import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageAnalyzer;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.serverSide.*;
-import jetbrains.buildServer.serverSide.metadata.impl.MetadataStorageEx;
-import jetbrains.buildServer.util.Action;
+import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -33,7 +32,7 @@ public class PackageUploadHandlerTests {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         ServerSettings settings = m.mock(ServerSettings.class);
-        MetadataStorageEx metadataStorage = m.mock(MetadataStorageEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
 
@@ -53,7 +52,7 @@ public class PackageUploadHandlerTests {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         ServerSettings settings = m.mock(ServerSettings.class);
-        MetadataStorageEx metadataStorage = m.mock(MetadataStorageEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
@@ -74,7 +73,7 @@ public class PackageUploadHandlerTests {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         ServerSettings settings = m.mock(ServerSettings.class);
-        MetadataStorageEx metadataStorage = m.mock(MetadataStorageEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
@@ -96,7 +95,7 @@ public class PackageUploadHandlerTests {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         ServerSettings settings = m.mock(ServerSettings.class);
-        MetadataStorageEx metadataStorage = m.mock(MetadataStorageEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
@@ -125,7 +124,7 @@ public class PackageUploadHandlerTests {
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
         ServerSettings settings = m.mock(ServerSettings.class);
-        MetadataStorageEx metadataStorage = m.mock(MetadataStorageEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
@@ -160,7 +159,7 @@ public class PackageUploadHandlerTests {
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
         ServerSettings settings = m.mock(ServerSettings.class);
-        MetadataStorageEx metadataStorage = m.mock(MetadataStorageEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
@@ -197,7 +196,7 @@ public class PackageUploadHandlerTests {
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
         ServerSettings settings = m.mock(ServerSettings.class);
-        MetadataStorageEx metadataStorage = m.mock(MetadataStorageEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
@@ -234,7 +233,7 @@ public class PackageUploadHandlerTests {
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
         ServerSettings settings = m.mock(ServerSettings.class);
-        MetadataStorageEx metadataStorage = m.mock(MetadataStorageEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
         Map<String, String> metadata = CollectionsUtil.asMap(
@@ -286,7 +285,7 @@ public class PackageUploadHandlerTests {
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
         ServerSettings settings = m.mock(ServerSettings.class);
-        MetadataStorageEx metadataStorage = m.mock(MetadataStorageEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
         Map<String, String> metadata = CollectionsUtil.asMap(
@@ -309,8 +308,8 @@ public class PackageUploadHandlerTests {
             allowing(build).isPersonal();
             will(returnValue(false));
             allowing(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
-            allowing(metadataStorage).updateCache(with(any(Long.class)), with(any(Boolean.class)),
-                    with(any(String.class)), with(any(Action.class)));
+            allowing(metadataStorage).addBuildEntry(with(any(Long.class)),  with(any(String.class)),
+                    with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
             allowing(cacheReset).resetCache();
         }});
 

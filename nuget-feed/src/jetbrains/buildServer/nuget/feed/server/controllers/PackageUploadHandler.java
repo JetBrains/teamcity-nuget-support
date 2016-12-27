@@ -7,8 +7,7 @@ import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
-import jetbrains.buildServer.serverSide.metadata.impl.MetadataStorageEx;
-import jetbrains.buildServer.serverSide.metadata.impl.MetadataStorageException;
+import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -36,13 +35,13 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     private static final String INVALID_PACKAGE_CONTENTS = "Invalid NuGet package contents";
     private final RunningBuildsCollection myRunningBuilds;
     private final ServerSettings myServerSettings;
-    private final MetadataStorageEx myStorage;
+    private final MetadataStorage myStorage;
     private final PackageAnalyzer myPackageAnalyzer;
     private final ResponseCacheReset myCacheReset;
 
     public PackageUploadHandler(@NotNull final RunningBuildsCollection runningBuilds,
                                 @NotNull final ServerSettings serverSettings,
-                                @NotNull final MetadataStorageEx storage,
+                                @NotNull final MetadataStorage storage,
                                 @NotNull final PackageAnalyzer packageAnalyzer,
                                 @NotNull final ResponseCacheReset cacheReset) {
         myRunningBuilds = runningBuilds;
@@ -176,9 +175,8 @@ public class PackageUploadHandler implements NuGetFeedHandler {
         }
 
         try {
-            myStorage.updateCache(build.getBuildId(), !build.isPersonal(), NUGET_PROVIDER_ID,
-                    metadataStorageWriter -> metadataStorageWriter.addParameters(id, metadata));
-        } catch (MetadataStorageException e) {
+            myStorage.addBuildEntry(build.getBuildId(), NUGET_PROVIDER_ID, id, metadata, !build.isPersonal());
+        } catch (Throwable e) {
             LOG.warnAndDebugDetails(String.format("Failed to update %s provider metadata for build %s. Error: %s",
                     NUGET_PROVIDER_ID, build, e.getMessage()), e);
             throw e;

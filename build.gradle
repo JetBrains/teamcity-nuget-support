@@ -2,7 +2,7 @@ ext {
     versionNumber = project.hasProperty('versionNumber') ? property('versionNumber') : 'SNAPSHOT-' + new Date().format('yyyyMMddHHmmss')
     projectIds = ['group': 'teamcity-nuget-support', 'version': versionNumber]
 
-    teamcityVersion = project.hasProperty('teamcityVersion') ? property('teamcityVersion') : '10.0'
+    teamcityVersion = project.hasProperty('teamcityVersion') ? property('teamcityVersion') : '10.1-SNAPSHOT'
     teamcityDir = project.hasProperty('teamcityDir') ? property('teamcityDir') : "$rootDir/teamcity/servers/TeamCity-${teamcityVersion}"
     if (teamcityDir == null || !file(teamcityDir).isDirectory()) {
         throw new InvalidUserDataException('Please, specify correct `teamcityDir` path in gradle.properties file')
