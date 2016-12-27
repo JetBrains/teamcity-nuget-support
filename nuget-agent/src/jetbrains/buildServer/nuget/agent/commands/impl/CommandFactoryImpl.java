@@ -34,8 +34,6 @@ import java.util.*;
  */
 public class CommandFactoryImpl implements CommandFactory {
 
-  private static final String TEAMCITY_NUGET_API_KEY_ENV_VAR_NAME_PREFIX = "teamcity_nuget_api_key_";
-
   @NotNull
   public <T> T createInstall(@NotNull PackagesInstallParameters params, @NotNull File packagesConfig, @NotNull File outputDir, @NotNull Callback<T> factory) throws RunBuildException {
     final List<String> argz = new ArrayList<String>();
@@ -186,13 +184,9 @@ public class CommandFactoryImpl implements CommandFactory {
     arguments.add(packagePath.getPath());
 
     final String apiKey = params.getApiKey();
-    final String apiKeyEnvVarName = TEAMCITY_NUGET_API_KEY_ENV_VAR_NAME_PREFIX + System.currentTimeMillis();
     if(!StringUtil.isEmptyOrSpaces(apiKey)){
-      arguments.add("%%" + apiKeyEnvVarName + "%%");
+      arguments.add(apiKey);
     }
-    final Map<String, String> additionalEnvironment = StringUtil.isEmptyOrSpaces(apiKey)
-            ? Collections.<String, String>emptyMap()
-            : Collections.singletonMap(apiKeyEnvVarName, apiKey);
 
     for (String cmd : params.getCustomCommandline()) {
       if (!arguments.contains(cmd) && !arguments.contains(cmd.toLowerCase())) {
@@ -210,7 +204,7 @@ public class CommandFactoryImpl implements CommandFactory {
             sources,
             arguments,
             packagePath.getParentFile(),
-            additionalEnvironment,
+            Collections.<String, String>emptyMap(),
             factory);
   }
 

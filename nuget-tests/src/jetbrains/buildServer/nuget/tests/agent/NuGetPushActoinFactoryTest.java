@@ -130,9 +130,9 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getCustomCommandline(); will(returnValue(Collections.emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
-              with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-Source", "push-feed")),
+              with(arguments("push", myFile.getPath(), "api-key-guid", "-Source", "push-feed")),
               with(equal(myFile.getParentFile())),
-              with(envApi("api-key-guid"))
+              with(equal(Collections.emptyMap()))
       );
     }});
 
@@ -150,9 +150,9 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getCustomCommandline(); will(returnValue(Collections.emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
-              with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%")),
+              with(arguments("push", myFile.getPath(), "api-key-guid")),
               with(equal(myFile.getParentFile())),
-              with(envApi("api-key-guid"))
+              with(equal(Collections.emptyMap()))
       );
     }});
 
@@ -170,9 +170,9 @@ public class NuGetPushActoinFactoryTest extends BaseTestCase {
       allowing(ps).getCustomCommandline(); will(returnValue(Collections.emptyList()));
 
       oneOf(myProcessFactory).executeCommandLine(with(equal(ctx)), with(equal(myNuGet.getPath())),
-              with(arguments("push", myFile.getPath(), "%%teamcity_nuget_api_key_DDD%%", "-Source", "push-feed")),
+              with(arguments("push", myFile.getPath(), "api-key-guid", "-Source", "push-feed")),
               with(equal(myFile.getParentFile())),
-              with(envApi("api-key-guid"))
+              with(equal(Collections.emptyMap()))
       );
     }});
 
