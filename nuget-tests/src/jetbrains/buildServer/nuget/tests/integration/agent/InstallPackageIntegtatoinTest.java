@@ -57,10 +57,10 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     String packages = "packages";
     List<File> packageses = listFiles(packages);
-    System.out.println("installed packageses = " + packageses);
+    System.out.println("installed packages = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Ninject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
   }
 
@@ -80,7 +80,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packages);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Ninject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
   }
 
@@ -99,7 +99,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packages);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Ninject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
   }
 
@@ -119,7 +119,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packages);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Ninject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
   }
 
@@ -134,7 +134,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Ninject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
   }
 
@@ -150,7 +150,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Ninject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
   }
 
@@ -166,7 +166,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Ninject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
   }
 
@@ -181,7 +181,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Ninject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
   }
 
@@ -238,7 +238,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     final File packagesRootDir = new File(myRoot, "packages");
     assertDirectoryExist(packagesRootDir, "NUnit");
-    assertDirectoryExist(packagesRootDir, "NInject");
+    assertDirectoryExist(packagesRootDir, "Ninject");
     assertDirectoryExist(packagesRootDir, "Machine.Specifications");
   }
 
@@ -255,7 +255,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/NUnit.2.5.7.10213").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.2.2.1.4").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/Ninject.2.2.1.4").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Machine.Specifications.0.4.13.0").isDirectory());
   }
 
@@ -328,7 +328,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     System.out.println("installed packageses = " + packageses);
 
     Assert.assertTrue(new File(myRoot, "packages/Microsoft.Web.Infrastructure.1.0.0.0").isDirectory());
-    Assert.assertTrue(new File(myRoot, "packages/NInject.3.0.0.15").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/WebActivator.1.5").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/jQuery.1.7.2").isDirectory());
   }
