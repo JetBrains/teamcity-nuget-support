@@ -22,6 +22,7 @@ import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.agent.impl.OSTypeDetector;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
 import jetbrains.buildServer.nuget.agent.commands.impl.LoggingNuGetActionFactoryImpl;
@@ -97,6 +98,12 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     final NuGet[] values =  NuGet.values();
     final List<Object[]> data = new ArrayList<Object[]>();
     for (NuGet value : values) {
+      if(!SystemInfo.isWindows) {
+        if(value == NuGet.NuGet_1_6) {
+          continue;
+        }
+      }
+
       if (value.major < lowerBound.major) continue;
       if (value.major == lowerBound.major && value.minor < lowerBound.minor) continue;
       data.add(new Object[]{value});

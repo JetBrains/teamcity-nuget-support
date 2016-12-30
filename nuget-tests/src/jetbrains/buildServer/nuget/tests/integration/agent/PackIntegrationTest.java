@@ -126,6 +126,10 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_vs_solution(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    if(!SystemInfo.isWindows) {
+      return;
+    }
+
     ZipUtil.extract(getTestDataPath("solution.zip"), myRoot, null);
     final File spec = new File(myRoot, "nuget-proj/nuget-proj.csproj");
 
@@ -148,6 +152,10 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_vs_solution_tool(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    if(!SystemInfo.isWindows) {
+      return;
+    }
+
     ZipUtil.extract(getTestDataPath("solution.zip"), myRoot, null);
     final File spec = new File(myRoot, "nuget-proj/nuget-proj.csproj");
 
@@ -169,6 +177,10 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_vs_solution_symbols(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    if(!SystemInfo.isWindows) {
+      return;
+    }
+
     ZipUtil.extract(getTestDataPath("solution.zip"), myRoot, null);
     final File spec = new File(myRoot, "nuget-proj/nuget-proj.csproj");
 
