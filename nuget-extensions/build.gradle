@@ -1,3 +1,5 @@
+import java.nio.file.Paths 
+
 plugins {
     id 'com.ullink.nuget' version '2.14'
     id 'com.ullink.nunit' version '1.8'
@@ -11,8 +13,16 @@ nugetRestore {
 task msbuild {
 	doLast {
 	    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+			def msbuildExecutable = file('msbuild.exe').getName()
+			def msbuildPath = System.getenv()['MSBuildTools4.0_x86_Path']
+
+			if (msbuildPath != null) {
+				msbuildPath = msbuildPath.replaceAll("\"", "")
+				msbuildExecutable = Paths.get(msbuildPath, msbuildExecutable)
+			}
+				
 	        exec {
-				commandLine "msbuild.exe", "nuget-extensions.sln", "/t:Clean,Rebuild", "/p:Configuration=Release"
+				 commandLine msbuildExecutable, "nuget-extensions.sln", "/t:Clean,Rebuild", "/p:Configuration=Release"
 	    	}	
 		}
 		else {
