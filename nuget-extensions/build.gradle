@@ -13,7 +13,7 @@ task msbuild {
 	    if (System.properties['os.name'].toLowerCase().contains('windows')) {
 			def msbuildExecutable = 'msbuild.exe'
 			if (project.hasProperty("msbuild_path")) {
-              msbuidExecutable = "${msbuild_path}/${msbuildExecutable}"
+              msbuildExecutable = "${msbuild_path}/${msbuildExecutable}"
 			}
 			
 	        exec {
