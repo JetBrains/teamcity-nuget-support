@@ -56,7 +56,7 @@ public class LocateNuGetConfigBuildProcess extends BuildProcessBase {
     myDispatcher = EventDispatcher.create(PackagesInstallerCallback.class);
     myDispatcher.setErrorHandler(new EventDispatcher.ErrorHandler() {
       public void handle(Throwable e) {
-        LOG.warn("Failed to process Installer Runner task. " + e.getMessage(), e);
+        LOG.warnAndDebugDetails("Failed to process Installer Runner task. " + e.getMessage(), e);
         ExceptionUtil.rethrowAsRuntimeException(e);
       }
     });

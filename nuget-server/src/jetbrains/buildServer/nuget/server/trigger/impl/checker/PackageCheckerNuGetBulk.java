@@ -117,7 +117,7 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
           }
 
         } catch (Throwable t) {
-          LOG.warn("Failed to bulk check changes of NuGet packages. " + t.getMessage(), t);
+          LOG.warnAndDebugDetails("Failed to bulk check changes of NuGet packages. " + t.getMessage(), t);
           for (CheckablePackage entry : map.values()) {
             entry.setResult(CheckResult.failed(t.getMessage()));
           }

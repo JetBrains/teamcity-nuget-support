@@ -52,7 +52,7 @@ public class ODataRequestHandler implements NuGetFeedHandler {
         return sc;
       });
     } catch (Throwable e) {
-      LOG.warn("Failed to initialize NuGet Feed container. " + e.getMessage(), e);
+      LOG.warnAndDebugDetails("Failed to initialize NuGet Feed container. " + e.getMessage(), e);
     }
   }
 

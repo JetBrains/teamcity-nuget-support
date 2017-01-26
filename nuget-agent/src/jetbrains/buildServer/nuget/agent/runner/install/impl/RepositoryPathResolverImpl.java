@@ -73,7 +73,7 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
         repositoryPath = extractRepositoryPathFromConfig(configFilePath);
       } catch (final Exception e) {
         final String message = "Error occured while parsing NuGet.config file at " + configFilePath + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".";
-        LOG.warn(message, e);
+        LOG.warnAndDebugDetails(message, e);
         logger.warning(message + " " + e.getMessage());
         continue;
       }

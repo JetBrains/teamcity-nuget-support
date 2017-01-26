@@ -45,7 +45,7 @@ public class PackageSourceCheckerImpl implements PackageSourceChecker {
         return "Package feed is empty or inaccessible";
       }
     } catch (final Throwable e) {
-      LOG.warn("Failed to connect to " + source + ". " + e.getMessage(), e);
+      LOG.warnAndDebugDetails("Failed to connect to " + source + ". " + e.getMessage(), e);
       return "Package feed is empty or inaccessible. " + e.getMessage();
     }
     return null;

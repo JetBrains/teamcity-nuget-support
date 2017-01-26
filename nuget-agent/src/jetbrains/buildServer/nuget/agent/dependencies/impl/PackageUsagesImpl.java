@@ -57,7 +57,7 @@ public class PackageUsagesImpl implements PackageUsages {
     try {
       myParser.parseNuGetPackages(packagesConfig, myCollector);
     } catch (IOException e) {
-      LOG.warn("Failed to parse " + packagesConfig + ". " + e.getMessage(), e);
+      LOG.warnAndDebugDetails("Failed to parse " + packagesConfig + ". " + e.getMessage(), e);
     }
   }
 

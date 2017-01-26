@@ -85,7 +85,7 @@ public class NuGetSourceCheckerImpl implements NuGetSourceChecker {
       try {
         return new CacheResult(myChecker.checkSource(key));
       } catch (final Throwable e) {
-        LOG.warn("Failed to connect to " + key + ". " + e.getMessage(), e);
+        LOG.warnAndDebugDetails("Failed to connect to " + key + ". " + e.getMessage(), e);
         return new CacheResult("Package feed is empty or inaccessible. " + e.getMessage());
       }
     }

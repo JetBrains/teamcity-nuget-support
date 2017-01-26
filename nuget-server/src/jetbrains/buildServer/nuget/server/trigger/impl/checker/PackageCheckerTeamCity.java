@@ -92,7 +92,7 @@ public class PackageCheckerTeamCity implements PackageChecker {
             entry.setResult(CheckResult.fromResult(infos));
           } catch (Throwable e) {
             final String msg = "Failed to check changes of " + packageId + ". " + e.getMessage();
-            LOG.warn(msg, e);
+            LOG.warnAndDebugDetails(msg, e);
             entry.setResult(CheckResult.failed(msg));
           }
         }

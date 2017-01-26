@@ -42,7 +42,7 @@ public class NuGetPackageValidationUtil {
       }
     } catch (IOException e) {
       String msg = "Failed to read NuGet package file. " + e.getMessage();
-      LOG.warn(msg, e);
+      LOG.warnAndDebugDetails(msg, e);
       throw new ToolException(msg);
     } finally {
       if (file != null) {

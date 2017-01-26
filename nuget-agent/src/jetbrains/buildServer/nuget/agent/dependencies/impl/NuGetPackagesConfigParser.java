@@ -63,7 +63,7 @@ public class NuGetPackagesConfigParser {
     try {
       parser.parse(packagesConfig);
     } catch (IOException e) {
-      LOG.warn("Failed to parse packages.config file: " + packagesConfig + ". " + e.getMessage(), e);
+      LOG.warnAndDebugDetails("Failed to parse packages.config file: " + packagesConfig + ". " + e.getMessage(), e);
     }
   }
 }

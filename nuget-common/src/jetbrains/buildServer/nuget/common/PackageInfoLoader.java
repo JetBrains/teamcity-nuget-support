@@ -79,7 +79,7 @@ public class PackageInfoLoader {
         }
       }
     } catch (IOException e) {
-      LOG.warn("Failed to read " + nupkg + ". " + e.getMessage(), e);
+      LOG.warnAndDebugDetails("Failed to read " + nupkg + ". " + e.getMessage(), e);
     } finally {
       close(zos);
       FileUtil.close(stream);

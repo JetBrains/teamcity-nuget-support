@@ -51,7 +51,7 @@ public class PackagesWatcher {
         try {
           uploader.uploadDepectedPackages(build, packages);
         } catch (IOException e) {
-          LOG.warn("Failed to generate and upload list of used NuGet packages. " + e.getMessage(), e);
+          LOG.warnAndDebugDetails("Failed to generate and upload list of used NuGet packages. " + e.getMessage(), e);
         }
       }
 

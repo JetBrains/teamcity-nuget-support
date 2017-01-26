@@ -73,7 +73,7 @@ public class PackageCheckerNuGetPerPackage extends PackageCheckerNuGetBase imple
               Map<SourcePackageReference, ListPackagesResult> map = myCommand.checkForChanges(nugetPath, Collections.singleton(pkg));
               packageCheckEntry.setResult(CheckResult.fromResult(map.get(pkg)));
             } catch (Throwable t) {
-              LOG.warn("Failed to check changes of " + packageId + ". " + t.getMessage(), t);
+              LOG.warnAndDebugDetails("Failed to check changes of " + packageId + ". " + t.getMessage(), t);
               packageCheckEntry.setResult(CheckResult.failed(t.getMessage()));
             }
           }

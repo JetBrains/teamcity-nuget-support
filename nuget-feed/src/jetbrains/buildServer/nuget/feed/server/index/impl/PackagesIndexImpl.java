@@ -158,7 +158,7 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
       }
       return pb;
     } catch (Exception ex){
-      LOG.warn("Failed to convert build metadata entry to nuget package. Entry: " + entry.toString(), ex);
+      LOG.warnAndDebugDetails("Failed to convert build metadata entry to nuget package. Entry: " + entry.toString(), ex);
       return null;
     }
   }
