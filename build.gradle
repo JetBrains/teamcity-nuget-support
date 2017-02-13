@@ -50,6 +50,7 @@ subprojects { subproject ->
         repositories {
             maven { url '../local-repo' }
             maven { url 'http://repository.apache.org/snapshots/' }
+            mavenCentral()
         }
 
         test.useTestNG()

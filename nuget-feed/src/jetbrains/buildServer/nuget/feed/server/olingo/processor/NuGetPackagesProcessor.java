@@ -706,7 +706,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
         final PathInfo pathInfo = getContext().getPathInfo();
         final EntityProviderBatchProperties batchProperties = EntityProviderBatchProperties.init()
                 .pathInfo(pathInfo)
-                //.setStrict(false)
+                .setStrict(false)
                 .build();
 
         final List<BatchRequestPart> batchParts = EntityProvider.parseBatchRequest(contentType, content, batchProperties);
