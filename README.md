@@ -22,7 +22,7 @@ This project uses gradle as a build system. To resolve non-public libraries, you
 * `:nuget-extensions:msbuild` - build .net nuget extensions.
 * `:nuget-extensions:nunit` - run .net nuget extensions tests.
 * `:nuget-server:assemble` - assemble nuget support plugin.
-* `:nuget-server:build` - build && test nuget support plugin.
+* `:nuget-server:build` - build & test nuget support plugin.
 
 # Contributions
 We appreciate all kinds of feedback, so please feel free to send a PR or write [an issue](https://github.com/JetBrains/teamcity-nuget-support/issues).
