@@ -70,6 +70,10 @@ public class NuGetExecutorTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_ping_windows(@NotNull final NuGet nuget) throws NuGetExecutionException {
+    if(!com.intellij.openapi.util.SystemInfo.isWindows) {
+      return;
+    }
+
     setIsWindows(true);
     doPingTest(nuget);
   }

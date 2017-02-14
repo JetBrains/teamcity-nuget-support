@@ -99,7 +99,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     final List<Object[]> data = new ArrayList<Object[]>();
     for (NuGet value : values) {
       if(!SystemInfo.isWindows) {
-        if(!(value.major == 3 || (value.major == 2 && value.minor == 8))) {
+        if(!((value.major == 3 && value.minor != 2) || (value.major == 2 && value.minor == 8))) {
           continue;
         }
       }
