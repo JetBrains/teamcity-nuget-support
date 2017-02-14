@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration.agent;
 
+import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.nuget.common.NuGetPackageInfo;
@@ -125,6 +126,10 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_forConfig(@NotNull final NuGet nuget) throws RunBuildException {
+    if (!SystemInfo.isWindows) {
+      return;
+    }
+
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
     allowUpdate(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG);
 
@@ -172,6 +177,10 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_safe(@NotNull final NuGet nuget) throws RunBuildException {
+    if (!SystemInfo.isWindows) {
+      return;
+    }
+
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
     allowUpdate(PackagesUpdateMode.FOR_EACH_PACKAGES_CONFIG, true, true);
 
