@@ -55,6 +55,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     public void handleRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
         final String contentType = request.getContentType();
         if (contentType == null || !contentType.toLowerCase().startsWith("multipart/")) {
+            LOG.debug("Request body should be multipart form data");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Request body should be multipart form data");
             return;
         }
@@ -72,6 +73,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
                               @NotNull final HttpServletResponse response) throws IOException {
         final RunningBuildEx build = getRunningBuild(request.getHeader("x-nuget-apikey"));
         if (build == null) {
+            LOG.debug(INVALID_TOKEN_VALUE);
             response.sendError(HttpServletResponse.SC_FORBIDDEN, INVALID_TOKEN_VALUE);
             return;
         }
@@ -84,6 +86,8 @@ public class PackageUploadHandler implements NuGetFeedHandler {
         }
 
         if (file.getSize() > myServerSettings.getMaximumAllowedArtifactSize()) {
+            LOG.debug(String.format("NuGet package size %s bytes is too large. Maximum allowed size is %s bytes.",
+                    file.getSize(), myServerSettings.getMaximumAllowedArtifactSize()));
             response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
             return;
         }
