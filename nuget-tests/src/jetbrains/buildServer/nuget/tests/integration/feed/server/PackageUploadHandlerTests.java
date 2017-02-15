@@ -100,7 +100,7 @@ public class PackageUploadHandlerTests {
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
         m.checking(new Expectations() {{
-            allowing(runningBuilds).findRunningBuildById(3641L);
+            oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(null));
         }});
 
@@ -129,7 +129,7 @@ public class PackageUploadHandlerTests {
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
         m.checking(new Expectations() {{
-            allowing(runningBuilds).findRunningBuildById(3641L);
+            oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
         }});
 
@@ -164,9 +164,9 @@ public class PackageUploadHandlerTests {
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
         m.checking(new Expectations() {{
-            allowing(runningBuilds).findRunningBuildById(3641L);
+            oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
-            allowing(settings).getMaximumAllowedArtifactSize();
+            oneOf(settings).getMaximumAllowedArtifactSize();
             will(returnValue(1L));
         }});
 
@@ -201,9 +201,9 @@ public class PackageUploadHandlerTests {
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
         m.checking(new Expectations() {{
-            allowing(runningBuilds).findRunningBuildById(3641L);
+            oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
-            allowing(settings).getMaximumAllowedArtifactSize();
+            oneOf(settings).getMaximumAllowedArtifactSize();
             will(returnValue(123L));
         }});
 
@@ -241,21 +241,19 @@ public class PackageUploadHandlerTests {
                 NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
 
         m.checking(new Expectations() {{
-            allowing(runningBuilds).findRunningBuildById(3641L);
+            oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
-            allowing(settings).getMaximumAllowedArtifactSize();
+            oneOf(settings).getMaximumAllowedArtifactSize();
             will(returnValue(123L));
-            allowing(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
+            oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
             will(returnValue(metadata));
-            allowing(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
+            oneOf(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
             will(returnValue("hash"));
-            allowing(build).getBuildTypeId();
+            oneOf(build).getBuildTypeId();
             will(returnValue("type"));
-            allowing(build).getBuildId();
+            oneOf(build).getBuildId();
             will(returnValue(3641L));
-            allowing(build).isPersonal();
-            will(returnValue(false));
-            allowing(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
+            oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
             will(throwException(new IOException("Failure")));
         }});
 
@@ -293,24 +291,77 @@ public class PackageUploadHandlerTests {
                 NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
 
         m.checking(new Expectations() {{
-            allowing(runningBuilds).findRunningBuildById(3641L);
+            oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
-            allowing(settings).getMaximumAllowedArtifactSize();
+            oneOf(settings).getMaximumAllowedArtifactSize();
             will(returnValue(123L));
-            allowing(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
+            oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
             will(returnValue(metadata));
-            allowing(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
+            oneOf(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
             will(returnValue("hash"));
-            allowing(build).getBuildTypeId();
+            oneOf(build).getBuildTypeId();
             will(returnValue("type"));
-            allowing(build).getBuildId();
+            oneOf(build).getBuildId();
             will(returnValue(3641L));
-            allowing(build).isPersonal();
+            oneOf(build).isPersonal();
             will(returnValue(false));
-            allowing(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
-            allowing(metadataStorage).addBuildEntry(with(any(Long.class)),  with(any(String.class)),
+            oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
+            oneOf(metadataStorage).addBuildEntry(with(any(Long.class)),  with(any(String.class)),
                     with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
-            allowing(cacheReset).resetCache();
+            oneOf(cacheReset).resetCache();
+        }});
+
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+                packageAnalyzer, cacheReset);
+        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+        ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+        request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
+        request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+        request.setBody((
+                "--3576595b-8e57-4d70-91bb-701d5aab54ea\r\n" +
+                        "Content-Type: application/octet-stream\r\n" +
+                        "Content-Disposition: form-data; name=package; filename=package.nupkg; filename*=utf-8''package.nupkg\r\n" +
+                        "\r\n" +
+                        "Hello\r\n" +
+                        "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n").getBytes());
+
+        handler.handleRequest(request, response);
+
+        m.assertIsSatisfied();
+    }
+
+    public void testUploadWithoutMaxArtifactSize() throws Exception {
+        Mockery m = new Mockery();
+        RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
+        RunningBuildEx build = m.mock(RunningBuildEx.class);
+        ServerSettings settings = m.mock(ServerSettings.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
+        PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
+        ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
+        Map<String, String> metadata = CollectionsUtil.asMap(
+                NuGetPackageAttributes.ID, "Id",
+                NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
+
+        m.checking(new Expectations() {{
+            oneOf(runningBuilds).findRunningBuildById(3641L);
+            will(returnValue(build));
+            oneOf(settings).getMaximumAllowedArtifactSize();
+            will(returnValue(-1L));
+            oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
+            will(returnValue(metadata));
+            oneOf(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
+            will(returnValue("hash"));
+            oneOf(build).getBuildTypeId();
+            will(returnValue("type"));
+            oneOf(build).getBuildId();
+            will(returnValue(3641L));
+            oneOf(build).isPersonal();
+            will(returnValue(false));
+            oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
+            oneOf(metadataStorage).addBuildEntry(with(any(Long.class)),  with(any(String.class)),
+                    with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
+            oneOf(cacheReset).resetCache();
         }});
 
         PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,

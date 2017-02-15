@@ -85,9 +85,10 @@ public class PackageUploadHandler implements NuGetFeedHandler {
             return;
         }
 
-        if (file.getSize() > myServerSettings.getMaximumAllowedArtifactSize()) {
+        long maximumArtifactSize = myServerSettings.getMaximumAllowedArtifactSize();
+        if (maximumArtifactSize > 0 && file.getSize() > maximumArtifactSize) {
             LOG.debug(String.format("NuGet package size %s bytes is too large. Maximum allowed size is %s bytes.",
-                    file.getSize(), myServerSettings.getMaximumAllowedArtifactSize()));
+                    file.getSize(), maximumArtifactSize));
             response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
             return;
         }
