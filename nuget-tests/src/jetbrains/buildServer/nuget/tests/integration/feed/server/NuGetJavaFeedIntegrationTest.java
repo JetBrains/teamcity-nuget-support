@@ -89,6 +89,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   public void testNuGetClientReadsFeed(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
+      return;
     }
 
     setODataSerializer(library);
@@ -115,6 +116,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   public void testNuGetClientReadsFeedQuery(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
+      return;
     }
 
     setODataSerializer(library);
@@ -140,6 +142,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   public void testNuGetClientBatchQueryForList(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
+      return;
     }
 
     setODataSerializer(library);
@@ -166,6 +169,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   public void testNuGetClientReadsPrereleaseFeedQuery(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
+      return;
     }
 
     setODataSerializer(library);
@@ -198,6 +202,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   public void testSkiptoken(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
+      return;
     }
 
     setODataSerializer(library);
@@ -232,6 +237,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
           throws NuGetExecutionException, IOException {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
+      return;
     }
 
     setODataSerializer(library);
@@ -243,6 +249,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
           throws NuGetExecutionException, IOException {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
+      return;
     }
 
     setODataSerializer(library);
