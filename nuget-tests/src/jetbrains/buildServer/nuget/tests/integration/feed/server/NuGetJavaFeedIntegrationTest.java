@@ -17,12 +17,14 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.openapi.util.SystemInfo;
 import com.sun.jersey.api.container.httpserver.HttpServerFactory;
 import com.sun.jersey.api.core.ClassNamesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.net.httpserver.HttpServer;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
+import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
 import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
@@ -85,6 +87,10 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void testNuGetClientReadsFeed(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+    if (!SystemInfo.isWindows) {
+      TestNGUtil.skip("is not supported under mono");
+    }
+
     setODataSerializer(library);
     enableDebug();
 
@@ -107,6 +113,10 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void testNuGetClientReadsFeedQuery(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+    if (!SystemInfo.isWindows) {
+      TestNGUtil.skip("is not supported under mono");
+    }
+
     setODataSerializer(library);
     enableDebug();
 
@@ -128,6 +138,10 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void testNuGetClientBatchQueryForList(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+    if (!SystemInfo.isWindows) {
+      TestNGUtil.skip("is not supported under mono");
+    }
+
     setODataSerializer(library);
     enableDebug();
 
@@ -150,6 +164,10 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   @TestFor(issues = "TW-24051")
   @Test(dataProvider = NUGET_VERSIONS)
   public void testNuGetClientReadsPrereleaseFeedQuery(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+    if (!SystemInfo.isWindows) {
+      TestNGUtil.skip("is not supported under mono");
+    }
+
     setODataSerializer(library);
     enableDebug();
     enablePackagesIndexSorting();
@@ -178,6 +196,10 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
 
   @Test(dataProvider = NUGET_VERSIONS_27p)
   public void testSkiptoken(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+    if (!SystemInfo.isWindows) {
+      TestNGUtil.skip("is not supported under mono");
+    }
+
     setODataSerializer(library);
     enableDebug();
     enablePackagesIndexSorting();
@@ -208,6 +230,10 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x1(final NugetFeedLibrary library, @NotNull final NuGet nuget)
           throws NuGetExecutionException, IOException {
+    if (!SystemInfo.isWindows) {
+      TestNGUtil.skip("is not supported under mono");
+    }
+
     setODataSerializer(library);
     doTriggerTest(nuget, packageId_1);
   }
@@ -215,6 +241,10 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x2(final NugetFeedLibrary library, @NotNull final NuGet nuget)
           throws NuGetExecutionException, IOException {
+    if (!SystemInfo.isWindows) {
+      TestNGUtil.skip("is not supported under mono");
+    }
+
     setODataSerializer(library);
     doTriggerTest(nuget, packageId_1.toLowerCase(), packageId_2.toUpperCase());
   }
