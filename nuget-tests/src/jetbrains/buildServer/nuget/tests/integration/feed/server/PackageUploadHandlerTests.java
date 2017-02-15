@@ -7,6 +7,7 @@ import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageAnalyzer;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.serverSide.*;
+import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.jmock.Expectations;
@@ -31,12 +32,11 @@ public class PackageUploadHandlerTests {
     public void testNonMultipartRequest() throws Exception {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
-        ServerSettings settings = m.mock(ServerSettings.class);
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
 
-        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
                 packageAnalyzer, cacheReset);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
@@ -51,12 +51,11 @@ public class PackageUploadHandlerTests {
     public void testUploadWithoutApiKey() throws Exception {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
-        ServerSettings settings = m.mock(ServerSettings.class);
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
-        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
                 packageAnalyzer, cacheReset);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
@@ -72,12 +71,11 @@ public class PackageUploadHandlerTests {
     public void testUploadWithInvalidApiKey() throws Exception {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
-        ServerSettings settings = m.mock(ServerSettings.class);
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
 
-        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
                 packageAnalyzer, cacheReset);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
@@ -94,7 +92,6 @@ public class PackageUploadHandlerTests {
     public void testUploadWithoutRunningBuild() throws Exception {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
-        ServerSettings settings = m.mock(ServerSettings.class);
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
@@ -104,7 +101,7 @@ public class PackageUploadHandlerTests {
             will(returnValue(null));
         }});
 
-        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
                 packageAnalyzer, cacheReset);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
@@ -123,7 +120,6 @@ public class PackageUploadHandlerTests {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
-        ServerSettings settings = m.mock(ServerSettings.class);
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
@@ -133,7 +129,7 @@ public class PackageUploadHandlerTests {
             will(returnValue(build));
         }});
 
-        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
                 packageAnalyzer, cacheReset);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
@@ -158,7 +154,6 @@ public class PackageUploadHandlerTests {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
-        ServerSettings settings = m.mock(ServerSettings.class);
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
@@ -166,11 +161,11 @@ public class PackageUploadHandlerTests {
         m.checking(new Expectations() {{
             oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
-            oneOf(settings).getMaximumAllowedArtifactSize();
-            will(returnValue(1L));
+            oneOf(build).getArtifactsLimit();
+            will(returnValue(new ArtifactsUploadLimit(1L, null)));
         }});
 
-        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
                 packageAnalyzer, cacheReset);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
@@ -195,7 +190,6 @@ public class PackageUploadHandlerTests {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
-        ServerSettings settings = m.mock(ServerSettings.class);
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
@@ -203,11 +197,11 @@ public class PackageUploadHandlerTests {
         m.checking(new Expectations() {{
             oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
-            oneOf(settings).getMaximumAllowedArtifactSize();
-            will(returnValue(123L));
+            oneOf(build).getArtifactsLimit();
+            will(returnValue(ArtifactsUploadLimit.UNLIMITED));
         }});
 
-        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
                 packageAnalyzer, cacheReset);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
@@ -232,7 +226,6 @@ public class PackageUploadHandlerTests {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
-        ServerSettings settings = m.mock(ServerSettings.class);
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
@@ -243,8 +236,8 @@ public class PackageUploadHandlerTests {
         m.checking(new Expectations() {{
             oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
-            oneOf(settings).getMaximumAllowedArtifactSize();
-            will(returnValue(123L));
+            one(build).getArtifactsLimit();
+            will(returnValue(ArtifactsUploadLimit.UNLIMITED));
             oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
             will(returnValue(metadata));
             oneOf(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
@@ -257,7 +250,7 @@ public class PackageUploadHandlerTests {
             will(throwException(new IOException("Failure")));
         }});
 
-        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
                 packageAnalyzer, cacheReset);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
@@ -282,7 +275,6 @@ public class PackageUploadHandlerTests {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
-        ServerSettings settings = m.mock(ServerSettings.class);
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
@@ -293,8 +285,8 @@ public class PackageUploadHandlerTests {
         m.checking(new Expectations() {{
             oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
-            oneOf(settings).getMaximumAllowedArtifactSize();
-            will(returnValue(123L));
+            one(build).getArtifactsLimit();
+            will(returnValue(ArtifactsUploadLimit.UNLIMITED));
             oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
             will(returnValue(metadata));
             oneOf(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
@@ -306,12 +298,12 @@ public class PackageUploadHandlerTests {
             oneOf(build).isPersonal();
             will(returnValue(false));
             oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
-            oneOf(metadataStorage).addBuildEntry(with(any(Long.class)),  with(any(String.class)),
+            oneOf(metadataStorage).addBuildEntry(with(any(Long.class)), with(any(String.class)),
                     with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
             oneOf(cacheReset).resetCache();
         }});
 
-        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
                 packageAnalyzer, cacheReset);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
@@ -335,7 +327,6 @@ public class PackageUploadHandlerTests {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
-        ServerSettings settings = m.mock(ServerSettings.class);
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
@@ -346,8 +337,8 @@ public class PackageUploadHandlerTests {
         m.checking(new Expectations() {{
             oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
-            oneOf(settings).getMaximumAllowedArtifactSize();
-            will(returnValue(-1L));
+            one(build).getArtifactsLimit();
+            will(returnValue(new ArtifactsUploadLimit(-1L, null)));
             oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
             will(returnValue(metadata));
             oneOf(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
@@ -359,12 +350,12 @@ public class PackageUploadHandlerTests {
             oneOf(build).isPersonal();
             will(returnValue(false));
             oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
-            oneOf(metadataStorage).addBuildEntry(with(any(Long.class)),  with(any(String.class)),
+            oneOf(metadataStorage).addBuildEntry(with(any(Long.class)), with(any(String.class)),
                     with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
             oneOf(cacheReset).resetCache();
         }});
 
-        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, settings, metadataStorage,
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
                 packageAnalyzer, cacheReset);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
