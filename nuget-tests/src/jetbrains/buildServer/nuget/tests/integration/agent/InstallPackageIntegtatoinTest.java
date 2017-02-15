@@ -209,6 +209,9 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     Assert.assertTrue(new File(myRoot, "packages/Elmah.1.2").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.3001").isDirectory());
+    if (!SystemInfo.isWindows) {
+        return;
+    }
     Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.4001-beta").isDirectory());
   }
 
