@@ -61,11 +61,19 @@ public class PackageUploadHandler implements NuGetFeedHandler {
         }
 
         final MultipartResolver multipartResolver = new CommonsMultipartResolver();
-        final MultipartHttpServletRequest servletRequest = multipartResolver.resolveMultipart(request);
+        MultipartHttpServletRequest servletRequest = null;
         try {
+            LOG.debug("NuGet package upload handler started");
+            servletRequest = multipartResolver.resolveMultipart(request);
             handleUpload(servletRequest, response);
+        } catch (Throwable e) {
+            LOG.warnAndDebugDetails("Unhandled error while processing NuGet package upload: " + e.getMessage(), e);
+            throw e;
         } finally {
-            multipartResolver.cleanupMultipart(servletRequest);
+            LOG.debug("NuGet package upload handler finished");
+            if (servletRequest != null) {
+                multipartResolver.cleanupMultipart(servletRequest);
+            }
         }
     }
 

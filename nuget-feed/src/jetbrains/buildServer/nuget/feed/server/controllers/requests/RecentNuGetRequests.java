@@ -43,7 +43,7 @@ public class RecentNuGetRequests {
   }
 
   public synchronized void reportFeedRequestFinished(@NotNull final String url, long requestProcessingDuration) {
-    LOG.debug("NuGet Feed Request request processing finsihed in " + requestProcessingDuration + "ms for " + url);
+    LOG.debug("NuGet Feed Request request processing finished in " + requestProcessingDuration + "ms for " + url);
     final Long requestProcessingStartTime = myFeedRequests.get(url);
     if(requestProcessingStartTime != null) {
       myFeedRequestTimes.put(requestProcessingStartTime, requestProcessingDuration);

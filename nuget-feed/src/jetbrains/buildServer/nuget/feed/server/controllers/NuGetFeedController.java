@@ -84,8 +84,10 @@ public class NuGetFeedController extends BaseController {
 
     final String path = requestPath.substring(myNuGetPath.length());
     final String query = requestWrapper.getQueryString();
-    final String pathAndQuery = path + (query != null ? ("?" + query) : "");
+    final String pathAndQuery = requestWrapper.getMethod() + " " + path + (query != null ? ("?" + query) : "");
+
     myRequestsList.reportFeedRequest(pathAndQuery);
+    final long startTime = new Date().getTime();
 
     final NuGetFeedHandler feedHandler = myFeedProvider.getHandler(requestWrapper);
     if (feedHandler == null) {
@@ -93,10 +95,10 @@ public class NuGetFeedController extends BaseController {
       // error response according to OData spec for unsupported operations (modification operations)
       response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, UNSUPPORTED_REQUEST);
     } else {
-      final long startTime = new Date().getTime();
       feedHandler.handleRequest(requestWrapper, response);
-      myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
     }
+
+    myRequestsList.reportFeedRequestFinished(pathAndQuery, new Date().getTime() - startTime);
 
     return null;
   }
