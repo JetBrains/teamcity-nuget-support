@@ -95,14 +95,18 @@ public class PackageUploadHandler implements NuGetFeedHandler {
         final ArtifactsUploadLimit artifactsLimit = build.getArtifactsLimit();
         long maximumArtifactSize = -1;
 
-        final Long totalSizeLimit = artifactsLimit.getArtifactsTotalSizeLimit();
-        if (totalSizeLimit != null && totalSizeLimit >= 0) {
-            maximumArtifactSize = totalSizeLimit;
-        }
-
         final Long maxArtifactFileSize = artifactsLimit.getMaxArtifactFileSize();
         if (maxArtifactFileSize != null && maxArtifactFileSize >= 0) {
             maximumArtifactSize = maxArtifactFileSize;
+        }
+
+        final Long totalSizeLimit = artifactsLimit.getArtifactsTotalSizeLimit();
+        if (totalSizeLimit != null && totalSizeLimit >= 0) {
+            if (maximumArtifactSize >= 0) {
+                maximumArtifactSize = Math.min(maximumArtifactSize, totalSizeLimit);
+            } else {
+                maximumArtifactSize = totalSizeLimit;
+            }
         }
 
         if (maximumArtifactSize >= 0 && file.getSize() > maximumArtifactSize) {

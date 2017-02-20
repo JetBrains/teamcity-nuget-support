@@ -28,6 +28,12 @@ import java.util.Map;
 public class PackageUploadHandlerTests {
 
     private static final String SERVLET_PATH = "/app/nuget/v1/FeedService.svc";
+    private static final String REQUEST_BODY = "--3576595b-8e57-4d70-91bb-701d5aab54ea\r\n" +
+            "Content-Type: application/octet-stream\r\n" +
+            "Content-Disposition: form-data; name=package; filename=package.nupkg; filename*=utf-8''package.nupkg\r\n" +
+            "\r\n" +
+            "Hello\r\n" +
+            "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n";
 
     public void testNonMultipartRequest() throws Exception {
         Mockery m = new Mockery();
@@ -150,7 +156,7 @@ public class PackageUploadHandlerTests {
         m.assertIsSatisfied();
     }
 
-    public void testUploadTooLargePackage() throws Exception {
+    public void testUploadWithExceedingArtifactLimit() throws Exception {
         Mockery m = new Mockery();
         RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
         RunningBuildEx build = m.mock(RunningBuildEx.class);
@@ -172,13 +178,67 @@ public class PackageUploadHandlerTests {
 
         request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
         request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
-        request.setBody((
-                "--3576595b-8e57-4d70-91bb-701d5aab54ea\r\n" +
-                        "Content-Type: application/octet-stream\r\n" +
-                        "Content-Disposition: form-data; name=package; filename=package.nupkg; filename*=utf-8''package.nupkg\r\n" +
-                        "\r\n" +
-                        "Hello\r\n" +
-                        "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n").getBytes());
+        request.setBody(REQUEST_BODY.getBytes());
+
+        handler.handleRequest(request, response);
+
+        Assert.assertEquals(response.getStatus(), 413);
+        m.assertIsSatisfied();
+    }
+
+    public void testUploadWithExceedingTotalLimit() throws Exception {
+        Mockery m = new Mockery();
+        RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
+        RunningBuildEx build = m.mock(RunningBuildEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
+        PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
+        ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
+
+        m.checking(new Expectations() {{
+            oneOf(runningBuilds).findRunningBuildById(3641L);
+            will(returnValue(build));
+            oneOf(build).getArtifactsLimit();
+            will(returnValue(new ArtifactsUploadLimit(null, 0L)));
+        }});
+
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
+                packageAnalyzer, cacheReset);
+        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+        ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+        request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
+        request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+        request.setBody(REQUEST_BODY.getBytes());
+
+        handler.handleRequest(request, response);
+
+        Assert.assertEquals(response.getStatus(), 413);
+        m.assertIsSatisfied();
+    }
+
+    public void testUploadWithTotalLimitLessThanArtifact() throws Exception {
+        Mockery m = new Mockery();
+        RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
+        RunningBuildEx build = m.mock(RunningBuildEx.class);
+        MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
+        PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
+        ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
+
+        m.checking(new Expectations() {{
+            oneOf(runningBuilds).findRunningBuildById(3641L);
+            will(returnValue(build));
+            oneOf(build).getArtifactsLimit();
+            will(returnValue(new ArtifactsUploadLimit(1000000L, 1L)));
+        }});
+
+        PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
+                packageAnalyzer, cacheReset);
+        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+        ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+        request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
+        request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+        request.setBody(REQUEST_BODY.getBytes());
 
         handler.handleRequest(request, response);
 
@@ -208,13 +268,7 @@ public class PackageUploadHandlerTests {
 
         request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
         request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
-        request.setBody((
-                "--3576595b-8e57-4d70-91bb-701d5aab54ea\r\n" +
-                        "Content-Type: application/octet-stream\r\n" +
-                        "Content-Disposition: form-data; name=package; filename=package.nupkg; filename*=utf-8''package.nupkg\r\n" +
-                        "\r\n" +
-                        "Hello\r\n" +
-                        "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n").getBytes());
+        request.setBody(REQUEST_BODY.getBytes());
 
         handler.handleRequest(request, response);
 
@@ -257,13 +311,7 @@ public class PackageUploadHandlerTests {
 
         request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
         request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
-        request.setBody((
-                "--3576595b-8e57-4d70-91bb-701d5aab54ea\r\n" +
-                        "Content-Type: application/octet-stream\r\n" +
-                        "Content-Disposition: form-data; name=package; filename=package.nupkg; filename*=utf-8''package.nupkg\r\n" +
-                        "\r\n" +
-                        "Hello\r\n" +
-                        "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n").getBytes());
+        request.setBody(REQUEST_BODY.getBytes());
 
         handler.handleRequest(request, response);
 
@@ -310,13 +358,7 @@ public class PackageUploadHandlerTests {
 
         request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
         request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
-        request.setBody((
-                "--3576595b-8e57-4d70-91bb-701d5aab54ea\r\n" +
-                        "Content-Type: application/octet-stream\r\n" +
-                        "Content-Disposition: form-data; name=package; filename=package.nupkg; filename*=utf-8''package.nupkg\r\n" +
-                        "\r\n" +
-                        "Hello\r\n" +
-                        "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n").getBytes());
+        request.setBody(REQUEST_BODY.getBytes());
 
         handler.handleRequest(request, response);
 
@@ -362,13 +404,7 @@ public class PackageUploadHandlerTests {
 
         request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
         request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
-        request.setBody((
-                "--3576595b-8e57-4d70-91bb-701d5aab54ea\r\n" +
-                        "Content-Type: application/octet-stream\r\n" +
-                        "Content-Disposition: form-data; name=package; filename=package.nupkg; filename*=utf-8''package.nupkg\r\n" +
-                        "\r\n" +
-                        "Hello\r\n" +
-                        "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n").getBytes());
+        request.setBody(REQUEST_BODY.getBytes());
 
         handler.handleRequest(request, response);
 
