@@ -1,12 +1,15 @@
 package jetbrains.buildServer.nuget.feed.server.controllers;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
+import jetbrains.buildServer.serverSide.buildLog.BuildLog;
+import jetbrains.buildServer.serverSide.buildLog.MessageAttrs;
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.FileUtil;
@@ -93,25 +96,31 @@ public class PackageUploadHandler implements NuGetFeedHandler {
 
         // Check maximum size of artifacts
         final ArtifactsUploadLimit artifactsLimit = build.getArtifactsLimit();
-        long maximumArtifactSize = -1;
+        long fileSize = file.getSize();
 
         final Long maxArtifactFileSize = artifactsLimit.getMaxArtifactFileSize();
-        if (maxArtifactFileSize != null && maxArtifactFileSize >= 0) {
-            maximumArtifactSize = maxArtifactFileSize;
+
+        if (maxArtifactFileSize != null && maxArtifactFileSize >= 0 && fileSize > maxArtifactFileSize) {
+            final BuildLog buildLog = build.getBuildLog();
+            final String message = String.format(
+                    "NuGet package size is %s bytes which exceeds maximum build artifact file size of %s bytes.\n" +
+                            "Consider increasing this limit on the Administration -> Global Settings page.",
+                    fileSize, maxArtifactFileSize);
+            buildLog.message(message, Status.ERROR, MessageAttrs.serverMessage());
+            LOG.debug(message);
+            response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
+            return;
         }
 
         final Long totalSizeLimit = artifactsLimit.getArtifactsTotalSizeLimit();
-        if (totalSizeLimit != null && totalSizeLimit >= 0) {
-            if (maximumArtifactSize >= 0) {
-                maximumArtifactSize = Math.min(maximumArtifactSize, totalSizeLimit);
-            } else {
-                maximumArtifactSize = totalSizeLimit;
-            }
-        }
-
-        if (maximumArtifactSize >= 0 && file.getSize() > maximumArtifactSize) {
-            LOG.debug(String.format("NuGet package size %s bytes is too large. Maximum allowed size is %s bytes.",
-                    file.getSize(), maximumArtifactSize));
+        if (totalSizeLimit != null && totalSizeLimit >= 0 && fileSize > totalSizeLimit) {
+            final BuildLog buildLog = build.getBuildLog();
+            final String message = String.format(
+                    "NuGet package size is %s bytes which exceeds elapsed size of build configuration artifacts of %s bytes.\n" +
+                            "Consider increasing this limit in the project or build configuration parameters.",
+                    fileSize, maxArtifactFileSize);
+            buildLog.message(message, Status.ERROR, MessageAttrs.serverMessage());
+            LOG.debug(message);
             response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
             return;
         }
