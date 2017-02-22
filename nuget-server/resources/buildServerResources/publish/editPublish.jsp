@@ -70,8 +70,9 @@
   <td>
     <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
       <span class="smallNote">
-        Specify the NuGet packages feed URL to push packages to. Leave blank to let NuGet decide what package repository to use.<br />
-        To use TeamCity as a NuGet server, specify <em><c:out value="${ib.nuGetFeedReference}"/></em>.
+        Specify the NuGet packages feed URL to push packages to.<br/>
+        Leave blank to let NuGet decide what package repository to use.<br />
+        For built-in TeamCity NuGet server, specify <em><c:out value="${ib.nuGetFeedReference}"/></em>.
       </span>
     <span class="error" id="error_${ib.nuGetSourceKey}"></span>
   </td>
