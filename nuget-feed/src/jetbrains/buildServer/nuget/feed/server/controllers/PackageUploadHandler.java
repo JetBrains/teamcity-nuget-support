@@ -99,7 +99,6 @@ public class PackageUploadHandler implements NuGetFeedHandler {
         long fileSize = file.getSize();
 
         final Long maxArtifactFileSize = artifactsLimit.getMaxArtifactFileSize();
-
         if (maxArtifactFileSize != null && maxArtifactFileSize >= 0 && fileSize > maxArtifactFileSize) {
             final BuildLog buildLog = build.getBuildLog();
             final String message = String.format(
@@ -118,7 +117,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
             final String message = String.format(
                     "NuGet package size is %s bytes which exceeds elapsed size of build configuration artifacts of %s bytes.\n" +
                             "Consider increasing this limit in the project or build configuration parameters.",
-                    fileSize, maxArtifactFileSize);
+                    fileSize, totalSizeLimit);
             buildLog.message(message, Status.ERROR, MessageAttrs.serverMessage());
             LOG.debug(message);
             response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
