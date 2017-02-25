@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.controllers.MockResponse;
-import jetbrains.buildServer.messages.Status;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
@@ -25,8 +25,6 @@ import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageAnalyzer;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
-import jetbrains.buildServer.serverSide.buildLog.BuildLog;
-import jetbrains.buildServer.serverSide.buildLog.MessageAttrs;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.jmock.Expectations;
@@ -182,18 +180,13 @@ public class PackageUploadHandlerTests {
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
-        BuildLog buildLog = m.mock(BuildLog.class);
 
         m.checking(new Expectations() {{
             oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
             oneOf(build).getArtifactsLimit();
             will(returnValue(new ArtifactsUploadLimit(1L, null)));
-            oneOf(build).getBuildLog();
-            will(returnValue(buildLog));
-            oneOf(buildLog).message(with(any(String.class)),
-                    with(any(Status.class)),
-                    with(any(MessageAttrs.class)));
+            oneOf(build).addBuildProblem(with(any(BuildProblemData.class)));
         }});
 
         PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
@@ -218,19 +211,13 @@ public class PackageUploadHandlerTests {
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
-        BuildLog buildLog = m.mock(BuildLog.class);
 
         m.checking(new Expectations() {{
             oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
             oneOf(build).getArtifactsLimit();
             will(returnValue(new ArtifactsUploadLimit(null, 0L)));
-            oneOf(build).getBuildLog();
-            will(returnValue(buildLog));
-            oneOf(buildLog).message(with(any(String.class)),
-                    with(any(Status.class)),
-                    with(any(MessageAttrs.class)));
-
+            oneOf(build).addBuildProblem(with(any(BuildProblemData.class)));
         }});
 
         PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
@@ -255,19 +242,13 @@ public class PackageUploadHandlerTests {
         MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
         PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
         ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
-        BuildLog buildLog = m.mock(BuildLog.class);
 
         m.checking(new Expectations() {{
             oneOf(runningBuilds).findRunningBuildById(3641L);
             will(returnValue(build));
             oneOf(build).getArtifactsLimit();
             will(returnValue(new ArtifactsUploadLimit(1000000L, 1L)));
-            oneOf(build).getBuildLog();
-            will(returnValue(buildLog));
-            oneOf(buildLog).message(with(any(String.class)),
-                    with(any(Status.class)),
-                    with(any(MessageAttrs.class)));
-
+            oneOf(build).addBuildProblem(with(any(BuildProblemData.class)));
         }});
 
         PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,

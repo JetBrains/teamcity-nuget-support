@@ -17,31 +17,34 @@
 package jetbrains.buildServer.nuget.feed.server.controllers;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
-import jetbrains.buildServer.serverSide.*;
+import jetbrains.buildServer.serverSide.RunningBuildEx;
+import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
-import jetbrains.buildServer.serverSide.buildLog.BuildLog;
-import jetbrains.buildServer.serverSide.buildLog.MessageAttrs;
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.web.multipart.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.*;
+import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
+import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
 import static jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
@@ -53,6 +56,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     private static final Logger LOG = Logger.getInstance(PackageUploadHandler.class.getName());
     private static final String INVALID_TOKEN_VALUE = "Invalid token value";
     private static final String INVALID_PACKAGE_CONTENTS = "Invalid NuGet package contents";
+    private static final String ARTIFACT_PUBLISHING_FAILED = "[Artifacts publishing failed]";
     private final RunningBuildsCollection myRunningBuilds;
     private final MetadataStorage myStorage;
     private final PackageAnalyzer myPackageAnalyzer;
@@ -116,12 +120,15 @@ public class PackageUploadHandler implements NuGetFeedHandler {
 
         final Long maxArtifactFileSize = artifactsLimit.getMaxArtifactFileSize();
         if (maxArtifactFileSize != null && maxArtifactFileSize >= 0 && fileSize > maxArtifactFileSize) {
-            final BuildLog buildLog = build.getBuildLog();
             final String message = String.format(
                     "NuGet package size is %s bytes which exceeds maximum build artifact file size of %s bytes.\n" +
                             "Consider increasing this limit on the Administration -> Global Settings page.",
                     fileSize, maxArtifactFileSize);
-            buildLog.message(message, Status.ERROR, MessageAttrs.serverMessage());
+            BuildProblemData problem = BuildProblemData.createBuildProblem(
+                    ARTIFACT_PUBLISHING_FAILED + "_maxArtifactFileSize",
+                    ARTIFACT_PUBLISHING_FAILED,
+                    message);
+            build.addBuildProblem(problem);
             LOG.debug(message);
             response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
             return;
@@ -129,12 +136,15 @@ public class PackageUploadHandler implements NuGetFeedHandler {
 
         final Long totalSizeLimit = artifactsLimit.getArtifactsTotalSizeLimit();
         if (totalSizeLimit != null && totalSizeLimit >= 0 && fileSize > totalSizeLimit) {
-            final BuildLog buildLog = build.getBuildLog();
             final String message = String.format(
                     "NuGet package size is %s bytes which exceeds elapsed size of build configuration artifacts of %s bytes.\n" +
                             "Consider increasing this limit in the project or build configuration parameters.",
                     fileSize, totalSizeLimit);
-            buildLog.message(message, Status.ERROR, MessageAttrs.serverMessage());
+            BuildProblemData problem = BuildProblemData.createBuildProblem(
+                    ARTIFACT_PUBLISHING_FAILED + "_totalSizeLimit",
+                    ARTIFACT_PUBLISHING_FAILED,
+                    message);
+            build.addBuildProblem(problem);
             LOG.debug(message);
             response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
             return;
