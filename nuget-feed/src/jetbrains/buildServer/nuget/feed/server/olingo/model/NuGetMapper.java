@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo.model;
 
+import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
@@ -68,17 +69,24 @@ public final class NuGetMapper {
     feedPackage.setRequireLicenseAcceptance(Boolean.parseBoolean(getValue(attributes, REQUIRE_LICENSE_ACCEPTANCE)));
     feedPackage.setTags(getValue(attributes, TAGS));
     feedPackage.setTitle(getValue(attributes, TITLE));
-    feedPackage.setTeamCityDownloadUrl(UriBuilder
-            .fromUri(requestUri)
-            .replacePath(getValue(attributes, PackagesIndex.TEAMCITY_DOWNLOAD_URL))
-            .build()
-            .toString());
+    feedPackage.setTeamCityDownloadUrl(getDownloadUrl(requestUri, attributes));
     feedPackage.setMinClientVersion(getValue(attributes, MIN_CLIENT_VERSION));
     feedPackage.setLicenseUrl(getValue(attributes, LICENSE_URL));
     feedPackage.setLicenseNames(getValue(attributes, LICENSE_NAMES));
     feedPackage.setLicenseReportUrl(getValue(attributes, LICENSE_REPORT_URL));
 
     return feedPackage;
+  }
+
+  private static String getDownloadUrl(@NotNull URI requestUri, Map<String, String> attributes) {
+    final String authSchema = StringUtil.split(requestUri.getPath(), "/").get(0);
+    final String artifactPath = getValue(attributes, PackagesIndex.TEAMCITY_DOWNLOAD_URL);
+    final String downloadPath = String.format("/%s%s", authSchema, artifactPath);
+    return UriBuilder
+            .fromUri(requestUri)
+            .replacePath(downloadPath)
+            .build()
+            .toString();
   }
 
   private static String getValue(@NotNull final Map<String, String> attributes, @NotNull final String key) {
