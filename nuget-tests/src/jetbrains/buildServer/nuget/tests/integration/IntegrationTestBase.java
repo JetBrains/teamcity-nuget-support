@@ -18,24 +18,17 @@ package jetbrains.buildServer.nuget.tests.integration;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.SystemInfo;
+import com.intellij.openapi.util.io.StreamUtil;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
-import jetbrains.buildServer.agent.impl.OSTypeDetector;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
-import jetbrains.buildServer.nuget.agent.commands.impl.CommandFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.LoggingNuGetActionFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl;
-import jetbrains.buildServer.nuget.agent.commands.impl.NuGetAuthCommandBuildProcessFactory;
+import jetbrains.buildServer.nuget.agent.commands.impl.*;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
-import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
-import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser;
-import jetbrains.buildServer.nuget.agent.dependencies.impl.PackageUsagesImpl;
-import jetbrains.buildServer.nuget.agent.parameters.NuGetFetchParameters;
-import jetbrains.buildServer.nuget.agent.parameters.PackageSourceManager;
-import jetbrains.buildServer.nuget.agent.parameters.PackagesParametersFactory;
+import jetbrains.buildServer.nuget.agent.dependencies.impl.*;
+import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.common.PackageInfoLoader;
@@ -247,7 +240,9 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     try {
       process = cmd.createProcess();
       assertTrue("Failed to wait for command to finish " + cmd.getCommandLineString(), process.waitFor(5, TimeUnit.SECONDS));
-      assertEquals("Failed to update nuget.org package source using command " + cmd.getCommandLineString(), 0, process.exitValue());
+      assertEquals(String.format("Failed to update nuget.org package source using command %s:\n%s",
+              cmd.getCommandLineString(), StreamUtil.readText(process.getInputStream())),
+              0, process.exitValue());
     } catch (Exception e) {
       fail(e.getMessage());
     }
