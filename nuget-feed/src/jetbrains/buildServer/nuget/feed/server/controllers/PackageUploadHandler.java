@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.feed.server.controllers;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.BuildProblemData;
+import jetbrains.buildServer.log.LogUtil;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
@@ -225,6 +226,8 @@ public class PackageUploadHandler implements NuGetFeedHandler {
             FileUtil.close(inputStream);
         }
 
+        LOG.info(String.format("Publishing nuget package %s:%s at path '%s' as a build artifact %s",
+                id, version, path, LogUtil.describe(build)));
         try {
             inputStream = file.getInputStream();
             build.publishArtifact(path, inputStream);
