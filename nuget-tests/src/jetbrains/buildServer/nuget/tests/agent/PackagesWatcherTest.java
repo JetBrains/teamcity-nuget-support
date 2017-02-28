@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.agent.AgentLifeCycleListener;
 import jetbrains.buildServer.agent.AgentRunningBuild;
+import jetbrains.buildServer.agent.BuildAgentConfiguration;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.artifacts.ArtifactsWatcher;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
@@ -70,7 +71,13 @@ public class PackagesWatcherTest extends BaseTestCase {
     final EventDispatcher<AgentLifeCycleListener> events = EventDispatcher.create(AgentLifeCycleListener.class);
     multicaster = events.getMulticaster();
 
-    final NuGetPackagesCollectorImpl nuGetPackagesCollector = new NuGetPackagesCollectorImpl();
+    BuildAgentConfiguration configuration = m.mock(BuildAgentConfiguration.class);
+    m.checking(new Expectations() {{
+      allowing(configuration).getServerUrl();
+      will(returnValue("http://localhost:8080"));
+    }});
+
+    final NuGetPackagesCollectorImpl nuGetPackagesCollector = new NuGetPackagesCollectorImpl(configuration);
     collector = nuGetPackagesCollector;
 
     new PackagesWatcher(

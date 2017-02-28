@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 
 import com.intellij.util.Function;
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.agent.BuildAgentConfiguration;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
@@ -31,6 +32,8 @@ import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.util.StringUtil;
 import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -52,7 +55,14 @@ public class PackageUsagesTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    myCollector = new NuGetPackagesCollectorImpl();
+    Mockery m = new Mockery();
+    BuildAgentConfiguration configuration = m.mock(BuildAgentConfiguration.class);
+    m.checking(new Expectations() {{
+      allowing(configuration).getServerUrl();
+      will(returnValue("http://localhost:8080"));
+    }});
+
+    myCollector = new NuGetPackagesCollectorImpl(configuration);
     myUsages = new PackageUsagesImpl(myCollector, new NuGetPackagesConfigParser(), new PackageInfoLoader());
   }
 

@@ -17,11 +17,14 @@
 package jetbrains.buildServer.nuget.tests.agent;
 
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.agent.BuildAgentConfiguration;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesConfigParser;
 import jetbrains.buildServer.nuget.common.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import org.jetbrains.annotations.NotNull;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -64,7 +67,14 @@ public class NuGetPackagesConfigParserTest extends BaseTestCase {
   public void doTest(@NotNull String testData,
                      @NotNull NuGetPackageInfo... packages) throws IOException {
     NuGetPackagesConfigParser p = new NuGetPackagesConfigParser();
-    NuGetPackagesCollectorImpl i = new NuGetPackagesCollectorImpl();
+    Mockery m = new Mockery();
+    BuildAgentConfiguration configuration = m.mock(BuildAgentConfiguration.class);
+    m.checking(new Expectations() {{
+      oneOf(configuration).getServerUrl();
+      will(returnValue("http://localhost:8080"));
+    }});
+
+    NuGetPackagesCollectorImpl i = new NuGetPackagesCollectorImpl(configuration);
     p.parseNuGetPackages(Paths.getTestDataPath("config/" + testData), i);
 
     if (packages.length != i.getUsedPackages().getUsedPackages().size()) {

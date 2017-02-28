@@ -197,7 +197,13 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       allowing(psm).getGlobalPackageSources(myBuild); will(returnValue(Collections.unmodifiableSet(myGlobalSources)));
     }});
 
-    myCollector = new NuGetPackagesCollectorImpl();
+    BuildAgentConfiguration configuration = m.mock(BuildAgentConfiguration.class);
+    m.checking(new Expectations() {{
+      oneOf(configuration).getServerUrl();
+      will(returnValue("http://localhost:8080"));
+    }});
+
+    myCollector = new NuGetPackagesCollectorImpl(configuration);
     PackageUsages pu = new PackageUsagesImpl(
             myCollector,
             new NuGetPackagesConfigParser(),
