@@ -16,17 +16,26 @@
 
 package jetbrains.buildServer.nuget.feed.server.controllers.requests;
 
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.ws.rs.core.UriBuilder;
+import java.util.regex.Pattern;
 
 /**
  * @author Yegor.Yarko
  *         Date: 16.11.2009
  */
 public class RequestWrapper extends HttpServletRequestWrapper {
+  private static final Logger LOG = Logger.getInstance(RequestWrapper.class.getName());
+  private static final Pattern PROTOCOL_PATTERN = Pattern.compile("^https?$", Pattern.CASE_INSENSITIVE);
+  private static final String X_FORWARDED_PROTO = "x-forwarded-proto";
+  private static final String X_FORWARDED_HOST = "x-forwarded-host";
+  private static final String X_FORWARDED_PORT = "x-forwarded-port";
   private final String myMapping;
 
   public RequestWrapper(@NotNull final HttpServletRequest request,
@@ -38,16 +47,19 @@ public class RequestWrapper extends HttpServletRequestWrapper {
   @Override
   public String getRequestURI() {
     final String uri = super.getRequestURI();
-    //Workaound for Jersey baseUri and requestUri computation.
+    //Workaround for Jersey baseUri and requestUri computation.
     if (uri.endsWith(myMapping)) return uri + "/";
     return uri;
   }
 
   @Override
   public StringBuffer getRequestURL() {
-    final StringBuffer buf = super.getRequestURL();
-    if (buf.toString().endsWith(myMapping)) buf.append("/");
-    return buf;
+    final UriBuilder uriBuilder = UriBuilder.fromPath(getRequestURI())
+            .scheme(getScheme())
+            .host(getServerName())
+            .port(getServerPort());
+
+    return new StringBuffer(uriBuilder.build().toString());
   }
 
   @Override
@@ -73,5 +85,39 @@ public class RequestWrapper extends HttpServletRequestWrapper {
     }
     //fallback
     return super.getServletPath();
+  }
+
+  @Override
+  public String getScheme() {
+    final String protocol = super.getHeader(X_FORWARDED_PROTO);
+    if (!StringUtil.isEmptyOrSpaces(protocol) && PROTOCOL_PATTERN.matcher(protocol).matches()) {
+      return protocol;
+    } else {
+      return super.getScheme();
+    }
+  }
+
+  @Override
+  public String getServerName() {
+    final String hostName = super.getHeader(X_FORWARDED_HOST);
+    if (!StringUtil.isEmptyOrSpaces(hostName)) {
+      return hostName;
+    } else {
+      return super.getServerName();
+    }
+  }
+
+  @Override
+  public int getServerPort() {
+    final String port = super.getHeader(X_FORWARDED_PORT);
+    if (!StringUtil.isEmptyOrSpaces(port)) {
+      try {
+        return Integer.parseInt(port);
+      } catch (NumberFormatException e) {
+        LOG.debug(String.format("Invalid %s number: %s", X_FORWARDED_PORT, port));
+      }
+    }
+
+    return super.getServerPort();
   }
 }
