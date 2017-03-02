@@ -1,37 +1,30 @@
 plugins {
-    id 'com.ullink.nuget' version '2.14'
-    id 'com.ullink.nunit' version '1.8'
+	id 'com.ullink.msbuild' version '2.16'
+	id 'com.ullink.nuget' version '2.15'
+	id 'com.ullink.nunit' version '1.10'
 }
 
 nugetRestore {
 	version = '3.3.0'
-    solutionFile = file('nuget-extensions.sln')
+	solutionFile = file('nuget-extensions.sln')
 }
 
-task msbuild {
-	doLast {
-	    if (System.properties['os.name'].toLowerCase().contains('windows')) {
-			def msbuildExecutable = 'msbuild.exe'
-			if (project.hasProperty("msbuild_path")) {
-              msbuildExecutable = "${msbuild_path}/${msbuildExecutable}"
-			}
-			
-	        exec {
-				 commandLine msbuildExecutable, "nuget-extensions.sln", "/t:Clean,Rebuild", "/p:Configuration=Release"
-	    	}	
-		}
-		else {
-			exec {
-				commandLine "xbuild", "nuget-extensions.sln", "/p:Configuration=Release"
-		    }	
-		}
-	}
-}
+msbuild {
+	solutionFile = file('nuget-extensions.sln')
+	configuration = 'Release'
 
+	// MsBuild project name (/p:Project=...)
+	projectName = project.name
+
+	// targets to execute (/t:Clean;Rebuild, no default)
+	targets = ['Clean', 'Build']
+
+	verbosity = 'detailed'
+}
 msbuild.dependsOn nugetRestore
 
-nunit.dependsOn msbuild
 nunit {
-    nunitVersion = '3.0.1'
-    useX86 = true
+	nunitVersion = '3.0.1'
+	useX86 = true
 }
+nunit.dependsOn msbuild
