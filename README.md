@@ -24,6 +24,11 @@ This project uses gradle as a build system. To resolve non-public libraries, you
 * `:nuget-server:assemble` - assemble nuget support plugin.
 * `:nuget-server:build` - build & test nuget support plugin.
 
+## Requirements
+
+On Windows to build nuget extensions should be installed Microsoft Build Tools.
+On Linux for that should be installed 'mono-devel' package.
+
 # Contributions
 We appreciate all kinds of feedback, so please feel free to send a PR or write [an issue](https://github.com/JetBrains/teamcity-nuget-support/issues).
 
