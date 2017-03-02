@@ -215,16 +215,16 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             )
     );
 
-    Exception exception = null;
     try {
       arrangeNuGetPackageSource("update");
+      return;
     } catch (Exception e) {
-      exception = e;
+      if (!e.getMessage().startsWith("Unable to find any package source(s) matching name")){
+        throw e;
+      }
     }
 
-    if (exception != null && exception.getMessage().startsWith("Unable to find any package source(s) matching name")) {
-      arrangeNuGetPackageSource("add");
-    }
+    arrangeNuGetPackageSource("add");
   }
 
   private void arrangeNuGetPackageSource(final String command) throws Exception {
@@ -241,16 +241,12 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     try {
       process = cmd.createProcess();
       assertTrue("Failed to wait for command to finish " + cmd.getCommandLineString(), process.waitFor(5, TimeUnit.SECONDS));
-
-      assertEquals(String.format("Failed to update nuget.org package source using command %s:\nStdout: %s\nStderr: %s",
-              cmd.getCommandLineString(),
-              StreamUtil.readText(process.getInputStream()),
-              StreamUtil.readText(process.getErrorStream())),
-              0, process.exitValue());
     } catch (Exception e) {
       if (process != null) process.destroy();
       throw e;
     }
+
+    if (process.exitValue() != 0) throw new Exception(StreamUtil.readText(process.getErrorStream()));
   }
 
   protected void addGlobalSource(@NotNull final String feed) {
