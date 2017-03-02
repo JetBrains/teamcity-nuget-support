@@ -199,7 +199,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
     BuildAgentConfiguration configuration = m.mock(BuildAgentConfiguration.class);
     m.checking(new Expectations() {{
-      oneOf(configuration).getServerUrl();
+      allowing(configuration).getServerUrl();
       will(returnValue("http://localhost:8080"));
     }});
 
