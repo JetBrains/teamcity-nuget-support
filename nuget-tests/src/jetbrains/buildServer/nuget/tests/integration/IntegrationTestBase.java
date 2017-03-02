@@ -241,8 +241,11 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   }
 
   private void arrangeNuGetPackageSource(final String command) throws Exception {
+    final String nugetPath = NuGet.NuGet_2_8.getPath().getPath();
+    enableExecution(nugetPath, null);
+
     final GeneralCommandLine cmd = new GeneralCommandLine();
-    cmd.setExePath(NuGet.NuGet_2_8.getPath().getPath());
+    cmd.setExePath(nugetPath);
     cmd.addParameter("sources");
     cmd.addParameter(command);
     cmd.addParameter("-Name");
