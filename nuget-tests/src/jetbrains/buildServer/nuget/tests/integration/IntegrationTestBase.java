@@ -215,29 +215,41 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             )
     );
 
-    enshureRunningArainstNuGetOrgAPIv2();
+    Exception exception = null;
+    try {
+      arrangeNuGetPackageSource("update");
+    } catch (Exception e) {
+      exception = e;
+    }
+
+    if (exception != null && exception.getMessage().startsWith("Unable to find any package source(s) matching name")) {
+      arrangeNuGetPackageSource("add");
+    }
   }
 
-  private void enshureRunningArainstNuGetOrgAPIv2() {
+  private void arrangeNuGetPackageSource(final String command) throws Exception {
     final GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(NuGet.NuGet_2_8.getPath().getPath());
     cmd.addParameter("sources");
-    cmd.addParameter("update");
+    cmd.addParameter(command);
     cmd.addParameter("-Name");
     cmd.addParameter("nuget.org");
     cmd.addParameter("-Source");
     cmd.addParameter("https://www.nuget.org/api/v2");
-    final Process process;
+
+    Process process = null;
     try {
       process = cmd.createProcess();
       assertTrue("Failed to wait for command to finish " + cmd.getCommandLineString(), process.waitFor(5, TimeUnit.SECONDS));
+
       assertEquals(String.format("Failed to update nuget.org package source using command %s:\nStdout: %s\nStderr: %s",
               cmd.getCommandLineString(),
               StreamUtil.readText(process.getInputStream()),
               StreamUtil.readText(process.getErrorStream())),
               0, process.exitValue());
     } catch (Exception e) {
-      fail(e.getMessage());
+      if (process != null) process.destroy();
+      throw e;
     }
   }
 
