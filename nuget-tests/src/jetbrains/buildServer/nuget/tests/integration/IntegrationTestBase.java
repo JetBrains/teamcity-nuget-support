@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
+import com.intellij.openapi.util.io.StreamUtil;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
@@ -230,7 +231,9 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     try {
       process = cmd.createProcess();
       assertTrue("Failed to wait for command to finish " + cmd.getCommandLineString(), process.waitFor(5, TimeUnit.SECONDS));
-      assertEquals("Failed to update nuget.org package source using command " + cmd.getCommandLineString(), 0, process.exitValue());
+      assertEquals(String.format("Failed to update nuget.org package source using command %s:\n%s",
+              cmd.getCommandLineString(), StreamUtil.readText(process.getInputStream())),
+              0, process.exitValue());
     } catch (Exception e) {
       fail(e.getMessage());
     }
