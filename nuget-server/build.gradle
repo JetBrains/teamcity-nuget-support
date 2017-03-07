@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.rodm.teamcity-server' version "0.9.1"
+    id 'com.github.rodm.teamcity-server' version '0.11'
 }
 
 teamcity {
@@ -22,6 +22,16 @@ teamcity {
             into('licenses') {
                 from (project.file('../licenses'))
             }
+        }
+    }
+
+    environments {
+        downloadsDir = project.downloadsDir
+        baseHomeDir = project.serversDir
+
+        teamcity_2017_1 {
+            version = '2017.1-SNAPSHOT'
+            downloadUrl = 'https://download.jetbrains.com/teamcity/eap/TeamCity-45965.tar.gz'
         }
     }
 }

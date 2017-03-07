@@ -16,11 +16,12 @@ The plugin is bundled from TeamCity 7.0. If you need the latest build, download 
 | 0.10 | <a href="https://teamcity.jetbrains.com/viewType.html?buildTypeId=TeamCityPluginsByJetBrains_NuGetSupportV010for80&guest=1"><img src="https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:TeamCityPluginsByJetBrains_NuGetSupportV010for80)/statusIcon.svg" alt=""/></a> | [Download](https://teamcity.jetbrains.com/repository/download/TeamCityPluginsByJetBrains_NuGetSupportV010for80/.lastSuccessful/dotNetPackagesSupport.zip?guest=1)| 8.0.x |
 
 # Building the plugin
-This project uses gradle as a build system. To resolve non-public libraries, you need to have a local TeamCity installation and define `teamcityDir` in the [gradle properties](https://docs.gradle.org/current/userguide/build_environment.html). After that you can open it in [IntelliJ IDEA](https://www.jetbrains.com/idea/help/importing-project-from-gradle-model.html) or [Eclipse](http://gradle.org/eclipse/).
+This project uses gradle as a build system. To resolve non-public libraries, you need to execute `:nuget-server:installTeamCity` gradle task or have a local TeamCity installation and define `teamcityDir` in the [gradle properties](https://docs.gradle.org/current/userguide/build_environment.html). After that you can open it in [IntelliJ IDEA](https://www.jetbrains.com/idea/help/importing-project-from-gradle-model.html) or [Eclipse](http://gradle.org/eclipse/).
 
 ## Gradle tasks
 * `:nuget-extensions:msbuild` - build .net nuget extensions.
 * `:nuget-extensions:nunit` - run .net nuget extensions tests.
+* `:nuget-server:installTeamCity` - downloads TeamCity distribution.
 * `:nuget-server:assemble` - assemble nuget support plugin.
 * `:nuget-server:build` - build & test nuget support plugin.
 
