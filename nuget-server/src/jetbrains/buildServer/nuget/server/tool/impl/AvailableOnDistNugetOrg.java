@@ -71,7 +71,7 @@ public class AvailableOnDistNugetOrg implements AvailableToolsFetcher {
                   FeedConstants.NUGET_COMMANDLINE + "." + commandlineVersion.getVersion() + EXE_EXTENSION));
         }
       }
-      return FetchAvailableToolsResult.createSuccessfull(nugets);
+      return FetchAvailableToolsResult.createSuccessful(nugets);
     } catch (IOException e) {
       LOG.debug(e);
       return FetchAvailableToolsResult.createError("Failed to fetch available nuget.exe versions from " + DIST_NUGET_ORG_INDEX_JSON_URL, e);

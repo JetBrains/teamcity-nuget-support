@@ -85,7 +85,7 @@ public class AvailableOnPackagesNugetOrg implements AvailableToolsFetcher {
                   }
                 }
         );
-        return FetchAvailableToolsResult.createSuccessfull(fetchedTools);
+        return FetchAvailableToolsResult.createSuccessful(fetchedTools);
       } catch (IOException e) {
         LOG.debug(e);
         error = FetchAvailableToolsResult.createError("Failed to fetch versions from: " + feedUrl, e);
