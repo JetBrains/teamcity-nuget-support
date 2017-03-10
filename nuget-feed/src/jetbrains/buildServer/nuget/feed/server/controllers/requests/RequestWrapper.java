@@ -28,11 +28,13 @@ import javax.ws.rs.core.UriBuilder;
  *         Date: 16.11.2009
  */
 public class RequestWrapper extends HttpServletRequestWrapper {
+  private final HttpServletRequest myRequest;
   private final String myMapping;
 
   public RequestWrapper(@NotNull final HttpServletRequest request,
                         @NotNull final String mappingPath) {
     super(request);
+    myRequest = request;
     myMapping = mappingPath;
   }
 
@@ -81,16 +83,16 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 
   @Override
   public String getScheme() {
-    return WebUtil.getScheme(this);
+    return WebUtil.getScheme(myRequest);
   }
 
   @Override
   public String getServerName() {
-    return WebUtil.getServerName(this);
+    return WebUtil.getServerName(myRequest);
   }
 
   @Override
   public int getServerPort() {
-    return WebUtil.getServerPort(this);
+    return WebUtil.getServerPort(myRequest);
   }
 }
