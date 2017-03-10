@@ -113,7 +113,16 @@ public class RequestWrapperTest extends BaseTestCase {
   @Test
   public void test_getXForwardedProto() {
     m.checking(new Expectations(){{
-      allowing(req).getHeader(with("x-forwarded-proto")); will(returnValue("https"));
+      allowing(req).getHeader(with("x-forwarded-proto")); will(returnValue(" https"));
+    }});
+
+    Assert.assertEquals(wrap.getScheme(), "https");
+  }
+
+  @Test
+  public void test_getXForwardedProtoMulti() {
+    m.checking(new Expectations(){{
+      allowing(req).getHeader(with("x-forwarded-proto")); will(returnValue("https ,http"));
     }});
 
     Assert.assertEquals(wrap.getScheme(), "https");
@@ -122,18 +131,62 @@ public class RequestWrapperTest extends BaseTestCase {
   @Test
   public void test_getXForwardedHost() {
     m.checking(new Expectations(){{
-      allowing(req).getHeader(with("x-forwarded-host")); will(returnValue("jb.com"));
+      allowing(req).getHeader(with("x-forwarded-host")); will(returnValue(" jb.com"));
+      allowing(req).getHeader(with("x-forwarded-port")); will(returnValue(null));
     }});
 
     Assert.assertEquals(wrap.getServerName(), "jb.com");
+    Assert.assertEquals(wrap.getServerPort(), -1);
+  }
+
+  @Test
+  public void test_getXForwardedHostMulti() {
+    m.checking(new Expectations(){{
+      allowing(req).getHeader(with("x-forwarded-host")); will(returnValue("jb.com , host:8080"));
+      allowing(req).getHeader(with("x-forwarded-port")); will(returnValue(null));
+    }});
+
+    Assert.assertEquals(wrap.getServerName(), "jb.com");
+    Assert.assertEquals(wrap.getServerPort(), -1);
   }
 
   @Test
   public void test_getXForwardedPort() {
     m.checking(new Expectations(){{
-      allowing(req).getHeader(with("x-forwarded-port")); will(returnValue("7777"));
+      allowing(req).getHeader(with("x-forwarded-port")); will(returnValue(" 7777"));
     }});
 
     Assert.assertEquals(wrap.getServerPort(), 7777);
+  }
+
+  @Test
+  public void test_getXForwardedPortMulti() {
+    m.checking(new Expectations(){{
+      allowing(req).getHeader(with("x-forwarded-port")); will(returnValue("7777 ,2222"));
+    }});
+
+    Assert.assertEquals(wrap.getServerPort(), 7777);
+  }
+
+  @Test
+  public void test_getXForwardedHostAndPort() {
+    m.checking(new Expectations(){{
+      allowing(req).getHeader(with("x-forwarded-host")); will(returnValue(" jb.com:443"));
+      allowing(req).getHeader(with("x-forwarded-port")); will(returnValue(null));
+    }});
+
+    Assert.assertEquals(wrap.getServerName(), "jb.com");
+    Assert.assertEquals(wrap.getServerPort(), 443);
+  }
+
+  @Test
+  public void test_getXForwardedHostAndPortMulti() {
+    m.checking(new Expectations(){{
+      allowing(req).getHeader(with("x-forwarded-host")); will(returnValue("jb.com:443 ,host:333"));
+      allowing(req).getHeader(with("x-forwarded-port")); will(returnValue(null));
+    }});
+
+    Assert.assertEquals(wrap.getServerName(), "jb.com");
+    Assert.assertEquals(wrap.getServerPort(), 443);
   }
 }
