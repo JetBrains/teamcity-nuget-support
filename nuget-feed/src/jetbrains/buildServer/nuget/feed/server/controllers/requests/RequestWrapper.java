@@ -16,29 +16,18 @@
 
 package jetbrains.buildServer.nuget.feed.server.controllers.requests;
 
-import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.ws.rs.core.UriBuilder;
-import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * @author Yegor.Yarko
  *         Date: 16.11.2009
  */
 public class RequestWrapper extends HttpServletRequestWrapper {
-  private static final Logger LOG = Logger.getInstance(RequestWrapper.class.getName());
-  private static final Pattern PROTOCOL_PATTERN = Pattern.compile("^https?$", Pattern.CASE_INSENSITIVE);
-  private static final String X_FORWARDED_PROTO = "x-forwarded-proto";
-  private static final String X_FORWARDED_HOST = "x-forwarded-host";
-  private static final String X_FORWARDED_PORT = "x-forwarded-port";
-  private static final String HEADER_SEPARATOR = ",";
-  private static final String PORT_SEPARATOR = ":";
   private final String myMapping;
 
   public RequestWrapper(@NotNull final HttpServletRequest request,
@@ -92,55 +81,16 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 
   @Override
   public String getScheme() {
-    final String protocols = super.getHeader(X_FORWARDED_PROTO);
-    if (!StringUtil.isEmptyOrSpaces(protocols)) {
-      final String protocol = StringUtil.split(protocols, HEADER_SEPARATOR).get(0).trim();
-      if (PROTOCOL_PATTERN.matcher(protocol).matches()) {
-        return protocol;
-      }
-    }
-
-    return super.getScheme();
+    return WebUtil.getScheme(this);
   }
 
   @Override
   public String getServerName() {
-    final String hostNames = super.getHeader(X_FORWARDED_HOST);
-    if (!StringUtil.isEmptyOrSpaces(hostNames)) {
-      final String hostname = StringUtil.split(hostNames, HEADER_SEPARATOR).get(0).trim();
-      return StringUtil.split(hostname, PORT_SEPARATOR).get(0);
-    }
-
-    return super.getServerName();
+    return WebUtil.getServerName(this);
   }
 
   @Override
   public int getServerPort() {
-    final String port = super.getHeader(X_FORWARDED_PORT);
-    if (!StringUtil.isEmptyOrSpaces(port)) {
-      try {
-        final String portValue = StringUtil.split(port, HEADER_SEPARATOR).get(0).trim();
-        return Integer.parseInt(portValue);
-      } catch (NumberFormatException e) {
-        LOG.debug(String.format("Invalid %s number: %s", X_FORWARDED_PORT, port));
-      }
-    }
-
-    final String hostNames = super.getHeader(X_FORWARDED_HOST);
-    if (!StringUtil.isEmptyOrSpaces(hostNames)) {
-      final String hostname = StringUtil.split(hostNames, HEADER_SEPARATOR).get(0).trim();
-      final List<String> parts = StringUtil.split(hostname, PORT_SEPARATOR);
-      if (parts.size() == 1) {
-        return -1;
-      } else if (parts.size() == 2) {
-        try {
-          return Integer.parseInt(parts.get(1));
-        } catch (NumberFormatException e) {
-          LOG.debug(String.format("Invalid %s port number: %s", X_FORWARDED_HOST, parts.get(1)));
-        }
-      }
-    }
-
-    return super.getServerPort();
+    return WebUtil.getServerPort(this);
   }
 }
