@@ -54,199 +54,200 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
  */
 public class PackageUploadHandler implements NuGetFeedHandler {
 
-    private static final Logger LOG = Logger.getInstance(PackageUploadHandler.class.getName());
-    private static final String INVALID_TOKEN_VALUE = "Invalid token value";
-    private static final String INVALID_PACKAGE_CONTENTS = "Invalid NuGet package contents";
-    private static final String ARTIFACT_PUBLISHING_FAILED = "[Artifacts publishing failed]";
-    private final RunningBuildsCollection myRunningBuilds;
-    private final MetadataStorage myStorage;
-    private final PackageAnalyzer myPackageAnalyzer;
-    private final ResponseCacheReset myCacheReset;
+  private static final Logger LOG = Logger.getInstance(PackageUploadHandler.class.getName());
+  private static final String INVALID_TOKEN_VALUE = "Invalid token value";
+  private static final String INVALID_PACKAGE_CONTENTS = "Invalid NuGet package contents";
+  private static final String ARTIFACT_PUBLISHING_FAILED = "[Artifacts publishing failed]";
+  private final RunningBuildsCollection myRunningBuilds;
+  private final MetadataStorage myStorage;
+  private final PackageAnalyzer myPackageAnalyzer;
+  private final ResponseCacheReset myCacheReset;
 
-    public PackageUploadHandler(@NotNull final RunningBuildsCollection runningBuilds,
-                                @NotNull final MetadataStorage storage,
-                                @NotNull final PackageAnalyzer packageAnalyzer,
-                                @NotNull final ResponseCacheReset cacheReset) {
-        myRunningBuilds = runningBuilds;
-        myStorage = storage;
-        myPackageAnalyzer = packageAnalyzer;
-        myCacheReset = cacheReset;
+  public PackageUploadHandler(@NotNull final RunningBuildsCollection runningBuilds,
+                              @NotNull final MetadataStorage storage,
+                              @NotNull final PackageAnalyzer packageAnalyzer,
+                              @NotNull final ResponseCacheReset cacheReset) {
+    myRunningBuilds = runningBuilds;
+    myStorage = storage;
+    myPackageAnalyzer = packageAnalyzer;
+    myCacheReset = cacheReset;
+  }
+
+  @Override
+  public void handleRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+    final String contentType = request.getContentType();
+    if (contentType == null || !contentType.toLowerCase().startsWith("multipart/")) {
+      LOG.debug("Request body should be multipart form data");
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Request body should be multipart form data");
+      return;
     }
 
-    @Override
-    public void handleRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
-        final String contentType = request.getContentType();
-        if (contentType == null || !contentType.toLowerCase().startsWith("multipart/")) {
-            LOG.debug("Request body should be multipart form data");
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Request body should be multipart form data");
-            return;
-        }
+    final MultipartResolver multipartResolver = new CommonsMultipartResolver();
+    MultipartHttpServletRequest servletRequest = null;
+    try {
+      LOG.debug("NuGet package upload handler started");
+      servletRequest = multipartResolver.resolveMultipart(request);
+      handleUpload(servletRequest, response);
+    } catch (Throwable e) {
+      LOG.warnAndDebugDetails("Unhandled error while processing NuGet package upload: " + e.getMessage(), e);
+      throw e;
+    } finally {
+      LOG.debug("NuGet package upload handler finished");
+      if (servletRequest != null) {
+        multipartResolver.cleanupMultipart(servletRequest);
+      }
+    }
+  }
 
-        final MultipartResolver multipartResolver = new CommonsMultipartResolver();
-        MultipartHttpServletRequest servletRequest = null;
-        try {
-            LOG.debug("NuGet package upload handler started");
-            servletRequest = multipartResolver.resolveMultipart(request);
-            handleUpload(servletRequest, response);
-        } catch (Throwable e) {
-            LOG.warnAndDebugDetails("Unhandled error while processing NuGet package upload: " + e.getMessage(), e);
-            throw e;
-        } finally {
-            LOG.debug("NuGet package upload handler finished");
-            if (servletRequest != null) {
-                multipartResolver.cleanupMultipart(servletRequest);
-            }
-        }
+  private void handleUpload(@NotNull final MultipartHttpServletRequest request,
+                            @NotNull final HttpServletResponse response) throws IOException {
+    final RunningBuildEx build = getRunningBuild(request.getHeader("x-nuget-apikey"));
+    if (build == null) {
+      LOG.debug(INVALID_TOKEN_VALUE);
+      response.sendError(HttpServletResponse.SC_FORBIDDEN, INVALID_TOKEN_VALUE);
+      return;
     }
 
-    private void handleUpload(@NotNull final MultipartHttpServletRequest request,
-                              @NotNull final HttpServletResponse response) throws IOException {
-        final RunningBuildEx build = getRunningBuild(request.getHeader("x-nuget-apikey"));
-        if (build == null) {
-            LOG.debug(INVALID_TOKEN_VALUE);
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, INVALID_TOKEN_VALUE);
-            return;
-        }
-
-        final MultipartFile file = request.getFile("package");
-        if (file == null) {
-            LOG.debug("Push NuGet package request does not contain package file");
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "NuGet package data not found");
-            return;
-        }
-
-        // Check maximum size of artifacts
-        final ArtifactsUploadLimit artifactsLimit = build.getArtifactsLimit();
-        long fileSize = file.getSize();
-
-        final Long maxArtifactFileSize = artifactsLimit.getMaxArtifactFileSize();
-        if (maxArtifactFileSize != null && maxArtifactFileSize >= 0 && fileSize > maxArtifactFileSize) {
-            final String message = String.format(
-                    "NuGet package size is %s bytes which exceeds maximum build artifact file size of %s bytes.\n" +
-                            "Consider increasing this limit on the Administration -> Global Settings page.",
-                    fileSize, maxArtifactFileSize);
-            BuildProblemData problem = BuildProblemData.createBuildProblem(
-                    ARTIFACT_PUBLISHING_FAILED + "_maxArtifactFileSize",
-                    ARTIFACT_PUBLISHING_FAILED,
-                    message);
-            build.addBuildProblem(problem);
-            LOG.debug(message);
-            response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
-            return;
-        }
-
-        final Long totalSizeLimit = artifactsLimit.getArtifactsTotalSizeLimit();
-        if (totalSizeLimit != null && totalSizeLimit >= 0 && fileSize > totalSizeLimit) {
-            final String message = String.format(
-                    "NuGet package size is %s bytes which exceeds elapsed size of build configuration artifacts of %s bytes.\n" +
-                            "Consider increasing this limit in the project or build configuration parameters.",
-                    fileSize, totalSizeLimit);
-            BuildProblemData problem = BuildProblemData.createBuildProblem(
-                    ARTIFACT_PUBLISHING_FAILED + "_totalSizeLimit",
-                    ARTIFACT_PUBLISHING_FAILED,
-                    message);
-            build.addBuildProblem(problem);
-            LOG.debug(message);
-            response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
-            return;
-        }
-
-        try {
-            processPackage(build, file);
-        } catch (PackageLoadException e) {
-            LOG.debug("Invalid NuGet package: " + e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, INVALID_PACKAGE_CONTENTS);
-        } catch (Throwable e) {
-            LOG.warnAndDebugDetails("Failed to process NuGet package: " + e.getMessage(), e);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to process NuGet package");
-        }
+    final MultipartFile file = request.getFile("package");
+    if (file == null) {
+      LOG.debug("Push NuGet package request does not contain package file");
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "NuGet package data not found");
+      return;
     }
 
-    @Nullable
-    private RunningBuildEx getRunningBuild(@Nullable final String tokenValue) throws IOException {
-        if (StringUtil.isEmptyOrSpaces(tokenValue)) {
-            return null;
-        }
+    // Check maximum size of artifacts
+    final ArtifactsUploadLimit artifactsLimit = build.getArtifactsLimit();
+    long fileSize = file.getSize();
 
-        final String token;
-        try {
-            token = EncryptUtil.unscramble(tokenValue);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-
-        if (!token.startsWith(NuGetFeedConstants.BUILD_TOKEN_PREFIX)) {
-            return null;
-        }
-
-        long buildId;
-        try {
-            buildId = Long.parseLong(token.substring(NuGetFeedConstants.BUILD_TOKEN_PREFIX.length()));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-
-        final RunningBuildEx build = myRunningBuilds.findRunningBuildById(buildId);
-        if (build == null) {
-            LOG.debug(String.format("Running build %s not found", buildId));
-            return null;
-        }
-
-        return build;
+    final Long maxArtifactFileSize = artifactsLimit.getMaxArtifactFileSize();
+    if (maxArtifactFileSize != null && maxArtifactFileSize >= 0 && fileSize > maxArtifactFileSize) {
+      final String message = String.format(
+        "NuGet package size is %s bytes which exceeds maximum build artifact file size of %s bytes.\n" +
+          "Consider increasing this limit on the Administration -> Global Settings page.",
+        fileSize, maxArtifactFileSize);
+      BuildProblemData problem = BuildProblemData.createBuildProblem(
+        ARTIFACT_PUBLISHING_FAILED + "_maxArtifactFileSize",
+        ARTIFACT_PUBLISHING_FAILED,
+        message);
+      build.addBuildProblem(problem);
+      LOG.debug(message);
+      response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
+      return;
     }
 
-    private void processPackage(@NotNull RunningBuildEx build,
-                                @NotNull MultipartFile file) throws Exception {
-        final Map<String, String> metadata;
-        InputStream inputStream = null;
-
-        try {
-            inputStream = file.getInputStream();
-            metadata = myPackageAnalyzer.analyzePackage(inputStream);
-        } finally {
-            FileUtil.close(inputStream);
-        }
-
-        final String id = metadata.get(ID);
-        final String version = metadata.get(NORMALIZED_VERSION);
-        if (StringUtil.isEmptyOrSpaces(id) || StringUtil.isEmptyOrSpaces(version)) {
-            throw new PackageLoadException("Lack of Id or Version in NuGet package specification");
-        }
-
-        final String path = MessageFormat.format(".teamcity/nuget/packages/{0}/{1}/{0}.{1}.nupkg", id, version);
-        metadata.put(PACKAGE_SIZE, String.valueOf(file.getSize()));
-        metadata.put(TEAMCITY_ARTIFACT_RELPATH, path);
-        metadata.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
-
-        try {
-            inputStream = file.getInputStream();
-            metadata.put(PACKAGE_HASH, myPackageAnalyzer.getSha512Hash(inputStream));
-            metadata.put(PACKAGE_HASH_ALGORITHM, PackageAnalyzer.SHA512);
-        } finally {
-            FileUtil.close(inputStream);
-        }
-
-        LOG.info(String.format("Publishing nuget package %s:%s at path '%s' as a build artifact %s",
-                id, version, path, LogUtil.describe(build)));
-        try {
-            inputStream = file.getInputStream();
-            build.publishArtifact(path, inputStream);
-        } catch (IOException e) {
-            LOG.warnAndDebugDetails(String.format("Failed to publish build %s artifact at the path %s: %s",
-                    build.getBuildId(), path, e.getMessage()), e);
-            throw e;
-        } finally {
-            FileUtil.close(inputStream);
-        }
-
-        try {
-            myStorage.addBuildEntry(build.getBuildId(), NUGET_PROVIDER_ID, id, metadata, !build.isPersonal());
-        } catch (Throwable e) {
-            LOG.warnAndDebugDetails(String.format("Failed to update %s provider metadata for build %s. Error: %s",
-                    NUGET_PROVIDER_ID, build, e.getMessage()), e);
-            throw e;
-        }
-
-        myCacheReset.resetCache();
+    final Long totalSizeLimit = artifactsLimit.getArtifactsTotalSizeLimit();
+    if (totalSizeLimit != null && totalSizeLimit >= 0 && fileSize > totalSizeLimit) {
+      final String message = String.format(
+        "NuGet package size is %s bytes which exceeds elapsed size of build configuration artifacts of %s bytes.\n" +
+          "Consider increasing this limit in the project or build configuration parameters.",
+        fileSize, totalSizeLimit);
+      BuildProblemData problem = BuildProblemData.createBuildProblem(
+        ARTIFACT_PUBLISHING_FAILED + "_totalSizeLimit",
+        ARTIFACT_PUBLISHING_FAILED,
+        message);
+      build.addBuildProblem(problem);
+      LOG.debug(message);
+      response.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE, "NuGet package is too large");
+      return;
     }
+
+    try {
+      processPackage(build, file);
+    } catch (PackageLoadException e) {
+      LOG.debug("Invalid NuGet package: " + e.getMessage(), e);
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, INVALID_PACKAGE_CONTENTS);
+    } catch (Throwable e) {
+      LOG.warnAndDebugDetails("Failed to process NuGet package: " + e.getMessage(), e);
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to process NuGet package");
+    }
+  }
+
+  @Nullable
+  private RunningBuildEx getRunningBuild(@Nullable final String tokenValue) throws IOException {
+    if (StringUtil.isEmptyOrSpaces(tokenValue)) {
+      return null;
+    }
+
+    final String token;
+    try {
+      token = EncryptUtil.unscramble(tokenValue);
+    } catch (IllegalArgumentException e) {
+      return null;
+    }
+
+    if (!token.startsWith(NuGetFeedConstants.BUILD_TOKEN_PREFIX)) {
+      return null;
+    }
+
+    long buildId;
+    try {
+      buildId = Long.parseLong(token.substring(NuGetFeedConstants.BUILD_TOKEN_PREFIX.length()));
+    } catch (NumberFormatException e) {
+      return null;
+    }
+
+    final RunningBuildEx build = myRunningBuilds.findRunningBuildById(buildId);
+    if (build == null) {
+      LOG.debug(String.format("Running build %s not found", buildId));
+      return null;
+    }
+
+    return build;
+  }
+
+  private void processPackage(@NotNull RunningBuildEx build,
+                              @NotNull MultipartFile file) throws Exception {
+    final Map<String, String> metadata;
+    InputStream inputStream = null;
+
+    try {
+      inputStream = file.getInputStream();
+      metadata = myPackageAnalyzer.analyzePackage(inputStream);
+    } finally {
+      FileUtil.close(inputStream);
+    }
+
+    final String id = metadata.get(ID);
+    final String version = metadata.get(NORMALIZED_VERSION);
+    if (StringUtil.isEmptyOrSpaces(id) || StringUtil.isEmptyOrSpaces(version)) {
+      throw new PackageLoadException("Lack of Id or Version in NuGet package specification");
+    }
+
+    final String path = MessageFormat.format(".teamcity/nuget/packages/{0}/{1}/{0}.{1}.nupkg", id, version);
+    metadata.put(PACKAGE_SIZE, String.valueOf(file.getSize()));
+    metadata.put(TEAMCITY_ARTIFACT_RELPATH, path);
+    metadata.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
+
+    try {
+      inputStream = file.getInputStream();
+      metadata.put(PACKAGE_HASH, myPackageAnalyzer.getSha512Hash(inputStream));
+      metadata.put(PACKAGE_HASH_ALGORITHM, PackageAnalyzer.SHA512);
+    } finally {
+      FileUtil.close(inputStream);
+    }
+
+    LOG.info(String.format("Publishing nuget package %s:%s at path '%s' as a build artifact %s",
+      id, version, path, LogUtil.describe(build)));
+    try {
+      inputStream = file.getInputStream();
+      build.publishArtifact(path, inputStream);
+    } catch (IOException e) {
+      LOG.warnAndDebugDetails(String.format("Failed to publish build %s artifact at the path %s: %s",
+        build.getBuildId(), path, e.getMessage()), e);
+      throw e;
+    } finally {
+      FileUtil.close(inputStream);
+    }
+
+    final String key = String.format("%s.%s", id, version);
+    try {
+      myStorage.addBuildEntry(build.getBuildId(), NUGET_PROVIDER_ID, key, metadata, !build.isPersonal());
+    } catch (Throwable e) {
+      LOG.warnAndDebugDetails(String.format("Failed to update %s provider metadata for build %s. Error: %s",
+        NUGET_PROVIDER_ID, build, e.getMessage()), e);
+      throw e;
+    }
+
+    myCacheReset.resetCache();
+  }
 }

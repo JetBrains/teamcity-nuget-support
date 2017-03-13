@@ -22,7 +22,6 @@ import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
@@ -32,6 +31,7 @@ import jetbrains.buildServer.serverSide.impl.LogUtil;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataProvider;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorageWriter;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,8 +94,10 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
       try {
         final Map<String, String> metadata = generateMetadataForPackage(build, aPackage);
         myReset.resetCache();
-        final String key = metadata.get(NuGetPackageAttributes.ID);
-        if (key != null) {
+        final String id = metadata.get(ID);
+        final String version = metadata.get(NORMALIZED_VERSION);
+        if (!StringUtil.isEmptyOrSpaces(id) && !StringUtil.isEmptyOrSpaces(version)) {
+          final String key = String.format("%s.%s", id, version);
           store.addParameters(key, metadata);
           LOG.debug("Added entry to NuGet package index with a key " + key);
         } else {
