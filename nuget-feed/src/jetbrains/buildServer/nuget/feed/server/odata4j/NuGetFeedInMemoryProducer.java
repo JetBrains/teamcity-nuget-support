@@ -20,11 +20,13 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
+import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntity;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunction;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.server.version.SemanticVersion;
+import jetbrains.buildServer.util.CollectionsUtil;
 import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
@@ -47,29 +49,32 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   private static final Logger LOG = Logger.getInstance(NuGetFeedInMemoryProducer.class.getName());
   private final Object mySyncRoot = new Object();
 
-  @NotNull private final NuGetFeedFunctions myFunctions;
+  private final NuGetFeedFunctions myFunctions;
+  private final NuGetServerSettings myServerSettings;
 
   private String myApiVersion;
 
-  public NuGetFeedInMemoryProducer(@NotNull final NuGetFeedFunctions functions) {
+  public NuGetFeedInMemoryProducer(@NotNull final NuGetFeedFunctions functions,
+                                   @NotNull final NuGetServerSettings settings) {
     super(MetadataConstants.NUGET_GALLERY_NAMESPACE, NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE);
     myFunctions = functions;
+    myServerSettings = settings;
     evaluation = new NuGetExpressionEvaluator();
   }
 
-  public void register(Func<Iterable<PackageEntity>> getFunc){
+  public void register(Func<Iterable<PackageEntity>> getFunc) {
     register(PackageEntity.class,
-            MetadataConstants.ENTITY_SET_NAME,
-            NuGetAPIVersion.getVersionToUse() + MetadataConstants.ENTITY_TYPE_NAME,
-            getFunc,
-            PackageEntity.KeyPropertyNames);
+      MetadataConstants.ENTITY_SET_NAME,
+      NuGetAPIVersion.getVersionToUse() + MetadataConstants.ENTITY_TYPE_NAME,
+      getFunc,
+      PackageEntity.KeyPropertyNames);
   }
 
   @Override
   public EdmDataServices getMetadata() {
     final String apiVersionToUse = NuGetAPIVersion.getVersionToUse();
-    synchronized (mySyncRoot){
-      if(!apiVersionToUse.equalsIgnoreCase(myApiVersion)){
+    synchronized (mySyncRoot) {
+      if (!apiVersionToUse.equalsIgnoreCase(myApiVersion)) {
         cleanCachedMetadata();
         myApiVersion = apiVersionToUse;
       }
@@ -80,23 +85,25 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   @Override
   public BaseResponse callFunction(ODataContext context, EdmFunctionImport function, Map<String, OFunctionParameter> params, QueryInfo queryInfo, boolean isCountCall) {
     final NuGetFeedFunction targetFunction = myFunctions.find(function);
-    if(targetFunction == null){
+    if (targetFunction == null) {
       LOG.debug("Failed to process NuGet feed function call. Failed to find target function by name " + function.getName());
       throw new NotImplementedException();
     }
 
-    final Iterable<Object> functionCallResult = targetFunction.call(function.getReturnType(), params, queryInfo);
-    if(functionCallResult == null) return null;
+    final Iterable<Object> functionCallResult = CollectionsUtil.convertCollection(
+      targetFunction.call(function.getReturnType(), params, queryInfo),
+      source -> new PackageEntityEx(source, myServerSettings));
+    if (functionCallResult == null) return null;
 
     final RequestContext rc = RequestContext.newBuilder(RequestContext.RequestType.GetEntities)
-            .entitySetName(MetadataConstants.ENTITY_SET_NAME)
-            .entitySet(getMetadata().getEdmEntitySet(MetadataConstants.ENTITY_SET_NAME))
-            .queryInfo(queryInfo)
-            .odataContext(context)
-            .pathHelper(new PropertyPathHelper(queryInfo)).build();
+      .entitySetName(MetadataConstants.ENTITY_SET_NAME)
+      .entitySet(getMetadata().getEdmEntitySet(MetadataConstants.ENTITY_SET_NAME))
+      .queryInfo(queryInfo)
+      .odataContext(context)
+      .pathHelper(new PropertyPathHelper(queryInfo)).build();
     final InMemoryEntityInfo<?> ei = getEntityInfo(MetadataConstants.ENTITY_SET_NAME);
 
-    if(isCountCall)
+    if (isCountCall)
       return getCountResponse(rc, Enumerable.create(functionCallResult));
     else
       return getEntitiesResponse(rc, rc.getEntitySet(), Enumerable.create(functionCallResult), ei.getPropertyModel());

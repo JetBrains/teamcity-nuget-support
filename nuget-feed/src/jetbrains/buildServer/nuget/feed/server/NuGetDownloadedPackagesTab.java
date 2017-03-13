@@ -20,7 +20,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.NuGetPackageInfo;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
-import jetbrains.buildServer.nuget.common.SourcePackageInfo;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -87,9 +86,9 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
     if (build == null) return;
     model.put("packages", loadDependencies(build));
 
-    Set<NuGetPackageInfo> infos = new TreeSet<NuGetPackageInfo>();
-    for(Iterator<NuGetIndexEntry> entries = myPackageFeed.getNuGetEntries(build.getBuildId()); entries.hasNext();) {
-      infos.add(entries.next().getPackageInfo());
+    Set<NuGetPackageInfo> infos = new TreeSet<>();
+    for (NuGetIndexEntry indexEntry : myPackageFeed.getForBuild(build.getBuildId())) {
+      infos.add(indexEntry.getPackageInfo());
     }
 
     model.put("feedPackages", infos);
@@ -110,8 +109,8 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
       }
     }
     return new PackageDependencies(
-            Collections.<NuGetPackageInfo>emptyList(),
-            Collections.<NuGetPackageInfo>emptyList(),
-            Collections.<SourcePackageInfo>emptyList());
+            Collections.emptyList(),
+            Collections.emptyList(),
+            Collections.emptyList());
   }
 }

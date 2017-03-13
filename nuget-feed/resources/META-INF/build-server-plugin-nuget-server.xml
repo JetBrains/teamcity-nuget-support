@@ -31,6 +31,7 @@
       </list>
     </constructor-arg>
   </bean>
+  <bean class="jetbrains.buildServer.nuget.feed.server.index.NuGetFeed"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.index.NuGetPackagesIndexer"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageAnalyzer"/>
 
@@ -50,7 +51,7 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSource"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler"/>

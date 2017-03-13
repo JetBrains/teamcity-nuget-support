@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSource;
+import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feed.server.olingo.model.NuGetMapper;
 import jetbrains.buildServer.nuget.feed.server.olingo.model.V2FeedPackage;
 import jetbrains.buildServer.util.CollectionsUtil;
@@ -50,14 +50,14 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
 
     private static final int SERVER_PAGING_SIZE = NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE;
     private final BeanPropertyAccess valueAccess;
-    private final NuGetDataSource dataSource;
+    private final OlingoDataSource dataSource;
     private final ExpressionEvaluator evaluator;
 
-    public NuGetPackagesProcessor(@NotNull final NuGetDataSource dataSource) {
+    public NuGetPackagesProcessor(@NotNull final OlingoDataSource dataSource) {
         this(dataSource, new BeanPropertyAccess());
     }
 
-    public NuGetPackagesProcessor(final NuGetDataSource dataSource, final BeanPropertyAccess valueAccess) {
+    public NuGetPackagesProcessor(final OlingoDataSource dataSource, final BeanPropertyAccess valueAccess) {
         this.dataSource = dataSource;
         this.valueAccess = valueAccess;
         this.evaluator = new ExpressionEvaluator(valueAccess);

@@ -18,7 +18,9 @@ package jetbrains.buildServer.nuget.feed.server.index;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -32,14 +34,14 @@ public interface PackagesIndex {
   public static final String TEAMCITY_DOWNLOAD_URL = "TeamCityDownloadUrl";
 
   @NotNull
-  Iterator<NuGetIndexEntry> getNuGetEntries();
+  List<NuGetIndexEntry> getAll();
 
   @NotNull
-  Iterator<NuGetIndexEntry> getNuGetEntries(long buildId);
+  List<NuGetIndexEntry> getForBuild(long buildId);
 
   @NotNull
-  Iterator<NuGetIndexEntry> getNuGetEntries(@NotNull String packageId);
+  List<NuGetIndexEntry> find(@NotNull Map<String, String> query);
 
   @NotNull
-  Iterator<NuGetIndexEntry> search(@NotNull String searchTerm);
+  List<NuGetIndexEntry> search(@NotNull Collection<String> keys, @NotNull String value);
 }

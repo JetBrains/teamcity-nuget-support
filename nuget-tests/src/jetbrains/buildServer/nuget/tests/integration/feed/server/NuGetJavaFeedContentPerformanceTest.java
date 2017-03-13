@@ -97,7 +97,7 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
       addMockPackage(base, false);
     }
 
-    Assert.assertEquals(count(myIndex.getNuGetEntries()), sz);
+    Assert.assertEquals(myIndex.getAll().size(), sz);
 
     final AtomicReference<String> s = new AtomicReference<>();
     assertTime(time, "aaa", 5, () -> {

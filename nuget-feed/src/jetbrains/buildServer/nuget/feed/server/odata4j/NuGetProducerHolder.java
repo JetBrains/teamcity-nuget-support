@@ -16,20 +16,14 @@
 
 package jetbrains.buildServer.nuget.feed.server.odata4j;
 
-import jetbrains.buildServer.dataStructures.DecoratingIterator;
-import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
-import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntity;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
-import org.core4j.Func;
+import jetbrains.buildServer.util.CollectionsUtil;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.xppimpl.XmlPullXMLFactoryProvider2;
-
-import java.util.Iterator;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -45,20 +39,8 @@ public class NuGetProducerHolder {
     //used to generate <foo></foo> that is badly parsed in
     //.NET OData WCF client
     XMLFactoryProvider2.setInstance(new XmlPullXMLFactoryProvider2());
-    myProducer = new NuGetFeedInMemoryProducer(functions);
-    myProducer.register(new Func<Iterable<PackageEntity>>() {
-      public Iterable<PackageEntity> apply() {
-        return new Iterable<PackageEntity>() {
-          public Iterator<PackageEntity> iterator() {
-            return new DecoratingIterator<PackageEntity, NuGetIndexEntry>(index.getNuGetEntries(), new Mapper<NuGetIndexEntry, PackageEntity>() {
-              public PackageEntity mapKey(@NotNull NuGetIndexEntry internal) {
-                return new PackageEntityEx(internal, settings);
-              }
-            });
-          }
-        };
-      }
-    });
+    myProducer = new NuGetFeedInMemoryProducer(functions, settings);
+    myProducer.register(() -> CollectionsUtil.convertCollection(index.getAll(), source -> new PackageEntityEx(source, settings)));
   }
 
   @NotNull

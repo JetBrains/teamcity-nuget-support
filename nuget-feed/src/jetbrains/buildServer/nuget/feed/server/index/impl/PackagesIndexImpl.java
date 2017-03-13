@@ -18,8 +18,6 @@ package jetbrains.buildServer.nuget.feed.server.index.impl;
 
 import com.google.common.collect.Lists;
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.dataStructures.DecoratingIterator;
-import jetbrains.buildServer.dataStructures.Mapper;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetServerStatisticsProvider;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
@@ -29,6 +27,8 @@ import jetbrains.buildServer.nuget.feed.server.index.impl.transform.IsLatestFiel
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
+import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.Converter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,68 +58,63 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
   public PackagesIndexImpl(@NotNull final MetadataStorage storage,
                            @NotNull final Collection<PackageTransformation> transformations) {
     myStorage = storage;
-    myTransformations = new ArrayList<PackageTransformation>(transformations);
+    myTransformations = new ArrayList<>(transformations);
   }
 
   @NotNull
-  public Iterator<NuGetIndexEntry> getNuGetEntries(long buildId) {
-    return decorateMetadata(getBuildEntries(buildId));
-  }
-
-  @NotNull
-  public Iterator<NuGetIndexEntry> getNuGetEntries(@NotNull String packageId) {
-    return decorateMetadata(myStorage.getEntriesByKey(NUGET_PROVIDER_ID, packageId));
-  }
-
-  @NotNull
-  public Iterator<NuGetIndexEntry> search(@NotNull String searchTerm) {
-    return decorateMetadata(myStorage.findEntriesWithValue(NUGET_PROVIDER_ID, searchTerm, PACKAGE_ATTRIBUTES_TO_SEARCH));
-  }
-
-  @NotNull
-  public Iterator<NuGetIndexEntry> getNuGetEntries() {
+  @Override
+  public List<NuGetIndexEntry> getAll() {
     return decorateMetadata(myStorage.getAllEntries(NUGET_PROVIDER_ID));
   }
 
-  private Iterator<NuGetIndexEntry> decorateMetadata(Iterator<BuildMetadataEntry> entries) {
+  @NotNull
+  @Override
+  public List<NuGetIndexEntry> getForBuild(long buildId) {
+    return decorateMetadata(myStorage.getBuildEntry(buildId, NUGET_PROVIDER_ID));
+  }
+
+  @NotNull
+  @Override
+  public List<NuGetIndexEntry> find(@NotNull Map<String, String> query) {
+    return decorateMetadata(myStorage.findEntriesWithKeyValuePairs(NUGET_PROVIDER_ID, query, true));
+  }
+
+  @NotNull
+  public List<NuGetIndexEntry> search(@NotNull Collection<String> keys, @NotNull String value) {
+    return decorateMetadata(myStorage.findEntriesWithValue(NUGET_PROVIDER_ID, value, keys, true));
+  }
+
+  private List<NuGetIndexEntry> decorateMetadata(Iterator<BuildMetadataEntry> entries) {
     if (TeamCityProperties.getBoolean("teamcity.nuget.simple.feed.sort")) {
-      return transformEntries(entries, getTranslatorsSimple());
+      final Collection<PackageTransformation> transformations = getTranslatorsSimple();
+      return convertCollection(entries, source -> {
+        final NuGetPackageBuilder pb = applyTransformation(source, transformations);
+        if (pb == null) return null;
+        return pb.build();
+      });
     }
 
-    final List<NuGetPackageBuilder> result = new ArrayList<NuGetPackageBuilder>();
     final Collection<PackageTransformation> translators = getTranslators(); //contains processing state!
     final LatestCalculator latestPackages = new LatestVersionsCalculator();
-    while (entries.hasNext()) {
+    final List<NuGetPackageBuilder> result = convertCollection(entries, source -> {
+      final NuGetPackageBuilder builder = applyTransformation(source, translators);
+      if (builder != null) {
+        latestPackages.updatePackage(builder);
+      }
+      return builder;
+    });
 
-      final NuGetPackageBuilder builder = applyTransformation(entries.next(), translators);
-      if (builder == null) continue;
-      latestPackages.updatePackage(builder);
-      result.add(builder);
-    }
     latestPackages.updateSelectedPackages();
 
     //This is most consuming operation that requires to sort collection of entire packages
-    Collections.sort(result, SemanticVersionsComparators.getBuildersComparator());
+    result.sort(SemanticVersionsComparators.getBuildersComparator());
 
-    return new DecoratingIterator<NuGetIndexEntry, NuGetPackageBuilder>(
-            result.iterator(),
-            new Mapper<NuGetPackageBuilder, NuGetIndexEntry>() {
-              @Nullable
-              public NuGetIndexEntry mapKey(@NotNull NuGetPackageBuilder internal) {
-                return internal.build();
-              }
-            }
-    );
-  }
-
-
-  private Iterator<BuildMetadataEntry> getBuildEntries(long buildId) {
-    return myStorage.getBuildEntry(buildId, NUGET_PROVIDER_ID);
+    return CollectionsUtil.convertCollection(result, NuGetPackageBuilder::build);
   }
 
   @NotNull
   private Collection<PackageTransformation> getTranslators() {
-    List<PackageTransformation> list = new ArrayList<PackageTransformation>(myTransformations.size() + 1);
+    List<PackageTransformation> list = new ArrayList<>(myTransformations.size() + 1);
     for (PackageTransformation t : myTransformations) {
       list.add(t.createCopy());
     }
@@ -133,31 +128,16 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
     return pts;
   }
 
-  @NotNull
-  private Iterator<NuGetIndexEntry> transformEntries(@NotNull final Iterator<BuildMetadataEntry> entries,
-                                                     @NotNull final Collection<PackageTransformation> trasformations) {
-    return new DecoratingIterator<NuGetIndexEntry, BuildMetadataEntry>(
-            entries,
-            new Mapper<BuildMetadataEntry, NuGetIndexEntry>() {
-              @Nullable
-              public NuGetIndexEntry mapKey(@NotNull BuildMetadataEntry e) {
-                final NuGetPackageBuilder pb = applyTransformation(e, trasformations);
-                if (pb == null) return null;
-                return pb.build();
-              }
-            });
-  }
-
   @Nullable
   private static NuGetPackageBuilder applyTransformation(@NotNull final BuildMetadataEntry entry,
-                                                         @NotNull final Collection<PackageTransformation> trasformations) {
-    try{
+                                                         @NotNull final Collection<PackageTransformation> transformations) {
+    try {
       final NuGetPackageBuilder pb = new NuGetPackageBuilder(entry);
-      for (PackageTransformation transformation : trasformations) {
+      for (PackageTransformation transformation : transformations) {
         if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
       }
       return pb;
-    } catch (Exception ex){
+    } catch (Exception ex) {
       LOG.warnAndDebugDetails("Failed to convert build metadata entry to nuget package. Entry: " + entry.toString(), ex);
       return null;
     }
@@ -168,20 +148,32 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
     final Iterator<BuildMetadataEntry> entries = myStorage.getAllEntries(NUGET_PROVIDER_ID);
 
     long totalItemsNumber = 0;
-    Set<Long> buildIds = new HashSet<Long>();
-    Set<String> packageIds = new HashSet<String>();
+    Set<Long> buildIds = new HashSet<>();
+    Set<String> packageIds = new HashSet<>();
 
-    while(entries.hasNext()){
+    while (entries.hasNext()) {
       final BuildMetadataEntry entry = entries.next();
       totalItemsNumber++;
       buildIds.add(entry.getBuildId());
       packageIds.add(entry.getMetadata().get(ID));
     }
 
-    final Map<String, Long> stats = new HashMap<String, Long>();
+    final Map<String, Long> stats = new HashMap<>();
     stats.put(TOTAL_NUMBER_OF_ITEMS_STAT, totalItemsNumber);
     stats.put(NUMBER_OF_INDEXED_BUILDS_STAT, (long) buildIds.size());
     stats.put(NUMBER_OF_PACKAGE_IDS_STAT, (long) packageIds.size());
     return stats;
+  }
+
+  private static <ResultType, SourceType> List<ResultType> convertCollection(Iterator<? extends SourceType> source,
+                                                                             Converter<ResultType, SourceType> converter) {
+    final List<ResultType> result = new ArrayList<>();
+    while (source.hasNext()) {
+      ResultType converted = converter.createFrom(source.next());
+      if (converted != null) {
+        result.add(converted);
+      }
+    }
+    return result;
   }
 }

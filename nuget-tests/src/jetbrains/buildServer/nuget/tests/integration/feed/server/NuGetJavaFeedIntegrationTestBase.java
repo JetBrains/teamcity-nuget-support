@@ -27,6 +27,7 @@ import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProviderImpl;
 import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
 import jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
@@ -38,11 +39,10 @@ import jetbrains.buildServer.nuget.feed.server.odata4j.NuGetProducerHolder;
 import jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
 import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
-import jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSource;
+import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
-import jetbrains.buildServer.serverSide.ServerSettings;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.StringUtil;
@@ -103,29 +103,28 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myMetadataStorage = m.mock(MetadataStorage.class);
     final ResponseCache responseCache = m.mock(ResponseCache.class);
     final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
-    final ServerSettings serverSettings = m.mock(ServerSettings.class);
     final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
     final ResponseCacheReset cacheReset = mockery.mock(ResponseCacheReset.class);
 
     m.checking(new Expectations() {{
-      allowing(myIndexProxy).getNuGetEntries();
+      allowing(myIndexProxy).getAll();
       will(new CustomAction("lazy return packages") {
         public Object invoke(Invocation invocation) throws Throwable {
-          return getPackages();
+          return myFeed;
         }
       });
-      allowing(myIndexProxy).search("noSuchPackage");
-      will(returnIterator(Collections.emptyList()));
-      allowing(myIndexProxy).search(with(any(String.class)));
-      will(returnIterator(myFeed));
-      allowing(myIndexProxy).getNuGetEntries(with(any(String.class)));
+      allowing(myIndexProxy).search(with(any(Collection.class)), with(equal("noSuchPackage")));
+      will(returnValue(Collections.emptyList()));
+      allowing(myIndexProxy).search(with(any(Collection.class)), with(any(String.class)));
+      will(returnValue(myFeed));
+      allowing(myIndexProxy).find(with(any(Map.class)));
       will(new CustomAction("lazy return packages") {
         public Object invoke(Invocation invocation) throws Throwable {
-          return getPackages();
+          return myFeed;
         }
       });
-      allowing(myIndex).getNuGetEntries();
-      will(returnIterator(myFeed));
+      allowing(myIndex).getAll();
+      will(returnValue(myFeed));
       allowing(mySettings).getNuGetFeedControllerPath();
       will(returnValue(NuGetServerSettingsImpl.PATH));
       allowing(mySettings).isFilteringByTargetFrameworkEnabled();
@@ -139,10 +138,11 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       });
     }});
 
-    myProducer = new NuGetProducerHolder(myIndexProxy, mySettings, new NuGetFeedFunctions(myIndexProxy, mySettings));
+
+    myProducer = new NuGetProducerHolder(myIndexProxy, mySettings, new NuGetFeedFunctions(new NuGetFeed(myIndexProxy, mySettings)));
 
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myProducer, responseCache);
-    final NuGetServiceFactory serviceFactory = new NuGetServiceFactory(new NuGetDataSource(myIndexProxy, mySettings));
+    final NuGetServiceFactory serviceFactory = new NuGetServiceFactory(new OlingoDataSource(new NuGetFeed(myIndexProxy, mySettings)));
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(serviceFactory, responseCache);
     final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, myMetadataStorage,
             packageAnalyzer, cacheReset);
@@ -185,11 +185,6 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
                     new DownloadUrlComputationTransformation(mySettings)
             )
     ));
-  }
-
-  @NotNull
-  private Iterator<NuGetIndexEntry> getPackages() {
-    return myActualIndex.getNuGetEntries();
   }
 
   @Override
@@ -258,9 +253,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   }
 
   protected void dumpFeed() {
-    final Iterator<NuGetIndexEntry> entries = myIndexProxy.getNuGetEntries();
-    while (entries.hasNext()) {
-      final NuGetIndexEntry e = entries.next();
+    for (NuGetIndexEntry e : myIndexProxy.getAll()) {
       final Map<String, String> a = e.getAttributes();
       System.out.println(a.get(ID) + " " + a.get(VERSION) + " => absolute:" + a.get(IS_ABSOLUTE_LATEST_VERSION) + ", latest: " + a.get(IS_LATEST_VERSION) + ", prerelease: " + a.get(IS_PRERELEASE));
     }

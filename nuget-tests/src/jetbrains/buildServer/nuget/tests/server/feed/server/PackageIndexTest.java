@@ -85,12 +85,17 @@ public class PackageIndexTest extends BaseTestCase {
                     new DownloadUrlComputationTransformation(serverSettings)
             ));
 
-    myEntries = new ArrayList<BuildMetadataEntry>();
+    myEntries = new ArrayList<>();
 
     m.checking(new Expectations(){{
       allowing(myContext).getAuthorityHolder(); will(returnValue(myAuthorityHolder));
       allowing(myStorage).getAllEntries("nuget"); will(returnIterator(myEntries));
-      allowing(myStorage).findEntriesWithValue(with(equal("nuget")), with(any(String.class)), with(PackagesIndexImpl.PACKAGE_ATTRIBUTES_TO_SEARCH)); will(returnIterator(myEntries));
+      allowing(myStorage).findEntriesWithValue(
+        with(equal("nuget")),
+        with(any(String.class)),
+        with(PackagesIndexImpl.PACKAGE_ATTRIBUTES_TO_SEARCH),
+        with(equal(true)));
+      will(returnIterator(myEntries));
     }});
   }
 
@@ -131,10 +136,9 @@ public class PackageIndexTest extends BaseTestCase {
     addEntry("Foo", "1.2.34", "btX", 7);
     addEntry("Foo", "1.2.34", "btY", 9);
 
-    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
-    final NuGetIndexEntry next = it.next();
-    Assert.assertFalse(it.hasNext());
-    Assert.assertEquals(next.getAttributes().get("teamcity.buildTypeId"), "btY");
+    List<NuGetIndexEntry> entries = myIndex.getAll();
+    Assert.assertEquals(entries.size(), 1);
+    Assert.assertEquals(entries.get(0).getAttributes().get("teamcity.buildTypeId"), "btY");
   }
 
   @Test
@@ -158,7 +162,7 @@ public class PackageIndexTest extends BaseTestCase {
     }});
     addEntry("Foo", "1.2.34", "btX", 7);
 
-    Assert.assertFalse(myIndex.getNuGetEntries().hasNext());
+    Assert.assertEquals(myIndex.getAll().size(), 0);
   }
 
   @Test
@@ -169,7 +173,7 @@ public class PackageIndexTest extends BaseTestCase {
     }});
     addEntry("Foo", "1.2.34", "btX", 7);
 
-    Assert.assertFalse(myIndex.getNuGetEntries().hasNext());
+    Assert.assertEquals(myIndex.getAll().size(), 0);
   }
 
   @Test
@@ -240,10 +244,11 @@ public class PackageIndexTest extends BaseTestCase {
     addEntry("Foo", "1.2.37-b", "btX", 12);
 
     dumpFeed();
-    assertPackagesCollection(myIndex.getNuGetEntries(42), FlagMode.Exists, "Foo.1.2.34-alpha", "Foo.1.2.34-beta", "Foo.1.2.32", "Foo.1.2.36", "Foo.1.2.37-b");
-    assertPackagesCollection(myIndex.getNuGetEntries(42), FlagMode.IsPrerelease, "Foo.1.2.34-alpha", "Foo.1.2.34-beta", "Foo.1.2.37-b");
-    assertPackagesCollection(myIndex.getNuGetEntries(42), FlagMode.IsAbsoluteLatest, "Foo.1.2.37-b"); //sorted by build number
-    assertPackagesCollection(myIndex.getNuGetEntries(42), FlagMode.IsLatest, "Foo.1.2.36"); //first entry in list
+
+    assertPackagesCollection(myIndex.getForBuild(42), FlagMode.Exists, "Foo.1.2.34-alpha", "Foo.1.2.34-beta", "Foo.1.2.32", "Foo.1.2.36", "Foo.1.2.37-b");
+    assertPackagesCollection(myIndex.getForBuild(42), FlagMode.IsPrerelease, "Foo.1.2.34-alpha", "Foo.1.2.34-beta", "Foo.1.2.37-b");
+    assertPackagesCollection(myIndex.getForBuild(42), FlagMode.IsAbsoluteLatest, "Foo.1.2.37-b"); //sorted by build number
+    assertPackagesCollection(myIndex.getForBuild(42), FlagMode.IsLatest, "Foo.1.2.36"); //first entry in list
   }
 
   @Test
@@ -308,8 +313,8 @@ public class PackageIndexTest extends BaseTestCase {
             "1.3.7"
     };
 
-    final Set<Integer> buildId = new HashSet<Integer>();
-    final Collection<String> expected = new ArrayList<String>();
+    final Set<Integer> buildId = new HashSet<>();
+    final Collection<String> expected = new ArrayList<>();
     final Random rnd = new SecureRandom(("iddqd-" + System.nanoTime()).getBytes("utf-8"));
     for (String version : versions) {
       int id;
@@ -339,13 +344,13 @@ public class PackageIndexTest extends BaseTestCase {
     addEntry("title-matches", "9", "btX", 9, CollectionsUtil.asMap(TITLE, "foo"));
     addEntry("title-not-matches", "10", "btX", 10, CollectionsUtil.asMap(TITLE, "boo"));
 
-    assertTrue(myIndex.search("foo").hasNext());
+    assertEquals(10, myIndex.search(PackagesIndexImpl.PACKAGE_ATTRIBUTES_TO_SEARCH, "foo").size());
 
     m.assertIsSatisfied();
   }
 
   private void addEntry(final String packageId, final String packageVersion, final String buildTypeId, final long buildId){
-    addEntry(packageId, packageVersion, buildTypeId, buildId, Maps.<String, String>newHashMap());
+    addEntry(packageId, packageVersion, buildTypeId, buildId, Maps.newHashMap());
   }
 
   private void addEntry(final String packageId, final String packageVersion, final String buildTypeId, final long buildId, @NotNull final Map<String, String> entryData) {
@@ -367,32 +372,25 @@ public class PackageIndexTest extends BaseTestCase {
     myEntries.add(entry);
 
     //recall natural sort order of metadata entries
-    Collections.sort(myEntries, new Comparator<BuildMetadataEntry>() {
-      public int compare(@NotNull BuildMetadataEntry o1, @NotNull BuildMetadataEntry o2) {
-        final long b1 = o1.getBuildId();
-        final long b2 = o2.getBuildId();
-        return (b1 > b2 ? -1 : b1 == b2 ? 0 : 1);
-      }
+    myEntries.sort((o1, o2) -> {
+      final long b1 = o1.getBuildId();
+      final long b2 = o2.getBuildId();
+      return (b1 > b2 ? -1 : b1 == b2 ? 0 : 1);
     });
   }
 
   private void dumpFeed() {
     System.out.println("Dump the feed: ");
-    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
-    while(it.hasNext()) {
-      NuGetIndexEntry p = it.next();
+    for (NuGetIndexEntry p : myIndex.getAll()) {
       System.out.println("p = " + p);
     }
   }
 
   private void assertPackages(@NotNull String... idsEx) {
-    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
-
-    final Set<String> packages = new TreeSet<String>();
+    final Set<String> packages = new TreeSet<>();
     Collections.addAll(packages, idsEx);
 
-    while(it.hasNext()) {
-      final NuGetIndexEntry p = it.next();
+    for(NuGetIndexEntry p : myIndex.getAll()) {
       final String actualName = p.getKey() + (createAdaptor(p).getIsLatestVersion() ? ":L" : "") + (createAdaptor(p).getIsAbsoluteLatestVersion() ? ":A" : "");
       Assert.assertTrue(packages.remove(actualName), "Must not contain: " + actualName);
     }
@@ -400,35 +398,31 @@ public class PackageIndexTest extends BaseTestCase {
   }
 
   private void assertPackagesSorted(@NotNull String... idsEx) {
-    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
-
     int idx = 0;
-    while(it.hasNext()) {
-      final NuGetIndexEntry p = it.next();
+    for (NuGetIndexEntry p : myIndex.getAll()) {
       final String actualName = p.getKey();
       final String expectedName = idsEx[idx++];
       Assert.assertEquals(actualName, expectedName);
     }
+
     Assert.assertTrue(idx == idsEx.length);
   }
 
   private void assertPackagesCollection(@NotNull FlagMode mode, @NotNull String... ids) {
-    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
-    assertPackagesCollection(it, mode, ids);
+    assertPackagesCollection(myIndex.getAll(), mode, ids);
   }
 
-  private void assertPackagesCollection(@NotNull Iterator<NuGetIndexEntry> it,
+  private void assertPackagesCollection(@NotNull List<NuGetIndexEntry> it,
                                         @NotNull FlagMode mode,
                                         @NotNull String... ids) {
-    final Set<String> t = new HashSet<String>(Arrays.asList(ids));
-    while(it.hasNext()) {
-      NuGetIndexEntry p = it.next();
+    final Set<String> t = new HashSet<>(Arrays.asList(ids));
+    for (NuGetIndexEntry p : it) {
       Assert.assertTrue(mode.readField(p) == t.remove(p.getKey()), "package " + p + " must have " + mode);
     }
     Assert.assertTrue(t.isEmpty(), "Unexpected packages for " + mode + ": " + t.toString());
   }
 
-  private static enum FlagMode {
+  private enum FlagMode {
     IsPrerelease,
     IsLatest,
     IsAbsoluteLatest,

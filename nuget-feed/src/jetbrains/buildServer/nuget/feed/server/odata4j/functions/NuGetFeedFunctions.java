@@ -16,40 +16,37 @@
 
 package jetbrains.buildServer.nuget.feed.server.odata4j.functions;
 
-import com.google.common.collect.Lists;
-import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
-import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.filters.Filter;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.edm.EdmFunctionImport;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class NuGetFeedFunctions {
-  private final Collection<NuGetFeedFunction> myAPIv2Functions;
+  private final Map<String, NuGetFeedFunction> myAPIv2Functions = new HashMap<>();
 
-  public NuGetFeedFunctions(@NotNull PackagesIndex index, @NotNull NuGetServerSettings serverSettings) {
-    myAPIv2Functions = Lists.newArrayList(new FindPackagesByIdFunction(index, serverSettings),
-                                          new GetUpdatesFunction(index, serverSettings),
-                                          new SearchFunction(index, serverSettings));
+  public NuGetFeedFunctions(@NotNull NuGetFeed feed) {
+    addFunction(new FindPackagesByIdFunction(feed));
+    addFunction(new GetUpdatesFunction(feed));
+    addFunction(new SearchFunction(feed));
+  }
+
+  private void addFunction(NuGetFeedFunction feedFunction) {
+    myAPIv2Functions.put(feedFunction.getName(), feedFunction);
   }
 
   @Nullable
   public NuGetFeedFunction find(@NotNull final EdmFunctionImport name) {
-    return CollectionsUtil.findFirst(myAPIv2Functions, new Filter<NuGetFeedFunction>() {
-      public boolean accept(@NotNull NuGetFeedFunction data) {
-        return data.getName().equals(name.getName());
-      }
-    });
+    return myAPIv2Functions.get(name.getName());
   }
 
   public Iterable<? extends NuGetFeedFunction> getAll() {
-    return Collections.unmodifiableCollection(myAPIv2Functions);
+    return Collections.unmodifiableCollection(myAPIv2Functions.values());
   }
 }

@@ -28,7 +28,6 @@ import jetbrains.buildServer.util.positioning.PositionConstraint;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -93,13 +92,12 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
 
   private Pair<Integer, Integer> countIndexEntries() {
     int count = 0;
-    final Set<String> packagesCounter = new HashSet<String>();
-    final Iterator<NuGetIndexEntry> it = myIndex.getNuGetEntries();
-    while(it.hasNext()) {
-      NuGetIndexEntry next = it.next();
-      packagesCounter.add(next.getAttributes().get("Id"));
+    final Set<String> packagesCounter = new HashSet<>();
+    for (NuGetIndexEntry indexEntry : myIndex.getAll()) {
+      packagesCounter.add(indexEntry.getAttributes().get("Id"));
       count++;
     }
+
     return Pair.create(count, packagesCounter.size());
   }
 }

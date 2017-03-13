@@ -19,10 +19,9 @@ package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.feed.server.olingo.data.NuGetDataSource;
+import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.util.Action;
-import jetbrains.buildServer.util.CaseInsensitiveStringComparator;
 import org.apache.olingo.odata2.api.*;
 import org.apache.olingo.odata2.api.edm.EdmTargetPath;
 import org.apache.olingo.odata2.api.edm.FullQualifiedName;
@@ -41,11 +40,11 @@ import java.util.TreeMap;
  */
 public class NuGetServiceFactory extends ODataServiceFactory {
 
-  private final NuGetDataSource myDataSource;
+  private final OlingoDataSource myDataSource;
   private static final Map<String, Action<Property>> PROPERTY_CONFIGS;
   private static final Map<String, EdmxProvider> EDMX_PROVIDERS;
 
-  public NuGetServiceFactory(NuGetDataSource dataSource) {
+  public NuGetServiceFactory(OlingoDataSource dataSource) {
     myDataSource = dataSource;
   }
 

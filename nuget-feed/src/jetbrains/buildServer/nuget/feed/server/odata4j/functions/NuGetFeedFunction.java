@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.odata4j.functions;
 
+import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OFunctionParameter;
@@ -31,5 +32,5 @@ import java.util.Map;
 public interface NuGetFeedFunction {
   @NotNull String getName();
   @NotNull EdmFunctionImport.Builder generateImport(@NotNull EdmType returnType);
-  @Nullable Iterable<Object> call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo);
+  @Nullable Iterable<NuGetIndexEntry> call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo);
 }
