@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
+import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
 import jetbrains.buildServer.serverSide.RunningBuildEx;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
@@ -42,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
+import java.util.Date;
 import java.util.Map;
 
 import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
@@ -217,6 +219,11 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     metadata.put(PACKAGE_SIZE, String.valueOf(file.getSize()));
     metadata.put(TEAMCITY_ARTIFACT_RELPATH, path);
     metadata.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
+
+    final String created = ODataDataFormat.formatDate(new Date());
+    metadata.put(CREATED, created);
+    metadata.put(LAST_UPDATED, created);
+    metadata.put(PUBLISHED, created);
 
     try {
       inputStream = file.getInputStream();

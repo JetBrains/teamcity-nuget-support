@@ -138,6 +138,12 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
       FileUtil.close(inputStream);
     }
 
+    final Date finishDate = build.getFinishDate();
+    final String created = ODataDataFormat.formatDate(finishDate != null ? finishDate : new Date());
+    metadata.put(CREATED, created);
+    metadata.put(LAST_UPDATED, created);
+    metadata.put(PUBLISHED, created);
+
     return metadata;
   }
 

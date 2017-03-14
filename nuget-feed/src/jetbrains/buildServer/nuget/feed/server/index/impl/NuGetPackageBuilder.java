@@ -42,7 +42,7 @@ public class NuGetPackageBuilder {
   public NuGetPackageBuilder(@NotNull final BuildMetadataEntry entry) {
     myMetadata = new HashMap<>(entry.getMetadata());
     myVersion = myMetadata.get(VERSION);
-    myKey = entry.getKey() + "." + myVersion;
+    myKey = entry.getKey();
     myBuildId = entry.getBuildId();
     setMetadata(TEAMCITY_BUILD_ID, String.valueOf(myBuildId));
   }

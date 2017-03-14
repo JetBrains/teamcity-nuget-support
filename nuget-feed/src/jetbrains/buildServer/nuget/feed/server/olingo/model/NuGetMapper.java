@@ -63,6 +63,8 @@ public final class NuGetMapper {
     feedPackage.setIsAbsoluteLatestVersion(getBoolean(attributes, IS_ABSOLUTE_LATEST_VERSION));
     feedPackage.setIsPrerelease(getBoolean(attributes, IS_PRERELEASE));
     feedPackage.setLanguage(getValue(attributes, LANGUAGE));
+    feedPackage.setLastUpdated(getDate(attributes, LAST_UPDATED));
+    feedPackage.setPublished(getDate(attributes, PUBLISHED));
     feedPackage.setPackageHash(getValue(attributes, PACKAGE_HASH));
     feedPackage.setPackageHashAlgorithm(getValue(attributes, PACKAGE_HASH_ALGORITHM));
     feedPackage.setPackageSize(getLong(attributes, PACKAGE_SIZE));
