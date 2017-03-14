@@ -108,12 +108,7 @@ public class OlingoDataSource {
 
       final Map<String, String> query = new HashMap<>(keys.size());
       for (String key : keys.keySet()) {
-        final String value = (String) keys.get(key);
-        if (key.equals(VERSION)) {
-          query.put(NORMALIZED_VERSION, VersionUtility.normalizeVersion(value));
-        } else {
-          query.put(key, value);
-        }
+        query.put(key, (String) keys.get(key));
       }
 
       final List<NuGetIndexEntry> result = myFeed.find(query);

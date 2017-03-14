@@ -85,6 +85,12 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
     return decorateMetadata(myStorage.findEntriesWithValue(NUGET_PROVIDER_ID, value, keys, true));
   }
 
+  @NotNull
+  @Override
+  public List<NuGetIndexEntry> getByKey(String key) {
+    return decorateMetadata(myStorage.getEntriesByKey(NUGET_PROVIDER_ID, key));
+  }
+
   private List<NuGetIndexEntry> decorateMetadata(Iterator<BuildMetadataEntry> entries) {
     if (TeamCityProperties.getBoolean("teamcity.nuget.simple.feed.sort")) {
       final Collection<PackageTransformation> transformations = getTranslatorsSimple();

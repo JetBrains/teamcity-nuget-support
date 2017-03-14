@@ -31,7 +31,7 @@ import java.util.Map;
 public class NuGetFeedFunctions {
   private final Map<String, NuGetFeedFunction> myAPIv2Functions = new HashMap<>();
 
-  public NuGetFeedFunctions(@NotNull NuGetFeed feed) {
+  public NuGetFeedFunctions(@NotNull final NuGetFeed feed) {
     addFunction(new FindPackagesByIdFunction(feed));
     addFunction(new GetUpdatesFunction(feed));
     addFunction(new SearchFunction(feed));

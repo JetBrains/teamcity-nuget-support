@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
 import jetbrains.buildServer.serverSide.SBuild;
@@ -97,7 +98,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
         final String id = metadata.get(ID);
         final String version = metadata.get(NORMALIZED_VERSION);
         if (!StringUtil.isEmptyOrSpaces(id) && !StringUtil.isEmptyOrSpaces(version)) {
-          final String key = String.format("%s.%s", id, version);
+          final String key = NuGetUtils.getPackageKey(id, version);
           store.addParameters(key, metadata);
           LOG.debug("Added entry to NuGet package index with a key " + key);
         } else {

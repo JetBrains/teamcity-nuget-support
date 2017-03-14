@@ -44,4 +44,7 @@ public interface PackagesIndex {
 
   @NotNull
   List<NuGetIndexEntry> search(@NotNull Collection<String> keys, @NotNull String value);
+
+  @NotNull
+  List<NuGetIndexEntry> getByKey(String key);
 }

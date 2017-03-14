@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 import com.google.common.collect.Maps;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
@@ -362,7 +363,7 @@ public class PackageIndexTest extends BaseTestCase {
       allowing(entry).getMetadata();
       will(returnValue(entryData));
       allowing(entry).getKey();
-      will(returnValue(packageId));
+      will(returnValue(NuGetUtils.getPackageKey(packageId, packageVersion)));
     }});
 
     entryData.put("teamcity.buildTypeId", buildTypeId);
@@ -389,7 +390,7 @@ public class PackageIndexTest extends BaseTestCase {
   }
 
   private void assertPackages(@NotNull String... idsEx) {
-    final Set<String> packages = new TreeSet<>();
+    final Set<String> packages = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
     Collections.addAll(packages, idsEx);
 
     for(NuGetIndexEntry p : myIndex.getAll()) {
@@ -404,7 +405,7 @@ public class PackageIndexTest extends BaseTestCase {
     for (NuGetIndexEntry p : myIndex.getAll()) {
       final String actualName = p.getKey();
       final String expectedName = idsEx[idx++];
-      Assert.assertEquals(actualName, expectedName);
+      Assert.assertTrue(actualName.equalsIgnoreCase(expectedName));
     }
 
     Assert.assertTrue(idx == idsEx.length);
@@ -417,7 +418,8 @@ public class PackageIndexTest extends BaseTestCase {
   private void assertPackagesCollection(@NotNull List<NuGetIndexEntry> it,
                                         @NotNull FlagMode mode,
                                         @NotNull String... ids) {
-    final Set<String> t = new HashSet<>(Arrays.asList(ids));
+    final Set<String> t = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    t.addAll(Arrays.asList(ids));
     for (NuGetIndexEntry p : it) {
       Assert.assertTrue(mode.readField(p) == t.remove(p.getKey()), "package " + p + " must have " + mode);
     }

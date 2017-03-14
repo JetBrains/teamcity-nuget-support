@@ -21,6 +21,7 @@ import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.log.LogUtil;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
+import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
@@ -246,7 +247,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       FileUtil.close(inputStream);
     }
 
-    final String key = String.format("%s.%s", id, version);
+    final String key = NuGetUtils.getPackageKey(id, version);
     try {
       myStorage.addBuildEntry(build.getBuildId(), NUGET_PROVIDER_ID, key, metadata, !build.isPersonal());
     } catch (Throwable e) {

@@ -21,6 +21,8 @@ import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntity;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunction;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
@@ -30,7 +32,9 @@ import jetbrains.buildServer.util.CollectionsUtil;
 import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
+import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
+import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.exceptions.NotImplementedException;
@@ -40,6 +44,8 @@ import org.odata4j.producer.PropertyPathHelper;
 import org.odata4j.producer.QueryInfo;
 import org.odata4j.producer.inmemory.*;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,15 +54,17 @@ import java.util.Map;
 public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   private static final Logger LOG = Logger.getInstance(NuGetFeedInMemoryProducer.class.getName());
   private final Object mySyncRoot = new Object();
-
+  private final NuGetFeed myFeed;
   private final NuGetFeedFunctions myFunctions;
   private final NuGetServerSettings myServerSettings;
 
   private String myApiVersion;
 
-  public NuGetFeedInMemoryProducer(@NotNull final NuGetFeedFunctions functions,
+  public NuGetFeedInMemoryProducer(@NotNull final NuGetFeed feed,
+                                   @NotNull final NuGetFeedFunctions functions,
                                    @NotNull final NuGetServerSettings settings) {
     super(MetadataConstants.NUGET_GALLERY_NAMESPACE, NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE);
+    myFeed = feed;
     myFunctions = functions;
     myServerSettings = settings;
     evaluation = new NuGetExpressionEvaluator();
@@ -123,5 +131,21 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
     }
 
     return super.comparePropertyValue(name, v1, v2);
+  }
+
+  @Override
+  protected Object getEntityPojo(RequestContext rc) {
+    final OEntityKey key = rc.getEntityKey();
+    final Map<String, String> query = new HashMap<>();
+    for (OProperty<?> property : key.asComplexProperties()) {
+      query.put(property.getName(), (String) property.getValue());
+    }
+
+    final List<NuGetIndexEntry> result = myFeed.find(query);
+    if (result.size() > 0) {
+      return new PackageEntityEx(result.get(0), myServerSettings);
+    } else {
+      return null;
+    }
   }
 }

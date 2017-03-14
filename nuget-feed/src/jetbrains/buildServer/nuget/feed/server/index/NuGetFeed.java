@@ -3,6 +3,7 @@ package jetbrains.buildServer.nuget.feed.server.index;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.containers.SortedList;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
 import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
@@ -15,9 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.ID;
-import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.IS_PRERELEASE;
-import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.VERSION;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**
  * Provides NuGet feed capabilities.
@@ -41,7 +40,18 @@ public class NuGetFeed {
 
   @NotNull
   public List<NuGetIndexEntry> find(@NotNull final Map<String, String> query) {
-    return myIndex.find(query);
+    if (query.size() == 2 && query.containsKey(ID) && query.containsKey(VERSION)) {
+      final String key = NuGetUtils.getPackageKey(query.get(ID), query.get(VERSION));
+      return myIndex.getByKey(key);
+    }
+
+    final Map<String, String> map = new HashMap<>(query);
+    if (map.containsKey(VERSION)) {
+      map.put(NORMALIZED_VERSION, VersionUtility.normalizeVersion(map.get(VERSION)));
+      map.remove(VERSION);
+    }
+
+    return myIndex.find(map);
   }
 
   @NotNull

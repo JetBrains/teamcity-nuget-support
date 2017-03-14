@@ -122,6 +122,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
           return myFeed;
         }
       });
+      allowing(myIndexProxy).getByKey(with(any(String.class)));
+      will(returnValue(myFeed));
       allowing(myIndex).getAll();
       will(returnValue(myFeed));
       allowing(mySettings).getNuGetFeedControllerPath();
@@ -138,10 +140,11 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     }});
 
 
-    myProducer = new NuGetProducerHolder(myIndexProxy, mySettings, new NuGetFeedFunctions(new NuGetFeed(myIndexProxy, mySettings)));
+    final NuGetFeed feed = new NuGetFeed(myIndexProxy, mySettings);
+    myProducer = new NuGetProducerHolder(feed, mySettings, new NuGetFeedFunctions(feed));
 
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myProducer, responseCache);
-    final NuGetServiceFactory serviceFactory = new NuGetServiceFactory(new OlingoDataSource(new NuGetFeed(myIndexProxy, mySettings)));
+    final NuGetServiceFactory serviceFactory = new NuGetServiceFactory(new OlingoDataSource(feed));
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(serviceFactory, responseCache);
     final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, myMetadataStorage,
             packageAnalyzer, cacheReset);
