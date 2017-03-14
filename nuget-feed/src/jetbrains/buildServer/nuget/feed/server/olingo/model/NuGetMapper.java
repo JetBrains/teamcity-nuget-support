@@ -20,11 +20,14 @@ import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
+import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joda.time.LocalDateTime;
 
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
+import java.util.Date;
 import java.util.Map;
 
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
@@ -52,28 +55,29 @@ public final class NuGetMapper {
     feedPackage.setNormalizedVersion(getValue(attributes, NORMALIZED_VERSION));
     feedPackage.setAuthors(getValue(attributes, AUTHORS));
     feedPackage.setCopyright(getValue(attributes, COPYRIGHT));
+    feedPackage.setCreated(getDate(attributes, CREATED));
     feedPackage.setDependencies(getValue(attributes, DEPENDENCIES));
     feedPackage.setDescription(getValue(attributes, DESCRIPTION));
     feedPackage.setIconUrl(getValue(attributes, ICON_URL));
-    feedPackage.setIsLatestVersion(Boolean.parseBoolean(getValue(attributes, IS_LATEST_VERSION)));
-    feedPackage.setIsAbsoluteLatestVersion(Boolean.parseBoolean(getValue(attributes, IS_ABSOLUTE_LATEST_VERSION)));
-    feedPackage.setIsPrerelease(Boolean.parseBoolean(getValue(attributes, IS_PRERELEASE)));
+    feedPackage.setIsLatestVersion(getBoolean(attributes, IS_LATEST_VERSION));
+    feedPackage.setIsAbsoluteLatestVersion(getBoolean(attributes, IS_ABSOLUTE_LATEST_VERSION));
+    feedPackage.setIsPrerelease(getBoolean(attributes, IS_PRERELEASE));
     feedPackage.setLanguage(getValue(attributes, LANGUAGE));
     feedPackage.setPackageHash(getValue(attributes, PACKAGE_HASH));
     feedPackage.setPackageHashAlgorithm(getValue(attributes, PACKAGE_HASH_ALGORITHM));
-    final String packageSize = getValue(attributes, PACKAGE_SIZE);
-    feedPackage.setPackageSize(packageSize != null ? Long.parseLong(packageSize) : 0);
+    feedPackage.setPackageSize(getLong(attributes, PACKAGE_SIZE));
     feedPackage.setProjectUrl(getValue(attributes, PROJECT_URL));
     feedPackage.setReportAbuseUrl(getValue(attributes, REPORT_ABUSE_URL));
     feedPackage.setReleaseNotes(getValue(attributes, RELEASE_NOTES));
-    feedPackage.setRequireLicenseAcceptance(Boolean.parseBoolean(getValue(attributes, REQUIRE_LICENSE_ACCEPTANCE)));
+    feedPackage.setRequireLicenseAcceptance(getBoolean(attributes, REQUIRE_LICENSE_ACCEPTANCE));
+    feedPackage.setSummary(getValue(attributes, SUMMARY));
     feedPackage.setTags(getValue(attributes, TAGS));
     feedPackage.setTitle(getValue(attributes, TITLE));
-    feedPackage.setTeamCityDownloadUrl(getDownloadUrl(requestUri, attributes));
     feedPackage.setMinClientVersion(getValue(attributes, MIN_CLIENT_VERSION));
     feedPackage.setLicenseUrl(getValue(attributes, LICENSE_URL));
     feedPackage.setLicenseNames(getValue(attributes, LICENSE_NAMES));
     feedPackage.setLicenseReportUrl(getValue(attributes, LICENSE_REPORT_URL));
+    feedPackage.setTeamCityDownloadUrl(getDownloadUrl(requestUri, attributes));
 
     return feedPackage;
   }
@@ -91,5 +95,27 @@ public final class NuGetMapper {
 
   private static String getValue(@NotNull final Map<String, String> attributes, @NotNull final String key) {
     return NuGetUtils.getValue(attributes, key);
+  }
+
+  @NotNull
+  private static Boolean getBoolean(@NotNull final Map<String, String> attributes, @NotNull final String key) {
+    return Boolean.parseBoolean(getValue(attributes, key));
+  }
+
+  @NotNull
+  private static Date getDate(@NotNull final Map<String, String> attributes, @NotNull final String key) {
+    final String value = getValue(attributes, key);
+    if (value != null) {
+      final LocalDateTime dateTime = ODataDataFormat.parseDate(value);
+      if (dateTime != null) return dateTime.toDate();
+    }
+
+    return new Date();
+  }
+
+  @NotNull
+  private static Long getLong(@NotNull final Map<String, String> attributes, @NotNull final String key) {
+    final String value = getValue(attributes, key);
+    return value == null ? 0 : Long.parseLong(value);
   }
 }

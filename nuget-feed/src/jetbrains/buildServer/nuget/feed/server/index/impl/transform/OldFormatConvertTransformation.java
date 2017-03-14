@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.feed.server.index.impl.transform;
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageBuilder;
 import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackageTransformation;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.serverSide.BuildsManager;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -30,7 +31,6 @@ import org.jetbrains.annotations.Nullable;
 *         Date: 18.01.12 20:29
 */
 public class OldFormatConvertTransformation implements PackageTransformation {
-  private static final String LAST_UPDATED = "LastUpdated";
 
   private final BuildsManager myBuilds;
 
@@ -54,7 +54,11 @@ public class OldFormatConvertTransformation implements PackageTransformation {
     if (aBuild == null || !(aBuild instanceof SFinishedBuild)) return null;
     final SFinishedBuild build = (SFinishedBuild) aBuild;
 
-    builder.setMetadata(LAST_UPDATED, ODataDataFormat.formatDate(build.getFinishDate()));
+    final String created = ODataDataFormat.formatDate(build.getFinishDate());
+    builder.setMetadata(NuGetPackageAttributes.CREATED, created);
+    builder.setMetadata(NuGetPackageAttributes.LAST_UPDATED, created);
+    builder.setMetadata(NuGetPackageAttributes.PUBLISHED, created);
+
     return build.getBuildTypeId();
   }
 

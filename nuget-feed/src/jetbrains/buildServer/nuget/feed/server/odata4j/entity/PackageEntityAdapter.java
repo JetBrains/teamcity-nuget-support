@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.odata4j.entity;
 
+import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDateTime;
 
@@ -31,7 +32,12 @@ public abstract class PackageEntityAdapter extends PackageEntityImpl implements 
 
   @NotNull
   public LocalDateTime getCreated() {
-    return getLastUpdated();
+    final String v = getValue(CREATED);
+    if (v != null) {
+      final LocalDateTime date = ODataDataFormat.parseDate(v);
+      if (date != null) return date;
+    }
+    return new LocalDateTime();
   }
 
   @NotNull
@@ -46,12 +52,21 @@ public abstract class PackageEntityAdapter extends PackageEntityImpl implements 
 
   @NotNull
   public LocalDateTime getPublished() {
-    return getLastUpdated();
+    final String v = getValue(PUBLISHED);
+    if (v != null) {
+      final LocalDateTime date = ODataDataFormat.parseDate(v);
+      if (date != null) return date;
+    }
+    return new LocalDateTime();
   }
 
   @NotNull
   public String getSummary() {
-    return getDescription();
+    final String v = getValue(SUMMARY);
+    if (v == null) {
+      return "";
+    }
+    return v;
   }
 
   @NotNull

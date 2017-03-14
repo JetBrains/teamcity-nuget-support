@@ -34,7 +34,6 @@ import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
 import jetbrains.buildServer.nuget.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
-import jetbrains.buildServer.nuget.feed.server.index.impl.transform.IsPrereleaseTransformation;
 import jetbrains.buildServer.nuget.feed.server.odata4j.NuGetProducerHolder;
 import jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
@@ -180,7 +179,6 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     setPackagesIndex(new PackagesIndexImpl(
             myMetadataStorage,
             Arrays.asList(
-                    new IsPrereleaseTransformation(),
                     new MockExternalIdTransformation(),
                     new DownloadUrlComputationTransformation(mySettings)
             )

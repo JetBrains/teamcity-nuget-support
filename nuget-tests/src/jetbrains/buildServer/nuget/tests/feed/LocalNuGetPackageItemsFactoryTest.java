@@ -115,10 +115,13 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
                     "Description = Extension for Ninject providing integration with ASP.NET MVC3\n" +
                     "IconUrl = https://github.com/ninject/ninject/raw/master/logos/Ninject-Logo32.png\n" +
                     "Id = Ninject.MVC3\n" +
+                    "IsPrerelease = false\n" +
+                    "Language = en-US\n" +
                     "LicenseUrl = https://github.com/ninject/ninject.web.mvc/raw/master/mvc3/LICENSE.txt\n" +
                     "NormalizedVersion = 2.2.2\n" +
                     "ProjectUrl = http://www.ninject.org\n" +
                     "RequireLicenseAcceptance = true\n" +
+                    "Summary = Extension for Ninject providing integration with ASP.NET MVC3\n" +
                     "Tags = Ninject ioc di web mvc3\n" +
                     "Version = 2.2.2.0");
   }

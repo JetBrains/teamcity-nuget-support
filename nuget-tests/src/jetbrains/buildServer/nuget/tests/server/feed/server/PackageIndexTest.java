@@ -24,9 +24,9 @@ import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.transform.AccessCheckTransformation;
 import jetbrains.buildServer.nuget.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
-import jetbrains.buildServer.nuget.feed.server.index.impl.transform.IsPrereleaseTransformation;
 import jetbrains.buildServer.nuget.feed.server.index.impl.transform.SamePackagesFilterTransformation;
 import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntityAdapter;
+import jetbrains.buildServer.nuget.server.version.SemanticVersion;
 import jetbrains.buildServer.nuget.tests.integration.feed.server.MockExternalIdTransformation;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
@@ -35,6 +35,7 @@ import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.TestFor;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
@@ -80,7 +81,6 @@ public class PackageIndexTest extends BaseTestCase {
             Arrays.asList(
                     new SamePackagesFilterTransformation(),
                     new AccessCheckTransformation(myProjectManager, myContext),
-                    new IsPrereleaseTransformation(),
                     new MockExternalIdTransformation(),
                     new DownloadUrlComputationTransformation(serverSettings)
             ));
@@ -369,6 +369,8 @@ public class PackageIndexTest extends BaseTestCase {
     entryData.put("teamcity.artifactPath", "btX/ZZZ");
     entryData.put(VERSION, packageVersion);
     entryData.put(ID, packageId);
+    SemanticVersion version = SemanticVersion.valueOf(packageVersion);
+    entryData.put(IS_PRERELEASE, Boolean.toString(version != null && !StringUtil.isEmpty(version.getSpecialVersion())));
     myEntries.add(entry);
 
     //recall natural sort order of metadata entries

@@ -58,7 +58,10 @@ public class NuGetFeed {
     final String searchDetails = builder.toString();
     LOG.debug(searchDetails);
 
-    final List<NuGetIndexEntry> foundPackages = searchPackages(searchTerm, filterByTargetFramework ? targetFramework : "");
+    final List<NuGetIndexEntry> foundPackages = searchPackages(searchTerm,
+      filterByTargetFramework ? targetFramework : "",
+      includePrerelease
+    );
     final List<NuGetIndexEntry> packages = CollectionsUtil.filterCollection(foundPackages, nugetPackage -> {
       final Map<String, String> nugetPackageAttributes = nugetPackage.getAttributes();
       final String id = nugetPackageAttributes.get(ID);
@@ -86,9 +89,15 @@ public class NuGetFeed {
   }
 
   @NotNull
-  private List<NuGetIndexEntry> searchPackages(final String searchTerm, final String targetFramework) {
-    if (StringUtil.isEmpty(searchTerm) && StringUtil.isNotEmpty(targetFramework)) {
-      return myIndex.search(Collections.singletonList(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS), targetFramework);
+  private List<NuGetIndexEntry> searchPackages(final String searchTerm, final String targetFramework, boolean includePrerelease) {
+    if (StringUtil.isEmpty(searchTerm)) {
+      if (StringUtil.isNotEmpty(targetFramework)) {
+        return myIndex.search(Collections.singletonList(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS), targetFramework);
+      }
+
+      if (!includePrerelease) {
+        return myIndex.find(CollectionsUtil.asMap(IS_PRERELEASE, "false"));
+      }
     }
 
     return myIndex.search(PackagesIndexImpl.PACKAGE_ATTRIBUTES_TO_SEARCH, searchTerm);
@@ -152,7 +161,13 @@ public class NuGetFeed {
     final Comparator<NuGetIndexEntry> comparator = Collections.reverseOrder(SemanticVersionsComparators.getEntriesComparator());
     final List<NuGetIndexEntry> result = new SortedList<>(comparator);
 
-    for (NuGetIndexEntry indexEntry : myIndex.find(CollectionsUtil.asMap(ID, requestedPackageId))) {
+    final Map<String, String> query = new HashMap<>();
+    query.put(ID, requestedPackageId);
+    if (!includePreRelease) {
+      query.put(IS_PRERELEASE, "false");
+    }
+
+    for (NuGetIndexEntry indexEntry : myIndex.find(query)) {
       if (match(indexEntry, requestedVersion, includePreRelease, frameworkConstraints, versionConstraint)) {
         LOG.debug(String.format("Matched indexed package found for id:%s version:%s. %s", requestedPackageId, requestedVersion, indexEntry));
         result.add(indexEntry);

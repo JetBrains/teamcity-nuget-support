@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.feed.server.index.impl;
 
 import com.intellij.openapi.util.text.StringUtil;
+import jetbrains.buildServer.nuget.server.version.SemanticVersion;
 import jetbrains.buildServer.nuget.server.version.VersionUtility;
 import jetbrains.buildServer.nuget.spec.Dependencies;
 import jetbrains.buildServer.nuget.spec.Dependency;
@@ -55,18 +56,30 @@ public class LocalNuGetPackageItemsFactory implements NuGetPackageStructureAnaly
     final String version = nuspec.getVersion();
     addItem(VERSION, version);
     addItem(NORMALIZED_VERSION, version == null ? null : VersionUtility.normalizeVersion(version));
-    addItem(TITLE, nuspec.getTitle());
-    addItem(RELEASE_NOTES, nuspec.getReleaseNotes());
     addItem(AUTHORS, nuspec.getAuthors());
+    addItem(COPYRIGHT, nuspec.getCopyright());
     addItem(DEPENDENCIES, parseDependencies(nuspec));
     addItem(DESCRIPTION, nuspec.getDescription());
-    addItem(COPYRIGHT, nuspec.getCopyright());
-    addItem(PROJECT_URL, nuspec.getProjectUrl());
-    addItem(TAGS, nuspec.getTags());
     addItem(ICON_URL, nuspec.getIconUrl());
-    addItem(LICENSE_URL, nuspec.getLicenseUrl());
+    addItem(IS_PRERELEASE, Boolean.toString(isPrerelease(version)));
+    addItem(LANGUAGE, nuspec.getLanguage());
+    addItem(PROJECT_URL, nuspec.getProjectUrl());
+    addItem(RELEASE_NOTES, nuspec.getReleaseNotes());
     addItem(REQUIRE_LICENSE_ACCEPTANCE, nuspec.getRequireLicenseAcceptance());
+    addItem(SUMMARY, nuspec.getSummary());
+    addItem(TAGS, nuspec.getTags());
+    addItem(TITLE, nuspec.getTitle());
     addItem(MIN_CLIENT_VERSION, nuspec.getMinClientVersion());
+    addItem(LICENSE_URL, nuspec.getLicenseUrl());
+  }
+
+  private Boolean isPrerelease(String version) {
+    if (version == null) {
+      return false;
+    }
+
+    final SemanticVersion semanticVersion = SemanticVersion.valueOf(version);
+    return semanticVersion != null && !StringUtil.isEmpty(semanticVersion.getSpecialVersion());
   }
 
   private void addItem(@NotNull final String key, @Nullable final String value) {

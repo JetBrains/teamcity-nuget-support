@@ -45,7 +45,8 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
 
   private static final Logger LOG = Logger.getInstance(PackagesIndexImpl.class.getName());
 
-  public static final Collection<String> PACKAGE_ATTRIBUTES_TO_SEARCH = Lists.newArrayList(ID, TITLE, TAGS, DESCRIPTION, AUTHORS);
+  public static final Collection<String> PACKAGE_ATTRIBUTES_TO_SEARCH = Lists.newArrayList(
+    ID, TITLE, TAGS, DESCRIPTION, AUTHORS, SUMMARY);
 
   private static final String TOTAL_NUMBER_OF_ITEMS_STAT = "Total number of items in index";
   private static final String NUMBER_OF_INDEXED_BUILDS_STAT = "Number of indexed builds";

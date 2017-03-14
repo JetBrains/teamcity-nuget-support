@@ -40,7 +40,7 @@ public class NuGetPackageBuilder {
   private String myExternalId = null;
 
   public NuGetPackageBuilder(@NotNull final BuildMetadataEntry entry) {
-    myMetadata = new HashMap<String, String>(entry.getMetadata());
+    myMetadata = new HashMap<>(entry.getMetadata());
     myVersion = myMetadata.get(VERSION);
     myKey = entry.getKey() + "." + myVersion;
     myBuildId = entry.getBuildId();
@@ -64,10 +64,6 @@ public class NuGetPackageBuilder {
   @NotNull
   public String getVersion() {
     return myVersion;
-  }
-
-  public void setPrerelease(boolean isPrerelease) {
-    setMetadata(IS_PRERELEASE, String.valueOf(isPrerelease));
   }
 
   public boolean isPrerelease() {
