@@ -20,7 +20,7 @@ import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.version.VersionUtility;
+import jetbrains.buildServer.util.StringUtil;
 import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.edm.EdmFunctionImport;
@@ -32,9 +32,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-
-import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.NORMALIZED_VERSION;
-import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.VERSION;
 
 /**
  * Controls request to the data source.
@@ -50,7 +47,7 @@ public class OlingoDataSource {
     myFunctions.put(MetadataConstants.SEARCH_FUNCTION_NAME, parameters -> {
       final String searchTerm = (String) parameters.get(MetadataConstants.SEARCH_TERM);
       final String targetFramework = (String) parameters.get(MetadataConstants.TARGET_FRAMEWORK);
-      final boolean includePrerelease = NuGetAPIVersion.shouldUseV2() && (Boolean) parameters.get(MetadataConstants.INCLUDE_PRERELEASE);
+      final boolean includePrerelease = NuGetAPIVersion.shouldUseV2() && getBooleanValue(parameters.get(MetadataConstants.INCLUDE_PRERELEASE));
       if (searchTerm == null || targetFramework == null) {
         throw new UriSyntaxException(UriSyntaxException.MISSINGPARAMETER);
       }
@@ -68,12 +65,12 @@ public class OlingoDataSource {
     });
 
     myFunctions.put(MetadataConstants.GET_UPDATES_FUNCTION_NAME, parameters -> myFeed.getUpdates(
-      (String) parameters.get(MetadataConstants.PACKAGE_IDS),
-      (String) parameters.get(MetadataConstants.VERSIONS),
-      (String) parameters.get(MetadataConstants.VERSION_CONSTRAINTS),
-      (String) parameters.get(MetadataConstants.TARGET_FRAMEWORKS),
-      (Boolean) parameters.get(MetadataConstants.INCLUDE_PRERELEASE),
-      (Boolean) parameters.get(MetadataConstants.INCLUDE_ALL_VERSIONS)));
+      getStringValue(parameters.get(MetadataConstants.PACKAGE_IDS)),
+      getStringValue(parameters.get(MetadataConstants.VERSIONS)),
+      getStringValue(parameters.get(MetadataConstants.VERSION_CONSTRAINTS)),
+      getStringValue(parameters.get(MetadataConstants.TARGET_FRAMEWORKS)),
+      getBooleanValue(parameters.get(MetadataConstants.INCLUDE_PRERELEASE)),
+      getBooleanValue(parameters.get(MetadataConstants.INCLUDE_ALL_VERSIONS))));
   }
 
   /**
@@ -145,5 +142,13 @@ public class OlingoDataSource {
   private interface OlingoFeedFunction {
     @NotNull
     Object handle(@NotNull final Map<String, Object> parameters) throws ODataHttpException;
+  }
+
+  private static String getStringValue(@Nullable Object value) {
+    return StringUtil.notEmpty((String) value, StringUtil.EMPTY);
+  }
+
+  private static boolean getBooleanValue(@Nullable Object value) {
+    return value != null ? (Boolean) value : false;
   }
 }
