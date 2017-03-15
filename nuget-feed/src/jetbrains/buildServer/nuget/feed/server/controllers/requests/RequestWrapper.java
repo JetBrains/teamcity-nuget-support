@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.controllers.requests;
 
+import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +29,7 @@ import javax.ws.rs.core.UriBuilder;
  *         Date: 16.11.2009
  */
 public class RequestWrapper extends HttpServletRequestWrapper {
+  private static final String FORWARD_SLASH = "/";
   private final HttpServletRequest myRequest;
   private final String myMapping;
 
@@ -42,7 +44,7 @@ public class RequestWrapper extends HttpServletRequestWrapper {
   public String getRequestURI() {
     final String uri = super.getRequestURI();
     //Workaround for Jersey baseUri and requestUri computation.
-    if (uri.endsWith(myMapping)) return uri + "/";
+    if (uri.endsWith(myMapping)) return uri + FORWARD_SLASH;
     return uri;
   }
 
@@ -62,8 +64,8 @@ public class RequestWrapper extends HttpServletRequestWrapper {
     int i = uri.indexOf(myMapping);
     if (i >= 0) {
       String s = uri.substring(myMapping.length() + i);
-      while (s.startsWith("/")) s = s.substring(1);
-      return "/" + s;
+      while (s.startsWith(FORWARD_SLASH)) s = s.substring(1);
+      return FORWARD_SLASH + s;
     }
 
     //fallback
@@ -94,5 +96,13 @@ public class RequestWrapper extends HttpServletRequestWrapper {
   @Override
   public int getServerPort() {
     return WebUtil.getServerPort(myRequest);
+  }
+
+  @Override
+  public String getParameter(String name) {
+    final String value = super.getParameter(name);
+    if (value == null) return null;
+    // NuGet client appends forward clash at the end of query string
+    return StringUtil.trimEnd(value, FORWARD_SLASH);
   }
 }

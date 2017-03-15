@@ -35,7 +35,7 @@ public class NuGetErrorCallback implements ODataErrorCallback {
   @Override
   public ODataResponse handleError(final ODataErrorContext context) throws ODataApplicationException {
     if (context.getHttpStatus() == HttpStatusCodes.INTERNAL_SERVER_ERROR) {
-      LOG.error("Internal Server Error", context.getException());
+      LOG.warnAndDebugDetails("Internal Server Error", context.getException());
     }
 
     return EntityProvider.writeErrorDocument(context);

@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.feed.server.controllers;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.log.LogUtil;
+import jetbrains.buildServer.nuget.common.PackageExistsException;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
@@ -85,12 +86,13 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       return;
     }
 
+    final boolean replace = "true".equalsIgnoreCase(request.getParameter("replace"));
     final MultipartResolver multipartResolver = new CommonsMultipartResolver();
     MultipartHttpServletRequest servletRequest = null;
     try {
       LOG.debug("NuGet package upload handler started");
       servletRequest = multipartResolver.resolveMultipart(request);
-      handleUpload(servletRequest, response);
+      handleUpload(servletRequest, response, replace);
     } catch (Throwable e) {
       LOG.warnAndDebugDetails("Unhandled error while processing NuGet package upload: " + e.getMessage(), e);
       throw e;
@@ -103,7 +105,8 @@ public class PackageUploadHandler implements NuGetFeedHandler {
   }
 
   private void handleUpload(@NotNull final MultipartHttpServletRequest request,
-                            @NotNull final HttpServletResponse response) throws IOException {
+                            @NotNull final HttpServletResponse response,
+                            final boolean replace) throws IOException {
     final RunningBuildEx build = getRunningBuild(request.getHeader("x-nuget-apikey"));
     if (build == null) {
       LOG.debug(INVALID_TOKEN_VALUE);
@@ -155,10 +158,13 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     }
 
     try {
-      processPackage(build, file);
+      processPackage(build, file, replace);
     } catch (PackageLoadException e) {
       LOG.debug("Invalid NuGet package: " + e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, INVALID_PACKAGE_CONTENTS);
+    } catch (PackageExistsException e) {
+      LOG.debug(e);
+      response.sendError(HttpServletResponse.SC_CONFLICT, e.getMessage());
     } catch (Throwable e) {
       LOG.warnAndDebugDetails("Failed to process NuGet package: " + e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to process NuGet package");
@@ -198,8 +204,9 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     return build;
   }
 
-  private void processPackage(@NotNull RunningBuildEx build,
-                              @NotNull MultipartFile file) throws Exception {
+  private void processPackage(@NotNull final RunningBuildEx build,
+                              @NotNull final MultipartFile file,
+                              final boolean replace) throws Exception {
     final Map<String, String> metadata;
     InputStream inputStream = null;
 
@@ -212,8 +219,16 @@ public class PackageUploadHandler implements NuGetFeedHandler {
 
     final String id = metadata.get(ID);
     final String version = metadata.get(NORMALIZED_VERSION);
+
+    // Package must have id and version specified
     if (StringUtil.isEmptyOrSpaces(id) || StringUtil.isEmptyOrSpaces(version)) {
       throw new PackageLoadException("Lack of Id or Version in NuGet package specification");
+    }
+
+    final String key = NuGetUtils.getPackageKey(id, version);
+    // Packages must not exists in the feed if `replace=true` query parameter was not specified
+    if (!replace && myStorage.getEntriesByKey(NUGET_PROVIDER_ID, key).hasNext()) {
+      throw new PackageExistsException(String.format("NuGet package %s:%s already exists in the feed", id, version));
     }
 
     final String path = MessageFormat.format(".teamcity/nuget/packages/{0}/{1}/{0}.{1}.nupkg", id, version);
@@ -247,7 +262,6 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       FileUtil.close(inputStream);
     }
 
-    final String key = NuGetUtils.getPackageKey(id, version);
     try {
       myStorage.addBuildEntry(build.getBuildId(), NUGET_PROVIDER_ID, key, metadata, !build.isPersonal());
     } catch (Throwable e) {

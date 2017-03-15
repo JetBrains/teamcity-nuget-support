@@ -38,6 +38,7 @@ public class RequestWrapper implements HttpServletRequest {
     private final String myServletPath;
     private final Map<String, Object> myAttributes = new HashMap<>();
     private final Map<String, String> myHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    private final Map<String, String> myParameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private String myMethod = "GET";
     private int myServerPort = -1;
     private byte[] myBody;
@@ -265,13 +266,17 @@ public class RequestWrapper implements HttpServletRequest {
     }
 
     @Override
-    public String getParameter(String s) {
-        return null;
+    public String getParameter(String name) {
+        return myParameters.get(name);
+    }
+
+    public void setParameter(String name, String value) {
+        myParameters.put(name, value);
     }
 
     @Override
     public Enumeration<String> getParameterNames() {
-        return null;
+      return new Vector<>(myParameters.keySet()).elements();
     }
 
     @Override
