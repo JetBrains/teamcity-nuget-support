@@ -20,4 +20,5 @@ dependencies {
     compile 'org.apache.olingo:olingo-odata2-core:2.0.8-SNAPSHOT'
     provided project(':nuget-common')
     provided project(':nuget-server-common')
+    provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
 }

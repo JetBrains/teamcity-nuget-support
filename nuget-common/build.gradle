@@ -1,4 +1,4 @@
-plugins{
+plugins {
     id 'com.github.rodm.teamcity-common' version '0.11'
 }
 
