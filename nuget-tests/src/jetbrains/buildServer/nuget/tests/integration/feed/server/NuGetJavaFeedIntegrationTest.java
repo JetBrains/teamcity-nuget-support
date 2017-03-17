@@ -222,8 +222,6 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     cmd.addParameter("-AllVersions");
     cmd.addParameter("-Source");
     cmd.addParameter(getNuGetServerUrl());
-    cmd.addParameter("-verbosity");
-    cmd.addParameter("detailed");
 
     final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
     if (exec.getExitCode() != 0) {
@@ -236,7 +234,8 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     System.out.println(stdout);
 
     for (int i = 0; i <= size; i++) {
-      Assert.assertTrue(stdout.contains("skiptoken 1.0." + i));
+      String packageName = "skiptoken 1.0." + i;
+      Assert.assertTrue(stdout.contains(packageName), "No package in the feed " + packageName);
     }
   }
 
