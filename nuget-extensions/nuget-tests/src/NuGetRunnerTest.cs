@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using NUnit.Framework;
 
@@ -9,6 +10,9 @@ namespace JetBrains.TeamCity.NuGet.Tests
   [TestFixture]
   public class NuGetRunnerTest
   {
+    private static Regex myExtensionsPattern = new Regex(
+      @"TeamCity.NuGetVersion: \d\.\d", RegexOptions.Compiled | RegexOptions.Multiline);
+
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestExcuteNuGet(NuGetVersion version)
     {
@@ -98,8 +102,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
           .AssertExitedSuccessfully()
           .AssertNoErrorOutput();
 
-      var text = res.Output;
-      Assert.IsTrue(text.Contains("TeamCity.NuGetVersion: 1.") || text.Contains("TeamCity.NuGetVersion: 2.") || text.Contains("TeamCity.NuGetVersion: 3."));
+      Assert.IsTrue(myExtensionsPattern.IsMatch(res.Output));
     }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
