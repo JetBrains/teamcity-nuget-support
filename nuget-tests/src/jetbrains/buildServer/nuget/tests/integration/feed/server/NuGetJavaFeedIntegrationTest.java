@@ -38,6 +38,7 @@ import org.testng.Assert;
 import org.testng.annotations.*;
 
 import javax.ws.rs.core.UriBuilder;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.URI;
@@ -199,7 +200,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
   }
 
   @Test(dataProvider = NUGET_VERSIONS_27p)
-  public void testSkiptoken(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+  public void testSkipTop(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
       return;
@@ -221,9 +222,16 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     cmd.addParameter("-AllVersions");
     cmd.addParameter("-Source");
     cmd.addParameter(getNuGetServerUrl());
+    cmd.addParameter("-verbosity");
+    cmd.addParameter("detailed");
 
     final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
-    Assert.assertEquals(exec.getExitCode(), 0, exec.getStderr());
+    if (exec.getExitCode() != 0) {
+      System.out.println(exec.getStdout());
+      System.out.println(exec.getStderr());
+      Assert.fail("Invalid exit code " + exec.getExitCode());
+    }
+
     final String stdout = exec.getStdout();
     System.out.println(stdout);
 
@@ -232,9 +240,48 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     }
   }
 
+  @Test(dataProvider = NUGET_VERSIONS_27p)
+  public void testSkipToken(final NugetFeedLibrary library, @NotNull final NuGet nuget) throws Exception {
+    if (!SystemInfo.isWindows) {
+      TestNGUtil.skip("is not supported under mono");
+      return;
+    }
+
+    setODataSerializer(library);
+    enableDebug();
+    enablePackagesIndexSorting();
+
+    int size = NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE + 2;
+    for (int i = 0; i <= size; i++) {
+      addMockPackage("skiptoken", "1.0." + i);
+    }
+
+    GeneralCommandLine cmd = new GeneralCommandLine();
+    File tempDir = createTempDir();
+    cmd.setExePath(nuget.getPath().getPath());
+    cmd.addParameter("install");
+    cmd.addParameter("skiptoken");
+    cmd.addParameter("-Source");
+    cmd.addParameter(getNuGetServerUrl());
+    cmd.addParameter("-verbosity");
+    cmd.addParameter("detailed");
+    cmd.addParameters("-nocache");
+    cmd.setWorkingDirectory(tempDir);
+
+    final ExecResult exec = SimpleCommandLineProcessRunner.runCommand(cmd, null);
+    System.out.println(exec.toString());
+
+    final String stdout = exec.getStdout();
+    if (stdout.contains("Resolved actions to install package") || stdout.contains(DOWNLOAD_URL)) {
+      return;
+    }
+
+    Assert.fail("Invalid response");
+  }
+
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x1(final NugetFeedLibrary library, @NotNull final NuGet nuget)
-          throws NuGetExecutionException, IOException {
+    throws NuGetExecutionException, IOException {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
       return;
@@ -246,7 +293,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x2(final NugetFeedLibrary library, @NotNull final NuGet nuget)
-          throws NuGetExecutionException, IOException {
+    throws NuGetExecutionException, IOException {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
       return;

@@ -68,7 +68,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
             throws ODataException {
         final ODataContext context = getContext();
         final PathInfo pathInfo = context.getPathInfo();
-        final ArrayList<V2FeedPackage> data = new ArrayList<>();
+        List<V2FeedPackage> data = new ArrayList<>();
 
         try {
             data.addAll(CollectionsUtil.convertCollection((List<?>) retrieveData(
@@ -109,15 +109,13 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
                 sortInDefaultOrder(entitySet, data);
             }
 
-            nextLink = pathInfo.getServiceRoot().relativize(pathInfo.getRequestUri()).toString();
+            nextLink = pathInfo.getRequestUri().toString();
             nextLink = percentEncodeNextLink(nextLink);
 
             nextLink += (nextLink.contains("?") ? "&" : "?")
                     + "$skiptoken=" + getSkipToken(entitySet, data.get(SERVER_PAGING_SIZE));
 
-            while (data.size() > SERVER_PAGING_SIZE) {
-                data.remove(SERVER_PAGING_SIZE);
-            }
+            data = data.subList(0, Math.min(data.size(), SERVER_PAGING_SIZE));
         }
 
         final EdmEntityType entityType = entitySet.getEntityType();

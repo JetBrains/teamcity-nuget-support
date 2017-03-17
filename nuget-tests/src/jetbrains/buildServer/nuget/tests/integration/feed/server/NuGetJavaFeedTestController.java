@@ -24,8 +24,10 @@ import org.jetbrains.annotations.NotNull;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import java.io.File;
 import java.net.URI;
 
 @Path("")
@@ -51,6 +53,29 @@ public class NuGetJavaFeedTestController {
     request.setBody(body);
 
     return getResponse(request);
+  }
+
+  @GET
+  @Path(NuGetJavaFeedIntegrationTestBase.DOWNLOAD_URL)
+  @Consumes("*/*")
+  public Response getDownloadResponse1() throws Exception {
+    return getFileResponse();
+  }
+
+  @GET
+  @Path("/app" + NuGetJavaFeedIntegrationTestBase.DOWNLOAD_URL)
+  @Consumes("*/*")
+  public Response getDownloadResponse2() throws Exception {
+    return getFileResponse();
+  }
+
+  @NotNull
+  private Response getFileResponse() {
+    final File file = new File("testData/packages/WebActivator.1.4.4.nupkg");
+    return Response.ok(file, MediaType.APPLICATION_OCTET_STREAM)
+      .header("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"" )
+      .header("Content-Length", String.valueOf(file.length()))
+      .build();
   }
 
   @NotNull

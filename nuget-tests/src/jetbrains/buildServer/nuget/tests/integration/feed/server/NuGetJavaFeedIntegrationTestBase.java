@@ -40,10 +40,12 @@ import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFuncti
 import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory;
+import jetbrains.buildServer.nuget.server.version.VersionUtility;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.http.NameValuePair;
 import org.apache.http.ProtocolVersion;
@@ -116,10 +118,22 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       will(returnValue(Collections.emptyList()));
       allowing(myIndexProxy).search(with(any(Collection.class)), with(any(String.class)));
       will(returnValue(myFeed));
+      allowing(myIndexProxy).find(with(equal(CollectionsUtil.asMap("Id", "skiptoken"))));
+      will(new CustomAction("lazy return packages") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return CollectionsUtil.filterCollection(myFeed, entry -> entry.getKey().startsWith("skiptoken"));
+        }
+      });
       allowing(myIndexProxy).find(with(any(Map.class)));
       will(new CustomAction("lazy return packages") {
         public Object invoke(Invocation invocation) throws Throwable {
           return myFeed;
+        }
+      });
+      allowing(myIndexProxy).getByKey(with(equal("skiptoken.1.0.102")));
+      will(new CustomAction("lazy return packages") {
+        public Object invoke(Invocation invocation) throws Throwable {
+          return Collections.singletonList(CollectionsUtil.findFirst(myFeed, item -> item.getKey().equals("skiptoken.1.0.102")));
         }
       });
       allowing(myIndexProxy).getByKey(with(any(String.class)));
@@ -204,7 +218,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   private Map<String, String> indexPackage(@NotNull final File file, final boolean isLatest) throws IOException {
     final int buildId = myCount++;
     final Map<String, String> map = indexPackage(file, isLatest, buildId);
-    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
+    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
     return map;
   }
 
@@ -221,14 +235,14 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     map.put(VERSION, ver + "." + myCount);
     map.put(IS_LATEST_VERSION, String.valueOf(isLatest));
     map.put(IS_ABSOLUTE_LATEST_VERSION, String.valueOf(isLatest));
-    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
+    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
     NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
     myFeed.add(e);
     return e;
   }
 
   protected NuGetIndexEntry addMockPackage(@NotNull final Map<String, String> attributes) {
-    attributes.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, "/downlaodREpoCon/downlaod-url");
+    attributes.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
 
     final String id = attributes.get(ID);
     final String ver = attributes.get(VERSION);
@@ -244,6 +258,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
     map.put(ID, id);
     map.put(VERSION, ver);
+    map.put(NORMALIZED_VERSION, VersionUtility.normalizeVersion(ver));
 
     map.remove(IS_LATEST_VERSION);
     map.remove(IS_ABSOLUTE_LATEST_VERSION);
