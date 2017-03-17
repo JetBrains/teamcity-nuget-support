@@ -25,6 +25,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourCachedNuGetExe_3_3 = PathSearcher.SearchFile("packages/NuGet.CommandLine.3.3.0/tools/NuGet.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_3_4 = PathSearcher.SearchFile("packages/NuGet.CommandLine.3.4.4-rtm-final/tools/NuGet.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_3_5 = PathSearcher.SearchFile("packages/NuGet.CommandLine.3.5.0-rtm-1938/tools/NuGet.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_4_0 = PathSearcher.SearchFile("packages/NuGet.CommandLine.4.0.0-rtm-2283/tools/NuGet.exe");
     private static readonly Lazy<string> ourCachedNuGetRunnerPath = PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
@@ -62,6 +63,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string NuGetExe_3_3 { get { return ourCachedNuGetExe_3_3.Value; } }
     public static string NuGetExe_3_4 { get { return ourCachedNuGetExe_3_4.Value; } }
     public static string NuGetExe_3_5 { get { return ourCachedNuGetExe_3_5.Value; } }
+    public static string NuGetExe_4_0 { get { return ourCachedNuGetExe_4_0.Value; } }
     public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
 
     public static string GetNuGetExe(NuGetVersion version)
@@ -100,6 +102,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return NuGetExe_3_4;
         case NuGetVersion.NuGet_3_5:
           return NuGetExe_3_5;
+        case NuGetVersion.NuGet_4_0:
+          return NuGetExe_4_0;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
           return ourCachedNuGet_CommandLinePackage_Last.Value;
         default:
@@ -170,6 +174,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     NuGet_3_3 = 17,
     NuGet_3_4 = 18,
     NuGet_3_5 = 19,
+    NuGet_4_0 = 20,
 
 
     NuGet_CommandLine_Package_Latest = 999

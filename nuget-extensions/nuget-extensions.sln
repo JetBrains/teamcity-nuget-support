@@ -45,6 +45,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{1BB29E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-3.5", "nuget-commands-3.5\nuget-commands-3.5.csproj", "{C3DBAD2C-30D3-4352-B17C-86B63F895D19}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nuget-commands-4.0", "nuget-commands-4.0\nuget-commands-4.0.csproj", "{31B69FFC-D4FD-45BF-999D-38411B9A51FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -223,6 +225,18 @@ Global
 		{C3DBAD2C-30D3-4352-B17C-86B63F895D19}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C3DBAD2C-30D3-4352-B17C-86B63F895D19}.Release|x86.ActiveCfg = Release|Any CPU
 		{C3DBAD2C-30D3-4352-B17C-86B63F895D19}.Release|x86.Build.0 = Release|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Debug|x86.Build.0 = Debug|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Release|x86.ActiveCfg = Release|Any CPU
+		{31B69FFC-D4FD-45BF-999D-38411B9A51FB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
