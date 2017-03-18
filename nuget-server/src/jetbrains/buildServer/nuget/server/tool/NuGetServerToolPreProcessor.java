@@ -114,7 +114,7 @@ public class NuGetServerToolPreProcessor extends ServerToolPreProcessorAdapter {
     final String defaultNuGetVersion = defaultNuGetToolIdNormalized.substring(NUGET_TOOL_ID_PREFIX.length());
     LOG.debug("Default NuGet tool version resolved is " + defaultNuGetVersion);
 
-    myDefaultToolVersions.setDefaultVersion(new SimpleToolVersion(nugetToolType, defaultNuGetVersion, defaultNuGetToolIdNormalized), rootProject);
+    myDefaultToolVersions.setDefaultVersion(new SimpleInstalledToolVersion(new SimpleToolVersion(nugetToolType, defaultNuGetVersion, defaultNuGetToolIdNormalized), null, null, null), rootProject);
     LOG.debug("Succesfully restore NuGet default version " + defaultNuGetVersion);
   }
 
