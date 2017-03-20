@@ -250,7 +250,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     System.out.println(result.getStdout());
     System.out.println(result.getStderr());
 
-    Assert.assertEquals(0, result.getExitCode());
+    Assert.assertEquals(0, result.getExitCode(), result.getStderr());
 
     File pkg = new File(root, "jonnyzzz.nuget.teamcity.testPackage." + build + ".nupkg");
     Assert.assertTrue(pkg.isFile());

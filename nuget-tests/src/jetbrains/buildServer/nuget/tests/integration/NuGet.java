@@ -17,6 +17,8 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
+import jetbrains.buildServer.nuget.server.version.SemanticVersion;
+import jetbrains.buildServer.nuget.server.version.Version;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -88,11 +90,13 @@ public enum NuGet {
     }
   }
 
-  public void makeOutputVerbose(GeneralCommandLine cmd){
-    if(this.major >= 2 && this.minor > 0){
+  private static final Version VERBOSITY_VERSION = new Version(2, 0, 0);
+
+  public void makeOutputVerbose(GeneralCommandLine cmd) {
+    if (VERBOSITY_VERSION.compareTo(new Version(this.major, this.minor, 0)) < 0) {
       cmd.addParameter("-Verbosity");
       cmd.addParameter("detailed");
-    } else{
+    } else {
       cmd.addParameter("-Verbose");
     }
   }
