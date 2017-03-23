@@ -95,7 +95,9 @@ public class RequestWrapper extends HttpServletRequestWrapper {
 
   @Override
   public int getServerPort() {
-    return WebUtil.getServerPort(myRequest);
+    final int serverPort = WebUtil.getServerPort(myRequest);
+    final int defaultPort = WebUtil.getDefaultPort(getScheme());
+    return serverPort == defaultPort ? -1 : serverPort;
   }
 
   @Override
