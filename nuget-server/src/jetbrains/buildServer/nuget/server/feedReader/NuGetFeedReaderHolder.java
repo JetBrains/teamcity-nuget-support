@@ -18,11 +18,11 @@ package jetbrains.buildServer.nuget.server.feedReader;
 
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
-import jetbrains.buildServer.nuget.feedReader.NuGetFeedReaderImpl;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackage;
 import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedGetMethodFactory;
 import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedUrlResolver;
 import jetbrains.buildServer.nuget.feedReader.impl.NuGetPackagesFeedParser;
+import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedReaderImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
