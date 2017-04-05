@@ -28,6 +28,7 @@ import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
 import jetbrains.buildServer.serverSide.RunningBuildEx;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
@@ -62,6 +63,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
   private static final String INVALID_TOKEN_VALUE = "Invalid token value";
   private static final String INVALID_PACKAGE_CONTENTS = "Invalid NuGet package contents";
   private static final String ARTIFACT_PUBLISHING_FAILED = "[Artifacts publishing failed]";
+  private static final String DEFAULT_PATH_FORMAT = ".teamcity/nuget/packages/{0}/{1}/{0}.{1}.nupkg";
   private final RunningBuildsCollection myRunningBuilds;
   private final MetadataStorage myStorage;
   private final PackageAnalyzer myPackageAnalyzer;
@@ -231,7 +233,13 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       throw new PackageExistsException(String.format("NuGet package %s:%s already exists in the feed", id, version));
     }
 
-    final String path = MessageFormat.format(".teamcity/nuget/packages/{0}/{1}/{0}.{1}.nupkg", id, version);
+    String path;
+    try {
+      path = MessageFormat.format(getPathFormat(build), id, version);
+    } catch (IllegalArgumentException e) {
+      path = MessageFormat.format(DEFAULT_PATH_FORMAT, id, version);
+    }
+
     metadata.put(PACKAGE_SIZE, String.valueOf(file.getSize()));
     metadata.put(TEAMCITY_ARTIFACT_RELPATH, path);
     metadata.put(TEAMCITY_BUILD_TYPE_ID, build.getBuildTypeId());
@@ -271,5 +279,15 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     }
 
     myCacheReset.resetCache();
+  }
+
+  @NotNull
+  private static String getPathFormat(RunningBuildEx build) {
+    final String pathParameter = build.getBuildOwnParameters().get(NuGetFeedConstants.PROP_NUGET_FEED_PUBLISH_PATH);
+    if (StringUtil.isEmptyOrSpaces(pathParameter)) {
+      return TeamCityProperties.getProperty(NuGetFeedConstants.PROP_NUGET_FEED_PUBLISH_PATH, DEFAULT_PATH_FORMAT).trim();
+    } else {
+      return pathParameter;
+    }
   }
 }

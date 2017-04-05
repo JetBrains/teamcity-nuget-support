@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.controllers.MockResponse;
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
@@ -325,6 +326,8 @@ public class PackageUploadHandlerTests {
       will(returnValue("type"));
       oneOf(build).getBuildId();
       will(returnValue(3641L));
+      one(build).getBuildOwnParameters();
+      will(returnValue(Collections.emptyMap()));
       oneOf(metadataStorage).getEntriesByKey(
         NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID,
         "id.1.0.0");
@@ -417,6 +420,8 @@ public class PackageUploadHandlerTests {
       will(returnValue(3641L));
       oneOf(build).isPersonal();
       will(returnValue(false));
+      one(build).getBuildOwnParameters();
+      will(returnValue(Collections.emptyMap()));
       oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
       oneOf(metadataStorage).addBuildEntry(with(any(Long.class)), with(any(String.class)),
         with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
@@ -464,6 +469,8 @@ public class PackageUploadHandlerTests {
       will(returnValue(3641L));
       oneOf(build).isPersonal();
       will(returnValue(false));
+      one(build).getBuildOwnParameters();
+      will(returnValue(Collections.emptyMap()));
       oneOf(metadataStorage).getEntriesByKey(
         NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID,
         "id.1.0.0");
@@ -514,11 +521,65 @@ public class PackageUploadHandlerTests {
       will(returnValue(3641L));
       oneOf(build).isPersonal();
       will(returnValue(false));
+      one(build).getBuildOwnParameters();
+      will(returnValue(Collections.emptyMap()));
       oneOf(metadataStorage).getEntriesByKey(
         NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID,
         "id.1.0.0");
       will(returnIterator());
       oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
+      oneOf(metadataStorage).addBuildEntry(with(any(Long.class)), with(any(String.class)),
+        with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
+      oneOf(cacheReset).resetCache();
+    }});
+
+    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
+      packageAnalyzer, cacheReset);
+    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+    ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+    request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setBody(REQUEST_BODY.getBytes());
+
+    handler.handleRequest(request, response);
+
+    m.assertIsSatisfied();
+  }
+
+  public void testUploadValidPackageAtCustomPath() throws Exception {
+    Mockery m = new Mockery();
+    RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
+    RunningBuildEx build = m.mock(RunningBuildEx.class);
+    MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
+    PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
+    ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
+    Map<String, String> metadata = CollectionsUtil.asMap(
+      NuGetPackageAttributes.ID, "Id",
+      NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
+
+    m.checking(new Expectations() {{
+      oneOf(runningBuilds).findRunningBuildById(3641L);
+      will(returnValue(build));
+      one(build).getArtifactsLimit();
+      will(returnValue(ArtifactsUploadLimit.UNLIMITED));
+      oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
+      will(returnValue(metadata));
+      oneOf(packageAnalyzer).getSha512Hash(with(any(InputStream.class)));
+      will(returnValue("hash"));
+      oneOf(build).getBuildTypeId();
+      will(returnValue("type"));
+      oneOf(build).getBuildId();
+      will(returnValue(3641L));
+      oneOf(build).isPersonal();
+      will(returnValue(false));
+      one(build).getBuildOwnParameters();
+      will(returnValue(CollectionsUtil.asMap(NuGetFeedConstants.PROP_NUGET_FEED_PUBLISH_PATH, "{0}.{1}.nupkg")));
+      oneOf(metadataStorage).getEntriesByKey(
+        NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID,
+        "id.1.0.0");
+      will(returnIterator());
+      oneOf(build).publishArtifact(with(equal("Id.1.0.0.nupkg")), with(any(InputStream.class)));
       oneOf(metadataStorage).addBuildEntry(with(any(Long.class)), with(any(String.class)),
         with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
       oneOf(cacheReset).resetCache();
