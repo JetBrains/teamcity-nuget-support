@@ -237,6 +237,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     try {
       path = MessageFormat.format(getPathFormat(build), id, version);
     } catch (IllegalArgumentException e) {
+      LOG.warn(String.format("Invalid '%s' parameter value: %s", NuGetFeedConstants.PROP_NUGET_FEED_PUBLISH_PATH, e.getMessage()));
       path = MessageFormat.format(DEFAULT_PATH_FORMAT, id, version);
     }
 
