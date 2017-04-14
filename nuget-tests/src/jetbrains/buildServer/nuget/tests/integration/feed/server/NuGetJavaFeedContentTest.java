@@ -263,6 +263,19 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     assertContainsPackageVersion(response, "1.0." + NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE);
   }
 
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  @TestFor(issues = "TW-49634")
+  public void testPsGetRequests(final NugetFeedLibrary library) {
+    setODataSerializer(library);
+    String[] reqs = {
+      "Packages()?$filter=tolower(Id)+eq+%27packagename%27&$orderby=Id",
+    };
+
+    for (String req : reqs) {
+      assert200(req).run();
+    }
+  }
+
   private String replaceXml(@NotNull final String text) {
     return text
             .replace("http://nuget.org/api/v2/", "BASE_URI/")

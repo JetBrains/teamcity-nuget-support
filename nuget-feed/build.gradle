@@ -6,6 +6,10 @@ teamcity {
     version = teamcityVersion
 }
 
+ext {
+    olingoVersion = '2.0.9-SNAPSHOT'
+}
+
 dependencies {
     compile 'org.core4j:core4j:0.5'
     compile 'org.odata4j:odata4j-core:0.8.0-SNAPSHOT'
@@ -15,9 +19,9 @@ dependencies {
     compile 'com.sun.jersey:jersey-core:1.11'
     compile 'com.sun.jersey:jersey-server:1.11'
     compile 'com.sun.jersey:jersey-servlet:1.11'
-    compile 'org.apache.olingo:olingo-odata2-api:2.0.8-SNAPSHOT'
-    compile 'org.apache.olingo:olingo-odata2-api-annotation:2.0.8'
-    compile 'org.apache.olingo:olingo-odata2-core:2.0.8-SNAPSHOT'
+    compile "org.apache.olingo:olingo-odata2-api:$olingoVersion"
+    compile "org.apache.olingo:olingo-odata2-api-annotation:$olingoVersion"
+    compile files("$rootDir/local-repo/org/apache/olingo/olingo-odata2-core/$olingoVersion/olingo-odata2-core-${olingoVersion}.jar")
     provided project(':nuget-common')
     provided project(':nuget-server-common')
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
