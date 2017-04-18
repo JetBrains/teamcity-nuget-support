@@ -43,7 +43,7 @@ public class SystemInfoImpl implements SystemInfo {
   }
 
   public boolean canStartNuGetProcesses() {
-    return (isWindows() && isDotNetFrameworkAvailable()) || !isWindows();
+    return isWindows() && isDotNetFrameworkAvailable(); //TODO check if mono installed
   }
 
   public boolean isWindows() {
