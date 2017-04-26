@@ -20,6 +20,7 @@ import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageBuilder;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackageTransformation;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -42,7 +43,9 @@ public class DownloadUrlComputationTransformation implements PackageTransformati
     if (buildTypeExternalId == null) return Status.SKIP;
 
     while (relPath.startsWith("/")) relPath = relPath.substring(1);
-    final String downloadUrl = myServerSettings.getNuGetFeedControllerPath() + "/download/" + buildTypeExternalId + "/" + builder.getBuildId() + ":id/" + relPath;
+    relPath = StringUtil.replace(relPath, "+", "%2B");
+    final String downloadUrl = myServerSettings.getNuGetFeedControllerPath() +
+      "/download/" + buildTypeExternalId + "/" + builder.getBuildId() + ":id/" + relPath;
     builder.setDownloadUrl(downloadUrl);
     return Status.CONTINUE;
   }

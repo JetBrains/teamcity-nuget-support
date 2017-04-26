@@ -350,6 +350,27 @@ public class PackageIndexTest extends BaseTestCase {
     m.assertIsSatisfied();
   }
 
+  @Test
+  @TestFor(issues = "TW-49724")
+  public void test_download_url_escaping() {
+    allowView();
+
+    m.checking(new Expectations() {{
+      allowing(myStorage).getBuildEntry(1, "nuget");
+      will(returnIterator(myEntries));
+    }});
+
+    String downloadUrl = "/path/foo.1.0.0-master+d277eaf.nupkg";
+    addEntry("foo", "1.0.0-master+d277eaf", "btX", 1, CollectionsUtil.asMap(
+      PackagesIndex.TEAMCITY_ARTIFACT_RELPATH, downloadUrl
+    ));
+
+    List<NuGetIndexEntry> entries = myIndex.getForBuild(1);
+
+    assertEquals(1, entries.size());
+    assertTrue(entries.get(0).getPackageDownloadUrl().endsWith(downloadUrl.replace("+", "%2B")));
+  }
+
   private void addEntry(final String packageId, final String packageVersion, final String buildTypeId, final long buildId){
     addEntry(packageId, packageVersion, buildTypeId, buildId, Maps.newHashMap());
   }
@@ -367,7 +388,9 @@ public class PackageIndexTest extends BaseTestCase {
     }});
 
     entryData.put("teamcity.buildTypeId", buildTypeId);
-    entryData.put("teamcity.artifactPath", "btX/ZZZ");
+    if (!entryData.containsKey(PackagesIndex.TEAMCITY_ARTIFACT_RELPATH)) {
+      entryData.put("teamcity.artifactPath", "btX/ZZZ");
+    }
     entryData.put(VERSION, packageVersion);
     entryData.put(ID, packageId);
     SemanticVersion version = SemanticVersion.valueOf(packageVersion);
