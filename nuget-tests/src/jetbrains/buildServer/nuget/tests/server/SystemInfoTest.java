@@ -78,6 +78,10 @@ public class SystemInfoTest extends BaseTestCase {
 
   @Test
   public void testWindowsDetected() {
+    if(!com.intellij.openapi.util.SystemInfo.isWindows) {
+      return;
+    }
+
     Assert.assertTrue(myInfo.canStartNuGetProcesses());
   }
 }
