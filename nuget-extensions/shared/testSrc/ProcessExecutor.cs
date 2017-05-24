@@ -1,8 +1,6 @@
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
-using System.Threading;
 using NUnit.Framework;
 using System.Linq;
 
@@ -13,42 +11,38 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static Result ExecuteProcess(string exe, params string[] args)
     {
       var pi = new ProcessStartInfo
-                 {
-                   FileName = exe,
-                   Arguments = string.Join(" ", args.Select(x=>x.Contains(' ') ? "\"" + x + "\"" : x)),
-                   RedirectStandardError = true,
-                   RedirectStandardOutput = true,
-                   RedirectStandardInput = true,
-                   UseShellExecute = false,
-                   CreateNoWindow = true,
-                 };
+               {
+                 FileName = exe,
+                 Arguments = string.Join(" ", args.Select(x => x.Contains(' ') ? "\"" + x + "\"" : x)),
+                 RedirectStandardError = true,
+                 RedirectStandardOutput = true,
+                 RedirectStandardInput = true,
+                 UseShellExecute = false,
+                 CreateNoWindow = true,
+               };
 
       Console.Out.WriteLine("Starting: " + pi.FileName + " " + pi.Arguments);
 
-      var process = Process.Start(pi);
-      process.StandardInput.Close();
-      Func<StreamReader, string> readOutput = stream =>
-                                                {
-                                                  var result = "";
-                                                  var th = new Thread(delegate()
-                                                                        {
-                                                                          var sb = new StringBuilder();
-                                                                          int i;
-                                                                          while ((i = stream.Read()) >= 0)
-                                                                            sb.Append((char) i);
-                                                                          result = sb.ToString();
-                                                                        })
-                                                             {Name = "Process output reader " + process.Id};
-                                                  th.Start();
-                                                  th.Join(TimeSpan.FromMinutes(10));
-                                                  return result;
-                                                };
+      var process = new Process { StartInfo = pi };
 
-      string output = readOutput(process.StandardOutput);
-      string error = readOutput(process.StandardError);
-      process.WaitForExit();
+      var errorDataBuilder = new StringBuilder();
+      process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
+                                   {
+                                     errorDataBuilder.Append(e.Data);
+                                   };
 
-      return new Result(output, error, process.ExitCode);
+      var outputDataBuilder = new StringBuilder();
+      process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
+                                    {
+                                      outputDataBuilder.Append(e.Data);
+                                    };
+
+      process.Start();
+      process.BeginOutputReadLine();
+      process.BeginErrorReadLine();
+      process.WaitForExit(30000);
+
+      return new Result(outputDataBuilder.ToString(), errorDataBuilder.ToString(), process.ExitCode);
     }
 
     public class Result
