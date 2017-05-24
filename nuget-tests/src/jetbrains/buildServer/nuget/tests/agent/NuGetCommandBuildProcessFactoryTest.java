@@ -16,12 +16,15 @@
 
 package jetbrains.buildServer.nuget.tests.agent;
 
+import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.dotNet.DotNetConstants;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactoryImpl;
 import jetbrains.buildServer.runner.SimpleRunnerConstants;
+import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.annotations.BeforeMethod;
@@ -30,12 +33,15 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 08.12.11 15:34
  */
 public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
+  private static String OurMonoPath = "/usr/bin/mono-sgen";
   private Mockery m;
   private BuildProcessFacade myFacade;
   private AgentRunningBuild myBuild;
@@ -59,6 +65,10 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
     myProcess = m.mock(BuildProcess.class);
     myLogger = m.mock(BuildProgressLogger.class);
     myFactory = new NuGetCommandBuildProcessFactoryImpl(myFacade);
+    Map<String, String> configParameters = new HashMap<String, String>();
+    if(!SystemInfo.isWindows) {
+      configParameters.put(DotNetConstants.MONO_JIT, OurMonoPath);
+    }
 
     m.checking(new Expectations(){{
       oneOf(myFacade).createBuildRunnerContext(myBuild, SimpleRunnerConstants.TYPE, myWorkDir.getPath(), myRootContext);
@@ -66,6 +76,7 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
 
       allowing(myRootContext).getBuild(); will(returnValue(myBuild));
       allowing(mySubContext).getBuild(); will(returnValue(myBuild));
+      allowing(mySubContext).getConfigParameters(); will(returnValue(configParameters));
 
       allowing(myBuild).getBuildLogger(); will(returnValue(myLogger));
       allowing(myLogger).message(with(any(String.class)));
@@ -78,9 +89,8 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testSupportQuotes() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "\" foo \"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, createScript("program \" foo \""));
     }});
 
     myFactory.executeCommandLine(myRootContext, "program", Arrays.asList("\"", "foo", "\""), myWorkDir, Collections.<String, String>emptyMap());
@@ -91,9 +101,8 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testSupportQuotes2() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "\" \" foo\" \"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, createScript("program \" \" foo\" \""));
     }});
 
     myFactory.executeCommandLine(myRootContext, "program", Arrays.asList("\"", "\" foo\"", "\""), myWorkDir, Collections.<String, String>emptyMap());
@@ -104,9 +113,8 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testQuoteArguments() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "\" \"f o o\" \"z e\" \"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, createScript("program \" \"f o o\" \"z e\" \""));
     }});
 
     myFactory.executeCommandLine(myRootContext, "program", Arrays.asList("\"", "f o o", "z e", "\""), myWorkDir, Collections.<String, String>emptyMap());
@@ -117,8 +125,8 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testSupportEnv() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "program");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, createScript("program"));
       oneOf(mySubContext).addEnvironmentVariable("a", "b");
     }});
 
@@ -130,8 +138,8 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testQuoteCommand() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "\"p r o g r a m\"");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, createScript("\"p r o g r a m\""));
       oneOf(mySubContext).addEnvironmentVariable("a", "b");
     }});
 
@@ -143,9 +151,8 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testQuoteCommandArgs() throws RunBuildException {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "\"p r o g r a m\"");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "a \"b c d e\" f");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, createScript("\"p r o g r a m\" a \"b c d e\" f"));
       oneOf(mySubContext).addEnvironmentVariable("a", "b");
     }});
 
@@ -157,13 +164,21 @@ public class NuGetCommandBuildProcessFactoryTest extends BaseTestCase {
   @Test
   public void testNuGetCmdOptions() throws Exception {
     m.checking(new Expectations(){{
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, "nuget");
-      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, "-Verbosity normal");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+      oneOf(mySubContext).addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, createScript("nuget -Verbosity normal"));
     }});
 
-    myFactory.executeCommandLine(myRootContext, "nuget", Collections.singletonList("-Verbosity normal"), myWorkDir, Collections.<String, String>emptyMap());
+    myFactory.executeCommandLine(myRootContext, "nuget", Arrays.asList("-Verbosity normal"), myWorkDir, Collections.<String, String>emptyMap());
 
     m.assertIsSatisfied();
+  }
+
+  private String createScript(@NotNull final String baseCommandLine)
+  {
+    if(!SystemInfo.isWindows) {
+      return OurMonoPath + " " + baseCommandLine;
+    }
+
+    return baseCommandLine;
   }
 }
