@@ -16,18 +16,22 @@
 
 package jetbrains.buildServer.nuget.agent.util.impl;
 
-import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.BuildProcessFacade;
 import jetbrains.buildServer.agent.BuildRunnerContext;
+import jetbrains.buildServer.dotNet.DotNetConstants;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.runner.SimpleRunnerConstants;
-import jetbrains.buildServer.util.StringUtils;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -39,7 +43,8 @@ public class NuGetCommandBuildProcessFactoryImpl implements CommandlineBuildProc
 
   private final BuildProcessFacade myFacade;
 
-  public NuGetCommandBuildProcessFactoryImpl(@NotNull final BuildProcessFacade facade) {
+  public NuGetCommandBuildProcessFactoryImpl(
+    @NotNull final BuildProcessFacade facade) {
     myFacade = facade;
   }
 
@@ -60,14 +65,23 @@ public class NuGetCommandBuildProcessFactoryImpl implements CommandlineBuildProc
       context.addEnvironmentVariable(entry.getKey(), entry.getValue());
     }
 
-    final String executable = joinCommandLineArguments(Collections.singletonList(program));
-    final String args = joinCommandLineArguments(new ArrayList<String>(argz));
-    hostContext.getBuild().getBuildLogger().message("NuGet command: " + executable + " " + args);
-    context.addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "false");
-    context.addRunnerParameter(SimpleRunnerConstants.COMMAND_EXECUTABLE, executable);
-    if (!StringUtil.isEmptyOrSpaces(args)) {
-      context.addRunnerParameter(SimpleRunnerConstants.COMMAND_PARAMETERS, args);
+    final List<String> newArgz = new ArrayList<String>();
+    if(!SystemInfo.isWindows) {
+      String mono = context.getConfigParameters().get(DotNetConstants.MONO_JIT);
+      if(!StringUtil.isEmptyOrSpaces(mono)) {
+        newArgz.add(mono);
+      }
     }
+
+    newArgz.add(program);
+    newArgz.addAll(argz);
+
+    final String commandLine = joinCommandLineArguments(newArgz);
+
+    hostContext.getBuild().getBuildLogger().message("NuGet command: " + commandLine);
+
+    context.addRunnerParameter(SimpleRunnerConstants.USE_CUSTOM_SCRIPT, "true");
+    context.addRunnerParameter(SimpleRunnerConstants.SCRIPT_CONTENT, commandLine);
 
     return myFacade.createExecutable(hostContext.getBuild(), context);
   }
