@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A1BABC58-91BC-46F6-B45F-604D8DAA0327}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JetBrains.TeamCity.NuGet.ExtendedCommands</RootNamespace>
+    <AssemblyName>JetBrains.TeamCity.NuGet.ExtendedCommands.2.0</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\plugins-2.0\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NUGET_2_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\plugins-2.0\</OutputPath>
+    <DefineConstants>TRACE;NUGET_2_0</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NuGet">
+      <HintPath>..\packages\NuGet.CommandLine.2.0.40001\tools\NuGet.exe</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\nuget-commands\src\AssemblyResolver.cs">
+      <Link>src\Shared\AssemblyResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\CommandBase.cs">
+      <Link>src\Shared\CommandBase.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\NuGetPackage.cs">
+      <Link>src\Shared\Data\NuGetPackage.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\NuGetPackageEntry.cs">
+      <Link>src\Shared\Data\NuGetPackageEntry.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\NuGetPackages.cs">
+      <Link>src\Shared\Data\NuGetPackages.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\NuGetSource.cs">
+      <Link>src\Shared\Data\NuGetSource.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\NuGetSources.cs">
+      <Link>src\Shared\Data\NuGetSources.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\INuGetPackage.cs">
+      <Link>src\Shared\Data\INuGetPackage.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\INuGetPackages.cs">
+      <Link>src\Shared\Data\INuGetPackages.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\INuGetSource.cs">
+      <Link>src\Shared\Data\INuGetSource.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\INuGetSources.cs">
+      <Link>src\Shared\Data\INuGetSources.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\InvalidFeedUrlException.cs">
+      <Link>src\Shared\InvalidFeedUrlException.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\ListCommandBase.cs">
+      <Link>src\Shared\ListCommandBase.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\NuGetTeamCityListPackagesCommand.cs">
+      <Link>src\Shared\NuGetTeamCityListPackagesCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\XmlSerializerHelper.cs">
+      <Link>src\Shared\XmlSerializerHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\NuGetTeamCityPingCommand.cs">
+      <Link>src\Shared\NuGetTeamCityPingCommand.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\NuGetTeamCityInfo.cs">
+      <Link>src\Shared\NuGetTeamCityInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\PackageExtensions2.cs">
+      <Link>src\Shared\PackageExtensions2.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\PackageFetchOption.cs">
+      <Link>src\Shared\PackageFetchOption.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\QueryBuilder.cs">
+      <Link>src\Shared\QueryBuilder.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\CredentialsSetter.cs">
+      <Link>src\Shared\CredentialsSetter.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\CustomHandlers.cs">
+      <Link>src\Shared\CustomHandlers.cs</Link>
+    </Compile>
+    <Compile Include="..\shared\src\Annotations.cs">
+      <Link>src\Shared\Shared\Annotations.cs</Link>
+    </Compile>
+    <Compile Include="..\shared\src\AssemblyHelper.cs">
+      <Link>src\Shared\Shared\AssemblyHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\shared\src\DisposableDelegate.cs">
+      <Link>src\Shared\Shared\DisposableDelegate.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src.2.0\CredentialsSetter.cs">
+      <Link>src\Shared.2.0\CredentialsSetter.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src.2.0\ListCommandBase.cs">
+      <Link>src\Shared.2.0\ListCommandBase.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src.2.0\TeamCityMultipleCredentialProvider.cs">
+      <Link>src\Shared.2.0\TeamCityMultipleCredentialProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src.2.0\TeamCitySingleCredentialProvider.cs">
+      <Link>src\Shared.2.0\TeamCitySingleCredentialProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src.2.0\CredentialsProviderUpdater.cs">
+      <Link>src\Shared.2.0\CredentialsProviderUpdater.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\CredentialsProviderUpdater.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

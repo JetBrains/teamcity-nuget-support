@@ -1,0 +1,12 @@
+plugins {
+    id 'com.github.rodm.teamcity-server' version '0.11'
+}
+
+teamcity {
+    version = teamcityVersion
+}
+
+dependencies {
+    compile 'commons-lang:commons-lang:2.6'
+    provided 'com.google.guava:guava:13.0.1'
+}

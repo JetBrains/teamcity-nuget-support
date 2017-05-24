@@ -1,0 +1,3 @@
+rootProject.name='teamcity-nuget-support'
+
+include 'nuget-agent', 'nuget-common', 'nuget-extensions', 'nuget-feed', 'nuget-server', 'nuget-server-common', 'nuget-tests'

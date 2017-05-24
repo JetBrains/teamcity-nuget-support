@@ -1,0 +1,16 @@
+plugins {
+    id 'com.github.rodm.teamcity-common' version '0.11'
+}
+
+teamcity {
+    version = teamcityVersion
+}
+
+dependencies {
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
+}
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = "1.6"
+    targetCompatibility = "1.6"
+}

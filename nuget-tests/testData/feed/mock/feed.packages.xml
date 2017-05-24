@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+      xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+      xml:base="http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/">
+  <title type="text">Packages</title>
+  <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages()</id>
+  <updated>2012-06-25T11:06:36Z</updated>
+  <link rel="self" title="Packages" href="Packages"/>
+  <entry>
+    <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages(Id=&apos;TestUtils&apos;,Version=&apos;1.0.189&apos;)</id>
+    <title type="text">TestUtils</title>
+    <summary type="text">Test utils for Fine Collections library</summary>
+    <updated>2012-06-20T19:09:48Z</updated>
+    <author>
+      <name>Leonid Bushuev</name>
+    </author>
+    <link rel="edit" title="V2FeedPackage" href="Packages(Id=&apos;TestUtils&apos;,Version=&apos;1.0.189&apos;)"/>
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+    <content type="application/zip"
+             src="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/TestUtils.1.0.189.nupkg"/>
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+                  xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:ProjectUrl>http://code.google.com/p/fine-collection</d:ProjectUrl>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">true</d:IsAbsoluteLatestVersion>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:Authors>Leonid Bushuev</d:Authors>
+      <d:Created m:type="Edm.DateTime">2012-06-20T19:09:48.823</d:Created>
+      <d:LicenseUrl m:null="true"/>
+      <d:Copyright m:null="true"/>
+      <d:Version>1.0.189</d:Version>
+      <d:ReportAbuseUrl m:null="true"/>
+      <d:VersionDownloadCount m:type="Edm.Int32">42</d:VersionDownloadCount>
+      <d:Description>Test utils for Fine Collections library</d:Description>
+      <d:LastUpdated m:type="Edm.DateTime">2012-06-20T19:09:48.823</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2012-06-20T19:09:48.823</d:Published>
+      <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+      <d:IconUrl m:null="true"/>
+      <d:PackageHash>n9LZpkmtzUKPue4bzjHtZH2nhwHGlendO1oigqUW33DbsqVyEX+qdjhCNEppt/pzbjJbhBHMeDiyIdonLesSlQ==
+      </d:PackageHash>
+      <d:Dependencies m:null="true"/>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Title>TestUtils</d:Title>
+      <d:Summary>Test utils for Fine Collections library</d:Summary>
+      <d:Tags>test extension</d:Tags>
+      <d:GalleryDetailsUrl>http://code.google.com/p/fine-collection</d:GalleryDetailsUrl>
+      <d:DownloadCount m:type="Edm.Int32">42</d:DownloadCount>
+      <d:PackageSize m:type="Edm.Int64">9638</d:PackageSize>
+      <d:AtomEntityType>application/zip</d:AtomEntityType>
+      <d:Language m:null="true"/>
+      <d:Id>TestUtils</d:Id>
+      <d:ReleaseNotes m:null="true"/>
+    </m:properties>
+  </entry>
+  <entry>
+    <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages(Id=&apos;FineCollection&apos;,Version=&apos;1.0.189&apos;)</id>
+    <title type="text">FineCollection</title>
+    <summary type="text">Fine Collections library</summary>
+    <updated>2012-06-20T19:09:48Z</updated>
+    <author>
+      <name>Leonid Bushuev</name>
+    </author>
+    <link rel="edit" title="V2FeedPackage"
+          href="Packages(Id=&apos;FineCollection&apos;,Version=&apos;1.0.189&apos;)"/>
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+    <content type="application/zip"
+             src="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/FineCollection.1.0.189.nupkg"/>
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+                  xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:ProjectUrl>http://code.google.com/p/fine-collection</d:ProjectUrl>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">true</d:IsAbsoluteLatestVersion>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:Authors>Leonid Bushuev</d:Authors>
+      <d:Created m:type="Edm.DateTime">2012-06-20T19:09:48.698</d:Created>
+      <d:LicenseUrl m:null="true"/>
+      <d:Copyright m:null="true"/>
+      <d:Version>1.0.189</d:Version>
+      <d:ReportAbuseUrl m:null="true"/>
+      <d:VersionDownloadCount m:type="Edm.Int32">42</d:VersionDownloadCount>
+      <d:Description>Fine Collections library</d:Description>
+      <d:LastUpdated m:type="Edm.DateTime">2012-06-20T19:09:48.698</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2012-06-20T19:09:48.698</d:Published>
+      <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+      <d:IconUrl m:null="true"/>
+      <d:PackageHash>imLE8dUokBwLh+5SfkDgiZXCFk/lFGW1az+qFhruWrboxeESHS521ElSMcJgsY+MBd9Pds/X2tIgMhEA1IE3kw==
+      </d:PackageHash>
+      <d:Dependencies m:null="true"/>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Title>FineCollection</d:Title>
+      <d:Summary>Fine Collections library</d:Summary>
+      <d:Tags>collection immutable</d:Tags>
+      <d:GalleryDetailsUrl>http://code.google.com/p/fine-collection</d:GalleryDetailsUrl>
+      <d:DownloadCount m:type="Edm.Int32">42</d:DownloadCount>
+      <d:PackageSize m:type="Edm.Int64">94809</d:PackageSize>
+      <d:AtomEntityType>application/zip</d:AtomEntityType>
+      <d:Language m:null="true"/>
+      <d:Id>FineCollection</d:Id>
+      <d:ReleaseNotes m:null="true"/>
+    </m:properties>
+  </entry>
+</feed>

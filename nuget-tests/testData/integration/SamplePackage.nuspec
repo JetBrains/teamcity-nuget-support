@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>jonnyzzz.nuget.teamcity.testPackage</id>
+    <version>1.0</version>
+    <authors>jonnyzzz-4-test</authors>
+    <owners>jonnyzzz-4-test</owners>
+    <licenseUrl>http://nuget.org/packages/jonnyzzz.nuget.teamcity.testPackage</licenseUrl>
+    <projectUrl>http://nuget.org/packages/jonnyzzz.nuget.teamcity.testPackage</projectUrl>
+    <iconUrl>http://www.gravatar.com/avatar/928231a8aca5fbbffd7ea8bc9d6dbfa2?s=32&amp;r=g&amp;d=retro</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>This is a test package for TeamCity-NuGet integration</description>
+    <tags>TaT1 TaZ2</tags>
+    <dependencies>
+      <dependency id="Elmah" version="1.2" />
+    </dependencies>
+  </metadata>
+</package>

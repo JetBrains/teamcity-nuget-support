@@ -1,0 +1,60 @@
+plugins {
+    id 'com.github.rodm.teamcity-server' version '0.11'
+}
+
+teamcity {
+    version = teamcityVersion
+
+    server {
+        descriptor = project.file('teamcity-server-plugin.xml')
+        tokens = [Plugin_Version: project.version]
+
+        files {
+            into('bin') {
+                from (project(':nuget-extensions').file('bin')) {
+                    include '**/*JetBrains*'
+                    include '**/*TeamCity*'
+                    include '**/*Newtonsoft*.dll'
+                    include '**/*PowerArgs*.dll'
+                }
+            }
+
+            into('licenses') {
+                from (project.file('../licenses'))
+            }
+        }
+    }
+
+    environments {
+        downloadsDir = project.downloadsDir
+        baseHomeDir = project.serversDir
+
+        teamcity_2017_1 {
+            version = '2017.1-SNAPSHOT'
+            downloadUrl = 'https://download.jetbrains.com/teamcity/eap/TeamCity-45965.tar.gz'
+        }
+    }
+}
+
+dependencies {
+    agent project(path: ':nuget-agent', configuration: 'plugin')
+
+    compile project(':nuget-common')
+    compile project(':nuget-feed')
+    compile project(':nuget-server-common')
+
+    provided 'com.google.code.gson:gson:2.4'
+    provided 'org.apache.httpcomponents:httpcore:4.3.3'
+    provided 'org.apache.httpcomponents:httpclient:4.3.6'
+    provided 'javax.ws.rs:javax.ws.rs-api:2.0'
+    provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-impl.jar")
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-tools.jar")
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-tools.jar")
+}
+
+serverPlugin.version = null
+serverPlugin.baseName = 'dotNetPackagesSupport'
+
+test.dependsOn(":nuget-tests:test")

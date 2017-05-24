@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSSL4MusicPlayer.Web", "CSSL4MusicPlayer\CSSL4MusicPlayer.Web\CSSL4MusicPlayer.Web.csproj", "{78A2D23A-D1A7-429C-B1E3-0ECE7F7CD5C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSSL4MusicPlayer", "CSSL4MusicPlayer\CSSL4MusicPlayer\CSSL4MusicPlayer.csproj", "{BF8C84CC-8CCC-4B6C-8C39-5511DF34313E}"
+EndProject
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF8C84CC-8CCC-4B6C-8C39-5511DF34313E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF8C84CC-8CCC-4B6C-8C39-5511DF34313E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF8C84CC-8CCC-4B6C-8C39-5511DF34313E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF8C84CC-8CCC-4B6C-8C39-5511DF34313E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78A2D23A-D1A7-429C-B1E3-0ECE7F7CD5C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78A2D23A-D1A7-429C-B1E3-0ECE7F7CD5C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78A2D23A-D1A7-429C-B1E3-0ECE7F7CD5C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78A2D23A-D1A7-429C-B1E3-0ECE7F7CD5C9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

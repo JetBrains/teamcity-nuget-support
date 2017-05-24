@@ -1,0 +1,21 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="nuget">
+  <test name="nuget integration test">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.integration.agent.PackIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.agent.InstallPackageIntegtatoinTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.NuGetExecutorTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.agent.PackagesPublishIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.ListPackagesCommandIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.agent.AuthInstallPackageIntegrationTest"/>
+    </classes>
+  </test>
+
+  <test name="nuget java feed integration">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedIntegrationTest"/>
+    </classes>
+  </test>
+
+</suite>
+

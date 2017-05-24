@@ -1,0 +1,141 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="nuget">
+  <test name="fs scanner">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.DirectoryFileFilesystemTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestAntPatternState"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestAntPatternUtil"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestDirectoryScanner"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestReadFileSystem"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.TestWildcard"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.fsScanner.DirectoryScannerMockFSTest"/>
+    </classes>
+  </test>
+
+
+  <test name="feed">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.PackageIndexTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.RequestWrapperTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.SemanticVersionTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.SemanticVersionComparisonTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.entity.MetadataLoaderTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.FeedConstantsTest"/>
+    </classes>
+  </test>
+
+  <test name="tools">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.NuGetPackageValidationUtilTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolUnpackerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.ToolIdUtilsTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableOnDistNugetOrgTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.tools.AvailableOnPackagesNugetOrgTest"/>
+    </classes>
+  </test>
+
+  <test name="settings">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.settings.NuGetSettingsManagerPersitedTest"/>
+    </classes>
+  </test>
+
+  <test name="trigger">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageSourceCheckerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.NuGetSourceCheckerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesManagerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckEntryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.CheckRequestModeFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageChangesCheckerThreadTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetBulkTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerNuGetPerPackageTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.trigger.PackageCheckerTeamCityTest"/>
+    </classes>
+  </test>
+
+  <test name="sln">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.agent.SolutionParserTest"/>
+    </classes>
+  </test>
+
+  <test name="install packages runner">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackagesScannerTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.agent.SolutionPackagesScannerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.ResourcesConfigPackagesScannerTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackageInstallerBuilderUpdateTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackageInstallerBuilderInstallTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackageInstallerBuilderReportTest"/>
+    </classes>
+  </test>
+
+  <test name="fast tests">
+    <classes>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackageSourceWriterTest" />
+      <class name="jetbrains.buildServer.nuget.tests.DotNetConstantsTest"/>
+
+      <!-- misc -->
+      <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.feed.FrameworkConstraintsCalculatorTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.feed.NuGetUtilsTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.SystemInfoTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.VersionConstraintTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.VersionUtilityTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.RunTypeNameTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetCommandBuildProcessFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackagesConfigParserTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackagesWatcherTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.LocateNuGetConfigBuildProcessTest"/>
+
+
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetInstallPackageActionFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetRestorePackageActionFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.RepositoryPathResolverTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetUpdatePackageActionFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPushActoinFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackageSourceManagerTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.common.PackageDependenciesStoreTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.util.CompositeBuildProcessTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.util.DelegatingBuildProcessTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.server.ListPackagesArgumentsTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.ListPackagesCommandTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.ListPackagesCommandProcessorTest"/>
+
+
+      <class name="jetbrains.buildServer.nuget.tests.server.NamedPackagesUpdateCheckerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.PackagesHashCalculatorTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.agent.MatchFilesBuildProcessTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPackActionFactoryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackRunnerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.PackageUsagesTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackagesInstallerRunTypeTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackagesInstallerRunnerDiscovererTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackRunTypeTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.runner.install.PackRunnerDiscovererTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.SolutionWidePackagesConfigScannerTest"/>
+
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedContentTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.SearchFunctionIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.GetUpdatesFunctionIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.FindPackagesByIdFunctionIntegrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetJavaFeedBatchTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetFeedControllerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetFeedProviderTests"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.PackageUploadHandlerTests"/>
+    </classes>
+  </test>
+</suite>
+

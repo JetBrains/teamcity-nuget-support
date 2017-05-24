@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<feed xml:base="http://nuget.org/api/v2/" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns="http://www.w3.org/2005/Atom">
+  <title type="text">Packages</title>
+  <id>http://nuget.org/api/v2/Packages</id>
+  <updated>2012-01-07T10:11:22Z</updated>
+  <link rel="self" title="Packages" href="Packages" />
+  <entry>
+    <id>http://nuget.org/api/v2/Packages(Id='CommonServiceLocator',Version='1.0')</id>
+    <title type="text">CommonServiceLocator</title>
+    <summary type="text">The Common Service Locator library contains a shared interface for service location which application and framework developers can reference. The library provides an abstraction over IoC containers and service locators. Using the library allows an application to indirectly access the capabilities without relying on hard references. The hope is that using this library, third-party applications and frameworks can begin to leverage IoC/Service Location without tying themselves down to a specific implementation.</summary>
+    <updated>2011-01-07T07:52:09Z</updated>
+    <author>
+      <name>Microsoft</name>
+    </author>
+    <link rel="edit-media" title="V2FeedPackage" href="Packages(Id='CommonServiceLocator',Version='1.0')/$value" />
+    <link rel="edit" title="V2FeedPackage" href="Packages(Id='CommonServiceLocator',Version='1.0')" />
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+    <content type="application/zip" src="http://nuget.org/api/v2/package/CommonServiceLocator/1.0" />
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Version>1.0</d:Version>
+      <d:Copyright m:null="true"></d:Copyright>
+      <d:Created m:type="Edm.DateTime">2011-01-07T07:52:09.197</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>The Common Service Locator library contains a shared interface for service location which application and framework developers can reference. The library provides an abstraction over IoC containers and service locators. Using the library allows an application to indirectly access the capabilities without relying on hard references. The hope is that using this library, third-party applications and frameworks can begin to leverage IoC/Service Location without tying themselves down to a specific implementation.</d:Description>
+      <d:DownloadCount m:type="Edm.Int32">33634</d:DownloadCount>
+      <d:GalleryDetailsUrl>http://nuget.org/packages/CommonServiceLocator/1.0</d:GalleryDetailsUrl>
+      <d:IconUrl m:null="true"></d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">true</d:IsAbsoluteLatestVersion>
+      <d:Published m:type="Edm.DateTime">2011-01-07T07:52:09.697</d:Published>
+      <d:Language m:null="true"></d:Language>
+      <d:LicenseUrl>http://commonservicelocator.codeplex.com/license</d:LicenseUrl>
+      <d:PackageHash>RJjv0yxm+Fk/ak/CVMTGr0ng7g/nudkVYos4eQrIDpth3BdE1j7J2ddRm8FXtOoIZbgDqTU6hKq5zoackwL3HQ==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">37216</d:PackageSize>
+      <d:ProjectUrl>http://commonservicelocator.codeplex.com/</d:ProjectUrl>
+      <d:ReportAbuseUrl>http://nuget.org/package/ReportAbuse/CommonServiceLocator/1.0</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"></d:ReleaseNotes>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Tags m:null="true"></d:Tags>
+      <d:Title>CommonServiceLocator</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">33634</d:VersionDownloadCount>
+    </m:properties>
+  </entry>
+</feed>

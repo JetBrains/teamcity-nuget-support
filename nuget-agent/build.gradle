@@ -1,0 +1,41 @@
+plugins {
+    id 'com.github.rodm.teamcity-agent' version '0.11'
+}
+
+teamcity {
+    version = teamcityVersion
+
+    agent {
+        descriptor {
+            pluginDeployment {
+                useSeparateClassloader = true
+            }
+        }
+
+        files {
+            into('bin') {
+                from (project(':nuget-extensions').file('bin')) {
+                    include '**/*JetBrains*'
+                    include '**/*TeamCity*'
+                    include '**/*Newtonsoft*.dll'
+                    include '**/*PowerArgs*.dll'
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    compile project(':nuget-common')
+    provided "org.jetbrains.teamcity.internal:agent:$teamcityVersion"
+    provided files("${teamcityDir}/buildAgent/lib/common-impl.jar")
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
+}
+
+agentPlugin.version = null
+agentPlugin.baseName = 'nuget-agent'
+
+tasks.withType(JavaCompile) {
+    sourceCompatibility = "1.6"
+    targetCompatibility = "1.6"
+}
