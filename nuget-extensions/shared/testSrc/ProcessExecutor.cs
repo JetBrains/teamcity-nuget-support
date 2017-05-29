@@ -28,13 +28,13 @@ namespace JetBrains.TeamCity.NuGet.Tests
       var errorDataBuilder = new StringBuilder();
       process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
                                    {
-                                     errorDataBuilder.Append(e.Data);
+                                     errorDataBuilder.AppendLine(e.Data);
                                    };
       
       var outputDataBuilder = new StringBuilder();
       process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
                                     {
-                                      outputDataBuilder.Append(e.Data);
+                                      outputDataBuilder.AppendLine(e.Data);
                                     };
       
       process.Start();
