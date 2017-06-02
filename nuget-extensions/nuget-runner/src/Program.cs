@@ -7,6 +7,9 @@ namespace JetBrains.TeamCity.NuGetRunner
 {
   public class Program
   {
+    private static readonly Version NuGet35Version = new Version(3, 5);
+    private static readonly string NugetPackagesPath = "NUGET_PACKAGES";
+
     static int Main(string[] args)
     {
       try
@@ -29,6 +32,7 @@ namespace JetBrains.TeamCity.NuGetRunner
       string nuget = args[0];
       var runner = new NuGetRunner(nuget);
       ConfigureExtensions(runner);
+      CheckEnvironment(runner);
 
       Console.Out.WriteLine("Starting NuGet.exe {1} from {0}", runner.NuGetAssembly.GetAssemblyPath(),
         runner.NuGetVersion);
@@ -107,6 +111,38 @@ namespace JetBrains.TeamCity.NuGetRunner
       else
       {
         yield return path("1.4");
+      }
+    }
+
+    private static void CheckEnvironment(NuGetRunner runner)
+    {
+      // Workaround for issue https://github.com/NuGet/Home/issues/4277
+      if (runner.NuGetVersion < NuGet35Version || !IsSystemAccount())
+      {
+        return;
+      }
+
+      var packagesPath = Environment.GetEnvironmentVariable(NugetPackagesPath);
+      if (string.IsNullOrEmpty(packagesPath))
+      {
+        var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (string.IsNullOrEmpty(userProfile))
+        {
+          return;
+        }
+
+        packagesPath = Path.Combine(userProfile, ".nuget", "packages");
+      }
+
+      Console.Out.WriteLine("Setting '{0}' environment variable to '{1}'", NugetPackagesPath, packagesPath);
+      runner.AddEnvironmentVariable(NugetPackagesPath, packagesPath);
+    }
+
+    private static bool IsSystemAccount()
+    {
+      using (var identity = System.Security.Principal.WindowsIdentity.GetCurrent())
+      {
+        return identity.IsSystem;
       }
     }
 
