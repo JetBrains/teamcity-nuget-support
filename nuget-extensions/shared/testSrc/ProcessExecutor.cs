@@ -40,9 +40,14 @@ namespace JetBrains.TeamCity.NuGet.Tests
       process.Start();
       process.BeginOutputReadLine();
       process.BeginErrorReadLine();
-      process.WaitForExit(30000);
 
-      return new Result(outputDataBuilder.ToString(), errorDataBuilder.ToString(), process.ExitCode);
+      var exitCode = 1;
+      if (process.WaitForExit(60000))
+      {
+        exitCode = process.ExitCode;
+      }
+
+      return new Result(outputDataBuilder.ToString(), errorDataBuilder.ToString(), exitCode);
     }
 
     public class Result
