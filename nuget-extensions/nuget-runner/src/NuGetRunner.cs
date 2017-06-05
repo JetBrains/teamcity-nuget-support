@@ -82,11 +82,12 @@ namespace JetBrains.TeamCity.NuGetRunner
                                    CreateNoWindow = true,                                        
                                  };
         foreach (var e in myEnv)
-        {          
+        {
+          if (pi.EnvironmentVariables.ContainsKey(e.Key)) continue;
           pi.EnvironmentVariables.Add(e.Key, e.Value);
         }
+
         var process = Process.Start(pi);
-        
 
         process.StandardInput.Close();
         Func<StreamReader, TextWriter, Thread> readOutput = (si, so) =>

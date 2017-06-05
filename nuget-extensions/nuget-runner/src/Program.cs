@@ -122,20 +122,25 @@ namespace JetBrains.TeamCity.NuGetRunner
         return;
       }
 
-      var packagesPath = Environment.GetEnvironmentVariable(NugetPackagesPath);
-      if (string.IsNullOrEmpty(packagesPath))
+      var variables = Environment.GetEnvironmentVariables();
+      if (variables.Contains(NugetPackagesPath))
       {
-        var userProfile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        if (string.IsNullOrEmpty(userProfile))
-        {
-          return;
-        }
-
-        packagesPath = Path.Combine(userProfile, ".nuget", "packages");
+        return;
       }
+
+      var tempDirectory = Path.GetTempPath();
+      if (string.IsNullOrEmpty(tempDirectory))
+      {
+        return;
+      }
+
+      var packagesPath = Path.Combine(tempDirectory, ".nuget", "packages");
 
       Console.Out.WriteLine("Setting '{0}' environment variable to '{1}'", NugetPackagesPath, packagesPath);
       runner.AddEnvironmentVariable(NugetPackagesPath, packagesPath);
+
+      // Set nuget packages path for subsequent MSBuild launch
+      Console.Out.WriteLine("##teamcity[setParameter name='env.{0}' value='{1}']", NugetPackagesPath, packagesPath);
     }
 
     private static bool IsSystemAccount()
