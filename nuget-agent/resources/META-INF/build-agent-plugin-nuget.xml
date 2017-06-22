@@ -32,4 +32,6 @@
   <bean class="jetbrains.buildServer.nuget.agent.runner.EnabledPackagesOptionSetter"/>
 
   <bean class="jetbrains.buildServer.nuget.agent.exec.AgentNuGetTeamCityProvider"/>
+
+  <bean class="jetbrains.buildServer.nuget.agent.NuGetCacheCleaner"/>
 </beans>
