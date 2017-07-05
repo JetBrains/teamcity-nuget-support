@@ -14,5 +14,8 @@ namespace JetBrains.TeamCity.NuGet.CredentialProvider
 
     [ArgDescription("Notifies the provider that this is a retry and the credentials were rejected on a previous attempt")]
     public bool IsRetry { get; set; }
+    
+    [ArgDescription("Notifies the provider of the level of optional logging to emit to the standard error stream")]
+    public Verbosity Verbosity { get; set; }
   }
 }
