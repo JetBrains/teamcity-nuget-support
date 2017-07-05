@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Linq;
-using System.Threading;
 
 namespace JetBrains.TeamCity.NuGetRunner
 {
@@ -70,49 +69,34 @@ namespace JetBrains.TeamCity.NuGetRunner
 
       try
       {
-        var pi = new ProcessStartInfo
-                                 {
-                                   FileName = myNuGetExe,
-                                   //TODO use escapring safe escaping here.
-                                   Arguments = CommandLineHelper.Join(argz),
-                                   UseShellExecute = false,
-                                   RedirectStandardInput = true, 
-                                   RedirectStandardError = true, 
-                                   RedirectStandardOutput = true, 
-                                   CreateNoWindow = true,                                        
-                                 };
+        var process = new Process();
+        var pi = process.StartInfo;
+        pi.FileName = myNuGetExe;
+        pi.Arguments = CommandLineHelper.Join(argz);
+        pi.UseShellExecute = false;
+        pi.RedirectStandardInput = true;
+        pi.RedirectStandardError = true;
+        pi.RedirectStandardOutput = true;
+        pi.CreateNoWindow = true;
+        
         foreach (var e in myEnv)
         {
           if (pi.EnvironmentVariables.ContainsKey(e.Key)) continue;
           pi.EnvironmentVariables.Add(e.Key, e.Value);
         }
 
-        var process = Process.Start(pi);
+        process.OutputDataReceived += (sender, args) => Console.Out.WriteLine(args.Data);
+        process.ErrorDataReceived += (sender, args) => Console.Error.WriteLine(args.Data);
 
+        process.Start();
+        
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
         process.StandardInput.Close();
-        Func<StreamReader, TextWriter, Thread> readOutput = (si, so) =>
-        {
-          var th = new Thread(delegate()
-          {
-            int i;
-            while ((i = si.Read()) >= 0) so.Write((char)i);            
-          }) { Name = "Process output reader " + process.Id };
-          th.Start();
-          return th;
-        };
-
-        var t1 = readOutput(process.StandardOutput, Console.Out);
-        var t2 = readOutput(process.StandardError, Console.Error);
         
         process.WaitForExit();
 
-        t1.Join(TimeSpan.FromMinutes(5));
-        t2.Join(TimeSpan.FromMinutes(5));
-
         return process.ExitCode;
-        /*AppDomain dom = AppDomain.CreateDomain("NuGet Launcher Domain");
-        var result = dom.ExecuteAssembly(myNuGetExe, argz);
-        return result is int ? (int) result : 0;*/
       }
       finally
       {

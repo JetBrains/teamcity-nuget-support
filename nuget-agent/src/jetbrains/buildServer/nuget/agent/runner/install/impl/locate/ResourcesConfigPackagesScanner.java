@@ -44,7 +44,7 @@ public class ResourcesConfigPackagesScanner implements PackagesConfigScanner {
     LOG.debug("resources.config path is " + repositoriesConfig);
 
     if (!repositoriesConfig.isFile()) {
-      logger.message("Failed to find repositories.config at " + repositoriesConfig);
+      logger.message("No repositories.config found at " + repositoriesConfig);
       return Collections.emptyList();
     }
 

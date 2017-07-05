@@ -47,6 +47,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\shared\src\Annotations.cs">
@@ -65,6 +69,7 @@
       <Link>src\Shared\ProcessExecutor.cs</Link>
     </Compile>
     <Compile Include="src\NuGetConstants.cs" />
+    <Compile Include="src\NuGetCredentialsProviderTest.cs" />
     <Compile Include="src\NuGetRunnerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\NuGetRunner_ListPackagesCommandTest.cs" />
@@ -73,6 +78,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\credential-provider\nuget-credential-provider.csproj">
+      <Project>{f2fd4f35-fe93-4573-9d6f-468dc8fa76ce}</Project>
+      <Name>nuget-credential-provider</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
