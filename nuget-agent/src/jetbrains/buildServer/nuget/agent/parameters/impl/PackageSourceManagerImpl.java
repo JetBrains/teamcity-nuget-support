@@ -72,7 +72,7 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
   @Nullable
   private String normalizeUrl(@NotNull String url) {
     try {
-      return URI.create(url).normalize().getPath();
+      return StringUtil.trimEnd(URI.create(url).normalize().toString(), "/");
     } catch (Exception e) {
       return url; // probably not URL, use as is
     }
@@ -105,9 +105,9 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
 
       @Override
       public boolean equals(Object obj) {
-        if ( this == obj ) return true;
+        if (this == obj) return true;
         if (!(obj instanceof PackageSource)) return false;
-        PackageSource that = (PackageSource)obj;
+        PackageSource that = (PackageSource) obj;
         return feed.equals(that.getSource());
       }
     };
