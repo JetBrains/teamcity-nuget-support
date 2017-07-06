@@ -48,7 +48,7 @@ import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_AUTH_
  */
 public class PackageSourceManagerTest extends BaseTestCase {
 
-    private static final AuthBean AUTH_BEAN = new AuthBean();
+  private static final AuthBean AUTH_BEAN = new AuthBean();
     private static final String AGENT_BASED_URL = "agent";
     private static final String SERVER_BASED_URL = "server";
     private static final Map<String, String> PARAMETERS = CollectionsUtil.asMap(
@@ -137,6 +137,24 @@ public class PackageSourceManagerTest extends BaseTestCase {
 
         assertContainsPackageSource("\\\\some\\path\\", "", "", packageSources);
     }
+
+  @Test
+  public void shouldSetupCredentialsForExternalTeamCityFeed() throws Exception {
+    final String externalTeamCityUrl = "http://teamcity/httpAuth/app/nuget/v1/FeedService.svc/";
+    final String externalUsername = "user2";
+    final String externalPassword = "password2";
+
+    addAuthBuildFeature(externalTeamCityUrl, externalUsername, externalPassword);
+
+    final AgentRunningBuildEx runningBuild = myBuild;
+
+    final List<PackageSource> packageSources = getPackageSourcesOfRunningBuild(runningBuild);
+
+    assertEquals(3, packageSources.size());
+    assertContainsPackageSource(AGENT_BASED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
+    assertContainsPackageSource(SERVER_BASED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
+    assertContainsPackageSource(externalTeamCityUrl, externalUsername, externalPassword, packageSources);
+  }
 
     private void assertContainsPackageSource(final String expectedUrl, final String expectedUser, final String expectedPassword, List<PackageSource> actualPackageSources) {
         assertTrue(CollectionsUtil.contains(actualPackageSources, new Filter<PackageSource>() {
