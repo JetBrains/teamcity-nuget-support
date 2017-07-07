@@ -31,5 +31,5 @@ public class TriggerBean {
   public String getVersionKey() {  return TriggerConstants.VERSION;   }
   public String getPrereleaseKey() {  return TriggerConstants.INCLUDE_PRERELEASE;   }
   public String getUsername() { return TriggerConstants.USERNAME; }
-  public String getPassword() { return Constants.SECURE_PROPERTY_PREFIX + TriggerConstants.PASSWORD; }
+  public String getPassword() { return TriggerConstants.PASSWORD; }
 }
