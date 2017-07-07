@@ -61,7 +61,7 @@ public class PackagesPublishRunner extends NuGetRunnerBase {
             if(FeedConstants.SYMBOLS_PACKAGE_FILE_FILTER.accept(file)){
               context.getBuild().getBuildLogger().warning("Attempt to publish symbol package. " +
                       "Symbol packages are not fully supported by TeamCity internal feed. " +
-                      "For more details see https://confluence.jetbrains.com/display/TCD10/NuGet#NuGet-symbols");
+                      "For more details see https://confluence.jetbrains.com/display/TCDL/NuGet#NuGet-symbols");
             } else if (!FeedConstants.PACKAGE_FILE_FILTER.accept(file)) {
               context.getBuild().getBuildLogger().warning(
                       "Attempt to publish NuGet package with wrong extension: "
