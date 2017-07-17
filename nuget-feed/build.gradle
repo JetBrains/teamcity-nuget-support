@@ -7,7 +7,7 @@ teamcity {
 }
 
 ext {
-    olingoVersion = '2.0.9-SNAPSHOT'
+    olingoVersion = '2.0.9'
 }
 
 dependencies {
