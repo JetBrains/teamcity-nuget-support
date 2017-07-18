@@ -41,8 +41,9 @@
   <tr>
     <th><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
     <td>
-      <props:multilineProperty name="${ib.packSpecFile}" linkTitle="Specification or project files" cols="60" rows="5" expanded="${true}"/>
-      <bs:vcsTree callback="appendSpecificationFile" treeId="${ib.packSpecFile}"/>
+      <props:multilineProperty name="${ib.packSpecFile}" linkTitle="Specification or project files" cols="60" rows="5" expanded="${true}">
+      <jsp:attribute name="afterTextField"><bs:vcsTree callback="appendSpecificationFile" treeId="${ib.packSpecFile}"/></jsp:attribute>
+      </props:multilineProperty>
       <script type="text/javascript">
         BS.Util.hide($('vcsTreeControl_${ib.packSpecFile}'));
       </script>
@@ -81,8 +82,9 @@
           <c:when test="${it.showBaseDirectorySelector}">
             <props:hiddenProperty name="${it.value}-showBaseDirectorySelector"/>
             <div id="content-${it.value}" class="packBaseDirectoryModeContent" style="padding-top: 8px">
-              <props:textProperty name="${ib.packBaseDirectory}" className="longField" />
-              <bs:vcsTree fieldId="${ib.packBaseDirectory}" treeId="${ib.packBaseDirectory}"/>
+              <props:textProperty name="${ib.packBaseDirectory}" className="longField">
+              <jsp:attribute name="afterTextField"><bs:vcsTree fieldId="${ib.packBaseDirectory}" treeId="${ib.packBaseDirectory}"/></jsp:attribute>
+              </<props:textProperty>
               <span class="smallNote"><c:out value="${it.details}"/></span>
               <span id="error_${ib.packBaseDirectory}" class="error"></span>
             </div>

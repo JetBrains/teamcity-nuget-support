@@ -42,8 +42,9 @@
   <td>
     <props:multilineProperty name="${ib.nuGetPublishFilesKey}" linkTitle="Package files"
                              cols="60" rows="5"
-                             expanded="${true}"/>
-    <bs:vcsTree callback="appendPackageToUpload" treeId="${ib.nuGetPublishFilesKey}"/>
+                             expanded="${true}">
+      <jsp:attribute name="afterTextField"><bs:vcsTree callback="appendPackageToUpload" treeId="${ib.nuGetPublishFilesKey}"/></jsp:attribute>
+    </props:multilineProperty>    
     <script type="text/javascript">
       BS.Util.hide($('vcsTreeControl_${ib.nuGetPublishFilesKey}'));
     </script>

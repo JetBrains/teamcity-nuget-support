@@ -28,8 +28,9 @@
   <tr>
     <th>Path To Solution File<l:star/>:</th>
     <td>
-      <props:textProperty name="${ib.solutionPathKey}" className="longField"/>
-      <bs:vcsTree fieldId="${ib.solutionPathKey}"/>
+      <props:textProperty name="${ib.solutionPathKey}" className="longField">
+      <jsp:attribute name="afterTextField"><bs:vcsTree fieldId="${ib.solutionPathKey}"/></jsp:attribute>
+      </props:textProperty>
       <span class="smallNote">The path to Visual Studio solution file (.sln)</span>
       <span class="error" id="error_${ib.solutionPathKey}"></span>
     </td>
