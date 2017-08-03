@@ -84,7 +84,7 @@
             <div id="content-${it.value}" class="packBaseDirectoryModeContent" style="padding-top: 8px">
               <props:textProperty name="${ib.packBaseDirectory}" className="longField">
               <jsp:attribute name="afterTextField"><bs:vcsTree fieldId="${ib.packBaseDirectory}" treeId="${ib.packBaseDirectory}"/></jsp:attribute>
-              </<props:textProperty>
+              </props:textProperty>
               <span class="smallNote"><c:out value="${it.details}"/></span>
               <span id="error_${ib.packBaseDirectory}" class="error"></span>
             </div>
