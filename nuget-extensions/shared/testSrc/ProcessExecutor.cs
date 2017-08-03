@@ -11,32 +11,38 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static Result ExecuteProcess(string exe, params string[] args)
     {
       var pi = new ProcessStartInfo
-                 {
-                   FileName = exe,
-                   Arguments = string.Join(" ", args.Select(x=>x.Contains(' ') ? "\"" + x + "\"" : x)),
-                   RedirectStandardError = true,
-                   RedirectStandardOutput = true,
-                   RedirectStandardInput = true,
-                   UseShellExecute = false,
-                   CreateNoWindow = true,
-                 };
+               {
+                 FileName = exe,
+                 Arguments = string.Join(" ", args.Select(x => x.Contains(' ') ? "\"" + x + "\"" : x)),
+                 RedirectStandardError = true,
+                 RedirectStandardOutput = true,
+                 RedirectStandardInput = true,
+                 UseShellExecute = false,
+                 CreateNoWindow = true,
+               };
 
       Console.Out.WriteLine("Starting: " + pi.FileName + " " + pi.Arguments);
 
       var process = new Process {StartInfo = pi};
-      
+
       var errorDataBuilder = new StringBuilder();
       process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
                                    {
-                                     errorDataBuilder.AppendLine(e.Data);
+                                     lock (errorDataBuilder)
+                                     {
+                                       errorDataBuilder.AppendLine(e.Data);
+                                     }
                                    };
-      
+
       var outputDataBuilder = new StringBuilder();
       process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
                                     {
-                                      outputDataBuilder.AppendLine(e.Data);
+                                      lock (outputDataBuilder)
+                                      {
+                                        outputDataBuilder.AppendLine(e.Data);
+                                      }
                                     };
-      
+
       process.Start();
       process.BeginOutputReadLine();
       process.BeginErrorReadLine();
