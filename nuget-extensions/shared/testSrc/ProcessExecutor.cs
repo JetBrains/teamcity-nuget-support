@@ -23,18 +23,24 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
       Console.Out.WriteLine("Starting: " + pi.FileName + " " + pi.Arguments);
 
-      var process = new Process { StartInfo = pi };
+      var process = new Process {StartInfo = pi};
 
       var errorDataBuilder = new StringBuilder();
       process.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e)
                                    {
-                                     errorDataBuilder.AppendLine(e.Data);
+                                     lock (errorDataBuilder)
+                                     {
+                                       errorDataBuilder.AppendLine(e.Data);
+                                     }
                                    };
 
       var outputDataBuilder = new StringBuilder();
       process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e)
                                     {
-                                      outputDataBuilder.AppendLine(e.Data);
+                                      lock (outputDataBuilder)
+                                      {
+                                        outputDataBuilder.AppendLine(e.Data);
+                                      }
                                     };
 
       process.Start();
