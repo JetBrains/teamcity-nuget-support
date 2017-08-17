@@ -276,6 +276,21 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     }
   }
 
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testNuGet28(final NugetFeedLibrary library) throws JDOMException, IOException {
+    setODataSerializer(library);
+    addMockPackage(
+      new NuGetIndexEntry("AdviserSpend.Web.UI", CollectionsUtil.asMap(
+        ID, "AdviserSpend.Web.UI", VERSION, "1.0.0.42")),
+      true);
+
+    final String response = openRequest("Packages()?$filter=%28substringof%28%27adviser%27%2Ctolower%28Id%29%29%20or"+
+      "%20%28%28Title%20ne%20null%29%20and%20substringof%28%27adviser%27%2Ctolower%28Title%29%29%29%29%20and%20%28"+
+      "IsLatestVersion%20or%20IsAbsoluteLatestVersion%29&$top=20");
+
+    assertContainsPackageVersion(response, "1.0.0.42.0");
+  }
+
   private String replaceXml(@NotNull final String text) {
     return text
             .replace("http://nuget.org/api/v2/", "BASE_URI/")
