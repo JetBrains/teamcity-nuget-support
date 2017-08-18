@@ -30,7 +30,7 @@ public class V2FeedPackage extends V1FeedPackage {
   private boolean myIsAbsoluteLatestVersion;
   private boolean myIsPrerelease;
   private String myMinClientVersion;
-  private Date myLastEdited;
+  private Long myLastEdited;
   private String myLicenseNames;
   private String myLicenseReportUrl;
 
@@ -73,11 +73,11 @@ public class V2FeedPackage extends V1FeedPackage {
   }
 
   @Nullable
-  public Date getLastEdited() {
+  public Long getLastEdited() {
     return myLastEdited;
   }
 
-  public void setLastEdited(Date lastEdited) {
+  public void setLastEdited(Long lastEdited) {
     myLastEdited = lastEdited;
   }
 

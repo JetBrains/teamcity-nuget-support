@@ -26,11 +26,12 @@ import java.util.Date;
  * NuGet feed package v1.
  */
 public class V1FeedPackage implements Comparable<V1FeedPackage> {
+  private final Long myCurrentDate = new Date().getTime();
   private final String myId;
   private final String myVersion;
   private String myAuthors;
   private String myCopyright;
-  private Date myCreated = new Date();
+  private Long myCreated = myCurrentDate;
   private String myDependencies;
   private String myDescription;
   private int myDownloadCount;
@@ -39,13 +40,13 @@ public class V1FeedPackage implements Comparable<V1FeedPackage> {
   private String myIconUrl;
   private boolean myIsLatestVersion;
   private String myLanguage;
-  private Date myLastUpdated = new Date();
+  private Long myLastUpdated = myCurrentDate;
   private String myLicenseUrl;
   private String myPackageHash;
   private String myPackageHashAlgorithm;
   private long myPackageSize;
   private String myProjectUrl;
-  private Date myPublished = new Date();
+  private Long myPublished = myCurrentDate;
   private String myReportAbuseUrl;
   private boolean myRequireLicenseAcceptance;
   private String myReleaseNotes;
@@ -91,11 +92,11 @@ public class V1FeedPackage implements Comparable<V1FeedPackage> {
   }
 
   @NotNull
-  public Date getCreated() {
+  public Long getCreated() {
     return myCreated;
   }
 
-  public void setCreated(@NotNull Date created) {
+  public void setCreated(@NotNull Long created) {
     myCreated = created;
   }
 
@@ -170,11 +171,11 @@ public class V1FeedPackage implements Comparable<V1FeedPackage> {
   }
 
   @NotNull
-  public Date getLastUpdated() {
+  public Long getLastUpdated() {
     return myLastUpdated;
   }
 
-  public void setLastUpdated(@NotNull Date lastUpdated) {
+  public void setLastUpdated(@NotNull Long lastUpdated) {
     myLastUpdated = lastUpdated;
   }
 
@@ -223,11 +224,11 @@ public class V1FeedPackage implements Comparable<V1FeedPackage> {
   }
 
   @NotNull
-  public Date getPublished() {
+  public Long getPublished() {
     return myPublished;
   }
 
-  public void setPublished(@NotNull Date published) {
+  public void setPublished(@NotNull Long published) {
     myPublished = published;
   }
 
