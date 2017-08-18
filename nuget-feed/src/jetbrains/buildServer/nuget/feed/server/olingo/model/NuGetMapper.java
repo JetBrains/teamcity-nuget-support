@@ -105,14 +105,14 @@ public final class NuGetMapper {
   }
 
   @NotNull
-  private static Date getDate(@NotNull final Map<String, String> attributes, @NotNull final String key) {
+  private static Long getDate(@NotNull final Map<String, String> attributes, @NotNull final String key) {
     final String value = getValue(attributes, key);
     if (value != null) {
       final LocalDateTime dateTime = ODataDataFormat.parseDate(value);
-      if (dateTime != null) return dateTime.toDate();
+      if (dateTime != null) return dateTime.toDate().getTime();
     }
 
-    return new Date();
+    return new Date().getTime();
   }
 
   @NotNull
