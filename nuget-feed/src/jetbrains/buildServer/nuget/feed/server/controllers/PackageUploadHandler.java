@@ -63,7 +63,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
   private static final String INVALID_TOKEN_VALUE = "Invalid token value";
   private static final String INVALID_PACKAGE_CONTENTS = "Invalid NuGet package contents";
   private static final String ARTIFACT_PUBLISHING_FAILED = "[Artifacts publishing failed]";
-  private static final String DEFAULT_PATH_FORMAT = ".teamcity/nuget/packages/{0}/{1}/{0}.{1}.nupkg";
+  private static final String DEFAULT_PATH_FORMAT = "nuget/packages/{0}/{1}/{0}.{1}.nupkg";
   private final RunningBuildsCollection myRunningBuilds;
   private final MetadataStorage myStorage;
   private final PackageAnalyzer myPackageAnalyzer;
