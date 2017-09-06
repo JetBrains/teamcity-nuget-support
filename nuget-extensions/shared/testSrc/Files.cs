@@ -125,7 +125,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
       ProcessExecutor.ExecuteProcess(NuGetExe_3_4, "install", "NuGet.commandline",
         "-Source", NuGetConstants.DefaultFeedUrl_v2,
         "-Source", NuGetConstants.NuGetDevFeed,
-        "-ExcludeVersion", "-OutputDirectory", temp)
+        "-ExcludeVersion", "-OutputDirectory", temp,
+        "-Verbosity", "detailed")
         .Dump().AssertNoErrorOutput().AssertExitedSuccessfully();
       string nugetPath = Path.Combine(temp, "NuGet.CommandLine/tools/NuGet.Exe");
       Assert.IsTrue(File.Exists(nugetPath));
