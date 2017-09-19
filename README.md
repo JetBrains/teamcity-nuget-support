@@ -1,4 +1,4 @@
-# TeamCity NuGet support [![official JetBrains project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
+# TeamCity NuGet support [![official JetBrains project](http://jb.gg/badges/official-plastic.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 This plugin provides NuGet support features for TeamCity. For more details, please see [NuGet support description](https://confluence.jetbrains.com/display/TCDL/NuGet).
 
@@ -34,5 +34,3 @@ On Linux for that should be installed 'mono-devel' package.
 # Contributions
 We appreciate all kinds of feedback, so please feel free to send a PR or write [an issue](https://github.com/JetBrains/teamcity-nuget-support/issues).
 
-# License
-Apache 2.0
