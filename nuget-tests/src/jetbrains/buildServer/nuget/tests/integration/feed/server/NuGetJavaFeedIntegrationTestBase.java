@@ -43,6 +43,7 @@ import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFact
 import jetbrains.buildServer.nuget.server.version.VersionUtility;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
+import jetbrains.buildServer.serverSide.ServerSettings;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.CollectionsUtil;
@@ -106,6 +107,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
     final ResponseCacheReset cacheReset = mockery.mock(ResponseCacheReset.class);
+    final ServerSettings serverSettings = mockery.mock(ServerSettings.class);
 
     m.checking(new Expectations() {{
       allowing(myIndexProxy).getAll();
@@ -151,6 +153,9 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
           return toEntries(myFeed).iterator();
         }
       });
+
+      allowing(serverSettings).getRootUrl();
+      will(returnValue("http://localhost:8111"));
     }});
 
 
@@ -161,7 +166,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final NuGetServiceFactory serviceFactory = new NuGetServiceFactory(new OlingoDataSource(feed));
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(serviceFactory, responseCache);
     final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, myMetadataStorage,
-            packageAnalyzer, cacheReset);
+            packageAnalyzer, cacheReset, serverSettings);
     myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, uploadHandler);
   }
 
