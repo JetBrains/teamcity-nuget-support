@@ -165,8 +165,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
       public PackagesInstallMode getInstallMode() throws RunBuildException {
         String useRestoreParamValue = getParameter(context, NUGET_USE_RESTORE_COMMAND);
         final PackagesInstallMode mode = PackagesInstallMode.parse(useRestoreParamValue);
-        if (mode != null) return mode;
-        throw new RunBuildException(String.format("Runner parameter %s has invalid value %s", NUGET_USE_RESTORE_COMMAND, useRestoreParamValue));
+        return mode != null ? mode : PackagesInstallMode.VIA_RESTORE;
       }
     };
   }
