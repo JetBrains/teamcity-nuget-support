@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.feed.server.cache;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -55,5 +56,14 @@ public class ResponseOutputStream extends ServletOutputStream {
   public void close() throws IOException {
     if (!myClosed.compareAndSet(false, true)) return;
     myStream.close();
+  }
+
+  @Override
+  public boolean isReady() {
+    return false;
+  }
+
+  @Override
+  public void setWriteListener(WriteListener listener) {
   }
 }

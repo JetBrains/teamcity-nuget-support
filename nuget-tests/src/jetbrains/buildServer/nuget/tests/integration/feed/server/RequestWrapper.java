@@ -171,7 +171,12 @@ public class RequestWrapper implements HttpServletRequest {
         return null;
     }
 
-    @Override
+  @Override
+  public String changeSessionId() {
+    return null;
+  }
+
+  @Override
     public boolean isRequestedSessionIdValid() {
         return false;
     }
@@ -216,7 +221,12 @@ public class RequestWrapper implements HttpServletRequest {
         return null;
     }
 
-    @Override
+  @Override
+  public <T extends HttpUpgradeHandler> T upgrade(Class<T> httpUpgradeHandlerClass) throws IOException, ServletException {
+    return null;
+  }
+
+  @Override
     public Object getAttribute(String s) {
         return myAttributes.get(s);
     }
@@ -241,7 +251,12 @@ public class RequestWrapper implements HttpServletRequest {
         return myBody.length;
     }
 
-    @Override
+  @Override
+  public long getContentLengthLong() {
+    return 0;
+  }
+
+  @Override
     public String getContentType() {
         return myHeaders.get("Content-Type");
     }
@@ -254,7 +269,21 @@ public class RequestWrapper implements HttpServletRequest {
     public ServletInputStream getInputStream() throws IOException {
         final int[] position = {0};
         return new ServletInputStream() {
-            @Override
+          @Override
+          public boolean isFinished() {
+            return false;
+          }
+
+          @Override
+          public boolean isReady() {
+            return false;
+          }
+
+          @Override
+          public void setReadListener(ReadListener listener) {
+          }
+
+          @Override
             public int read() throws IOException {
                 return position[0] < myBody.length ? myBody[position[0]++] : -1;
             }

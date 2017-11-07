@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
@@ -40,6 +41,15 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
 
   public ServletOutputStream getOutputStream() throws IOException {
     return new ServletOutputStream() {
+      @Override
+      public boolean isReady() {
+        return false;
+      }
+
+      @Override
+      public void setWriteListener(WriteListener listener) {
+      }
+
       @Override
       public void write(int b) throws IOException {
         sw.write(b);
