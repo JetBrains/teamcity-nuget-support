@@ -2,7 +2,7 @@ ext {
     versionNumber = project.hasProperty('versionNumber') ? property('versionNumber') : 'SNAPSHOT-' + new Date().format('yyyyMMddHHmmss')
     projectIds = ['group': 'teamcity-nuget-support', 'version': versionNumber]
 
-    teamcityVersion = project.findProperty('teamcityVersion') ?: '2017.1-SNAPSHOT'
+    teamcityVersion = project.findProperty('teamcityVersion') ?: '2017.2-SNAPSHOT'
     teamcityDir = project.findProperty('teamcityDir') ?: "$rootDir/servers/TeamCity-${teamcityVersion}"
     if (teamcityDir == null || !file(teamcityDir).isDirectory()) {
         throw new InvalidUserDataException('Please, execute gradle task `:nuget-server:installTeamCity` ' +
