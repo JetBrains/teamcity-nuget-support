@@ -47,7 +47,7 @@
 
 <l:settingsGroup title="Restore Packages">
   <tr>
-    <th>Path To Solution File<l:star/>:</th>
+    <th>Path to solution file<l:star/>:</th>
     <td>
       <props:textProperty name="${ib.solutionPathKey}" className="longField">
       <jsp:attribute name="afterTextField"><bs:vcsTree fieldId="${ib.solutionPathKey}"/></jsp:attribute>
@@ -57,7 +57,7 @@
     </td>
   </tr>
   <tr class="advancedSetting">
-    <th><label for="${ib.restoreCommandModeKey}">Restore Mode:</label></th>
+    <th><label for="${ib.restoreCommandModeKey}">Restore mode:</label></th>
     <td>
       <c:set var="restoreMode" value="${propertiesBean.properties[ib.restoreCommandModeKey]}"/>
       <props:selectProperty name="${ib.restoreCommandModeKey}" style="longField">
@@ -68,7 +68,7 @@
     </td>
   </tr>
   <tr class="advancedSetting">
-    <th>Restore Options:</th>
+    <th>Restore options:</th>
     <td>
       <div id="exclude-version">
         <props:checkboxProperty name="${ib.excludeVersionKey}"/>
@@ -93,7 +93,7 @@
 
 <l:settingsGroup title="Packages Sources" className="advancedSetting">
   <tr class="advancedSetting">
-    <th>Packages Sources:</th>
+    <th>Packages sources:</th>
     <td>
       <props:multilineProperty name="${ib.nuGetSourcesKey}"
                                linkTitle="Sources"
@@ -117,7 +117,7 @@
 
 <l:settingsGroup title="Update Packages" className="advancedSetting">
   <tr class="advancedSetting">
-    <th>Update Packages:</th>
+    <th>Update packages:</th>
     <td>
       <props:checkboxProperty name="${ib.updatePackagesKey}"/>
       <label for="${ib.updatePackagesKey}">Update packages with help of NuGet update command</label>
@@ -127,7 +127,7 @@
     </td>
   </tr>
   <tr id="nugetUpdateModeSection" class="advancedSetting">
-    <th>Update Mode:</th>
+    <th>Update mode:</th>
     <td>
       <props:selectProperty name="${ib.updateModeKey}" style="longField">
         <props:option value="${ib.updatePerSolutionValue}">Update via solution file</props:option>
@@ -143,7 +143,7 @@
     </td>
   </tr>
   <tr class="advancedSetting">
-    <th rowspan="2">Update Options:</th>
+    <th rowspan="2">Update options:</th>
     <td>
       <props:checkboxProperty name="${ib.updatePackagesPrerelease}"/>
       <label for="${ib.updatePackagesPrerelease}">Include pre-release packages</label>

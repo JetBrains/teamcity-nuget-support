@@ -57,9 +57,9 @@ public enum PackagesPackDirectoryMode {
   public String getDetails() {
     switch (this) {
       case PROJECT_DIRECTORY:
-        return "Specifies -BaseDirectory parameter value to point to directory that contains project or .nuspec file";
+        return "Specifies the -BaseDirectory parameter value to point to the directory that contains project or .nuspec files";
       case LEAVE_AS_IS:
-        return "Do not an add explicit -BaseDirectory parameter";
+        return "Do not add an explicit -BaseDirectory parameter";
       case EXPLICIT_DIRECTORY:
         return "The -BaseDirectory parameter value. Leave blank to use the build checkout directory";
       default:

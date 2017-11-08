@@ -37,7 +37,7 @@
   };
 </script>
 
-<l:settingsGroup title="Package parameters">
+<l:settingsGroup title="Package Parameters">
   <tr>
     <th><label for="${ib.packSpecFile}">Specification files</label><l:star/>:</th>
     <td>
@@ -70,7 +70,7 @@
   </tr>
 
   <tr class="advancedSetting">
-    <th><label for="${ib.packBaseDirectoryMode}">Base Directory</label>:</th>
+    <th><label for="${ib.packBaseDirectoryMode}">Base directory</label>:</th>
     <td>
       <props:selectProperty name="${ib.packBaseDirectoryMode}" onchange="BS.NuGet.PackRunnerSettings.onBaseDirModeChange();">
         <c:forEach var="it" items="${ib.packBaseDirectoryModes}">
@@ -103,7 +103,7 @@
 
 <l:settingsGroup title="Output">
   <tr>
-    <th rowspan="3"><label for="${ib.packOutputDirectory}">Output Directory</label><l:star/>:</th>
+    <th rowspan="3"><label for="${ib.packOutputDirectory}">Output directory</label><l:star/>:</th>
     <td>
       <props:textProperty name="${ib.packOutputDirectory}" className="longField"/>
       <span class="smallNote">The path to the output directory for generated NuGet packages. See also <em>NuGet Publish</em> build runner</span>
@@ -123,7 +123,7 @@
   </tr>
 </l:settingsGroup>
 
-<l:settingsGroup title="Additionals parameters" className="advancedSetting">
+<l:settingsGroup title="Additionals Parameters" className="advancedSetting">
 
   <tr class="advancedSetting">
     <th><label for="${ib.packExcludePatterns}">Exclude files: </label></th>

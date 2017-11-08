@@ -67,7 +67,7 @@
 </tr>
 
 <tr class="advancedSetting">
-  <th>Package Source:</th>
+  <th>Package source:</th>
   <td>
     <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
       <span class="smallNote">
