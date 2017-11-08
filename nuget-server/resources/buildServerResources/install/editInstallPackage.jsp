@@ -24,6 +24,27 @@
 
 <jsp:include page="/tools/editToolUsage.html?toolType=${ib.nugetToolTypeName}&versionParameterName=${ib.nuGetPathKey}&class=longField"/>
 
+<script type="text/javascript">
+    var restoreModeId = BS.Util.escapeId('${ib.restoreCommandModeKey}');
+
+    BS.NugetParametersForm = {
+        updateElements: function () {
+            var restoreMode = $j(restoreModeId).val();
+            $j(BS.Util.escapeId('exclude-version')).toggleClass('hidden', restoreMode === '${ib.restoreCommandModeRestoreValue}');
+
+            BS.MultilineProperties.updateVisible();
+        }
+    };
+
+    $j(document).on('change', restoreModeId, function () {
+        BS.NugetParametersForm.updateElements();
+    });
+
+    $j(document).on('ready', restoreModeId, function () {
+        BS.NugetParametersForm.updateElements();
+    });
+</script>
+
 <l:settingsGroup title="Restore Packages">
   <tr>
     <th>Path To Solution File<l:star/>:</th>
@@ -47,16 +68,14 @@
     </td>
   </tr>
   <tr class="advancedSetting">
-    <th rowspan="2">Restore Options:</th>
+    <th>Restore Options:</th>
     <td>
-      <props:checkboxProperty name="${ib.excludeVersionKey}"/>
-      <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
-      <span class="smallNote">Makes NuGet exclude package version from package folder names.
-                              Equivalent to the <em>-ExcludeVersion</em> NuGet.exe command line argument</span>
-    </td>
-  </tr>
-  <tr class="advancedSetting">
-    <td>
+      <div id="exclude-version">
+        <props:checkboxProperty name="${ib.excludeVersionKey}"/>
+        <label for="${ib.excludeVersionKey}">Exclude version from package folder names</label>
+        <span class="smallNote">Makes NuGet exclude package version from package folder names.
+                                Equivalent to the <em>-ExcludeVersion</em> NuGet.exe command line argument</span><br/>
+      </div>
       <props:checkboxProperty name="${ib.noCacheKey}"/>
       <label for="${ib.noCacheKey}">Disable looking up packages from local machine cache</label>
       <span class="smallNote">Equivalent to the <em>-NoCache</em> NuGet.exe commanline argument</span>
@@ -147,3 +166,7 @@
     </td>
   </tr>
 </l:settingsGroup>
+
+<script type="text/javascript">
+    BS.NugetParametersForm.updateElements();
+</script>

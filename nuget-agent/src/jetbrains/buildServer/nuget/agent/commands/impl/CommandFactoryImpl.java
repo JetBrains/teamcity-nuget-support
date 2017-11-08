@@ -63,9 +63,6 @@ public class CommandFactoryImpl implements CommandFactory {
     final List<String> argz = new ArrayList<String>();
     argz.add("restore");
     argz.add(FileUtil.getCanonicalFile(solutionFile).getPath());
-    if (params.getExcludeVersion()) {
-      argz.add("-ExcludeVersion");
-    }
     if (params.getNoCache()) {
       argz.add("-NoCache");
     }

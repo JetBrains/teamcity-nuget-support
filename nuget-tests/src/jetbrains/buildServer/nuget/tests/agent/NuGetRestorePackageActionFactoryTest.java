@@ -91,7 +91,7 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
               nuget.getPath(),
               Arrays.asList("restore", mySolution.getPath()),
               mySolution.getParentFile(),
-              Collections.<String, String>emptyMap()
+              Collections.emptyMap()
       );
     }});
 
@@ -114,7 +114,7 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
               nuget.getPath(),
               Arrays.asList("restore", mySolution.getPath(), "-NoCache"),
               mySolution.getParentFile(),
-              Collections.<String, String>emptyMap()
+              Collections.emptyMap()
       );
     }});
 
@@ -135,9 +135,9 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
       oneOf(myProcessFactory).executeCommandLine(
               ctx,
               nuget.getPath(),
-              Arrays.asList("restore", mySolution.getPath(), "-ExcludeVersion"),
+              Arrays.asList("restore", mySolution.getPath()),
               mySolution.getParentFile(),
-              Collections.<String, String>emptyMap()
+              Collections.emptyMap()
       );
     }});
 
@@ -160,7 +160,7 @@ public class NuGetRestorePackageActionFactoryTest extends BaseTestCase {
               nuget.getPath(),
               Arrays.asList("restore", mySolution.getPath(), "-Source", "aaa", "-Source", "bbb"),
               mySolution.getParentFile(),
-              Collections.<String, String>emptyMap()
+              Collections.emptyMap()
       );
     }});
 
