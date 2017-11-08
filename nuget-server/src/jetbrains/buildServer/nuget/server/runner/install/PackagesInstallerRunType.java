@@ -27,7 +27,6 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -69,23 +68,21 @@ public class PackagesInstallerRunType extends NuGetRunType {
   @NotNull
   @Override
   public PropertiesProcessor getRunnerPropertiesProcessor() {
-    return new PropertiesProcessor() {
-      public Collection<InvalidProperty> process(Map<String, String> properties) {
-        List<InvalidProperty> checks = new ArrayList<InvalidProperty>();
+    return properties -> {
+      List<InvalidProperty> checks = new ArrayList<>();
 
-        if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PATH))) {
-          checks.add(new InvalidProperty(NUGET_PATH, "The path to nuget.exe must be specified"));
-        }
-
-        String sln = properties.get(SLN_PATH);
-        if (StringUtil.isEmptyOrSpaces(sln)) {
-          checks.add(new InvalidProperty(SLN_PATH, "The path to the Visual Studio solution file should be specified"));
-        } else if (!ReferencesResolverUtil.containsReference(sln) && !sln.toLowerCase().endsWith(".sln")) {
-          checks.add(new InvalidProperty(SLN_PATH, "The file extension must be .sln. Specify the path to a Visual Studio solution file"));
-        }
-
-        return checks;
+      if (StringUtil.isEmptyOrSpaces(properties.get(NUGET_PATH))) {
+        checks.add(new InvalidProperty(NUGET_PATH, "The path to nuget.exe must be specified"));
       }
+
+      String sln = properties.get(SLN_PATH);
+      if (StringUtil.isEmptyOrSpaces(sln)) {
+        checks.add(new InvalidProperty(SLN_PATH, "The path to the Visual Studio solution file should be specified"));
+      } else if (!ReferencesResolverUtil.containsReference(sln, new String[0], true) && !sln.toLowerCase().endsWith(".sln")) {
+        checks.add(new InvalidProperty(SLN_PATH, "The file extension must be .sln. Specify the path to a Visual Studio solution file"));
+      }
+
+      return checks;
     };
   }
 
