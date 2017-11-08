@@ -21,13 +21,32 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
 
     protected override void ExecuteCommandImpl()
     {
-      if (!File.Exists(Request))
-        throw new CommandLineException("Failed to find file at {0}", Request);
+      if (string.IsNullOrEmpty(Request) || !File.Exists(Request))
+      {
+        var message = string.Format("Request file '{0}' was not found", Request);
+        System.Console.Error.WriteLine(message);
+        throw new CommandLineException(message);
+      }
+      
+      if (string.IsNullOrEmpty(Response))
+      {
+        var message = string.Format("Response file {0} was not found", Response);
+        System.Console.Error.WriteLine(message);
+        throw new CommandLineException(message);
+      }
       
       new AssemblyResolver(GetType().Assembly.GetAssemblyDirectory());
 
-      INuGetPackages reqs = XmlSerializerHelper.Load<NuGetPackages>(Request);
-      reqs.ClearCheckResults();
+      INuGetPackages reqs;
+      try
+      {
+        reqs = XmlSerializerHelper.Load<NuGetPackages>(Request);
+        reqs.ClearCheckResults();
+      }
+      catch (Exception e)
+      {
+        throw new CommandLineException("Invalid request file: {0}", e.Message);
+      }
       
       var sourceToRequest = reqs.Packages.GroupBy(x => x.Feed, Id, NuGetSourceComparer.Comparer);
       foreach (var sourceRequest in sourceToRequest)
@@ -35,7 +54,15 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
         ProcessPackageSource(sourceRequest.Key, sourceRequest.ToList());
       }
 
-      XmlSerializerHelper.Save(Response, (NuGetPackages) reqs);
+      try
+      {
+        XmlSerializerHelper.Save(Response, (NuGetPackages) reqs);
+      }
+      catch (Exception e)
+      {
+        System.Console.Error.WriteLine("Unable to write response file: {0}", e.Message);
+        throw;
+      }
     }
 
     private void ProcessPackageSource(INuGetSource source, List<INuGetPackage> request)
@@ -72,8 +99,8 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
           foreach (var pkg in req.Data)
             pkg.AddError(message);
 
-          System.Console.Out.WriteLine("Failed to check package sources information for URI {0}. {1}", source, message);
-          System.Console.Out.WriteLine(e);
+          System.Console.Error.WriteLine("Failed to check package sources information for URI {0}. {1}", source, message);
+          System.Console.Error.WriteLine(e);
         }
       }
     }

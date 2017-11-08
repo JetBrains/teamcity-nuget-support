@@ -53,7 +53,7 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
   }
 
   public void update(@NotNull ExecutorService executor, @NotNull Collection<CheckablePackage> data) {
-    final MultiMap<File, CheckablePackage> entries = new MultiMap<File, CheckablePackage>();
+    final MultiMap<File, CheckablePackage> entries = new MultiMap<>();
     for (CheckablePackage entry : data) {
       entries.putValue(getNuGetPath(entry.getMode()), entry);
     }
@@ -61,8 +61,8 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
     for (Map.Entry<File, List<CheckablePackage>> nuget : entries.entrySet()) {
       final File nugetPath = nuget.getKey();
 
-      final List<CheckablePackage> allVersions = new ArrayList<CheckablePackage>();
-      final List<CheckablePackage> setVersions = new ArrayList<CheckablePackage>();
+      final List<CheckablePackage> allVersions = new ArrayList<>();
+      final List<CheckablePackage> setVersions = new ArrayList<>();
       for (CheckablePackage p : nuget.getValue()) {
         (p.getPackage().getVersionSpec() == null ? allVersions : setVersions).add(p);
       }
@@ -70,7 +70,7 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
       //first schedule packages check without version, this will work faster
       chunkAndSchedule(executor, nugetPath, allVersions);
 
-      //than schedule check for packages with versions constrait
+      //than schedule check for packages with versions constraint
       chunkAndSchedule(executor, nugetPath, setVersions);
     }
   }
@@ -78,49 +78,47 @@ public class PackageCheckerNuGetBulk extends PackageCheckerNuGetBase implements 
   private void chunkAndSchedule(@NotNull ExecutorService executor,
                                 @NotNull File nugetPath,
                                 @NotNull Collection<CheckablePackage> requests) {
-    Map<SourcePackageReference, CheckablePackage> map = new HashMap<SourcePackageReference, CheckablePackage>();
+    Map<SourcePackageReference, CheckablePackage> map = new HashMap<>();
     for (CheckablePackage e : requests) {
       map.put(e.getPackage(), e);
       e.setExecuting();
 
       if (map.size() >= mySettings.getMaxPackagesToQueryInBulk()) {
-        postCkeckTask(executor, map, nugetPath);
-        map = new HashMap<SourcePackageReference, CheckablePackage>();
+        postCheckTask(executor, map, nugetPath);
+        map = new HashMap<>();
       }
     }
     if (!map.isEmpty()) {
-      postCkeckTask(executor, map, nugetPath);
+      postCheckTask(executor, map, nugetPath);
     }
   }
 
-  private void postCkeckTask(ExecutorService executor, Map<SourcePackageReference, CheckablePackage> _map, final File nugetPath) {
+  private void postCheckTask(ExecutorService executor, Map<SourcePackageReference, CheckablePackage> _map, final File nugetPath) {
     //avoid possible concurrency here.
-    final Map<SourcePackageReference, CheckablePackage> map = new HashMap<SourcePackageReference, CheckablePackage>(_map);
-    executor.submit(ExceptionUtil.catchAll("Bulk check for update of NuGet packages", new Runnable() {
-      public void run() {
-        try {
-          final Map<SourcePackageReference, ListPackagesResult> result = myCommand.checkForChanges(nugetPath, map.keySet());
+    final Map<SourcePackageReference, CheckablePackage> map = new HashMap<>(_map);
+    executor.submit(ExceptionUtil.catchAll("Checking updates of NuGet packages", () -> {
+      try {
+        final Map<SourcePackageReference, ListPackagesResult> result = myCommand.checkForChanges(nugetPath, map.keySet());
 
-          for (Map.Entry<SourcePackageReference, ListPackagesResult> e : result.entrySet()) {
-            final SourcePackageReference ref = e.getKey();
-            final CheckablePackage p = map.get(ref);
-            if (p == null) continue;
+        for (Map.Entry<SourcePackageReference, ListPackagesResult> e : result.entrySet()) {
+          final SourcePackageReference ref = e.getKey();
+          final CheckablePackage p = map.get(ref);
+          if (p == null) continue;
 
-            p.setResult(CheckResult.fromResult(e.getValue()));
-            map.remove(ref);
-          }
+          p.setResult(CheckResult.fromResult(e.getValue()));
+          map.remove(ref);
+        }
 
-          for (CheckablePackage entry : map.values()) {
-            final String msg = "Package " + entry.getPackage().getPackageId() + " was not found in the feed";
-            LOG.warn(msg + ": " + entry.getPackage());
-            entry.setResult(CheckResult.empty());
-          }
+        for (CheckablePackage entry : map.values()) {
+          final String msg = "Package " + entry.getPackage().getPackageId() + " was not found in the feed";
+          LOG.warn(msg + ": " + entry.getPackage());
+          entry.setResult(CheckResult.empty());
+        }
 
-        } catch (Throwable t) {
-          LOG.warnAndDebugDetails("Failed to bulk check changes of NuGet packages. " + t.getMessage(), t);
-          for (CheckablePackage entry : map.values()) {
-            entry.setResult(CheckResult.failed(t.getMessage()));
-          }
+      } catch (Throwable t) {
+        LOG.warnAndDebugDetails("Failed to check updates of NuGet packages", t);
+        for (CheckablePackage entry : map.values()) {
+          entry.setResult(CheckResult.failed(t.getMessage()));
         }
       }
     }));
