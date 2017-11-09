@@ -79,6 +79,9 @@
     <Compile Include="..\nuget-commands\src\NuGetTeamCityPingCommand.cs">
       <Link>src\Shared\NuGetTeamCityPingCommand.cs</Link>
     </Compile>
+    <Compile Include="..\nuget-commands\src\NuGetTeamCityListPackagesCommand.cs">
+      <Link>src\Shared\NuGetTeamCityListPackagesCommand.cs</Link>
+    </Compile>
     <Compile Include="..\nuget-commands\src\PackageExtensions2.cs">
       <Link>src\Shared\PackageExtensions2.cs</Link>
     </Compile>
@@ -111,9 +114,8 @@
     </Compile>
     <Compile Include="..\nuget-commands\src.3.3\ListCommandBase.cs">
       <Link>src\Shared.3.3\ListCommandBase.cs</Link>
-    </Compile>
+    </Compile>	
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\NuGetTeamCityListPackagesCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
