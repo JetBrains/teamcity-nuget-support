@@ -102,7 +102,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
           foreach (var pkg in req.Data)
             pkg.AddError(message);
 
-          System.Console.Error.WriteLine("Failed to check package sources information for URI {0}. {1}", source, message);
+          System.Console.Error.WriteLine("Failed to check package sources information for {0}: {1}", source, message);
           System.Console.Out.WriteLine(e);
         }
       }

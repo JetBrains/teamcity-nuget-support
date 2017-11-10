@@ -34,14 +34,13 @@ public abstract class NuGetOutputProcessorAdapter<T> implements NuGetOutputProce
 
   public void onStdOutput(@NotNull String text) {
     if (LOG.isDebugEnabled()) {
-      LOG.debug(text);
+      LOG.debug(text.trim());
     }
-
   }
 
   public void onStdError(@NotNull String text) {
     if (!StringUtil.isEmptyOrSpaces(text)) {
-      LOG.warn(text);
+      LOG.warn(text.trim());
     }
   }
 
