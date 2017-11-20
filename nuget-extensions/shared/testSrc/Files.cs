@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using NUnit.Framework;
 using System.Linq;
+using System.Threading;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {
@@ -30,7 +31,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
     private static readonly Lazy<string> ourLocalFeed_1_8 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.8");    
-    private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline); 
+    private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline, LazyThreadSafetyMode.PublicationOnly); 
 
     public static string GetLocalFeedURI(NuGetVersion version)
     {
@@ -127,8 +128,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
         "-Source", NuGetConstants.NuGetDevFeed,
         "-ExcludeVersion", "-OutputDirectory", temp)
         .Dump().AssertNoErrorOutput().AssertExitedSuccessfully();
-      string nugetPath = Path.Combine(temp, "NuGet.CommandLine/tools/NuGet.Exe");
-      Assert.IsTrue(File.Exists(nugetPath));
+      string nugetPath = Path.Combine(temp, "NuGet.CommandLine/tools/NuGet.exe");
+      Assert.IsTrue(File.Exists(nugetPath), string.Format("File {0} does not exists", nugetPath));
       return nugetPath;
     }
 
