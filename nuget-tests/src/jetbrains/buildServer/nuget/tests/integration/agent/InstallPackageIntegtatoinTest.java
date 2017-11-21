@@ -207,11 +207,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
     List<File> packageses = listFiles("packages");
     System.out.println("installed packageses = " + packageses);
 
-    Assert.assertTrue(new File(myRoot, "packages/Elmah.1.2").isDirectory());
+    Assert.assertTrue(new File(myRoot, "packages/elmah.1.2").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.3001").isDirectory());
-    if (!SystemInfo.isWindows) {
-        return;
-    }
     Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.4001-beta").isDirectory());
   }
 
