@@ -17,13 +17,15 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
-import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.HttpAuthServer;
+import jetbrains.buildServer.util.SimpleHttpServerBase;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -170,9 +172,34 @@ public class MockNuGetAuthHTTP {
       }
     };
 
+    int port = getServerPort();
+
+    setServerPort(myHttp, port);
+
     myHttp.start();
     mySourceUrl = "http://localhost:" + myHttp.getPort() + "/nuget/";
     myDownloadUrl = "http://localhost:" + myHttp.getPort() + "/download/";
+  }
+
+  private void setServerPort(HttpAuthServer server, int port) {
+    try {
+      Field field = SimpleHttpServerBase.class.getDeclaredField("myPort");
+      field.setAccessible(true);
+      field.set(server, port);
+    } catch (Exception ignored) {
+    }
+  }
+
+  private static int getServerPort() throws IOException {
+    ServerSocket socket = null;
+    try {
+      socket = new ServerSocket(0);
+      return socket.getLocalPort();
+    } finally {
+      if (socket != null) {
+        socket.close();
+      }
+    }
   }
 
   private void log(String message) {
