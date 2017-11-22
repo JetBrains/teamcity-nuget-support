@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.feed.server.odata4j;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
-import jetbrains.buildServer.controllers.BaseController;
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
@@ -59,13 +59,13 @@ public class ODataRequestHandler implements NuGetFeedHandler {
   public void handleRequest(@NotNull final HttpServletRequest request,
                             @NotNull final HttpServletResponse response) throws Exception {
     if (myContainer == null) {
-      //error response according to OData spec for unsupported oprtaions (modification operations)
+      //error response according to OData spec for unsupported operations (modification operations)
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "TeamCity provided feed is not initialized.");
       return;
     }
 
     final ResponseCache.ComputeAction action = this::processFeedRequest;
-    if (TeamCityProperties.getBoolean("teamcity.nuget.feed.use.cache")) {
+    if (TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_USE_CACHE)) {
       myCache.getOrCompute(request, response, action);
     } else {
       action.compute(request, response);
