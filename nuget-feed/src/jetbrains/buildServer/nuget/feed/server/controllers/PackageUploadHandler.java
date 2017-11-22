@@ -265,7 +265,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       FileUtil.close(inputStream);
     }
 
-    LOG.info(String.format("Publishing nuget package %s:%s at path '%s' as a build artifact %s",
+    LOG.info(String.format("Publishing nuget package %s:%s at path '%s' as artifact for build %s",
       id, version, path, LogUtil.describe(build)));
     try {
       inputStream = file.getInputStream();
@@ -275,18 +275,30 @@ public class PackageUploadHandler implements NuGetFeedHandler {
         build.getBuildId(), path, e.getMessage()), e);
       throw e;
     } finally {
+      LOG.debug(String.format("Published nuget package %s:%s as artifact for build %s",
+        id, version, LogUtil.describe(build)));
       FileUtil.close(inputStream);
     }
 
     try {
+      LOG.debug(String.format("Adding metadata entry for package %s in build %s", key, LogUtil.describe(build)));
       myStorage.addBuildEntry(build.getBuildId(), NUGET_PROVIDER_ID, key, metadata, !build.isPersonal());
     } catch (Throwable e) {
       LOG.warnAndDebugDetails(String.format("Failed to update %s provider metadata for build %s. Error: %s",
         NUGET_PROVIDER_ID, build, e.getMessage()), e);
       throw e;
+    } finally {
+      LOG.debug(String.format("Added metadata entry for package %s in build %s", key, LogUtil.describe(build)));
     }
 
-    myCacheReset.resetCache();
+    if (TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_USE_CACHE)) {
+      try {
+        LOG.debug("Resetting packages cache");
+        myCacheReset.resetCache();
+      } finally {
+        LOG.debug("Resetted packages cache");
+      }
+    }
   }
 
   @NotNull

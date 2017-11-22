@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.feed.server.olingo;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory;
@@ -45,7 +46,7 @@ public class OlingoRequestHandler implements NuGetFeedHandler {
 
   @Override
   public void handleRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
-    if (TeamCityProperties.getBoolean("teamcity.nuget.feed.use.cache")) {
+    if (TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_USE_CACHE)) {
       myCache.getOrCompute(request, response, this::processFeedRequest);
     } else {
       processFeedRequest(request, response);
