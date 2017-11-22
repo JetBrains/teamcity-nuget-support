@@ -177,6 +177,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_safe(@NotNull final NuGet nuget) throws RunBuildException {
+    // nuget update command does not work on Unix
     if (!SystemInfo.isWindows) {
       return;
     }
@@ -196,6 +197,11 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS_17p)
   public void test_prerelease_local(@NotNull final NuGet nuget) throws RunBuildException {
+    // nuget update command does not work on Unix
+    if (!SystemInfo.isWindows) {
+      return;
+    }
+
     ArchiveUtil.unpackZip(getTestDataPath("test-prerelease.zip"), "prereleaseUpdate/", myRoot);
     allowUpdate(PackagesUpdateMode.FOR_SLN, true, false);
 
@@ -209,9 +215,6 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
     Assert.assertTrue(new File(myRoot, "packages/Elmah.1.2").isDirectory());
     Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.3001").isDirectory());
-    if (!SystemInfo.isWindows) {
-        return;
-    }
     Assert.assertTrue(new File(myRoot, "packages/Jonnyz.Package.3.0.4001-beta").isDirectory());
   }
 
