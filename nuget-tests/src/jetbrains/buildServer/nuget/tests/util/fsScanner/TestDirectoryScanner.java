@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.util.fsScanner;
 
 import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.nuget.agent.util.fsScanner.DirectoryScanner;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
@@ -150,7 +151,7 @@ public class TestDirectoryScanner extends BaseTestCase {
 
   @Test
   public void TestCaseSensitive() throws IOException {
-    if (SystemInfo.isWindows) return;
+    if (SystemInfo.isWindows) TestNGUtil.skip("test for Unix only");
 
     AssertScannerResult(
             new String[]
@@ -165,7 +166,7 @@ public class TestDirectoryScanner extends BaseTestCase {
 
   @Test
   public void TestCaseInSensitive() throws IOException {
-    if (!SystemInfo.isWindows) return;
+    if (!SystemInfo.isWindows) TestNGUtil.skip("test for Windows only");
 
     AssertScannerResult(
             new String[]

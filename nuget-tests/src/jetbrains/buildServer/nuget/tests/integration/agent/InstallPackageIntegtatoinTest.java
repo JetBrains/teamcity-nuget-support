@@ -127,7 +127,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_forConfig(@NotNull final NuGet nuget) throws RunBuildException {
     if (!SystemInfo.isWindows) {
-      return;
+      TestNGUtil.skip("nuget update command works only on Windows");
     }
 
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
@@ -177,9 +177,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_safe(@NotNull final NuGet nuget) throws RunBuildException {
-    // nuget update command does not work on Unix
     if (!SystemInfo.isWindows) {
-      return;
+      TestNGUtil.skip("nuget update command works only on Windows");
     }
 
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
@@ -197,9 +196,8 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS_17p)
   public void test_prerelease_local(@NotNull final NuGet nuget) throws RunBuildException {
-    // nuget update command does not work on Unix
     if (!SystemInfo.isWindows) {
-      return;
+      TestNGUtil.skip("nuget update command works only on Windows");
     }
 
     ArchiveUtil.unpackZip(getTestDataPath("test-prerelease.zip"), "prereleaseUpdate/", myRoot);

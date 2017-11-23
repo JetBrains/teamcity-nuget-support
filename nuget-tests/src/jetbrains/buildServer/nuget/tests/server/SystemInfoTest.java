@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.TempFolderProvider;
+import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.nuget.server.util.SystemInfoImpl;
 import jetbrains.buildServer.util.Win32RegistryAccessorUnpacker;
@@ -53,7 +54,7 @@ public class SystemInfoTest extends BaseTestCase {
   @Test
   public void testNet4IsDetected() throws IOException {
     if(!com.intellij.openapi.util.SystemInfo.isWindows) {
-      return;
+      TestNGUtil.skip("test for Windows only");
     }
 
     Assert.assertTrue(myInfo.isDotNetFrameworkAvailable());
@@ -62,7 +63,7 @@ public class SystemInfoTest extends BaseTestCase {
   @Test
   public void testNet4FlagCahced() throws IOException {
     if(!com.intellij.openapi.util.SystemInfo.isWindows) {
-      return;
+      TestNGUtil.skip("test for Windows only");
     }
 
     testNet4IsDetected();
@@ -79,7 +80,7 @@ public class SystemInfoTest extends BaseTestCase {
   @Test
   public void testWindowsDetected() {
     if(!com.intellij.openapi.util.SystemInfo.isWindows) {
-      return;
+      TestNGUtil.skip("test for Windows only");
     }
 
     Assert.assertTrue(myInfo.canStartNuGetProcesses());
