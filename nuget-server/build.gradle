@@ -47,6 +47,7 @@ dependencies {
     provided 'org.apache.httpcomponents:httpcore:4.3.3'
     provided 'org.apache.httpcomponents:httpclient:4.3.6'
     provided 'javax.ws.rs:javax.ws.rs-api:2.0'
+    provided "com.github.ben-manes.caffeine:caffeine:2.4.0"
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-api.jar")
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-api.jar")
