@@ -291,14 +291,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       LOG.debug(String.format("Added metadata entry for package %s in build %s", key, LogUtil.describe(build)));
     }
 
-    if (TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_USE_CACHE)) {
-      try {
-        LOG.debug("Resetting packages cache");
-        myCacheReset.resetCache();
-      } finally {
-        LOG.debug("Resetted packages cache");
-      }
-    }
+    myCacheReset.resetCache();
   }
 
   @NotNull

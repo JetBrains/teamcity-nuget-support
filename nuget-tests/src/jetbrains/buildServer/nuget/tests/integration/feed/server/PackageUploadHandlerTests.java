@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.controllers.MockResponse;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
@@ -37,7 +36,6 @@ import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -53,7 +51,7 @@ import java.util.Map;
  * Time: 16:37
  */
 @Test
-public class PackageUploadHandlerTests extends BaseTestCase {
+public class PackageUploadHandlerTests {
 
   private static final String SERVLET_PATH = "/app/nuget/v1/FeedService.svc";
   private static final String REQUEST_BODY = "--3576595b-8e57-4d70-91bb-701d5aab54ea\r\n" +
@@ -62,27 +60,6 @@ public class PackageUploadHandlerTests extends BaseTestCase {
     "\r\n" +
     "Hello\r\n" +
     "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n";
-
-  @BeforeClass
-  @Override
-  protected void setUpClass() throws Exception {
-    super.setUpClass();
-    setInternalProperty(NuGetFeedConstants.PROP_NUGET_FEED_USE_CACHE, "true");
-  }
-
-  public PackageUploadHandlerTests() {
-//    m = new Mockery();
-//    ServerSettings serverSettings = m.mock(ServerSettings.class);
-//    m.checking(new Expectations() {
-//      {
-//        allowing(serverSettings).getRootUrl();
-//        will(returnValue("http://localhost:8111"));
-//        allowing(serverSettings).getArtifactDirectories();
-//        File tempDirectory = FileUtil.createTempDirectory("PackageUploadHandlerTests", "test");
-//        will(returnValue(Arrays.asList(tempDirectory)));
-//      }
-//    });
-  }
 
   public void testNonMultipartRequest() throws Exception {
     Mockery m = new Mockery();

@@ -47,20 +47,25 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
 
   @Override
   public void setHeader(String name, String value) {
-    super.setHeader(name, value);
     myHeaders.put(name, value);
   }
 
   @Override
   public void addHeader(String name, String value) {
-    super.addHeader(name, value);
     myHeaders.put(name, value);
   }
 
   @Override
   public void setStatus(int sc) {
-    super.setStatus(sc);
     myStatus = sc;
+  }
+
+  @Override
+  public void setContentType(String type) {
+  }
+
+  @Override
+  public void setContentLength(int len) {
   }
 
   @Override

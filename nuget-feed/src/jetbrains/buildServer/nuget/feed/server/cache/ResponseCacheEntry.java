@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.cache;
 
+import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletOutputStream;
@@ -29,15 +30,15 @@ import java.util.TreeMap;
  * Date: 22.04.13 22:34
  */
 public class ResponseCacheEntry {
-  private final Map<String, String> myHeaders = new TreeMap<String, String>();
-  private final byte[] myGZippedContent;
+  private final Map<String, String> myHeaders = new TreeMap<>();
+  private final byte[] myContent;
   private final int myStatus;
 
   public ResponseCacheEntry(@NotNull final Map<String, String> headers,
-                            @NotNull final byte[] GZippedContent,
+                            @NotNull final byte[] content,
                             final int status) {
     myHeaders.putAll(headers);
-    myGZippedContent = GZippedContent;
+    myContent = content;
     myStatus = status;
   }
 
@@ -48,8 +49,14 @@ public class ResponseCacheEntry {
     }
     response.setHeader("Content-Encoding", "gzip");
     response.setStatus(myStatus);
-    ServletOutputStream stream = response.getOutputStream();
-    stream.write(myGZippedContent);
-    stream.flush();
+
+    ServletOutputStream stream = null;
+    try {
+      stream = response.getOutputStream();
+      stream.write(myContent);
+      stream.flush();
+    } finally {
+      FileUtil.close(stream);
+    }
   }
 }
