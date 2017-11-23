@@ -27,6 +27,7 @@ public class NuGetFeedConstants {
   public static final String PROP_NUGET_FEED_FILTER_TARGETFRAMEWORK = "teamcity.nuget.feed.filter.targetframework";
   public static final String PROP_NUGET_FEED_PUBLISH_PATH = "teamcity.nuget.feed.publish.path";
   public static final String PROP_NUGET_FEED_USE_CACHE = "teamcity.nuget.feed.use.cache";
+  public static final String PROP_NUGET_FEED_CACHE_SIZE = "teamcity.nuget.feed.response.cache.size";
   public static final int NUGET_FEED_PACKAGE_SIZE = 100;
   public static final String BUILD_TOKEN_PREFIX = WebAuthUtil.TEAM_CITY_AUTHENTICATED_BUILD + ":";
 }

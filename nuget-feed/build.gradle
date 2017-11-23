@@ -25,4 +25,5 @@ dependencies {
     provided project(':nuget-common')
     provided project(':nuget-server-common')
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
+    provided "com.github.ben-manes.caffeine:caffeine:2.4.0"
 }

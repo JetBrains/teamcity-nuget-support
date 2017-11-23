@@ -16,9 +16,13 @@
 
 package jetbrains.buildServer.nuget.feed.server.cache;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.BuildServerListener;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.users.SUser;
 import jetbrains.buildServer.util.*;
 import jetbrains.buildServer.web.impl.TeamCityInternalKeys;
@@ -28,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -36,21 +39,28 @@ import java.util.Map;
  */
 public class ResponseCacheImpl implements ResponseCache {
   private static final Logger LOG = Logger.getInstance(ResponseCacheImpl.class.getName());
-  private final Map<String, ResponseCacheEntry> myCache = new SoftValueHashMap<>();
+  private final Cache<String, ResponseCacheEntry> myCache;
 
   public ResponseCacheImpl(@NotNull EventDispatcher<BuildServerListener> dispatcher) {
+    myCache = Caffeine.newBuilder()
+      .executor(Runnable::run)
+      .maximumSize(TeamCityProperties.getLong(NuGetFeedConstants.PROP_NUGET_FEED_CACHE_SIZE, 100))
+      .build();
+
     dispatcher.addListener(new BuildServerAdapter() {
       @Override
       public void cleanupFinished() {
-        super.cleanupFinished();
         resetCache();
       }
     });
   }
 
   public void resetCache() {
-    synchronized (myCache) {
-      myCache.clear();
+    try {
+      LOG.debug("Resetting packages cache");
+      myCache.invalidateAll();
+    } finally {
+      LOG.debug("Resetted packages cache");
     }
   }
 
@@ -84,26 +94,22 @@ public class ResponseCacheImpl implements ResponseCache {
                            @NotNull final HttpServletResponse response,
                            @NotNull final ComputeAction action) throws Exception {
     final String key = key(request);
-    final ResponseCacheEntry cached;
-    synchronized (myCache) {
-      cached = myCache.get(key);
+    final ResponseCacheEntry entry = myCache.get(key, s -> {
+      LOG.debug("NuGet cache miss for: " + WebUtil.getRequestDump(request));
+      try {
+        final ResponseWrapper wrapped = new ResponseWrapper(response);
+        action.compute(request, wrapped);
+        return wrapped.build();
+      } catch (Exception e) {
+        LOG.warnAndDebugDetails("Failed to process request", e);
+        return null;
+      }
+    });
+
+    if (entry != null) {
+      entry.handleRequest(request, response);
+    } else {
+      action.compute(request, response);
     }
-
-    if (cached != null) {
-      cached.handleRequest(request, response);
-      return;
-    }
-
-    LOG.debug("NuGet cache miss for: " + WebUtil.getRequestDump(request));
-    final ResponseWrapper wrapped = new ResponseWrapper(response);
-
-    action.compute(request, wrapped);
-
-    final ResponseCacheEntry entry = wrapped.build();
-    synchronized (myCache) {
-      myCache.put(key, entry);
-    }
-
-    entry.handleRequest(request, response);
   }
 }
