@@ -22,6 +22,7 @@ import com.intellij.util.io.ZipUtil;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
+import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.SmartDirectoryCleaner;
@@ -127,7 +128,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_vs_solution(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     if(!SystemInfo.isWindows) {
-      return;
+      TestNGUtil.skip("nuget pack command works only on Windows");
     }
 
     ZipUtil.extract(getTestDataPath("solution.zip"), myRoot, null);
@@ -153,7 +154,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_vs_solution_tool(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     if(!SystemInfo.isWindows) {
-      return;
+      TestNGUtil.skip("nuget pack command works only on Windows");
     }
 
     ZipUtil.extract(getTestDataPath("solution.zip"), myRoot, null);
@@ -178,7 +179,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_vs_solution_symbols(@NotNull final NuGet nuget) throws IOException, RunBuildException {
     if(!SystemInfo.isWindows) {
-      return;
+      TestNGUtil.skip("nuget pack command works only on Windows");
     }
 
     ZipUtil.extract(getTestDataPath("solution.zip"), myRoot, null);

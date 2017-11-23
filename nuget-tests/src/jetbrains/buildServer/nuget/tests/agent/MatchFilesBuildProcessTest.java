@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 
 import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildRunnerContext;
@@ -108,7 +109,7 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
 
   @Test
   public void test_match_relative_file_windows_slashes() throws RunBuildException {
-    if (!SystemInfo.isWindows) return;
+    if (!SystemInfo.isWindows) TestNGUtil.skip("Only for Windows");
     final File dest = new File(root, "a/b/c/d/e/aaa.txt");
     FileUtil.createParentDirs(dest);
     FileUtil.writeFile(dest, "some content");
@@ -125,7 +126,7 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
 
   @Test
   public void test_match_relative_file_slashes() throws RunBuildException {
-    if (!SystemInfo.isWindows) return;
+    if (!SystemInfo.isWindows) TestNGUtil.skip("Only for Windows");
     final File dest = new File(root, "a/b/c/d/e/aaa.txt");
     FileUtil.createParentDirs(dest);
     FileUtil.writeFile(dest, "some content");
