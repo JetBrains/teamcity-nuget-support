@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.integration.MockNuGetAuthHTTP;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.util.ArchiveUtil;
+import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.testng.Assert;
@@ -62,6 +63,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_install(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
+    FileUtil.delete(new File(myRoot,"packages"));
     fetchPackages(nuget);
     Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
   }
@@ -70,6 +72,8 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   public void test_auth_restore(@NotNull final NuGet nuget) throws RunBuildException {
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
+    FileUtil.delete(new File(myRoot,"packages"));
+
     fetchPackages(nuget);
     Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
   }
@@ -77,6 +81,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_update(@NotNull final NuGet nuget) throws RunBuildException {
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
+    FileUtil.delete(new File(myRoot,"packages"));
 
     m.checking(new Expectations() {{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
