@@ -17,12 +17,12 @@
 package jetbrains.buildServer.nuget.tests.integration.agent;
 
 import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.integration.MockNuGetAuthHTTP;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.util.ArchiveUtil;
-import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.testng.Assert;
@@ -62,26 +62,28 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_install(@NotNull final NuGet nuget) throws RunBuildException {
+    if (nuget == NuGet.NuGet_3_3) TestNGUtil.skip("NuGet 3.3 has problems with authentication");
+
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
-    FileUtil.delete(new File(myRoot,"packages"));
     fetchPackages(nuget);
     Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
   }
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_auth_restore(@NotNull final NuGet nuget) throws RunBuildException {
+    if (nuget == NuGet.NuGet_3_3) TestNGUtil.skip("NuGet 3.3 has problems with authentication");
+
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
-    FileUtil.delete(new File(myRoot,"packages"));
-
     fetchPackages(nuget);
     Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
   }
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_update(@NotNull final NuGet nuget) throws RunBuildException {
+    if (nuget == NuGet.NuGet_3_3) TestNGUtil.skip("NuGet 3.3 has problems with authentication");
+
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
-    FileUtil.delete(new File(myRoot,"packages"));
 
     m.checking(new Expectations() {{
       allowing(myLogger).activityStarted(with(equal("update")), with(any(String.class)), with(equal("nuget")));
