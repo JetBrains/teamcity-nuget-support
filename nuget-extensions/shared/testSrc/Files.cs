@@ -4,7 +4,10 @@ using System.IO;
 using System.Net;
 using NUnit.Framework;
 using System.Linq;
+using System.ServiceModel.Syndication;
+using System.Text.RegularExpressions;
 using System.Threading;
+using System.Xml;
 
 namespace JetBrains.TeamCity.NuGet.Tests
 {
@@ -33,7 +36,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
     private static readonly Lazy<string> ourLocalFeed_1_8 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.8");    
-    private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline, LazyThreadSafetyMode.PublicationOnly); 
+    private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline, LazyThreadSafetyMode.PublicationOnly);
+    
+    // Example: https://dotnet.myget.org/F/nuget-build/api/v2/Packages(Id='NuGet.CommandLine',Version='3.2.0')
+    private static readonly Regex Version = new Regex("Version='([^']+)'", RegexOptions.Compiled);
 
     public static string GetLocalFeedURI(NuGetVersion version)
     {
@@ -130,16 +136,71 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     private static string FetchLatestNuGetCommandline()
     {
+      var version = GetLatestRtmVersion();
       var temp = CreateTempPath();
-      ProcessExecutor.ExecuteProcess(NuGetExe_4_3, "install", "NuGet.commandline",
-        "-Source", NuGetConstants.DefaultFeedUrl_v2,
-        "-Source", NuGetConstants.NuGetDevFeed,
-        "-ExcludeVersion", "-OutputDirectory", temp,
-        "-Verbosity", "detailed")
-        .Dump().AssertNoErrorOutput().AssertExitedSuccessfully();
+      ProcessExecutor.Result result = null;
+      
+      for (int i = 2; i > 0; i--)
+      {
+        result = ProcessExecutor.ExecuteProcess(NuGetExe_4_3, "install", "NuGet.commandline",
+            "-Source", NuGetConstants.DefaultFeedUrl_v2,
+            "-Source", NuGetConstants.NuGetDevFeed,
+            "-Version", version,
+            "-ExcludeVersion", "-OutputDirectory", temp,
+            "-Verbosity", "detailed")
+          .Dump().AssertNoErrorOutput();
+        if (result.ExitCode == 0) break;
+      }
+
+      Assert.NotNull(result, "Result is null");
+      result.AssertExitedSuccessfully();
+      
       string nugetPath = Path.Combine(temp, "NuGet.CommandLine/tools/NuGet.exe");
       Assert.IsTrue(File.Exists(nugetPath), string.Format("File {0} does not exists", nugetPath));
       return nugetPath;
+    }
+
+    private static string GetLatestRtmVersion()
+    {
+      String version = "4.3.0";
+      
+      try
+      {
+        var url = "https://dotnet.myget.org/F/nuget-build/api/v2/FindPackagesById?id='NuGet.CommandLine'&$skiptoken='NuGet.CommandLine','4.5.0-rtm-4681'";
+        do
+        {
+          using (var reader = XmlReader.Create(url))
+          {
+            var feed = SyndicationFeed.Load(reader);
+            foreach (var package in feed.Items)
+            {
+              var id = package.Id;
+              if (String.IsNullOrEmpty(id)) continue;
+
+              var match = Version.Match(id);
+              if (match.Success)
+              {
+                var value = match.Groups[1].Value;
+                if (value.Contains("rtm"))
+                {
+                  if (String.Compare(value, version, StringComparison.Ordinal) > 0)
+                  {
+                    version = value;
+                  }
+                }
+              }
+            }
+            var nextLink = feed.Links.FirstOrDefault(p => p.RelationshipType == "next");
+            url = nextLink != null ? nextLink.Uri.ToString() : null;
+          }
+        } while (!string.IsNullOrEmpty(url));
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e);
+      }
+
+      return version;
     }
 
     public static NuGetVersion[] NuGetVersions
