@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.settings.impl;
 
+import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.util.FileUtil;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -30,6 +31,7 @@ import java.io.IOException;
  *         Date: 30.10.11 15:30
  */
 public class NuGetSettingsPersistance {
+  private static final Logger LOG = Logger.getInstance(NuGetSettingsPersistance.class.getName());
   private final NuGetSettingsManagerConfiguration myConfig;
 
   public NuGetSettingsPersistance(@NotNull final NuGetSettingsManagerConfiguration config) {
@@ -47,6 +49,7 @@ public class NuGetSettingsPersistance {
   public SettingsState loadSettings() throws IOException {
     final File file = myConfig.getNuGetConfigXml();
     if (!file.isFile() || file.length() < 10) {
+      LOG.debug("Configuration file for NuGet plugin is empty, will use default settings");
       return new SettingsState();
     }
 

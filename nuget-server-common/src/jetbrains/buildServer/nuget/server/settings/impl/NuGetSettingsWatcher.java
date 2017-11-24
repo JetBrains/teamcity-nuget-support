@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.server.settings.impl;
 
 import com.intellij.openapi.diagnostic.Logger;
-import jetbrains.buildServer.configuration.ChangeListener;
 import jetbrains.buildServer.configuration.FileWatcher;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsComponent;
 import jetbrains.buildServer.nuget.server.settings.NuGetSettingsEventAdapter;
@@ -59,24 +58,20 @@ public class NuGetSettingsWatcher {
       }
     });
 
-    myWatcher.registerListener(new ChangeListener() {
-      public void changeOccured(String requestor) {
-        LOG.debug("Settings reload event recieved. Requestor - " + requestor);
-        reloadSettings(settings, persist);
-      }
+    myWatcher.registerListener(requestor -> {
+      LOG.debug("Settings reload event received. Requestor - " + requestor);
+      reloadSettings(settings, persist);
     });
 
     settings.addListener(new NuGetSettingsEventAdapter() {
       @Override
       public void settingsChanged(@NotNull NuGetSettingsComponent component) {
-        myWatcher.runActionWithDisabledObserver(new Runnable() {
-          public void run() {
-            try {
-              persist.saveSettings(settings.getState());
-            } catch (IOException e) {
-              LOG.warn("Failed to save NuGet settings. " + e.getMessage());
-              LOG.debug("Failed to save NuGet settings. " + e.getMessage(), e);
-            }
+        myWatcher.runActionWithDisabledObserver(() -> {
+          try {
+            persist.saveSettings(settings.getState());
+          } catch (IOException e) {
+            LOG.warn("Failed to save NuGet settings. " + e.getMessage());
+            LOG.debug("Failed to save NuGet settings. " + e.getMessage(), e);
           }
         });
       }
