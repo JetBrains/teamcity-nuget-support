@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.feed.server.controllers;
 
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.BuildAuthUtil;
 import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.log.LogUtil;
 import jetbrains.buildServer.nuget.common.PackageExistsException;
@@ -49,6 +50,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
@@ -181,7 +183,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
   }
 
   @Nullable
-  private RunningBuildEx getRunningBuild(@Nullable final String tokenValue) throws IOException {
+  private RunningBuildEx getRunningBuild(@Nullable final String tokenValue) {
     if (StringUtil.isEmptyOrSpaces(tokenValue)) {
       return null;
     }
@@ -193,20 +195,24 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       return null;
     }
 
-    if (!token.startsWith(NuGetFeedConstants.BUILD_TOKEN_PREFIX)) {
+    final List<String> parts = StringUtil.split(token, true, ':');
+    if (parts.size() != 2) {
       return null;
     }
 
-    long buildId;
-    try {
-      buildId = Long.parseLong(token.substring(NuGetFeedConstants.BUILD_TOKEN_PREFIX.length()));
-    } catch (NumberFormatException e) {
+    long buildId = BuildAuthUtil.getBuildId(parts.get(0));
+    if (buildId < 0) {
       return null;
     }
 
     final RunningBuildEx build = myRunningBuilds.findRunningBuildById(buildId);
     if (build == null) {
       LOG.debug(String.format("Running build %s not found", buildId));
+      return null;
+    }
+
+    if (!build.getAgentAccessCode().equals(parts.get(1))) {
+      LOG.info("Invalid access code for running build " + buildId);
       return null;
     }
 

@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.feed.server;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.agent.Constants;
+import jetbrains.buildServer.parameters.ProcessingResult;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
 import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider;
@@ -28,6 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static jetbrains.buildServer.agent.AgentRuntimeProperties.TEAMCITY_SERVER_URL;
+import static jetbrains.buildServer.agent.ServerProvidedProperties.TEAMCITY_AUTH_PASSWORD_PROP;
+import static jetbrains.buildServer.agent.ServerProvidedProperties.TEAMCITY_AUTH_USER_ID_PROP;
 import static jetbrains.buildServer.nuget.common.NuGetServerConstants.*;
 import static jetbrains.buildServer.parameters.ReferencesResolverUtil.makeReference;
 import static jetbrains.buildServer.web.util.WebUtil.*;
@@ -50,8 +53,14 @@ public class NuGetServerPropertiesProvider extends AbstractBuildParametersProvid
   public Map<String, String> getParameters(@NotNull SBuild build, boolean emulationMode) {
     final Map<String, String> properties = getProperties();
     if (mySettings.isNuGetServerEnabled()) {
-      final String buildToken = NuGetFeedConstants.BUILD_TOKEN_PREFIX + build.getBuildId();
-      properties.put(FEED_REFERENCE_AGENT_API_KEY_PROVIDED, EncryptUtil.scramble(buildToken));
+      final String buildToken = String.format("%s:%s",
+        makeReference(TEAMCITY_AUTH_USER_ID_PROP),
+        makeReference(TEAMCITY_AUTH_PASSWORD_PROP));
+
+      final ProcessingResult result = build.getValueResolver().resolve(buildToken);
+      if (result.isFullyResolved()) {
+        properties.put(FEED_REFERENCE_AGENT_API_KEY_PROVIDED, EncryptUtil.scramble(result.getResult()));
+      }
     }
     return properties;
   }
