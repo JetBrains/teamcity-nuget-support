@@ -168,7 +168,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody("".getBytes());
 
     handler.handleRequest(request, response);
@@ -189,6 +189,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
 
       oneOf(serverSettings).getRootUrl();
       will(returnValue("http://localhost:8111"));
@@ -203,7 +205,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody((
       "--3576595b-8e57-4d70-91bb-701d5aab54ea\r\n" +
         "Content-Type: application/octet-stream\r\n" +
@@ -230,6 +232,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
       oneOf(build).getArtifactsLimit();
       will(returnValue(new ArtifactsUploadLimit(1L, null)));
       oneOf(build).addBuildProblem(with(any(BuildProblemData.class)));
@@ -247,7 +251,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
     handler.handleRequest(request, response);
@@ -268,6 +272,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
       oneOf(build).getArtifactsLimit();
       will(returnValue(new ArtifactsUploadLimit(null, 0L)));
       oneOf(build).addBuildProblem(with(any(BuildProblemData.class)));
@@ -285,7 +291,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
     handler.handleRequest(request, response);
@@ -306,6 +312,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
       oneOf(build).getArtifactsLimit();
       will(returnValue(new ArtifactsUploadLimit(1000000L, 1L)));
       oneOf(build).addBuildProblem(with(any(BuildProblemData.class)));
@@ -322,7 +330,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
     handler.handleRequest(request, response);
@@ -343,6 +351,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
       oneOf(build).getArtifactsLimit();
       will(returnValue(ArtifactsUploadLimit.UNLIMITED));
 
@@ -359,7 +369,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
     handler.handleRequest(request, response);
@@ -393,6 +403,8 @@ public class PackageUploadHandlerTests {
       will(returnValue("type"));
       oneOf(build).getBuildId();
       will(returnValue(3641L));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
       one(build).getBuildOwnParameters();
       will(returnValue(Collections.emptyMap()));
       oneOf(metadataStorage).getEntriesByKey(
@@ -415,7 +427,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
     handler.handleRequest(request, response);
@@ -439,6 +451,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
       one(build).getArtifactsLimit();
       will(returnValue(ArtifactsUploadLimit.UNLIMITED));
       oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
@@ -465,7 +479,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
     handler.handleRequest(request, response);
@@ -499,6 +513,8 @@ public class PackageUploadHandlerTests {
       will(returnValue("type"));
       oneOf(build).getBuildId();
       will(returnValue(3641L));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
       oneOf(build).isPersonal();
       will(returnValue(false));
       one(build).getBuildOwnParameters();
@@ -521,7 +537,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
     request.setParameter("replace", "true");
 
@@ -555,6 +571,8 @@ public class PackageUploadHandlerTests {
       will(returnValue("type"));
       oneOf(build).getBuildId();
       will(returnValue(3641L));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
       oneOf(build).isPersonal();
       will(returnValue(false));
       one(build).getBuildOwnParameters();
@@ -581,7 +599,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
     handler.handleRequest(request, response);
@@ -614,6 +632,8 @@ public class PackageUploadHandlerTests {
       will(returnValue("type"));
       oneOf(build).getBuildId();
       will(returnValue(3641L));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
       oneOf(build).isPersonal();
       will(returnValue(false));
       one(build).getBuildOwnParameters();
@@ -639,7 +659,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
     handler.handleRequest(request, response);
@@ -672,6 +692,8 @@ public class PackageUploadHandlerTests {
       will(returnValue("type"));
       oneOf(build).getBuildId();
       will(returnValue(3641L));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
       oneOf(build).isPersonal();
       will(returnValue(false));
       one(build).getBuildOwnParameters();
@@ -698,7 +720,7 @@ public class PackageUploadHandlerTests {
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
-    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef923157da5d6c0a4328e5bbb66c5f55a62469ba6d36bedf0ebc0ef");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
     handler.handleRequest(request, response);
