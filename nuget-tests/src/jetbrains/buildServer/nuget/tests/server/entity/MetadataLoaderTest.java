@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import javax.net.ssl.SSLException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -76,6 +77,11 @@ public class MetadataLoaderTest {
       final MetadataParseResult result = XmlFeedParsers.loadMetadataBeans(XmlUtil.from_s(source));
       Assert.assertFalse(result.getData().isEmpty());
       Assert.assertFalse(result.getKey().isEmpty());
+    } catch (SSLException ignored) {
+      // ignore SSL problems on agents with outdated JDK
+      if (!ignored.getMessage().contains("hostname in certificate didn't match")) {
+        throw ignored;
+      }
     } finally {
       get.abort();
     }
