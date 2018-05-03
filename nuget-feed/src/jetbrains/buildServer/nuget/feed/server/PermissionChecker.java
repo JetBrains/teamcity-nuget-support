@@ -31,7 +31,7 @@ public class PermissionChecker {
   }
 
   public boolean hasAccess(@NotNull AuthorityHolder authorityHolder) {
-    return AuthUtil.hasGlobalPermission(authorityHolder, Permission.CHANGE_SERVER_SETTINGS);
+    return AuthUtil.hasGlobalPermission(authorityHolder, Permission.VIEW_SERVER_SETTINGS);
   }
 
   public boolean hasAccess() {

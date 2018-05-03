@@ -35,10 +35,10 @@
     NuGet Server<bs:help file="NuGet"/> is
     <c:choose>
       <c:when test="${serverEnabled}">
-        <strong>enabled</strong> <input type="button" class="btn btn_mini" value="Disable" onclick="return BS.NuGet.FeedServer.disableFeedServer(this);" />
+        <strong>enabled</strong> <c:if test="${afn:permissionGrantedGlobally('CHANGE_SERVER_SETTINGS')}"><input type="button" class="btn btn_mini" value="Disable" onclick="return BS.NuGet.FeedServer.disableFeedServer(this);" /></c:if>
       </c:when>
       <c:otherwise>
-        <strong>disabled</strong> <input type="button" class="btn btn_mini" value="Enable" onclick="return BS.NuGet.FeedServer.enableFeedServer(this);" />
+        <strong>disabled</strong> <c:if test="${afn:permissionGrantedGlobally('CHANGE_SERVER_SETTINGS')}"><input type="button" class="btn btn_mini" value="Enable" onclick="return BS.NuGet.FeedServer.enableFeedServer(this);" /></c:if>
       </c:otherwise>
     </c:choose>
     <span><%--used for loading icon--%></span>
