@@ -30,6 +30,7 @@ import jetbrains.buildServer.util.XmlUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.HttpStatus;
 import org.jdom.*;
+import org.jdom.input.JDOMParseException;
 import org.jdom.xpath.XPath;
 import org.jetbrains.annotations.NotNull;
 import org.testng.Assert;
@@ -37,6 +38,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URI;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -313,8 +315,13 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     compareXmlWithGold(parseXml(actualXml), goldPath);
   }
 
-  private Element parseXml(String text) {
-    return XmlUtil.from_s(text);
+  private Element parseXml(String text) throws JDOMException, IOException {
+    try {
+      return FileUtil.parseDocument(new StringReader(text), false);
+    } catch (JDOMParseException e) {
+      System.err.println("Failed to parse document: " + text);
+      throw e;
+    }
   }
 
   private void compareXmlWithGold(Element actual, String goldPath) throws JDOMException, IOException {
@@ -323,7 +330,7 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     compareXml(actual, gold);
   }
 
-  private Element parseGoldXml(String goldPath) throws IOException {
+  private Element parseGoldXml(String goldPath) throws IOException, JDOMException {
     final File file = Paths.getTestDataPath(goldPath);
     final String text = new String(FileUtil.loadFileText(file, "utf-8"));
     return parseXml(text);
