@@ -105,9 +105,9 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
           LOG.warn("Failed to resolve NuGet package Id, package ignored: " + aPackage);
         }
       } catch (PackageLoadException e) {
-        LOG.warn("Failed to read NuGet package: " + aPackage);
+        LOG.warnAndDebugDetails("Failed to read NuGet package " + aPackage, e);
       } catch (Throwable e) {
-        LOG.warnAndDebugDetails(String.format("Unexpected error while indexing NuGet package %s: %s", aPackage, e.getMessage()), e);
+        LOG.warnAndDebugDetails("Unexpected error while indexing NuGet package " + aPackage, e);
       }
     }
   }
@@ -120,7 +120,7 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
       inputStream = artifact.getInputStream();
       metadata = myPackageAnalyzer.analyzePackage(inputStream);
     } catch (IOException e) {
-      throw new PackageLoadException("Failed to read build artifact data");
+      throw new PackageLoadException("Failed to read build artifact data", e);
     } finally {
       FileUtil.close(inputStream);
     }
