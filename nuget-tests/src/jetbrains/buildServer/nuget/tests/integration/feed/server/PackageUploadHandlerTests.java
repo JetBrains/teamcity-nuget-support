@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.controllers.MockResponse;
+import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
@@ -408,7 +409,7 @@ public class PackageUploadHandlerTests {
       one(build).getBuildOwnParameters();
       will(returnValue(Collections.emptyMap()));
       oneOf(metadataStorage).getEntriesByKey(
-        NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID,
+        PackageConstants.NUGET_PROVIDER_ID,
         "id.1.0.0");
       will(returnIterator());
       oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
@@ -458,7 +459,7 @@ public class PackageUploadHandlerTests {
       oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
       will(returnValue(metadata));
       oneOf(metadataStorage).getEntriesByKey(
-        NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID,
+          PackageConstants.NUGET_PROVIDER_ID,
         "id.1.0.0"
       );
       will(returnIterator(new BuildMetadataEntryImpl(
@@ -578,7 +579,7 @@ public class PackageUploadHandlerTests {
       one(build).getBuildOwnParameters();
       will(returnValue(Collections.emptyMap()));
       oneOf(metadataStorage).getEntriesByKey(
-        NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID,
+        PackageConstants.NUGET_PROVIDER_ID,
         "id.1.0.0");
       will(returnIterator());
       oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
@@ -639,7 +640,7 @@ public class PackageUploadHandlerTests {
       one(build).getBuildOwnParameters();
       will(returnValue(Collections.emptyMap()));
       oneOf(metadataStorage).getEntriesByKey(
-        NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID,
+          PackageConstants.NUGET_PROVIDER_ID,
         "id.1.0.0");
       will(returnIterator());
       oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
@@ -699,7 +700,7 @@ public class PackageUploadHandlerTests {
       one(build).getBuildOwnParameters();
       will(returnValue(CollectionsUtil.asMap(NuGetFeedConstants.PROP_NUGET_FEED_PUBLISH_PATH, "{0}.{1}.nupkg")));
       oneOf(metadataStorage).getEntriesByKey(
-        NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID,
+          PackageConstants.NUGET_PROVIDER_ID,
         "id.1.0.0");
       will(returnIterator());
       oneOf(build).publishArtifact(with(equal("Id.1.0.0.nupkg")), with(any(InputStream.class)));

@@ -34,8 +34,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static jetbrains.buildServer.nuget.common.index.PackageConstants.NUGET_PROVIDER_ID;
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
-import static jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)

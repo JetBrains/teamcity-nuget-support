@@ -70,7 +70,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
+import static jetbrains.buildServer.nuget.common.index.PackageConstants.NUGET_PROVIDER_ID;
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**

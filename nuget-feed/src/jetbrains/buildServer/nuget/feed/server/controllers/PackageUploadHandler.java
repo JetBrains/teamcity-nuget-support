@@ -53,9 +53,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.common.index.PackageConstants.TEAMCITY_ARTIFACT_RELPATH;
-import static jetbrains.buildServer.nuget.common.index.PackageConstants.TEAMCITY_BUILD_TYPE_ID;
-import static jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
+import static jetbrains.buildServer.nuget.common.index.PackageConstants.*;
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**

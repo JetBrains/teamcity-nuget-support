@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.index;
 
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider;
+import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.serverSide.metadata.impl.indexer.MetadataIndexerService;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,6 +36,6 @@ public class NuGetPackagesIndexer {
    * Re-index all NuGet-related data
    */
   public void reindexAll() {
-    myMetadataIndexerService.reindexProviderData(NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID);
+    myMetadataIndexerService.reindexProviderData(PackageConstants.NUGET_PROVIDER_ID);
   }
 }
