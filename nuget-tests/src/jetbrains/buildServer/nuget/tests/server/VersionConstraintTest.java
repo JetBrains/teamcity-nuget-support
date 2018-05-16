@@ -17,8 +17,8 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.version.SemanticVersion;
-import jetbrains.buildServer.nuget.server.version.VersionConstraint;
+import jetbrains.buildServer.nuget.common.version.SemanticVersion;
+import jetbrains.buildServer.nuget.common.version.VersionConstraint;
 import org.jetbrains.annotations.NotNull;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;

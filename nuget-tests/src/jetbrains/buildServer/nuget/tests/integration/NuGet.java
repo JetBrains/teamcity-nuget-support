@@ -17,8 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
-import jetbrains.buildServer.nuget.server.version.SemanticVersion;
-import jetbrains.buildServer.nuget.server.version.Version;
+import jetbrains.buildServer.nuget.common.version.Version;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

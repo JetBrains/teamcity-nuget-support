@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.odata4j;
 
-import jetbrains.buildServer.nuget.server.version.SemanticVersion;
+import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import org.odata4j.expression.BinaryCommonExpression;
 import org.odata4j.expression.CommonExpression;
 import org.odata4j.expression.EntitySimpleProperty;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.version;
+package jetbrains.buildServer.nuget.common.version;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

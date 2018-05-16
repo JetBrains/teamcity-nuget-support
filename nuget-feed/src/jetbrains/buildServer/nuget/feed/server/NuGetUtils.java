@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server;
 
-import jetbrains.buildServer.nuget.server.version.VersionUtility;
+import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

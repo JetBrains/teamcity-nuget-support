@@ -40,7 +40,7 @@ import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFuncti
 import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory;
-import jetbrains.buildServer.nuget.server.version.VersionUtility;
+import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.ServerSettings;

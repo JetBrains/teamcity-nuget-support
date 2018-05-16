@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo.model;
 
-import jetbrains.buildServer.nuget.server.version.SemanticVersion;
+import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -27,7 +27,7 @@ import jetbrains.buildServer.nuget.feed.server.index.impl.transform.AccessCheckT
 import jetbrains.buildServer.nuget.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
 import jetbrains.buildServer.nuget.feed.server.index.impl.transform.SamePackagesFilterTransformation;
 import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntityAdapter;
-import jetbrains.buildServer.nuget.server.version.SemanticVersion;
+import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import jetbrains.buildServer.nuget.tests.integration.feed.server.MockExternalIdTransformation;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;

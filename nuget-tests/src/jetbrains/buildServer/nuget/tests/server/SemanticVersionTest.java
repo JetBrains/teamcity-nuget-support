@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.server.version.SemanticVersion;
+import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import org.testng.annotations.Test;
 
 /**

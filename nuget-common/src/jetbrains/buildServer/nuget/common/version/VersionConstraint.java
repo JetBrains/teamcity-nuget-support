@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.version;
+package jetbrains.buildServer.nuget.common.version;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 import com.intellij.openapi.util.text.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class VersionConstraint {
-
-  static Splitter VERSIONS_IN_RANGE = Splitter.on(",").omitEmptyStrings().trimResults();
 
   @Nullable private SemanticVersion myMinVersion;
   private boolean myIsMinInclusive = true;
@@ -75,20 +73,20 @@ public class VersionConstraint {
     }
 
     final String valueTrimmed = value.substring(1, value.length() - 1);
-    final String[] parts = Iterables.toArray(VERSIONS_IN_RANGE.split(valueTrimmed), String.class);
+    final List<String> parts = StringUtil.split(valueTrimmed, ",");
     String minVersionString = "";
     String maxVersionString = "";
-    if(parts.length == 2){
-      minVersionString = parts[0];
-      maxVersionString = parts[1];
-    } else if (parts.length == 1){
+    if(parts.size() == 2){
+      minVersionString = parts.get(0);
+      maxVersionString = parts.get(1);
+    } else if (parts.size() == 1){
       if(valueTrimmed.indexOf(',') == -1){
-        minVersionString = maxVersionString = parts[0];
+        minVersionString = maxVersionString = parts.get(0);
       } else{
         if(valueTrimmed.startsWith(",")){
-          maxVersionString = parts[0];
+          maxVersionString = parts.get(0);
         } else if(valueTrimmed.endsWith(",")){
-          minVersionString = parts[0];
+          minVersionString = parts.get(0);
         } else return null;
       }
     } else return null;

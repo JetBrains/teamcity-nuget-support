@@ -25,7 +25,7 @@ import jetbrains.buildServer.nuget.feed.server.index.impl.FrameworkConstraintsCa
 import jetbrains.buildServer.nuget.feed.server.index.impl.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageStructureAnalyser;
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageStructureVisitor;
-import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
+import jetbrains.buildServer.nuget.common.version.FrameworkConstraints;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;

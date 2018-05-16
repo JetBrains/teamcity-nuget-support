@@ -18,6 +18,8 @@ package jetbrains.buildServer.nuget.feed.server;
 
 import jetbrains.buildServer.RootUrlHolder;
 import jetbrains.buildServer.agent.Constants;
+import jetbrains.buildServer.nuget.common.NuGetServerConstants;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils;
 import jetbrains.buildServer.parameters.ProcessingResult;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
@@ -60,6 +62,10 @@ public class NuGetServerPropertiesProvider extends AbstractBuildParametersProvid
       final ProcessingResult result = build.getValueResolver().resolve(buildToken);
       if (result.isFullyResolved()) {
         properties.put(FEED_REFERENCE_AGENT_API_KEY_PROVIDED, EncryptUtil.scramble(result.getResult()));
+      }
+
+      if (NuGetIndexUtils.isIndexingEnabledForBuild(build)) {
+        properties.put(NuGetServerConstants.FEED_INDEXING_ENABLED_PROP, "true");
       }
     }
     return properties;

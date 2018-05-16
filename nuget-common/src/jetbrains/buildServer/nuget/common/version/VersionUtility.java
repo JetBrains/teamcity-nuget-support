@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.server.version;
+package jetbrains.buildServer.nuget.common.version;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.util.CaseInsensitiveMap;
@@ -22,7 +22,6 @@ import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.Converter;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.util.filters.Filter;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -235,15 +234,17 @@ public class VersionUtility {
 
     Version version = Version.EMPTY;
 
-    if(versionPart != null){
-      try{
+    if (versionPart != null) {
+      try {
         Integer.parseInt(versionPart);
-        if (versionPart.length() > 4){
+        int length = versionPart.length();
+        if (length > 4) {
           versionPart = versionPart.substring(0, 4);
         }
         // Make sure it has at least 2 digits so it parses as a valid version
-        versionPart = StringUtils.join(splitByChar(StringUtils.rightPad(versionPart, 2, '0')), ".");
-      } catch (NumberFormatException ex){
+        String paddedVersion = length > 2 ? versionPart : versionPart + StringUtil.repeatSymbol('0', 2 - length);
+        versionPart = StringUtil.join(splitByChar(paddedVersion), ".");
+      } catch (NumberFormatException ex) {
         LOG.debug("Failed to parse framework version from string " + frameworkNameString, ex);
         return null;
       }

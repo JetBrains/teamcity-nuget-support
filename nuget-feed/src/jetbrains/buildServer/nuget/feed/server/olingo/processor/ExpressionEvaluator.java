@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 
-import jetbrains.buildServer.nuget.server.version.SemanticVersion;
+import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import org.apache.olingo.odata2.api.edm.*;
 import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.exception.ODataNotImplementedException;

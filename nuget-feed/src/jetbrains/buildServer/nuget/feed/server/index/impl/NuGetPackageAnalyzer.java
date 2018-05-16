@@ -19,7 +19,7 @@ package jetbrains.buildServer.nuget.feed.server.index.impl;
 import com.google.common.collect.Lists;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
-import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
+import jetbrains.buildServer.nuget.common.version.FrameworkConstraints;
 import jetbrains.buildServer.util.FileUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;

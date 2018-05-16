@@ -18,7 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.google.common.collect.Lists;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.server.version.FrameworkConstraints;
+import jetbrains.buildServer.nuget.common.version.FrameworkConstraints;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;

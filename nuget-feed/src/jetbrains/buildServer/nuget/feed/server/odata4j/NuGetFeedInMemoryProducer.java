@@ -27,7 +27,7 @@ import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntity;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunction;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
-import jetbrains.buildServer.nuget.server.version.SemanticVersion;
+import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.core4j.Enumerable;
 import org.core4j.Func;
