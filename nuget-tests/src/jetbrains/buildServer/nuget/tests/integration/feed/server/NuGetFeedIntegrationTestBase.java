@@ -21,10 +21,10 @@ import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedGetMethodFactory;
 import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedHttpClientHolder;
-import jetbrains.buildServer.nuget.feed.server.index.impl.FrameworkConstraintsCalculator;
-import jetbrains.buildServer.nuget.feed.server.index.impl.LocalNuGetPackageItemsFactory;
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageStructureAnalyser;
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageStructureVisitor;
+import jetbrains.buildServer.nuget.common.index.FrameworkConstraintsCalculator;
+import jetbrains.buildServer.nuget.common.index.LocalNuGetPackageItemsFactory;
+import jetbrains.buildServer.nuget.common.index.NuGetPackageStructureAnalyser;
+import jetbrains.buildServer.nuget.common.index.NuGetPackageStructureVisitor;
 import jetbrains.buildServer.nuget.common.version.FrameworkConstraints;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.serverSide.SFinishedBuild;
@@ -39,8 +39,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
-import org.jmock.api.Invocation;
-import org.jmock.lib.action.CustomAction;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -48,6 +46,7 @@ import org.testng.annotations.BeforeMethod;
 import java.io.*;
 import java.util.*;
 
+import static jetbrains.buildServer.nuget.common.index.PackageConstants.*;
 import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.*;
 import static org.apache.http.HttpStatus.*;
 
@@ -117,15 +116,6 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
       allowing(build).getFinishDate();
       will(returnValue(new Date(1319214849319L)));
 
-      allowing(artifact).getInputStream();
-      will(new CustomAction("open file") {
-        public Object invoke(Invocation invocation) throws Throwable {
-          final FileInputStream stream = new FileInputStream(packageFile);
-          myStreams.add(stream);
-          return stream;
-        }
-      });
-
       allowing(artifact).getTimestamp();
       will(returnValue(packageFile.lastModified()));
       allowing(artifact).getSize();
@@ -141,7 +131,7 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
       final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
       final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
 
-      new NuGetPackageStructureVisitor(analysers).visit(artifact);
+      new NuGetPackageStructureVisitor(analysers).visit(new FileInputStream(packageFile));
 
       final Map<String, String> map = packageItemsFactory.getItems();
       map.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints()));

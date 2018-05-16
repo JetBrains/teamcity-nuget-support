@@ -20,9 +20,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
-import jetbrains.buildServer.nuget.feed.server.index.impl.FrameworkConstraintsCalculator;
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageStructureAnalyser;
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageStructureVisitor;
+import jetbrains.buildServer.nuget.common.index.FrameworkConstraintsCalculator;
+import jetbrains.buildServer.nuget.common.index.NuGetPackageStructureAnalyser;
+import jetbrains.buildServer.nuget.common.index.NuGetPackageStructureVisitor;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.FileUtil;
@@ -117,26 +117,7 @@ public class FrameworkConstraintsCalculatorTest extends BaseTestCase {
     final File pkg = Paths.getTestDataPath(pathToPackage);
     Assert.assertTrue(pkg.isFile(), "Package wasn't found on path " + pkg.getAbsolutePath());
     final FrameworkConstraintsCalculator calculator = new FrameworkConstraintsCalculator();
-    new NuGetPackageStructureVisitor(Lists.<NuGetPackageStructureAnalyser>newArrayList(calculator)).visit(artifact(pkg));
+    new NuGetPackageStructureVisitor(Lists.newArrayList(calculator)).visit(new FileInputStream(pkg));
     assertEquals(expectedConstraints, calculator.getPackageConstraints());
-  }
-
-  @NotNull
-  private BuildArtifact artifact(@NotNull final File file) throws IOException {
-    final BuildArtifact a = m.mock(BuildArtifact.class, file.getPath());
-    m.checking(new Expectations(){{
-      allowing(a).getInputStream(); will(new CustomAction("open file") {
-        public Object invoke(Invocation invocation) throws Throwable {
-          final FileInputStream stream = new FileInputStream(file);
-          myStreams.add(stream);
-          return stream;
-        }
-      });
-      allowing(a).getTimestamp(); will(returnValue(file.lastModified()));
-      allowing(a).getSize(); will(returnValue(file.length()));
-      allowing(a).getRelativePath(); will(returnValue(file.getPath()));
-      allowing(a).getName(); will(returnValue(file.getName()));
-    }});
-    return a;
   }
 }

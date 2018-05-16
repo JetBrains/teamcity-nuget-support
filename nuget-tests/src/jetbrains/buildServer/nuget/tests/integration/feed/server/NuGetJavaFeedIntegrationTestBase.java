@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.intellij.util.containers.SortedList;
 import jetbrains.buildServer.controllers.MockResponse;
+import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
@@ -29,7 +30,7 @@ import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
 import jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
+import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
@@ -223,7 +224,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   private Map<String, String> indexPackage(@NotNull final File file, final boolean isLatest) throws IOException {
     final int buildId = myCount++;
     final Map<String, String> map = indexPackage(file, isLatest, buildId);
-    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
+    map.put(PackageConstants.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
     return map;
   }
 
@@ -240,14 +241,14 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     map.put(VERSION, ver + "." + myCount);
     map.put(IS_LATEST_VERSION, String.valueOf(isLatest));
     map.put(IS_ABSOLUTE_LATEST_VERSION, String.valueOf(isLatest));
-    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
+    map.put(PackageConstants.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
     NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
     myFeed.add(e);
     return e;
   }
 
   protected NuGetIndexEntry addMockPackage(@NotNull final Map<String, String> attributes) {
-    attributes.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
+    attributes.put(PackageConstants.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
 
     final String id = attributes.get(ID);
     final String ver = attributes.get(VERSION);
@@ -267,7 +268,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
     map.remove(IS_LATEST_VERSION);
     map.remove(IS_ABSOLUTE_LATEST_VERSION);
-    map.put(PackagesIndex.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
+    map.put(PackageConstants.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
     NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
     myFeed.add(e);
     return e;

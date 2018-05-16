@@ -2,6 +2,7 @@ package jetbrains.buildServer.nuget.feed.server.index;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.containers.SortedList;
+import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+import static jetbrains.buildServer.nuget.common.index.PackageConstants.TEAMCITY_FRAMEWORK_CONSTRAINTS;
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**
@@ -77,7 +79,7 @@ public class NuGetFeed {
       final String id = nugetPackageAttributes.get(ID);
       final String version = nugetPackageAttributes.get(VERSION);
       final String isPrerelease = nugetPackageAttributes.get(IS_PRERELEASE);
-      final String frameworkConstraints = nugetPackageAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS);
+      final String frameworkConstraints = nugetPackageAttributes.get(TEAMCITY_FRAMEWORK_CONSTRAINTS);
       if (!includePrerelease && Boolean.parseBoolean(isPrerelease)) {
         LOG.debug(String.format("Skipped package (id:%s, version:%s) since its pre-released.", id, version));
         return false;
@@ -102,7 +104,7 @@ public class NuGetFeed {
   private List<NuGetIndexEntry> searchPackages(final String searchTerm, final String targetFramework, boolean includePrerelease) {
     if (StringUtil.isEmpty(searchTerm)) {
       if (StringUtil.isNotEmpty(targetFramework)) {
-        return myIndex.search(Collections.singletonList(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS), targetFramework);
+        return myIndex.search(Collections.singletonList(TEAMCITY_FRAMEWORK_CONSTRAINTS), targetFramework);
       }
 
       if (!includePrerelease) {
@@ -206,7 +208,7 @@ public class NuGetFeed {
     }
 
     if (myServerSettings.isFilteringByTargetFrameworkEnabled()) {
-      final String frameworkConstraints = indexEntryAttributes.get(PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS);
+      final String frameworkConstraints = indexEntryAttributes.get(TEAMCITY_FRAMEWORK_CONSTRAINTS);
       final Set<String> packageFrameworkConstraints = FrameworkConstraints.convertFromString(frameworkConstraints);
       if (!targetFrameworks.isEmpty() && !VersionUtility.isPackageCompatibleWithFrameworks(targetFrameworks, packageFrameworkConstraints)) {
         return false;

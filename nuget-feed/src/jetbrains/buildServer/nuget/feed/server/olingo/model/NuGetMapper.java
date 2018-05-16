@@ -17,10 +17,11 @@
 package jetbrains.buildServer.nuget.feed.server.olingo.model;
 
 import com.intellij.openapi.util.text.StringUtil;
+import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
-import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
+import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joda.time.LocalDateTime;
@@ -86,7 +87,7 @@ public final class NuGetMapper {
 
   private static String getDownloadUrl(@NotNull URI requestUri, Map<String, String> attributes) {
     final String authSchema = StringUtil.split(requestUri.getPath(), "/").get(0);
-    final String artifactPath = getValue(attributes, PackagesIndex.TEAMCITY_DOWNLOAD_URL);
+    final String artifactPath = getValue(attributes, PackageConstants.TEAMCITY_DOWNLOAD_URL);
     final String downloadPath = String.format("/%s%s", authSchema, artifactPath);
     return UriBuilder
             .fromUri(requestUri)

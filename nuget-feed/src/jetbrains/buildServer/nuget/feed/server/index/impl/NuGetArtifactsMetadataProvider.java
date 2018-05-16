@@ -19,13 +19,13 @@ package jetbrains.buildServer.nuget.feed.server.index.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
+import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
-import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils;
+import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.serverSide.SBuild;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode;
 import jetbrains.buildServer.serverSide.impl.LogUtil;
@@ -34,14 +34,13 @@ import jetbrains.buildServer.serverSide.metadata.MetadataStorageWriter;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
-import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.*;
+import static jetbrains.buildServer.nuget.common.index.PackageConstants.*;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -52,7 +51,6 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
   private static final Logger LOG = Logger.getInstance(NuGetArtifactsMetadataProvider.class.getName());
 
   public static final String NUGET_PROVIDER_ID = "nuget";
-  private static final String TEAMCITY_NUGET_INDEX_PACKAGES_PROP_NAME = "teamcity.nuget.index.packages";
 
   private final ResponseCacheReset myReset;
   private final NuGetServerSettings myFeedSettings;
@@ -76,12 +74,8 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
       LOG.debug(String.format("Skip NuGet metadata generation for build %s. NuGet feed disabled.", LogUtil.describe(build)));
       return;
     }
-    if (!TeamCityProperties.getBooleanOrTrue(TEAMCITY_NUGET_INDEX_PACKAGES_PROP_NAME)){
-      LOG.info(String.format("Skip NuGet metadata generation for build %s. NuGet packages indexing disabled on the server.", LogUtil.describe(build)));
-      return;
-    }
-    if(!isIndexingEnabledForBuildType(build.getBuildType())){
-      LOG.info(String.format("Skip NuGet metadata generation for build %s. NuGet packages indexing disabled for build type %s.", LogUtil.describe(build), LogUtil.describe(build.getBuildType())));
+
+    if(!NuGetIndexUtils.isIndexingEnabledForBuild(build)){
       return;
     }
 
@@ -146,13 +140,6 @@ public class NuGetArtifactsMetadataProvider implements BuildMetadataProvider {
     metadata.put(PUBLISHED, created);
 
     return metadata;
-  }
-
-  private boolean isIndexingEnabledForBuildType(@Nullable SBuildType buildType) {
-    if(buildType == null) return true;
-    final String indexEnabledConfigParamValue = buildType.getConfigParameters().get(TEAMCITY_NUGET_INDEX_PACKAGES_PROP_NAME);
-    if(indexEnabledConfigParamValue == null) return true;
-    return Boolean.valueOf(indexEnabledConfigParamValue);
   }
 
   private void visitArtifacts(@NotNull final BuildArtifact artifact, @NotNull final Set<BuildArtifact> packages) {

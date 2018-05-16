@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.index.impl;
+package jetbrains.buildServer.nuget.common.index;
 
 import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.nuget.common.version.SemanticVersion;
@@ -38,7 +38,7 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
  */
 public class LocalNuGetPackageItemsFactory implements NuGetPackageStructureAnalyser {
   private final static int MAX_VALUE_LENGTH = 1024;
-  private final Map<String, String> myItems = new LinkedHashMap<>();
+  private final Map<String, String> myItems = new LinkedHashMap<String, String>();
 
   @NotNull
   public Map<String, String> getItems() {

@@ -6,11 +6,7 @@ teamcity {
     version = teamcityVersion
 
     agent {
-        descriptor {
-            pluginDeployment {
-                useSeparateClassloader = true
-            }
-        }
+        descriptor = project.file('teamcity-agent-plugin.xml')
 
         files {
             into('bin') {
@@ -27,6 +23,7 @@ teamcity {
 
 dependencies {
     compile project(':nuget-common')
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
     provided "org.jetbrains.teamcity.internal:agent:$teamcityVersion"
     provided files("${teamcityDir}/buildAgent/lib/common-impl.jar")
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
@@ -38,4 +35,9 @@ agentPlugin.baseName = 'nuget-agent'
 tasks.withType(JavaCompile) {
     sourceCompatibility = "1.6"
     targetCompatibility = "1.6"
+}
+
+compileKotlin {
+    sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_6
 }

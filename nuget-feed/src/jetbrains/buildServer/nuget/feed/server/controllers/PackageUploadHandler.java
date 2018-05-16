@@ -25,8 +25,8 @@ import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
-import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
-import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
+import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
+import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
 import jetbrains.buildServer.serverSide.RunningBuildEx;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.ServerSettings;
@@ -53,8 +53,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.TEAMCITY_ARTIFACT_RELPATH;
-import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.TEAMCITY_BUILD_TYPE_ID;
+import static jetbrains.buildServer.nuget.common.index.PackageConstants.TEAMCITY_ARTIFACT_RELPATH;
+import static jetbrains.buildServer.nuget.common.index.PackageConstants.TEAMCITY_BUILD_TYPE_ID;
 import static jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider.NUGET_PROVIDER_ID;
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 

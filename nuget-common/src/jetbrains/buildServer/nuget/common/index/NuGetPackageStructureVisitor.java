@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.index.impl;
+package jetbrains.buildServer.nuget.common.index;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.spec.NuspecFileContent;
-import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.FileUtil;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -47,17 +46,17 @@ public class NuGetPackageStructureVisitor {
     myAnalysers = analysers;
   }
 
-  public void visit(@NotNull BuildArtifact artifact) throws PackageLoadException {
-    InputStream inputStream = null;
-    try {
-      inputStream = artifact.getInputStream();
-      visit(inputStream);
-    } catch (IOException e) {
-      throw new PackageLoadException(e.getMessage(), e);
-    } finally {
-      FileUtil.close(inputStream);
-    }
-  }
+//  public void visit(@NotNull BuildArtifact artifact) throws PackageLoadException {
+//    InputStream inputStream = null;
+//    try {
+//      inputStream = artifact.getInputStream();
+//      visit(inputStream);
+//    } catch (IOException e) {
+//      throw new PackageLoadException(e.getMessage(), e);
+//    } finally {
+//      FileUtil.close(inputStream);
+//    }
+//  }
 
   public void visit(@NotNull InputStream stream) throws PackageLoadException {
     if(myAnalysers.isEmpty()) return;

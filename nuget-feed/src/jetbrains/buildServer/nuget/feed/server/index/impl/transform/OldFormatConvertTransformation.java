@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.feed.server.index.impl.transform;
 
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageBuilder;
-import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
+import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackageTransformation;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.serverSide.BuildsManager;

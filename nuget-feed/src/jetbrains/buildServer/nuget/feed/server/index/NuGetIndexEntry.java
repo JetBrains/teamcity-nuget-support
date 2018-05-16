@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.feed.server.index;
 
 import jetbrains.buildServer.nuget.common.NuGetPackageInfo;
+import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -50,7 +51,7 @@ public class NuGetIndexEntry {
 
   @NotNull
   public String getPackageDownloadUrl() {
-    return myAttributes.get(PackagesIndex.TEAMCITY_DOWNLOAD_URL);
+    return myAttributes.get(PackageConstants.TEAMCITY_DOWNLOAD_URL);
   }
 
   @NotNull

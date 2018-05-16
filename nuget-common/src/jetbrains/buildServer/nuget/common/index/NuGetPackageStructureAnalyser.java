@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.index;
+package jetbrains.buildServer.nuget.common.index;
 
-import jetbrains.buildServer.nuget.common.PackageLoadException;
+import jetbrains.buildServer.nuget.spec.NuspecFileContent;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.InputStream;
-import java.util.Map;
-
 /**
- * Analyzes package contents.
+ * @author Evgeniy.Koshkin
  */
-public interface PackageAnalyzer {
-    String SHA512 = "SHA512";
-
-    @NotNull
-    Map<String, String> analyzePackage(@NotNull InputStream content) throws PackageLoadException;
-
-    @NotNull
-    String getSha512Hash(@NotNull InputStream content) throws PackageLoadException;
+public interface NuGetPackageStructureAnalyser {
+  void analyseEntry(@NotNull String entryName);
+  void analyseNuspecFile(@NotNull NuspecFileContent nuspecContent);
 }

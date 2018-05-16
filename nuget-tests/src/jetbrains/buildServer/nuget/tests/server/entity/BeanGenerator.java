@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.server.entity;
 
-import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
+import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.edm.EdmSimpleType;

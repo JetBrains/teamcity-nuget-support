@@ -27,12 +27,6 @@ import java.util.Map;
  *         Date: 19.10.11 16:17
  */
 public interface PackagesIndex {
-  public static final String TEAMCITY_ARTIFACT_RELPATH = "teamcity.artifactPath";
-  public static final String TEAMCITY_BUILD_TYPE_ID = "teamcity.buildTypeId";
-  public static final String TEAMCITY_FRAMEWORK_CONSTRAINTS = "teamcity.frameworkConstraints";
-  public static final String TEAMCITY_BUILD_ID = "TeamCityBuildId";
-  public static final String TEAMCITY_DOWNLOAD_URL = "TeamCityDownloadUrl";
-
   @NotNull
   List<NuGetIndexEntry> getAll();
 

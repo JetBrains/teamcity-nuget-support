@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.odata4j.entity;
 
-import jetbrains.buildServer.nuget.feed.server.index.impl.ODataDataFormat;
+import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.LocalDateTime;
 

@@ -20,9 +20,8 @@ import com.google.common.collect.Lists;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
-import jetbrains.buildServer.nuget.feed.server.index.impl.LocalNuGetPackageItemsFactory;
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageStructureAnalyser;
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageStructureVisitor;
+import jetbrains.buildServer.nuget.common.index.LocalNuGetPackageItemsFactory;
+import jetbrains.buildServer.nuget.common.index.NuGetPackageStructureVisitor;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.CollectionsUtil;
@@ -169,7 +168,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   @NotNull
   private Map<String, String> loadPackage(@NotNull File artifact) throws PackageLoadException, IOException {
     final LocalNuGetPackageItemsFactory packageItemsFactory = new LocalNuGetPackageItemsFactory();
-    new NuGetPackageStructureVisitor(Lists.<NuGetPackageStructureAnalyser>newArrayList(packageItemsFactory)).visit(artifact(artifact));
+    new NuGetPackageStructureVisitor(Lists.newArrayList(packageItemsFactory)).visit(new FileInputStream(artifact));
     return packageItemsFactory.getItems();
   }
 }

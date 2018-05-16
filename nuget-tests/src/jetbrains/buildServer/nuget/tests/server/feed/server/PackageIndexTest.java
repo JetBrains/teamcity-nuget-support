@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import com.google.common.collect.Maps;
 import jetbrains.buildServer.BaseTestCase;
+import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
@@ -362,7 +363,7 @@ public class PackageIndexTest extends BaseTestCase {
 
     String downloadUrl = "/path/foo.1.0.0-master+d277eaf.nupkg";
     addEntry("foo", "1.0.0-master+d277eaf", "btX", 1, CollectionsUtil.asMap(
-      PackagesIndex.TEAMCITY_ARTIFACT_RELPATH, downloadUrl
+      PackageConstants.TEAMCITY_ARTIFACT_RELPATH, downloadUrl
     ));
 
     List<NuGetIndexEntry> entries = myIndex.getForBuild(1);
@@ -388,7 +389,7 @@ public class PackageIndexTest extends BaseTestCase {
     }});
 
     entryData.put("teamcity.buildTypeId", buildTypeId);
-    if (!entryData.containsKey(PackagesIndex.TEAMCITY_ARTIFACT_RELPATH)) {
+    if (!entryData.containsKey(PackageConstants.TEAMCITY_ARTIFACT_RELPATH)) {
       entryData.put("teamcity.artifactPath", "btX/ZZZ");
     }
     entryData.put(VERSION, packageVersion);

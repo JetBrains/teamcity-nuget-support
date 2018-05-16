@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.index.impl;
+package jetbrains.buildServer.nuget.common.index;
 
+import jetbrains.buildServer.nuget.common.PackageLoadException;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.joda.time.LocalDateTime;
 
-import java.util.Date;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
- * @author Eugene Petrenko (eugene.petrenko@gmail.com)
- *         Date: 24.11.11 13:09
+ * Analyzes package contents.
  */
-public class ODataDataFormat {
-  @NotNull
-  public static String formatDate(@NotNull final Date date) {
-    return "j" + date.getTime();
-  }
-  
-  @Nullable
-  public static LocalDateTime parseDate(@NotNull final String text) {
-    if (!text.startsWith("j")) return null;
-    return new LocalDateTime(Long.parseLong(text.substring(1)));
-  }
+public interface PackageAnalyzer {
+    String SHA512 = "SHA512";
+
+    @NotNull
+    Map<String, String> analyzePackage(@NotNull InputStream content) throws PackageLoadException;
+
+    @NotNull
+    String getSha512Hash(@NotNull InputStream content) throws PackageLoadException;
 }

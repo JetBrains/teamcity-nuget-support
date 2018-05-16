@@ -25,4 +25,5 @@ public class NuGetServerConstants {
   public static final String FEED_AUTH_REFERENCE_AGENT_PROVIDED = "teamcity.nuget.feed.auth.server";
   public static final String FEED_AUTH_REFERENCE_SERVER_PROVIDED = "teamcity.nuget.feed.auth.serverRootUrlBased.server";
   public static final String FEED_REFERENCE_AGENT_API_KEY_PROVIDED = "teamcity.nuget.feed.api.key";
+  public static final String FEED_INDEXING_ENABLED_PROP = "teamcity.nuget.index.packages";
 }

@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.index.impl;
+package jetbrains.buildServer.nuget.common.index;
 
-import com.google.common.collect.Lists;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
-import jetbrains.buildServer.nuget.feed.server.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.common.version.FrameworkConstraints;
 import jetbrains.buildServer.util.FileUtil;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS;
-import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
+import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.LAST_UPDATED;
 
 /**
  * Perform analysis of NuGet packages.
@@ -41,7 +43,7 @@ public class NuGetPackageAnalyzer implements PackageAnalyzer {
     public Map<String, String> analyzePackage(@NotNull final InputStream content) throws PackageLoadException {
         final LocalNuGetPackageItemsFactory packageItemsFactory = new LocalNuGetPackageItemsFactory();
         final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
-        final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
+        final List<NuGetPackageStructureAnalyser> analysers = Arrays.asList(frameworkConstraintsCalculator, packageItemsFactory);
 
         final InputStream inputStream = new BufferedInputStream(content);
         try {
@@ -51,7 +53,8 @@ public class NuGetPackageAnalyzer implements PackageAnalyzer {
         }
 
         final Map<String, String> metadata = packageItemsFactory.getItems();
-        metadata.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints()));
+        String constraints = FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints());
+        metadata.put(PackageConstants.TEAMCITY_FRAMEWORK_CONSTRAINTS, constraints);
         metadata.put(LAST_UPDATED, ODataDataFormat.formatDate(new Date()));
 
         return metadata;

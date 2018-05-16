@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 
+import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
@@ -64,7 +65,7 @@ public class NuGetServiceFactory extends ODataServiceFactory {
     final String name = version + MetadataConstants.ENTITY_TYPE_NAME;
     final EntityType packageType = provider.getEntityType(new FullQualifiedName(MetadataConstants.ENTITY_NAMESPACE, name));
     packageType.setMapping(new Mapping()
-            .setMediaResourceSourceKey(PackagesIndex.TEAMCITY_DOWNLOAD_URL)
+            .setMediaResourceSourceKey(PackageConstants.TEAMCITY_DOWNLOAD_URL)
             .setMediaResourceMimeTypeKey(MetadataConstants.CONTENT_TYPE));
 
     // Customize properties

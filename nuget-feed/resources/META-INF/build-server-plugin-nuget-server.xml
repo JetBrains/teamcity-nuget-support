@@ -32,7 +32,7 @@
   </bean>
   <bean class="jetbrains.buildServer.nuget.feed.server.index.NuGetFeed"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.index.NuGetPackagesIndexer"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageAnalyzer"/>
+  <bean class="jetbrains.buildServer.nuget.common.index.NuGetPackageAnalyzer"/>
 
   <!-- UI -->
   <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerSettingsController"/>

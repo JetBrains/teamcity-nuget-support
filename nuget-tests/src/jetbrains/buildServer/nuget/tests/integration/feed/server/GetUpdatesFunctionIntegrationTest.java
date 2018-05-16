@@ -23,8 +23,8 @@ import jetbrains.buildServer.util.CollectionsUtil;
 import org.apache.http.HttpStatus;
 import org.testng.annotations.Test;
 
+import static jetbrains.buildServer.nuget.common.index.PackageConstants.TEAMCITY_FRAMEWORK_CONSTRAINTS;
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
-import static jetbrains.buildServer.nuget.feed.server.index.PackagesIndex.TEAMCITY_FRAMEWORK_CONSTRAINTS;
 
 /**
  * @author Evgeniy.Koshkin

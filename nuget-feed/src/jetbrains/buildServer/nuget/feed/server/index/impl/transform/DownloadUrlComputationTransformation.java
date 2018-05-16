@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.index.impl.transform;
 
+import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageBuilder;
@@ -37,7 +38,7 @@ public class DownloadUrlComputationTransformation implements PackageTransformati
 
   @NotNull
   public Status applyTransformation(@NotNull NuGetPackageBuilder builder) {
-    String relPath = builder.getMetadata().get(PackagesIndex.TEAMCITY_ARTIFACT_RELPATH);
+    String relPath = builder.getMetadata().get(PackageConstants.TEAMCITY_ARTIFACT_RELPATH);
     final String buildTypeExternalId = builder.getBuildTypeExternalId();
     if (relPath == null) return Status.SKIP;
     if (buildTypeExternalId == null) return Status.SKIP;

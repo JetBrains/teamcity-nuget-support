@@ -1,3 +1,7 @@
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "1.2.30"
+}
+
 ext {
     versionNumber = project.hasProperty('versionNumber') ? property('versionNumber') : 'SNAPSHOT-' + new Date().format('yyyyMMddHHmmss')
     projectIds = ['group': 'teamcity-nuget-support', 'version': versionNumber]
@@ -27,7 +31,7 @@ allprojects {
 
 subprojects { subproject ->
     if (!subproject.name.endsWith("extensions")) {
-        apply plugin: 'java'
+        apply plugin: "kotlin"
 
         sourceSets {
             main {
