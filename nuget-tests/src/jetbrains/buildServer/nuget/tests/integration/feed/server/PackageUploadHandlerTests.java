@@ -23,7 +23,6 @@ import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider;
 import jetbrains.buildServer.nuget.common.index.NuGetPackageAnalyzer;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.serverSide.*;
@@ -190,6 +189,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       oneOf(build).getAgentAccessCode();
       will(returnValue("code"));
 
@@ -233,6 +234,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       oneOf(build).getAgentAccessCode();
       will(returnValue("code"));
       oneOf(build).getArtifactsLimit();
@@ -273,6 +276,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       oneOf(build).getAgentAccessCode();
       will(returnValue("code"));
       oneOf(build).getArtifactsLimit();
@@ -313,6 +318,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       oneOf(build).getAgentAccessCode();
       will(returnValue("code"));
       oneOf(build).getArtifactsLimit();
@@ -352,6 +359,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       oneOf(build).getAgentAccessCode();
       will(returnValue("code"));
       oneOf(build).getArtifactsLimit();
@@ -394,6 +403,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       one(build).getArtifactsLimit();
       will(returnValue(ArtifactsUploadLimit.UNLIMITED));
       oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
@@ -452,6 +463,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       oneOf(build).getAgentAccessCode();
       will(returnValue("code"));
       one(build).getArtifactsLimit();
@@ -504,6 +517,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       one(build).getArtifactsLimit();
       will(returnValue(ArtifactsUploadLimit.UNLIMITED));
       oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
@@ -562,6 +577,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       one(build).getArtifactsLimit();
       will(returnValue(ArtifactsUploadLimit.UNLIMITED));
       oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
@@ -623,6 +640,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       one(build).getArtifactsLimit();
       will(returnValue(new ArtifactsUploadLimit(-1L, null)));
       oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
@@ -683,6 +702,8 @@ public class PackageUploadHandlerTests {
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
       will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
       one(build).getArtifactsLimit();
       will(returnValue(ArtifactsUploadLimit.UNLIMITED));
       oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));

@@ -27,6 +27,7 @@ import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils;
 import jetbrains.buildServer.serverSide.RunningBuildEx;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.ServerSettings;
@@ -120,6 +121,11 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     if (build == null) {
       LOG.debug(INVALID_TOKEN_VALUE);
       response.sendError(HttpServletResponse.SC_FORBIDDEN, INVALID_TOKEN_VALUE);
+      return;
+    }
+
+    if (!NuGetIndexUtils.isIndexingEnabledForBuild(build)) {
+      response.sendError(HttpServletResponse.SC_FORBIDDEN, "Indexing is disabled for build " + LogUtil.describe(build));
       return;
     }
 
