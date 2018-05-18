@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -33,8 +32,6 @@ public class FeedServerSettingsTab extends SimpleCustomTab {
   public static final String TAB_ID = "nugetServerSettingsTab";
   private static final String NUGET = "NuGet Feed";
 
-  @NotNull
-  private final PluginDescriptor myPluginDescriptor;
   private final PermissionChecker myChecker;
 
   public FeedServerSettingsTab(@NotNull final PagePlaces pagePlaces,
@@ -45,11 +42,8 @@ public class FeedServerSettingsTab extends SimpleCustomTab {
             TAB_ID,
             pluginDescriptor.getPluginResourcesPath("feedSettingsTab.jsp"),
             NUGET);
-    myPluginDescriptor = pluginDescriptor;
     myChecker = checker;
     setPosition(PositionConstraint.between(Collections.singletonList("pluginsTab"), Arrays.asList("mavenSettings", "toolLoadTab", "usage-statistics")));
-    addJsFile(pluginDescriptor.getPluginResourcesPath("feedServer.js"));
-    addCssFile(pluginDescriptor.getPluginResourcesPath("feedServer.css"));
     register();
   }
 
@@ -61,11 +55,5 @@ public class FeedServerSettingsTab extends SimpleCustomTab {
   @Override
   public boolean isAvailable(@NotNull HttpServletRequest request) {
     return super.isAvailable(request) && myChecker.hasAccess();
-  }
-
-  @Override
-  public void fillModel(@NotNull Map<String, Object> model, @NotNull HttpServletRequest request) {
-    super.fillModel(model, request);
-    model.put("includeUrl", myPluginDescriptor.getPluginResourcesPath("feed/status.html"));
   }
 }

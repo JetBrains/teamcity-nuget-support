@@ -1,3 +1,2 @@
-<%@ include file="/include-internal.jsp"%>
-<jsp:useBean id="includeUrl" class="java.lang.String" scope="request"/>
-<jsp:include page="${includeUrl}" />
+
+NuGet server feed settings were moved on the <a href="/admin/editProject.html?projectId=_Root&tab=repositories">project level</a>.

@@ -61,5 +61,15 @@ BS.NuGet.FeedServer = {
 
   enableFeedServer : function(el) {
     BS.NuGet.FeedServer._request(el, true);
+  },
+
+  addFeed: function(name) {
+    alert("Adding feed " + name);
+    return false;
+  },
+
+  deleteFeed: function (name) {
+    alert("Deleting feed " + name);
+    return false;
   }
 };
