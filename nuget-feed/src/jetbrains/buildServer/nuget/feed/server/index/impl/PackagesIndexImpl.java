@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.feed.server.index.impl;
 
 import com.google.common.collect.Lists;
 import com.intellij.openapi.diagnostic.Logger;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetServerStatisticsProvider;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
@@ -34,7 +35,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.common.index.PackageConstants.NUGET_PROVIDER_ID;
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**
@@ -52,12 +52,15 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
   private static final String NUMBER_OF_INDEXED_BUILDS_STAT = "Number of indexed builds";
   private static final String NUMBER_OF_PACKAGE_IDS_STAT = "Number of unique package Ids";
 
+  private final NuGetFeedData myFeedData;
   private final MetadataStorage myStorage;
   private final Collection<PackageTransformation> myTransformations;
 
 
-  public PackagesIndexImpl(@NotNull final MetadataStorage storage,
+  public PackagesIndexImpl(@NotNull final NuGetFeedData feedData,
+                           @NotNull final MetadataStorage storage,
                            @NotNull final Collection<PackageTransformation> transformations) {
+    myFeedData = feedData;
     myStorage = storage;
     myTransformations = new ArrayList<>(transformations);
   }
@@ -65,30 +68,30 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
   @NotNull
   @Override
   public List<NuGetIndexEntry> getAll() {
-    return decorateMetadata(myStorage.getAllEntries(NUGET_PROVIDER_ID));
+    return decorateMetadata(myStorage.getAllEntries(myFeedData.getKey()));
   }
 
   @NotNull
   @Override
   public List<NuGetIndexEntry> getForBuild(long buildId) {
-    return decorateMetadata(myStorage.getBuildEntry(buildId, NUGET_PROVIDER_ID));
+    return decorateMetadata(myStorage.getBuildEntry(buildId, myFeedData.getKey()));
   }
 
   @NotNull
   @Override
   public List<NuGetIndexEntry> find(@NotNull Map<String, String> query) {
-    return decorateMetadata(myStorage.findEntriesWithKeyValuePairs(NUGET_PROVIDER_ID, query, true));
+    return decorateMetadata(myStorage.findEntriesWithKeyValuePairs(myFeedData.getKey(), query, true));
   }
 
   @NotNull
   public List<NuGetIndexEntry> search(@NotNull Collection<String> keys, @NotNull String value) {
-    return decorateMetadata(myStorage.findEntriesWithValue(NUGET_PROVIDER_ID, value, keys, true));
+    return decorateMetadata(myStorage.findEntriesWithValue(myFeedData.getKey(), value, keys, true));
   }
 
   @NotNull
   @Override
   public List<NuGetIndexEntry> getByKey(String key) {
-    return decorateMetadata(myStorage.getEntriesByKey(NUGET_PROVIDER_ID, key));
+    return decorateMetadata(myStorage.getEntriesByKey(myFeedData.getKey(), key));
   }
 
   private List<NuGetIndexEntry> decorateMetadata(Iterator<BuildMetadataEntry> entries) {
@@ -136,10 +139,10 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
   }
 
   @Nullable
-  private static NuGetPackageBuilder applyTransformation(@NotNull final BuildMetadataEntry entry,
+  private NuGetPackageBuilder applyTransformation(@NotNull final BuildMetadataEntry entry,
                                                          @NotNull final Collection<PackageTransformation> transformations) {
     try {
-      final NuGetPackageBuilder pb = new NuGetPackageBuilder(entry);
+      final NuGetPackageBuilder pb = new NuGetPackageBuilder(myFeedData.getName(), entry);
       for (PackageTransformation transformation : transformations) {
         if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
       }
@@ -152,7 +155,7 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
 
   @NotNull
   public Map<String, Long> getIndexStatistics() {
-    final Iterator<BuildMetadataEntry> entries = myStorage.getAllEntries(NUGET_PROVIDER_ID);
+    final Iterator<BuildMetadataEntry> entries = myStorage.getAllEntries(myFeedData.getKey());
 
     long totalItemsNumber = 0;
     Set<Long> buildIds = new HashSet<>();

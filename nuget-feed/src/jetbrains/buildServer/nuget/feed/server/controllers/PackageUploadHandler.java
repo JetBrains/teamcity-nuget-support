@@ -27,6 +27,7 @@ import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils;
 import jetbrains.buildServer.serverSide.RunningBuildEx;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
@@ -86,7 +87,9 @@ public class PackageUploadHandler implements NuGetFeedHandler {
   }
 
   @Override
-  public void handleRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+  public void handleRequest(@NotNull final NuGetFeedData feedData,
+                            @NotNull final HttpServletRequest request,
+                            @NotNull final HttpServletResponse response) throws Exception {
     final String contentType = request.getContentType();
     if (contentType == null || !contentType.toLowerCase().startsWith("multipart/")) {
       LOG.debug("Request body should be multipart form data");
@@ -102,7 +105,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     try {
       LOG.debug("NuGet package upload handler has started");
       servletRequest = multipartResolver.resolveMultipart(request);
-      handleUpload(servletRequest, response, replace);
+      handleUpload(servletRequest, response, replace, feedData);
     } catch (Throwable e) {
       LOG.warnAndDebugDetails("Unhandled error while processing NuGet package upload: " + e.getMessage(), e);
       throw e;
@@ -114,9 +117,10 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     }
   }
 
-  private void handleUpload(@NotNull final MultipartHttpServletRequest request,
-                            @NotNull final HttpServletResponse response,
-                            final boolean replace) throws IOException {
+  private void handleUpload(final MultipartHttpServletRequest request,
+                            final HttpServletResponse response,
+                            final boolean replace,
+                            final NuGetFeedData feedData) throws IOException {
     final RunningBuildEx build = getRunningBuild(request.getHeader("x-nuget-apikey"));
     if (build == null) {
       LOG.debug(INVALID_TOKEN_VALUE);
@@ -173,7 +177,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     }
 
     try {
-      processPackage(build, file, replace);
+      processPackage(build, file, replace, feedData);
     } catch (PackageLoadException e) {
       LOG.debug("Invalid NuGet package: " + e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, INVALID_PACKAGE_CONTENTS);
@@ -225,7 +229,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
 
   private void processPackage(@NotNull final RunningBuildEx build,
                               @NotNull final MultipartFile file,
-                              final boolean replace) throws Exception {
+                              final boolean replace, NuGetFeedData feedData) throws Exception {
     final Map<String, String> metadata;
     InputStream inputStream = null;
 
@@ -246,8 +250,8 @@ public class PackageUploadHandler implements NuGetFeedHandler {
 
     final String key = NuGetUtils.getPackageKey(id, version);
     // Packages must not exists in the feed if `replace=true` query parameter was not specified
-    if (!replace && myStorage.getEntriesByKey(NUGET_PROVIDER_ID, key).hasNext()) {
-      throw new PackageExistsException(String.format("NuGet package %s:%s already exists in the feed", id, version));
+    if (!replace && myStorage.getEntriesByKey(feedData.getKey(), key).hasNext()) {
+      throw new PackageExistsException(String.format("NuGet package %s:%s already exists in the feed %s", id, version, feedData.getName()));
     }
 
     String path;
@@ -292,10 +296,10 @@ public class PackageUploadHandler implements NuGetFeedHandler {
 
     try {
       LOG.debug(String.format("Adding metadata entry for package %s in build %s", key, LogUtil.describe(build)));
-      myStorage.addBuildEntry(build.getBuildId(), NUGET_PROVIDER_ID, key, metadata, !build.isPersonal());
+      myStorage.addBuildEntry(build.getBuildId(), feedData.getKey(), key, metadata, !build.isPersonal());
     } catch (Throwable e) {
-      LOG.warnAndDebugDetails(String.format("Failed to update %s provider metadata for build %s. Error: %s",
-        NUGET_PROVIDER_ID, build, e.getMessage()), e);
+      LOG.warnAndDebugDetails(String.format("Failed to update metadata for build %s in feed %s. Error: %s",
+        build, feedData.getName(), e.getMessage()), e);
       throw e;
     } finally {
       LOG.debug(String.format("Added metadata entry for package %s in build %s", key, LogUtil.describe(build)));

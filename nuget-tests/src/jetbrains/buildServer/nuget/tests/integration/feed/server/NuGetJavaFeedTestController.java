@@ -92,7 +92,7 @@ public class NuGetJavaFeedTestController {
     final NuGetFeedHandler handler = NuGetJavaFeedControllerIoC.getFeedProvider().getHandler(request);
     final ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(NuGetJavaFeedIntegrationTestBase.FEED_DATA, request, response);
 
     Response.ResponseBuilder responseBuilder = Response
             .status(response.getStatus())

@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.controllers;
 
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,7 @@ import java.io.IOException;
  */
 public interface NuGetFeedHandler {
 
-  void handleRequest(@NotNull final HttpServletRequest request,
+  void handleRequest(@NotNull final NuGetFeedData feedData,
+                     @NotNull final HttpServletRequest request,
                      @NotNull final HttpServletResponse response) throws Exception;
 }

@@ -26,5 +26,7 @@ public class NuGetFeedConstants {
   public static final String PROP_NUGET_FEED_PUBLISH_PATH = "teamcity.nuget.feed.publish.path";
   public static final String PROP_NUGET_FEED_USE_CACHE = "teamcity.nuget.feed.use.cache";
   public static final String PROP_NUGET_FEED_CACHE_SIZE = "teamcity.nuget.feed.response.cache.size";
+  public static final String PROP_NUGET_FEED_ENABLED = "teamcity.nuget.feed.enabled";
+  public static final String PROP_NUGET_FEED_CACHED_SERVLETS = "teamcity.nuget.feed.cached.servlets";
   public static final int NUGET_FEED_PACKAGE_SIZE = 100;
 }

@@ -17,9 +17,9 @@
 package jetbrains.buildServer.nuget.feed.server;
 
 import com.intellij.openapi.util.Pair;
+import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests;
-import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
+import jetbrains.buildServer.nuget.feed.server.index.*;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsPublisher;
 import jetbrains.buildServer.usageStatistics.impl.providers.BaseDefaultUsageStatisticsProvider;
 import jetbrains.buildServer.usageStatistics.presentation.UsageStatisticsPresentationManager;
@@ -55,15 +55,15 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
   };
 
   private final RecentNuGetRequests myRequests;
-  private final PackagesIndex myIndex;
   private final NuGetServerSettings mySettings;
+  private final NuGetFeedFactory myFeedFactory;
 
   public NuGetFeedUsageStatisticsProvider(@NotNull final RecentNuGetRequests requests,
                                           @NotNull final NuGetServerSettings settings,
-                                          @NotNull final PackagesIndex index) {
+                                          @NotNull final NuGetFeedFactory feedFactory) {
     myRequests = requests;
     mySettings = settings;
-    myIndex = index;
+    myFeedFactory = feedFactory;
     myGroupName = GROUP_NAME;
   }
 
@@ -93,7 +93,8 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
   private Pair<Integer, Integer> countIndexEntries() {
     int count = 0;
     final Set<String> packagesCounter = new HashSet<>();
-    for (NuGetIndexEntry indexEntry : myIndex.getAll()) {
+    final NuGetFeed feed = myFeedFactory.createFeed(new NuGetFeedData("_Root", PackageConstants.NUGET_PROVIDER_ID));
+    for (NuGetIndexEntry indexEntry : feed.getAll()) {
       packagesCounter.add(indexEntry.getAttributes().get("Id"));
       count++;
     }

@@ -36,10 +36,12 @@ public class NuGetPackageBuilder {
   private final String myKey;
   private final String myVersion;
   private final long myBuildId;
+  private final String myFeedName;
   private final Map<String, String> myMetadata;
   private String myExternalId = null;
 
-  public NuGetPackageBuilder(@NotNull final BuildMetadataEntry entry) {
+  public NuGetPackageBuilder(@NotNull final String feedName, @NotNull final BuildMetadataEntry entry) {
+    myFeedName = feedName;
     myMetadata = new HashMap<>(entry.getMetadata());
     myVersion = myMetadata.get(VERSION);
     myKey = entry.getKey();
@@ -122,6 +124,7 @@ public class NuGetPackageBuilder {
     if (myMetadata.get(IS_LATEST_VERSION) == null) setIsLatest(false);
     if (myMetadata.get(IS_ABSOLUTE_LATEST_VERSION) == null) setIsAbsoluteLatest(false);
     return new NuGetIndexEntry(
+            myFeedName,
             myKey,
             myMetadata
     );

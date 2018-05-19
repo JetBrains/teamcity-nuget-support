@@ -41,7 +41,7 @@ public class NuGetPackageDownloadController extends BaseController {
   public NuGetPackageDownloadController(@NotNull final WebControllerManager web,
                                         @NotNull final NuGetServerSettings serverSettings) {
     myServerSettings = serverSettings;
-    web.registerController(serverSettings.getNuGetFeedControllerPath() + "/download/**", this);
+    web.registerController(NuGetServerSettings.PATH_PREFIX + "/download/**", this);
   }
 
   @Nullable
@@ -49,7 +49,7 @@ public class NuGetPackageDownloadController extends BaseController {
   protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
     String requestPath = WebUtil.getPathWithoutAuthenticationType(request);
     if (!requestPath.startsWith("/")) requestPath = "/" + requestPath;
-    final String feedControllerPath = myServerSettings.getNuGetFeedControllerPath();
+    final String feedControllerPath = NuGetServerSettings.PATH_PREFIX;
     if(!requestPath.contains(feedControllerPath + "/download/")){
       response.sendError(HttpServletResponse.SC_NOT_FOUND);
       return null;

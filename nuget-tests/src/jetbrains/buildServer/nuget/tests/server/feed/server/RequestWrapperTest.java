@@ -17,7 +17,7 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl;
+import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -35,7 +35,7 @@ public class RequestWrapperTest extends BaseTestCase {
   private Mockery m;
   private HttpServletRequest req;
   private HttpServletRequest wrap;
-  private static final String PATH = NuGetServerSettingsImpl.PATH;
+  private static final String PATH = NuGetServerSettings.PROJECT_PATH;
 
   @BeforeMethod
   @Override

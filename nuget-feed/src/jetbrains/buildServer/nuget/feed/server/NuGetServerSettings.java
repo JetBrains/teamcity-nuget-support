@@ -16,13 +16,15 @@
 
 package jetbrains.buildServer.nuget.feed.server;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 21.10.11 18:53
  */
-public interface  NuGetServerSettings {
+public interface NuGetServerSettings {
+
+  String PATH_PREFIX = "/app/nuget";
+  String GLOBAL_PATH = PATH_PREFIX + "/v1/FeedService.svc";
+  String PROJECT_PATH = PATH_PREFIX + "/feed";
 
   /**
    * @return true if any of NuGet server implementations are enabled
@@ -30,22 +32,12 @@ public interface  NuGetServerSettings {
   boolean isNuGetServerEnabled();
 
   /**
+   * @return true if any of NuGet server implementations are enabled
+   */
+  boolean isGlobalIndexingEnabled();
+
+  /**
    * @return true if feed filters responses by target framework requested
    */
   boolean isFilteringByTargetFrameworkEnabled();
-
-  /**
-   * @return context based path of nuget feed OData service
-   */
-  @NotNull
-  //TODO: Allow to register minor NuGet Feed urls, will be used to migrated to new feed url
-  String getNuGetFeedControllerPath();
-
-  String getNuGetFeedControllerPathWithEndSlash();
-  
-  @NotNull
-  String getNuGetHttpAuthFeedControllerPath();
-
-  @NotNull
-  String getNuGetGuestAuthFeedControllerPath();
 }

@@ -16,19 +16,17 @@
 
 package jetbrains.buildServer.nuget.feed.server.impl;
 
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
-import jetbrains.buildServer.web.util.WebUtil;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import org.jetbrains.annotations.NotNull;
-
-import static jetbrains.buildServer.nuget.feed.server.impl.UrlUtil.join;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 17.01.12 17:14
  */
 public class NuGetServerSettingsImpl implements NuGetServerSettings {
-  public static final String PATH = "/app/nuget/v1/FeedService.svc";
-  public static final String PATH_END_SLASH = "/app/nuget/v1/FeedService.svc/";
+
   private final NuGetServerFeedSettingsImpl myDotNetSettings;
 
   public NuGetServerSettingsImpl(@NotNull final NuGetServerFeedSettingsImpl dotNetSettings) {
@@ -36,31 +34,14 @@ public class NuGetServerSettingsImpl implements NuGetServerSettings {
   }
 
   public boolean isNuGetServerEnabled() {
+    return TeamCityProperties.getBooleanOrTrue(NuGetFeedConstants.PROP_NUGET_FEED_ENABLED);
+  }
+
+  public boolean isGlobalIndexingEnabled() {
     return myDotNetSettings.isNuGetJavaFeedEnabled();
   }
 
   public boolean isFilteringByTargetFrameworkEnabled() {
     return myDotNetSettings.isFilteringByTargetFrameworkEnabled();
-  }
-
-  @NotNull
-  public String getNuGetFeedControllerPath() {
-    //NOTE: Do not change it unless you want to break compatibility
-    return PATH;
-  }
-
-  @Override
-  public String getNuGetFeedControllerPathWithEndSlash() {
-    return PATH_END_SLASH;
-  }
-
-  @NotNull
-  public String getNuGetHttpAuthFeedControllerPath() {
-    return join(WebUtil.HTTP_AUTH_PREFIX, PATH_END_SLASH);
-  }
-
-  @NotNull
-  public String getNuGetGuestAuthFeedControllerPath() {
-    return join(WebUtil.GUEST_AUTH_PREFIX, PATH_END_SLASH);
   }
 }

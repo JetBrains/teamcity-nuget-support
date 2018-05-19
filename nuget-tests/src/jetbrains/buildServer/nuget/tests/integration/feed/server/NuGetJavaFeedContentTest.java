@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
-import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.nuget.tests.server.entity.FeedParseResult;
 import jetbrains.buildServer.nuget.tests.server.entity.MetadataBeanProperty;
@@ -167,7 +166,7 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   @Test(dataProvider = "nugetFeedLibrariesData")
   public void testGetByNormalizedVersion(final NugetFeedLibrary library) throws JDOMException, IOException {
     setODataSerializer(library);
-    addMockPackage(new NuGetIndexEntry("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "1.0.0")));
+    addMockPackage("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "1.0.0"));
 
     final String s = openRequest("Packages(Id='foo',Version='1.0.0.0')");
     Assert.assertTrue(s.contains("<title type=\"text\">foo</title>"));
@@ -280,8 +279,8 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   public void testNuGet28(final NugetFeedLibrary library) throws JDOMException, IOException {
     setODataSerializer(library);
     addMockPackage(
-      new NuGetIndexEntry("AdviserSpend.Web.UI", CollectionsUtil.asMap(
-        ID, "AdviserSpend.Web.UI", VERSION, "1.0.0.42")),
+      "AdviserSpend.Web.UI", CollectionsUtil.asMap(
+        ID, "AdviserSpend.Web.UI", VERSION, "1.0.0.42"),
       true);
 
     final String response = openRequest("Packages()?$filter=%28substringof%28%27adviser%27%2Ctolower%28Id%29%29%20or"+

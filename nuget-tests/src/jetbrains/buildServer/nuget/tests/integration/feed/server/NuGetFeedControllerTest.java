@@ -22,6 +22,9 @@ import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
+import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.ServerListenerEventDispatcher;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.apache.http.HttpStatus;
 import org.jmock.Expectations;
@@ -47,19 +50,24 @@ public class NuGetFeedControllerTest {
         NuGetServerSettings settings = m.mock(NuGetServerSettings.class);
         NuGetFeedProvider provider = m.mock(NuGetFeedProvider.class);
         NuGetFeedHandler handler = m.mock(NuGetFeedHandler.class);
+        ProjectManager projectManager = m.mock(ProjectManager.class);
+        ServerListenerEventDispatcher eventDispatcher = m.mock(ServerListenerEventDispatcher.class);
 
         m.checking(new Expectations(){{
-            allowing(settings).getNuGetFeedControllerPath(); will(returnValue("/path"));
             allowing(settings).isNuGetServerEnabled(); will(returnValue(true));
 
             allowing(web).registerController(with(any(String.class)), with(any(Controller.class)));
 
             allowing(provider).getHandler(with(any(HttpServletRequest.class))); will(returnValue(handler));
 
-            allowing(handler).handleRequest(with(any(HttpServletRequest.class)), with(any(HttpServletResponse.class)));
+            allowing(handler).handleRequest(
+                    with(any(NuGetFeedData.class)),
+                    with(any(HttpServletRequest.class)),
+                    with(any(HttpServletResponse.class)));
         }});
 
-        Controller controller = new NuGetFeedController(web, settings, new RecentNuGetRequests(), provider);
+        Controller controller = new NuGetFeedController(web, eventDispatcher, settings,
+                new RecentNuGetRequests(), provider, projectManager);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -73,9 +81,10 @@ public class NuGetFeedControllerTest {
         WebControllerManager web = m.mock(WebControllerManager.class);
         NuGetServerSettings settings = m.mock(NuGetServerSettings.class);
         NuGetFeedProvider provider = m.mock(NuGetFeedProvider.class);
+        ProjectManager projectManager = m.mock(ProjectManager.class);
+        ServerListenerEventDispatcher eventDispatcher = m.mock(ServerListenerEventDispatcher.class);
 
         m.checking(new Expectations(){{
-            allowing(settings).getNuGetFeedControllerPath(); will(returnValue("/path"));
             allowing(settings).isNuGetServerEnabled(); will(returnValue(true));
 
             allowing(web).registerController(with(any(String.class)), with(any(Controller.class)));
@@ -83,7 +92,8 @@ public class NuGetFeedControllerTest {
             allowing(provider).getHandler(with(any(HttpServletRequest.class))); will(returnValue(null));
         }});
 
-        Controller controller = new NuGetFeedController(web, settings, new RecentNuGetRequests(), provider);
+        Controller controller = new NuGetFeedController(web, eventDispatcher, settings,
+                new RecentNuGetRequests(), provider, projectManager);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
 

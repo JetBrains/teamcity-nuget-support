@@ -21,17 +21,15 @@ import jetbrains.buildServer.controllers.MockResponse;
 import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProviderImpl;
 import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
-import jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl;
-import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
-import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.feed.server.index.*;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
-import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
 import jetbrains.buildServer.nuget.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
@@ -80,6 +78,8 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBase {
   protected static final String SERVLET_PATH = "/app/nuget/v1/FeedService.svc";
   protected static final String DOWNLOAD_URL = "/downlaodREpoCon/downlaod-url";
+  protected static final String FEED_NAME = "_Root";
+  protected static final NuGetFeedData FEED_DATA = new NuGetFeedData(FEED_NAME, PackageConstants.NUGET_PROVIDER_ID);
   protected NuGetProducerHolder myProducer;
   protected PackagesIndex myIndex;
   protected PackagesIndex myActualIndex;
@@ -88,6 +88,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   private SortedList<NuGetIndexEntry> myFeed;
   private NuGetServerSettings mySettings;
   protected NuGetFeedProvider myFeedProvider;
+  protected NuGetFeedFactory myFeedFactory;
   private int myCount;
 
   @BeforeMethod
@@ -104,6 +105,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myIndexProxy = m.mock(PackagesIndex.class, "proxy");
     mySettings = m.mock(NuGetServerSettings.class);
     myMetadataStorage = m.mock(MetadataStorage.class);
+    myFeedFactory = m.mock(NuGetFeedFactory.class);
     final ResponseCache responseCache = m.mock(ResponseCache.class);
     final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
@@ -143,8 +145,6 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       will(returnValue(myFeed));
       allowing(myIndex).getAll();
       will(returnValue(myFeed));
-      allowing(mySettings).getNuGetFeedControllerPath();
-      will(returnValue(NuGetServerSettingsImpl.PATH));
       allowing(mySettings).isFilteringByTargetFrameworkEnabled();
       will(returnValue(true));
 
@@ -157,15 +157,14 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
       allowing(serverSettings).getRootUrl();
       will(returnValue("http://localhost:8111"));
+
+      final NuGetFeed feed = new NuGetFeed(myIndexProxy, mySettings);
+      allowing(myFeedFactory).createFeed(with(any(NuGetFeedData.class)));
+      will(returnValue(feed));
     }});
 
-
-    final NuGetFeed feed = new NuGetFeed(myIndexProxy, mySettings);
-    myProducer = new NuGetProducerHolder(feed, mySettings, new NuGetFeedFunctions(feed));
-
-    final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myProducer, responseCache);
-    final NuGetServiceFactory serviceFactory = new NuGetServiceFactory(new OlingoDataSource(feed));
-    final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(serviceFactory, responseCache);
+    final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myFeedFactory, responseCache);
+    final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(myFeedFactory, responseCache);
     final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, myMetadataStorage,
             packageAnalyzer, cacheReset, serverSettings);
     myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, uploadHandler);
@@ -200,22 +199,23 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   protected void enablePackagesIndexSorting() {
     setPackagesIndex(new PackagesIndexImpl(
+            FEED_DATA,
             myMetadataStorage,
             Arrays.asList(
                     new MockExternalIdTransformation(),
-                    new DownloadUrlComputationTransformation(mySettings)
+                    new DownloadUrlComputationTransformation()
             )
     ));
   }
 
   @Override
   protected String getNuGetServerUrl() {
-    return "http://localhost" + NuGetServerSettingsImpl.PATH + "/";
+    return "http://localhost" + NuGetUtils.getProjectNuGetFeedPath(FEED_DATA.getName()) + "/";
   }
 
   protected NuGetIndexEntry addPackage(@NotNull final File file, boolean isLatest) throws IOException {
     final Map<String, String> map = indexPackage(file, isLatest);
-    NuGetIndexEntry e = new NuGetIndexEntry(file.getName(), map);
+    NuGetIndexEntry e = new NuGetIndexEntry(FEED_NAME, file.getName(), map);
     myFeed.add(e);
     return e;
   }
@@ -232,6 +232,14 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     return addMockPackage(entry, false);
   }
 
+  protected NuGetIndexEntry addMockPackage(@NotNull final String key, @NotNull final Map<String, String> params) {
+    return addMockPackage(key, params, false);
+  }
+
+  protected NuGetIndexEntry addMockPackage(@NotNull final String key, @NotNull final Map<String, String> params, boolean isLatest) {
+    return addMockPackage(new NuGetIndexEntry(FEED_NAME, key, params), false);
+  }
+
   protected NuGetIndexEntry addMockPackage(@NotNull final NuGetIndexEntry entry, boolean isLatest) {
     final Map<String, String> map = new HashMap<>(entry.getAttributes());
 
@@ -242,7 +250,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     map.put(IS_LATEST_VERSION, String.valueOf(isLatest));
     map.put(IS_ABSOLUTE_LATEST_VERSION, String.valueOf(isLatest));
     map.put(PackageConstants.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
-    NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
+    NuGetIndexEntry e = new NuGetIndexEntry(FEED_NAME, id + "." + ver, map);
     myFeed.add(e);
     return e;
   }
@@ -252,7 +260,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
     final String id = attributes.get(ID);
     final String ver = attributes.get(VERSION);
-    NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, attributes);
+    NuGetIndexEntry e = new NuGetIndexEntry(FEED_NAME, id + "." + ver, attributes);
 
     myFeed.add(e);
     return e;
@@ -269,7 +277,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     map.remove(IS_LATEST_VERSION);
     map.remove(IS_ABSOLUTE_LATEST_VERSION);
     map.put(PackageConstants.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
-    NuGetIndexEntry e = new NuGetIndexEntry(id + "." + ver, map);
+    NuGetIndexEntry e = new NuGetIndexEntry(FEED_NAME, id + "." + ver, map);
     myFeed.add(e);
     return e;
   }
@@ -335,7 +343,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final ResponseWrapper responseWrapper = new ResponseWrapper(response);
 
     try {
-      handler.handleRequest(request, responseWrapper);
+      handler.handleRequest(FEED_DATA, request, responseWrapper);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

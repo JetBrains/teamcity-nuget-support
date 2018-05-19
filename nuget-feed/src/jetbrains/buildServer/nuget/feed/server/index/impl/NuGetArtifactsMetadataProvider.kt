@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.feed.server.index.impl
 
 import com.intellij.openapi.diagnostic.Logger
-import jetbrains.buildServer.ArtifactsConstants
 import jetbrains.buildServer.nuget.common.FeedConstants
 import jetbrains.buildServer.nuget.common.PackageLoadException
 import jetbrains.buildServer.nuget.common.index.*
@@ -52,6 +51,11 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
     override fun generateMedatadata(build: SBuild, store: MetadataStorageWriter) {
         if (!myFeedSettings.isNuGetServerEnabled) {
             LOG.debug(String.format("Skip NuGet metadata generation for build %s. NuGet feed disabled.", LogUtil.describe(build)))
+            return
+        }
+
+        if (!myFeedSettings.isGlobalIndexingEnabled) {
+            LOG.debug(String.format("Skip NuGet metadata generation for build %s. NuGet global indexing is disabled.", LogUtil.describe(build)))
             return
         }
 
@@ -116,7 +120,7 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
                     NuGetPackageData(path, it)
                 }
             }
-            File(build.artifactsDirectory, PACKAGES_PATH).outputStream().use {
+            File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH).outputStream().use {
                 NuGetPackagesUtil.writePackages(NuGetPackagesList(packages), it)
             }
         }
@@ -124,7 +128,7 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
 
     private fun readBuildMetadata(build: SBuild): Collection<Map<String, String>>? {
         val artifacts = build.getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
-        val artifact = artifacts.getArtifact(PACKAGES_PATH)
+        val artifact = artifacts.getArtifact(PackageConstants.PACKAGES_FILE_PATH)
         if (artifact != null) {
             val packages = try {
                 artifact.inputStream.use {
@@ -139,7 +143,7 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
                 return it.values
             }
 
-            FileUtil.delete(File(build.artifactsDirectory, PACKAGES_PATH))
+            FileUtil.delete(File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH))
         }
         return null
     }
@@ -190,7 +194,5 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
 
     companion object {
         private val LOG = Logger.getInstance(NuGetArtifactsMetadataProvider::class.java.name)
-        const val PACKAGES_PATH = ArtifactsConstants.TEAMCITY_ARTIFACTS_DIR + "/" +
-            PackageConstants.NUGET_PROVIDER_ID + "/" + PackageConstants.PACKAGES_LIST_NAME
     }
 }

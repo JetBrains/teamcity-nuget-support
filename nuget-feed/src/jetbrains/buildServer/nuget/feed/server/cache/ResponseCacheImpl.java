@@ -20,6 +20,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.serverSide.BuildServerAdapter;
 import jetbrains.buildServer.serverSide.BuildServerListener;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
@@ -65,8 +66,10 @@ public class ResponseCacheImpl implements ResponseCache {
   }
 
   @NotNull
-  private String key(@NotNull final HttpServletRequest request) {
+  private String key(@NotNull final String feedName,
+                     @NotNull final HttpServletRequest request) {
     StringBuilder builder = new StringBuilder();
+    builder.append(feedName);
     builder.append(request.getMethod());
     builder.append(" ");
     builder.append(request.getRequestURL());
@@ -90,15 +93,16 @@ public class ResponseCacheImpl implements ResponseCache {
   }
 
   @Override
-  public void getOrCompute(@NotNull final HttpServletRequest request,
+  public void getOrCompute(@NotNull final NuGetFeedData feedData,
+                           @NotNull final HttpServletRequest request,
                            @NotNull final HttpServletResponse response,
                            @NotNull final ComputeAction action) throws Exception {
-    final String key = key(request);
+    final String key = key(feedData.getName(), request);
     final ResponseCacheEntry entry = myCache.get(key, s -> {
       LOG.debug("NuGet cache miss for: " + WebUtil.getRequestDump(request));
       try {
         final ResponseWrapper wrapped = new ResponseWrapper(response);
-        action.compute(request, wrapped);
+        action.compute(feedData, request, wrapped);
         return wrapped.build();
       } catch (Exception e) {
         LOG.warnAndDebugDetails("Failed to process request", e);
@@ -109,7 +113,7 @@ public class ResponseCacheImpl implements ResponseCache {
     if (entry != null) {
       entry.handleRequest(request, response);
     } else {
-      action.compute(request, response);
+      action.compute(feedData, request, response);
     }
   }
 }

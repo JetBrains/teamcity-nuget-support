@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.common.index.NuGetPackageAnalyzer;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
@@ -60,6 +61,7 @@ public class PackageUploadHandlerTests {
     "\r\n" +
     "Hello\r\n" +
     "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n";
+  private static final NuGetFeedData FEED_DATA = new NuGetFeedData("_Root", PackageConstants.NUGET_PROVIDER_ID);
 
   public void testNonMultipartRequest() throws Exception {
     Mockery m = new Mockery();
@@ -76,7 +78,7 @@ public class PackageUploadHandlerTests {
 
     request.setContentType("form/url-encoded");
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 400);
   }
@@ -107,7 +109,7 @@ public class PackageUploadHandlerTests {
       }
     });
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 403);
   }
@@ -139,7 +141,7 @@ public class PackageUploadHandlerTests {
       }
     });
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 403);
   }
@@ -171,7 +173,7 @@ public class PackageUploadHandlerTests {
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody("".getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 403);
     m.assertIsSatisfied();
@@ -216,7 +218,7 @@ public class PackageUploadHandlerTests {
         "Hello\r\n" +
         "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n").getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 400);
     m.assertIsSatisfied();
@@ -258,7 +260,7 @@ public class PackageUploadHandlerTests {
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 413);
     m.assertIsSatisfied();
@@ -300,7 +302,7 @@ public class PackageUploadHandlerTests {
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 413);
     m.assertIsSatisfied();
@@ -341,7 +343,7 @@ public class PackageUploadHandlerTests {
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 413);
     m.assertIsSatisfied();
@@ -382,7 +384,7 @@ public class PackageUploadHandlerTests {
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 400);
     m.assertIsSatisfied();
@@ -442,7 +444,7 @@ public class PackageUploadHandlerTests {
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 500);
     m.assertIsSatisfied();
@@ -496,7 +498,7 @@ public class PackageUploadHandlerTests {
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     Assert.assertEquals(response.getStatus(), 409);
     m.assertIsSatisfied();
@@ -557,7 +559,7 @@ public class PackageUploadHandlerTests {
     request.setBody(REQUEST_BODY.getBytes());
     request.setParameter("replace", "true");
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     m.assertIsSatisfied();
   }
@@ -620,7 +622,7 @@ public class PackageUploadHandlerTests {
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     m.assertIsSatisfied();
   }
@@ -682,7 +684,7 @@ public class PackageUploadHandlerTests {
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     m.assertIsSatisfied();
   }
@@ -745,7 +747,7 @@ public class PackageUploadHandlerTests {
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
     request.setBody(REQUEST_BODY.getBytes());
 
-    handler.handleRequest(request, response);
+    handler.handleRequest(FEED_DATA, request, response);
 
     m.assertIsSatisfied();
   }

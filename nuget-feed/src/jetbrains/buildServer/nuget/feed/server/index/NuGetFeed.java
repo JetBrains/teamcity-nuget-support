@@ -2,7 +2,6 @@ package jetbrains.buildServer.nuget.feed.server.index;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.containers.SortedList;
-import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
@@ -123,6 +122,7 @@ public class NuGetFeed {
     return packages;
   }
 
+  @NotNull
   public List<NuGetIndexEntry> getUpdates(@NotNull final String packageIdsValue,
                                           @NotNull final String versionsValue,
                                           @NotNull final String versionConstraintsValue,
@@ -161,6 +161,13 @@ public class NuGetFeed {
     }
 
     LOG.debug(String.format("%d updated package(s) found", packages.size()));
+    return packages;
+  }
+
+  @NotNull
+  public List<NuGetIndexEntry> getForBuild(final long buildId) {
+    final List<NuGetIndexEntry> packages = myIndex.getForBuild(buildId);
+    LOG.debug(String.format("Found %s packages for build %s", packages.size(), buildId));
     return packages;
   }
 

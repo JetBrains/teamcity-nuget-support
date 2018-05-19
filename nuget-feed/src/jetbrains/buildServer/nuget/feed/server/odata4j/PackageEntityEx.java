@@ -16,7 +16,6 @@
 
 package jetbrains.buildServer.nuget.feed.server.odata4j;
 
-import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntityAdapter;
@@ -32,11 +31,9 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
   private static final String APPLICATION_ZIP = "application/zip";
 
   private final NuGetIndexEntry myEntry;
-  private final NuGetServerSettings mySettings;
 
-  public PackageEntityEx(@NotNull final NuGetIndexEntry entry, @NotNull final NuGetServerSettings settings) {
+  public PackageEntityEx(@NotNull final NuGetIndexEntry entry) {
     myEntry = entry;
-    mySettings = settings;
   }
 
   public String getAtomEntityType() {
@@ -44,7 +41,7 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
   }
 
   public String getAtomEntitySource(String baseUri) {
-    int idx = baseUri.indexOf(mySettings.getNuGetFeedControllerPath());
+    int idx = baseUri.indexOf(NuGetUtils.getProjectNuGetFeedPath(myEntry.getFeedName()));
     if (idx < 0) {
       return null;
     }

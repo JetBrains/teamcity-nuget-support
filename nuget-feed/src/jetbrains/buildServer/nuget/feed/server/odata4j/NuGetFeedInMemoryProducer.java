@@ -20,7 +20,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
-import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntity;
@@ -56,17 +55,13 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   private final Object mySyncRoot = new Object();
   private final NuGetFeed myFeed;
   private final NuGetFeedFunctions myFunctions;
-  private final NuGetServerSettings myServerSettings;
-
   private String myApiVersion;
 
   public NuGetFeedInMemoryProducer(@NotNull final NuGetFeed feed,
-                                   @NotNull final NuGetFeedFunctions functions,
-                                   @NotNull final NuGetServerSettings settings) {
+                                   @NotNull final NuGetFeedFunctions functions) {
     super(MetadataConstants.NUGET_GALLERY_NAMESPACE, NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE);
     myFeed = feed;
     myFunctions = functions;
-    myServerSettings = settings;
     evaluation = new NuGetExpressionEvaluator();
   }
 
@@ -99,8 +94,7 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
     }
 
     final Iterable<Object> functionCallResult = CollectionsUtil.convertCollection(
-      targetFunction.call(function.getReturnType(), params, queryInfo),
-      source -> new PackageEntityEx(source, myServerSettings));
+      targetFunction.call(function.getReturnType(), params, queryInfo), PackageEntityEx::new);
     if (functionCallResult == null) return null;
 
     final RequestContext rc = RequestContext.newBuilder(RequestContext.RequestType.GetEntities)
@@ -143,7 +137,7 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
 
     final List<NuGetIndexEntry> result = myFeed.find(query);
     if (result.size() > 0) {
-      return new PackageEntityEx(result.get(0), myServerSettings);
+      return new PackageEntityEx(result.get(0));
     } else {
       return null;
     }

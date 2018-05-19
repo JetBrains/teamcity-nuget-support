@@ -47,4 +47,12 @@ public class NuGetUtils {
   public static String getPackageKey(@NotNull final String id, @NotNull final String version) {
     return String.format("%s.%s", id, VersionUtility.normalizeVersion(version)).toLowerCase();
   }
+
+  /**
+   * @return context based path of nuget feed OData service
+   */
+  @NotNull
+  public static String getProjectNuGetFeedPath(@NotNull final String feedName) {
+    return String.format(NuGetServerSettings.PROJECT_PATH + "/%s/v2", feedName);
+  }
 }

@@ -30,13 +30,21 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
  */
 public class NuGetIndexEntry {
 
-  @NotNull private final String myKey;
-  @NotNull private final Map<String, String> myAttributes;
+  private final String myFeedName;
+  private final String myKey;
+  private final Map<String, String> myAttributes;
 
-  public NuGetIndexEntry(@NotNull String key,
-                         @NotNull Map<String, String> attributes) {
+  public NuGetIndexEntry(@NotNull final String feedName,
+                         @NotNull final String key,
+                         @NotNull final Map<String, String> attributes) {
+    myFeedName = feedName;
     myKey = key;
     myAttributes = attributes;
+  }
+
+  @NotNull
+  public String getFeedName() {
+    return myFeedName;
   }
 
   @NotNull

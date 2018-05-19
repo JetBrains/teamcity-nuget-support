@@ -21,6 +21,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.index.PackagesIndex;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
@@ -75,16 +76,14 @@ public class PackageIndexTest extends BaseTestCase {
     myAuthorityHolder = m.mock(AuthorityHolder.class);
     myStorage = m.mock(MetadataStorage.class);
     final NuGetServerSettings serverSettings = m.mock(NuGetServerSettings.class);
-    m.checking(new Expectations(){{
-      allowing(serverSettings).getNuGetFeedControllerPath(); will(returnValue("foo"));
-    }});
     myIndex = new PackagesIndexImpl(
+            new NuGetFeedData("_Root", PackageConstants.NUGET_PROVIDER_ID),
             myStorage,
             Arrays.asList(
                     new SamePackagesFilterTransformation(),
                     new AccessCheckTransformation(myProjectManager, myContext),
                     new MockExternalIdTransformation(),
-                    new DownloadUrlComputationTransformation(serverSettings)
+                    new DownloadUrlComputationTransformation()
             ));
 
     myEntries = new ArrayList<>();
