@@ -41,6 +41,7 @@ public class RepositoryManagerImpl implements RepositoryManager {
                 repository.getParameters(),
                 project.getProjectId()
         ));
+        project.persist();
     }
 
     @Nullable
@@ -58,6 +59,7 @@ public class RepositoryManagerImpl implements RepositoryManager {
             throw new IllegalArgumentException(String.format("Package repository %s not found", name));
         }
         project.removeFeature(feature.getId());
+        project.persist();
 
         NuGetFeedData feedData = new NuGetFeedData(project.getExternalId(), name);
         Iterator<BuildMetadataEntry> entries = myMetadataStorage.getAllEntries(feedData.getKey());
@@ -95,9 +97,12 @@ public class RepositoryManagerImpl implements RepositoryManager {
 
         if (oldName.equals(repository.getName())) {
             project.updateFeature(feature.getId(), feature.getType(), repository.getParameters());
+            project.persist();
         } else {
             addRepository(project, repository);
             project.removeFeature(feature.getId());
+            project.persist();
+
             NuGetFeedData feedData = new NuGetFeedData(project.getExternalId(), oldName);
             Iterator<BuildMetadataEntry> entries = myMetadataStorage.getAllEntries(feedData.getKey());
             while (entries.hasNext()) {
