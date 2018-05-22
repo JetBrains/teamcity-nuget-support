@@ -15,7 +15,7 @@
   --%>
 
 <%@ include file="/include-internal.jsp" %>
-<%@ page import="jetbrains.buildServer.nuget.common.NuGetServerConstants" %>
+<%@ page import="jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="afn" uri="/WEB-INF/functions/authz" %>
 <%@ taglib prefix="intprop" uri="/WEB-INF/functions/intprop" %>
@@ -133,7 +133,7 @@
         </c:if>
     </div>
 
-    <c:set var="globalIndexingProperty" value="<%= NuGetServerConstants.FEED_GLOBAL_INDEXING_ENABLED_PROP%>"/>
+    <c:set var="globalIndexingProperty" value="<%= NuGetFeedConstants.PROP_FEED_GLOBAL_INDEXING_ENABLED%>"/>
     <c:set var="showGlobalSettings" value="${intprop:getBoolean(globalIndexingProperty)}"/>
 
     <c:if test="${(showGlobalSettings or isGlobalIndexingEnabled) and project.externalId eq '_Root'}">

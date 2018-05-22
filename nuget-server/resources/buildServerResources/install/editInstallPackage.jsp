@@ -100,14 +100,9 @@
                                cols="60" rows="5"
                                expanded="${true}"/>
       <span class="smallNote">
-        Leave blank to use NuGet.org
-        <br />
-        To use TeamCity as a NuGet server, specify
-        <em><c:out value="${ib.nuGetFeedReference}"/></em>
-        to refer to the TeamCity-provided guest-visible packages source
-        <br />
-        Specify <em><c:out value="${ib.nuGetAuthFeedReference}"/></em>
-        to refer to the TeamCity-provided authenticated NuGet feed and configure the <em>NuGet Feed Credentials</em> build feature
+        Leave blank to use NuGet.org<br />
+        To use TeamCity NuGet feed specify the URL from the project settings.<br />
+        For feeds with authentication configure the <em>NuGet Feed Credentials</em> build feature
         <bs:help file="NuGet+Feed+Credentials"/>
       </span>
       <span class="error" id="error_${ib.nuGetSourcesKey}"></span>

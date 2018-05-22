@@ -31,44 +31,60 @@ import jetbrains.buildServer.agent.AgentRuntimeProperties.TEAMCITY_SERVER_URL
 import jetbrains.buildServer.agent.ServerProvidedProperties.TEAMCITY_AUTH_PASSWORD_PROP
 import jetbrains.buildServer.agent.ServerProvidedProperties.TEAMCITY_AUTH_USER_ID_PROP
 import jetbrains.buildServer.nuget.common.NuGetServerConstants.*
+import jetbrains.buildServer.nuget.common.index.PackageConstants
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.parameters.ReferencesResolverUtil.makeReference
+import jetbrains.buildServer.serverSide.ProjectManager
+import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.web.util.WebUtil.*
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 07.10.11 17:52
  */
-class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings, private val myRootUrlHolder: RootUrlHolder) : AbstractBuildParametersProvider() {
+class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings,
+                                    private val myProjectManager: ProjectManager,
+                                    private val myRepositoryManager: RepositoryManager,
+                                    private val myRootUrlHolder: RootUrlHolder)
+    : AbstractBuildParametersProvider() {
 
     override fun getParameters(build: SBuild, emulationMode: Boolean): Map<String, String> {
         val properties = properties
-        if (mySettings.isNuGetServerEnabled) {
-            val buildToken = String.format("%s:%s",
-                    makeReference(TEAMCITY_AUTH_USER_ID_PROP),
-                    makeReference(TEAMCITY_AUTH_PASSWORD_PROP))
-
-            val result = build.valueResolver.resolve(buildToken)
-            if (result.isFullyResolved) {
-                properties[FEED_REFERENCE_AGENT_API_KEY_PROVIDED] = EncryptUtil.scramble(result.result)
-            }
-
-            if (mySettings.isGlobalIndexingEnabled && NuGetIndexUtils.isIndexingEnabledForBuild(build)) {
-                properties[NuGetServerConstants.FEED_INDEXING_ENABLED_PROP] = "true"
-            }
+        if (!mySettings.isNuGetServerEnabled) {
+            return properties
         }
+
+        val buildToken = String.format("%s:%s",
+                makeReference(TEAMCITY_AUTH_USER_ID_PROP),
+                makeReference(TEAMCITY_AUTH_PASSWORD_PROP))
+
+        val result = build.valueResolver.resolve(buildToken)
+        if (result.isFullyResolved) {
+            properties[FEED_REFERENCE_AGENT_API_KEY_PROVIDED] = EncryptUtil.scramble(result.result)
+        }
+
+        if (mySettings.isGlobalIndexingEnabled && NuGetIndexUtils.isIndexingEnabledForBuild(build) ||
+                build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).isNotEmpty()) {
+            properties[NuGetServerConstants.FEED_INDEXING_ENABLED_PROP] = "true"
+        }
+
         return properties
     }
 
     val properties: MutableMap<String, String>
         get() {
             val map = HashMap<String, String>()
-            if (mySettings.isNuGetServerEnabled) {
-                val nugetFeedPath = NuGetServerSettings.GLOBAL_PATH
-                map[FEED_REFERENCE_AGENT_PROVIDED] = makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, nugetFeedPath)
-                val httpAuthFeedPath = combineContextPath(HTTP_AUTH_PREFIX, nugetFeedPath)
+            val project = myProjectManager.rootProject
+            val feedData = NuGetFeedData.GLOBAL
+
+            if (myRepositoryManager.hasRepository(project, PackageConstants.NUGET_PROVIDER_ID, feedData.feedId)) {
+                val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, feedData.feedId)
+                map[FEED_REFERENCE_AGENT_PROVIDED] = makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, feedPath)
+                val httpAuthFeedPath = combineContextPath(HTTP_AUTH_PREFIX, feedPath)
                 map[FEED_AUTH_REFERENCE_AGENT_PROVIDED] = makeReference(TEAMCITY_SERVER_URL) + httpAuthFeedPath
                 map[Constants.SYSTEM_PREFIX + FEED_AUTH_REFERENCE_SERVER_PROVIDED] = UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
             }
+
             return map
         }
 }

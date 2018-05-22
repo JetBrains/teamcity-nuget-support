@@ -30,6 +30,7 @@ public class NuGetFeedConstants {
   public static final String PROP_NUGET_FEED_CACHE_SIZE = "teamcity.nuget.feed.response.cache.size";
   public static final String PROP_NUGET_FEED_ENABLED = "teamcity.nuget.feed.enabled";
   public static final String PROP_NUGET_FEED_CACHED_SERVLETS = "teamcity.nuget.feed.cached.servlets";
+  public static final String PROP_FEED_GLOBAL_INDEXING_ENABLED = "teamcity.nuget.feed.global.indexing";
   public static final int NUGET_FEED_PACKAGE_SIZE = 100;
 
   public static final String NUGET_INDEXER_TYPE = "nuget-indexer";

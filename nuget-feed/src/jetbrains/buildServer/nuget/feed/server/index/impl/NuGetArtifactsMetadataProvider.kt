@@ -62,7 +62,7 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
             return
         }
 
-        val targetFeeds = arrayListOf<NuGetFeedData>()
+        val targetFeeds = hashSetOf<NuGetFeedData>()
         if (myFeedSettings.isGlobalIndexingEnabled) {
             if (NuGetIndexUtils.isIndexingEnabledForBuild(build)) {
                 val rootProject = myProjectManager.rootProject

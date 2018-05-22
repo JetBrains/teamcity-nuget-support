@@ -1,6 +1,7 @@
 package jetbrains.buildServer.nuget.feed.server.index
 
 import jetbrains.buildServer.nuget.common.index.PackageConstants
+import java.util.*
 
 class NuGetFeedData(val projectId: String, val feedId: String) {
     val key: String by lazy {
@@ -11,8 +12,24 @@ class NuGetFeedData(val projectId: String, val feedId: String) {
         }
     }
 
+    override fun hashCode(): Int {
+        return Objects.hash(projectId, feedId)
+    }
+
     override fun toString(): String {
         return "$projectId/$feedId"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as NuGetFeedData
+
+        if (projectId != other.projectId) return false
+        if (feedId != other.feedId) return false
+
+        return true
     }
 
     companion object {

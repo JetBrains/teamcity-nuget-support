@@ -32,7 +32,5 @@ public class PublishBean {
   public String getNuGetPublishFilesKey() {return PackagesConstants.NUGET_PUBLISH_FILES; }
   public String getPushCustomCommandline() { return PackagesConstants.NUGET_PUSH_CUSTOM_COMMANDLINE; }
   public String getNugetToolTypeName() {return FeedConstants.NUGET_COMMANDLINE;}
-  public String getNuGetFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_REFERENCE_AGENT_PROVIDED); }
-  public String getNuGetAuthFeedReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED); }
   public String getNuGetFeedApiKeyReference() { return ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_REFERENCE_AGENT_API_KEY_PROVIDED); }
 }
