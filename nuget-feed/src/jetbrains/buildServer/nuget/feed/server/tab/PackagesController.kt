@@ -70,7 +70,7 @@ class PackagesController(auth: AuthorizationInterceptor,
 
         mv.model["statusRefreshUrl"] = myIncludePath
         mv.model["settingsPostUrl"] = mySettingsPath
-        mv.model["serverEnabled"] = mySettings.isNuGetServerEnabled
+        mv.model["isGlobalIndexingEnabled"] = mySettings.isGlobalIndexingEnabled
         mv.model["isGuestEnabled"] = myLoginConfiguration.isGuestLoginAllowed
 
         return mv

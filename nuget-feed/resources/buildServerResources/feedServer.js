@@ -32,7 +32,7 @@ BS.NuGet.FeedServer = {
       },
       onComplete : function() {
         $j(el).closest("div").find("span:last").html('');
-        $('packages').refresh();
+        BS.reload(true);
       }
     });
   },

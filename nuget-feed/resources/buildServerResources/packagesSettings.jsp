@@ -21,7 +21,7 @@
 <%@ taglib prefix="intprop" uri="/WEB-INF/functions/intprop" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<jsp:useBean id="serverEnabled" type="java.lang.Boolean" scope="request"/>
+<jsp:useBean id="isGlobalIndexingEnabled" type="java.lang.Boolean" scope="request"/>
 <jsp:useBean id="isGuestEnabled" type="java.lang.Boolean" scope="request"/>
 
 <jsp:useBean id="statusRefreshUrl" scope="request" type="java.lang.String"/>
@@ -136,7 +136,7 @@
     <c:set var="globalIndexingProperty" value="<%= NuGetServerConstants.FEED_GLOBAL_INDEXING_ENABLED_PROP%>"/>
     <c:set var="showGlobalSettings" value="${intprop:getBoolean(globalIndexingProperty)}"/>
 
-    <c:if test="${(showGlobalSettings or serverEnabled) and project.externalId eq '_Root'}">
+    <c:if test="${(showGlobalSettings or isGlobalIndexingEnabled) and project.externalId eq '_Root'}">
         <h2 style="border: none">Global NuGet Packages Indexing</h2>
         <bs:smallNote>
             When this setting is enabled all NuGet packages published in builds will be available in the Root project feed.
@@ -148,7 +148,7 @@
         <div data-url="${settingsPostUrl}">
             Global NuGet packages indexing<bs:help file="NuGet"/> is
             <c:choose>
-                <c:when test="${serverEnabled}">
+                <c:when test="${isGlobalIndexingEnabled}">
                     <strong>enabled</strong> <c:if test="${afn:permissionGrantedGlobally('CHANGE_SERVER_SETTINGS')}"><input type="button" class="btn btn_mini" value="Disable" onclick="return BS.NuGet.FeedServer.disableFeedServer(this);" /></c:if>
                 </c:when>
                 <c:otherwise>
