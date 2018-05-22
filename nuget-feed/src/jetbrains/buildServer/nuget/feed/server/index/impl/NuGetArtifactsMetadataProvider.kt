@@ -68,10 +68,9 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
                 val rootProject = myProjectManager.rootProject
                 val globalFeed = NuGetFeedData.GLOBAL
                 if (myRepositoryManager.hasRepository(rootProject, providerId, globalFeed.feedId)) {
-                    LOG.debug("Indexing NuGet packages into global feed")
                     targetFeeds.add(globalFeed)
                 } else {
-                    LOG.info("Could not find '${globalFeed.feedId}' NuGet feed for '${globalFeed.projectId}' project.")
+                    LOG.warn("Could not find '${globalFeed.feedId}' NuGet feed for '${globalFeed.projectId}' project.")
                 }
             } else {
                 LOG.debug("Indexing NuGet packages into build ${LogUtil.describe(build)} is disabled")
@@ -81,7 +80,12 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
         build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).forEach {feature ->
             feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED_ID]?.let {
                 NuGetUtils.feedIdToData(it)?.let {
-                    targetFeeds.add(it)
+                    val project = myProjectManager.findProjectByExternalId(it.projectId)
+                    if (project != null && myRepositoryManager.hasRepository(project, providerId, it.feedId)) {
+                        targetFeeds.add(it)
+                    } else {
+                        LOG.warn("Could not find '${it.feedId}' NuGet feed for '${it.projectId}' project.")
+                    }
                 }
             }
         }
