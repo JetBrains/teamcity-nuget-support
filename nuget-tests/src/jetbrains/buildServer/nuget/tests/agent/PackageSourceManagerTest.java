@@ -40,8 +40,8 @@ import org.testng.annotations.Test;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED;
-import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_AUTH_REFERENCE_SERVER_PROVIDED;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_REF_HTTP_AUTH_GLOBAL;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL;
 
 /**
  * @author Evgeniy.Koshkin
@@ -52,8 +52,8 @@ public class PackageSourceManagerTest extends BaseTestCase {
     private static final String AGENT_BASED_URL = "agent";
     private static final String SERVER_BASED_URL = "server";
     private static final Map<String, String> PARAMETERS = CollectionsUtil.asMap(
-            FEED_AUTH_REFERENCE_AGENT_PROVIDED, AGENT_BASED_URL,
-            Constants.SYSTEM_PREFIX + FEED_AUTH_REFERENCE_SERVER_PROVIDED, SERVER_BASED_URL);
+            FEED_REF_HTTP_AUTH_GLOBAL, AGENT_BASED_URL,
+            Constants.SYSTEM_PREFIX + FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL, SERVER_BASED_URL);
     private List<AgentBuildFeature> myFeatures;
 
     private PackageSourceManager mySources;
@@ -101,7 +101,7 @@ public class PackageSourceManagerTest extends BaseTestCase {
 
     @Test
     public void shouldSetupCredentialsForInternalFeed_AuthFeatureConfiguredForInternalFeed() throws Exception {
-        addAuthBuildFeature(ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED), "user1", "password1");
+        addAuthBuildFeature(ReferencesResolverUtil.makeReference(NuGetServerConstants.FEED_REF_HTTP_AUTH_GLOBAL), "user1", "password1");
 
         final AgentRunningBuildEx runningBuild = myBuild;
         final List<PackageSource> packageSources = getPackageSourcesOfRunningBuild(runningBuild);

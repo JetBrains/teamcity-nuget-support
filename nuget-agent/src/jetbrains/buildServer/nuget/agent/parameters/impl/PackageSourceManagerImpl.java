@@ -54,22 +54,22 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
       result.put(normalizeUrl(feed), source(feed, user, pass));
     }
 
-    final String agentProvidedTcFeedUrl = build.getSharedConfigParameters().get(NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED);
-    if (StringUtil.isEmptyOrSpaces(agentProvidedTcFeedUrl))
-      LOG.debug("Failed to resolve TeamCity internal NuGet feed url via config parameter " + NuGetServerConstants.FEED_AUTH_REFERENCE_AGENT_PROVIDED);
-    else
-      result.put(normalizeUrl(agentProvidedTcFeedUrl), source(agentProvidedTcFeedUrl, build.getAccessUser(), build.getAccessCode()));
-
-    final String serverProvidedTcFeedUrl = build.getSharedBuildParameters().getSystemProperties().get(NuGetServerConstants.FEED_AUTH_REFERENCE_SERVER_PROVIDED);
-    if (StringUtil.isEmptyOrSpaces(serverProvidedTcFeedUrl))
-      LOG.debug("Failed to resolve TeamCity internal NuGet feed url via system property " + NuGetServerConstants.FEED_AUTH_REFERENCE_SERVER_PROVIDED);
-    else
-      result.put(normalizeUrl(serverProvidedTcFeedUrl), source(serverProvidedTcFeedUrl, build.getAccessUser(), build.getAccessCode()));
+    final Map<String, String> parameters = build.getSharedConfigParameters();
+    for (String key : parameters.keySet()) {
+      if (key.startsWith(NuGetServerConstants.FEED_REF_HTTP_AUTH_PREFIX)) {
+        final String feedUrl = parameters.get(key);
+        if (StringUtil.isEmptyOrSpaces(feedUrl)) {
+          LOG.debug("Failed to resolve TeamCity NuGet feed url via config parameter " + key);
+        } else {
+          result.put(normalizeUrl(feedUrl), source(feedUrl, build.getAccessUser(), build.getAccessCode()));
+        }
+      }
+    }
 
     return new HashSet<PackageSource>(result.values());
   }
 
-  @Nullable
+  @NotNull
   private String normalizeUrl(@NotNull String url) {
     try {
       return StringUtil.trimEnd(URI.create(url).normalize().toString(), "/");

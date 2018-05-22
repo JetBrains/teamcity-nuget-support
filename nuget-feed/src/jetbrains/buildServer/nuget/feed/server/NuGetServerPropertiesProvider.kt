@@ -33,6 +33,7 @@ import jetbrains.buildServer.agent.ServerProvidedProperties.TEAMCITY_AUTH_USER_I
 import jetbrains.buildServer.nuget.common.NuGetServerConstants.*
 import jetbrains.buildServer.nuget.common.index.PackageConstants
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
+import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
 import jetbrains.buildServer.parameters.ReferencesResolverUtil.makeReference
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
@@ -49,7 +50,7 @@ class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings,
     : AbstractBuildParametersProvider() {
 
     override fun getParameters(build: SBuild, emulationMode: Boolean): Map<String, String> {
-        val properties = properties
+        val properties = getFeedProperties(build)
         if (!mySettings.isNuGetServerEnabled) {
             return properties
         }
@@ -74,17 +75,35 @@ class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings,
     val properties: MutableMap<String, String>
         get() {
             val map = HashMap<String, String>()
+            // Add global feed
             val project = myProjectManager.rootProject
             val feedData = NuGetFeedData.GLOBAL
-
             if (myRepositoryManager.hasRepository(project, PackageConstants.NUGET_PROVIDER_ID, feedData.feedId)) {
                 val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, feedData.feedId)
-                map[FEED_REFERENCE_AGENT_PROVIDED] = makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, feedPath)
+                map[FEED_REF_GUEST_AUTH_GLOBAL] = makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, feedPath)
                 val httpAuthFeedPath = combineContextPath(HTTP_AUTH_PREFIX, feedPath)
-                map[FEED_AUTH_REFERENCE_AGENT_PROVIDED] = makeReference(TEAMCITY_SERVER_URL) + httpAuthFeedPath
-                map[Constants.SYSTEM_PREFIX + FEED_AUTH_REFERENCE_SERVER_PROVIDED] = UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
+                map[FEED_REF_HTTP_AUTH_GLOBAL] = makeReference(TEAMCITY_SERVER_URL) + httpAuthFeedPath
+                map[Constants.SYSTEM_PREFIX + FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL] = UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
             }
-
             return map
         }
+
+    private fun getFeedProperties(build: SBuild): MutableMap<String, String> {
+        val map = properties
+        myProjectManager.findProjectById(build.projectId)?.let {
+            val repositories = myRepositoryManager
+                    .getRepositories(it, true)
+                    .filterIsInstance<NuGetRepository>()
+
+            repositories.forEach {
+                val feedPath = NuGetUtils.getProjectFeedPath(it.projectId, it.name)
+                val feedSuffix = "${it.projectId}.${it.name}"
+                map[FEED_REF_GUEST_AUTH_PREFIX + feedSuffix] = makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, feedPath)
+                val httpAuthFeedPath = combineContextPath(HTTP_AUTH_PREFIX, feedPath)
+                map[FEED_REF_HTTP_AUTH_PREFIX + feedSuffix] = makeReference(TEAMCITY_SERVER_URL) + httpAuthFeedPath
+                map[Constants.SYSTEM_PREFIX + FEED_REF_HTTP_AUTH_PUBLIC_PREFIX + feedSuffix] = UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
+            }
+        }
+        return map
+    }
 }
