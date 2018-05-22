@@ -51,9 +51,7 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
         return true
     }
 
-    override fun isRequiresAgent(): Boolean {
-        return true
-    }
+    override fun isRequiresAgent() = false
 
     private fun getProject(request: HttpServletRequest): SProject {
         val buildTypeForm = request.getAttribute("buildForm") as BuildTypeForm
