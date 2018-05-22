@@ -6,5 +6,6 @@
   <bean class="jetbrains.buildServer.serverSide.packages.impl.RepositoryManagerImpl"/>
   <bean class="jetbrains.buildServer.serverSide.packages.impl.RepositoryRegistryImpl"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.packages.NuGetRepositoryType"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.packages.NuGetIndexerFeature"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.tab.PackagesProjectTab"/>
 </beans>

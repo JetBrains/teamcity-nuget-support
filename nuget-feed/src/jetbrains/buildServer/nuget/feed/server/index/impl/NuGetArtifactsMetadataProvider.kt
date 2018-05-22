@@ -22,17 +22,22 @@ import jetbrains.buildServer.nuget.common.PackageLoadException
 import jetbrains.buildServer.nuget.common.index.*
 import jetbrains.buildServer.nuget.common.index.PackageConstants.TEAMCITY_ARTIFACT_RELPATH
 import jetbrains.buildServer.nuget.common.index.PackageConstants.TEAMCITY_BUILD_TYPE_ID
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*
+import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.SBuild
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode
 import jetbrains.buildServer.serverSide.impl.LogUtil
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataProvider
+import jetbrains.buildServer.serverSide.metadata.MetadataStorage
 import jetbrains.buildServer.serverSide.metadata.MetadataStorageWriter
+import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.util.FileUtil
 import java.io.File
 import java.io.IOException
@@ -44,7 +49,10 @@ import java.util.*
  */
 class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
                                      private val myFeedSettings: NuGetServerSettings,
-                                     private val myPackageAnalyzer: PackageAnalyzer) : BuildMetadataProvider {
+                                     private val myPackageAnalyzer: PackageAnalyzer,
+                                     private val myProjectManager: ProjectManager,
+                                     private val myRepositoryManager: RepositoryManager,
+                                     private val myMetadataStorage: MetadataStorage) : BuildMetadataProvider {
 
     override fun getProviderId() = PackageConstants.NUGET_PROVIDER_ID
 
@@ -54,12 +62,32 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
             return
         }
 
-        if (!myFeedSettings.isGlobalIndexingEnabled) {
-            LOG.debug(String.format("Skip NuGet metadata generation for build %s. NuGet global indexing is disabled.", LogUtil.describe(build)))
-            return
+        val targetFeeds = arrayListOf<NuGetFeedData>()
+        if (myFeedSettings.isGlobalIndexingEnabled) {
+            if (NuGetIndexUtils.isIndexingEnabledForBuild(build)) {
+                val rootProject = myProjectManager.rootProject
+                val globalFeed = NuGetFeedData.GLOBAL
+                if (myRepositoryManager.hasRepository(rootProject, providerId, globalFeed.feedId)) {
+                    LOG.debug("Indexing NuGet packages into global feed")
+                    targetFeeds.add(globalFeed)
+                } else {
+                    LOG.info("Could not find '${globalFeed.feedId}' NuGet feed for '${globalFeed.projectId}' project.")
+                }
+            } else {
+                LOG.debug("Indexing NuGet packages into build ${LogUtil.describe(build)} is disabled")
+            }
         }
 
-        if (!NuGetIndexUtils.isIndexingEnabledForBuild(build)) {
+        build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).forEach {feature ->
+            feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED_ID]?.let {
+                NuGetUtils.feedIdToData(it)?.let {
+                    targetFeeds.add(it)
+                }
+            }
+        }
+
+        if (targetFeeds.isEmpty()) {
+            LOG.debug("No NuGet feeds found to index packages from build ${LogUtil.describe(build)}")
             return
         }
 
@@ -71,8 +99,10 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
             val version = metadata[NORMALIZED_VERSION]
             if (id != null && version != null) {
                 val key = NuGetUtils.getPackageKey(id, version)
-                store.addParameters(key, metadata)
-                LOG.debug("Added entry to NuGet package index with a key $key")
+                targetFeeds.forEach { feedData ->
+                    myMetadataStorage.addBuildEntry(build.buildId, feedData.key, key, metadata, !build.isPersonal)
+                    LOG.debug("Added NuGet package $key from build ${LogUtil.describe(build)} into feed $feedData")
+                }
             } else {
                 LOG.warn("Failed to resolve NuGet package Id, package ignored: ${metadata[TEAMCITY_ARTIFACT_RELPATH]}")
             }

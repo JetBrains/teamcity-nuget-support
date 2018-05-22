@@ -11,6 +11,10 @@ class NuGetFeedData(val projectId: String, val feedId: String) {
         }
     }
 
+    override fun toString(): String {
+        return "$projectId/$feedId"
+    }
+
     companion object {
         private const val GLOBAL_PROJECT_ID = "_Root"
         private const val GLOBAL_FEED_ID = "global"

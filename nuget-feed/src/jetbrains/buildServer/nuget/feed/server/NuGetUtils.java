@@ -17,9 +17,12 @@
 package jetbrains.buildServer.nuget.feed.server;
 
 import jetbrains.buildServer.nuget.common.version.VersionUtility;
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,5 +57,14 @@ public class NuGetUtils {
   @NotNull
   public static String getProjectFeedPath(@NotNull final String projectId, @NotNull final String name) {
     return String.format(NuGetServerSettings.PROJECT_PATH + "/%s/%s/v2", projectId, name);
+  }
+
+  @Nullable
+  public static NuGetFeedData feedIdToData(@NotNull String feedId) {
+    final List<String> parts = StringUtil.split(feedId, "/");
+    if (parts.size() != 2) {
+      return null;
+    }
+    return new NuGetFeedData(parts.get(0), parts.get(1));
   }
 }

@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.feed.server;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * NuGet feed constants.
  */
@@ -29,4 +31,12 @@ public class NuGetFeedConstants {
   public static final String PROP_NUGET_FEED_ENABLED = "teamcity.nuget.feed.enabled";
   public static final String PROP_NUGET_FEED_CACHED_SERVLETS = "teamcity.nuget.feed.cached.servlets";
   public static final int NUGET_FEED_PACKAGE_SIZE = 100;
+
+  public static final String NUGET_INDEXER_TYPE = "nuget-indexer";
+  public static final String NUGET_INDEXER_FEED_ID = "feedId";
+
+  @NotNull
+  public String getFeedId() {
+      return NUGET_INDEXER_FEED_ID;
+  }
 }
