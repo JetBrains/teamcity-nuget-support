@@ -142,7 +142,7 @@ public class PackagesIndexImpl implements PackagesIndex, NuGetServerStatisticsPr
   private NuGetPackageBuilder applyTransformation(@NotNull final BuildMetadataEntry entry,
                                                          @NotNull final Collection<PackageTransformation> transformations) {
     try {
-      final NuGetPackageBuilder pb = new NuGetPackageBuilder(myFeedData.getName(), entry);
+      final NuGetPackageBuilder pb = new NuGetPackageBuilder(myFeedData, entry);
       for (PackageTransformation transformation : transformations) {
         if (transformation.applyTransformation(pb) == PackageTransformation.Status.SKIP) return null;
       }

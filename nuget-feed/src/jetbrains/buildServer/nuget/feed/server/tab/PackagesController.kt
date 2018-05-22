@@ -21,13 +21,10 @@ import jetbrains.buildServer.controllers.AuthorizationInterceptor
 import jetbrains.buildServer.controllers.BaseController
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.PermissionChecker
-import jetbrains.buildServer.nuget.feed.server.packages.RepositoryConstants
-import jetbrains.buildServer.nuget.feed.server.packages.RepositoryRegistry
-import jetbrains.buildServer.nuget.feed.server.packages.RepositorySettingsManager
+import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.serverSide.ProjectManager
-import jetbrains.buildServer.serverSide.SProject
-import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor
 import jetbrains.buildServer.serverSide.auth.LoginConfiguration
+import jetbrains.buildServer.serverSide.packages.RepositoryRegistry
 import jetbrains.buildServer.web.openapi.PluginDescriptor
 import jetbrains.buildServer.web.openapi.WebControllerManager
 import org.springframework.web.servlet.ModelAndView
@@ -38,16 +35,16 @@ import javax.servlet.http.HttpServletResponse
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 26.10.11 19:21
  */
-class FeedServerController(auth: AuthorizationInterceptor,
-                           checker: PermissionChecker,
-                           web: WebControllerManager,
-                           private val myDescriptor: PluginDescriptor,
-                           private val myLoginConfiguration: LoginConfiguration,
-                           private val mySettings: NuGetServerSettings,
-                           private val myRootUrlHolder: RootUrlHolder,
-                           private val myRepositoryRegistry: RepositoryRegistry,
-                           private val myRepositoriesManager: RepositorySettingsManager,
-                           private val myProjectManager: ProjectManager) : BaseController() {
+class PackagesController(auth: AuthorizationInterceptor,
+                         checker: PermissionChecker,
+                         web: WebControllerManager,
+                         private val myDescriptor: PluginDescriptor,
+                         private val myLoginConfiguration: LoginConfiguration,
+                         private val mySettings: NuGetServerSettings,
+                         private val myRootUrlHolder: RootUrlHolder,
+                         private val myRepositoryRegistry: RepositoryRegistry,
+                         private val myRepositoriesManager: RepositoryManager,
+                         private val myProjectManager: ProjectManager) : BaseController() {
 
     private val myIncludePath: String = myDescriptor.getPluginResourcesPath("packages/status.html")
     private val mySettingsPath: String = myDescriptor.getPluginResourcesPath("packages/settings.html")
@@ -61,17 +58,18 @@ class FeedServerController(auth: AuthorizationInterceptor,
 
     override fun doHandle(request: HttpServletRequest,
                           response: HttpServletResponse): ModelAndView? {
-        val mv = ModelAndView(myDescriptor.getPluginResourcesPath("feedServerSettings.jsp"))
+        val mv = ModelAndView(myDescriptor.getPluginResourcesPath("packagesSettings.jsp"))
 
         val project = getProject(request)
-        val repositories = myRepositoriesManager.getRepositories(project, false).mapNotNull {
-            getProjectRepository(it, project)
+        val repositories = myRepositoriesManager.getRepositories(project, false).map {
+            ProjectRepository(it, project, myRootUrlHolder.rootUrl)
         }
         mv.model["project"] = project
         mv.model["repositories"] = repositories
+        mv.model["repositoryTypes"] = myRepositoryRegistry.types
 
-        mv.model["nugetStatusRefreshUrl"] = myIncludePath
-        mv.model["nugetSettingsPostUrl"] = mySettingsPath
+        mv.model["statusRefreshUrl"] = myIncludePath
+        mv.model["settingsPostUrl"] = mySettingsPath
         mv.model["serverEnabled"] = mySettings.isNuGetServerEnabled
         mv.model["isGuestEnabled"] = myLoginConfiguration.isGuestLoginAllowed
 
@@ -80,10 +78,4 @@ class FeedServerController(auth: AuthorizationInterceptor,
 
     private fun getProject(request: HttpServletRequest) =
             myProjectManager.findProjectByExternalId(request.getParameter("projectId"))!!
-
-    private fun getProjectRepository(descriptor: SProjectFeatureDescriptor, project: SProject): ProjectRepository? {
-        val type = descriptor.parameters[RepositoryConstants.REPOSITORY_TYPE_KEY] ?: return null
-        val repositoryType = myRepositoryRegistry.findType(type) ?: return null
-        return ProjectRepository(repositoryType.createRepository(descriptor.parameters), project, myRootUrlHolder.rootUrl)
-    }
 }

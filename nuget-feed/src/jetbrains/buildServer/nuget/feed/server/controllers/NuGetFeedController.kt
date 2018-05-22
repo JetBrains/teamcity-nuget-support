@@ -24,8 +24,8 @@ import jetbrains.buildServer.nuget.feed.server.NuGetUtils
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
-import jetbrains.buildServer.nuget.feed.server.packages.RepositoryConstants
 import jetbrains.buildServer.serverSide.*
+import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.web.openapi.WebControllerManager
 import jetbrains.buildServer.web.util.WebUtil
 import org.springframework.web.servlet.ModelAndView
@@ -38,25 +38,17 @@ import javax.ws.rs.HttpMethod
  * Entry point for nuget feed.
  */
 class NuGetFeedController(web: WebControllerManager,
-                          eventDispatcher: ServerListenerEventDispatcher,
                           private val mySettings: NuGetServerSettings,
                           private val myRequestsList: RecentNuGetRequests,
                           private val myFeedProvider: NuGetFeedProvider,
-                          private val myProjectManager: ProjectManager)
+                          private val myProjectManager: ProjectManager,
+                          private val myRepositoryManager: RepositoryManager)
     : BaseController() {
-
-    private lateinit var myRootProjectId: String
 
     init {
         setSupportedMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE)
         web.registerController(NuGetServerSettings.GLOBAL_PATH + "/**", this)
         web.registerController(NuGetServerSettings.PROJECT_PATH + "/**", this)
-        eventDispatcher.addListener(object: ServerListenerAdapter() {
-            override fun serverStartup() {
-                myRootProjectId = myProjectManager.rootProject.externalId
-            }
-        })
-
     }
 
     override fun doHandle(request: HttpServletRequest,
@@ -66,7 +58,8 @@ class NuGetFeedController(web: WebControllerManager,
         }
 
         val pathInfo = if (request.pathInfo.contains(NuGetServerSettings.GLOBAL_PATH)) {
-            val rootFeedPath = NuGetUtils.getProjectNuGetFeedPath(myRootProjectId)
+            val globalFeed = NuGetFeedData.GLOBAL
+            val rootFeedPath = NuGetUtils.getProjectFeedPath(globalFeed.projectId, globalFeed.feedId)
             request.pathInfo.replace(NuGetServerSettings.GLOBAL_PATH, rootFeedPath)
         } else {
             request.pathInfo
@@ -83,10 +76,15 @@ class NuGetFeedController(web: WebControllerManager,
             return null
         }
 
-        val (feedPath, feedName) = result.destructured
-        val project = myProjectManager.findProjectByExternalId(feedName)
-        if (project == null || project.getAvailableFeaturesOfType(RepositoryConstants.PACKAGES_FEATURE_TYPE).isEmpty()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Requested NuGet Feed not found")
+        val (feedPath, projectId, feedId) = result.destructured
+        val project = myProjectManager.findProjectByExternalId(projectId)
+        if (project == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed project $projectId not found")
+            return null
+        }
+
+        if (!myRepositoryManager.hasRepository(project, PackageConstants.NUGET_PROVIDER_ID, feedId)) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed $feedId not found")
             return null
         }
 
@@ -118,16 +116,10 @@ class NuGetFeedController(web: WebControllerManager,
             return null
         }
 
-        val feedKey = if (feedName == myRootProjectId)  {
-            PackageConstants.NUGET_PROVIDER_ID
-        } else {
-            "${PackageConstants.NUGET_PROVIDER_ID}.$feedName"
-        }
-        val feedData = NuGetFeedData(feedName, feedKey)
-
-        myRequestsList.reportFeedRequest(pathAndQuery)
+        val feedData = NuGetFeedData(projectId, feedId)
         val startTime = Date().time
         try {
+            myRequestsList.reportFeedRequest(pathAndQuery)
             feedHandler.handleRequest(feedData, requestWrapper, response)
         } finally {
             myRequestsList.reportFeedRequestFinished(pathAndQuery, Date().time - startTime)
@@ -139,7 +131,7 @@ class NuGetFeedController(web: WebControllerManager,
     companion object {
         private val LOG = Logger.getInstance(NuGetFeedController::class.java.name)
         private val QUERY_ID = Regex("^(id=)(.*)", RegexOption.IGNORE_CASE)
-        private val FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.PROJECT_PATH + "/([^/]+)/v[12])")
+        private val FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.PROJECT_PATH + "/([^/]+)/([^/]+)/v[12])")
         private const val UNSUPPORTED_REQUEST = "Unsupported NuGet feed request"
     }
 }

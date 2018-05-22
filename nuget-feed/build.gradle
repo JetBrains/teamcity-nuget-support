@@ -25,7 +25,9 @@ dependencies {
     compile files("$rootDir/local-repo/org/apache/olingo/olingo-odata2-core/$olingoVersion/olingo-odata2-core-${olingoVersion}.jar")
     provided project(':nuget-common')
     provided project(':nuget-server-common')
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-impl.jar")
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-api.jar")
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web.jar")
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
     provided "com.github.ben-manes.caffeine:caffeine:2.4.0"
 }

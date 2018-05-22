@@ -18,7 +18,9 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.intellij.util.containers.SortedList;
 import jetbrains.buildServer.controllers.MockResponse;
+import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.common.index.PackageConstants;
+import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
@@ -29,17 +31,11 @@ import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProviderImpl;
 import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
 import jetbrains.buildServer.nuget.feed.server.index.*;
-import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
 import jetbrains.buildServer.nuget.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
-import jetbrains.buildServer.nuget.feed.server.odata4j.NuGetProducerHolder;
 import jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler;
-import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
 import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
-import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
-import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory;
-import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.ServerSettings;
@@ -78,9 +74,7 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBase {
   protected static final String SERVLET_PATH = "/app/nuget/v1/FeedService.svc";
   protected static final String DOWNLOAD_URL = "/downlaodREpoCon/downlaod-url";
-  protected static final String FEED_NAME = "_Root";
-  protected static final NuGetFeedData FEED_DATA = new NuGetFeedData(FEED_NAME, PackageConstants.NUGET_PROVIDER_ID);
-  protected NuGetProducerHolder myProducer;
+  protected static final NuGetFeedData FEED_DATA = NuGetFeedData.GLOBAL;
   protected PackagesIndex myIndex;
   protected PackagesIndex myActualIndex;
   protected PackagesIndex myIndexProxy;
@@ -210,12 +204,12 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   @Override
   protected String getNuGetServerUrl() {
-    return "http://localhost" + NuGetUtils.getProjectNuGetFeedPath(FEED_DATA.getName()) + "/";
+    return "http://localhost" + NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId()) + "/";
   }
 
   protected NuGetIndexEntry addPackage(@NotNull final File file, boolean isLatest) throws IOException {
     final Map<String, String> map = indexPackage(file, isLatest);
-    NuGetIndexEntry e = new NuGetIndexEntry(FEED_NAME, file.getName(), map);
+    NuGetIndexEntry e = new NuGetIndexEntry(FEED_DATA, file.getName(), map);
     myFeed.add(e);
     return e;
   }
@@ -237,7 +231,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   }
 
   protected NuGetIndexEntry addMockPackage(@NotNull final String key, @NotNull final Map<String, String> params, boolean isLatest) {
-    return addMockPackage(new NuGetIndexEntry(FEED_NAME, key, params), false);
+    return addMockPackage(new NuGetIndexEntry(FEED_DATA, key, params), false);
   }
 
   protected NuGetIndexEntry addMockPackage(@NotNull final NuGetIndexEntry entry, boolean isLatest) {
@@ -250,7 +244,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     map.put(IS_LATEST_VERSION, String.valueOf(isLatest));
     map.put(IS_ABSOLUTE_LATEST_VERSION, String.valueOf(isLatest));
     map.put(PackageConstants.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
-    NuGetIndexEntry e = new NuGetIndexEntry(FEED_NAME, id + "." + ver, map);
+    NuGetIndexEntry e = new NuGetIndexEntry(FEED_DATA, id + "." + ver, map);
     myFeed.add(e);
     return e;
   }
@@ -260,7 +254,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
     final String id = attributes.get(ID);
     final String ver = attributes.get(VERSION);
-    NuGetIndexEntry e = new NuGetIndexEntry(FEED_NAME, id + "." + ver, attributes);
+    NuGetIndexEntry e = new NuGetIndexEntry(FEED_DATA, id + "." + ver, attributes);
 
     myFeed.add(e);
     return e;
@@ -277,7 +271,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     map.remove(IS_LATEST_VERSION);
     map.remove(IS_ABSOLUTE_LATEST_VERSION);
     map.put(PackageConstants.TEAMCITY_DOWNLOAD_URL, DOWNLOAD_URL);
-    NuGetIndexEntry e = new NuGetIndexEntry(FEED_NAME, id + "." + ver, map);
+    NuGetIndexEntry e = new NuGetIndexEntry(FEED_DATA, id + "." + ver, map);
     myFeed.add(e);
     return e;
   }

@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.index.impl;
 
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import org.jetbrains.annotations.NotNull;
@@ -36,12 +37,12 @@ public class NuGetPackageBuilder {
   private final String myKey;
   private final String myVersion;
   private final long myBuildId;
-  private final String myFeedName;
+  private final NuGetFeedData myFeedData;
   private final Map<String, String> myMetadata;
   private String myExternalId = null;
 
-  public NuGetPackageBuilder(@NotNull final String feedName, @NotNull final BuildMetadataEntry entry) {
-    myFeedName = feedName;
+  public NuGetPackageBuilder(@NotNull final NuGetFeedData feedData, @NotNull final BuildMetadataEntry entry) {
+    myFeedData = feedData;
     myMetadata = new HashMap<>(entry.getMetadata());
     myVersion = myMetadata.get(VERSION);
     myKey = entry.getKey();
@@ -124,7 +125,7 @@ public class NuGetPackageBuilder {
     if (myMetadata.get(IS_LATEST_VERSION) == null) setIsLatest(false);
     if (myMetadata.get(IS_ABSOLUTE_LATEST_VERSION) == null) setIsAbsoluteLatest(false);
     return new NuGetIndexEntry(
-            myFeedName,
+            myFeedData,
             myKey,
             myMetadata
     );

@@ -97,7 +97,7 @@ public class ResponseCacheImpl implements ResponseCache {
                            @NotNull final HttpServletRequest request,
                            @NotNull final HttpServletResponse response,
                            @NotNull final ComputeAction action) throws Exception {
-    final String key = key(feedData.getName(), request);
+    final String key = key(feedData.getKey(), request);
     final ResponseCacheEntry entry = myCache.get(key, s -> {
       LOG.debug("NuGet cache miss for: " + WebUtil.getRequestDump(request));
       try {

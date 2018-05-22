@@ -66,7 +66,7 @@ class OlingoRequestHandler(private val myFeedFactory: NuGetFeedFactory,
                                    response: HttpServletResponse) {
         LOG.debug("NuGet Feed: " + WebUtil.getRequestDump(request) + "|" + request.requestURI)
 
-        val (servlet, feed) = myServletsCache.get(feedData.name) { _ ->
+        val (servlet, feed) = myServletsCache.get(feedData.key) { _ ->
             ODataServlet().apply {
                 this.init(ODataServletConfig())
             } to myFeedFactory.createFeed(feedData)

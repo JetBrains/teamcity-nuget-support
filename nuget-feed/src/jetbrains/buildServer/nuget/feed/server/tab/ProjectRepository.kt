@@ -1,7 +1,7 @@
 package jetbrains.buildServer.nuget.feed.server.tab
 
-import jetbrains.buildServer.nuget.feed.server.packages.Repository
 import jetbrains.buildServer.serverSide.SProject
+import jetbrains.buildServer.serverSide.packages.Repository
 import jetbrains.buildServer.web.util.WebUtil
 import java.net.URI
 import javax.ws.rs.core.UriBuilder

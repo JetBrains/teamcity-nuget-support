@@ -3,8 +3,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
        default-autowire="constructor">
-  <bean class="jetbrains.buildServer.nuget.feed.server.packages.RepositorySettingsManagerImpl"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.packages.RepositoryRegistryImpl"/>
+  <bean class="jetbrains.buildServer.serverSide.packages.impl.RepositoryManagerImpl"/>
+  <bean class="jetbrains.buildServer.serverSide.packages.impl.RepositoryRegistryImpl"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.packages.NuGetRepositoryType"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.tab.RepositoriesProjectTab"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.tab.PackagesProjectTab"/>
 </beans>

@@ -24,7 +24,7 @@ import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.serverSide.ProjectManager;
-import jetbrains.buildServer.serverSide.ServerListenerEventDispatcher;
+import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.apache.http.HttpStatus;
 import org.jmock.Expectations;
@@ -51,7 +51,7 @@ public class NuGetFeedControllerTest {
         NuGetFeedProvider provider = m.mock(NuGetFeedProvider.class);
         NuGetFeedHandler handler = m.mock(NuGetFeedHandler.class);
         ProjectManager projectManager = m.mock(ProjectManager.class);
-        ServerListenerEventDispatcher eventDispatcher = m.mock(ServerListenerEventDispatcher.class);
+        RepositoryManager repositoryManager = m.mock(RepositoryManager.class);
 
         m.checking(new Expectations(){{
             allowing(settings).isNuGetServerEnabled(); will(returnValue(true));
@@ -66,8 +66,8 @@ public class NuGetFeedControllerTest {
                     with(any(HttpServletResponse.class)));
         }});
 
-        Controller controller = new NuGetFeedController(web, eventDispatcher, settings,
-                new RecentNuGetRequests(), provider, projectManager);
+        Controller controller = new NuGetFeedController(web, settings,
+                new RecentNuGetRequests(), provider, projectManager, repositoryManager);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -82,7 +82,7 @@ public class NuGetFeedControllerTest {
         NuGetServerSettings settings = m.mock(NuGetServerSettings.class);
         NuGetFeedProvider provider = m.mock(NuGetFeedProvider.class);
         ProjectManager projectManager = m.mock(ProjectManager.class);
-        ServerListenerEventDispatcher eventDispatcher = m.mock(ServerListenerEventDispatcher.class);
+        RepositoryManager repositoryManager = m.mock(RepositoryManager.class);
 
         m.checking(new Expectations(){{
             allowing(settings).isNuGetServerEnabled(); will(returnValue(true));
@@ -92,8 +92,8 @@ public class NuGetFeedControllerTest {
             allowing(provider).getHandler(with(any(HttpServletRequest.class))); will(returnValue(null));
         }});
 
-        Controller controller = new NuGetFeedController(web, eventDispatcher, settings,
-                new RecentNuGetRequests(), provider, projectManager);
+        Controller controller = new NuGetFeedController(web, settings,
+                new RecentNuGetRequests(), provider, projectManager, repositoryManager);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
 

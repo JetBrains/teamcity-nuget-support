@@ -34,8 +34,8 @@
   <bean class="jetbrains.buildServer.nuget.common.index.NuGetPackageAnalyzer"/>
 
   <!-- UI -->
-  <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerSettingsController"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.tab.FeedServerController"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.tab.PackagesSettingsController"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.tab.PackagesController"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.NuGetDownloadedPackagesTab"/>
 
   <!--stats -->

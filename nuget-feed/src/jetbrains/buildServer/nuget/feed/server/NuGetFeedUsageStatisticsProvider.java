@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.feed.server;
 
 import com.intellij.openapi.util.Pair;
-import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.nuget.feed.server.index.*;
 import jetbrains.buildServer.usageStatistics.UsageStatisticsPublisher;
@@ -93,7 +92,7 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
   private Pair<Integer, Integer> countIndexEntries() {
     int count = 0;
     final Set<String> packagesCounter = new HashSet<>();
-    final NuGetFeed feed = myFeedFactory.createFeed(new NuGetFeedData("_Root", PackageConstants.NUGET_PROVIDER_ID));
+    final NuGetFeed feed = myFeedFactory.createFeed(NuGetFeedData.GLOBAL);
     for (NuGetIndexEntry indexEntry : feed.getAll()) {
       packagesCounter.add(indexEntry.getAttributes().get("Id"));
       count++;

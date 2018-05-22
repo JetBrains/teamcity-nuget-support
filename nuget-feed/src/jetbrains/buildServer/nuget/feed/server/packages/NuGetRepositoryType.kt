@@ -1,17 +1,27 @@
 package jetbrains.buildServer.nuget.feed.server.packages
 
 import jetbrains.buildServer.nuget.common.index.PackageConstants
+import jetbrains.buildServer.serverSide.packages.Repository
+import jetbrains.buildServer.serverSide.packages.RepositoryRegistry
+import jetbrains.buildServer.serverSide.packages.RepositoryType
+import jetbrains.buildServer.web.openapi.PluginDescriptor
 
-class NuGetRepositoryType(repositoryRegistry: RepositoryRegistry) : RepositoryType {
+class NuGetRepositoryType(repositoryRegistry: RepositoryRegistry,
+                          pluginDescriptor: PluginDescriptor) : RepositoryType() {
 
-    override val type: String
-        get() = PackageConstants.NUGET_PROVIDER_ID
+    private val editParametersUrl = pluginDescriptor.getPluginResourcesPath("editNuGetRepository.html")
 
     init {
         repositoryRegistry.register(this)
     }
 
-    override fun createRepository(parameters: Map<String, String>): Repository {
-        return NuGetRepository(parameters)
+    override fun getType() = PackageConstants.NUGET_PROVIDER_ID
+
+    override fun getName() = "NuGet Feed"
+
+    override fun getEditParametersUrl() = editParametersUrl
+
+    override fun createRepository(projectId: String, parameters: Map<String, String>): Repository {
+        return NuGetRepository(this, projectId, parameters)
     }
 }

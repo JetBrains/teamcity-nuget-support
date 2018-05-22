@@ -70,7 +70,7 @@ class ODataRequestHandler(private val myFeedFactory: NuGetFeedFactory,
         XMLFactoryProvider2.setInstance(DOM_XML_FACTORY_PROVIDER_2)
         LOG.debug("NuGet Feed: " + WebUtil.getRequestDump(request) + "|" + request.requestURI)
 
-        val servletContainer = myServletsCache.get(feedData.name, {
+        val servletContainer = myServletsCache.get(feedData.key, {
             Util.doUnderContextClassLoader<ServletContainer, ServletException>(javaClass.classLoader) {
                 val feed = myFeedFactory.createFeed(feedData)
                 ServletContainer(NuGetODataApplication(NuGetProducerHolder(feed))).apply {

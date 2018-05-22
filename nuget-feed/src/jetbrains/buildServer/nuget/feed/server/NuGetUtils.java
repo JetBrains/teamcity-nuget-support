@@ -52,7 +52,7 @@ public class NuGetUtils {
    * @return context based path of nuget feed OData service
    */
   @NotNull
-  public static String getProjectNuGetFeedPath(@NotNull final String feedName) {
-    return String.format(NuGetServerSettings.PROJECT_PATH + "/%s/v2", feedName);
+  public static String getProjectFeedPath(@NotNull final String projectId, @NotNull final String name) {
+    return String.format(NuGetServerSettings.PROJECT_PATH + "/%s/%s/v2", projectId, name);
   }
 }

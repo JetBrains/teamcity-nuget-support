@@ -18,18 +18,6 @@ if (!BS) BS = {};
 if (!BS.NuGet) BS.NuGet = {};
 
 BS.NuGet.FeedServer = {
-  refreshStatus : function () {
-    $('nugetServerStatus').refresh();
-  },
-
-  registerStatusRefresh : function () {
-    var that = this;
-    setTimeout(function () {
-      that.refreshStatus();
-      that.registerStatusRefresh();
-    }, 1000);
-  },
-
   _request : function(el, enabled) {
     var url = $j(el).closest("div").data("url");
 
@@ -39,14 +27,14 @@ BS.NuGet.FeedServer = {
     BS.ajaxRequest(url, {
       method : "POST",
       parameters : {
-        'nuget-feed-enabled' : enabled
+        'nuget-feed-enabled' : enabled,
+        'action': 'nugetFeed'
       },
       onComplete : function() {
         $j(el).closest("div").find("span:last").html('');
-        $('nugetEnableDisable').refresh();
+        $('packages').refresh();
       }
     });
-
   },
 
   disableFeedServer : function(el) {
@@ -61,15 +49,5 @@ BS.NuGet.FeedServer = {
 
   enableFeedServer : function(el) {
     BS.NuGet.FeedServer._request(el, true);
-  },
-
-  addFeed: function(name) {
-    alert("Adding feed " + name);
-    return false;
-  },
-
-  deleteFeed: function (name) {
-    alert("Deleting feed " + name);
-    return false;
   }
 };
