@@ -26,14 +26,16 @@ BS.Packages = {
     return this.pageUrl;
   },
 
-  deleteRepository: function (projectId, type, typeName, name) {
-    var text = "<p>Do you really want to delete the '" + name + "' " + typeName + " from the '" + projectId + "' project?</p>";
+  deleteRepository: function (projectId, projectName, type, typeName, name) {
+    var feedName = name === "default" ? "" : "'" + name + "'";
+    var text = "<p>Do you really want to delete the " + feedName + " " + typeName + " from the '" +
+      $j("<span />").text(projectName).html() + "' project?</p>";
     var url = this.getPageUrl();
     BS.confirmDialog.show({
       text: text,
       actionButtonText: "Delete",
       cancelButtonText: 'Cancel',
-      title: "Delete '" + name + "' " + typeName,
+      title: "Delete " + feedName + " " + typeName,
       action: function () {
         var completed = $j.Deferred();
         BS.ajaxRequest(url, {
@@ -44,6 +46,16 @@ BS.Packages = {
           }
         });
         return completed;
+      }
+    });
+  },
+
+  addRepository: function (projectId, type, name) {
+    var url = this.getPageUrl();
+    BS.ajaxRequest(url, {
+      parameters: {projectId: projectId, type: type, name: name, action: "addRepository"},
+      onComplete: function () {
+        BS.reload(true);
       }
     });
   }

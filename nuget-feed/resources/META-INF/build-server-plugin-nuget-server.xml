@@ -15,7 +15,6 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.requests.NuGetFeedRequestsController"/>
 
-  <bean class="jetbrains.buildServer.nuget.feed.server.impl.NuGetServerFeedSettingsImpl"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider"/>

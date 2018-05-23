@@ -111,7 +111,7 @@ public class NuGetDownloadedPackagesTab extends ViewLogTab {
         }
       }
     } else {
-      final NuGetFeed feed = myFeedFactory.createFeed(NuGetFeedData.GLOBAL);
+      final NuGetFeed feed = myFeedFactory.createFeed(NuGetFeedData.DEFAULT);
       for (NuGetIndexEntry indexEntry : feed.getForBuild(build.getBuildId())) {
         infos.add(indexEntry.getPackageInfo());
       }

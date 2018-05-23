@@ -20,9 +20,8 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.controllers.*;
 import jetbrains.buildServer.controllers.admin.projects.PluginPropertiesUtil;
 import jetbrains.buildServer.log.Loggers;
-import jetbrains.buildServer.nuget.feed.server.NuGetServerJavaSettings;
 import jetbrains.buildServer.nuget.feed.server.PermissionChecker;
-import jetbrains.buildServer.nuget.feed.server.index.NuGetPackagesIndexer;
+import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.identifiers.IdentifiersUtil;
 import jetbrains.buildServer.serverSide.impl.DuplicateIdException;
@@ -31,6 +30,7 @@ import jetbrains.buildServer.serverSide.packages.RepositoryConstants;
 import jetbrains.buildServer.serverSide.packages.RepositoryRegistry;
 import jetbrains.buildServer.serverSide.packages.RepositoryType;
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.ControllerAction;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
@@ -53,12 +53,9 @@ import java.util.Map;
  * Date: 01.11.11 17:56
  */
 public class PackagesSettingsController extends BaseFormXmlController {
-    private static final String NUGET_FEED_ENABLED_PARAM_NAME = "nuget-feed-enabled";
     private static final Logger LOG = Logger.getInstance(PackagesSettingsController.class.getName());
 
     private final PluginDescriptor myPluginDescriptor;
-    private final NuGetServerJavaSettings mySettings;
-    private final NuGetPackagesIndexer myPackagesIndexer;
     private final ProjectManager myProjectManager;
     private final RepositoryRegistry myRepositoryRegistry;
     private final RepositoryManager myRepositoryManager;
@@ -69,14 +66,10 @@ public class PackagesSettingsController extends BaseFormXmlController {
                                       @NotNull final PluginDescriptor pluginDescriptor,
                                       @NotNull final PermissionChecker checker,
                                       @NotNull final WebControllerManager web,
-                                      @NotNull final NuGetServerJavaSettings settings,
-                                      @NotNull final NuGetPackagesIndexer packagesIndexer,
                                       @NotNull final ProjectManager projectManager,
                                       @NotNull final RepositoryRegistry repositoryRegistry,
                                       @NotNull final RepositoryManager repositoryManager) {
         myPluginDescriptor = pluginDescriptor;
-        mySettings = settings;
-        myPackagesIndexer = packagesIndexer;
         myProjectManager = projectManager;
         myRepositoryRegistry = repositoryRegistry;
         myRepositoryManager = repositoryManager;
@@ -100,6 +93,7 @@ public class PackagesSettingsController extends BaseFormXmlController {
 
         myPostActions = new ArrayList<>();
         myPostActions.add(new SaveRepositoryAction());
+        myPostActions.add(new AddRepositoryAction());
         myPostActions.add(new DeleteRepositoryAction());
         myPostActions.add(new NuGetFeedAction());
     }
@@ -169,20 +163,67 @@ public class PackagesSettingsController extends BaseFormXmlController {
 
         @Override
         public boolean canProcess(@NotNull HttpServletRequest request) {
-            return "nugetFeed".equals(request.getParameter("action"));
+            return "nugetFeedIndexing".equals(request.getParameter("action"));
         }
 
         @Override
         public void process(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @Nullable Element element) {
-            final Boolean enabled = getServerStatus(request);
-            if (enabled != null) {
-                mySettings.setNuGetJavaFeedEnabled(enabled);
+            final String projectExternalId = request.getParameter("projectId");
+            final SProject project = myProjectManager.findProjectByExternalId(projectExternalId);
+            try {
+                if (projectExternalId == null || project == null) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Project was not found");
+                    return;
+                }
+
+                if (project.isReadOnly()) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Project is read-only");
+                    return;
+                }
+
+                final String type = request.getParameter("type");
+                if (StringUtil.isEmpty(type)) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Repository type not found");
+                    return;
+                }
+
+                RepositoryType registryType = myRepositoryRegistry.findType(type);
+                if (registryType == null) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Repository type not found");
+                    return;
+                }
+
+                final String name = request.getParameter("name");
+                if (StringUtil.isEmpty(name)) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, registryType.getName() + "name is not found");
+                    return;
+                }
+
+                Repository repository = myRepositoryManager.getRepository(project, type, name);
+                if (!(repository instanceof NuGetRepository)) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, registryType.getName() + "name is not found");
+                    return;
+                }
+
+                final NuGetRepository nuGetRepository = (NuGetRepository) repository;
+                final String value = request.getParameter("enabled");
+                final boolean enabled;
+                if (!StringUtil.isEmptyOrSpaces(value)) {
+                    enabled = Boolean.valueOf(value);
+                } else {
+                    enabled = false;
+                }
+
+                nuGetRepository.setIndexPackages(enabled);
+                myRepositoryManager.updateRepository(project, name, nuGetRepository);
+
                 if (enabled) {
-                    LOG.info("NuGet feed was enabled. Start re-indexing NuGet builds metadata.");
-                    myPackagesIndexer.reindexAll();
+                    LOG.info("NuGet feed indexing was enabled. Will be indexed newly published .nupkg files in project and subprojects.");
                 } else {
                     LOG.info("NuGet feed was disabled. Newly published .nupkg files will not be indexed while feed is disabled.");
                 }
+            } catch (IOException e) {
+                LOG.infoAndDebugDetails("Failed to send response", e);
             }
         }
     }
@@ -327,14 +368,62 @@ public class PackagesSettingsController extends BaseFormXmlController {
         }
     }
 
-    @Nullable
-    private Boolean getServerStatus(@NotNull final HttpServletRequest request) {
-        final String v = request.getParameter(NUGET_FEED_ENABLED_PARAM_NAME);
-        if (StringUtil.isEmptyOrSpaces(v)) return null;
-        try {
-            return Boolean.valueOf(v);
-        } catch (Exception e) {
-            return null;
+    final class AddRepositoryAction implements ControllerAction {
+
+        @Override
+        public boolean canProcess(@NotNull HttpServletRequest request) {
+            return "addRepository".equals(request.getParameter("action"));
+        }
+
+        @Override
+        public void process(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @Nullable Element xmlResponse) {
+            final ActionErrors errors = new ActionErrors();
+            final String projectExternalId = request.getParameter("projectId");
+            final SProject project = myProjectManager.findProjectByExternalId(projectExternalId);
+            try {
+                if (projectExternalId == null || project == null) {
+                    errors.addError("projectNotFound", "Project was not found");
+                    return;
+                }
+
+                if (project.isReadOnly()) {
+                    errors.addError("cannotEditProject", "Project is read-only");
+                    return;
+                }
+
+                final String type = request.getParameter("type");
+                if (StringUtil.isEmpty(type)) {
+                    errors.addError(RepositoryConstants.REPOSITORY_TYPE_KEY, "Repository type not found");
+                    return;
+                }
+
+                RepositoryType repositoryType = myRepositoryRegistry.findType(type);
+                if (repositoryType == null) {
+                    errors.addError(RepositoryConstants.REPOSITORY_TYPE_KEY, "Repository type not found");
+                    return;
+                }
+
+                final String name = request.getParameter("name");
+                if (StringUtil.isEmpty(name)) {
+                    errors.addError(RepositoryConstants.REPOSITORY_NAME_KEY, repositoryType.getName() + "name is not found");
+                    return;
+                }
+
+                final Repository repository = repositoryType.createRepository(projectExternalId, CollectionsUtil.asMap(
+                        RepositoryConstants.REPOSITORY_TYPE_KEY, type,
+                        RepositoryConstants.REPOSITORY_NAME_KEY, name
+                ));
+                try {
+                    myRepositoryManager.addRepository(project, repository);
+                } catch (Exception e) {
+                    LOG.infoAndDebugDetails(String.format("Failed to add %s %s in project %s", repositoryType.getName(), name, projectExternalId), e);
+                    errors.addError(RepositoryConstants.REPOSITORY_NAME_KEY, e.getMessage());
+                }
+            } finally {
+                if (xmlResponse != null) {
+                    writeErrors(xmlResponse, errors);
+                }
+            }
         }
     }
 

@@ -56,7 +56,7 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
 
     final Map<String, String> parameters = build.getSharedConfigParameters();
     for (String key : parameters.keySet()) {
-      if (key.startsWith(NuGetServerConstants.FEED_REF_HTTP_AUTH_PREFIX)) {
+      if (NuGetServerConstants.FEED_URL_PATTERN.matcher(key).find()) {
         final String feedUrl = parameters.get(key);
         if (StringUtil.isEmptyOrSpaces(feedUrl)) {
           LOG.debug("Failed to resolve TeamCity NuGet feed url via config parameter " + key);

@@ -22,6 +22,6 @@ class NuGetRepositoryType(repositoryRegistry: RepositoryRegistry,
     override fun getEditParametersUrl() = editParametersUrl
 
     override fun createRepository(projectId: String, parameters: Map<String, String>): Repository {
-        return NuGetRepository(this, projectId, parameters)
+        return NuGetRepository(this, projectId, parameters.toMutableMap())
     }
 }

@@ -27,14 +27,20 @@ import org.jetbrains.annotations.NotNull;
 public class NuGetServerPropertiesDescription extends AbstractParameterDescriptionProvider {
   @Override
   public String describe(@NotNull String paramName) {
-    if (paramName.startsWith(NuGetServerConstants.FEED_REF_GUEST_AUTH_PREFIX)) {
-        return "Contains URL to TeamCity provided NuGet feed";
+    if (NuGetServerConstants.FEED_URL_PATTERN.matcher(paramName).find()) {
+      return "Contains URL to TeamCity provided NuGet feed with basic authentication";
     }
-    if (paramName.startsWith(NuGetServerConstants.FEED_REF_HTTP_AUTH_PREFIX)) {
-        return "Contains URL to TeamCity provided NuGet feed with basic authentication";
+    if (paramName.equals(NuGetServerConstants.FEED_REF_GUEST_AUTH_GLOBAL)) {
+        return "Deprecated URL for default TeamCity provided NuGet feed";
     }
-    if (paramName.startsWith(NuGetServerConstants.FEED_REFERENCE_AGENT_API_KEY_PROVIDED)) {
-        return "Contains API key to push packages into TeamCity provided NuGet feed";
+    if (paramName.equals(NuGetServerConstants.FEED_REF_HTTP_AUTH_GLOBAL)) {
+        return "Deprecated URL for default TeamCity provided NuGet feed with basic authentication";
+    }
+    if (paramName.equals(NuGetServerConstants.FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL)) {
+        return "Deprecated URL for default TeamCity provided NuGet feed with public URL";
+    }
+    if (paramName.equals(NuGetServerConstants.FEED_REFERENCE_AGENT_API_KEY_PROVIDED)) {
+      return "Contains API key to push packages into TeamCity provided NuGet feed";
     }
     return null;
   }

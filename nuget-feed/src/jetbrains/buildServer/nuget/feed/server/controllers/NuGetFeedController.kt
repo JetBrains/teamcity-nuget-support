@@ -58,7 +58,7 @@ class NuGetFeedController(web: WebControllerManager,
         }
 
         val pathInfo = if (request.pathInfo.contains(NuGetServerSettings.GLOBAL_PATH)) {
-            val globalFeed = NuGetFeedData.GLOBAL
+            val globalFeed = NuGetFeedData.DEFAULT
             val rootFeedPath = NuGetUtils.getProjectFeedPath(globalFeed.projectId, globalFeed.feedId)
             request.pathInfo.replace(NuGetServerSettings.GLOBAL_PATH, rootFeedPath)
         } else {

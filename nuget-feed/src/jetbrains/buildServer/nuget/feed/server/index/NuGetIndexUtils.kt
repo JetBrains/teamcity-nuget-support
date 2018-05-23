@@ -3,9 +3,13 @@ package jetbrains.buildServer.nuget.feed.server.index
 import com.intellij.openapi.diagnostic.Logger
 import jetbrains.buildServer.BuildType
 import jetbrains.buildServer.nuget.common.NuGetServerConstants
+import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
 import jetbrains.buildServer.serverSide.SBuild
+import jetbrains.buildServer.serverSide.SProject
 import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.serverSide.impl.LogUtil
+import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
+import kotlin.coroutines.experimental.buildSequence
 
 object NuGetIndexUtils {
     private val LOG = Logger.getInstance(NuGetIndexUtils::class.java.name)
@@ -24,5 +28,15 @@ object NuGetIndexUtils {
         }
 
         return indexingEnabled
+    }
+
+    fun findFeedsWithIndexing(project: SProject?, repositoryManager: RepositoryManager) = buildSequence {
+        var currentProject = project
+        while (currentProject != null) {
+            yieldAll(repositoryManager.getRepositories(currentProject, false)
+                .filterIsInstance<NuGetRepository>()
+                .filter { it.indexPackages })
+            currentProject = currentProject.parentProject
+        }
     }
 }

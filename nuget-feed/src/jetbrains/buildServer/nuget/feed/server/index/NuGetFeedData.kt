@@ -5,7 +5,7 @@ import java.util.*
 
 class NuGetFeedData(val projectId: String, val feedId: String) {
     val key: String by lazy {
-        return@lazy if (projectId == "_Root" && feedId == "global") {
+        return@lazy if (projectId == DEFAULT_PROJECT_ID && feedId == DEFAULT_FEED_ID) {
             PackageConstants.NUGET_PROVIDER_ID
         } else {
             "${PackageConstants.NUGET_PROVIDER_ID}.$projectId.$feedId"
@@ -17,7 +17,7 @@ class NuGetFeedData(val projectId: String, val feedId: String) {
     }
 
     override fun toString(): String {
-        return "$projectId/$feedId"
+        return if (feedId == DEFAULT_FEED_ID) projectId else "$projectId/$feedId"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -33,9 +33,9 @@ class NuGetFeedData(val projectId: String, val feedId: String) {
     }
 
     companion object {
-        private const val GLOBAL_PROJECT_ID = "_Root"
-        private const val GLOBAL_FEED_ID = "global"
+        private const val DEFAULT_PROJECT_ID = "_Root"
+        const val DEFAULT_FEED_ID = "default"
         @JvmField
-        val GLOBAL = NuGetFeedData(GLOBAL_PROJECT_ID, GLOBAL_FEED_ID)
+        val DEFAULT = NuGetFeedData(DEFAULT_PROJECT_ID, DEFAULT_FEED_ID)
     }
 }

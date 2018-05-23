@@ -56,16 +56,18 @@ class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings,
         }
 
         val buildToken = String.format("%s:%s",
-                makeReference(TEAMCITY_AUTH_USER_ID_PROP),
-                makeReference(TEAMCITY_AUTH_PASSWORD_PROP))
+            makeReference(TEAMCITY_AUTH_USER_ID_PROP),
+            makeReference(TEAMCITY_AUTH_PASSWORD_PROP))
 
         val result = build.valueResolver.resolve(buildToken)
         if (result.isFullyResolved) {
             properties[FEED_REFERENCE_AGENT_API_KEY_PROVIDED] = EncryptUtil.scramble(result.result)
         }
 
-        if (mySettings.isGlobalIndexingEnabled && NuGetIndexUtils.isIndexingEnabledForBuild(build) ||
-                build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).isNotEmpty()) {
+        val buildProject = myProjectManager.findProjectById(build.projectId)
+        if (build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).isNotEmpty() ||
+            NuGetIndexUtils.isIndexingEnabledForBuild(build) &&
+            NuGetIndexUtils.findFeedsWithIndexing(buildProject, myRepositoryManager).any()) {
             properties[NuGetServerConstants.FEED_INDEXING_ENABLED_PROP] = "true"
         }
 
@@ -76,14 +78,16 @@ class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings,
         get() {
             val map = HashMap<String, String>()
             // Add global feed
-            val project = myProjectManager.rootProject
-            val feedData = NuGetFeedData.GLOBAL
-            if (myRepositoryManager.hasRepository(project, PackageConstants.NUGET_PROVIDER_ID, feedData.feedId)) {
-                val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, feedData.feedId)
+            val rootProject = myProjectManager.rootProject
+            val feedData = NuGetFeedData.DEFAULT
+            if (myRepositoryManager.hasRepository(rootProject, PackageConstants.NUGET_PROVIDER_ID, feedData.feedId)) {
+                val feedPath = NuGetUtils.getProjectFeedPath(feedData.projectId, feedData.feedId)
                 map[FEED_REF_GUEST_AUTH_GLOBAL] = makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, feedPath)
                 val httpAuthFeedPath = combineContextPath(HTTP_AUTH_PREFIX, feedPath)
                 map[FEED_REF_HTTP_AUTH_GLOBAL] = makeReference(TEAMCITY_SERVER_URL) + httpAuthFeedPath
-                map[Constants.SYSTEM_PREFIX + FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL] = UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
+                map[Constants.SYSTEM_PREFIX + FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL] = UriBuilder
+                    .fromUri(myRootUrlHolder.rootUrl)
+                    .replacePath(httpAuthFeedPath).build().toString()
             }
             return map
         }
@@ -92,16 +96,17 @@ class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings,
         val map = properties
         myProjectManager.findProjectById(build.projectId)?.let {
             val repositories = myRepositoryManager
-                    .getRepositories(it, true)
-                    .filterIsInstance<NuGetRepository>()
+                .getRepositories(it, true)
+                .filterIsInstance<NuGetRepository>()
 
             repositories.forEach {
                 val feedPath = NuGetUtils.getProjectFeedPath(it.projectId, it.name)
-                val feedSuffix = "${it.projectId}.${it.name}"
-                map[FEED_REF_GUEST_AUTH_PREFIX + feedSuffix] = makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, feedPath)
+                val feedSuffix = if (it.name == NuGetFeedData.DEFAULT_FEED_ID) it.projectId else "${it.projectId}.${it.name}"
                 val httpAuthFeedPath = combineContextPath(HTTP_AUTH_PREFIX, feedPath)
-                map[FEED_REF_HTTP_AUTH_PREFIX + feedSuffix] = makeReference(TEAMCITY_SERVER_URL) + httpAuthFeedPath
-                map[Constants.SYSTEM_PREFIX + FEED_REF_HTTP_AUTH_PUBLIC_PREFIX + feedSuffix] = UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
+                map[FEED_REF_PREFIX + feedSuffix + FEED_REF_URL_SUFFIX] = makeReference(TEAMCITY_SERVER_URL) + httpAuthFeedPath
+                map[FEED_REF_PREFIX + feedSuffix + FEED_REF_PUBLIC_URL_SUFFIX] = UriBuilder
+                    .fromUri(myRootUrlHolder.rootUrl)
+                    .replacePath(httpAuthFeedPath).build().toString()
             }
         }
         return map

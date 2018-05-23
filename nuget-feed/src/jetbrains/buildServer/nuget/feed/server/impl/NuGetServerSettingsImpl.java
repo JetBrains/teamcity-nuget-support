@@ -27,21 +27,14 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NuGetServerSettingsImpl implements NuGetServerSettings {
 
-  private final NuGetServerFeedSettingsImpl myDotNetSettings;
-
-  public NuGetServerSettingsImpl(@NotNull final NuGetServerFeedSettingsImpl dotNetSettings) {
-    myDotNetSettings = dotNetSettings;
+  public NuGetServerSettingsImpl() {
   }
 
   public boolean isNuGetServerEnabled() {
     return TeamCityProperties.getBooleanOrTrue(NuGetFeedConstants.PROP_NUGET_FEED_ENABLED);
   }
 
-  public boolean isGlobalIndexingEnabled() {
-    return myDotNetSettings.isNuGetJavaFeedEnabled();
-  }
-
   public boolean isFilteringByTargetFrameworkEnabled() {
-    return myDotNetSettings.isFilteringByTargetFrameworkEnabled();
+    return TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_FILTER_TARGETFRAMEWORK);
   }
 }

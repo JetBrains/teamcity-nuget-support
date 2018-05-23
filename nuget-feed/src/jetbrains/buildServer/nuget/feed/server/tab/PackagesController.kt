@@ -21,6 +21,8 @@ import jetbrains.buildServer.controllers.AuthorizationInterceptor
 import jetbrains.buildServer.controllers.BaseController
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.PermissionChecker
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
+import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.auth.LoginConfiguration
@@ -66,11 +68,17 @@ class PackagesController(auth: AuthorizationInterceptor,
         }
         mv.model["project"] = project
         mv.model["repositories"] = repositories
+        val projectRepository = repositories.filter {
+            it.repository is NuGetRepository
+        }.firstOrNull {
+            it.repository.name == NuGetFeedData.DEFAULT_FEED_ID
+        }
+        mv.model["defaultFeed"] = projectRepository
+        mv.model["hasDefaultFeedIndexing"] = (projectRepository?.repository as? NuGetRepository)?.indexPackages ?: false
         mv.model["repositoryTypes"] = myRepositoryRegistry.types
 
         mv.model["statusRefreshUrl"] = myIncludePath
         mv.model["settingsPostUrl"] = mySettingsPath
-        mv.model["isGlobalIndexingEnabled"] = mySettings.isGlobalIndexingEnabled
         mv.model["isGuestEnabled"] = myLoginConfiguration.isGuestLoginAllowed
 
         return mv

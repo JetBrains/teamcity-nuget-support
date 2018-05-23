@@ -16,20 +16,26 @@
 
 package jetbrains.buildServer.nuget.common;
 
+import java.util.regex.Pattern;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 23.11.11 19:05
  */
 public class NuGetServerConstants {
-  public static final String FEED_REF_GUEST_AUTH_PREFIX = "teamcity.nuget.feed.";
-  public static final String FEED_REF_GUEST_AUTH_GLOBAL = FEED_REF_GUEST_AUTH_PREFIX + "server";
-
-  public static final String FEED_REF_HTTP_AUTH_PREFIX = "teamcity.nuget.feed.auth.";
-  public static final String FEED_REF_HTTP_AUTH_GLOBAL = FEED_REF_HTTP_AUTH_PREFIX + "server";
-
-  public static final String FEED_REF_HTTP_AUTH_PUBLIC_PREFIX = "teamcity.nuget.feed.auth.serverRootUrlBased.";
-  public static final String FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL = FEED_REF_HTTP_AUTH_PUBLIC_PREFIX + "server";
+  public static final String FEED_REF_PREFIX = "teamcity.nuget.feed.";
+  public static final String FEED_REF_GUEST_AUTH_GLOBAL = FEED_REF_PREFIX + "server";
+  public static final String FEED_REF_HTTP_AUTH_GLOBAL = FEED_REF_PREFIX + "auth.server";
+  public static final String FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL = FEED_REF_PREFIX + "auth.serverRootUrlBased.server";
+  public static final String FEED_REF_URL_SUFFIX = ".url";
+  public static final String FEED_REF_PUBLIC_URL_SUFFIX = ".publicUrl";
 
   public static final String FEED_REFERENCE_AGENT_API_KEY_PROVIDED = "teamcity.nuget.feed.api.key";
   public static final String FEED_INDEXING_ENABLED_PROP = "teamcity.nuget.index.packages";
+
+  public static final Pattern FEED_URL_PATTERN = Pattern.compile(String.format("^%s.*(%s|%s)$",
+      NuGetServerConstants.FEED_REF_PREFIX.replace(".", "\\."),
+      NuGetServerConstants.FEED_REF_URL_SUFFIX.replace(".", "\\."),
+      NuGetServerConstants.FEED_REF_PUBLIC_URL_SUFFIX.replace(".", "\\.")
+  ));
 }

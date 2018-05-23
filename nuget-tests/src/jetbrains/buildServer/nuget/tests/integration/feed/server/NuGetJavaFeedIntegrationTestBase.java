@@ -74,7 +74,7 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBase {
   protected static final String SERVLET_PATH = "/app/nuget/v1/FeedService.svc";
   protected static final String DOWNLOAD_URL = "/downlaodREpoCon/downlaod-url";
-  protected static final NuGetFeedData FEED_DATA = NuGetFeedData.GLOBAL;
+  protected static final NuGetFeedData FEED_DATA = NuGetFeedData.DEFAULT;
   protected PackagesIndex myIndex;
   protected PackagesIndex myActualIndex;
   protected PackagesIndex myIndexProxy;

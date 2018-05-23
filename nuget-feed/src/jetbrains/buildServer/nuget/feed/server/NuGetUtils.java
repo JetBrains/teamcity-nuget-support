@@ -62,9 +62,11 @@ public class NuGetUtils {
   @Nullable
   public static NuGetFeedData feedIdToData(@NotNull String feedId) {
     final List<String> parts = StringUtil.split(feedId, "/");
-    if (parts.size() != 2) {
-      return null;
+    if (parts.size() == 1) {
+      return new NuGetFeedData(parts.get(0), NuGetFeedData.DEFAULT_FEED_ID);
+    } else if (parts.size() == 2) {
+      return new NuGetFeedData(parts.get(0), parts.get(1));
     }
-    return new NuGetFeedData(parts.get(0), parts.get(1));
+    return null;
   }
 }

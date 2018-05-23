@@ -1,7 +1,9 @@
 package jetbrains.buildServer.nuget.feed.server.tab
 
 import jetbrains.buildServer.controllers.admin.projects.EditProjectTab
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.serverSide.SProject
+import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.serverSide.crypt.RSACipher
 import jetbrains.buildServer.serverSide.packages.RepositoryRegistry
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
@@ -35,6 +37,9 @@ class PackagesProjectTab(pagePlaces: PagePlaces,
     }
 
     override fun getTabTitle(request: HttpServletRequest): String {
+        if (TeamCityProperties.getBooleanOrTrue(NuGetFeedConstants.PROP_NUGET_FEED_USE_DEFAULT)) {
+            return super.getTabTitle(request)
+        }
         val numRepositories = getProject(request)?.let {
             myRepositoryManager.getRepositories(it, false).size
         } ?: 0

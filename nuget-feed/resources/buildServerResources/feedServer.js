@@ -18,7 +18,7 @@ if (!BS) BS = {};
 if (!BS.NuGet) BS.NuGet = {};
 
 BS.NuGet.FeedServer = {
-  _request : function(el, enabled) {
+  _request : function(projectId, type, name, enabled, el) {
     var url = $j(el).closest("div").data("url");
 
     $j(el).closest("div").find("span:last").html(BS.loadingIcon);
@@ -27,8 +27,11 @@ BS.NuGet.FeedServer = {
     BS.ajaxRequest(url, {
       method : "POST",
       parameters : {
-        'nuget-feed-enabled' : enabled,
-        'action': 'nugetFeed'
+        'action': 'nugetFeedIndexing',
+        'projectId' : projectId,
+        'type' : type,
+        'name' : name,
+        'enabled' : enabled
       },
       onComplete : function() {
         $j(el).closest("div").find("span:last").html('');
@@ -37,17 +40,7 @@ BS.NuGet.FeedServer = {
     });
   },
 
-  disableFeedServer : function(el) {
-    var message = "Newly created packages will not be indexed after the feed is disabled.\n" +
-            "To provide consistent feed content, all build artifacts on the server will be re-indexed on the feed re-enabling.\n" +
-            "Full re-indexing may require significant time. Some existing packages may disappear from the feed during that period.\n\n" +
-            "Are you sure you want to disable the NuGet feed now?";
-    if(confirm(message)){
-      BS.NuGet.FeedServer._request(el, false);
-    }
-  },
-
-  enableFeedServer : function(el) {
-    BS.NuGet.FeedServer._request(el, true);
+  toggleFeedIndexing : function(projectId, type, name, enabled, el) {
+    BS.NuGet.FeedServer._request(projectId, type, name, enabled, el);
   }
 };

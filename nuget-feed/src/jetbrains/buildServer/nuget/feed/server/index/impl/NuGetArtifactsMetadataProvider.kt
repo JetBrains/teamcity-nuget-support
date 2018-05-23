@@ -58,27 +58,21 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
 
     override fun generateMedatadata(build: SBuild, store: MetadataStorageWriter) {
         if (!myFeedSettings.isNuGetServerEnabled) {
-            LOG.debug(String.format("Skip NuGet metadata generation for build %s. NuGet feed disabled.", LogUtil.describe(build)))
+            LOG.debug(String.format("Skip NuGet metadata generation for build %s. NuGet feed is disabled.", LogUtil.describe(build)))
             return
         }
 
         val targetFeeds = hashSetOf<NuGetFeedData>()
-        if (myFeedSettings.isGlobalIndexingEnabled) {
-            if (NuGetIndexUtils.isIndexingEnabledForBuild(build)) {
-                val rootProject = myProjectManager.rootProject
-                val globalFeed = NuGetFeedData.GLOBAL
-                if (myRepositoryManager.hasRepository(rootProject, providerId, globalFeed.feedId)) {
-                    targetFeeds.add(globalFeed)
-                } else {
-                    LOG.warn("Could not find '${globalFeed.feedId}' NuGet feed for '${globalFeed.projectId}' project.")
-                }
-            } else {
-                LOG.debug("Indexing NuGet packages into build ${LogUtil.describe(build)} is disabled")
-            }
+
+        // Add projects with enabled NuGet feed indexing
+        val buildProject = myProjectManager.findProjectById(build.projectId)
+        NuGetIndexUtils.findFeedsWithIndexing(buildProject, myRepositoryManager).forEach {
+            targetFeeds.add(NuGetFeedData(it.projectId, it.name))
         }
 
+        // Add projects from NuGet Package Indexer build features
         build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).forEach {feature ->
-            feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED_ID]?.let {
+            feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED]?.let {
                 NuGetUtils.feedIdToData(it)?.let {
                     val project = myProjectManager.findProjectByExternalId(it.projectId)
                     if (project != null && myRepositoryManager.hasRepository(project, providerId, it.feedId)) {

@@ -32,11 +32,6 @@ public interface NuGetServerSettings {
   boolean isNuGetServerEnabled();
 
   /**
-   * @return true if any of NuGet server implementations are enabled
-   */
-  boolean isGlobalIndexingEnabled();
-
-  /**
    * @return true if feed filters responses by target framework requested
    */
   boolean isFilteringByTargetFrameworkEnabled();
