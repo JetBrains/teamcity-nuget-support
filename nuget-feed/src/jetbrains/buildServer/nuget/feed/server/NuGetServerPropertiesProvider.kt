@@ -68,7 +68,7 @@ class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings,
         if (build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).isNotEmpty() ||
             NuGetIndexUtils.isIndexingEnabledForBuild(build) &&
             NuGetIndexUtils.findFeedsWithIndexing(buildProject, myRepositoryManager).any()) {
-            properties[NuGetServerConstants.FEED_INDEXING_ENABLED_PROP] = "true"
+            properties[NuGetServerConstants.FEED_AGENT_SIDE_INDEXING] = "true"
         }
 
         return properties

@@ -32,6 +32,7 @@ public class NuGetServerConstants {
 
   public static final String FEED_REFERENCE_AGENT_API_KEY_PROVIDED = "teamcity.nuget.feed.api.key";
   public static final String FEED_INDEXING_ENABLED_PROP = "teamcity.nuget.index.packages";
+  public static final String FEED_AGENT_SIDE_INDEXING = "teamcity.nuget.feed.agentSideIndexing";
 
   public static final Pattern FEED_URL_PATTERN = Pattern.compile(String.format("^%s.*(%s|%s)$",
       NuGetServerConstants.FEED_REF_PREFIX.replace(".", "\\."),

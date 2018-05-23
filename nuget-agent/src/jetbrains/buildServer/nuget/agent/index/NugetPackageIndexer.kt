@@ -34,7 +34,7 @@ class NugetPackageIndexer(dispatcher: EventDispatcher<AgentLifeCycleListener>,
             override fun buildStarted(runningBuild: AgentRunningBuild) {
                 myPackages.clear()
                 val parameters = runningBuild.sharedBuildParameters.allParameters
-                myIndexingEnabled = parameters[NuGetServerConstants.FEED_INDEXING_ENABLED_PROP]?.toBoolean() ?: false
+                myIndexingEnabled = parameters[NuGetServerConstants.FEED_AGENT_SIDE_INDEXING]?.toBoolean() ?: false
                 myBuildType = runningBuild.buildTypeId
                 myLogger = runningBuild.buildLogger
             }
