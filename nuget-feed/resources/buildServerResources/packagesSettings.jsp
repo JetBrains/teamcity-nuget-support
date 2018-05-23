@@ -121,9 +121,7 @@
                                 <c:forEach var="url" items="${entry.httpAuthUrls}" varStatus="loop">
                                     <li>
                                         <c:set var="endpointUrlId" value="http-auth-${entry.repository.type.type}-${entry.repository.name}-${loop.index}"/>
-                                        <span id="${endpointUrlId}" class="grayNote">
-                                            <c:out value="${url}" />
-                                        </span>
+                                        <span id="${endpointUrlId}" class="grayNote"><c:out value="${url}" /></span>
                                         <bs:copy2ClipboardLink dataId="${endpointUrlId}"/>
                                     </li>
                                 </c:forEach>
@@ -134,9 +132,7 @@
                                     <c:forEach var="url" items="${entry.guestAuthUrls}" varStatus="loop">
                                         <li>
                                             <c:set var="endpointUrlId" value="guest-auth-${entry.repository.type.type}-${entry.repository.name}-${loop.index}"/>
-                                            <span id="${endpointUrlId}" class="grayNote">
-                                                <c:out value="${url}" />
-                                            </span>
+                                            <span id="${endpointUrlId}" class="grayNote"><c:out value="${url}" /></span>
                                             <bs:copy2ClipboardLink dataId="${endpointUrlId}"/>
                                         </li>
                                     </c:forEach>
