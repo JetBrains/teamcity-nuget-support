@@ -37,16 +37,16 @@ import javax.servlet.http.HttpServletResponse
 /**
  * Request handler based on Olingo library.
  */
-class OlingoRequestHandler(private val myFeedFactory: NuGetFeedFactory,
-                           private val myCache: ResponseCache) : NuGetFeedHandler {
+open class OlingoRequestHandler(private val myFeedFactory: NuGetFeedFactory,
+                                private val myCache: ResponseCache) : NuGetFeedHandler {
     private val myServletsCache: Cache<String, Pair<ODataServlet, NuGetFeed>>
 
     init {
         val cacheSize = TeamCityProperties.getInteger(NuGetFeedConstants.PROP_NUGET_FEED_CACHED_SERVLETS, 32)
         myServletsCache = Caffeine.newBuilder()
-                .maximumSize(cacheSize.toLong())
-                .executor({ it.run() })
-                .build()
+            .maximumSize(cacheSize.toLong())
+            .executor({ it.run() })
+            .build()
     }
 
     override fun handleRequest(feedData: NuGetFeedData,

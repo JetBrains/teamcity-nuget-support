@@ -46,7 +46,7 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
   public Set<PackageSource> getGlobalPackageSources(@NotNull AgentRunningBuild build) {
     final Map<String, PackageSource> result = new HashMap<String, PackageSource>();
 
-    for (AgentBuildFeature feature : build.getBuildFeaturesOfType(PackagesConstants.ATHU_FEATURE_TYPE)) {
+    for (AgentBuildFeature feature : build.getBuildFeaturesOfType(PackagesConstants.AUTH_FEATURE_TYPE)) {
       final String feed = feature.getParameters().get(PackagesConstants.NUGET_AUTH_FEED);
       final String user = feature.getParameters().get(PackagesConstants.NUGET_AUTH_USERNAME);
       final String pass = feature.getParameters().get(PackagesConstants.NUGET_AUTH_PASSWORD);
@@ -56,7 +56,9 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
 
     final Map<String, String> parameters = build.getSharedConfigParameters();
     for (String key : parameters.keySet()) {
-      if (NuGetServerConstants.FEED_URL_PATTERN.matcher(key).find()) {
+      if (NuGetServerConstants.FEED_URL_PATTERN.matcher(key).find() ||
+          NuGetServerConstants.FEED_REF_HTTP_AUTH_GLOBAL.equals(key) ||
+          NuGetServerConstants.FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL.equals(key)) {
         final String feedUrl = parameters.get(key);
         if (StringUtil.isEmptyOrSpaces(feedUrl)) {
           LOG.debug("Failed to resolve TeamCity NuGet feed url via config parameter " + key);

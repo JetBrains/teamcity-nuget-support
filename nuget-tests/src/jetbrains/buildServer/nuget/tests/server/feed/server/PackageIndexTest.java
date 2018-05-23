@@ -77,7 +77,7 @@ public class PackageIndexTest extends BaseTestCase {
     myStorage = m.mock(MetadataStorage.class);
     final NuGetServerSettings serverSettings = m.mock(NuGetServerSettings.class);
     myIndex = new PackagesIndexImpl(
-            new NuGetFeedData("_Root", PackageConstants.NUGET_PROVIDER_ID),
+            NuGetFeedData.DEFAULT,
             myStorage,
             Arrays.asList(
                     new SamePackagesFilterTransformation(),

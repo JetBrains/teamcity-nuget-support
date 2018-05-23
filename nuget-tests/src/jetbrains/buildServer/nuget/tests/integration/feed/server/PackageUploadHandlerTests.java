@@ -61,7 +61,7 @@ public class PackageUploadHandlerTests {
     "\r\n" +
     "Hello\r\n" +
     "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n";
-  private static final NuGetFeedData FEED_DATA = new NuGetFeedData("_Root", PackageConstants.NUGET_PROVIDER_ID);
+  private static final NuGetFeedData FEED_DATA = NuGetFeedData.DEFAULT;
 
   public void testNonMultipartRequest() throws Exception {
     Mockery m = new Mockery();

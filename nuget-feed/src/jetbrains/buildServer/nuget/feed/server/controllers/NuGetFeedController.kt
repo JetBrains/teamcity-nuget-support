@@ -20,7 +20,6 @@ import com.intellij.openapi.diagnostic.Logger
 import jetbrains.buildServer.controllers.BaseController
 import jetbrains.buildServer.nuget.common.index.PackageConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
-import jetbrains.buildServer.nuget.feed.server.NuGetUtils
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
@@ -47,7 +46,7 @@ class NuGetFeedController(web: WebControllerManager,
 
     init {
         setSupportedMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE)
-        web.registerController(NuGetServerSettings.GLOBAL_PATH + "/**", this)
+        web.registerController(NuGetServerSettings.DEFAULT_PATH + "/**", this)
         web.registerController(NuGetServerSettings.PROJECT_PATH + "/**", this)
     }
 
@@ -57,26 +56,12 @@ class NuGetFeedController(web: WebControllerManager,
             return NuGetResponseUtil.nugetFeedIsDisabled(response)
         }
 
-        val pathInfo = if (request.pathInfo.contains(NuGetServerSettings.GLOBAL_PATH)) {
-            val globalFeed = NuGetFeedData.DEFAULT
-            val rootFeedPath = NuGetUtils.getProjectFeedPath(globalFeed.projectId, globalFeed.feedId)
-            request.pathInfo.replace(NuGetServerSettings.GLOBAL_PATH, rootFeedPath)
-        } else {
-            request.pathInfo
-        }
-
-        if (!pathInfo.contains(NuGetServerSettings.PROJECT_PATH)) {
+        val (feedPath, projectId, feedId) = getPathComponents(request)
+        if (projectId.isEmpty() || feedId.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid request to NuGet Feed")
             return null
         }
 
-        val result = FEED_PATH_PATTERN.find(pathInfo)
-        if (result == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid request to NuGet Feed")
-            return null
-        }
-
-        val (feedPath, projectId, feedId) = result.destructured
         val project = myProjectManager.findProjectByExternalId(projectId)
         if (project == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed project $projectId not found")
@@ -126,6 +111,26 @@ class NuGetFeedController(web: WebControllerManager,
         }
 
         return null
+    }
+
+    private fun getPathComponents(request: HttpServletRequest): Triple<String, String, String> {
+        val pathInfo = WebUtil.getPathWithoutAuthenticationType(request)
+        val result = FEED_PATH_PATTERN.find(pathInfo)
+        if (result != null) {
+            val (feedPath, projectId, feedId) = result.destructured
+            return Triple(feedPath, projectId, feedId)
+        }
+
+        val defaultPathIndex = pathInfo.indexOf(NuGetServerSettings.DEFAULT_PATH_SUFFIX)
+        return if (defaultPathIndex >= 0) {
+            Triple(
+                pathInfo.substring(0, defaultPathIndex + NuGetServerSettings.DEFAULT_PATH_SUFFIX.length),
+                NuGetFeedData.DEFAULT.projectId,
+                NuGetFeedData.DEFAULT.feedId
+            )
+        } else {
+            Triple("", NuGetFeedData.DEFAULT.projectId, NuGetFeedData.DEFAULT.feedId)
+        }
     }
 
     companion object {

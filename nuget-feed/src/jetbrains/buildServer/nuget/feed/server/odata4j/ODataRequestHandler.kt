@@ -39,17 +39,17 @@ import javax.servlet.http.HttpServletResponse
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 30.12.11 17:49
  */
-class ODataRequestHandler(private val myFeedFactory: NuGetFeedFactory,
-                          private val myCache: ResponseCache) : NuGetFeedHandler {
+open class ODataRequestHandler(private val myFeedFactory: NuGetFeedFactory,
+                               private val myCache: ResponseCache) : NuGetFeedHandler {
 
     private val myServletsCache: Cache<String, ServletContainer>
 
     init {
         val cacheSize = TeamCityProperties.getInteger(NuGetFeedConstants.PROP_NUGET_FEED_CACHED_SERVLETS, 32)
         myServletsCache = Caffeine.newBuilder()
-                .maximumSize(cacheSize.toLong())
-                .executor({ it.run() })
-                .build()
+            .maximumSize(cacheSize.toLong())
+            .executor({ it.run() })
+            .build()
     }
 
     override fun handleRequest(feedData: NuGetFeedData,

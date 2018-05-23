@@ -23,7 +23,8 @@ package jetbrains.buildServer.nuget.feed.server;
 public interface NuGetServerSettings {
 
   String PATH_PREFIX = "/app/nuget";
-  String GLOBAL_PATH = PATH_PREFIX + "/v1/FeedService.svc";
+  String DEFAULT_PATH_SUFFIX = "/v1/FeedService.svc";
+  String DEFAULT_PATH = PATH_PREFIX + DEFAULT_PATH_SUFFIX;
   String PROJECT_PATH = PATH_PREFIX + "/feed";
 
   /**

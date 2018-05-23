@@ -40,8 +40,7 @@ import org.testng.annotations.Test;
 
 import java.util.*;
 
-import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_REF_HTTP_AUTH_GLOBAL;
-import static jetbrains.buildServer.nuget.common.NuGetServerConstants.FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.*;
 
 /**
  * @author Evgeniy.Koshkin
@@ -53,11 +52,12 @@ public class PackageSourceManagerTest extends BaseTestCase {
     private static final String SERVER_BASED_URL = "server";
     private static final Map<String, String> PARAMETERS = CollectionsUtil.asMap(
             FEED_REF_HTTP_AUTH_GLOBAL, AGENT_BASED_URL,
-            Constants.SYSTEM_PREFIX + FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL, SERVER_BASED_URL);
+            FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL, SERVER_BASED_URL);
     private List<AgentBuildFeature> myFeatures;
 
     private PackageSourceManager mySources;
     private AgentRunningBuildEx myBuild;
+    private Map<String, String> myParameters = new HashMap<>();
     private Mockery m;
 
     @BeforeMethod
@@ -69,17 +69,19 @@ public class PackageSourceManagerTest extends BaseTestCase {
         final BuildParametersProvider parametersProvider = m.mock(BuildParametersProvider.class);
         myBuild = m.mock(AgentRunningBuildEx.class);
         myFeatures = new ArrayList<>();
+        myParameters.clear();
+        myParameters.putAll(PARAMETERS);
         m.checking(new Expectations() {{
             allowing(parametersProvider).getParameters(with(any(SBuild.class)), with(any(Boolean.class)));
-            will(returnValue(PARAMETERS));
+            will(returnValue(myParameters));
             allowing(parametersProvider).getParametersAvailableOnAgent(with(any(SBuild.class)));
             will(returnValue(Collections.emptyList()));
-            allowing(myBuild).getBuildFeaturesOfType(PackagesConstants.ATHU_FEATURE_TYPE);
+            allowing(myBuild).getBuildFeaturesOfType(PackagesConstants.AUTH_FEATURE_TYPE);
             will(returnValue(myFeatures));
             allowing(myBuild).getSharedConfigParameters();
-            will(returnValue(PARAMETERS));
+            will(returnValue(myParameters));
             allowing(myBuild).getSharedBuildParameters();
-            will(returnValue(new BuildParametersMapImpl(PARAMETERS)));
+            will(returnValue(new BuildParametersMapImpl(myParameters)));
             allowing(myBuild).getAccessUser();
             will(returnValue("user"));
             allowing(myBuild).getAccessCode();
@@ -154,6 +156,24 @@ public class PackageSourceManagerTest extends BaseTestCase {
     assertContainsPackageSource(AGENT_BASED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
     assertContainsPackageSource(SERVER_BASED_URL, runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
     assertContainsPackageSource(externalTeamCityUrl, externalUsername, externalPassword, packageSources);
+  }
+
+  @Test
+  public void shouldUsePerProjectTeamCityFeedReferences() throws Exception {
+      final AgentRunningBuildEx runningBuild = myBuild;
+      myParameters.clear();
+      myParameters.putAll(CollectionsUtil.asMap(
+              FEED_REF_PREFIX + "_Root.url", "url1",
+              FEED_REF_PREFIX + "_Root.publicUrl", "url2",
+              FEED_REF_PREFIX + "_Root", "url3",
+              FEED_REFERENCE_AGENT_API_KEY_PROVIDED, "key"
+      ));
+
+      final List<PackageSource> packageSources = getPackageSourcesOfRunningBuild(runningBuild);
+
+      assertEquals(2, packageSources.size());
+      assertContainsPackageSource("url1", runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
+      assertContainsPackageSource("url2", runningBuild.getAccessUser(), runningBuild.getAccessCode(), packageSources);
   }
 
     private void assertContainsPackageSource(final String expectedUrl, final String expectedUser, final String expectedPassword, List<PackageSource> actualPackageSources) {

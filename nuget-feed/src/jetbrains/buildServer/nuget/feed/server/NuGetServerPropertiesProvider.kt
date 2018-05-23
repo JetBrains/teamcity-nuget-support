@@ -85,7 +85,7 @@ class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings,
                 map[FEED_REF_GUEST_AUTH_GLOBAL] = makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, feedPath)
                 val httpAuthFeedPath = combineContextPath(HTTP_AUTH_PREFIX, feedPath)
                 map[FEED_REF_HTTP_AUTH_GLOBAL] = makeReference(TEAMCITY_SERVER_URL) + httpAuthFeedPath
-                map[Constants.SYSTEM_PREFIX + FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL] = UriBuilder
+                map[FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL] = UriBuilder
                     .fromUri(myRootUrlHolder.rootUrl)
                     .replacePath(httpAuthFeedPath).build().toString()
             }

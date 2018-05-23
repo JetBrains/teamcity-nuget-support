@@ -18,12 +18,14 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.controllers.MockResponse;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
+import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.apache.http.HttpStatus;
@@ -52,11 +54,18 @@ public class NuGetFeedControllerTest {
         NuGetFeedHandler handler = m.mock(NuGetFeedHandler.class);
         ProjectManager projectManager = m.mock(ProjectManager.class);
         RepositoryManager repositoryManager = m.mock(RepositoryManager.class);
+        SProject project = m.mock(SProject.class);
 
         m.checking(new Expectations(){{
             allowing(settings).isNuGetServerEnabled(); will(returnValue(true));
 
             allowing(web).registerController(with(any(String.class)), with(any(Controller.class)));
+
+            allowing(projectManager).findProjectByExternalId(with("_Root"));
+            will(returnValue(project));
+
+            allowing(repositoryManager).hasRepository(with(project), with(any(String.class)), with(any(String.class)));
+            will(returnValue(true));
 
             allowing(provider).getHandler(with(any(HttpServletRequest.class))); will(returnValue(handler));
 
@@ -83,13 +92,22 @@ public class NuGetFeedControllerTest {
         NuGetFeedProvider provider = m.mock(NuGetFeedProvider.class);
         ProjectManager projectManager = m.mock(ProjectManager.class);
         RepositoryManager repositoryManager = m.mock(RepositoryManager.class);
+        SProject project = m.mock(SProject.class);
 
         m.checking(new Expectations(){{
-            allowing(settings).isNuGetServerEnabled(); will(returnValue(true));
+            allowing(settings).isNuGetServerEnabled();
+            will(returnValue(true));
 
             allowing(web).registerController(with(any(String.class)), with(any(Controller.class)));
 
-            allowing(provider).getHandler(with(any(HttpServletRequest.class))); will(returnValue(null));
+            allowing(projectManager).findProjectByExternalId(with("_Root"));
+            will(returnValue(project));
+
+            allowing(repositoryManager).hasRepository(with(project), with(any(String.class)), with(any(String.class)));
+            will(returnValue(true));
+
+            allowing(provider).getHandler(with(any(HttpServletRequest.class)));
+            will(returnValue(null));
         }});
 
         Controller controller = new NuGetFeedController(web, settings,
@@ -99,6 +117,46 @@ public class NuGetFeedControllerTest {
 
         controller.handleRequest(request, response);
         Assert.assertEquals(response.getStatus(), HttpStatus.SC_METHOD_NOT_ALLOWED);
+
+        m.assertIsSatisfied();
+    }
+
+    public void testNewPathWithHandler() throws Exception {
+        Mockery m = new Mockery();
+        WebControllerManager web = m.mock(WebControllerManager.class);
+        NuGetServerSettings settings = m.mock(NuGetServerSettings.class);
+        NuGetFeedProvider provider = m.mock(NuGetFeedProvider.class);
+        NuGetFeedHandler handler = m.mock(NuGetFeedHandler.class);
+        ProjectManager projectManager = m.mock(ProjectManager.class);
+        RepositoryManager repositoryManager = m.mock(RepositoryManager.class);
+        SProject project = m.mock(SProject.class);
+
+        m.checking(new Expectations(){{
+            allowing(settings).isNuGetServerEnabled(); will(returnValue(true));
+
+            allowing(web).registerController(with(any(String.class)), with(any(Controller.class)));
+
+            allowing(projectManager).findProjectByExternalId(with(NuGetFeedData.DEFAULT.getProjectId()));
+            will(returnValue(project));
+
+            allowing(repositoryManager).hasRepository(with(project), with(any(String.class)), with(any(String.class)));
+            will(returnValue(true));
+
+            allowing(provider).getHandler(with(any(HttpServletRequest.class))); will(returnValue(handler));
+
+            allowing(handler).handleRequest(
+                    with(any(NuGetFeedData.class)),
+                    with(any(HttpServletRequest.class)),
+                    with(any(HttpServletResponse.class)));
+        }});
+
+        Controller controller = new NuGetFeedController(web, settings,
+                new RecentNuGetRequests(), provider, projectManager, repositoryManager);
+        String feedPath = NuGetUtils.getProjectFeedPath(NuGetFeedData.DEFAULT.getProjectId(), NuGetFeedData.DEFAULT.getFeedId());
+        RequestWrapper request = new RequestWrapper(feedPath, SERVLET_PATH + "/Packages");
+        ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+        controller.handleRequest(request, response);
 
         m.assertIsSatisfied();
     }

@@ -42,7 +42,7 @@ public class NuGetAuthFeature extends BuildFeature {
   @NotNull
   @Override
   public String getType() {
-    return PackagesConstants.ATHU_FEATURE_TYPE;
+    return PackagesConstants.AUTH_FEATURE_TYPE;
   }
 
   @NotNull

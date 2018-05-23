@@ -72,9 +72,9 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
  * Date: 04.01.12 23:55
  */
 public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBase {
-  protected static final String SERVLET_PATH = "/app/nuget/v1/FeedService.svc";
-  protected static final String DOWNLOAD_URL = "/downlaodREpoCon/downlaod-url";
   protected static final NuGetFeedData FEED_DATA = NuGetFeedData.DEFAULT;
+  protected static final String SERVLET_PATH = "/app/nuget/feed/_Root/default/v2";
+  protected static final String DOWNLOAD_URL = "/downlaodREpoCon/downlaod-url";
   protected PackagesIndex myIndex;
   protected PackagesIndex myActualIndex;
   protected PackagesIndex myIndexProxy;
@@ -231,7 +231,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   }
 
   protected NuGetIndexEntry addMockPackage(@NotNull final String key, @NotNull final Map<String, String> params, boolean isLatest) {
-    return addMockPackage(new NuGetIndexEntry(FEED_DATA, key, params), false);
+    return addMockPackage(new NuGetIndexEntry(FEED_DATA, key, params), isLatest);
   }
 
   protected NuGetIndexEntry addMockPackage(@NotNull final NuGetIndexEntry entry, boolean isLatest) {
