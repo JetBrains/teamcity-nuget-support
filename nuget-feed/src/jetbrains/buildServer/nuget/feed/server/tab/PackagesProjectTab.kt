@@ -49,6 +49,6 @@ class PackagesProjectTab(pagePlaces: PagePlaces,
 
     companion object {
         private const val PACKAGES_TITLE = "Packages"
-        private const val FEEDS_TITLE = "NuGet Feeds"
+        private const val FEEDS_TITLE = "NuGet Feed"
     }
 }

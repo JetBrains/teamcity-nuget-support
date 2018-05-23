@@ -48,7 +48,7 @@
                     Packages
                 </c:when>
                 <c:otherwise>
-                    NuGet Feeds
+                    NuGet Feed
                 </c:otherwise>
             </c:choose>
         </h2>
