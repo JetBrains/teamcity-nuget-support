@@ -22,6 +22,10 @@ teamcity {
             into('licenses') {
                 from (project.file('../licenses'))
             }
+
+            into('kotlin-dsl') {
+                from("${rootProject.projectDir}/kotlin-dsl")
+            }
         }
     }
 

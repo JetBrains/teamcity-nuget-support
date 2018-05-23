@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dsl-extension kind="projectFeature" type="PackageRepository" generateDslJar="true" applicable="params['type'] == 'nuget'">
+  <class name="NuGetFeed">
+    <description>
+      Project feature enabling [TeamCity NuGet feed](https://confluence.jetbrains.com/display/TCDL/NuGet)
+    </description>
+  </class>
+  <init>
+    <param name="type" value="nuget" />
+  </init>
+  <function name="nuGetFeed">
+    <description>
+      Enables [TeamCity NuGet feed](https://confluence.jetbrains.com/display/TCDL/NuGet)
+    </description>
+  </function>
+  <params>
+    <param name="name">
+      <description>
+        The feed name
+      </description>
+    </param>
+      <param name="description">
+      <description>
+        The feed description
+      </description>
+    </param>
+    <param name="indexPackages" type="boolean" trueValue="true" falseValue="">
+      <description>
+        Enables indexing NuGet packages into feed produced by builds in this project and all subprojects
+      </description>
+    </param>
+  </params>
+</dsl-extension>

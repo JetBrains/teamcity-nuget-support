@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dsl-extension kind="buildFeature" type="NuGetPackagesIndexer" generateDslJar="true">
+    <class name="NuGetPackagesIndexer">
+        <description>
+            A [build feature](https://confluence.jetbrains.com/display/TCDL/NuGet) to index *.nupkg files in
+            build artifacts into TeamCity NuGet Feed.
+        </description>
+    </class>
+    <function name="nuGetPackagesIndexer">
+        <description>
+            Enables [NuGet packages indexing](https://confluence.jetbrains.com/display/TCDL/NuGet) into feed
+            @see NuGetPackagesIndexer
+        </description>
+    </function>
+    <params>
+        <param name="feed">
+            <description>
+                Specifies target TeamCity NuGet feed to add indexed packages in the following format:
+                %externalProjectId%/%feedName%
+            </description>
+        </param>
+    </params>
+</dsl-extension>
