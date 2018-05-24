@@ -98,7 +98,11 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
             if (id != null && version != null) {
                 val key = NuGetUtils.getPackageKey(id, version)
                 targetFeeds.forEach { feedData ->
-                    myMetadataStorage.addBuildEntry(build.buildId, feedData.key, key, metadata, !build.isPersonal)
+                    if (feedData.key == providerId) {
+                        store.addParameters(key, metadata)
+                    } else {
+                        myMetadataStorage.addBuildEntry(build.buildId, feedData.key, key, metadata, !build.isPersonal)
+                    }
                     LOG.debug("Added NuGet package $key from build ${LogUtil.describe(build)} into feed $feedData")
                 }
             } else {
