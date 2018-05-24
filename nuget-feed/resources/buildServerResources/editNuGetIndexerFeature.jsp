@@ -26,7 +26,7 @@
                     </props:option>
                 </c:forEach>
             </props:selectProperty>
-            <span class="smallNote">NuGet packages indexing will be performed for all .nupkg files published as a build artifacts.</span>
+            <span class="smallNote">NuGet packages indexing will be performed for all .nupkg files published as build artifacts</span>
             <span class="error" id="error_${cons.feed}"></span>
         </td>
     </tr>

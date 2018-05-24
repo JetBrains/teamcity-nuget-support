@@ -168,19 +168,19 @@
 
 
     <c:if test="${useDefaultFeed and not empty defaultFeed}">
-        <h2 style="border: none">Automatic NuGet Packages Indexing</h2>
+        <h2 style="border: none">Automatic packages indexing</h2>
         <bs:smallNote>
-            When this setting is enabled all NuGet packages published in builds of this project and its subprojects will be available in the NuGet feed.
-            Another way to publish NuGet packages to the feed is to add NuGet Packages Indexer<bs:help file="NuGet"/> build feature.
+            When this setting is enabled, all NuGet packages published by builds of this project and its subprojects will be available in the NuGet feed.
+            To publish NuGet packages for builds of selected configurations, add the NuGet packages indexer<bs:help file="NuGet"/> build feature to them.
         </bs:smallNote>
         <c:if test="${project.externalId eq '_Root'}">
             <div class="attentionComment">
                 Due to performance reasons it is recommended to disable global packages indexing and use
-                NuGet Packages Indexer build feature only in required build configurations.
+                NuGet packages indexer build feature only in required build configurations.
             </div>
         </c:if>
         <div data-url="${settingsPostUrl}">
-            Automatic NuGet packages indexing is
+            Automatic packages indexing is
             <c:choose>
                 <c:when test="${hasDefaultFeedIndexing}">
                     <strong>enabled</strong> <c:if test="${canEdit}"><input
