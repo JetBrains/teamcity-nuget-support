@@ -9,7 +9,7 @@
         <th><label for="${cons.feed}">NuGet Feed: <l:star/></label></th>
         <td>
             <props:selectProperty name="${cons.feed}" className="longField" enableFilter="true">
-                <props:option value="">&lt;Select NuGet feed&gt;</props:option>
+                <props:option value="">-- Select NuGet feed --</props:option>
                 <c:forEach var="feed" items="${feeds}">
                     <props:option value="${feed.project.externalId}/${feed.repository.name}">
                         <c:choose>

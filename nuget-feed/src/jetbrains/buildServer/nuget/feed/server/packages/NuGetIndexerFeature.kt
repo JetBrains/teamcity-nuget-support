@@ -108,7 +108,7 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
 
     override fun getType() = NuGetFeedConstants.NUGET_INDEXER_TYPE
 
-    override fun getDisplayName() = "NuGet Packages Indexer"
+    override fun getDisplayName() = "NuGet packages indexer"
 
     override fun getEditParametersUrl() = myEditParametersUrl
 

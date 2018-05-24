@@ -48,7 +48,7 @@ public class NuGetAuthFeature extends BuildFeature {
   @NotNull
   @Override
   public String getDisplayName() {
-    return "NuGet Feed Credentials";
+    return "NuGet feed credentials";
   }
 
   @NotNull
