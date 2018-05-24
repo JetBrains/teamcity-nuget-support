@@ -8,6 +8,7 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProviderImpl"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetPackageDownloadController"/>
 
+  <bean class="jetbrains.buildServer.nuget.feed.server.NuGetFeedParametersProvider"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.NuGetServerPropertiesProvider"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.NuGetServerPropertiesDescription"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.NuGetFeedPasswordProvider"/>
