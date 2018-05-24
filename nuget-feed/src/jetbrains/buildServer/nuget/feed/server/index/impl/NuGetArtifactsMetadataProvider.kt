@@ -103,7 +103,7 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
                     } else {
                         myMetadataStorage.addBuildEntry(build.buildId, feedData.key, key, metadata, !build.isPersonal)
                     }
-                    LOG.debug("Added NuGet package $key from build ${LogUtil.describe(build)} into feed $feedData")
+                    LOG.info("Added NuGet package $key from build ${LogUtil.describe(build)} into feed $feedData")
                 }
             } else {
                 LOG.warn("Failed to resolve NuGet package Id, package ignored: ${metadata[TEAMCITY_ARTIFACT_RELPATH]}")
