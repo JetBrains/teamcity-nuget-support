@@ -31,12 +31,10 @@ object NuGetIndexUtils {
     }
 
     fun findFeedsWithIndexing(project: SProject?, repositoryManager: RepositoryManager) = buildSequence {
-        var currentProject = project
-        while (currentProject != null) {
-            yieldAll(repositoryManager.getRepositories(currentProject, false)
+        project?.let {
+            yieldAll(repositoryManager.getRepositories(project, true)
                 .filterIsInstance<NuGetRepository>()
                 .filter { it.indexPackages })
-            currentProject = currentProject.parentProject
         }
     }
 }

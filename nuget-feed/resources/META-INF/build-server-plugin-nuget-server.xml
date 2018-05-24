@@ -18,6 +18,8 @@
 
   <bean class="jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl"/>
 
+  <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildFeedsProviderImpl"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildMetadataProviderImpl"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.index.NuGetFeedFactoryImpl">
     <constructor-arg>
