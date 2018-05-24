@@ -64,6 +64,9 @@ public class NuGetFeedControllerTest {
             allowing(projectManager).findProjectByExternalId(with("_Root"));
             will(returnValue(project));
 
+            allowing(project).getProjectId();
+            will(returnValue("_Root"));
+
             allowing(repositoryManager).hasRepository(with(project), with(any(String.class)), with(any(String.class)));
             will(returnValue(true));
 
@@ -103,6 +106,9 @@ public class NuGetFeedControllerTest {
             allowing(projectManager).findProjectByExternalId(with("_Root"));
             will(returnValue(project));
 
+            allowing(project).getProjectId();
+            will(returnValue("_Root"));
+
             allowing(repositoryManager).hasRepository(with(project), with(any(String.class)), with(any(String.class)));
             will(returnValue(true));
 
@@ -138,6 +144,9 @@ public class NuGetFeedControllerTest {
 
             allowing(projectManager).findProjectByExternalId(with(NuGetFeedData.DEFAULT.getProjectId()));
             will(returnValue(project));
+
+            allowing(project).getProjectId();
+            will(returnValue("_Root"));
 
             allowing(repositoryManager).hasRepository(with(project), with(any(String.class)), with(any(String.class)));
             will(returnValue(true));
