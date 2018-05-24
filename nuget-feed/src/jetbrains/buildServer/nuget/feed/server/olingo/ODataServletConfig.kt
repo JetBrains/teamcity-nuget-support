@@ -14,33 +14,29 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.olingo;
+package jetbrains.buildServer.nuget.feed.server.olingo
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import java.util.Enumeration;
+import java.util.*
+import javax.servlet.ServletConfig
+import javax.servlet.ServletContext
 
 /**
  * Configuration for ODataService.
  */
-public class ODataServletConfig implements ServletConfig {
-  @Override
-  public String getServletName() {
-    return "NuGet Feed";
-  }
+class ODataServletConfig(private val parameters: Map<String, String>) : ServletConfig {
+    override fun getServletName(): String {
+        return "NuGet Feed"
+    }
 
-  @Override
-  public ServletContext getServletContext() {
-    return null;
-  }
+    override fun getServletContext(): ServletContext? {
+        return null
+    }
 
-  @Override
-  public String getInitParameter(String name) {
-    return null;
-  }
+    override fun getInitParameter(name: String): String? {
+        return parameters[name]
+    }
 
-  @Override
-  public Enumeration<String> getInitParameterNames() {
-    return null;
-  }
+    override fun getInitParameterNames(): Enumeration<String>? {
+        return Vector(parameters.keys).elements()
+    }
 }

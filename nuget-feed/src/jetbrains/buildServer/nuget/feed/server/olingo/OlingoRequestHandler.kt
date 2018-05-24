@@ -29,6 +29,7 @@ import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource
 import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory
 import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.web.util.WebUtil
+import org.apache.olingo.odata2.api.ODataServiceFactory
 import org.apache.olingo.odata2.core.servlet.ODataServlet
 
 import javax.servlet.http.HttpServletRequest
@@ -68,12 +69,14 @@ open class OlingoRequestHandler(private val myFeedFactory: NuGetFeedFactory,
 
         val (servlet, feed) = myServletsCache.get(feedData.key) { _ ->
             ODataServlet().apply {
-                this.init(ODataServletConfig())
+                this.init(ODataServletConfig(mapOf(
+                    ODataServiceFactory.ACCEPT_FORM_ENCODING to "true"
+                )))
             } to myFeedFactory.createFeed(feedData)
         } ?: throw Exception("Failed to create servlet")
 
         val serviceFactory = NuGetServiceFactory(OlingoDataSource(feed))
-        request.setAttribute("org.apache.olingo.odata2.service.factory.instance", serviceFactory)
+        request.setAttribute(ODataServiceFactory.FACTORY_INSTANCE_LABEL, serviceFactory)
 
         try {
             servlet.service(request, response)

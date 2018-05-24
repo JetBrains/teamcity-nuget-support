@@ -7,7 +7,7 @@ teamcity {
 }
 
 ext {
-    olingoVersion = '2.0.9'
+    olingoVersion = '2.0.10'
 }
 
 kotlin { experimental { coroutines 'enable' } }
@@ -23,8 +23,8 @@ dependencies {
     compile 'com.sun.jersey:jersey-servlet:1.11'
     compile "org.apache.olingo:olingo-odata2-api:$olingoVersion"
     compile "org.apache.olingo:olingo-odata2-api-annotation:$olingoVersion"
+    compile "org.apache.olingo:olingo-odata2-core:$olingoVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile files("$rootDir/local-repo/org/apache/olingo/olingo-odata2-core/$olingoVersion/olingo-odata2-core-${olingoVersion}.jar")
     provided project(':nuget-common')
     provided project(':nuget-server-common')
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-impl.jar")
