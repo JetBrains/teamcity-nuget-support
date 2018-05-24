@@ -1,6 +1,7 @@
 package jetbrains.buildServer.serverSide.packages;
 
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.ServerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +34,7 @@ public abstract class RepositoryType implements ServerExtension {
      * @return new instance of repository.
      */
     @NotNull
-    public abstract Repository createRepository(@NotNull final String projectId,
+    public abstract Repository createRepository(@NotNull final SProject project,
                                                 @NotNull final Map<String, String> parameters);
 
     /**

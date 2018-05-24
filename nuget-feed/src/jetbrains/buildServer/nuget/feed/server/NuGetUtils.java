@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.feed.server;
 import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.util.StringUtil;
+import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,12 +61,12 @@ public class NuGetUtils {
   }
 
   @Nullable
-  public static NuGetFeedData feedIdToData(@NotNull String feedId) {
+  public static Pair<String, String> feedIdToData(@NotNull String feedId) {
     final List<String> parts = StringUtil.split(feedId, "/");
     if (parts.size() == 1) {
-      return new NuGetFeedData(parts.get(0), NuGetFeedData.DEFAULT_FEED_ID);
+      return new Pair<>(parts.get(0), NuGetFeedData.DEFAULT_FEED_ID);
     } else if (parts.size() == 2) {
-      return new NuGetFeedData(parts.get(0), parts.get(1));
+      return new Pair<>(parts.get(0), parts.get(1));
     }
     return null;
   }

@@ -47,8 +47,13 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
                 .filterIsInstance<NuGetRepository>()
 
             repositories.forEach {
-                val feedPath = NuGetUtils.getProjectFeedPath(it.projectId, it.name)
-                val feedSuffix = if (it.name == NuGetFeedData.DEFAULT_FEED_ID) it.projectId else "${it.projectId}.${it.name}"
+                val project = myProjectManager.findProjectById(it.projectId) ?: return
+                val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, it.name)
+                val feedSuffix = if (it.name == NuGetFeedData.DEFAULT_FEED_ID) {
+                    project.externalId
+                } else {
+                    "${project.externalId}.${it.name}"
+                }
                 val httpAuthFeedPath = WebUtil.combineContextPath(WebUtil.HTTP_AUTH_PREFIX, feedPath)
                 context.addSharedParameter(
                     NuGetServerConstants.FEED_REF_PREFIX + feedSuffix + NuGetServerConstants.FEED_REF_URL_SUFFIX,

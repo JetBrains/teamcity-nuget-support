@@ -1,6 +1,7 @@
 package jetbrains.buildServer.nuget.feed.server.packages
 
 import jetbrains.buildServer.nuget.common.index.PackageConstants
+import jetbrains.buildServer.serverSide.SProject
 import jetbrains.buildServer.serverSide.packages.Repository
 import jetbrains.buildServer.serverSide.packages.RepositoryRegistry
 import jetbrains.buildServer.serverSide.packages.RepositoryType
@@ -21,7 +22,7 @@ class NuGetRepositoryType(repositoryRegistry: RepositoryRegistry,
 
     override fun getEditParametersUrl() = editParametersUrl
 
-    override fun createRepository(projectId: String, parameters: Map<String, String>): Repository {
-        return NuGetRepository(this, projectId, parameters.toMutableMap())
+    override fun createRepository(project: SProject, parameters: Map<String, String>): Repository {
+        return NuGetRepository(this, project, parameters.toMutableMap())
     }
 }

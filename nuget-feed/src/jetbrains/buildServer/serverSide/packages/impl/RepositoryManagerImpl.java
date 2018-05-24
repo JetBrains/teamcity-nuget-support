@@ -61,7 +61,7 @@ public class RepositoryManagerImpl implements RepositoryManager {
         project.removeFeature(feature.getId());
         project.persist();
 
-        NuGetFeedData feedData = new NuGetFeedData(project.getExternalId(), name);
+        NuGetFeedData feedData = new NuGetFeedData(project.getProjectId(), name);
         Iterator<BuildMetadataEntry> entries = myMetadataStorage.getAllEntries(feedData.getKey());
         while (entries.hasNext()) {
             BuildMetadataEntry entry = entries.next();
@@ -103,7 +103,7 @@ public class RepositoryManagerImpl implements RepositoryManager {
             project.removeFeature(feature.getId());
             project.persist();
 
-            NuGetFeedData feedData = new NuGetFeedData(project.getExternalId(), oldName);
+            NuGetFeedData feedData = new NuGetFeedData(project.getProjectId(), oldName);
             Iterator<BuildMetadataEntry> entries = myMetadataStorage.getAllEntries(feedData.getKey());
             while (entries.hasNext()) {
                 BuildMetadataEntry entry = entries.next();
@@ -126,7 +126,7 @@ public class RepositoryManagerImpl implements RepositoryManager {
         if (project == null) {
             return null;
         }
-        return repositoryType.createRepository(project.getExternalId(), parameters);
+        return repositoryType.createRepository(project, parameters);
     }
 
     @NotNull

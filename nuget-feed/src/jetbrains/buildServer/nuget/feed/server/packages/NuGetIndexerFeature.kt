@@ -36,7 +36,7 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
                 model["feeds"] = myRepositoryManager.getRepositories(project, true)
                     .filterIsInstance<NuGetRepository>()
                     .mapNotNull { repository ->
-                        myProjectManager.findProjectByExternalId(repository.projectId)?.let {
+                        myProjectManager.findProjectById(repository.projectId)?.let {
                             ProjectFeed(repository, it)
                         }
                     }
@@ -60,8 +60,8 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
                     return
                 }
 
-                val oldReference = NuGetFeedData(project.externalId, oldName)
-                val newReference = NuGetFeedData(project.externalId, newName)
+                val oldReference = Pair(project.externalId, oldName)
+                val newReference = Pair(project.externalId, newName)
 
                 updateFeedReferences(project, oldReference, newReference)
                 project.projects.forEach {
@@ -78,7 +78,7 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
                 }
 
                 val name = feature.parameters[RepositoryConstants.REPOSITORY_NAME_KEY] ?: return
-                val reference = NuGetFeedData(project.externalId, name)
+                val reference = Pair(project.externalId, name)
 
                 deleteFeedReferences(project, reference)
                 project.projects.forEach {
@@ -93,7 +93,7 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
                     }
 
                     val name = feature.parameters[RepositoryConstants.REPOSITORY_NAME_KEY] ?: return
-                    val reference = NuGetFeedData(project.externalId, name)
+                    val reference = Pair(project.externalId, name)
 
                     deleteFeedReferences(project, reference)
                     project.projects.forEach {
@@ -126,8 +126,8 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
     override fun describeParameters(parameters: MutableMap<String, String>): String {
         val feedName = parameters[NuGetFeedConstants.NUGET_INDEXER_FEED]?.let {
             NuGetUtils.feedIdToData(it)?.let { feed ->
-                myProjectManager.findProjectByExternalId(feed.projectId)?.let {
-                    if (feed.feedId == NuGetFeedData.DEFAULT_FEED_ID) "\"${it.name}\" project" else "\"${it.name}/${feed.feedId}\""
+                myProjectManager.findProjectByExternalId(feed.first)?.let {
+                    if (feed.second == NuGetFeedData.DEFAULT_FEED_ID) "\"${it.name}\" project" else "\"${it.name}/${feed.second}\""
                 }
             }
         } ?: "<Unknown>"
@@ -147,7 +147,7 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
         }
     }
 
-    private fun updateFeedReferences(project: SProject, oldReference: NuGetFeedData, newReference: NuGetFeedData) {
+    private fun updateFeedReferences(project: SProject, oldReference: Pair<String, String>, newReference: Pair<String, String>) {
         processFeedReferences(project,  oldReference, { buildType, feature ->
             val parameters = feature.parameters.toMutableMap()
             parameters[NuGetFeedConstants.NUGET_INDEXER_FEED] = newReference.toString()
@@ -155,13 +155,13 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
         })
     }
 
-    private fun deleteFeedReferences(project: SProject, oldReference: NuGetFeedData) {
+    private fun deleteFeedReferences(project: SProject, oldReference: Pair<String, String>) {
         processFeedReferences(project,  oldReference, { buildType, feature ->
             buildType.removeBuildFeature(feature.id)
         })
     }
 
-    private fun processFeedReferences(project: SProject, reference: NuGetFeedData, action: (SBuildType, SBuildFeatureDescriptor) -> Unit) {
+    private fun processFeedReferences(project: SProject, reference: Pair<String, String>, action: (SBuildType, SBuildFeatureDescriptor) -> Unit) {
         project.buildTypes.forEach {buildType ->
             var updated = false
             buildType.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).forEach {feature ->

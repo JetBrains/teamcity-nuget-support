@@ -74,11 +74,11 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
         build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).forEach {feature ->
             feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED]?.let {
                 NuGetUtils.feedIdToData(it)?.let {
-                    val project = myProjectManager.findProjectByExternalId(it.projectId)
-                    if (project != null && myRepositoryManager.hasRepository(project, providerId, it.feedId)) {
-                        targetFeeds.add(it)
+                    val project = myProjectManager.findProjectByExternalId(it.first)
+                    if (project != null && myRepositoryManager.hasRepository(project, providerId, it.second)) {
+                        targetFeeds.add(NuGetFeedData(project.projectId, it.second))
                     } else {
-                        LOG.warn("Could not find '${it.feedId}' NuGet feed for '${it.projectId}' project.")
+                        LOG.warn("Could not find '${it.second}' NuGet feed for '${it.first}' project.")
                     }
                 }
             }

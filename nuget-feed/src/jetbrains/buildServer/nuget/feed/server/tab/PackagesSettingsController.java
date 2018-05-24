@@ -291,7 +291,7 @@ public class PackagesSettingsController extends BaseFormXmlController {
                 }
 
                 if (errors.hasNoErrors()) {
-                    Repository repository = registryType.createRepository(projectExternalId, properties);
+                    Repository repository = registryType.createRepository(project, properties);
                     try {
                         if (StringUtil.isEmpty(name)) {
                             myRepositoryManager.addRepository(project, repository);
@@ -409,7 +409,7 @@ public class PackagesSettingsController extends BaseFormXmlController {
                     return;
                 }
 
-                final Repository repository = repositoryType.createRepository(projectExternalId, CollectionsUtil.asMap(
+                final Repository repository = repositoryType.createRepository(project, CollectionsUtil.asMap(
                         RepositoryConstants.REPOSITORY_TYPE_KEY, type,
                         RepositoryConstants.REPOSITORY_NAME_KEY, name
                 ));

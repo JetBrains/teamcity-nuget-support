@@ -101,7 +101,7 @@ class NuGetFeedController(web: WebControllerManager,
             return null
         }
 
-        val feedData = NuGetFeedData(projectId, feedId)
+        val feedData = NuGetFeedData(project.projectId, feedId)
         val startTime = Date().time
         try {
             myRequestsList.reportFeedRequest(pathAndQuery)
