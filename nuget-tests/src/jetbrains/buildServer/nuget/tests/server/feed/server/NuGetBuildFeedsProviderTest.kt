@@ -1,4 +1,4 @@
-package jetbrains.buildServer.nuget.tests.feed
+package jetbrains.buildServer.nuget.tests.server.feed.server
 
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildFeedsProviderImpl

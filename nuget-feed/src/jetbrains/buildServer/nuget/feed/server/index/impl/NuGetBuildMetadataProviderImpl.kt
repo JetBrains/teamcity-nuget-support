@@ -22,7 +22,12 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
         }
 
         val metadata = indexBuildPackages(build)
-        writeBuildMetadata(build, metadata)
+        try {
+            writeBuildMetadata(build, metadata)
+        } catch (e: Throwable) {
+            LOG.warnAndDebugDetails("Failed to write packages list for build ${LogUtil.describe(build)}", e)
+        }
+
         return metadata
     }
 
@@ -33,13 +38,13 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
         visitArtifacts(artifacts.rootArtifact, nugetArtifacts)
 
         return nugetArtifacts.mapNotNull {
-            LOG.info("Indexing NuGet package from artifact " + it.relativePath + " of build " + LogUtil.describe(build))
+            LOG.info("Indexing NuGet package from artifact ${it.relativePath} of build ${LogUtil.describe(build)}")
             try {
                 generateMetadataForPackage(build, it)
             } catch (e: PackageLoadException) {
                 LOG.warnAndDebugDetails("Failed to read NuGet package $it", e)
                 null
-            } catch (e: Throwable) {
+            } catch (e: Exception) {
                 LOG.warnAndDebugDetails("Unexpected error while indexing NuGet package $it", e)
                 null
             }
@@ -53,7 +58,12 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
                     NuGetPackageData(path, it)
                 }
             }
-            File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH).outputStream().use {
+
+            val packageFile = File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH)
+            FileUtil.createDir(packageFile.parentFile)
+
+            LOG.debug("Writing list of NuGet packages into $packageFile file")
+            packageFile.outputStream().use {
                 NuGetPackagesUtil.writePackages(NuGetPackagesList(packages), it)
             }
         }
@@ -63,17 +73,14 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
         val artifacts = build.getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
         val artifact = artifacts.getArtifact(PackageConstants.PACKAGES_FILE_PATH)
         if (artifact != null) {
-            val packages = try {
+            try {
                 artifact.inputStream.use {
-                    NuGetPackagesUtil.readPackages(it)
+                    NuGetPackagesUtil.readPackages(it)?.packages?.let {
+                        return it.values
+                    }
                 }
-            } catch (e: IOException) {
-                LOG.warnAndDebugDetails("Failed to read NuGet packages list", e)
-                null
-            }
-
-            packages?.packages?.let {
-                return it.values
+            } catch (e: Exception) {
+                LOG.warnAndDebugDetails("Failed to read NuGet packages list for build ${LogUtil.describe(build)}", e)
             }
 
             FileUtil.delete(File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH))

@@ -17,6 +17,9 @@
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.server.feed.server.PackageIndexTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.feed.server.RequestWrapperTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.NuGetArtifactsMetadataProviderTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.NuGetBuildFeedsProviderTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.server.feed.server.NuGetBuildMetadataProviderTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.SemanticVersionTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.SemanticVersionComparisonTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.entity.MetadataLoaderTest"/>
