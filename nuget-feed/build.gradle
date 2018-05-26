@@ -21,8 +21,6 @@ dependencies {
     compile 'com.sun.jersey:jersey-core:1.11'
     compile 'com.sun.jersey:jersey-server:1.11'
     compile 'com.sun.jersey:jersey-servlet:1.11'
-    compile 'javax.xml.bind:jaxb-api:2.3.0'
-    compile 'com.sun.xml.bind:jaxb-impl:2.3.0'
     compile "org.apache.olingo:olingo-odata2-api:$olingoVersion"
     compile "org.apache.olingo:olingo-odata2-api-annotation:$olingoVersion"
     compile "org.apache.olingo:olingo-odata2-core:$olingoVersion"

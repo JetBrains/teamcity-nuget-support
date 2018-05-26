@@ -59,8 +59,6 @@ subprojects { subproject ->
             maven { url '../local-repo' }
             maven { url 'http://repository.apache.org/snapshots/' }
             mavenCentral()
-            jcenter()
-            maven { url 'http://repository.jetbrains.com/all' }
         }
 
         test.useTestNG()
