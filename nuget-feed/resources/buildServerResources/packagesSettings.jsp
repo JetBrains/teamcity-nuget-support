@@ -170,8 +170,8 @@
     <c:if test="${useDefaultFeed and not empty defaultFeed}">
         <h2 style="border: none">Automatic packages indexing</h2>
         <bs:smallNote>
-            When this setting is enabled, all NuGet packages published by builds of this project and its subprojects will be available in the NuGet feed.
-            To publish NuGet packages for builds of selected configurations, add the NuGet packages indexer<bs:help file="NuGet"/> build feature to them.
+            To index all .nupkg files published as build artifacts in this project and its subprojects, enable this feature. All project's .nupkg files will be available in the NuGet feed.
+            To index packages published by selected build configurations only, add the NuGet packages indexer<bs:help file="NuGet+Packages+Indexer"/> build feature to these build configurations.
         </bs:smallNote>
         <c:if test="${project.externalId eq '_Root'}">
             <div class="attentionComment">
