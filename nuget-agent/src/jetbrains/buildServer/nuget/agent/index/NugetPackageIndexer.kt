@@ -42,6 +42,10 @@ class NugetPackageIndexer(dispatcher: EventDispatcher<AgentLifeCycleListener>,
     }
 
     override fun afterCollectingFiles(artifacts: MutableList<ArtifactsCollection>) {
+        if (!myIndexingEnabled) {
+            return
+        }
+
         getPackages(artifacts).forEach { (file, path) ->
             val packagePath = if (path.isNotEmpty()) "$path/${file.name}" else file.name
             try {
