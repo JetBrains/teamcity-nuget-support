@@ -217,10 +217,11 @@ public class PackagesSettingsController extends BaseFormXmlController {
                 nuGetRepository.setIndexPackages(enabled);
                 myRepositoryManager.updateRepository(project, name, nuGetRepository);
 
+                final String feedReference = String.format("Automatic NuGet feed indexing in project %s", StringUtil.notEmpty(project.getName(), projectExternalId));
                 if (enabled) {
-                    LOG.info("NuGet feed indexing was enabled. Will be indexed newly published .nupkg files in project and subprojects.");
+                    LOG.info(feedReference + " was enabled. Newly published .nupkg files in project and subprojects will be added to the feed.");
                 } else {
-                    LOG.info("NuGet feed was disabled. Newly published .nupkg files will not be indexed while feed is disabled.");
+                    LOG.info(feedReference + " was disabled. Newly published .nupkg files in project and subprojects will not be longer added to the feed.");
                 }
             } catch (IOException e) {
                 LOG.infoAndDebugDetails("Failed to send response", e);
