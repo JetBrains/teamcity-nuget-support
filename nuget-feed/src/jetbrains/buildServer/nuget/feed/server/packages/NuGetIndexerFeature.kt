@@ -9,6 +9,7 @@ import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.serverSide.*
 import jetbrains.buildServer.serverSide.packages.RepositoryConstants
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
+import jetbrains.buildServer.util.StringUtil
 import jetbrains.buildServer.web.openapi.PluginDescriptor
 import jetbrains.buildServer.web.openapi.WebControllerManager
 import org.springframework.web.servlet.ModelAndView
@@ -132,7 +133,7 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
             }
         } ?: "<Unknown>"
 
-        return "Indexing packages into $feedName NuGet feed"
+        return "Indexing packages into ${StringUtil.escapeHTML(feedName, true)} NuGet feed"
     }
 
     override fun getParametersProcessor(): PropertiesProcessor? {
