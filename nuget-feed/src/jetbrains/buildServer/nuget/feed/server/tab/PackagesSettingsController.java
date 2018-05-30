@@ -75,7 +75,7 @@ public class PackagesSettingsController extends BaseFormXmlController {
         myRepositoryManager = repositoryManager;
 
         final String path = pluginDescriptor.getPluginResourcesPath("packages/settings.html");
-        auth.addPathBasedPermissionsChecker(path, (authorityHolder, request) -> checker.assertAccess(authorityHolder));
+        auth.addPathBasedPermissionsChecker(path, (authorityHolder, request) -> checker.assertAccess(getProject(request), authorityHolder));
         web.registerController(path, this);
 
         myDefaultProcessor = parameters -> {
@@ -168,10 +168,9 @@ public class PackagesSettingsController extends BaseFormXmlController {
 
         @Override
         public void process(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @Nullable Element element) {
-            final String projectExternalId = request.getParameter("projectId");
-            final SProject project = myProjectManager.findProjectByExternalId(projectExternalId);
+            final SProject project = getProject(request);
             try {
-                if (projectExternalId == null || project == null) {
+                if (project == null) {
                     response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Project was not found");
                     return;
                 }
@@ -217,7 +216,7 @@ public class PackagesSettingsController extends BaseFormXmlController {
                 nuGetRepository.setIndexPackages(enabled);
                 myRepositoryManager.updateRepository(project, name, nuGetRepository);
 
-                final String feedReference = String.format("Automatic NuGet feed indexing in project %s", StringUtil.notEmpty(project.getName(), projectExternalId));
+                final String feedReference = String.format("Automatic NuGet feed indexing in project %s", StringUtil.notEmpty(project.getName(), project.getExternalId()));
                 if (enabled) {
                     LOG.info(feedReference + " was enabled. Newly published .nupkg files in project and subprojects will be added to the feed.");
                 } else {
@@ -239,10 +238,9 @@ public class PackagesSettingsController extends BaseFormXmlController {
         @Override
         public void process(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @Nullable Element xmlResponse) {
             final ActionErrors errors = new ActionErrors();
-            final String projectExternalId = request.getParameter("projectId");
             try {
-                final SProject project = myProjectManager.findProjectByExternalId(projectExternalId);
-                if (projectExternalId == null || project == null) {
+                final SProject project = getProject(request);
+                if (project == null) {
                     errors.addError("projectNotFound", "Project was not found");
                     return;
                 }
@@ -324,10 +322,9 @@ public class PackagesSettingsController extends BaseFormXmlController {
         @Override
         public void process(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @Nullable Element xmlResponse) {
             final ActionErrors errors = new ActionErrors();
-            final String projectExternalId = request.getParameter("projectId");
-            final SProject project = myProjectManager.findProjectByExternalId(projectExternalId);
+            final SProject project = getProject(request);
             try {
-                if (projectExternalId == null || project == null) {
+                if (project == null) {
                     errors.addError("projectNotFound", "Project was not found");
                     return;
                 }
@@ -358,7 +355,7 @@ public class PackagesSettingsController extends BaseFormXmlController {
                 try {
                     myRepositoryManager.removeRepository(project, type, name);
                 } catch (Exception e) {
-                    LOG.infoAndDebugDetails(String.format("Failed to delete %s %s in project %s", registryType.getName(), name, projectExternalId), e);
+                    LOG.infoAndDebugDetails(String.format("Failed to delete %s %s in project %s", registryType.getName(), name, project.getExternalId()), e);
                     errors.addError(RepositoryConstants.REPOSITORY_NAME_KEY, e.getMessage());
                 }
             } finally {
@@ -379,10 +376,9 @@ public class PackagesSettingsController extends BaseFormXmlController {
         @Override
         public void process(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @Nullable Element xmlResponse) {
             final ActionErrors errors = new ActionErrors();
-            final String projectExternalId = request.getParameter("projectId");
-            final SProject project = myProjectManager.findProjectByExternalId(projectExternalId);
+            final SProject project = getProject(request);
             try {
-                if (projectExternalId == null || project == null) {
+                if (project == null) {
                     errors.addError("projectNotFound", "Project was not found");
                     return;
                 }
@@ -417,7 +413,7 @@ public class PackagesSettingsController extends BaseFormXmlController {
                 try {
                     myRepositoryManager.addRepository(project, repository);
                 } catch (Exception e) {
-                    LOG.infoAndDebugDetails(String.format("Failed to add %s %s in project %s", repositoryType.getName(), name, projectExternalId), e);
+                    LOG.infoAndDebugDetails(String.format("Failed to add %s %s in project %s", repositoryType.getName(), name, project.getExternalId()), e);
                     errors.addError(RepositoryConstants.REPOSITORY_NAME_KEY, e.getMessage());
                 }
             } finally {
@@ -426,6 +422,12 @@ public class PackagesSettingsController extends BaseFormXmlController {
                 }
             }
         }
+    }
+
+    @Nullable
+    private SProject getProject(@NotNull final HttpServletRequest request) {
+      final String projectExternalId = request.getParameter("projectId");
+      return myProjectManager.findProjectByExternalId(projectExternalId);
     }
 
     @NotNull
