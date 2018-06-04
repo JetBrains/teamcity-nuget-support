@@ -28,8 +28,9 @@ BS.Packages = {
 
   deleteRepository: function (projectId, projectName, type, typeName, name) {
     var feedName = name === "default" ? "" : "'" + name + "'";
-    var text = "<p>Do you really want to delete the " + feedName + " " + typeName + " from the '" +
-      $j("<span />").text(projectName).html() + "' project?</p>";
+    var text = "<p>Delete the " + typeName + " with all contents from the from the '" +
+      $j("<span />").text(projectName).html() + "' project?</p>" +
+      "<p>This will also remove all package indexer build features pointing at this " + typeName + ".</p>";
     var url = this.getPageUrl();
     BS.confirmDialog.show({
       text: text,
