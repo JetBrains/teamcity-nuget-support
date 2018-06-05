@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.server.runner.install;
 
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.io.StreamUtil;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
 import jetbrains.buildServer.serverSide.BuildTypeSettings;
@@ -23,23 +25,28 @@ import jetbrains.buildServer.serverSide.SBuildRunnerDescriptor;
 import jetbrains.buildServer.serverSide.discovery.BreadthFirstRunnerDiscoveryExtension;
 import jetbrains.buildServer.serverSide.discovery.DiscoveredObject;
 import jetbrains.buildServer.tools.ToolVersionReference;
-import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.Converter;
-import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.*;
 import jetbrains.buildServer.util.browser.Browser;
 import jetbrains.buildServer.util.browser.Element;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscoveryExtension {
 
+  private static final Logger LOG = Logger.getInstance(PackagesInstallerRunnerDiscoverer.class.getName());
   private static final String PACKAGES_CONFIG = "packages.config";
   private static final String NUGET_DIR_NAME = ".nuget";
   private static final String SLN_FILE_EXTENSION = ".sln";
+  private static final Pattern PROJECT_PATH_PATTERN = Pattern.compile("^Project\\(.+\\)\\s*=\\s*\".+\"\\s*,\\s*\"(.+)\"\\s*,\\s*\".+\"\\s*$", Pattern.CASE_INSENSITIVE);
+  private static final Pattern PROJECT_NAME_PATTERN = Pattern.compile("^.+\\.(proj|csproj|vbproj)$", Pattern.CASE_INSENSITIVE);
 
   @NotNull private final PackagesInstallerRunnerDefaults myDefaults;
 
@@ -57,8 +64,12 @@ public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscove
       final String name = item.getName();
       final boolean isLeaf = item.isLeaf();
 
-      if(isLeaf && name.endsWith(SLN_FILE_EXTENSION) && item.isContentAvailable())
+      if(isLeaf && name.endsWith(SLN_FILE_EXTENSION) && item.isContentAvailable()) {
         foundSlns.add(item.getFullName());
+        if (!nugetUsageFound && hasPackages(item)) {
+          nugetUsageFound = true;
+        }
+      }
 
       if(nugetUsageFound) continue;
       nugetUsageFound = (isLeaf && name.equalsIgnoreCase(PACKAGES_CONFIG)) || (!isLeaf && name.equalsIgnoreCase(NUGET_DIR_NAME));
@@ -66,11 +77,55 @@ public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscove
 
     if (foundSlns.isEmpty() || !nugetUsageFound) return Collections.emptyList();
 
-    return CollectionsUtil.convertCollection(foundSlns, new Converter<DiscoveredObject, String>() {
-      public DiscoveredObject createFrom(@NotNull String source) {
-        return discover(source);
+    return CollectionsUtil.convertCollection(foundSlns, this::discover);
+  }
+
+  private boolean hasPackages(Element solutionFile) {
+    InputStream stream = null;
+    try {
+      stream = solutionFile.getInputStream();
+      final String text = StreamUtil.readText(stream);
+      for (String line : text.split("\\r?\\n")) {
+        final Matcher matcher = PROJECT_PATH_PATTERN.matcher(line);
+        if (!matcher.find()) {
+          continue;
+        }
+
+        final String projectFilePath = matcher.group(1);
+        if (!PROJECT_NAME_PATTERN.matcher(projectFilePath).find()) {
+          continue;
+        }
+
+        final String projectPath = FileUtil.normalizeRelativePath(solutionFile.getFullName() + "/../" + projectFilePath);
+        if (hasProjectReferences(solutionFile.getBrowser().getElement(projectPath))) {
+          return true;
+        }
       }
-    });
+    } catch (IOException e) {
+      LOG.infoAndDebugDetails("Failed to read solution contents " + solutionFile.getFullName(), e);
+    } finally {
+      FileUtil.close(stream);
+    }
+
+    return false;
+  }
+
+  private boolean hasProjectReferences(Element projectFile) {
+    if (projectFile == null || !projectFile.isContentAvailable()) {
+      return false;
+    }
+
+    InputStream stream = null;
+    try {
+      stream = projectFile.getInputStream();
+      return StreamUtil.readText(stream).contains("PackageReference");
+    } catch (IOException e) {
+      LOG.infoAndDebugDetails("Failed to read project file contents " + projectFile.getFullName(), e);
+    } finally {
+      FileUtil.close(stream);
+    }
+
+    return false;
   }
 
   @NotNull

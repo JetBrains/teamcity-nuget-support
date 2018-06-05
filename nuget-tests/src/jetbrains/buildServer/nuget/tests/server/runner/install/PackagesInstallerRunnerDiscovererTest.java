@@ -124,6 +124,19 @@ public class PackagesInstallerRunnerDiscovererTest extends NuGetRunnerDiscoverer
     assertEmpty(myDiscoverer.discover(myBuildTypeSettings, getBrowser("single-sln-dot-nuget")));
   }
 
+  @Test
+  public void solutionWithPackageReferences() throws Exception {
+    final List<DiscoveredObject> runners = myDiscoverer.discover(myBuildTypeSettings, getBrowser("sln-with-package-references"));
+    assertNotNull(runners);
+    assertEquals(1, runners.size());
+    final DiscoveredObject runner = runners.get(0);
+    assertEquals(PackagesConstants.INSTALL_RUN_TYPE, runner.getType());
+    final Map<String, String> runnerParameters = runner.getParameters();
+    assertMapping(runnerParameters, PackagesConstants.NUGET_PATH, myDefaultToolPath);
+    assertMapping(runnerParameters, PackagesConstants.SLN_PATH, "foo.sln");
+    assertMapping(runnerParameters, PackagesConstants.NUGET_USE_RESTORE_COMMAND, PackagesConstants.NUGET_USE_RESTORE_COMMAND_RESTORE_MODE);
+  }
+
   private void registerNugetInstallerRunner(String pathToSlnFile) {
     myRegisteredRunners.add(new SBuildRunnerDescriptorImpl("id", "name", PackagesConstants.INSTALL_RUN_TYPE, Collections.singletonMap(PackagesConstants.SLN_PATH, pathToSlnFile), Collections.<String, String>emptyMap(), myRunTypesProvider));
   }
