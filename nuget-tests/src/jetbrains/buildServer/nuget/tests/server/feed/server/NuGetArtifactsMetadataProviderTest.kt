@@ -8,6 +8,7 @@ import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildMetadataProv
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildFeedsProvider
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
 import jetbrains.buildServer.serverSide.SBuild
+import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage
 import jetbrains.buildServer.serverSide.metadata.MetadataStorageWriter
 import org.jmock.Expectations
@@ -70,8 +71,11 @@ class NuGetArtifactsMetadataProviderTest {
                 oneOf(targetFeedProvider).getFeeds(build)
                 will(returnValue(emptySet<NuGetFeedData>()))
 
-                oneOf(build).buildId
+                exactly(2).of(build).buildId
                 will(returnValue(1L))
+
+                oneOf(metadataStorage).getBuildEntry(1L, "nuget")
+                will(returnIterator(emptyList<BuildMetadataEntry>()))
 
                 oneOf(build).buildNumber
                 will(returnValue("123"))
@@ -109,8 +113,11 @@ class NuGetArtifactsMetadataProviderTest {
                 oneOf(buildMetadataProvider).getPackagesMetadata(build)
                 will(returnValue(emptyList<Map<String, String>>()))
 
-                oneOf(build).buildId
+                exactly(2).of(build).buildId
                 will(returnValue(1L))
+
+                oneOf(metadataStorage).getBuildEntry(1L, "nuget")
+                will(returnIterator(emptyList<BuildMetadataEntry>()))
 
                 oneOf(build).buildNumber
                 will(returnValue("123"))
@@ -151,6 +158,9 @@ class NuGetArtifactsMetadataProviderTest {
 
                 allowing(build).buildId
                 will(returnValue(1L))
+
+                oneOf(metadataStorage).getBuildEntry(1L, "nuget")
+                will(returnIterator(emptyList<BuildMetadataEntry>()))
 
                 allowing(build).buildNumber
                 will(returnValue("123"))
@@ -197,6 +207,9 @@ class NuGetArtifactsMetadataProviderTest {
                 oneOf(targetFeedProvider).getFeeds(build)
                 will(returnValue(setOf(NuGetFeedData("projectId", "feed"))))
 
+                oneOf(metadataStorage).getBuildEntry(1L, "nuget")
+                will(returnIterator(emptyList<BuildMetadataEntry>()))
+
                 allowing(build).buildId
                 will(returnValue(1L))
 
@@ -216,6 +229,55 @@ class NuGetArtifactsMetadataProviderTest {
                 oneOf(metadataStorage).addBuildEntry(1L, "nuget.projectId.feed", "id.1.0.0", packageMetadata, true)
 
                 oneOf(cacheReset).resetCache()
+            }
+        })
+
+        metadataProvider.generateMedatadata(build, storageWriter)
+
+        m.assertIsSatisfied()
+    }
+
+    fun republishMetadataForPackagesInRootProjectFeed() {
+        val m = Mockery()
+        val cacheReset = m.mock(ResponseCacheReset::class.java)
+        val serverSettings = m.mock(NuGetServerSettings::class.java)
+        val buildMetadataProvider = m.mock(NuGetBuildMetadataProvider::class.java)
+        val targetFeedProvider = m.mock(NuGetBuildFeedsProvider::class.java)
+        val metadataStorage = m.mock(MetadataStorage::class.java)
+        val build = m.mock(SBuild::class.java)
+        val storageWriter = m.mock(MetadataStorageWriter::class.java)
+        val packageMetadata = mapOf(
+            NuGetPackageAttributes.ID to "id",
+            NuGetPackageAttributes.NORMALIZED_VERSION to "1.0.0"
+        )
+
+        val metadataProvider = NuGetArtifactsMetadataProvider(cacheReset, serverSettings, buildMetadataProvider, targetFeedProvider, metadataStorage)
+
+        m.checking(object : Expectations() {
+            init {
+                oneOf(serverSettings).isNuGetServerEnabled
+                will(returnValue(true))
+
+                oneOf(targetFeedProvider).getFeeds(build)
+                will(returnValue(emptySet<NuGetFeedData>()))
+
+                oneOf(metadataStorage).getBuildEntry(1L, "nuget")
+                will(returnIterator(listOf<BuildMetadataEntry>(object: BuildMetadataEntry {
+                    override fun getMetadata() = packageMetadata
+                    override fun getKey() = "id.1.0.0"
+                    override fun getBuildId() = 1L
+                })))
+
+                allowing(build).buildId
+                will(returnValue(1L))
+
+                allowing(build).buildNumber
+                will(returnValue("123"))
+
+                allowing(build).buildTypeExternalId
+                will(returnValue("bt"))
+
+                oneOf(storageWriter).addParameters("id.1.0.0", packageMetadata)
             }
         })
 

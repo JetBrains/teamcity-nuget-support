@@ -281,8 +281,8 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       FileUtil.close(inputStream);
     }
 
-    LOG.info(String.format("Publishing nuget package %s:%s at path '%s' as artifact for build %s",
-      id, version, path, LogUtil.describe(build)));
+    LOG.info(String.format("Publishing nuget package %s:%s at path '%s' as artifact for build %s into feed %s",
+      id, version, path, LogUtil.describe(build), feedData));
     try {
       inputStream = file.getInputStream();
       build.publishArtifact(path, inputStream);

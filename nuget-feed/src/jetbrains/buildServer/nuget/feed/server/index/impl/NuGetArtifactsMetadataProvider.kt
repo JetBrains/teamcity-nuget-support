@@ -47,6 +47,11 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
             return
         }
 
+        // Publish existing parameters
+        myMetadataStorage.getBuildEntry(build.buildId, PackageConstants.NUGET_PROVIDER_ID).forEach {
+            store.addParameters(it.key, it.metadata)
+        }
+
         val targetFeeds = myFeedsProvider.getFeeds(build)
         if (targetFeeds.isEmpty()) {
             LOG.debug("No NuGet feeds found to index packages from build ${LogUtil.describe(build)}")
