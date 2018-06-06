@@ -1,0 +1,21 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26114.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".scripts", ".scripts", "{4AA7D406-B158-4FCA-97BE-B3CE4B9ED1AA}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\build.cmd = scripts\build.cmd
+		scripts\build.properties.sample.ps1 = scripts\build.properties.sample.ps1
+		scripts\build.ps1 = scripts\build.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{F729740C-2635-49A7-9342-2A2A7158992D}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\libs\core_build.ps1 = scripts\libs\core_build.ps1
+		scripts\libs\psake.psm1 = scripts\libs\psake.psm1
+		scripts\libs\psake_ext.ps1 = scripts\libs\psake_ext.ps1
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "foo", "foo\foo.csproj", "{489A3BD0-35AF-4E8E-939F-6597125603B7}"
+EndProject

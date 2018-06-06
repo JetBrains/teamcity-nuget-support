@@ -96,6 +96,14 @@ public class PackagesInstallerRunnerDiscoverer extends BreadthFirstRunnerDiscove
           continue;
         }
 
+        // Check packages.config file existence in the project file directory
+        final String packagesPath = FileUtil.normalizeRelativePath(solutionFile.getFullName() + "/../" + projectFilePath + "/../" + PACKAGES_CONFIG);
+        final Element packagesElement = solutionFile.getBrowser().getElement(packagesPath);
+        if (packagesElement != null && packagesElement.isContentAvailable()) {
+          return true;
+        }
+
+        // Check that project file contains PackageReferences
         final String projectPath = FileUtil.normalizeRelativePath(solutionFile.getFullName() + "/../" + projectFilePath);
         if (hasProjectReferences(solutionFile.getBrowser().getElement(projectPath))) {
           return true;
