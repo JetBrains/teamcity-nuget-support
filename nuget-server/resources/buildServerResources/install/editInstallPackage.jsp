@@ -101,7 +101,7 @@
                                expanded="${true}"/>
       <span class="smallNote">
         Leave blank to use NuGet.org<br />
-        To use TeamCity NuGet feed specify the URL from the project settings.<br />
+        To use a TeamCity NuGet feed<bs:help file="NuGet"/>, specify the URL from the NuGet feed project settings page.<br />
         For feeds with authentication configure the <em>NuGet Feed Credentials</em> build feature
         <bs:help file="NuGet+Feed+Credentials"/>
       </span>
