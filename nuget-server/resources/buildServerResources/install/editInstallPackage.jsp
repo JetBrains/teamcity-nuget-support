@@ -99,6 +99,9 @@
                                linkTitle="Sources"
                                cols="60" rows="5"
                                expanded="${true}"/>
+      <button id="buildTypeId" style="display: none"></button>
+      <bs:projectData type="NuGetFeedUrls" sourceFieldId="buildTypeId"
+                      targetFieldId="${ib.nuGetSourcesKey}" popupTitle="Select TeamCity NuGet feeds"/>
       <span class="smallNote">
         Leave blank to use NuGet.org<br />
         To use a TeamCity NuGet feed<bs:help file="Using+TeamCity+as+NuGet+Server"/>, specify the URL from the NuGet feed project settings page.<br />
@@ -164,4 +167,5 @@
 
 <script type="text/javascript">
     BS.NugetParametersForm.updateElements();
+    $('buildTypeId').value = window.location.search.substring(1).split('&').grep(/id=buildType:(.*)/).join('').split(':')[1];
 </script>

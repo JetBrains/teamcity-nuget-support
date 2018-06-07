@@ -8,4 +8,5 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.packages.NuGetRepositoryType"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.packages.NuGetIndexerFeature"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.tab.PackagesProjectTab"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.NuGetFeedUrlsProvider"/>
 </beans>

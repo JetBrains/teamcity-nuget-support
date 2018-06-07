@@ -70,6 +70,9 @@
   <th>Package source:</th>
   <td>
     <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
+    <button id="buildTypeId" style="display: none"></button>
+    <bs:projectData type="NuGetFeedUrls" sourceFieldId="buildTypeId" selectionMode="single"
+                    targetFieldId="${ib.nuGetSourceKey}" popupTitle="Select TeamCity NuGet feed" />
       <span class="smallNote">
         Specify the NuGet packages feed URL to push packages to. Leave blank to let NuGet decide what package repository to use.<br />
         To use a TeamCity NuGet feed<bs:help file="Using+TeamCity+as+NuGet+Server"/>, specify the URL from the NuGet feed project settings page.
@@ -110,5 +113,7 @@
     var y = pos[1] + 3 + layout.get('margin-top');
     BS.Util.show(img);
     BS.Util.place(img, x, y);
+
+    $('buildTypeId').value = window.location.search.substring(1).split('&').grep(/id=buildType:(.*)/).join('').split(':')[1];
   });
 </script>
