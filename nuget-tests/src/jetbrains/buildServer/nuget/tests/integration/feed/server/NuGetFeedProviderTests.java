@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.feed.server.controllers.*;
+import jetbrains.buildServer.nuget.feed.server.json.JsonRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
 import org.jmock.Mockery;
@@ -45,8 +46,9 @@ public class NuGetFeedProviderTests {
         }};
         final ODataRequestHandler oDataRequestHandler = m.mock(ODataRequestHandler.class);
         final OlingoRequestHandler olingoRequestHandler = m.mock(OlingoRequestHandler.class);
+        final JsonRequestHandler jsonRequestHandler = m.mock(JsonRequestHandler.class);
         final PackageUploadHandler uploadHandler = m.mock(PackageUploadHandler.class);
-        myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, uploadHandler);
+        myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);
     }
 
     public void testGetPackagesHandler() {

@@ -21,6 +21,7 @@ import jetbrains.buildServer.controllers.MockResponse;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.common.version.VersionUtility;
+import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
@@ -34,6 +35,7 @@ import jetbrains.buildServer.nuget.feed.server.index.*;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
 import jetbrains.buildServer.nuget.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
+import jetbrains.buildServer.nuget.feed.server.json.JsonRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
@@ -159,9 +161,10 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myFeedFactory, responseCache);
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(myFeedFactory, responseCache);
+    final JsonRequestHandler jsonRequestHandler = new JsonRequestHandler();
     final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, myMetadataStorage,
             packageAnalyzer, cacheReset, serverSettings);
-    myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, uploadHandler);
+    myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);
   }
 
   @NotNull
@@ -204,7 +207,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   @Override
   protected String getNuGetServerUrl() {
-    return "http://localhost" + NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId()) + "/";
+    return "http://localhost" + NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId(), NuGetAPIVersion.V2) + "/";
   }
 
   protected NuGetIndexEntry addPackage(@NotNull final File file, boolean isLatest) throws IOException {
@@ -332,6 +335,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   @NotNull
   protected ResponseWrapper processRequest(@NotNull final HttpServletRequest request) {
+    request.setAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION, NuGetAPIVersion.V2);
     final NuGetFeedHandler handler = myFeedProvider.getHandler(request);
     final MockResponse response = new MockResponse();
     final ResponseWrapper responseWrapper = new ResponseWrapper(response);

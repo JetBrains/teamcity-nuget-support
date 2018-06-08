@@ -18,11 +18,13 @@ package jetbrains.buildServer.nuget.feed.server;
 
 import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
+import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
 import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -56,8 +58,22 @@ public class NuGetUtils {
    * @return context based path of nuget feed OData service
    */
   @NotNull
-  public static String getProjectFeedPath(@NotNull final String projectId, @NotNull final String name) {
-    return String.format(NuGetServerSettings.PROJECT_PATH + "/%s/%s/v2", projectId, name);
+  public static String getProjectFeedPath(@NotNull final String projectId,
+                                          @NotNull final String name,
+                                          @NotNull final NuGetAPIVersion version) {
+    return String.format(NuGetServerSettings.PROJECT_PATH + "/%s/%s/%s", projectId, name, version.name().toLowerCase());
+  }
+
+  /**
+   * @return context based path of nuget feed OData service
+   */
+  @NotNull
+  public static List<String> getProjectFeedPaths(@NotNull final String projectId,
+                                                 @NotNull final String name) {
+    return CollectionsUtil.convertCollection(
+      Arrays.asList(NuGetAPIVersion.values()),
+      apiVersion -> getProjectFeedPath(projectId, name, apiVersion)
+    );
   }
 
   @Nullable

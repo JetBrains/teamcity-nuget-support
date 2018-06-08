@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.feed.server.olingo
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.intellij.openapi.diagnostic.Logger
+import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
@@ -75,7 +76,8 @@ open class OlingoRequestHandler(private val myFeedFactory: NuGetFeedFactory,
             } to myFeedFactory.createFeed(feedData)
         } ?: throw Exception("Failed to create servlet")
 
-        val serviceFactory = NuGetServiceFactory(OlingoDataSource(feed))
+        val apiVersion = request.getAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION) as NuGetAPIVersion
+        val serviceFactory = NuGetServiceFactory(OlingoDataSource(feed, apiVersion))
         request.setAttribute(ODataServiceFactory.FACTORY_INSTANCE_LABEL, serviceFactory)
 
         try {

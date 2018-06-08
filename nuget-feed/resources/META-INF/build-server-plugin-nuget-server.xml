@@ -46,6 +46,7 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheImpl"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonRequestHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.PermissionChecker"/>

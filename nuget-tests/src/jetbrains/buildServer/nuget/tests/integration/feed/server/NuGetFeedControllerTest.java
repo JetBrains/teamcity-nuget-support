@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.controllers.MockResponse;
+import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController;
@@ -161,7 +162,7 @@ public class NuGetFeedControllerTest {
 
         Controller controller = new NuGetFeedController(web, settings,
                 new RecentNuGetRequests(), provider, projectManager, repositoryManager);
-        String feedPath = NuGetUtils.getProjectFeedPath(NuGetFeedData.DEFAULT.getProjectId(), NuGetFeedData.DEFAULT.getFeedId());
+        String feedPath = NuGetUtils.getProjectFeedPath(NuGetFeedData.DEFAULT.getProjectId(), NuGetFeedData.DEFAULT.getFeedId(), NuGetAPIVersion.V2);
         RequestWrapper request = new RequestWrapper(feedPath, SERVLET_PATH + "/Packages");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
 

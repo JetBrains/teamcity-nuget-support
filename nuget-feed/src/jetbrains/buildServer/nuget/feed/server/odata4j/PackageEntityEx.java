@@ -16,8 +16,8 @@
 
 package jetbrains.buildServer.nuget.feed.server.odata4j;
 
+import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
-import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntityAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -42,8 +42,7 @@ public class PackageEntityEx extends PackageEntityAdapter implements OAtomStream
   }
 
   public String getAtomEntitySource(String baseUri) {
-    final NuGetFeedData feedData = myEntry.getFeedData();
-    int idx = baseUri.indexOf(NuGetUtils.getProjectFeedPath(feedData.getProjectId(), feedData.getFeedId()));
+    int idx = baseUri.indexOf(NuGetServerSettings.PROJECT_PATH);
     if (idx < 0) {
       return null;
     }

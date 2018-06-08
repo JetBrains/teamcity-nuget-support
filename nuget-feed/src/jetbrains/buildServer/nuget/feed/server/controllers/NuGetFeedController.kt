@@ -19,6 +19,8 @@ package jetbrains.buildServer.nuget.feed.server.controllers
 import com.intellij.openapi.diagnostic.Logger
 import jetbrains.buildServer.controllers.BaseController
 import jetbrains.buildServer.nuget.common.index.PackageConstants
+import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper
@@ -56,7 +58,7 @@ class NuGetFeedController(web: WebControllerManager,
             return NuGetResponseUtil.nugetFeedIsDisabled(response)
         }
 
-        val (feedPath, projectId, feedId) = getPathComponents(request)
+        val (feedPath, projectId, feedId, apiVersion) = getPathComponents(request)
         if (projectId.isEmpty() || feedId.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid request to NuGet Feed")
             return null
@@ -73,6 +75,8 @@ class NuGetFeedController(web: WebControllerManager,
             return null
         }
 
+        // Set NuGet feed API version
+        request.setAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION, NuGetAPIVersion.valueOf(apiVersion))
         val requestWrapper = object : RequestWrapper(request, feedPath) {
             override fun getQueryString(): String? {
                 val queryString = super.getQueryString()
@@ -113,30 +117,31 @@ class NuGetFeedController(web: WebControllerManager,
         return null
     }
 
-    private fun getPathComponents(request: HttpServletRequest): Triple<String, String, String> {
+    private fun getPathComponents(request: HttpServletRequest): List<String> {
         val pathInfo = WebUtil.getPathWithoutAuthenticationType(request)
         val result = FEED_PATH_PATTERN.find(pathInfo)
         if (result != null) {
-            val (feedPath, projectId, feedId) = result.destructured
-            return Triple(feedPath, projectId, feedId)
+            val (feedPath, projectId, feedId, apiVersion) = result.destructured
+            return listOf(feedPath, projectId, feedId, apiVersion.toUpperCase())
         }
 
+        val version = TeamCityProperties.getProperty(NuGetFeedConstants.PROP_NUGET_API_VERSION, NUGET_API_V2)
+        val apiVersion = if (NUGET_API_V2.equals(version, true)) "V2" else "V1"
+
         val defaultPathIndex = pathInfo.indexOf(NuGetServerSettings.DEFAULT_PATH_SUFFIX)
-        return if (defaultPathIndex >= 0) {
-            Triple(
+        return if (defaultPathIndex >= 0) listOf(
                 pathInfo.substring(0, defaultPathIndex + NuGetServerSettings.DEFAULT_PATH_SUFFIX.length),
                 NuGetFeedData.DEFAULT.projectId,
-                NuGetFeedData.DEFAULT.feedId
-            )
-        } else {
-            Triple("", NuGetFeedData.DEFAULT.projectId, NuGetFeedData.DEFAULT.feedId)
-        }
+                NuGetFeedData.DEFAULT.feedId,
+                apiVersion
+        ) else listOf("", NuGetFeedData.DEFAULT.projectId, NuGetFeedData.DEFAULT.feedId, apiVersion)
     }
 
     companion object {
         private val LOG = Logger.getInstance(NuGetFeedController::class.java.name)
         private val QUERY_ID = Regex("^(id=)(.*)", RegexOption.IGNORE_CASE)
-        private val FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.PROJECT_PATH + "/([^/]+)/([^/]+)/v[12])")
+        private val FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.PROJECT_PATH + "/([^/]+)/([^/]+)/(v[123]))")
         private const val UNSUPPORTED_REQUEST = "Unsupported NuGet feed request"
+        private const val NUGET_API_V2 = "v2"
     }
 }

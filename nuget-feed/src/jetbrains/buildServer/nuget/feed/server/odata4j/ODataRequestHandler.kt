@@ -20,6 +20,7 @@ import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.intellij.openapi.diagnostic.Logger
 import com.sun.jersey.spi.container.servlet.ServletContainer
+import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
@@ -70,10 +71,11 @@ open class ODataRequestHandler(private val myFeedFactory: NuGetFeedFactory,
         XMLFactoryProvider2.setInstance(DOM_XML_FACTORY_PROVIDER_2)
         LOG.debug("NuGet Feed: " + WebUtil.getRequestDump(request) + "|" + request.requestURI)
 
+        val apiVersion = request.getAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION) as NuGetAPIVersion
         val servletContainer = myServletsCache.get(feedData.key, {
             Util.doUnderContextClassLoader<ServletContainer, ServletException>(javaClass.classLoader) {
                 val feed = myFeedFactory.createFeed(feedData)
-                ServletContainer(NuGetODataApplication(NuGetProducerHolder(feed))).apply {
+                ServletContainer(NuGetODataApplication(NuGetProducerHolder(feed, apiVersion))).apply {
                     this.init(ODataServletConfig())
                 }
             }

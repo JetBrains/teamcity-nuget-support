@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.util.Action;
@@ -30,10 +31,10 @@ import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.processor.ODataContext;
 import org.apache.olingo.odata2.core.edm.provider.EdmxProvider;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Creates a new NuGet service.
@@ -42,26 +43,28 @@ public class NuGetServiceFactory extends ODataServiceFactory {
 
   private final OlingoDataSource myDataSource;
   private static final Map<String, Action<Property>> PROPERTY_CONFIGS;
-  private static final Map<String, EdmxProvider> EDMX_PROVIDERS;
+  private static final Map<NuGetAPIVersion, EdmxProvider> EDMX_PROVIDERS;
 
   public NuGetServiceFactory(OlingoDataSource dataSource) {
     myDataSource = dataSource;
   }
 
   @Override
-  public ODataService createService(final ODataContext context) throws ODataException {
-    final EdmxProvider edmxProvider = EDMX_PROVIDERS.get(NuGetAPIVersion.getVersionToUse());
+  public ODataService createService(final ODataContext context) {
+    final HttpServletRequest request = (HttpServletRequest) context.getParameter(ODataContext.HTTP_SERVLET_REQUEST_OBJECT);
+    final NuGetAPIVersion apiVersion = (NuGetAPIVersion) request.getAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION);
+    final EdmxProvider edmxProvider = EDMX_PROVIDERS.get(apiVersion);
     return createODataSingleProcessorService(edmxProvider, new NuGetPackagesProcessor(myDataSource));
   }
 
-  private static EdmxProvider getEdmProvider(final String version) throws ODataException {
-    final String metadataPath = String.format("/feed-metadata/NuGet-%s.xml", version);
+  private static EdmxProvider getEdmProvider(final NuGetAPIVersion version) throws ODataException {
+    final String metadataPath = String.format("/feed-metadata/NuGet-%s.xml", version.name());
 
     final InputStream inputStream = NuGetServiceFactory.class.getResourceAsStream(metadataPath);
     final EdmxProvider provider = new EdmxProvider().parse(inputStream, true);
 
     // Customize download link and content type
-    final String name = version + MetadataConstants.ENTITY_TYPE_NAME;
+    final String name = version.name() + MetadataConstants.ENTITY_TYPE_NAME;
     final EntityType packageType = provider.getEntityType(new FullQualifiedName(MetadataConstants.ENTITY_NAMESPACE, name));
     packageType.setMapping(new Mapping()
             .setMediaResourceSourceKey(PackageConstants.TEAMCITY_DOWNLOAD_URL)
@@ -102,7 +105,7 @@ public class NuGetServiceFactory extends ODataServiceFactory {
     PROPERTY_CONFIGS.put(NuGetPackageAttributes.AUTHORS, property -> property.setCustomizableFeedMappings(
             new CustomizableFeedMappings().setFcTargetPath(EdmTargetPath.SYNDICATION_AUTHORNAME)));
 
-    EDMX_PROVIDERS = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    EDMX_PROVIDERS = new HashMap<>();
     try {
       EDMX_PROVIDERS.put(NuGetAPIVersion.V1, getEdmProvider(NuGetAPIVersion.V1));
       EDMX_PROVIDERS.put(NuGetAPIVersion.V2, getEdmProvider(NuGetAPIVersion.V2));

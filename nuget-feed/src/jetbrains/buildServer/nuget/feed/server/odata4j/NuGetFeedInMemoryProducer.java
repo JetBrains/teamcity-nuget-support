@@ -34,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OProperty;
-import org.odata4j.edm.EdmDataServices;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.exceptions.NotImplementedException;
 import org.odata4j.producer.BaseResponse;
@@ -52,37 +51,26 @@ import java.util.Map;
  */
 public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   private static final Logger LOG = Logger.getInstance(NuGetFeedInMemoryProducer.class.getName());
-  private final Object mySyncRoot = new Object();
   private final NuGetFeed myFeed;
   private final NuGetFeedFunctions myFunctions;
-  private String myApiVersion;
+  private final NuGetAPIVersion myApiVersion;
 
   public NuGetFeedInMemoryProducer(@NotNull final NuGetFeed feed,
-                                   @NotNull final NuGetFeedFunctions functions) {
+                                   @NotNull final NuGetFeedFunctions functions,
+                                   @NotNull final NuGetAPIVersion apiVersion) {
     super(MetadataConstants.NUGET_GALLERY_NAMESPACE, NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE);
     myFeed = feed;
     myFunctions = functions;
+    myApiVersion = apiVersion;
     evaluation = new NuGetExpressionEvaluator();
   }
 
   public void register(Func<Iterable<PackageEntity>> getFunc) {
     register(PackageEntity.class,
       MetadataConstants.ENTITY_SET_NAME,
-      NuGetAPIVersion.getVersionToUse() + MetadataConstants.ENTITY_TYPE_NAME,
+      myApiVersion.name() + MetadataConstants.ENTITY_TYPE_NAME,
       getFunc,
       PackageEntity.KeyPropertyNames);
-  }
-
-  @Override
-  public EdmDataServices getMetadata() {
-    final String apiVersionToUse = NuGetAPIVersion.getVersionToUse();
-    synchronized (mySyncRoot) {
-      if (!apiVersionToUse.equalsIgnoreCase(myApiVersion)) {
-        cleanCachedMetadata();
-        myApiVersion = apiVersionToUse;
-      }
-    }
-    return super.getMetadata();
   }
 
   @Override
@@ -113,7 +101,7 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
 
   @Override
   protected InMemoryEdmGenerator newEdmGenerator(String namespace, InMemoryTypeMapping typeMapping, String idPropName, Map<String, InMemoryEntityInfo<?>> eis, Map<String, InMemoryComplexTypeInfo<?>> complexTypesInfo) {
-    return new NuGetFeedInMemoryEdmGenerator(namespace, MetadataConstants.CONTAINER_NAME, typeMapping, idPropName, eis, complexTypesInfo, myFunctions);
+    return new NuGetFeedInMemoryEdmGenerator(namespace, MetadataConstants.CONTAINER_NAME, typeMapping, idPropName, eis, complexTypesInfo, myFunctions, myApiVersion);
   }
 
   @Override

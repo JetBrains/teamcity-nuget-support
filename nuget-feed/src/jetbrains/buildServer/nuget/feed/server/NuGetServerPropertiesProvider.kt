@@ -66,7 +66,7 @@ class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings,
             val rootProject = myProjectManager.rootProject
             val feedData = NuGetFeedData.DEFAULT
             if (myRepositoryManager.hasRepository(rootProject, PackageConstants.NUGET_PROVIDER_ID, feedData.feedId)) {
-                val feedPath = NuGetUtils.getProjectFeedPath(feedData.projectId, feedData.feedId)
+                val feedPath = NuGetUtils.getProjectFeedPath(feedData.projectId, feedData.feedId, NuGetAPIVersion.V2)
                 map[FEED_REF_GUEST_AUTH_GLOBAL] = makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, feedPath)
                 val httpAuthFeedPath = combineContextPath(HTTP_AUTH_PREFIX, feedPath)
                 map[FEED_REF_HTTP_AUTH_GLOBAL] = makeReference(TEAMCITY_SERVER_URL) + httpAuthFeedPath

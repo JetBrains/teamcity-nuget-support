@@ -39,15 +39,17 @@ import java.util.*;
 public class OlingoDataSource {
 
   private final NuGetFeed myFeed;
+  private final NuGetAPIVersion myApiVersion;
   private final Map<String, OlingoFeedFunction> myFunctions = new HashMap<>();
 
-  public OlingoDataSource(@NotNull final NuGetFeed feed) {
+  public OlingoDataSource(@NotNull final NuGetFeed feed, @NotNull final NuGetAPIVersion apiVersion) {
     myFeed = feed;
+    myApiVersion = apiVersion;
 
     myFunctions.put(MetadataConstants.SEARCH_FUNCTION_NAME, parameters -> {
       final String searchTerm = (String) parameters.get(MetadataConstants.SEARCH_TERM);
       final String targetFramework = (String) parameters.get(MetadataConstants.TARGET_FRAMEWORK);
-      final boolean includePrerelease = NuGetAPIVersion.shouldUseV2() && getBooleanValue(parameters.get(MetadataConstants.INCLUDE_PRERELEASE));
+      final boolean includePrerelease = myApiVersion == NuGetAPIVersion.V2 && getBooleanValue(parameters.get(MetadataConstants.INCLUDE_PRERELEASE));
       if (searchTerm == null || targetFramework == null) {
         throw new UriSyntaxException(UriSyntaxException.MISSINGPARAMETER);
       }

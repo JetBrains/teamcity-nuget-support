@@ -8,7 +8,7 @@ import jetbrains.buildServer.serverSide.packages.RepositoryType
 class NuGetRepository(type: RepositoryType, private val project: SProject, parameters: Map<String, String>)
     : Repository(type, project.projectId, parameters) {
 
-    override fun getUrlPaths() = listOf(NuGetUtils.getProjectFeedPath(project.externalId, name))
+    override fun getUrlPaths(): List<String> = NuGetUtils.getProjectFeedPaths(project.externalId, name)
 
     var indexPackages: Boolean
         get() {

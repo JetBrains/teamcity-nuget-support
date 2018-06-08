@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.odata4j;
 
+import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
 import jetbrains.buildServer.util.CollectionsUtil;
@@ -31,13 +32,13 @@ import org.odata4j.stax2.xppimpl.XmlPullXMLFactoryProvider2;
 public class NuGetProducerHolder {
   private final NuGetFeedInMemoryProducer myProducer;
 
-  public NuGetProducerHolder(@NotNull final NuGetFeed feed) {
+  public NuGetProducerHolder(@NotNull final NuGetFeed feed, @NotNull final NuGetAPIVersion apiVersion) {
     final NuGetFeedFunctions functions = new NuGetFeedFunctions(feed);
     //Workaround for Xml generation. Default STAX xml writer
     //used to generate <foo></foo> that is badly parsed in
     //.NET OData WCF client
     XMLFactoryProvider2.setInstance(new XmlPullXMLFactoryProvider2());
-    myProducer = new NuGetFeedInMemoryProducer(feed, functions);
+    myProducer = new NuGetFeedInMemoryProducer(feed, functions, apiVersion);
     myProducer.register(() -> CollectionsUtil.convertCollection(feed.getAll(), PackageEntityEx::new));
   }
 
