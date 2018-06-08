@@ -19,17 +19,22 @@ class NuGetFeedUrlsProvider(private val myProjectManager: ProjectManager,
     override fun getType() = "NuGetFeedUrls"
 
     override fun retrieveData(browser: Browser, buildTypeId: String): MutableList<DataItem> {
-        val buildTypeByExternalId = myProjectManager.findBuildTypeByExternalId(buildTypeId) ?: return mutableListOf()
+        val segments = buildTypeId.split(":")
+        val buildTypeByExternalId = myProjectManager.findBuildTypeByExternalId(segments.first())
+                ?: return mutableListOf()
+
         val uriBuilder = UriBuilder.fromUri(myRootUrlHolder.rootUrl)
+        val prefix = if (WebUtil.GUEST_AUTH_PREFIX.contains(segments.last()) && myLoginConfiguration.isGuestLoginAllowed) {
+            WebUtil.GUEST_AUTH_PREFIX
+        } else {
+            WebUtil.HTTP_AUTH_PREFIX
+        }
+
         return myRepositoryManager.getRepositories(buildTypeByExternalId.project, true)
                 .filterIsInstance<NuGetRepository>()
                 .flatMap {
-                    it.urlPaths.flatMap {
-                        arrayListOf<String>(WebUtil.combineContextPath(WebUtil.HTTP_AUTH_PREFIX, it)).apply {
-                            if (myLoginConfiguration.isGuestLoginAllowed) {
-                                this.add(WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, it))
-                            }
-                        }
+                    it.urlPaths.map {
+                        WebUtil.combineContextPath(prefix, it)
                     }
                 }.map {
                     DataItem(uriBuilder.replacePath(it).build().toString(), null)
