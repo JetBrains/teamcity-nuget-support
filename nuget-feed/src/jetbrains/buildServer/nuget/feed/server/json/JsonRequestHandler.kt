@@ -5,8 +5,24 @@ import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-open class JsonRequestHandler : NuGetFeedHandler {
+open class JsonRequestHandler(serviceIndexHandler: JsonServiceIndexHandler) : NuGetFeedHandler {
+    private val myHandlers = HashMap<String, NuGetFeedHandler>()
+
+    init {
+        myHandlers["index.json"] = serviceIndexHandler
+    }
+
     override fun handleRequest(feedData: NuGetFeedData, request: HttpServletRequest, response: HttpServletResponse) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val serviceName = request.pathInfo.splitToSequence("/").firstOrNull { it.isNotEmpty() }
+        if (serviceName == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid request path")
+            return
+        }
+        val handler = myHandlers[serviceName]
+        if (handler == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid request path")
+            return
+        }
+        handler.handleRequest(feedData, request, response)
     }
 }

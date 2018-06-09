@@ -1,0 +1,98 @@
+{
+  "version": "3.0.0",
+  "resources": [{
+    "@id": "%1$s/autocomplete",
+    "@type": "SearchAutocompleteService",
+    "comment": "Autocomplete endpoint of NuGet Search service."
+  }, {
+    "@id": "%1$s/autocomplete",
+    "@type": "SearchAutocompleteService/3.0.0-beta",
+    "comment": "Autocomplete endpoint of NuGet Search service."
+  }, {
+    "@id": "%1$s/autocomplete",
+    "@type": "SearchAutocompleteService/3.0.0-rc",
+    "comment": "Autocomplete endpoint of NuGet Search service."
+  }, {
+    "@id": "%1$s/query",
+    "@type": "SearchQueryService",
+    "comment": "Query endpoint of NuGet Search service."
+  }, {
+    "@id": "%1$s/query",
+    "@type": "SearchQueryService/3.0.0-beta",
+    "comment": "Query endpoint of NuGet Search service."
+  }, {
+    "@id": "%1$s/query",
+    "@type": "SearchQueryService/3.0.0-rc",
+    "comment": "Query endpoint of NuGet Search service."
+  }, {
+    "@id": "%1$s/registration1/",
+    "@type": "RegistrationsBaseUrl",
+    "comment": "Base URL of Azure storage where NuGet package registration info is stored."
+  }, {
+    "@id": "%1$s/registration1/",
+    "@type": "RegistrationsBaseUrl/3.0.0-beta",
+    "comment": "Base URL of Azure storage where NuGet package registration info is stored."
+  }, {
+    "@id": "%1$s/registration1/",
+    "@type": "RegistrationsBaseUrl/3.0.0-rc",
+    "comment": "Base URL of Azure storage where NuGet package registration info is stored."
+  }, {
+    "@id": "%1$s/registration1/",
+    "@type": "RegistrationsBaseUrl/3.4.0",
+    "comment": "Base URL of Azure storage where NuGet package registration info is stored in GZIP format."
+  }, {
+    "@id": "%1$s/registration1/",
+    "@type": "RegistrationsBaseUrl/3.6.0",
+    "comment": "Base URL of Azure storage where NuGet package registration info is stored in GZIP format. This base URL includes SemVer 2.0.0 packages."
+  }, {
+    "@id": "%1$s/registration1/",
+    "@type": "RegistrationsBaseUrl/Versioned",
+    "clientVersion": "4.3.0-alpha",
+    "comment": "Base URL of Azure storage where NuGet package registration info is stored in GZIP format. This base URL includes SemVer 2.0.0 packages."
+  }, {
+    "@id": "%1$s/registration1/{id-lower}/index.json",
+    "@type": "PackageDisplayMetadataUriTemplate",
+    "comment": "URI template used by NuGet Client to construct display metadata for Packages using ID."
+  }, {
+    "@id": "%1$s/registration1/{id-lower}/index.json",
+    "@type": "PackageDisplayMetadataUriTemplate/3.0.0-beta",
+    "comment": "URI template used by NuGet Client to construct display metadata for Packages using ID."
+  }, {
+    "@id": "%1$s/registration1/{id-lower}/index.json",
+    "@type": "PackageDisplayMetadataUriTemplate/3.0.0-rc",
+    "comment": "URI template used by NuGet Client to construct display metadata for Packages using ID."
+  }, {
+    "@id": "%1$s/registration1/{id-lower}/{version-lower}.json",
+    "@type": "PackageVersionDisplayMetadataUriTemplate",
+    "comment": "URI template used by NuGet Client to construct display metadata for Packages using ID, Version."
+  }, {
+    "@id": "%1$s/registration1/{id-lower}/{version-lower}.json",
+    "@type": "PackageVersionDisplayMetadataUriTemplate/3.0.0-beta",
+    "comment": "URI template used by NuGet Client to construct display metadata for Packages using ID, Version."
+  }, {
+    "@id": "%1$s/registration1/{id-lower}/{version-lower}.json",
+    "@type": "PackageVersionDisplayMetadataUriTemplate/3.0.0-rc",
+    "comment": "URI template used by NuGet Client to construct display metadata for Packages using ID, Version."
+  }, {
+    "@id": "%1$s/flatcontainer/",
+    "@type": "PackageBaseAddress/3.0.0",
+    "comment": "Base URL of Azure storage where NuGet package registration info for DNX is stored."
+  }, {
+    "@id": "%2$s",
+    "@type": "LegacyGallery",
+    "comment": "Legacy gallery using the V2 protocol."
+  }, {
+    "@id": "%2$s",
+    "@type": "LegacyGallery/2.0.0",
+    "comment": "Legacy gallery using the V2 protocol."
+  }, {
+    "@id": "%2$s/package",
+    "@type": "PackagePublish/2.0.0",
+    "comment": "Legacy gallery publish endpoint using the V2 protocol."
+  }
+  ],
+  "@context": {
+    "@vocab": "http://schema.nuget.org/schema#",
+    "comment": "http://www.w3.org/2000/01/rdf-schema#comment"
+  }
+}
