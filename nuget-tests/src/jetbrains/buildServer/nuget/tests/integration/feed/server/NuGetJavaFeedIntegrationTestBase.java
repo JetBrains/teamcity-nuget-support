@@ -107,6 +107,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
     final ResponseCacheReset cacheReset = mockery.mock(ResponseCacheReset.class);
     final ServerSettings serverSettings = mockery.mock(ServerSettings.class);
+    final JsonRequestHandler jsonRequestHandler = mockery.mock(JsonRequestHandler.class);
 
     m.checking(new Expectations() {{
       allowing(myIndexProxy).getAll();
@@ -161,7 +162,6 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myFeedFactory, responseCache);
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(myFeedFactory, responseCache);
-    final JsonRequestHandler jsonRequestHandler = new JsonRequestHandler();
     final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, myMetadataStorage,
             packageAnalyzer, cacheReset, serverSettings);
     myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);

@@ -48,6 +48,7 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonRequestHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonServiceIndexHandler"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonSearchQueryHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.PermissionChecker"/>
