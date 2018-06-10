@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class JsonPackage(
         @SerializedName("@id")
-        val packageUrl: String,
+        val atId: String,
         @SerializedName("@type")
-        val packageType: String,
+        val atType: String,
         val id: String,
         val version: String,
         val versions: List<JsonPackageVersion>,

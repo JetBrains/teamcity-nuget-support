@@ -77,6 +77,6 @@ class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetF
     }
 
     companion object {
-        private val gson: Gson = GsonBuilder().create()
+        private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
     }
 }
