@@ -6,6 +6,7 @@ import jetbrains.buildServer.nuget.common.PackageLoadException
 import jetbrains.buildServer.nuget.common.index.*
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
 import jetbrains.buildServer.serverSide.SBuild
+import jetbrains.buildServer.serverSide.ServerResponsibility
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode
 import jetbrains.buildServer.serverSide.impl.LogUtil
@@ -14,7 +15,8 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnalyzer) : NuGetBuildMetadataProvider {
+class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnalyzer,
+                                     private val myServerResponsibility: ServerResponsibility) : NuGetBuildMetadataProvider {
 
     override fun getPackagesMetadata(build: SBuild): Collection<Map<String, String>> {
         readBuildMetadata(build)?.let {
@@ -22,10 +24,13 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
         }
 
         val metadata = indexBuildPackages(build)
-        try {
-            writeBuildMetadata(build, metadata)
-        } catch (e: Throwable) {
-            LOG.warnAndDebugDetails("Failed to write packages list for build ${LogUtil.describe(build)}", e)
+
+        if (myServerResponsibility.isResponsibleForBuild(build)) {
+            try {
+                writeBuildMetadata(build, metadata)
+            } catch (e: Throwable) {
+                LOG.warnAndDebugDetails("Failed to write packages list for build ${LogUtil.describe(build)}", e)
+            }
         }
 
         return metadata
@@ -83,7 +88,9 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
                 LOG.warnAndDebugDetails("Failed to read NuGet packages list for build ${LogUtil.describe(build)}", e)
             }
 
-            FileUtil.delete(File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH))
+            if (myServerResponsibility.isResponsibleForBuild(build)) {
+                FileUtil.delete(File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH))
+            }
         }
         return null
     }
