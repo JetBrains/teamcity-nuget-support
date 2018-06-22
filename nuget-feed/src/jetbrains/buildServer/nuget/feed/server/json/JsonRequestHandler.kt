@@ -6,12 +6,14 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 open class JsonRequestHandler(serviceIndexHandler: JsonServiceIndexHandler,
-                              searchQueryHandler: JsonSearchQueryHandler) : NuGetFeedHandler {
+                              searchQueryHandler: JsonSearchQueryHandler,
+                              packageMetadata: JsonRegistrationHandler) : NuGetFeedHandler {
     private val myHandlers = HashMap<String, NuGetFeedHandler>()
 
     init {
         myHandlers["index.json"] = serviceIndexHandler
         myHandlers["query"] = searchQueryHandler
+        myHandlers["registration1"] = packageMetadata
     }
 
     override fun handleRequest(feedData: NuGetFeedData, request: HttpServletRequest, response: HttpServletResponse) {

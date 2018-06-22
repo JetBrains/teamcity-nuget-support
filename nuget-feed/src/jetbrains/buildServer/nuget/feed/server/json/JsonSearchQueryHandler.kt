@@ -39,19 +39,20 @@ class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetF
             results[it]?.let { packages ->
                 val entry = packages.first()
                 val packageUrl = "$rootUrl${request.servletPath}/registration1/${it.toLowerCase()}/"
-                val versions = packages.drop(1).map {
-                    val version = it.packageInfo.version.toLowerCase()
+                val versions = packages.map {
+                    val version = it.getVersion()
                     JsonPackageVersion(
                             "$packageUrl/$version.json",
                             version,
                             0
                     )
                 }
+                val version = entry.getVersion()
                 data.add(JsonPackage(
-                        packageUrl + "index.json",
+                        "$packageUrl$version.json",
                         "Package",
                         it,
-                        entry.packageInfo.version,
+                        version,
                         versions,
                         entry.attributes[NuGetPackageAttributes.DESCRIPTION],
                         entry.attributes[NuGetPackageAttributes.AUTHORS],
