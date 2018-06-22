@@ -58,6 +58,7 @@ dependencies {
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-impl.jar")
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-tools.jar")
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web.jar")
 }
 
 serverPlugin.version = null
