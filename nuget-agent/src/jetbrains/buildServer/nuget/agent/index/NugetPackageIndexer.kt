@@ -33,8 +33,7 @@ class NugetPackageIndexer(dispatcher: EventDispatcher<AgentLifeCycleListener>,
         dispatcher.addListener(object : AgentLifeCycleAdapter() {
             override fun buildStarted(runningBuild: AgentRunningBuild) {
                 myPackages.clear()
-                val parameters = runningBuild.sharedBuildParameters.allParameters
-                myIndexingEnabled = parameters[NuGetServerConstants.FEED_AGENT_SIDE_INDEXING]?.toBoolean() ?: false
+                myIndexingEnabled = runningBuild.sharedConfigParameters[NuGetServerConstants.FEED_AGENT_SIDE_INDEXING]?.toBoolean() ?: false
                 myBuildType = runningBuild.buildTypeId
                 myLogger = runningBuild.buildLogger
             }
@@ -70,7 +69,6 @@ class NugetPackageIndexer(dispatcher: EventDispatcher<AgentLifeCycleListener>,
     private fun readMetadata(file: File, packagePath: String): MutableMap<String, String> {
         val metadata = file.inputStream().use {
             packageAnalyzer.analyzePackage(it)
-
         }
 
         file.inputStream().use {
