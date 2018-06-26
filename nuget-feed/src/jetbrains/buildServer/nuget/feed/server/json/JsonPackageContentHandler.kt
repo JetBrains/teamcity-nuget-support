@@ -18,19 +18,24 @@ class JsonPackageContentHandler(private val feedFactory: NuGetFeedFactory) : NuG
             return
         }
 
-        val (id, version, file) = matchResult.destructured
+        val (id, version, _, file, extension) = matchResult.destructured
         val feed = feedFactory.createFeed(feedData)
         if (version == "index.json" && file.isEmpty()) {
             getVersions(feed, response, id)
-        } else if (file == "/$id.$version.nupkg") {
-            getContent(feed, request, response, id, version)
+        } else if (file == "/$id.$version.") {
+            getContent(feed, request, response, id, version, extension)
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Requested resource not found")
             return
         }
     }
 
-    private fun getContent(feed: NuGetFeed, request: HttpServletRequest, response: HttpServletResponse, id: String, version: String) {
+    private fun getContent(feed: NuGetFeed,
+                           request: HttpServletRequest,
+                           response: HttpServletResponse,
+                           id: String,
+                           version: String,
+                           extension: String) {
         val results = feed.find(mapOf(
                 NuGetPackageAttributes.ID to id,
                 NuGetPackageAttributes.VERSION to version
@@ -43,7 +48,19 @@ class JsonPackageContentHandler(private val feedFactory: NuGetFeedFactory) : NuG
 
         val entry = results.first()
         val rootUrl = WebUtil.getRootUrl(request)
-        response.sendRedirect("$rootUrl${entry.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}")
+        val downloadUrl = entry.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]
+        val redirectUrl = when(extension) {
+            "nupkg" -> "$rootUrl$downloadUrl"
+            "nuspec" -> {
+                val packageId = entry.attributes[NuGetPackageAttributes.ID]
+                "$rootUrl$downloadUrl!/$packageId.nuspec"
+            }
+            else -> {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unsupported format $extension")
+                return
+            }
+        }
+        response.sendRedirect(redirectUrl)
     }
 
     private fun getVersions(feed: NuGetFeed, response: HttpServletResponse, id: String) {
@@ -58,6 +75,6 @@ class JsonPackageContentHandler(private val feedFactory: NuGetFeedFactory) : NuG
     }
 
     companion object {
-        private val FLAT_CONTAINER_URL = Regex("\\/flatcontainer\\/([^\\/]+)\\/([^\\/]+)(\\/[^\\/]+\\.nupkg)?")
+        private val FLAT_CONTAINER_URL = Regex("\\/flatcontainer\\/([^\\/]+)\\/([^\\/]+)((\\/[^\\/]+\\.)(nupkg|nuspec))?")
     }
 }
