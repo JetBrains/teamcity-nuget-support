@@ -50,6 +50,7 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonServiceIndexHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonSearchQueryHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonRegistrationHandler"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonPackageContentHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.PermissionChecker"/>

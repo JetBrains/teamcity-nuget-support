@@ -76,7 +76,7 @@
   }, {
     "@id": "%1$s/flatcontainer/",
     "@type": "PackageBaseAddress/3.0.0",
-    "comment": "Base URL of Azure storage where NuGet package registration info for DNX is stored."
+    "comment": "Base URL of where NuGet packages are stored, in the format %1$s/flatcontainer/{id-lower}/{version-lower}/{id-lower}.{version-lower}.nupkg"
   }, {
     "@id": "%2$s",
     "@type": "LegacyGallery",
