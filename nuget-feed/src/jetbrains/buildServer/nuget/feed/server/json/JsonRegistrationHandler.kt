@@ -3,6 +3,7 @@ package jetbrains.buildServer.nuget.feed.server.json
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.stream.JsonWriter
+import jetbrains.buildServer.nuget.common.index.PackageConstants
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
@@ -13,86 +14,97 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGetFeedHandler {
-  override fun handleRequest(feedData: NuGetFeedData, request: HttpServletRequest, response: HttpServletResponse) {
-    REGISTRATION_URL.find(request.pathInfo)?.let {
-      val (id, resource) = it.destructured
-      val feed = feedFactory.createFeed(feedData)
-      if (resource == "index") {
-        getAllRegistrations(feed, request, response, id)
-      } else {
-        getRegistration(feed, request, response, id, resource)
-      }
-    }
-  }
-
-  private fun getRegistration(feed: NuGetFeed, request: HttpServletRequest, response: HttpServletResponse, id: String, version: String) {
-    val results = feed.find(mapOf(
-      NuGetPackageAttributes.ID to id,
-      NuGetPackageAttributes.VERSION to version
-    ))
-
-    if (results.isEmpty()) {
-      response.sendError(HttpServletResponse.SC_NOT_FOUND, "Package $id:$version not found")
-      return
+    override fun handleRequest(feedData: NuGetFeedData, request: HttpServletRequest, response: HttpServletResponse) {
+        val matchResult = REGISTRATION_URL.find(request.pathInfo)
+        if (matchResult != null) {
+            val (id, resource) = matchResult.destructured
+            val feed = feedFactory.createFeed(feedData)
+            if (resource == "index") {
+                getAllRegistrations(feed, request, response, id)
+            } else {
+                getRegistration(feed, request, response, id, resource)
+            }
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Requested resource not found")
+        }
     }
 
-    val entry = results.first()
-    val rootUrl = WebUtil.getRootUrl(request)
-    val packageResponse = JsonRegistrationPackageResponse(
-      rootUrl + request.pathInfo,
-      listOf("Package","catalog:Permalink"),
-      rootUrl,
-      entry
-    )
+    private fun getRegistration(feed: NuGetFeed, request: HttpServletRequest, response: HttpServletResponse, id: String, version: String) {
+        val results = feed.find(mapOf(
+                NuGetPackageAttributes.ID to id,
+                NuGetPackageAttributes.VERSION to version
+        ))
 
-    response.status = HttpServletResponse.SC_OK
-    response.contentType = "application/json;charset=UTF-8"
-    JsonWriter(response.writer).use {
-      gson.toJson(packageResponse, JsonRegistrationPackageResponse::class.java, it)
+        if (results.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Package $id:$version not found")
+            return
+        }
+
+        val entry = results.first()
+        val rootUrl = WebUtil.getRootUrl(request)
+        val downloadUrl = "$rootUrl${entry.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}"
+        val packageResponse = entry.toRegistrationEntry(
+                "$rootUrl${request.servletPath}${request.pathInfo}",
+                listOf("Package", "catalog:Permalink"),
+                downloadUrl
+        )
+
+        response.status = HttpServletResponse.SC_OK
+        response.contentType = "application/json;charset=UTF-8"
+        JsonWriter(response.writer).use {
+            gson.toJson(packageResponse, JsonRegistrationPackageResponse::class.java, it)
+        }
     }
-  }
 
-  private fun getAllRegistrations(feed: NuGetFeed, request: HttpServletRequest, response: HttpServletResponse, id: String) {
-    val results = feed.findPackagesById(id)
-    val rootUrl = WebUtil.getRootUrl(request)
-    val items = results.map {
-      val registrationUrl = "$rootUrl/registration1/$id/${it.getVersion()}.json"
-      JsonRegistrationPackage(
-        registrationUrl,
-        "Package",
-        JsonRegistrationPackageResponse(
-          registrationUrl,
-          listOf("PackageDetails"),
-          registrationUrl,
-          it
-        ),
-        registrationUrl,
-        registrationUrl
-      )
+    private fun getAllRegistrations(feed: NuGetFeed, request: HttpServletRequest, response: HttpServletResponse, id: String) {
+        val results = feed.findPackagesById(id)
+        if (results.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Package $id not found")
+            return
+        }
+
+        val rootUrl = WebUtil.getRootUrl(request)
+        val items = results.map {
+            val registrationUrl = "$rootUrl${request.servletPath}/registration1/$id/${it.getVersion()}.json"
+            val downloadUrl = "$rootUrl${it.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}"
+            JsonRegistrationPackage(
+                    registrationUrl,
+                    "Package",
+                    it.toRegistrationEntry(
+                            registrationUrl,
+                            listOf("PackageDetails"),
+                            registrationUrl
+                    ),
+                    downloadUrl,
+                    registrationUrl
+            )
+        }
+        val registrationPage = JsonRegistrationPage(
+                "$rootUrl${request.servletPath}${request.pathInfo}",
+                results.size,
+                lower = results.first().getVersion(),
+                upper = results.last().getVersion(),
+                items = items
+        )
+        val registration = JsonRegistrationResponse(
+                "$rootUrl${request.servletPath}${request.pathInfo}",
+                listOf("catalog:CatalogRoot", "PackageRegistration", "catalog:Permalink"),
+                1,
+                listOf(registrationPage)
+        )
+
+        response.status = HttpServletResponse.SC_OK
+        response.contentType = "application/json;charset=UTF-8"
+        JsonWriter(response.writer).use {
+            gson.toJson(registration, JsonRegistrationResponse::class.java, it)
+        }
     }
-    val registrationPage = JsonRegistrationPage(
-      rootUrl + request.pathInfo,
-      results.size,
-      lower = results.first().getVersion(),
-      upper = results.last().getVersion(),
-      items = items
-    )
-    val registration = JsonRegistrationResponse(
-      rootUrl + request.pathInfo,
-      listOf("catalog:CatalogRoot","PackageRegistration","catalog:Permalink"),
-      1,
-      listOf(registrationPage)
-    )
 
-    response.status = HttpServletResponse.SC_OK
-    response.contentType = "application/json;charset=UTF-8"
-    JsonWriter(response.writer).use {
-      gson.toJson(registration, JsonRegistrationResponse::class.java, it)
+    companion object {
+        private val REGISTRATION_URL = Regex("\\/registration1\\/([^\\/]+)\\/([^\\/]+)\\.json")
+        private val gson: Gson = GsonBuilder()
+                .setPrettyPrinting()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                .create()
     }
-  }
-
-  companion object {
-    private val REGISTRATION_URL = Regex("\\/registration1\\/([^\\/]+)\\/([^\\/]+)\\.json")
-    private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
-  }
 }
