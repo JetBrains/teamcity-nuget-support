@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonWriter
 import jetbrains.buildServer.nuget.common.index.ODataDataFormat
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
+import java.io.OutputStreamWriter
 import java.util.*
 import javax.servlet.http.HttpServletResponse
 
@@ -82,8 +83,8 @@ private fun NuGetIndexEntry.getDependencyGroups(registrationUrl: String): List<J
 
 inline fun <reified T> HttpServletResponse.writeJson(obj: T) {
     this.status = HttpServletResponse.SC_OK
-    this.contentType = "application/json;charset=UTF-8"
-    JsonWriter(this.writer).use {
+    this.contentType = "application/json"
+    JsonWriter(OutputStreamWriter(this.outputStream, "UTF-8")).use {
         JsonExtensions.gson.toJson(obj, T::class.java, it)
     }
 }
