@@ -70,7 +70,7 @@ private fun NuGetIndexEntry.getDependencyGroups(registrationUrl: String): List<J
         JsonPackageDependencyGroup(
                 "$registrationUrl#dependencygroup/${it.key.toLowerCase()}",
                 "PackageDependencyGroup",
-                it.key,
+                if (it.key.isEmpty()) null else it.key,
                 it.value
         )
     }

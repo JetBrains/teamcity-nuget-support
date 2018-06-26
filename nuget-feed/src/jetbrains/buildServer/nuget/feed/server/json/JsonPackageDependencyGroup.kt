@@ -7,6 +7,6 @@ data class JsonPackageDependencyGroup(
         val atId: String,
         @SerializedName("@type")
         val atType: String,
-        val targetFramework: String,
+        val targetFramework: String?,
         val dependencies: List<JsonPackageDependency>
 )
