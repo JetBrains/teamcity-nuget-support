@@ -1,8 +1,5 @@
 package jetbrains.buildServer.nuget.feed.server.json
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.stream.JsonWriter
 import jetbrains.buildServer.nuget.common.index.PackageConstants
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
@@ -57,16 +54,10 @@ class JsonPackageContentHandler(private val feedFactory: NuGetFeedFactory) : NuG
         }
 
         val versions = results.map { it.getVersion() }
-
-        response.status = HttpServletResponse.SC_OK
-        response.contentType = "application/json;charset=UTF-8"
-        JsonWriter(response.writer).use {
-            gson.toJson(JsonPackageVersions(versions), JsonPackageVersions::class.java, it)
-        }
+        response.writeJson(JsonPackageVersions(versions))
     }
 
     companion object {
-        private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
         private val FLAT_CONTAINER_URL = Regex("\\/flatcontainer\\/([^\\/]+)\\/([^\\/]+)(\\/[^\\/]+\\.nupkg)?")
     }
 }

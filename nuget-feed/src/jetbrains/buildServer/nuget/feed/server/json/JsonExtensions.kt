@@ -1,9 +1,13 @@
 package jetbrains.buildServer.nuget.feed.server.json
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.stream.JsonWriter
 import jetbrains.buildServer.nuget.common.index.ODataDataFormat
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
 import java.util.*
+import javax.servlet.http.HttpServletResponse
 
 internal fun NuGetIndexEntry.getVersion(): String {
     return this.attributes[NuGetPackageAttributes.NORMALIZED_VERSION]!!.toLowerCase()
@@ -75,3 +79,20 @@ private fun NuGetIndexEntry.getDependencyGroups(registrationUrl: String): List<J
         )
     }
 }
+
+inline fun <reified T> HttpServletResponse.writeJson(obj: T) {
+    this.status = HttpServletResponse.SC_OK
+    this.contentType = "application/json;charset=UTF-8"
+    JsonWriter(this.writer).use {
+        JsonExtensions.gson.toJson(obj, T::class.java, it)
+    }
+}
+
+object JsonExtensions {
+    val gson: Gson = GsonBuilder()
+            .setPrettyPrinting()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            .create()
+}
+
+

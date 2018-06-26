@@ -1,8 +1,5 @@
 package jetbrains.buildServer.nuget.feed.server.json
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.stream.JsonWriter
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
@@ -70,14 +67,6 @@ class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetF
             }
         }
 
-        response.status = HttpServletResponse.SC_OK
-        response.contentType = "application/json;charset=UTF-8"
-        JsonWriter(response.writer).use {
-            gson.toJson(JsonSearchResponse(totalHits, data), JsonSearchResponse::class.java, it)
-        }
-    }
-
-    companion object {
-        private val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+        response.writeJson(JsonSearchResponse(totalHits, data))
     }
 }

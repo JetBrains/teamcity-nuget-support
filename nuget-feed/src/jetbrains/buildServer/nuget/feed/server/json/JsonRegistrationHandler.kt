@@ -1,8 +1,5 @@
 package jetbrains.buildServer.nuget.feed.server.json
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.stream.JsonWriter
 import jetbrains.buildServer.nuget.common.index.PackageConstants
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
@@ -49,11 +46,7 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
                 downloadUrl
         )
 
-        response.status = HttpServletResponse.SC_OK
-        response.contentType = "application/json;charset=UTF-8"
-        JsonWriter(response.writer).use {
-            gson.toJson(packageResponse, JsonRegistrationPackageResponse::class.java, it)
-        }
+        response.writeJson(packageResponse)
     }
 
     private fun getAllRegistrations(feed: NuGetFeed, request: HttpServletRequest, response: HttpServletResponse, id: String) {
@@ -93,18 +86,10 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
                 listOf(registrationPage)
         )
 
-        response.status = HttpServletResponse.SC_OK
-        response.contentType = "application/json;charset=UTF-8"
-        JsonWriter(response.writer).use {
-            gson.toJson(registration, JsonRegistrationResponse::class.java, it)
-        }
+        response.writeJson(registration)
     }
 
     companion object {
         private val REGISTRATION_URL = Regex("\\/registration1\\/([^\\/]+)\\/([^\\/]+)\\.json")
-        private val gson: Gson = GsonBuilder()
-                .setPrettyPrinting()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                .create()
     }
 }
