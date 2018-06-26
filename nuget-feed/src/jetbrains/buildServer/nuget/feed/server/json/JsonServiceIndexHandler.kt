@@ -8,6 +8,11 @@ import javax.servlet.http.HttpServletResponse
 
 class JsonServiceIndexHandler : NuGetFeedHandler {
     override fun handleRequest(feedData: NuGetFeedData, request: HttpServletRequest, response: HttpServletResponse) {
+        if (request.pathInfo != "/index.json") {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Requested resource not found")
+            return
+        }
+
         val feedPathV3 = request.servletPath
         val feedPathV2 = feedPathV3.replaceAfterLast("/", "v2")
         val rootUrl = WebUtil.getRootUrl(request)

@@ -61,7 +61,11 @@ public class NuGetUtils {
   public static String getProjectFeedPath(@NotNull final String projectId,
                                           @NotNull final String name,
                                           @NotNull final NuGetAPIVersion version) {
-    return String.format(NuGetServerSettings.PROJECT_PATH + "/%s/%s/%s", projectId, name, version.name().toLowerCase());
+    final String apiPath = String.format(NuGetServerSettings.PROJECT_PATH + "/%s/%s/%s", projectId, name, version.name().toLowerCase());
+    if (version == NuGetAPIVersion.V3) {
+      return apiPath + "/index.json";
+    }
+    return apiPath;
   }
 
   /**
