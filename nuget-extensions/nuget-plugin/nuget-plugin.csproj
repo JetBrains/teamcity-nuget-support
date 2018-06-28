@@ -37,4 +37,10 @@
   <ItemGroup>
     <Reference Include="System" />
   </ItemGroup>
+  <PropertyGroup>
+    <ApplicationIcon>..\..\teamCity.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\bin\credential-plugin\</OutputPath>
+  </PropertyGroup>
 </Project>

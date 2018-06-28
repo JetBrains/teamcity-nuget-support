@@ -1,5 +1,5 @@
 plugins {
-	id 'com.ullink.msbuild' version '2.16'
+	id 'com.ullink.msbuild' version '2.19'
 	id 'com.ullink.nuget' version '2.15'
 	id 'com.ullink.nunit' version '1.10'
 }
