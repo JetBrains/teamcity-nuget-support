@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp1.0;net46</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>CredentialProvider.TeamCity</AssemblyName>
+    <RootNamespace>JetBrains.TeamCity.NuGet</RootNamespace>
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="NuGet.Protocol" Version="4.8.0-preview4.5307" />
+    <Compile Include="..\nuget-commands\src\Data\NuGetSource.cs">
+      <Link>Data\NuGetSource.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\NuGetSources.cs">
+      <Link>Data\NuGetSources.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\INuGetSource.cs">
+      <Link>Data\INuGetSource.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\Data\INuGetSources.cs">
+      <Link>Data\INuGetSources.cs</Link>
+    </Compile>
+    <Compile Include="..\nuget-commands\src\XmlSerializerHelper.cs">
+      <Link>Data\XmlSerializerHelper.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.0" />
+    <PackageReference Include="System.Xml.XmlDocument" Version="4.3.0" />
+    <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+</Project>

@@ -53,7 +53,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
   public class NuGetSourceComparer : IEqualityComparer<INuGetSource>
   {
     public static readonly IEqualityComparer<INuGetSource> Comparer = new NuGetSourceComparer();
-    private readonly IEqualityComparer<String> SourceComparer = StringComparer.InvariantCultureIgnoreCase;
+    private readonly IEqualityComparer<String> SourceComparer = StringComparer.OrdinalIgnoreCase;
 
     public bool Equals(INuGetSource x, INuGetSource y)
     {
