@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
@@ -26,14 +23,11 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
       _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
     }
 
-    public override async Task<GetAuthenticationCredentialsResponse> HandleRequestAsync(GetAuthenticationCredentialsRequest request)
+    public override GetAuthenticationCredentialsResponse HandleRequest(GetAuthenticationCredentialsRequest request)
     {
       try
       {
-        var response = await _credentialProvider
-          .HandleRequestAsync(request, CancellationToken)
-          .ConfigureAwait(continueOnCapturedContext: false);
-
+        var response = _credentialProvider.HandleRequest(request);
         if (response != null && response.ResponseCode == MessageResponseCode.Success)
         {
           return response;

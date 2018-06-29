@@ -21,8 +21,7 @@ namespace JetBrains.TeamCity.NuGet
     /// Handles a <see cref="GetAuthenticationCredentialsRequest"/>.
     /// </summary>
     /// <param name="request">A <see cref="GetAuthenticationCredentialsRequest"/> object containing details about the request.</param>
-    /// <param name="cancellationToken">A <see cref="CancellationToken"/> used for signaling cancellation.</param>
     /// <returns>A <see cref="GetAuthenticationCredentialsResponse"/> object containg details about a response.</returns>
-    Task<GetAuthenticationCredentialsResponse> HandleRequestAsync(GetAuthenticationCredentialsRequest request, CancellationToken cancellationToken);
+    GetAuthenticationCredentialsResponse HandleRequest(GetAuthenticationCredentialsRequest request);
   }
 }

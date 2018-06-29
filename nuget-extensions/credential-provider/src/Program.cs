@@ -48,14 +48,7 @@ namespace JetBrains.TeamCity.NuGet.CredentialProvider
           }
           else
           {
-            var targetUri = request.Uri.AbsoluteUri.TrimEnd('/');
-            var targetSource = sources.FirstOrDefault(source =>
-                                                      {
-                                                        var sourceUri = source.Source.TrimEnd('/');
-                                                        return string.Equals(sourceUri, targetUri,
-                                                          StringComparison.OrdinalIgnoreCase);
-                                                      });
-
+            var targetSource = sources.FirstOrDefault(x => request.Uri.AbsoluteUri.StartsWith(x.Source, StringComparison.OrdinalIgnoreCase));
             if (targetSource == null)
             {
               response.Message = "NuGet feed credentials file contains no credentials for URL " + request.Uri;

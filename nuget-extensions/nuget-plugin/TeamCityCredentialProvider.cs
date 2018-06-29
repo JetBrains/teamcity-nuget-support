@@ -69,25 +69,25 @@ namespace JetBrains.TeamCity.NuGet
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public bool CanProvideCredentials(Uri uri)
     {
-      return NuGetSources.Any(x => x.Source == uri.AbsoluteUri);
+      return NuGetSources.Any(x => uri.AbsoluteUri.StartsWith(x.Source, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
-    public Task<GetAuthenticationCredentialsResponse> HandleRequestAsync(GetAuthenticationCredentialsRequest request,
-      CancellationToken cancellationToken)
+    public GetAuthenticationCredentialsResponse HandleRequest(GetAuthenticationCredentialsRequest request)
     {
-      var source = NuGetSources.Where(x => x.HasCredentials).FirstOrDefault(x => x.Source == request.Uri.AbsoluteUri);
+      var source = NuGetSources.Where(x => x.HasCredentials)
+        .FirstOrDefault(x => request.Uri.AbsoluteUri.StartsWith(x.Source, StringComparison.OrdinalIgnoreCase));
       if (source != null)
       {
-        return Task.FromResult(new GetAuthenticationCredentialsResponse(
+        return new GetAuthenticationCredentialsResponse(
           source.Username,
           source.Password,
           null,
           new List<string> {"basic"},
-          MessageResponseCode.Success));
+          MessageResponseCode.Success);
       }
 
-      return Task.FromResult(NotFoundResponse);
+      return NotFoundResponse;
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>

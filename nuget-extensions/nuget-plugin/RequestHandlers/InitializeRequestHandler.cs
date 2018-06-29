@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Threading.Tasks;
 using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
@@ -18,9 +17,9 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     {
     }
 
-    public override Task<InitializeResponse> HandleRequestAsync(InitializeRequest request)
+    public override InitializeResponse HandleRequest(InitializeRequest request)
     {
-      return Task.FromResult(new InitializeResponse(MessageResponseCode.Success));
+      return new InitializeResponse(MessageResponseCode.Success);
     }
   }
 }

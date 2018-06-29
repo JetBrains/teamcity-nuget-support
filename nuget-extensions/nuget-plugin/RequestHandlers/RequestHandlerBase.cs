@@ -14,30 +14,19 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
       Logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public virtual CancellationToken CancellationToken { get; private set; } = CancellationToken.None;
-
-    public IConnection Connection { get; private set; }
-
     public TraceSource Logger { get; }
 
-    public async Task HandleResponseAsync(IConnection connection, Message message, IResponseHandler responseHandler, CancellationToken cancellationToken)
+    public CancellationToken CancellationToken { get; }
+
+    public Task HandleResponseAsync(IConnection connection, Message message, IResponseHandler responseHandler,
+      CancellationToken cancellationToken)
     {
-      Connection = connection;
-
-      CancellationToken = cancellationToken;
-
       TRequest request = MessageUtilities.DeserializePayload<TRequest>(message);
+      TResponse response = HandleRequest(request);
 
-      Logger.Verbose($"Handling request '{message.Method}' - {message.Payload.ToString(Formatting.None)}'");
-
-      TResponse response = await HandleRequestAsync(request).ConfigureAwait(continueOnCapturedContext: false);
-
-      Logger.Verbose($"Sending response: '{JsonConvert.SerializeObject(response, new JsonSerializerSettings {Formatting = Formatting.None})}'");
-
-      await responseHandler.SendResponseAsync(message, response, cancellationToken)
-        .ConfigureAwait(continueOnCapturedContext: false);
+      return responseHandler.SendResponseAsync(message, response, cancellationToken);
     }
 
-    public abstract Task<TResponse> HandleRequestAsync(TRequest request);
+    public abstract TResponse HandleRequest(TRequest request);
   }
 }

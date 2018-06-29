@@ -33,7 +33,11 @@ namespace JetBrains.TeamCity.NuGet
                               },
                               {
                                 MessageMethod.GetOperationClaims,
-                                new GetOperationClaimsRequestHandler(Logger)
+                                new GetOperationClaimsRequestHandler(Logger, credentialProvider)
+                              },
+                              {
+                                MessageMethod.SetLogLevel,
+                                new SetLogLevelHandler(Logger)
                               },
                               {
                                 MessageMethod.Initialize, 
@@ -43,6 +47,8 @@ namespace JetBrains.TeamCity.NuGet
 
       if (String.Equals(args.SingleOrDefault(), "-plugin", StringComparison.OrdinalIgnoreCase))
       {
+        Logger.Info("Running in plug-in mode");
+
         using (IPlugin plugin = await PluginFactory
           .CreateFromCurrentProcessAsync(requestHandlers, ConnectionOptions.CreateDefault(), CancellationToken.None)
           .ConfigureAwait(continueOnCapturedContext: false))
@@ -57,9 +63,16 @@ namespace JetBrains.TeamCity.NuGet
       if (requestHandlers.TryGet(MessageMethod.GetAuthenticationCredentials, out IRequestHandler requestHandler) &&
           requestHandler is GetAuthenticationCredentialsRequestHandler getAuthenticationCredentialsRequestHandler)
       {
+        Logger.Info("Running in stand-alone mode");
+
+        if (args.Length == 0)
+        {
+          Console.WriteLine("Usage: CredentialProvider.TeamCity.exe <NuGetFeedUrl>");
+          return 1;
+        }
+
         var request = new GetAuthenticationCredentialsRequest(new Uri(args[0]), isRetry: false, isNonInteractive: true);
-        var response = await getAuthenticationCredentialsRequestHandler
-          .HandleRequestAsync(request).ConfigureAwait(continueOnCapturedContext: false);
+        var response = getAuthenticationCredentialsRequestHandler.HandleRequest(request);
 
         Console.WriteLine(response?.Username);
         Console.WriteLine(response?.Password);
@@ -77,14 +90,13 @@ namespace JetBrains.TeamCity.NuGet
 
       plugin.Connection.Faulted += (sender, a) =>
                                    {
-                                     traceSource.Error(
-                                       $"Faulted on message: {a.Message?.Type} {a.Message?.Method} {a.Message?.RequestId}");
+                                     traceSource.Error($"Faulted on message: {a.Message?.Type} {a.Message?.Method} {a.Message?.RequestId}");
                                      traceSource.Error(a.Exception.ToString());
                                    };
 
       plugin.Closed += (sender, a) => semaphore.Release();
 
-      bool complete = await semaphore.WaitAsync(TimeSpan.FromMinutes(1), cancellationToken)
+      bool complete = await semaphore.WaitAsync(TimeSpan.FromDays(1), cancellationToken)
         .ConfigureAwait(continueOnCapturedContext: false);
 
       if (!complete)
