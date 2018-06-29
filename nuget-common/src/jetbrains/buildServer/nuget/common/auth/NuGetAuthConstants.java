@@ -22,4 +22,5 @@ package jetbrains.buildServer.nuget.common.auth;
 public class NuGetAuthConstants {
   public static final String TEAMCITY_NUGET_FEEDS_ENV_VAR = "TEAMCITY_NUGET_FEEDS";
   public static final String NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR = "NUGET_CREDENTIALPROVIDERS_PATH";
+  public static final String NUGET_PLUGIN_PATH_ENV_VAR = "NUGET_PLUGIN_PATHS";
 }

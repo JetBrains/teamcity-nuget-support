@@ -61,19 +61,6 @@ class NuGetServerPropertiesProvider(private val mySettings: NuGetServerSettings,
 
     val properties: MutableMap<String, String>
         get() {
-            val map = HashMap<String, String>()
-            // Add global feed
-            val rootProject = myProjectManager.rootProject
-            val feedData = NuGetFeedData.DEFAULT
-            if (myRepositoryManager.hasRepository(rootProject, PackageConstants.NUGET_PROVIDER_ID, feedData.feedId)) {
-                val feedPath = NuGetUtils.getProjectFeedPath(feedData.projectId, feedData.feedId, NuGetAPIVersion.V2)
-                map[FEED_REF_GUEST_AUTH_GLOBAL] = makeReference(TEAMCITY_SERVER_URL) + combineContextPath(GUEST_AUTH_PREFIX, feedPath)
-                val httpAuthFeedPath = combineContextPath(HTTP_AUTH_PREFIX, feedPath)
-                map[FEED_REF_HTTP_AUTH_GLOBAL] = makeReference(TEAMCITY_SERVER_URL) + httpAuthFeedPath
-                map[FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL] = UriBuilder
-                    .fromUri(myRootUrlHolder.rootUrl)
-                    .replacePath(httpAuthFeedPath).build().toString()
-            }
-            return map
+            return mutableMapOf()
         }
 }

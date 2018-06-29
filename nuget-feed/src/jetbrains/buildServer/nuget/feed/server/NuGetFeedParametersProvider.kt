@@ -48,23 +48,21 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
 
             repositories.forEach {
                 val project = myProjectManager.findProjectById(it.projectId) ?: return
-                NuGetAPIVersion.values().forEach { apiVersion ->
-                    val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, it.name, apiVersion)
-                    val feedSuffix = if (it.name == NuGetFeedData.DEFAULT_FEED_ID) {
-                        "${project.externalId}.$apiVersion"
-                    } else {
-                        "${project.externalId}.${it.name}.$apiVersion"
-                    }
-                    val httpAuthFeedPath = WebUtil.combineContextPath(WebUtil.HTTP_AUTH_PREFIX, feedPath)
-                    context.addSharedParameter(
-                            NuGetServerConstants.FEED_REF_PREFIX + feedSuffix + NuGetServerConstants.FEED_REF_URL_SUFFIX,
-                            ReferencesResolverUtil.makeReference(AgentRuntimeProperties.TEAMCITY_SERVER_URL) + httpAuthFeedPath
-                    )
-                    context.addSharedParameter(
-                            NuGetServerConstants.FEED_REF_PREFIX + feedSuffix + NuGetServerConstants.FEED_REF_PUBLIC_URL_SUFFIX,
-                            UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
-                    )
+                val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, it.name)
+                val feedSuffix = if (it.name == NuGetFeedData.DEFAULT_FEED_ID) {
+                    project.externalId
+                } else {
+                    "${project.externalId}.${it.name}"
                 }
+                val httpAuthFeedPath = WebUtil.combineContextPath(WebUtil.HTTP_AUTH_PREFIX, feedPath)
+                context.addSharedParameter(
+                        NuGetServerConstants.FEED_REF_PREFIX + feedSuffix + NuGetServerConstants.FEED_REF_URL_SUFFIX,
+                        ReferencesResolverUtil.makeReference(AgentRuntimeProperties.TEAMCITY_SERVER_URL) + httpAuthFeedPath
+                )
+                context.addSharedParameter(
+                        NuGetServerConstants.FEED_REF_PREFIX + feedSuffix + NuGetServerConstants.FEED_REF_PUBLIC_URL_SUFFIX,
+                        UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
+                )
             }
         }
     }

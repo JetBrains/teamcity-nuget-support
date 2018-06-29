@@ -69,6 +69,15 @@ public class NuGetUtils {
   }
 
   /**
+   * @return common path for project nuget feeds.
+   */
+  @NotNull
+  public static String getProjectFeedPath(@NotNull final String projectId,
+                                          @NotNull final String name) {
+    return String.format(NuGetServerSettings.PROJECT_PATH + "/%s/%s", projectId, name);
+  }
+
+  /**
    * @return context based path of nuget feed OData service
    */
   @NotNull

@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static jetbrains.buildServer.nuget.common.auth.NuGetAuthConstants.NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR;
+import static jetbrains.buildServer.nuget.common.auth.NuGetAuthConstants.NUGET_PLUGIN_PATH_ENV_VAR;
 import static jetbrains.buildServer.nuget.common.auth.NuGetAuthConstants.TEAMCITY_NUGET_FEEDS_ENV_VAR;
 
 /**
@@ -78,9 +79,14 @@ public class NuGetAuthCommandBuildProcessFactory implements CommandlineBuildProc
     }
 
     final Map<String, String> additionalEnvironment = new HashMap<String, String>(_additionalEnvironment);
+
     final String credentialsProviderPath = myProvider.getCredentialProviderHomeDirectory().getAbsolutePath();
     LOG.debug("Set credentials provider location to " + credentialsProviderPath);
     additionalEnvironment.put(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, credentialsProviderPath);
+
+    final String pluginPaths = myProvider.getNuGetPluginPaths();
+    LOG.debug("Set credentials plugin paths to " + pluginPaths);
+    additionalEnvironment.put(NUGET_PLUGIN_PATH_ENV_VAR, pluginPaths);
 
     if (sources.isEmpty() || hostContext.getConfigParameters().containsKey("teamcity.nuget.disableTeamCityRunner"))  {
       return myFactory.executeCommandLine(

@@ -16,8 +16,6 @@
 
 package jetbrains.buildServer.nuget.common;
 
-import jetbrains.buildServer.agent.Constants;
-
 import java.util.regex.Pattern;
 
 /**
@@ -26,9 +24,6 @@ import java.util.regex.Pattern;
  */
 public class NuGetServerConstants {
   public static final String FEED_REF_PREFIX = "teamcity.nuget.feed.";
-  public static final String FEED_REF_GUEST_AUTH_GLOBAL = FEED_REF_PREFIX + "server";
-  public static final String FEED_REF_HTTP_AUTH_GLOBAL = FEED_REF_PREFIX + "auth.server";
-  public static final String FEED_REF_HTTP_AUTH_PUBLIC_GLOBAL = Constants.SYSTEM_PREFIX + FEED_REF_PREFIX + "auth.serverRootUrlBased.server";
   public static final String FEED_REF_URL_SUFFIX = ".url";
   public static final String FEED_REF_PUBLIC_URL_SUFFIX = ".publicUrl";
 

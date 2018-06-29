@@ -13,9 +13,11 @@ teamcity {
             into('bin') {
                 from (project(':nuget-extensions').file('bin')) {
                     include '**/*JetBrains*'
-                    include '**/*TeamCity*'
+                    include '**/*TeamCity*.exe'
+                    include '**/*TeamCity*.dll'
                     include '**/*Newtonsoft*.dll'
                     include '**/*PowerArgs*.dll'
+                    include '**/NuGet.Protocol.dll'
                 }
             }
 
