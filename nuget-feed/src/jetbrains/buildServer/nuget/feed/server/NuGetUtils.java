@@ -74,7 +74,7 @@ public class NuGetUtils {
   @NotNull
   public static String getProjectFeedPath(@NotNull final String projectId,
                                           @NotNull final String name) {
-    return String.format(NuGetServerSettings.PROJECT_PATH + "/%s/%s", projectId, name);
+    return String.format(NuGetServerSettings.PROJECT_PATH + "/%s/%s/", projectId, name);
   }
 
   /**

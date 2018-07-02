@@ -72,7 +72,7 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
   @NotNull
   private String normalizeUrl(@NotNull String url) {
     try {
-      return StringUtil.trimEnd(URI.create(url).normalize().toString(), "/");
+      return URI.create(url).normalize().toString();
     } catch (Exception e) {
       return url; // probably not URL, use as is
     }

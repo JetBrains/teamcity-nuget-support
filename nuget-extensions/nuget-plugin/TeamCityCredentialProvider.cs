@@ -23,8 +23,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using JetBrains.TeamCity.NuGet.ExtendedCommands;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 using NuGet.Protocol.Plugins;
@@ -34,9 +32,6 @@ namespace JetBrains.TeamCity.NuGet
   internal class TeamCityCredentialProvider : ICredentialProvider
   {
     private const string NugetFeedsEnv = "TEAMCITY_NUGET_FEEDS";
-
-    private readonly GetAuthenticationCredentialsResponse NotFoundResponse =
-      new GetAuthenticationCredentialsResponse(null, null, null, null, MessageResponseCode.NotFound);
 
     internal TeamCityCredentialProvider(TraceSource traceSource)
     {
@@ -69,14 +64,13 @@ namespace JetBrains.TeamCity.NuGet
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public bool CanProvideCredentials(Uri uri)
     {
-      return NuGetSources.Any(x => uri.AbsoluteUri.StartsWith(x.Source, StringComparison.OrdinalIgnoreCase));
+      return GetSource(uri) != null;
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public GetAuthenticationCredentialsResponse HandleRequest(GetAuthenticationCredentialsRequest request)
     {
-      var source = NuGetSources.Where(x => x.HasCredentials)
-        .FirstOrDefault(x => request.Uri.AbsoluteUri.StartsWith(x.Source, StringComparison.OrdinalIgnoreCase));
+      var source = GetSource(request.Uri);
       if (source != null)
       {
         return new GetAuthenticationCredentialsResponse(
@@ -87,7 +81,18 @@ namespace JetBrains.TeamCity.NuGet
           MessageResponseCode.Success);
       }
 
-      return NotFoundResponse;
+      return new GetAuthenticationCredentialsResponse(null, null, null, null, MessageResponseCode.NotFound);
+    }
+
+    private NuGetSource GetSource(Uri uri)
+    {
+      var requestUrl = uri.AbsoluteUri;
+      if (!requestUrl.EndsWith("/"))
+      {
+        requestUrl += "/";
+      }
+      
+      return NuGetSources.FirstOrDefault(x => requestUrl.StartsWith(x.Source, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>

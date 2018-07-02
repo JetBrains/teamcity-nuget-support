@@ -27,5 +27,6 @@ import java.io.File;
 public interface NuGetTeamCityProvider {
   @NotNull File getNuGetRunnerPath();
   @NotNull File getCredentialProviderHomeDirectory();
-  @NotNull String getNuGetPluginPaths();
+  @NotNull String getPluginFxPath();
+  @NotNull String getPluginCorePath();
 }

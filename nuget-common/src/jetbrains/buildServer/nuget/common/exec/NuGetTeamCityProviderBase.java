@@ -39,8 +39,15 @@ public class NuGetTeamCityProviderBase implements NuGetTeamCityProvider {
   }
 
   @NotNull
-  public final String getNuGetPluginPaths() {
-    return myNugetBinariesRoot.getAbsolutePath() + "/bin/credential-plugin/net46/CredentialProvider.TeamCity.exe";
+  @Override
+  public String getPluginCorePath() {
+    return  myNugetBinariesRoot.getAbsolutePath() + "/bin/credential-plugin/netcoreapp2.0/CredentialProvider.TeamCity.dll";
+  }
+
+  @NotNull
+  @Override
+  public String getPluginFxPath() {
+    return  myNugetBinariesRoot.getAbsolutePath() + "/bin/credential-plugin/net46/CredentialProvider.TeamCity.exe";
   }
 
   @NotNull

@@ -15,7 +15,7 @@
     <constructor-arg>
       <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetActionFactoryImpl">
         <constructor-arg>
-          <bean class="jetbrains.buildServer.nuget.agent.commands.impl.NuGetAuthCommandBuildProcessFactory"/>
+          <bean class="jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactoryImpl"/>
         </constructor-arg>
       </bean>
     </constructor-arg>
@@ -30,6 +30,7 @@
 
 
   <bean class="jetbrains.buildServer.nuget.agent.runner.EnabledPackagesOptionSetter"/>
+  <bean class="jetbrains.buildServer.nuget.agent.runner.NuGetCredentialsProvider"/>
 
   <bean class="jetbrains.buildServer.nuget.agent.exec.AgentNuGetTeamCityProvider"/>
 
