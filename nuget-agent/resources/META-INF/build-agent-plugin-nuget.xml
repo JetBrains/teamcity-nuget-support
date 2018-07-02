@@ -41,5 +41,6 @@
   <bean class="jetbrains.buildServer.nuget.agent.index.NuGetPackagePublisher">
     <constructor-arg index="0" ref="webPublisher"/>
   </bean>
+  <bean class="jetbrains.buildServer.nuget.agent.index.NuGetPackagePathProvider"/>
   <bean class="jetbrains.buildServer.nuget.agent.index.NugetPackageIndexer"/>
 </beans>

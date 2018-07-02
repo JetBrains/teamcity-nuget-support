@@ -21,7 +21,8 @@ import java.util.*
 
 class NugetPackageIndexer(dispatcher: EventDispatcher<AgentLifeCycleListener>,
                           private val packageAnalyzer: PackageAnalyzer,
-                          private val packagePublisher: NuGetPackagePublisher)
+                          private val packagePublisher: NuGetPackagePublisher,
+                          private val pathProvider: NuGetPackagePathProvider)
     : ArtifactsBuilderAdapter() {
 
     private var myIndexingEnabled = false
@@ -46,7 +47,7 @@ class NugetPackageIndexer(dispatcher: EventDispatcher<AgentLifeCycleListener>,
         }
 
         getPackages(artifacts).forEach { (file, path) ->
-            val packagePath = if (path.isNotEmpty()) "$path/${file.name}" else file.name
+            val packagePath = pathProvider.getArtifactPath(path, file.name)
             try {
                 val metadata = readMetadata(file, packagePath)
                 myPackages.add(NuGetPackageData(packagePath, metadata))
