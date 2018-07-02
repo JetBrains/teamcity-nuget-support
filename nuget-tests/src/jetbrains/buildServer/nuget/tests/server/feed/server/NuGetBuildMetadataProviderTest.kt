@@ -5,6 +5,7 @@ import jetbrains.buildServer.nuget.common.PackageLoadException
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildMetadataProviderImpl
 import jetbrains.buildServer.serverSide.SBuild
+import jetbrains.buildServer.serverSide.ServerResponsibilityImpl
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifacts
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode
@@ -24,7 +25,7 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val buildArtifacts = m.mock(BuildArtifacts::class.java)
         val buildArtifact = m.mock(BuildArtifact::class.java)
         val build = m.mock(SBuild::class.java)
-        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer)
+        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
 
         m.checking(object : Expectations() {
             init {
@@ -55,7 +56,7 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val buildArtifacts = m.mock(BuildArtifacts::class.java)
         val buildArtifact = m.mock(BuildArtifact::class.java)
         val build = m.mock(SBuild::class.java)
-        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer)
+        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
         val artifactsDir = createTempDir()
 
         m.checking(object : Expectations() {
@@ -124,6 +125,86 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         m.assertIsSatisfied()
     }
 
+    fun doNotCreatePackagesJSONIfServerIsReadOnly() {
+        val m = Mockery()
+        val packageAnalyzer = m.mock(PackageAnalyzer::class.java)
+        val buildArtifacts = m.mock(BuildArtifacts::class.java)
+        val buildArtifact = m.mock(BuildArtifact::class.java)
+        val build = m.mock(SBuild::class.java)
+        val responsibility = object : ServerResponsibilityImpl() {
+            override fun isResponsibleForBuild(build: SBuild): Boolean {
+                return false
+            }
+        }
+
+        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, responsibility)
+        val artifactsDir = createTempDir()
+
+        m.checking(object : Expectations() {
+            init {
+                exactly(2).of(build).getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
+                will(returnValue(buildArtifacts))
+
+                oneOf(buildArtifacts).getArtifact(".teamcity/nuget/packages.json")
+                will(returnValue(null))
+
+                oneOf(buildArtifacts).rootArtifact
+                will(returnValue(buildArtifact))
+
+                oneOf(buildArtifact).isDirectory
+                will(returnValue(false))
+
+                oneOf(buildArtifact).name
+                will(returnValue("package.nupkg"))
+
+                allowing(buildArtifact).relativePath
+                will(returnValue("package.nupkg"))
+
+                allowing(buildArtifact).size
+                will(returnValue(1L))
+
+                val inputStream = Files.newInputStream(Paths.get("testData/feed/indexer/$PACKAGES_PATH"))
+                allowing(buildArtifact).inputStream
+                will(returnValue(inputStream))
+
+                oneOf(packageAnalyzer).analyzePackage(inputStream)
+                will(returnValue(mapOf("Id" to "id", "NormalizedVersion" to "1.0.0")))
+
+                oneOf(packageAnalyzer).getSha512Hash(inputStream)
+                will(returnValue("hash"))
+
+                allowing(build).buildId
+                will(returnValue(1L))
+
+                allowing(build).buildNumber
+                will(returnValue("123"))
+
+                allowing(build).buildTypeExternalId
+                will(returnValue("bt"))
+
+                allowing(build).buildTypeId
+                will(returnValue("bt"))
+
+                oneOf(build).finishDate
+                will(returnValue(null))
+
+                allowing(build).artifactsDirectory
+                will(returnValue(artifactsDir))
+            }
+        })
+
+        val packages = metadataProvider.getPackagesMetadata(build)
+
+        Assert.assertTrue(packages.isNotEmpty())
+        val first = packages.first()
+        Assert.assertEquals(first["Id"], "id")
+        Assert.assertEquals(first["NormalizedVersion"], "1.0.0")
+        val packagesFile = artifactsDir.toPath().resolve(PACKAGES_PATH)
+        Assert.assertFalse(Files.exists(packagesFile))
+
+        m.assertIsSatisfied()
+    }
+
     fun indexArtifactsIfPackagesListCorrupted() {
         val m = Mockery()
         val packageAnalyzer = m.mock(PackageAnalyzer::class.java)
@@ -131,7 +212,7 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val packagesArtifact = m.mock(BuildArtifact::class.java , "packagesArtifact")
         val buildArtifact = m.mock(BuildArtifact::class.java)
         val build = m.mock(SBuild::class.java)
-        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer)
+        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
         val artifactsDir = createTempDir()
         val packagesFile = artifactsDir.toPath().resolve(PACKAGES_PATH)
 
@@ -212,7 +293,7 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val buildArtifacts = m.mock(BuildArtifacts::class.java)
         val buildArtifact = m.mock(BuildArtifact::class.java)
         val build = m.mock(SBuild::class.java)
-        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer)
+        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
         val artifactsDir = createTempDir()
         val packagesFile = artifactsDir.toPath().resolve(PACKAGES_PATH)
 
