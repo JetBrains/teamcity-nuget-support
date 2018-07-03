@@ -10,10 +10,12 @@ class NuGetPackagePathProvider(private val extensions: ExtensionHolder) {
             return fileName
         }
 
-        for (preprocessor in extensions.getExtensions(ArchivePreprocessor::class.java)) {
-            preprocessor.getTargetKey(targetPath)?.let {archivePath ->
-                if (archivePath.isNotEmpty()) {
-                    return archivePath + ARCHIVE_PATH_SEPARATOR + fileName
+        if (!targetPath.contains(ARCHIVE_PATH_SEPARATOR)) {
+            for (preprocessor in extensions.getExtensions(ArchivePreprocessor::class.java)) {
+                preprocessor.getTargetKey(targetPath)?.let {archivePath ->
+                    if (archivePath.isNotEmpty()) {
+                        return archivePath + ARCHIVE_PATH_SEPARATOR + fileName
+                    }
                 }
             }
         }

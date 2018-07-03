@@ -37,6 +37,7 @@ class NuGetPackagePathProviderTest {
         return arrayOf(
                 arrayOf<Any>("archive.zip", "package.nupkg", "archive.zip!/package.nupkg"),
                 arrayOf<Any>("archive.zip/", "package.nupkg", "archive.zip!/package.nupkg"),
+                arrayOf<Any>("archive.zip!/packages", "package.nupkg", "archive.zip!/packages/package.nupkg"),
                 arrayOf<Any>("path/to/", "package.nupkg", "path/to/package.nupkg"),
                 arrayOf<Any>("", "package.nupkg", "package.nupkg"),
                 arrayOf<Any>("/", "package.nupkg", "package.nupkg"),
