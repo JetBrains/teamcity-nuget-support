@@ -47,14 +47,15 @@ class NugetPackageIndexer(dispatcher: EventDispatcher<AgentLifeCycleListener>,
         }
 
         getPackages(artifacts).forEach { (file, path) ->
-            val packagePath = pathProvider.getArtifactPath(path, file.name)
-            try {
-                val metadata = readMetadata(file, packagePath)
-                myPackages.add(NuGetPackageData(packagePath, metadata))
-            } catch (e: Exception) {
-                val message = "Failed to read NuGet package $packagePath contents"
-                myLogger.warning("$message: ${e.message}")
-                LOG.warnAndDebugDetails(message, e)
+            pathProvider.getArtifactPath(path, file.name)?.let { packagePath ->
+                try {
+                    val metadata = readMetadata(file, packagePath)
+                    myPackages.add(NuGetPackageData(packagePath, metadata))
+                } catch (e: Exception) {
+                    val message = "Failed to read NuGet package $packagePath contents"
+                    myLogger.warning("$message: ${e.message}")
+                    LOG.warnAndDebugDetails(message, e)
+                }
             }
         }
 

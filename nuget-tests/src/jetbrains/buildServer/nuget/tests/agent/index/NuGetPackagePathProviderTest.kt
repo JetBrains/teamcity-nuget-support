@@ -15,7 +15,7 @@ import org.testng.annotations.Test
 class NuGetPackagePathProviderTest {
 
     @Test(dataProvider = "testPackagePaths")
-    fun testPackagePath(path: String, fileName: String, expectedPath: String) {
+    fun testPackagePath(path: String, fileName: String, expectedPath: String?) {
         val m = Mockery()
         val extensionHolder = m.mock(ExtensionHolder::class.java)
         val propertiesHolder = m.mock(InternalPropertiesHolder::class.java)
@@ -33,15 +33,15 @@ class NuGetPackagePathProviderTest {
     }
 
     @DataProvider
-    fun testPackagePaths(): Array<Array<Any>> {
+    fun testPackagePaths(): Array<Array<Any?>> {
         return arrayOf(
-                arrayOf<Any>("archive.zip", "package.nupkg", "archive.zip!/package.nupkg"),
-                arrayOf<Any>("archive.zip/", "package.nupkg", "archive.zip!/package.nupkg"),
-                arrayOf<Any>("archive.zip!/packages", "package.nupkg", "archive.zip!/packages/package.nupkg"),
-                arrayOf<Any>("path/to/", "package.nupkg", "path/to/package.nupkg"),
-                arrayOf<Any>("", "package.nupkg", "package.nupkg"),
-                arrayOf<Any>("/", "package.nupkg", "package.nupkg"),
-                arrayOf<Any>("\\", "package.nupkg", "package.nupkg")
+                arrayOf<Any?>("archive.zip", "package.nupkg", null),
+                arrayOf<Any?>("archive.zip/", "package.nupkg", null),
+                arrayOf<Any?>("archive.zip!/packages", "package.nupkg", null),
+                arrayOf<Any?>("path/to/", "package.nupkg", "path/to/package.nupkg"),
+                arrayOf<Any?>("", "package.nupkg", "package.nupkg"),
+                arrayOf<Any?>("/", "package.nupkg", "package.nupkg"),
+                arrayOf<Any?>("\\", "package.nupkg", "package.nupkg")
         )
     }
 }

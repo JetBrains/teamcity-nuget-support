@@ -4,20 +4,16 @@ import jetbrains.buildServer.ExtensionHolder
 import jetbrains.buildServer.agent.impl.artifacts.ArchivePreprocessor
 
 class NuGetPackagePathProvider(private val extensions: ExtensionHolder) {
-    fun getArtifactPath(path: String, fileName: String): String {
+    fun getArtifactPath(path: String, fileName: String): String? {
         val targetPath = path.trimEnd('\\', '/')
         if (targetPath.isEmpty()) {
             return fileName
         }
 
-        if (!targetPath.contains(ARCHIVE_PATH_SEPARATOR)) {
-            for (preprocessor in extensions.getExtensions(ArchivePreprocessor::class.java)) {
-                preprocessor.getTargetKey(targetPath)?.let {archivePath ->
-                    if (archivePath.isNotEmpty()) {
-                        return archivePath + ARCHIVE_PATH_SEPARATOR + fileName
-                    }
-                }
-            }
+        // We should not index packages withing archives
+        if (targetPath.contains(ARCHIVE_PATH_SEPARATOR) ||
+            extensions.getExtensions(ArchivePreprocessor::class.java).any { it.shouldProcess(targetPath) }) {
+            return null
         }
 
         return "$targetPath/$fileName"
