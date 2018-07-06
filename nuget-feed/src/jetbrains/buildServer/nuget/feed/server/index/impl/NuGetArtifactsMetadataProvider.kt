@@ -22,8 +22,10 @@ import jetbrains.buildServer.nuget.common.index.PackageConstants.TEAMCITY_ARTIFA
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.ID
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.NORMALIZED_VERSION
+import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.SBuild
 import jetbrains.buildServer.serverSide.impl.LogUtil
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataProvider
@@ -37,7 +39,8 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
                                      private val myFeedSettings: NuGetServerSettings,
                                      private val myMetadataProvider: NuGetBuildMetadataProvider,
                                      private val myFeedsProvider: NuGetBuildFeedsProvider,
-                                     private val myMetadataStorage: MetadataStorage) : BuildMetadataProvider {
+                                     private val myMetadataStorage: MetadataStorage,
+                                     private val myProjectManager: ProjectManager) : BuildMetadataProvider {
 
     override fun getProviderId() = PackageConstants.NUGET_PROVIDER_ID
 
@@ -61,6 +64,15 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
         LOG.debug("Looking for NuGet packages in ${LogUtil.describe(build)}")
 
         val packages = myMetadataProvider.getPackagesMetadata(build)
+        if (packages.isEmpty()) {
+            return
+        }
+
+        val feedNames = targetFeeds.joinToString {
+            val projectId = myProjectManager.findProjectById(it.projectId)?.externalId ?: it.projectId
+            return@joinToString if (it.feedId == NuGetFeedData.DEFAULT_FEED_ID) projectId else "$projectId/${it.feedId}"
+        } + " feed" + if (targetFeeds.size > 1) "s"  else ""
+
         packages.forEach { metadata ->
             val id = metadata[ID]
             val version = metadata[NORMALIZED_VERSION]
@@ -72,16 +84,14 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
                     } else {
                         myMetadataStorage.addBuildEntry(build.buildId, feedData.key, key, metadata, !build.isPersonal)
                     }
-                    LOG.info("Added NuGet package $key from build ${LogUtil.describe(build)} into feed $feedData")
                 }
+                LOG.info("Added NuGet package $key from build ${LogUtil.describe(build)} into $feedNames")
             } else {
                 LOG.warn("Failed to resolve NuGet package Id, package ignored: ${metadata[TEAMCITY_ARTIFACT_RELPATH]}")
             }
         }
 
-        if (packages.isNotEmpty()) {
-            myReset.resetCache()
-        }
+        myReset.resetCache()
     }
 
     companion object {
