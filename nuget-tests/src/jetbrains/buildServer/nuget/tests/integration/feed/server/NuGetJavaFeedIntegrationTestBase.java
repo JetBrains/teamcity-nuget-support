@@ -35,7 +35,7 @@ import jetbrains.buildServer.nuget.feed.server.index.*;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
 import jetbrains.buildServer.nuget.feed.server.index.impl.transform.DownloadUrlComputationTransformation;
-import jetbrains.buildServer.nuget.feed.server.json.JsonRequestHandler;
+import jetbrains.buildServer.nuget.feed.server.json.*;
 import jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
@@ -107,7 +107,6 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
     final ResponseCacheReset cacheReset = mockery.mock(ResponseCacheReset.class);
     final ServerSettings serverSettings = mockery.mock(ServerSettings.class);
-    final JsonRequestHandler jsonRequestHandler = mockery.mock(JsonRequestHandler.class);
 
     m.checking(new Expectations() {{
       allowing(myIndexProxy).getAll();
@@ -164,6 +163,12 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(myFeedFactory, responseCache);
     final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, myMetadataStorage,
             packageAnalyzer, cacheReset, serverSettings);
+    final JsonRequestHandler jsonRequestHandler = new JsonRequestHandler(
+      new JsonServiceIndexHandler(),
+      new JsonSearchQueryHandler(myFeedFactory),
+      new JsonRegistrationHandler(myFeedFactory),
+      new JsonPackageContentHandler(myFeedFactory)
+    );
     myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);
   }
 
@@ -205,9 +210,17 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     ));
   }
 
+  protected NuGetAPIVersion getAPIVersion() {
+    return NuGetAPIVersion.V2;
+  }
+
   @Override
   protected String getNuGetServerUrl() {
-    return "http://localhost" + NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId(), NuGetAPIVersion.V2) + "/";
+    return "http://localhost" + NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId(), getAPIVersion()) + "/";
+  }
+
+  protected String getServletPath() {
+    return NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId()) + getAPIVersion().name().toLowerCase();
   }
 
   protected NuGetIndexEntry addPackage(@NotNull final File file, boolean isLatest) throws IOException {
@@ -312,7 +325,17 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   @Override
   @NotNull
   protected String openRequest(@NotNull final String requestUrl, @NotNull final NameValuePair... reqs) {
-    return processRequest(new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/" + requestUrl)).toString();
+    return processRequest(createRequest(requestUrl, reqs)).toString();
+  }
+
+  @NotNull
+  protected HttpServletRequest createRequest(@NotNull final String requestUrl, @NotNull final NameValuePair... reqs) {
+    final String servletPath = getServletPath();
+    final RequestWrapper requestWrapper = new RequestWrapper(servletPath, servletPath + "/" + requestUrl);
+    for (NameValuePair req : reqs) {
+      requestWrapper.setParameter(req.getName(), req.getValue());
+    }
+    return requestWrapper;
   }
 
   @Override
@@ -320,7 +343,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected <T> T execute(@NotNull final HttpRequestBase get, @NotNull final ExecuteAction<T> action) {
     final URI uri = get.getURI();
     final String path = uri.getRawPath() + (StringUtil.isEmpty(uri.getRawQuery()) ? StringUtil.EMPTY : "?" + uri.getRawQuery());
-    final RequestWrapper request = new RequestWrapper(SERVLET_PATH, path);
+    final RequestWrapper request = new RequestWrapper(getServletPath(), path);
 
     final ResponseWrapper response = processRequest(request);
 
@@ -335,7 +358,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   @NotNull
   protected ResponseWrapper processRequest(@NotNull final HttpServletRequest request) {
-    request.setAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION, NuGetAPIVersion.V2);
+    request.setAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION, getAPIVersion());
     final NuGetFeedHandler handler = myFeedProvider.getHandler(request);
     final MockResponse response = new MockResponse();
     final ResponseWrapper responseWrapper = new ResponseWrapper(response);

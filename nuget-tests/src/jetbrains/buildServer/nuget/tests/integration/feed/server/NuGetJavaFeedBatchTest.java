@@ -30,7 +30,7 @@ public class NuGetJavaFeedBatchTest extends NuGetJavaFeedIntegrationTestBase {
         setODataSerializer(library);
         addMockPackage("MyPackage", "1.0.0.0");
 
-        final RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/$batch");
+        final RequestWrapper request = new RequestWrapper(getServletPath(), getServletPath() + "/$batch");
         request.setMethod("POST");
         request.setContentType("multipart/mixed; boundary=batch_e3b6819b-13c3-43bb-85b2-24b14122fed1");
         request.setBody((
@@ -57,7 +57,7 @@ public class NuGetJavaFeedBatchTest extends NuGetJavaFeedIntegrationTestBase {
         addMockPackage("MyPackage", "1.0.0.0");
         addMockPackage("OtherPackage", "2.0.0.0");
 
-        final RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/$batch");
+        final RequestWrapper request = new RequestWrapper(getServletPath(), getServletPath() + "/$batch");
         request.setMethod("POST");
         String boundary = "batch_e3b6819b-13c3-43bb-85b2-24b14122fed1";
         String contentTypePrefix = "multipart/mixed; boundary=";

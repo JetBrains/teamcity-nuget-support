@@ -30,6 +30,7 @@ import java.io.StringWriter;
 public class ResponseWrapper extends HttpServletResponseWrapper {
 
   private StringWriter sw = new StringWriter();
+  private String myRedirectLocation = null;
 
   public ResponseWrapper(HttpServletResponse response) {
     super(response);
@@ -59,5 +60,19 @@ public class ResponseWrapper extends HttpServletResponseWrapper {
 
   public String toString() {
     return sw.toString();
+  }
+
+  @Override
+  public void sendRedirect(String location) throws IOException {
+    super.sendRedirect(location);
+    myRedirectLocation = location;
+  }
+
+  @Override
+  public String getHeader(String name) {
+    if ("Location".equalsIgnoreCase(name)) {
+      return myRedirectLocation;
+    }
+    return super.getHeader(name);
   }
 }

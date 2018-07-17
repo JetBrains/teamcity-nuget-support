@@ -39,7 +39,7 @@ class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetF
                 val versions = packages.map {
                     val version = it.getVersion()
                     JsonPackageVersion(
-                            "$packageUrl/$version.json",
+                            "$packageUrl$version.json",
                             version,
                             0
                     )

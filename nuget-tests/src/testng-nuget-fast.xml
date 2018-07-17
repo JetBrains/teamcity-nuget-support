@@ -139,6 +139,11 @@
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetFeedControllerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetFeedProviderTests"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.PackageUploadHandlerTests"/>
+
+      <!-- Feed v3 APIs -->
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonPackageContentTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonRegistrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonSearchQueryTest"/>
     </classes>
   </test>
 </suite>

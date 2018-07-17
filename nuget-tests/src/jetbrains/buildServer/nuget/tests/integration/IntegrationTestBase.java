@@ -31,6 +31,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.impl.*;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
+import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactoryImpl;
 import jetbrains.buildServer.nuget.common.PackageInfoLoader;
 import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
@@ -70,6 +71,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected NuGetTeamCityProvider myNuGetTeamCityProvider;
   protected String cmd;
   protected Set<PackageSource> myGlobalSources;
+  private BuildProcessFacade myFacade;
 
   @NotNull
   protected String getCommandsOutput() {
@@ -160,6 +162,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myFetchParameters = m.mock(NuGetFetchParameters.class);
     myBuildParametersMap = m.mock(BuildParametersMap.class);
     myNuGetTeamCityProvider = m.mock(NuGetTeamCityProvider.class);
+    myFacade = m.mock(BuildProcessFacade.class);
 
     cmd = System.getenv("ComSpec");
     final PackageSourceManager psm = m.mock(PackageSourceManager.class);
@@ -213,10 +216,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myExecutor = executingFactory();
     myActionFactory = new LoggingNuGetActionFactoryImpl(
             new NuGetActionFactoryImpl(
-                    new NuGetAuthCommandBuildProcessFactory(
-                            executingFactory(),
-                            myNuGetTeamCityProvider,
-                            psm),
+              new NuGetCommandBuildProcessFactoryImpl(myFacade),
                     pu,
                     new CommandFactoryImpl()
             )

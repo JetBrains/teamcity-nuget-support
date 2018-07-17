@@ -49,6 +49,12 @@ public class RequestWrapper implements HttpServletRequest {
         myServletPath = servletPath;
         myQueryString = queryStringIndex < 0 ? StringUtil.EMPTY : path.substring(queryStringIndex + 1);
         myPath = queryStringIndex < 0 ? path : path.substring(0, queryStringIndex);
+        final String[] parameters = myQueryString.split("&");
+        for (String parameter : parameters) {
+            final String[] pair = parameter.split("=");
+            if (pair.length != 2) continue;
+            setParameter(pair[0], pair[1]);
+        }
     }
 
     @Override
@@ -152,7 +158,7 @@ public class RequestWrapper implements HttpServletRequest {
     @Override
     public StringBuffer getRequestURL() {
         UriBuilder builder = UriBuilder.fromPath(myServletPath + "/" + myPath)
-                .scheme("http").host("localhost").port(myServerPort);
+                .scheme(getScheme()).host(getServerName()).port(myServerPort);
         return new StringBuffer(builder.build().toString());
     }
 

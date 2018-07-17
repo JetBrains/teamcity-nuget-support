@@ -55,7 +55,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
 
   @Override
   protected String getNuGetServerUrl() {
-    return myServerUrl.toString() + NuGetJavaFeedIntegrationTestBase.SERVLET_PATH.substring(1);
+    return StringUtil.trimEnd(myServerUrl.toString(), "/") + getServletPath();
   }
 
   @BeforeMethod
