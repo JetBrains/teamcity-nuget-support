@@ -33,6 +33,8 @@ subprojects { subproject ->
     if (!subproject.name.endsWith("extensions")) {
         apply plugin: "kotlin"
 
+        kotlin { experimental { coroutines 'enable' } }
+
         sourceSets {
             main {
                 java {
