@@ -19,9 +19,11 @@ package jetbrains.buildServer.nuget.tests.integration.agent;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
+import jetbrains.buildServer.agent.impl.AgentEventDispatcher;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
+import jetbrains.buildServer.nuget.agent.runner.NuGetCredentialsProvider;
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigProcessFactory;
@@ -30,6 +32,7 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionPack
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionWidePackagesConfigScanner;
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.common.NuGetPackageInfo;
+import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
@@ -129,22 +132,33 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
       will(returnValue(noCache));
       allowing(myParametersFactory).loadUpdatePackagesParameters(myContext, myFetchParameters);
       will(returnValue(update ? myUpdateParameters : null));
+      allowing(myContext).getRunType();
+      will(returnValue(PackagesConstants.INSTALL_RUN_TYPE));
     }});
 
-    BuildProcess proc = new PackagesInstallerRunner(
-            myActionFactory,
-            myParametersFactory,
-            new LocateNuGetConfigProcessFactory(
-                    new RepositoryPathResolverImpl(),
-                    Arrays.asList(
-                            new ResourcesConfigPackagesScanner(),
-                            new SolutionPackagesScanner(new SolutionParserImpl()),
-                            new SolutionWidePackagesConfigScanner())
-            )
-    ).createBuildProcess(myBuild, myContext);
-    ((NuGetPackagesCollectorImpl)myCollector).removeAllPackages();
+    AgentEventDispatcher eventDispatcher = new AgentEventDispatcher();
+    final NuGetCredentialsProvider provider = new NuGetCredentialsProvider(
+      eventDispatcher, myPsm, myNuGetTeamCityProvider
+    );
+    try {
+      eventDispatcher.getMulticaster().beforeRunnerStart(myContext);
+      BuildProcess proc = new PackagesInstallerRunner(
+        myActionFactory,
+        myParametersFactory,
+        new LocateNuGetConfigProcessFactory(
+          new RepositoryPathResolverImpl(),
+          Arrays.asList(
+            new ResourcesConfigPackagesScanner(),
+            new SolutionPackagesScanner(new SolutionParserImpl()),
+            new SolutionWidePackagesConfigScanner())
+        )
+      ).createBuildProcess(myBuild, myContext);
+      ((NuGetPackagesCollectorImpl)myCollector).removeAllPackages();
 
-    assertRunSuccessfully(proc, status);
+      assertRunSuccessfully(proc, status);
+    } finally {
+      eventDispatcher.getMulticaster().runnerFinished(myContext, BuildFinishedStatus.FINISHED_SUCCESS);
+    }
 
     System.out.println(myCollector.getUsedPackages());
     if (detectedPackages != null) {

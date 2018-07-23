@@ -20,7 +20,7 @@ import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.StreamUtil;
 import jetbrains.buildServer.ExecResult;
-import jetbrains.buildServer.RunBuildException;
+import jetbrains.buildServer.ExtensionHolder;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
@@ -31,10 +31,13 @@ import jetbrains.buildServer.nuget.agent.dependencies.impl.*;
 import jetbrains.buildServer.nuget.agent.parameters.*;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
-import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactoryImpl;
+import jetbrains.buildServer.nuget.agent.util.impl.CommandLineExecutorImpl;
+import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactory;
+import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandLineProvider;
 import jetbrains.buildServer.nuget.common.PackageInfoLoader;
 import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProviderBase;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,7 +74,8 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected NuGetTeamCityProvider myNuGetTeamCityProvider;
   protected String cmd;
   protected Set<PackageSource> myGlobalSources;
-  private BuildProcessFacade myFacade;
+  private ExtensionHolder myExtensionHolder;
+  protected PackageSourceManager myPsm;
 
   @NotNull
   protected String getCommandsOutput() {
@@ -150,54 +154,90 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    myGlobalSources = new HashSet<PackageSource>();
+    myGlobalSources = new HashSet<>();
     myCommandsOutput = new StringBuilder();
     myRoot = createTempDir();
     m = new Mockery();
     myBuild = m.mock(AgentRunningBuild.class);
     myContext = m.mock(BuildRunnerContext.class);
-    myLogger = m.mock(BuildProgressLogger.class);
+    myLogger = m.mock(FlowLogger.class);
     myParametersFactory = m.mock(PackagesParametersFactory.class);
     myMockProcess = m.mock(BuildProcess.class);
     myFetchParameters = m.mock(NuGetFetchParameters.class);
     myBuildParametersMap = m.mock(BuildParametersMap.class);
-    myNuGetTeamCityProvider = m.mock(NuGetTeamCityProvider.class);
-    myFacade = m.mock(BuildProcessFacade.class);
+    File extensionsPath = Paths.getCredentialProviderHomeDirectory().getParentFile().getParentFile();
+    myNuGetTeamCityProvider = new NuGetTeamCityProviderBase(extensionsPath);
+    myExtensionHolder = m.mock(ExtensionHolder.class);
 
     cmd = System.getenv("ComSpec");
-    final PackageSourceManager psm = m.mock(PackageSourceManager.class);
+    myPsm = m.mock(PackageSourceManager.class);
 
-    final Map<String, String> configParameters = new TreeMap<String, String>();
+    final Map<String, String> configParameters = new TreeMap<>();
+    final Map<String, String> envParameters = new TreeMap<>();
+    envParameters.put("ComSpec", cmd);
 
     m.checking(new Expectations(){{
       allowing(myContext).getBuildParameters(); will(returnValue(myBuildParametersMap));
       allowing(myContext).getConfigParameters(); will(returnValue(Collections.emptyMap()));
-      allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(Collections.singletonMap("ComSpec", cmd)));
-
+      allowing(myContext).getWorkingDirectory(); will(returnValue(myRoot));
       allowing(myContext).getBuild(); will(returnValue(myBuild));
+      allowing(myContext).addEnvironmentVariable(with(any(String.class)), with(any(String.class)));
+      will(new CustomAction("Add env parameter") {
+        public Object invoke(Invocation invocation) {
+          envParameters.put((String)invocation.getParameter(0), (String)invocation.getParameter(1));
+          return null;
+        }
+      });
+
+      allowing(myBuildParametersMap).getEnvironmentVariables(); will(returnValue(envParameters));
       allowing(myBuild).getBuildLogger();  will(returnValue(myLogger));
       allowing(myBuild).getCheckoutDirectory();  will(returnValue(myRoot));
       allowing(myBuild).getAgentTempDirectory(); will(returnValue(createTempDir()));
+      allowing(myBuild).getBuildTempDirectory(); will(returnValue(createTempDir()));
 
       allowing(myMockProcess).start();
       allowing(myMockProcess).waitFor();
       will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
 
       allowing(myLogger).message(with(any(String.class)));
+      will(new CustomAction("Log message") {
+        public Object invoke(Invocation invocation) {
+          System.out.println((String)invocation.getParameter(0));
+          return null;
+        }
+      });
+      allowing(myLogger).warning(with(any(String.class)));
+      will(new CustomAction("Log warning") {
+        public Object invoke(Invocation invocation) {
+          System.out.println((String)invocation.getParameter(0));
+          return null;
+        }
+      });
+      allowing(myLogger).error(with(any(String.class)));
+      will(new CustomAction("Log error") {
+        public Object invoke(Invocation invocation) {
+          System.err.println((String)invocation.getParameter(0));
+          return null;
+        }
+      });
+      allowing(myLogger).getFlowId();
+      will(returnValue("123"));
+      allowing(myLogger).getFlowLogger(with(any(String.class)));
+      will(returnValue(myLogger));
 
       allowing(myBuild).getBuildId(); will(returnValue(42L));
       allowing(myBuild).getSharedConfigParameters(); will(returnValue(Collections.unmodifiableMap(configParameters)));
       allowing(myBuild).addSharedConfigParameter(with(any(String.class)), with(any(String.class)));
       will(new CustomAction("Add config parameter") {
-        public Object invoke(Invocation invocation) throws Throwable {
+        public Object invoke(Invocation invocation) {
           configParameters.put((String)invocation.getParameter(0), (String)invocation.getParameter(1));
           return null;
         }
       });
 
-      allowing(myNuGetTeamCityProvider).getNuGetRunnerPath(); will(returnValue(Paths.getNuGetRunnerPath()));
-      allowing(myNuGetTeamCityProvider).getCredentialProviderHomeDirectory(); will(returnValue(Paths.getCredentialProviderHomeDirectory()));
-      allowing(psm).getGlobalPackageSources(myBuild); will(returnValue(Collections.unmodifiableSet(myGlobalSources)));
+      allowing(myPsm).getGlobalPackageSources(myBuild); will(returnValue(Collections.unmodifiableSet(myGlobalSources)));
+
+      allowing(myExtensionHolder).getExtensions(with(Expectations.<Class<AgentExtension>>anything())); will(returnValue(Collections.emptyList()));
     }});
 
     BuildAgentConfiguration configuration = m.mock(BuildAgentConfiguration.class);
@@ -215,11 +255,14 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
     myExecutor = executingFactory();
     myActionFactory = new LoggingNuGetActionFactoryImpl(
-            new NuGetActionFactoryImpl(
-              new NuGetCommandBuildProcessFactoryImpl(myFacade),
-                    pu,
-                    new CommandFactoryImpl()
-            )
+      new NuGetActionFactoryImpl(
+        new NuGetCommandBuildProcessFactory(
+          myExtensionHolder,
+          new NuGetCommandLineProvider(myNuGetTeamCityProvider, new CommandLineExecutorImpl())
+        ),
+        pu,
+        new CommandFactoryImpl()
+      )
     );
 
     // Add an access to run NuGet.exe
@@ -265,10 +308,6 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     if (process.exitValue() != 0) throw new Exception(StreamUtil.readText(process.getErrorStream()));
   }
 
-  protected void addGlobalSource(@NotNull final String feed) {
-    addGlobalSource(feed, null, null);
-  }
-
   protected void addGlobalSource(@NotNull final String feed,
                                  @Nullable final String user,
                                  @Nullable final String pass) {
@@ -297,47 +336,38 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
   @NotNull
   private CommandlineBuildProcessFactory executingFactory() {
-    return new CommandlineBuildProcessFactory() {
+    return (hostContext, program, argz, workingDir, additionalEnvironment) -> new BuildProcessBase() {
       @NotNull
-      public BuildProcess executeCommandLine(@NotNull final BuildRunnerContext hostContext,
-                                             @NotNull final String program,
-                                             @NotNull final Collection<String> argz,
-                                             @NotNull final File workingDir,
-                                             @NotNull final Map<String, String> additionalEnvironment) throws RunBuildException {
-        return new BuildProcessBase() {
-          @NotNull
-          @Override
-          protected BuildFinishedStatus waitForImpl() throws RunBuildException {
-            if (!SystemInfo.isWindows) {
-              enableExecution(program, workingDir.getAbsolutePath());
-            }
+      @Override
+      protected BuildFinishedStatus waitForImpl() {
+        if (!SystemInfo.isWindows) {
+          enableExecution(program, workingDir.getAbsolutePath());
+        }
 
-            GeneralCommandLine cmd = new GeneralCommandLine();
-            cmd.setExePath(program);
-            for (String arg : argz) {
-              cmd.addParameter(arg.replaceAll("%+", "%"));
-            }
-            cmd.setWorkingDirectory(workingDir);
+        GeneralCommandLine cmd = new GeneralCommandLine();
+        cmd.setExePath(program);
+        for (String arg : argz) {
+          cmd.addParameter(arg.replaceAll("%+", "%"));
+        }
+        cmd.setWorkingDirectory(workingDir);
 
-            Map<String, String> env = new HashMap<String, String>();
-            env.putAll(System.getenv());
-            env.putAll(additionalEnvironment);
-            cmd.setEnvParams(env);
+        Map<String, String> env = new HashMap<>();
+        env.putAll(System.getenv());
+        env.putAll(additionalEnvironment);
+        cmd.setEnvParams(env);
 
-            System.out.println("Run: " + cmd.getCommandLineString());
+        System.out.println("Run: " + cmd.getCommandLineString());
 
-            ExecResult result = SimpleCommandLineProcessRunner.runCommand(cmd, new byte[0]);
+        ExecResult result = SimpleCommandLineProcessRunner.runCommand(cmd, new byte[0]);
 
-            System.out.println(result.getStdout());
-            System.out.println(result.getStderr());
+        System.out.println(result.getStdout());
+        System.out.println(result.getStderr());
 
-            myCommandsOutput.append(result.getStdout()).append("\n\n").append(result.getStderr()).append("\n\n");
+        myCommandsOutput.append(result.getStdout()).append("\n\n").append(result.getStderr()).append("\n\n");
 
-            return result.getExitCode() == 0
-                    ? BuildFinishedStatus.FINISHED_SUCCESS
-                    : BuildFinishedStatus.FINISHED_FAILED;
-          }
-        };
+        return result.getExitCode() == 0
+                ? BuildFinishedStatus.FINISHED_SUCCESS
+                : BuildFinishedStatus.FINISHED_FAILED;
       }
     };
   }
@@ -349,7 +379,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
     final GeneralCommandLine commandLine = new GeneralCommandLine();
 
-    String canonicalFilePath = null;
+    String canonicalFilePath;
     try {
       canonicalFilePath = new File(filePath).getCanonicalPath();
     } catch (IOException e) {

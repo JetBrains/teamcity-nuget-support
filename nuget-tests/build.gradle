@@ -21,6 +21,7 @@ dependencies {
     testCompile files("${teamcityDir}/devPackage/tests/tests-integration.jar")
     testCompile files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web.jar")
     testRuntime files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/db.jar")
+    testRuntime files("${teamcityDir}/buildAgent/lib/server-logging.jar")
 }
 
 sourceSets {

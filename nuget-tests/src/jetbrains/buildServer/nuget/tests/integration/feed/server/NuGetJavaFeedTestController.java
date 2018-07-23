@@ -17,6 +17,8 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.controllers.MockResponse;
+import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -89,6 +91,7 @@ public class NuGetJavaFeedTestController {
 
   @NotNull
   private Response getResponse(@NotNull HttpServletRequest request) throws Exception {
+    request.setAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION, NuGetAPIVersion.V2);
     final NuGetFeedHandler handler = NuGetJavaFeedControllerIoC.getFeedProvider().getHandler(request);
     final ResponseWrapper response = new ResponseWrapper(new MockResponse());
 

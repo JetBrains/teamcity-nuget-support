@@ -127,9 +127,10 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
     List<String> list = new ArrayList<String>();
     for (String _source : sources.split("[\\r\\n]+")) {
-      final String source = _source.trim();
-      if (!StringUtil.isEmptyOrSpaces(source)) {
-        list.add(source);
+      for (String source : StringUtil.splitCommandArgumentsAndUnquote(_source)) {
+        if (!StringUtil.isEmptyOrSpaces(source)) {
+          list.add(source);
+        }
       }
     }
 
