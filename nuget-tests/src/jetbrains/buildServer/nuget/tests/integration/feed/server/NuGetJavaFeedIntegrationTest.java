@@ -94,7 +94,6 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     }
 
     setODataSerializer(library);
-    enableDebug();
 
     GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(nuget.getPath().getPath());
@@ -121,7 +120,6 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     }
 
     setODataSerializer(library);
-    enableDebug();
 
     GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(nuget.getPath().getPath());
@@ -147,7 +145,6 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     }
 
     setODataSerializer(library);
-    enableDebug();
 
     String packageName = StringUtil.repeat("Common", " ", 256);
     GeneralCommandLine cmd = new GeneralCommandLine();
@@ -174,7 +171,6 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     }
 
     setODataSerializer(library);
-    enableDebug();
     enablePackagesIndexSorting();
 
     addMockPackage("foo", "1.0.0");
@@ -207,7 +203,6 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     }
 
     setODataSerializer(library);
-    enableDebug();
     enablePackagesIndexSorting();
 
     int size = NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE + 2;
@@ -247,7 +242,6 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     }
 
     setODataSerializer(library);
-    enableDebug();
     enablePackagesIndexSorting();
 
     int size = NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE + 2;
