@@ -48,7 +48,9 @@ public class NuGetCommandBuildProcessFactory implements CommandlineBuildProcessF
                                          @NotNull final Collection<String> arguments,
                                          @NotNull final File workingDir,
                                          @NotNull final Map<String, String> env) {
-    final ProgramCommandLine programCommandLine = myProvider.getProgramCommandLine(context, executable, arguments, env);
+    final ProgramCommandLine programCommandLine = myProvider.getProgramCommandLine(
+      context, executable, arguments, workingDir, env
+    );
     final CommandLineBuildSession commandLineBuildSession = new CommandLineBuildSession(programCommandLine, context);
     return new GenericCommandLineBuildProcess(context, commandLineBuildSession, myExtensionHolder);
   }

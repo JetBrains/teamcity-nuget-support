@@ -24,6 +24,7 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
     fun getProgramCommandLine(context: BuildRunnerContext,
                               executable: String,
                               args: Collection<String>,
+                              workingDir: File,
                               env: Map<String, String>): ProgramCommandLine {
         var (executablePath, arguments) = getExecutableAndArguments(executable, args, context)
         val buildLogger = context.build.buildLogger
@@ -61,7 +62,12 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
             context.addEnvironmentVariable(key, value)
         }
 
-        return SimpleProgramCommandLine(context, executablePath, arguments)
+        return SimpleProgramCommandLine(
+                context.buildParameters.environmentVariables,
+                workingDir.path,
+                executablePath,
+                arguments
+        )
     }
 
     private fun getExecutableAndArguments(executable: String,

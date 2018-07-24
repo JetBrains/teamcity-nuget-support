@@ -77,7 +77,7 @@ public class NuGetCommandLineProviderTest extends BaseTestCase {
     NuGetCommandLineProvider provider = new NuGetCommandLineProvider(myNugetProvider, executor);
     List<String> args = new ArrayList<>(Arrays.asList("arg1", "arg2"));
     String executable = "nuget.exe";
-    ProgramCommandLine commandLine = provider.getProgramCommandLine(myRootContext, executable, args, Collections.emptyMap());
+    ProgramCommandLine commandLine = provider.getProgramCommandLine(myRootContext, executable, args, myWorkDir, Collections.emptyMap());
 
     Assert.assertNotNull(commandLine);
     Assert.assertEquals(commandLine.getWorkingDirectory(), myWorkDir.getPath());
