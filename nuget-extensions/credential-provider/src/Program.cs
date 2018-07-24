@@ -39,8 +39,8 @@ namespace JetBrains.TeamCity.NuGet.CredentialProvider
         }
         else
         {
-          var nuGetSources = XmlSerializerHelper.Load<NuGetSources>(path).Sources ?? new NuGetSource[]{};
-          var sources = nuGetSources.Where(x => x.HasCredentials).ToArray();
+          INuGetSources nuGetSources = XmlSerializerHelper.Load<NuGetSources>(path);
+          var sources = nuGetSources.Sources.Where(x => x.HasCredentials).ToArray();
           if (sources.Length == 0)
           {
             response.Message = "NuGet feed credentials file contains no sources with credentials specified";

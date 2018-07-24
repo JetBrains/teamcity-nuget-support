@@ -38,14 +38,11 @@ namespace JetBrains.TeamCity.NuGet
       Logger = traceSource ?? new TraceSource(nameof(TeamCityCredentialProvider));
 
       var teamCityFeedsPath = Environment.GetEnvironmentVariable(NugetFeedsEnv);
-      var nugetSources = new List<NuGetSource>();
+      var nugetSources = new List<INuGetSource>();
       if (!string.IsNullOrEmpty(teamCityFeedsPath) && File.Exists(teamCityFeedsPath))
       {
-        var sources = XmlSerializerHelper.Load<NuGetSources>(teamCityFeedsPath).Sources;
-        if (sources != null)
-        {
-          nugetSources.AddRange(sources.Where(x => x.HasCredentials));
-        }
+        INuGetSources sources = XmlSerializerHelper.Load<NuGetSources>(teamCityFeedsPath);
+        nugetSources.AddRange(sources.Sources.Where(x => x.HasCredentials));
       }
 
       NuGetSources = nugetSources;
@@ -59,7 +56,7 @@ namespace JetBrains.TeamCity.NuGet
     /// <summary>
     /// Gets a <see cref="TraceSource"/> to use for logging.
     /// </summary>
-    private List<NuGetSource> NuGetSources { get; }
+    private List<INuGetSource> NuGetSources { get; }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public bool CanProvideCredentials(Uri uri)
@@ -84,7 +81,7 @@ namespace JetBrains.TeamCity.NuGet
       return new GetAuthenticationCredentialsResponse(null, null, null, null, MessageResponseCode.NotFound);
     }
 
-    private NuGetSource GetSource(Uri uri)
+    private INuGetSource GetSource(Uri uri)
     {
       var requestUrl = uri.AbsoluteUri;
       if (!requestUrl.EndsWith("/"))

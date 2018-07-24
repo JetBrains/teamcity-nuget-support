@@ -9,7 +9,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
     [Import]
     public CredentialsProviderUpdater CredentialsUpdater { get; set; }
 
-    private void UpdateCredentials(IEnumerable<NuGetSource> actual)
+    private void UpdateCredentials(IEnumerable<INuGetSource> actual)
     {
       CredentialsUpdater.UpdateCredentialsProvider(actual);
     }

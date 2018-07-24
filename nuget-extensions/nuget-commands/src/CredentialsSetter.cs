@@ -26,7 +26,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands
       }
 
       new AssemblyResolver(GetType().Assembly.GetAssemblyDirectory());
-      var sources = XmlSerializerHelper.Load<NuGetSources>(path);
+      INuGetSources sources = XmlSerializerHelper.Load<NuGetSources>(path);
       var actual = sources.Sources.Where(x => x.HasCredentials).ToArray();
 
       if (actual.Any())
