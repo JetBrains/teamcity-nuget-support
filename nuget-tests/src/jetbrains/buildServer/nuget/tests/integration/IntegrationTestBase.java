@@ -59,6 +59,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class IntegrationTestBase extends BuildProcessTestCase {
   private StringBuilder myCommandsOutput;
+  private StringBuilder myCommandsWarnings;
   protected File myRoot;
   protected Mockery m;
   protected AgentRunningBuild myBuild;
@@ -80,6 +81,11 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   @NotNull
   protected String getCommandsOutput() {
     return myCommandsOutput.toString();
+  }
+
+  @NotNull
+  protected String getCommandsWarnings() {
+    return myCommandsWarnings.toString();
   }
 
 
@@ -156,6 +162,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     super.setUp();
     myGlobalSources = new HashSet<>();
     myCommandsOutput = new StringBuilder();
+    myCommandsWarnings = new StringBuilder();
     myRoot = createTempDir();
     m = new Mockery();
     myBuild = m.mock(AgentRunningBuild.class);
@@ -202,14 +209,18 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       allowing(myLogger).message(with(any(String.class)));
       will(new CustomAction("Log message") {
         public Object invoke(Invocation invocation) {
-          System.out.println((String)invocation.getParameter(0));
+          String message = (String) invocation.getParameter(0);
+          System.out.println(message);
+          myCommandsOutput.append(message).append("\n");
           return null;
         }
       });
       allowing(myLogger).warning(with(any(String.class)));
       will(new CustomAction("Log warning") {
         public Object invoke(Invocation invocation) {
-          System.out.println((String)invocation.getParameter(0));
+          String message = (String) invocation.getParameter(0);
+          System.out.println(message);
+          myCommandsWarnings.append(message).append("\n");
           return null;
         }
       });

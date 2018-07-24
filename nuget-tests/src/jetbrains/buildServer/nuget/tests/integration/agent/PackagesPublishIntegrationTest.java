@@ -24,8 +24,13 @@ import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
+import jetbrains.buildServer.agent.impl.AgentEventDispatcher;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
+import jetbrains.buildServer.nuget.agent.runner.NuGetCredentialsProvider;
 import jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner;
+import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
+import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
+import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.util.FileUtil;
@@ -43,6 +48,7 @@ import org.hamcrest.text.StringContains;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -61,6 +67,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PackagesPublishIntegrationTest extends IntegrationTestBase {
   public static final ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion("HTTP", 1, 1);
   protected NuGetPublishParameters myPublishParameters;
+  private AgentEventDispatcher myEventDispatcher;
 
   @BeforeMethod
   @Override
@@ -70,20 +77,30 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     m.checking(new Expectations(){{
       allowing(myLogger).activityStarted(with(equal("push")), with(any(String.class)), with(any(String.class)));
       allowing(myLogger).activityFinished(with(equal("push")), with(any(String.class)));
+      allowing(myContext).getRunType();
+      will(returnValue(PackagesConstants.PUBLISH_RUN_TYPE));
     }});
+    myEventDispatcher = new AgentEventDispatcher();
+    final NuGetCredentialsProvider provider = new NuGetCredentialsProvider(
+      myEventDispatcher, myPsm, myNuGetTeamCityProvider
+    );
+  }
+
+  @AfterMethod
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    myEventDispatcher.getMulticaster().runnerFinished(myContext, BuildFinishedStatus.FINISHED_SUCCESS);
   }
 
   @Test(dataProvider = NUGET_VERSIONS_18p)
   public void test_publish_wrong_files(@NotNull final NuGet nuget) throws IOException, RunBuildException {
-
-    m.checking(new Expectations(){{
-      oneOf(myLogger).warning(with(new StringContains(".zpoo")));
-    }});
-
     final File home = createTempDir();
     final File pkg1 = new File(home, "a.b.c.4.3.zpoo"){{createNewFile(); }};
     final BuildProcess p = callPublishRunnerEx(nuget, pkg1);
     assertRunSuccessfully(p, BuildFinishedStatus.FINISHED_FAILED);
+
+    Assert.assertTrue(getCommandsWarnings().contains(".zpoo"));
 
     m.assertIsSatisfied();
   }
@@ -279,8 +296,17 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
       allowing(myParametersFactory).loadPublishParameters(myContext);will(returnValue(myPublishParameters));
     }});
 
-    final PackagesPublishRunner runner = new PackagesPublishRunner(myActionFactory, myParametersFactory);
-    return runner.createBuildProcess(myBuild, myContext);
+    final CompositeBuildProcessImpl buildProcess = new CompositeBuildProcessImpl();
+    buildProcess.pushBuildProcess(new BuildProcessBase() {
+      @NotNull
+      @Override
+      protected BuildFinishedStatus waitForImpl() throws RunBuildException {
+        myEventDispatcher.getMulticaster().beforeRunnerStart(myContext);
+        return BuildFinishedStatus.FINISHED_SUCCESS;
+      }
+    });
+    buildProcess.pushBuildProcess(new PackagesPublishRunner(myActionFactory, myParametersFactory).createBuildProcess(myBuild, myContext));
+    return buildProcess;
   }
 
   private void callPublishRunner(@NotNull final NuGet nuget, @NotNull final File pkg) throws RunBuildException {
