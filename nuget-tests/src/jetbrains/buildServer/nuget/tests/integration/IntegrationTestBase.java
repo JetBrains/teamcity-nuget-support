@@ -34,6 +34,7 @@ import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.agent.util.impl.CommandLineExecutorImpl;
 import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactory;
 import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandLineProvider;
+import jetbrains.buildServer.nuget.agent.util.impl.SystemInformationImpl;
 import jetbrains.buildServer.nuget.common.PackageInfoLoader;
 import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
@@ -180,7 +181,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myPsm = m.mock(PackageSourceManager.class);
 
     final Map<String, String> configParameters = new TreeMap<>();
-    final Map<String, String> envParameters = new TreeMap<>();
+    final Map<String, String> envParameters = new TreeMap<>(System.getenv());
     envParameters.put("ComSpec", cmd);
 
     m.checking(new Expectations(){{
@@ -269,7 +270,11 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       new NuGetActionFactoryImpl(
         new NuGetCommandBuildProcessFactory(
           myExtensionHolder,
-          new NuGetCommandLineProvider(myNuGetTeamCityProvider, new CommandLineExecutorImpl())
+          new NuGetCommandLineProvider(
+            myNuGetTeamCityProvider,
+            new CommandLineExecutorImpl(),
+            new SystemInformationImpl()
+          )
         ),
         pu,
         new CommandFactoryImpl()

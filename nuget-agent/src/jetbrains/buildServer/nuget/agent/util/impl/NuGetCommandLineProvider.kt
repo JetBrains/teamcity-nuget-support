@@ -7,6 +7,7 @@ import jetbrains.buildServer.agent.runner.ProgramCommandLine
 import jetbrains.buildServer.agent.runner.SimpleProgramCommandLine
 import jetbrains.buildServer.dotNet.DotNetConstants
 import jetbrains.buildServer.nuget.agent.util.CommandLineExecutor
+import jetbrains.buildServer.nuget.agent.util.SystemInformation
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider
 import jetbrains.buildServer.nuget.common.version.SemanticVersion
 import java.io.File
@@ -17,7 +18,8 @@ import java.util.concurrent.ConcurrentHashMap
  * Constructs NuGet command line.
  */
 class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvider,
-                               private val myCommandLineExecutor: CommandLineExecutor) {
+                               private val myCommandLineExecutor: CommandLineExecutor,
+                               private val mySystemInformation: SystemInformation) {
 
     private val myVersions = ConcurrentHashMap<String, SemanticVersion>()
 
@@ -44,9 +46,10 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
                 executablePath = myNugetProvider.nuGetRunnerPath.path
             }
             else -> {
-                // NuGet 3.5+ does not properly work under SYSTEM account:
+                // NuGet 3.5+ does not properly work under SYSTEM account on Windows:
                 // https://github.com/NuGet/Home/issues/4277
-                if (version >= NUGET_VERSION_3_5 && "SYSTEM".equals(userName, true) &&
+                if (version >= NUGET_VERSION_3_5 && mySystemInformation.isWindows &&
+                    "SYSTEM".equals(mySystemInformation.userName, true) &&
                     !context.buildParameters.environmentVariables.containsKey(NUGET_PACKAGES_ENV)) {
                     val packagesPath = File(context.build.buildTempDirectory, ".nuget/packages")
                     buildLogger.message("Setting '$NUGET_PACKAGES_ENV' environment variable to '$packagesPath'")
@@ -74,7 +77,7 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
                                           args: Collection<String>,
                                           context: BuildRunnerContext): Pair<String, MutableList<String>> {
       val arguments = args.toMutableList()
-      if (!SystemInfo.isWindows) {
+      if (!mySystemInformation.isWindows) {
           context.configParameters[DotNetConstants.MONO_JIT]?.let { monoPath ->
               if (monoPath.isNotEmpty()) {
                   arguments.add(0, executable)
@@ -102,17 +105,6 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
       }
 
       return NUGET_UNKNOWN_VERSION
-    }
-
-    private val userName: String by lazy {
-        if (SystemInfo.isWindows) {
-          try {
-              Class.forName("com.sun.security.auth.module.NTSystem")
-              return@lazy com.sun.security.auth.module.NTSystem().name
-          } catch (ignored: ClassNotFoundException) {
-          }
-        }
-        System.getProperty("user.name")
     }
 
     companion object {
