@@ -19,10 +19,10 @@ class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetF
         val prerelease = request.getParameter("prerelease")?.toBoolean() ?: false
         val semVerLevel = request.getParameter("semVerLevel")
 
-        val results = (if (query.isNotEmpty()) {
-            nuGetFeed.search(query, "", prerelease)
-        } else {
+        val results = (if (query.isNullOrEmpty()) {
             nuGetFeed.all
+        } else {
+            nuGetFeed.search(query, "", prerelease)
         }).groupBy { it.packageInfo.id }
 
         val totalHits = results.size

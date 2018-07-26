@@ -35,4 +35,14 @@ class JsonSearchQueryTest : JsonFeedIntegrationTestBase() {
         val responseBody = openRequest("query/?q=package&skip=1")
         assertContainsPackageVersion(responseBody, "2.0.0")
     }
+
+    @Test
+    fun find_all_packages() {
+        addMockPackage("MyPackage", "1.0.0.0")
+        addMockPackage("OtherPackage", "2.0.0.0")
+
+        val responseBody = openRequest("query")
+        assertContainsPackageVersion(responseBody, "1.0.0")
+        assertContainsPackageVersion(responseBody, "2.0.0")
+    }
 }
