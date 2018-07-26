@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.feed.server.index.impl;
 
+import jetbrains.buildServer.nuget.common.version.PackageVersion;
+import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
@@ -35,7 +37,7 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 public class NuGetPackageBuilder {
 
   private final String myKey;
-  private final String myVersion;
+  private final PackageVersion myVersion;
   private final long myBuildId;
   private final NuGetFeedData myFeedData;
   private final Map<String, String> myMetadata;
@@ -44,7 +46,7 @@ public class NuGetPackageBuilder {
   public NuGetPackageBuilder(@NotNull final NuGetFeedData feedData, @NotNull final BuildMetadataEntry entry) {
     myFeedData = feedData;
     myMetadata = new HashMap<>(entry.getMetadata());
-    myVersion = myMetadata.get(VERSION);
+    myVersion = VersionUtility.valueOf(myMetadata.get(VERSION));
     myKey = entry.getKey();
     myBuildId = entry.getBuildId();
     setMetadata(TEAMCITY_BUILD_ID, String.valueOf(myBuildId));
@@ -65,7 +67,7 @@ public class NuGetPackageBuilder {
   }
 
   @NotNull
-  public String getVersion() {
+  public PackageVersion getVersion() {
     return myVersion;
   }
 
@@ -124,9 +126,11 @@ public class NuGetPackageBuilder {
 
     if (myMetadata.get(IS_LATEST_VERSION) == null) setIsLatest(false);
     if (myMetadata.get(IS_ABSOLUTE_LATEST_VERSION) == null) setIsAbsoluteLatest(false);
+
     return new NuGetIndexEntry(
             myFeedData,
             myKey,
+            myVersion,
             myMetadata
     );
   }

@@ -30,36 +30,27 @@ import java.util.Comparator;
 public class SemanticVersionsComparators {
   @NotNull
   public static Comparator<NuGetPackageBuilder> getBuildersComparator() {
-    return new Comparator<NuGetPackageBuilder>() {
-      public int compare(@NotNull NuGetPackageBuilder o1, @NotNull NuGetPackageBuilder o2) {
-        final String id1 = o1.getPackageName();
-        final String id2 = o2.getPackageName();
+    return (o1, o2) -> {
+      final String id1 = o1.getPackageName();
+      final String id2 = o2.getPackageName();
 
-        int cmp;
-        if ((cmp = id1.compareTo(id2)) != 0) return cmp;
+      int cmp;
+      if ((cmp = id1.compareTo(id2)) != 0) return cmp;
 
-        final String v1 = o1.getVersion();
-        final String v2 = o2.getVersion();
-        return SemanticVersion.compareAsVersions(v1, v2);
-      }
+      return o1.getVersion().compareTo(o2.getVersion());
     };
   }
 
   @NotNull
   public static Comparator<NuGetIndexEntry> getEntriesComparator() {
-    return new Comparator<NuGetIndexEntry>() {
-      public int compare(@NotNull NuGetIndexEntry o1, @NotNull NuGetIndexEntry o2) {
-        final String id1 = o1.getPackageInfo().getId();
-        final String id2 = o2.getPackageInfo().getId();
+    return (o1, o2) -> {
+      final String id1 = o1.getPackageInfo().getId();
+      final String id2 = o2.getPackageInfo().getId();
 
-        int cmp;
-        if ((cmp = id1.compareTo(id2)) != 0) return cmp;
+      int cmp;
+      if ((cmp = id1.compareTo(id2)) != 0) return cmp;
 
-        final String v1 = o1.getPackageInfo().getVersion();
-        final String v2 = o2.getPackageInfo().getVersion();
-
-        return SemanticVersion.compareAsVersions(v1, v2);
-      }
+      return o1.getVersion().compareTo(o2.getVersion());
     };
   }
 }

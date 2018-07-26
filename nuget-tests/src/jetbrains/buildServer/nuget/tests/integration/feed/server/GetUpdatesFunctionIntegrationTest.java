@@ -76,7 +76,7 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
   public void shouldHandleTargetFrameworksParameter(final NugetFeedLibrary library) throws Exception {
     setODataSerializer(library);
     addMockPackage("old-foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, "", VERSION, "1"));
-    addMockPackage("current-foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net40")), VERSION, "2.0.0.0"));
+    addMockPackage("current-foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net40")), VERSION, "2.0.0"));
     addMockPackage("new-foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net45")), VERSION, "3"));
     addMockPackage("latest-switched-framework-foo", CollectionsUtil.asMap(ID, "foo", TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(Lists.newArrayList("net50")), VERSION, "4"));
 
@@ -137,5 +137,50 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     setODataSerializer(library);
     addMockPackage("foo", CollectionsUtil.asMap(ID, "foo", VERSION, "3.2"));
     assert200("GetUpdates()?packageIds='foo'&versions='3.2'&includePrerelease=true&includeAllVersions=true").run();
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void findUpdatesWithoutSemVer(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    addMockPackage("old", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "1", PACKAGE_SIZE, "0"));
+    addMockPackage("current", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "2"));
+    addMockPackage("new-stable", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "3"));
+    addMockPackage("newest-semver-20", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "4.0.0+metadata"));
+
+    final String responseBody = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''");
+    assertNotContainsPackageVersion(responseBody, "1.0");
+    assertNotContainsPackageVersion(responseBody, "2.0");
+    assertContainsPackageVersion(responseBody, "3.0");
+    assertNotContainsPackageVersion(responseBody, "4.0.0+metadata.0");
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void findUpdatesWithSemVer10(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    addMockPackage("old", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "1", PACKAGE_SIZE, "0"));
+    addMockPackage("current", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "2"));
+    addMockPackage("new-stable", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "3"));
+    addMockPackage("newest-semver-20", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "4.0.0+metadata"));
+
+    final String responseBody = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''&semVerLevel='1.0.0'");
+    assertNotContainsPackageVersion(responseBody, "1.0");
+    assertNotContainsPackageVersion(responseBody, "2.0");
+    assertContainsPackageVersion(responseBody, "3.0");
+    assertNotContainsPackageVersion(responseBody, "4.0.0+metadata.0");
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void findUpdatesWithSemVer20(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    addMockPackage("old", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "1", PACKAGE_SIZE, "0"));
+    addMockPackage("current", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "2"));
+    addMockPackage("new-stable", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "3"));
+    addMockPackage("newest-semver-20", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "4.0.0+metadata"));
+
+    final String responseBody = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''&semVerLevel='2.0.0'");
+    assertNotContainsPackageVersion(responseBody, "1.0");
+    assertNotContainsPackageVersion(responseBody, "2.0");
+    assertNotContainsPackageVersion(responseBody, "3.0");
+    assertContainsPackageVersion(responseBody, "4.0.0+metadata.0");
   }
 }

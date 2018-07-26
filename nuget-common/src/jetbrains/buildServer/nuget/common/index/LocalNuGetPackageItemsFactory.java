@@ -79,7 +79,7 @@ public class LocalNuGetPackageItemsFactory implements NuGetPackageStructureAnaly
     }
 
     final SemanticVersion semanticVersion = SemanticVersion.valueOf(version);
-    return semanticVersion != null && !StringUtil.isEmpty(semanticVersion.getSpecialVersion());
+    return semanticVersion != null && !StringUtil.isEmpty(semanticVersion.getRelease());
   }
 
   private void addItem(@NotNull final String key, @Nullable final String value) {

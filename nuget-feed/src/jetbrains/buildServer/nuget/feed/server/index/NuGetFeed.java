@@ -2,14 +2,11 @@ package jetbrains.buildServer.nuget.feed.server.index;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.containers.SortedList;
+import jetbrains.buildServer.nuget.common.version.*;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
-import jetbrains.buildServer.nuget.common.version.FrameworkConstraints;
-import jetbrains.buildServer.nuget.common.version.SemanticVersion;
-import jetbrains.buildServer.nuget.common.version.VersionConstraint;
-import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +55,8 @@ public class NuGetFeed {
   @NotNull
   public List<NuGetIndexEntry> search(@NotNull final String searchTerm,
                                       @NotNull final String targetFramework,
-                                      final boolean includePrerelease) {
+                                      final boolean includePrerelease,
+                                      final boolean includeSemVer2) {
     final boolean filterByTargetFramework = myServerSettings.isFilteringByTargetFrameworkEnabled();
 
     final Set<String> requestedFrameworks = FrameworkConstraints.convertFromString(targetFramework);
@@ -77,6 +75,11 @@ public class NuGetFeed {
       final Map<String, String> nugetPackageAttributes = nugetPackage.getAttributes();
       final String id = nugetPackageAttributes.get(ID);
       final String version = nugetPackageAttributes.get(VERSION);
+      if (!includeSemVer2 && nugetPackage.isSemanticVersion2()) {
+        LOG.debug(String.format("Skipped package (id:%s, version:%s) since it has semver 2.0.", id, version));
+        return false;
+      }
+
       final String isPrerelease = nugetPackageAttributes.get(IS_PRERELEASE);
       final String frameworkConstraints = nugetPackageAttributes.get(TEAMCITY_FRAMEWORK_CONSTRAINTS);
       if (!includePrerelease && Boolean.parseBoolean(isPrerelease)) {
@@ -115,10 +118,12 @@ public class NuGetFeed {
   }
 
   @NotNull
-  public List<NuGetIndexEntry> findPackagesById(@NotNull final String id) {
-    final List<NuGetIndexEntry> packages = myIndex.find(CollectionsUtil.asMap(ID, id));
-    LOG.debug(String.format("Found %s packages for id %s", packages.size(), id));
-
+  public List<NuGetIndexEntry> findPackagesById(@NotNull final String id, final boolean includeSemVer2) {
+    List<NuGetIndexEntry> packages = myIndex.find(CollectionsUtil.asMap(ID, id));
+    if (!includeSemVer2) {
+      packages = CollectionsUtil.filterCollection(packages, data -> !data.isSemanticVersion2());
+    }
+    LOG.debug(String.format("Found %s packages for id %s, semVer2.0 filtering: %s", packages.size(), id, includeSemVer2));
     return packages;
   }
 
@@ -128,7 +133,8 @@ public class NuGetFeed {
                                           @NotNull final String versionConstraintsValue,
                                           @NotNull final String targetFrameworksValue,
                                           final boolean includePrerelease,
-                                          final boolean includeAllVersions) {
+                                          final boolean includeAllVersions,
+                                          final boolean includeSemVer2) {
     final List<String> packageIds = StringUtil.split(packageIdsValue, VALUE_SEPARATOR);
     final List<String> versions = StringUtil.split(versionsValue, VALUE_SEPARATOR);
     final List<String> versionConstraints = StringUtil.split(versionConstraintsValue, VALUE_SEPARATOR);
@@ -157,7 +163,7 @@ public class NuGetFeed {
         }
       }
 
-      packages.addAll(getUpdateOfPackageWithId(includeAllVersions, includePrerelease, targetFrameworks, requestedPackageId, requestedVersion, versionConstraint));
+      packages.addAll(getUpdateOfPackageWithId(includeAllVersions, includePrerelease, targetFrameworks, requestedPackageId, requestedVersion, versionConstraint, includeSemVer2));
     }
 
     LOG.debug(String.format("%d updated package(s) found", packages.size()));
@@ -176,7 +182,8 @@ public class NuGetFeed {
                                                                final Set<String> frameworkConstraints,
                                                                final String requestedPackageId,
                                                                final SemanticVersion requestedVersion,
-                                                               final VersionConstraint versionConstraint) {
+                                                               final VersionConstraint versionConstraint,
+                                                               final boolean includeSemVer2) {
     final Comparator<NuGetIndexEntry> comparator = Collections.reverseOrder(SemanticVersionsComparators.getEntriesComparator());
     final List<NuGetIndexEntry> result = new SortedList<>(comparator);
 
@@ -187,8 +194,13 @@ public class NuGetFeed {
     }
 
     for (NuGetIndexEntry indexEntry : myIndex.find(query)) {
+      if (!includeSemVer2 && indexEntry.isSemanticVersion2()) {
+        LOG.debug(String.format("Skipped package (id:%s, version:%s) since it has semver 2.0.", requestedPackageId, indexEntry.getVersion()));
+        continue;
+      }
+
       if (match(indexEntry, requestedVersion, includePreRelease, frameworkConstraints, versionConstraint)) {
-        LOG.debug(String.format("Matched indexed package found for id:%s version:%s. %s", requestedPackageId, requestedVersion, indexEntry));
+        LOG.debug(String.format("Matched package (id:%s version:%s): %s", requestedPackageId, requestedVersion, indexEntry));
         result.add(indexEntry);
       }
     }
@@ -222,9 +234,12 @@ public class NuGetFeed {
       }
     }
 
-    final SemanticVersion entryVersion = SemanticVersion.valueOf(indexEntry.getPackageInfo().getVersion());
-    return entryVersion != null &&
-      (versionConstraint == null || versionConstraint.satisfies(entryVersion)) &&
-      requestedVersion.compareTo(entryVersion) < 0;
+    final PackageVersion version = indexEntry.getVersion();
+    if (!(version instanceof SemanticVersion)) {
+      return false;
+    }
+
+    final SemanticVersion semanticVersion = (SemanticVersion) version;
+    return (versionConstraint == null || versionConstraint.satisfies(semanticVersion)) && requestedVersion.compareTo(version) < 0;
   }
 }

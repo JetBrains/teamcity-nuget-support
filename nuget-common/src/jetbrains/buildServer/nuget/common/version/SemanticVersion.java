@@ -24,19 +24,32 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author Evgeniy.Koshkin
+ * Semantic package version.
  */
-public class SemanticVersion implements Comparable<SemanticVersion> {
-  private static Pattern VERSION_STRING_MATCHING_PATTERN = Pattern.compile("^([0-9]+)(?:\\.([0-9]+))?(?:\\.([0-9]+))?(?:\\.([0-9]+))?(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(?:\\+[0-9A-Za-z-\\.]+)?$", Pattern.CASE_INSENSITIVE);
+public class SemanticVersion implements PackageVersion {
+  private static Pattern VERSION_STRING_MATCHING_PATTERN = Pattern.compile("^([0-9]+)(?:\\.([0-9]+))?(?:\\.([0-9]+))?(?:\\.([0-9]+))?(?:-([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?(\\+[0-9A-Za-z-\\.]+)?$", Pattern.CASE_INSENSITIVE);
 
-  @NotNull private final Version myVersion;
-  @Nullable private final String mySpecialVersion;
-  @NotNull private final String myOriginalString;
+  private final Version myVersion;
+  private final String myRelease;
+  private final String myMetadata;
+  private final String myOriginalString;
+  private final SemVerLevel myLevel;
 
-  private SemanticVersion(@NotNull Version version, @Nullable String specialVersion, @NotNull String originalString) {
+  private SemanticVersion(@NotNull Version version,
+                          @Nullable String release,
+                          @Nullable String metadata,
+                          @NotNull String originalString) {
     myVersion = version;
-    mySpecialVersion = specialVersion;
+    myRelease = release;
+    myMetadata = metadata;
     myOriginalString = originalString;
+
+    // A version is defined as SemVer v2.0.0 if either of the following statements is true:
+    // * The (pre)release label is dot-separated, e.g. 1.0.0-alpha.1
+    // * The version has build-metadata, e.g. 1.0.0+githash
+    myLevel = StringUtil.isNotEmpty(myMetadata) || StringUtil.isNotEmpty(myRelease) && myRelease.contains(".")
+      ? SemVerLevel.V2
+      : SemVerLevel.V1;
   }
 
   @Nullable
@@ -60,13 +73,11 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
     if (release != null && release.startsWith("-"))
       release = release.substring(1);
 
-    return new SemanticVersion(versionValue, release, versionString.replace(" ", ""));
-  }
+    String metadata = match.group(6);
+    if (metadata != null && metadata.startsWith("+"))
+      metadata = metadata.substring(1);
 
-  public static int compareAsVersions(@NotNull String versionString1, @NotNull String versionString2) {
-    final SemanticVersion version1 = valueOf(versionString1);
-    final SemanticVersion version2 = valueOf(versionString2);
-    return version1 != null && version2 != null ? version1.compareTo(version2) : versionString1.compareTo(versionString2);
+    return new SemanticVersion(versionValue, release, metadata, versionString.replace(" ", ""));
   }
 
   @NotNull
@@ -75,21 +86,31 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
   }
 
   @Nullable
-  public String getSpecialVersion() {
-    return mySpecialVersion;
+  public String getRelease() {
+    return myRelease;
   }
 
-  public int compareTo(@NotNull SemanticVersion other) {
-    int result = myVersion.compareTo(other.myVersion);
+  @Nullable
+  public String getMetadata() {
+    return myMetadata;
+  }
+
+  public int compareTo(@NotNull PackageVersion other) {
+    if (!(other instanceof SemanticVersion)) {
+      return myOriginalString.compareTo(other.toString());
+    }
+
+    SemanticVersion o = (SemanticVersion)other;
+    int result = myVersion.compareTo(o.myVersion);
     if (result != 0) return result;
-    boolean empty = StringUtil.isEmpty(mySpecialVersion);
-    boolean otherEmpty = StringUtil.isEmpty(other.mySpecialVersion);
+    boolean empty = StringUtil.isEmpty(myRelease);
+    boolean otherEmpty = StringUtil.isEmpty(o.myRelease);
     if (empty && otherEmpty) return 0;
     else if (empty) return 1;
     else if (otherEmpty) return -1;
 
-    String[] o1 = split(mySpecialVersion);
-    String[] o2 = split(other.mySpecialVersion);
+    String[] o1 = split(myRelease);
+    String[] o2 = split(o.myRelease);
 
     int x;
     for(int i = 0, max = Math.min(o1.length, o2.length); i < max; i++) {
@@ -105,7 +126,7 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
   }
 
   public boolean equals(SemanticVersion that){
-    if (mySpecialVersion != null ? !mySpecialVersion.equals(that.mySpecialVersion) : that.mySpecialVersion != null) return false;
+    if (myRelease != null ? !myRelease.equals(that.myRelease) : that.myRelease != null) return false;
     return myVersion.equals(that.myVersion);
   }
 
@@ -120,7 +141,8 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
   public int hashCode() {
     int hash = 5;
     hash = 43 * hash + this.myVersion.hashCode();
-    hash = 43 * hash + (this.mySpecialVersion != null ? this.mySpecialVersion.hashCode() : 0);
+    hash = 43 * hash + (this.myRelease != null ? this.myRelease.hashCode() : 0);
+    hash = 43 * hash + (this.myMetadata != null ? this.myMetadata.hashCode() : 0);
     return hash;
   }
 
@@ -167,5 +189,11 @@ public class SemanticVersion implements Comparable<SemanticVersion> {
   private String[] split(@Nullable String s) {
     if (s == null || s.length() == 0) return new String[0];
     return Pattern.compile("\\.").split(s);
+  }
+
+  @NotNull
+  @Override
+  public SemVerLevel getLevel() {
+    return myLevel;
   }
 }

@@ -233,4 +233,66 @@ public class SearchFunctionIntegrationTest extends NuGetJavaFeedIntegrationTestB
     assertContainsPackageVersion(response, "1.2.0-beta");
   }
 
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testSearchWithoutSemVer(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    addMockPackage(CollectionsUtil.asMap(
+      ID, "aaa",
+      VERSION, "1.0.0",
+      IS_PRERELEASE, "false",
+      IS_LATEST_VERSION, "true",
+      IS_ABSOLUTE_LATEST_VERSION, "false"));
+    addMockPackage(CollectionsUtil.asMap(
+      ID, "aaa",
+      VERSION, "1.1.0+metadata",
+      IS_PRERELEASE, "false",
+      IS_LATEST_VERSION, "true",
+      IS_ABSOLUTE_LATEST_VERSION, "false"));
+
+    String response = openRequest("Search()?searchTerm='aaa'&targetFramework='net45'&includePrerelease=false");
+    assertContainsPackageVersion(response, "1.0.0");
+    assertNotContainsPackageVersion(response, "1.1.0+metadata");
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testSearchWitSemVer10(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    addMockPackage(CollectionsUtil.asMap(
+      ID, "aaa",
+      VERSION, "1.0.0",
+      IS_PRERELEASE, "false",
+      IS_LATEST_VERSION, "true",
+      IS_ABSOLUTE_LATEST_VERSION, "false"));
+    addMockPackage(CollectionsUtil.asMap(
+      ID, "aaa",
+      VERSION, "1.1.0+metadata",
+      IS_PRERELEASE, "false",
+      IS_LATEST_VERSION, "true",
+      IS_ABSOLUTE_LATEST_VERSION, "false"));
+
+    String response = openRequest("Search()?searchTerm='aaa'&targetFramework='net45'&includePrerelease=false&semVerLevel='1.0.0'");
+    assertContainsPackageVersion(response, "1.0.0");
+    assertNotContainsPackageVersion(response, "1.1.0+metadata");
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testSearchWitSemVer20(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    addMockPackage(CollectionsUtil.asMap(
+      ID, "aaa",
+      VERSION, "1.0.0",
+      IS_PRERELEASE, "false",
+      IS_LATEST_VERSION, "false",
+      IS_ABSOLUTE_LATEST_VERSION, "false"));
+    addMockPackage(CollectionsUtil.asMap(
+      ID, "aaa",
+      VERSION, "1.1.0+metadata",
+      IS_PRERELEASE, "false",
+      IS_LATEST_VERSION, "false",
+      IS_ABSOLUTE_LATEST_VERSION, "false"));
+
+    String response = openRequest("Search()?searchTerm='aaa'&targetFramework='net45'&includePrerelease=false&semVerLevel='2.0.0'");
+    assertContainsPackageVersion(response, "1.0.0");
+    assertContainsPackageVersion(response, "1.1.0+metadata");
+  }
 }

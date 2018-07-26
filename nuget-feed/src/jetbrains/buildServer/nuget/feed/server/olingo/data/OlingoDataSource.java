@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo.data;
 
+import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
@@ -40,6 +41,7 @@ public class OlingoDataSource {
 
   private final NuGetFeed myFeed;
   private final Map<String, OlingoFeedFunction> myFunctions = new HashMap<>();
+  private final SemanticVersion VERSION_20 = Objects.requireNonNull(SemanticVersion.valueOf("2.0.0"));
 
   public OlingoDataSource(@NotNull final NuGetFeed feed) {
     myFeed = feed;
@@ -52,7 +54,8 @@ public class OlingoDataSource {
         throw new UriSyntaxException(UriSyntaxException.MISSINGPARAMETER);
       }
 
-      return myFeed.search(searchTerm, targetFramework, includePrerelease);
+      final boolean includeSemVer2 = includeSemVer2(parameters);
+      return myFeed.search(searchTerm, targetFramework, includePrerelease, includeSemVer2);
     });
 
     myFunctions.put(MetadataConstants.FIND_PACKAGES_BY_ID_FUNCTION_NAME, parameters -> {
@@ -61,16 +64,21 @@ public class OlingoDataSource {
         throw new UriSyntaxException(UriSyntaxException.MISSINGPARAMETER);
       }
 
-      return myFeed.findPackagesById(id);
+      final boolean includeSemVer2 = includeSemVer2(parameters);
+      return myFeed.findPackagesById(id, includeSemVer2);
     });
 
-    myFunctions.put(MetadataConstants.GET_UPDATES_FUNCTION_NAME, parameters -> myFeed.getUpdates(
-      getStringValue(parameters.get(MetadataConstants.PACKAGE_IDS)),
-      getStringValue(parameters.get(MetadataConstants.VERSIONS)),
-      getStringValue(parameters.get(MetadataConstants.VERSION_CONSTRAINTS)),
-      getStringValue(parameters.get(MetadataConstants.TARGET_FRAMEWORKS)),
-      getBooleanValue(parameters.get(MetadataConstants.INCLUDE_PRERELEASE)),
-      getBooleanValue(parameters.get(MetadataConstants.INCLUDE_ALL_VERSIONS))));
+    myFunctions.put(MetadataConstants.GET_UPDATES_FUNCTION_NAME, parameters -> {
+      final boolean includeSemVer2 = includeSemVer2(parameters);
+      return myFeed.getUpdates(
+        getStringValue(parameters.get(MetadataConstants.PACKAGE_IDS)),
+        getStringValue(parameters.get(MetadataConstants.VERSIONS)),
+        getStringValue(parameters.get(MetadataConstants.VERSION_CONSTRAINTS)),
+        getStringValue(parameters.get(MetadataConstants.TARGET_FRAMEWORKS)),
+        getBooleanValue(parameters.get(MetadataConstants.INCLUDE_PRERELEASE)),
+        getBooleanValue(parameters.get(MetadataConstants.INCLUDE_ALL_VERSIONS)),
+        includeSemVer2);
+    });
   }
 
   /**
@@ -150,5 +158,15 @@ public class OlingoDataSource {
 
   private static boolean getBooleanValue(@Nullable Object value) {
     return value != null ? (Boolean) value : false;
+  }
+
+  private boolean includeSemVer2(Map<String, Object> parameters) {
+    boolean semVer20 = false;
+    final String semVerLevel = (String)parameters.get(MetadataConstants.SEMANTIC_VERSION);
+    if (semVerLevel != null) {
+      final SemanticVersion version = SemanticVersion.valueOf(semVerLevel);
+      semVer20 = version != null && version.compareTo(VERSION_20) >= 0;
+    }
+    return semVer20;
   }
 }

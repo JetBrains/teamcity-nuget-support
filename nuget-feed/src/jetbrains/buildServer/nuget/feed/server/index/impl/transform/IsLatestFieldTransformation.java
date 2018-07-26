@@ -16,8 +16,11 @@
 
 package jetbrains.buildServer.nuget.feed.server.index.impl.transform;
 
+import jetbrains.buildServer.nuget.common.version.PackageVersion;
+import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetPackageBuilder;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackageTransformation;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -34,15 +37,16 @@ public class IsLatestFieldTransformation implements PackageTransformation {
   @NotNull
   public Status applyTransformation(@NotNull final NuGetPackageBuilder builder) {
     final String packageName = builder.getPackageName();
-    final String version = builder.getVersion();
+    final PackageVersion version = builder.getVersion();
 
     //release or preselease version is parsed from package information according for semver.org
     //http://semver.org/
     //http://docs.nuget.org/docs/reference/versioning
-    final boolean isReleaseVersion = version.matches("^\\d+(\\.\\d+)+$");
+    final boolean isReleaseVersion = version instanceof SemanticVersion &&
+      StringUtil.isEmpty(((SemanticVersion)version).getRelease());
 
     //Metadata entries are sorted from newer to older packages
-    //isLatestVersion === this is the firts occurence of package in the collection
+    //isLatestVersion === this is the first occurrence of package in the collection
     final boolean isLatestVersion = isReleaseVersion && myReleasedPackages.add(packageName);
     final boolean isAbsoluteLatestVersion = myAllPackages.add(packageName);
 
@@ -55,6 +59,7 @@ public class IsLatestFieldTransformation implements PackageTransformation {
     //Note: see https://github.com/NuGet/NuGetGallery/wiki/Package-Metadata-in-the-NuGet-Gallery-Feed
     builder.setIsLatest(isLatestVersion);
     builder.setIsAbsoluteLatest(isAbsoluteLatestVersion);
+
     return Status.CONTINUE;
   }
 

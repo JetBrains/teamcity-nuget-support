@@ -17,9 +17,8 @@
 package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
-import jetbrains.buildServer.nuget.common.version.FrameworkName;
-import jetbrains.buildServer.nuget.common.version.Version;
-import jetbrains.buildServer.nuget.common.version.VersionUtility;
+import jetbrains.buildServer.nuget.common.version.*;
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -177,5 +176,29 @@ public class VersionUtilityTest extends BaseTestCase {
     assertEquals("4.0.0-alpha", VersionUtility.normalizeVersion("4.0.0.0-alpha"));
     assertEquals("5.0.0", VersionUtility.normalizeVersion("05.0"));
     assertEquals("6.2.1.1", VersionUtility.normalizeVersion("6.2.01.1"));
+  }
+
+  @Test
+  public void testValueOfNonSemVer() {
+    PackageVersion version1 = VersionUtility.valueOf("v1");
+    Assert.assertEquals(version1.getLevel(), SemVerLevel.NONE);
+  }
+
+  @Test
+  public void testValueOfSemVer1() {
+    PackageVersion version1 = VersionUtility.valueOf("1.0.0");
+    Assert.assertEquals(version1.getLevel(), SemVerLevel.V1);
+
+    PackageVersion version2 = VersionUtility.valueOf("1.0.0-beta");
+    Assert.assertEquals(version2.getLevel(), SemVerLevel.V1);
+  }
+
+  @Test
+  public void testValueOfSemVer2() {
+    PackageVersion version1 = VersionUtility.valueOf("1.0.0+metadata");
+    Assert.assertEquals(version1.getLevel(), SemVerLevel.V2);
+
+    PackageVersion version2 = VersionUtility.valueOf("1.0.0-rel.2");
+    Assert.assertEquals(version2.getLevel(), SemVerLevel.V2);
   }
 }

@@ -85,7 +85,7 @@ public class PackageDependenciesStore {
     for (NuGetPackageInfo info : usedPackages) {
       final Element pkg = new Element(PACKAGE_ELEMENT);
       pkg.setAttribute(PACKAGE_ID, info.getId());
-      pkg.setAttribute(PACKAGE_VERSION, info.getVersion());
+      pkg.setAttribute(PACKAGE_VERSION, info.getVersion().toString());
       container.addContent((Content) pkg);
     }
     root.addContent((Content) container);
@@ -116,7 +116,7 @@ public class PackageDependenciesStore {
     for (SourcePackageInfo info : usedPackages) {
       final Element pkg = new Element(PACKAGE_ELEMENT);
       pkg.setAttribute(PACKAGE_ID, info.getPackageInfo().getId());
-      pkg.setAttribute(PACKAGE_VERSION, info.getPackageInfo().getVersion());
+      pkg.setAttribute(PACKAGE_VERSION, info.getPackageInfo().getVersion().toString());
       if (!StringUtil.isEmptyOrSpaces(info.getSource())) {
         pkg.setAttribute(PACKAGE_SOURCE, info.getSource());
       }

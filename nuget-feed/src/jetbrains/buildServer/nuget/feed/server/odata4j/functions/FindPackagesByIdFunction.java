@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * @author Evgeniy.Koshkin
  */
-public class FindPackagesByIdFunction implements NuGetFeedFunction {
+public class FindPackagesByIdFunction extends NuGetFeedFunctionBase {
 
   private final Logger LOG = Logger.getInstance(getClass().getName());
   private final NuGetFeed myFeed;
@@ -59,7 +59,8 @@ public class FindPackagesByIdFunction implements NuGetFeedFunction {
       .setHttpMethod(MetadataConstants.HTTP_METHOD_GET)
       .setReturnType(returnType)
       .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID).setType(EdmSimpleType.STRING))
-      .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID_UPPER_CASE).setType(EdmSimpleType.STRING));
+      .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID_UPPER_CASE).setType(EdmSimpleType.STRING))
+      .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.SEMANTIC_VERSION).setType(EdmSimpleType.STRING));
   }
 
   @Nullable
@@ -80,6 +81,7 @@ public class FindPackagesByIdFunction implements NuGetFeedFunction {
     final OSimpleObject idObjectCasted = (OSimpleObject) id;
     final String packageId = idObjectCasted.getValue().toString();
 
-    return myFeed.findPackagesById(packageId);
+    final boolean includeSemVer2 = includeSemVer2(params);
+    return myFeed.findPackagesById(packageId, includeSemVer2);
   }
 }

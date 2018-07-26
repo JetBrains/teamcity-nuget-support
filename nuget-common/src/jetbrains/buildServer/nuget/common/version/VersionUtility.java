@@ -297,7 +297,19 @@ public class VersionUtility {
             version.getMinor(),
             version.getPatch(),
             version.getBuild() > 0 ? ("." + String.valueOf(version.getBuild())) : "",
-            !StringUtil.isEmpty(semanticVersion.getSpecialVersion()) ? ("-" + semanticVersion.getSpecialVersion()) : "");
+            !StringUtil.isEmpty(semanticVersion.getRelease()) ? ("-" + semanticVersion.getRelease()) : "");
+  }
+
+  /**
+   * Creates a version instance from the string representation.
+   *
+   * @param version string.
+   * @return version instance.
+   */
+  @NotNull
+  public static PackageVersion valueOf(@NotNull final String version) {
+    final SemanticVersion semanticVersion = SemanticVersion.valueOf(version);
+    return semanticVersion != null ? semanticVersion : new RegularVersion(version);
   }
 
   private static FrameworkName normalizeFrameworkName(FrameworkName framework){

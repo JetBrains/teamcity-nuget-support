@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feed.server.olingo.model.NuGetMapper;
 import jetbrains.buildServer.nuget.feed.server.olingo.model.V2FeedPackage;
 import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.StringUtil;
 import org.apache.olingo.odata2.api.batch.*;
 import org.apache.olingo.odata2.api.commons.HttpStatusCodes;
 import org.apache.olingo.odata2.api.commons.InlineCount;
@@ -92,7 +93,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       uriInfo.getFilter(),
       inlineCountType,
       uriInfo.getOrderBy(),
-      uriInfo.getSkipToken(),
+      getSkipToken(uriInfo),
       uriInfo.getSkip(),
       uriInfo.getTop());
 
@@ -106,7 +107,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     // and $skip.
     if (data.size() > SERVER_PAGING_SIZE) {
       if (uriInfo.getOrderBy() == null
-        && uriInfo.getSkipToken() == null
+        && getSkipToken(uriInfo) == null
         && uriInfo.getSkip() == null
         && uriInfo.getTop() == null) {
         sortInDefaultOrder(entitySet, data);
@@ -116,7 +117,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       nextLink = percentEncodeNextLink(nextLink);
 
       nextLink += (nextLink.contains("?") ? "&" : "?")
-        + "$skiptoken=" + getSkipToken(entitySet, data.get(SERVER_PAGING_SIZE));
+        + "$skiptoken=" + getSkipToken(entitySet, data.get(SERVER_PAGING_SIZE - 1));
 
       data = data.subList(0, Math.min(data.size(), SERVER_PAGING_SIZE));
     }
@@ -140,6 +141,14 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     context.stopRuntimeMeasurement(timingHandle);
 
     return ODataResponse.fromResponse(response).build();
+  }
+
+  private String getSkipToken(GetEntitySetUriInfo uriInfo) {
+    final String skipToken = uriInfo.getSkipToken();
+    if (skipToken == null) {
+      return null;
+    }
+    return StringUtil.replace(skipToken, " ", "+");
   }
 
   private static String percentEncodeNextLink(final String link) {
@@ -550,10 +559,12 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       sortInDefaultOrder(entitySet, data);
     }
 
-    if (skipToken != null) {
-      while (!data.isEmpty() && !getSkipToken(entitySet, data.get(0)).equals(skipToken)) {
+    if (skipToken != null && !data.isEmpty()) {
+      String entitySkipToken;
+      do {
+        entitySkipToken = getSkipToken(entitySet, data.get(0));
         data.remove(0);
-      }
+      } while (!data.isEmpty() && !entitySkipToken.equals(skipToken));
     }
 
     if (skip != null) {

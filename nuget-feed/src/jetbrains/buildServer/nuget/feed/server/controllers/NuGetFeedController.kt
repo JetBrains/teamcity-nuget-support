@@ -75,7 +75,9 @@ class NuGetFeedController(web: WebControllerManager,
 
         val requestWrapper = object : RequestWrapper(request, feedPath) {
             override fun getQueryString(): String? {
-                val queryString = super.getQueryString()
+                val queryString = super.getQueryString()?.let {
+                    SEM_VER_LEVEL.replaceFirst(it, "$1'$2'$3")
+                }
                 return if (queryString == null || !super.getRequestURI().endsWith("FindPackagesById()")) {
                     queryString
                 } else {
@@ -136,6 +138,7 @@ class NuGetFeedController(web: WebControllerManager,
     companion object {
         private val LOG = Logger.getInstance(NuGetFeedController::class.java.name)
         private val QUERY_ID = Regex("^(id=)(.*)", RegexOption.IGNORE_CASE)
+        private val SEM_VER_LEVEL = Regex("(.*semVerLevel=)([\\d\\.]+)(.*)", RegexOption.IGNORE_CASE)
         private val FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.PROJECT_PATH + "/([^/]+)/([^/]+)/v[12])")
         private const val UNSUPPORTED_REQUEST = "Unsupported NuGet feed request"
     }
