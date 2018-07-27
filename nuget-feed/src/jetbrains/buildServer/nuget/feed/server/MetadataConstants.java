@@ -33,6 +33,7 @@ public class MetadataConstants {
   public static final String ID = "id";
   public static final String ID_UPPER_CASE = "Id";  //used by VS since 2015 version
   public static final String SEARCH_TERM = "searchTerm";
+  public static final String SEMANTIC_VERSION = "semVerLevel";
   public static final String TARGET_FRAMEWORK = "targetFramework";
   public static final String INCLUDE_PRERELEASE = "includePrerelease";
   public static final String PACKAGE_IDS = "packageIds";

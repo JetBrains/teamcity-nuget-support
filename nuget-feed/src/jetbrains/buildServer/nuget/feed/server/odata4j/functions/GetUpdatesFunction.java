@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * @author Evgeniy.Koshkin
  */
-public class GetUpdatesFunction implements NuGetFeedFunction {
+public class GetUpdatesFunction extends NuGetFeedFunctionBase {
 
   private final Logger LOG = Logger.getInstance(getClass().getName());
   private final NuGetFeed myFeed;
@@ -63,18 +63,21 @@ public class GetUpdatesFunction implements NuGetFeedFunction {
         new EdmFunctionParameter.Builder().setName(MetadataConstants.INCLUDE_PRERELEASE).setType(EdmSimpleType.BOOLEAN),
         new EdmFunctionParameter.Builder().setName(MetadataConstants.INCLUDE_ALL_VERSIONS).setType(EdmSimpleType.BOOLEAN),
         new EdmFunctionParameter.Builder().setName(MetadataConstants.TARGET_FRAMEWORKS).setType(EdmSimpleType.STRING),
-        new EdmFunctionParameter.Builder().setName(MetadataConstants.VERSION_CONSTRAINTS).setType(EdmSimpleType.STRING));
+        new EdmFunctionParameter.Builder().setName(MetadataConstants.VERSION_CONSTRAINTS).setType(EdmSimpleType.STRING),
+        new EdmFunctionParameter.Builder().setName(MetadataConstants.SEMANTIC_VERSION).setType(EdmSimpleType.STRING));
   }
 
   @Nullable
   public Iterable<NuGetIndexEntry> call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
+    final boolean includeSemVer2 = includeSemVer2(params);
     return myFeed.getUpdates(
       extractStringParameterValue(params, MetadataConstants.PACKAGE_IDS),
       extractStringParameterValue(params, MetadataConstants.VERSIONS),
       extractStringParameterValue(params, MetadataConstants.VERSION_CONSTRAINTS),
       extractStringParameterValue(params, MetadataConstants.TARGET_FRAMEWORKS),
       extractBooleanParameterValue(params, MetadataConstants.INCLUDE_PRERELEASE),
-      extractBooleanParameterValue(params, MetadataConstants.INCLUDE_ALL_VERSIONS)
+      extractBooleanParameterValue(params, MetadataConstants.INCLUDE_ALL_VERSIONS),
+      includeSemVer2
     );
   }
 

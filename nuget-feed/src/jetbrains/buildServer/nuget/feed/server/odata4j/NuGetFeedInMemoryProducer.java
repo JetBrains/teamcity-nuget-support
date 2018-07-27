@@ -28,6 +28,7 @@ import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFuncti
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.StringUtil;
 import org.core4j.Enumerable;
 import org.core4j.Func;
 import org.jetbrains.annotations.NotNull;
@@ -74,13 +75,14 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
   }
 
   @Override
-  public BaseResponse callFunction(ODataContext context, EdmFunctionImport function, Map<String, OFunctionParameter> params, QueryInfo queryInfo, boolean isCountCall) {
+  public BaseResponse callFunction(ODataContext context, EdmFunctionImport function, Map<String, OFunctionParameter> params, QueryInfo query, boolean isCountCall) {
     final NuGetFeedFunction targetFunction = myFunctions.find(function);
     if (targetFunction == null) {
       LOG.debug("Failed to process NuGet feed function call. Failed to find target function by name " + function.getName());
       throw new NotImplementedException();
     }
 
+    final QueryInfo queryInfo = getQueryInfo(query);
     final Iterable<Object> functionCallResult = CollectionsUtil.convertCollection(
       targetFunction.call(function.getReturnType(), params, queryInfo), PackageEntityEx::new);
     if (functionCallResult == null) return null;
@@ -97,6 +99,21 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
       return getCountResponse(rc, Enumerable.create(functionCallResult));
     else
       return getEntitiesResponse(rc, rc.getEntitySet(), Enumerable.create(functionCallResult), ei.getPropertyModel());
+  }
+
+  private QueryInfo getQueryInfo(QueryInfo query) {
+    final String skipToken = query.skipToken;
+    return QueryInfo.newBuilder()
+      .setInlineCount(query.inlineCount)
+      .setTop(query.top)
+      .setSkip(query.skip)
+      .setFilter(query.filter)
+      .setOrderBy(query.orderBy)
+      .setSkipToken(skipToken != null ? StringUtil.replace(skipToken, " ", "+") : null)
+      .setCustomOptions(query.customOptions)
+      .setExpand(query.expand)
+      .setSelect(query.select)
+      .build();
   }
 
   @Override

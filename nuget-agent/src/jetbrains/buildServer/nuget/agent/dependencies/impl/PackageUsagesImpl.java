@@ -65,7 +65,7 @@ public class PackageUsagesImpl implements PackageUsages {
     for (File file : packageFiles) {
       try {
         NuGetPackageInfo info = myLoader.loadPackageInfo(file);
-        myCollector.addCreatedPackage(info.getId(), info.getVersion());
+        myCollector.addCreatedPackage(info.getId(), info.getVersion().toString());
       } catch (PackageLoadException e) {
         LOG.warn("Failed to parse create NuGet package: " + file);
       }
@@ -75,7 +75,7 @@ public class PackageUsagesImpl implements PackageUsages {
   public void reportPublishedPackage(@NotNull final File packageFile, @Nullable String source) {
     try {
       NuGetPackageInfo info = myLoader.loadPackageInfo(packageFile);
-      myCollector.addPublishedPackage(info.getId(), info.getVersion(), source);
+      myCollector.addPublishedPackage(info.getId(), info.getVersion().toString(), source);
     } catch (PackageLoadException e) {
       LOG.warn("Failed to parse create NuGet package: " + packageFile);
     }

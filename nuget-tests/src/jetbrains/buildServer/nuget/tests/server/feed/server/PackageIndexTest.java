@@ -394,7 +394,7 @@ public class PackageIndexTest extends BaseTestCase {
     entryData.put(VERSION, packageVersion);
     entryData.put(ID, packageId);
     SemanticVersion version = SemanticVersion.valueOf(packageVersion);
-    entryData.put(IS_PRERELEASE, Boolean.toString(version != null && !StringUtil.isEmpty(version.getSpecialVersion())));
+    entryData.put(IS_PRERELEASE, Boolean.toString(version != null && !StringUtil.isEmpty(version.getRelease())));
     myEntries.add(entry);
 
     //recall natural sort order of metadata entries

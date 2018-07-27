@@ -16,6 +16,8 @@
 
 package jetbrains.buildServer.nuget.common;
 
+import jetbrains.buildServer.nuget.common.version.PackageVersion;
+import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,18 +26,24 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NuGetPackageInfo implements Comparable<NuGetPackageInfo> {
   private final String myId;
-  private final String myVersion;
+  private final PackageVersion myVersion;
 
   public NuGetPackageInfo(@NotNull final String id,
                           @NotNull final String version) {
     myId = id;
+    myVersion = VersionUtility.valueOf(version);
+  }
+
+  public NuGetPackageInfo(@NotNull final String id,
+                          @NotNull final PackageVersion version) {
+    myId = id;
     myVersion = version;
   }
 
-  public int compareTo(NuGetPackageInfo o) {
+  public int compareTo(@NotNull final NuGetPackageInfo other) {
     int x;
-    if ((x = getId().compareTo(o.getId())) != 0) return x;
-    if ((x = getVersion().compareTo(o.getVersion())) != 0) return x;
+    if ((x = myId.compareTo(other.myId)) != 0) return x;
+    if ((x = myVersion.compareTo(other.myVersion)) != 0) return x;
     return 0;
   }
 
@@ -45,7 +53,7 @@ public class NuGetPackageInfo implements Comparable<NuGetPackageInfo> {
   }
 
   @NotNull
-  public String getVersion() {
+  public PackageVersion getVersion() {
     return myVersion;
   }
 

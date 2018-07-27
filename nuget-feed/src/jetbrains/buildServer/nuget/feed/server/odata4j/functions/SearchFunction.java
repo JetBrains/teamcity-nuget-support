@@ -35,7 +35,7 @@ import static jetbrains.buildServer.nuget.feed.server.MetadataConstants.*;
 /**
  * @author Evgeniy.Koshkin
  */
-public class SearchFunction implements NuGetFeedFunction {
+public class SearchFunction extends NuGetFeedFunctionBase {
   private static final Logger LOG = Logger.getInstance(SearchFunction.class.getName());
   private final NuGetFeed myFeed;
 
@@ -58,7 +58,8 @@ public class SearchFunction implements NuGetFeedFunction {
       .setReturnType(returnType)
       .addParameters(new EdmFunctionParameter.Builder().setName(SEARCH_TERM).setType(EdmSimpleType.STRING),
         new EdmFunctionParameter.Builder().setName(TARGET_FRAMEWORK).setType(EdmSimpleType.STRING),
-        new EdmFunctionParameter.Builder().setName(INCLUDE_PRERELEASE).setType(EdmSimpleType.BOOLEAN));
+        new EdmFunctionParameter.Builder().setName(INCLUDE_PRERELEASE).setType(EdmSimpleType.BOOLEAN),
+        new EdmFunctionParameter.Builder().setName(SEMANTIC_VERSION).setType(EdmSimpleType.STRING));
   }
 
   @Nullable
@@ -103,7 +104,7 @@ public class SearchFunction implements NuGetFeedFunction {
     }
     final OSimpleObject includePreReleaseCasted = (OSimpleObject) includePreReleaseParamValue;
     final boolean includePreRelease = Boolean.parseBoolean(includePreReleaseCasted.getValue().toString());
-
-    return myFeed.search(searchTerm, targetFramework, includePreRelease);
+    final boolean includeSemVer2 = includeSemVer2(params);
+    return myFeed.search(searchTerm, targetFramework, includePreRelease, includeSemVer2);
   }
 }

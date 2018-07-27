@@ -253,6 +253,11 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
       Assert.assertTrue(matcher.find());
     }
 
+    for (int i = 0; i < NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE; i++) {
+      assertContainsPackageVersion(response, "1.0." + i);
+    }
+    assertNotContainsPackageVersion(response, "1.0." + NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE);
+
     String link = StringEscapeUtils.unescapeXml(matcher.group(1));
     String serverUrl = getNuGetServerUrl();
     if (link.startsWith(serverUrl)) {
@@ -261,6 +266,7 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     }
 
     response = openRequest(link);
+    assertNotContainsPackageVersion(response, "1.0." + (NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE - 1));
     assertContainsPackageVersion(response, "1.0." + NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE);
   }
 
