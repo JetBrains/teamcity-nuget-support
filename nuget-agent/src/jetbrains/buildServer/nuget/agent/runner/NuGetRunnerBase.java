@@ -60,7 +60,7 @@ public abstract class NuGetRunnerBase implements AgentBuildRunner, AgentBuildRun
       }
     })) return true;
 
-    LOG.warn("NuGet requires .NET Framework (x86) 4.0 and higher or Mono 3.2 and higher to be installed.");
+    LOG.info("NuGet requires .NET Framework (x86) 4.0 and higher or Mono 3.2 and higher to be installed.");
     return false;
   }
 }
