@@ -71,7 +71,12 @@ namespace JetBrains.TeamCity.NuGet
           return 1;
         }
 
-        var request = new GetAuthenticationCredentialsRequest(new Uri(args[0]), isRetry: false, isNonInteractive: true);
+        var request = new GetAuthenticationCredentialsRequest(
+          uri: new Uri(args[0]),
+          isRetry: false,
+          isNonInteractive: true,
+          canShowDialog: false
+        );
         var response = getAuthenticationCredentialsRequestHandler.HandleRequest(request);
 
         Console.WriteLine(response?.Username);

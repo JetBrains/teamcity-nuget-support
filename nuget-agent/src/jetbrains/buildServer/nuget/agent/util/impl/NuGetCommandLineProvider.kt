@@ -1,7 +1,6 @@
 package jetbrains.buildServer.nuget.agent.util.impl
 
 import com.intellij.execution.configurations.GeneralCommandLine
-import com.intellij.openapi.util.SystemInfo
 import jetbrains.buildServer.agent.BuildRunnerContext
 import jetbrains.buildServer.agent.runner.ProgramCommandLine
 import jetbrains.buildServer.agent.runner.SimpleProgramCommandLine

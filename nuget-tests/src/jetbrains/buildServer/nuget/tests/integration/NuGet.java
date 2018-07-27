@@ -86,7 +86,7 @@ public enum NuGet {
       case NuGet_4_0:
         return Paths.getPackagesPath("NuGet.CommandLine.4.0.0-rtm-2283/tools/NuGet.exe");
       case NuGet_4_8:
-        return Paths.getPackagesPath("NuGet.CommandLine.4.8.0-rtm.5362+dc0b55f597c6224a13d64b984651b18700d3054a/tools/NuGet.exe");
+        return Paths.getPackagesPath("NuGet.CommandLine.4.8.0-rtm.5362/tools/NuGet.exe");
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }

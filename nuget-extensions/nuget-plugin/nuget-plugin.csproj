@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="NuGet.Protocol" Version="4.8.0-preview4.5316+2794da17c9630f48ecffdc1cf8f28de04c71f516" />
+    <PackageReference Include="NuGet.Protocol" Version="4.8.0-rtm.5362" />
     <Compile Include="..\nuget-commands\src\Data\NuGetSource.cs">
       <Link>Data\NuGetSource.cs</Link>
     </Compile>
