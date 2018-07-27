@@ -21,8 +21,6 @@ msbuild {
 
 	// targets to execute (/t:Clean;Rebuild, no default)
 	targets = ['Clean', 'Build']
-
-	verbosity = 'detailed'
 }
 msbuild.dependsOn nugetRestore
 
