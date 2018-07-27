@@ -4,8 +4,11 @@ plugins {
 	id 'com.ullink.nunit' version '1.10'
 }
 
+nuget {
+    version = '4.5.0'
+}
+
 nugetRestore {
-	version = '4.5.0'
 	solutionFile = file('nuget-extensions.sln')
 }
 
