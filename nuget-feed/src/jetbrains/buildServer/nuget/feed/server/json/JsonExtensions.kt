@@ -4,15 +4,14 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.stream.JsonWriter
 import jetbrains.buildServer.nuget.common.index.ODataDataFormat
+import jetbrains.buildServer.nuget.common.version.SemanticVersion
+import jetbrains.buildServer.nuget.feed.server.MetadataConstants
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
 import java.io.OutputStreamWriter
 import java.util.*
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-
-internal fun NuGetIndexEntry.getVersion(): String {
-    return this.attributes[NuGetPackageAttributes.NORMALIZED_VERSION]!!.toLowerCase()
-}
 
 internal fun NuGetIndexEntry.toRegistrationEntry(atId: String, atType: List<String>, downloadUrl: String): JsonRegistrationPackageResponse {
     return JsonRegistrationPackageResponse(
@@ -88,6 +87,16 @@ inline fun <reified T> HttpServletResponse.writeJson(obj: T) {
         JsonExtensions.gson.toJson(obj, T::class.java, it)
     }
 }
+
+internal fun HttpServletRequest.includeSemVer2(): Boolean {
+    return this.getParameter(MetadataConstants.SEMANTIC_VERSION)?.let {
+        SemanticVersion.valueOf(it)?.let {
+            it >= VERSION_20
+        }
+    } ?: false
+}
+
+private val VERSION_20 = SemanticVersion.valueOf("2.0.0")!!
 
 object JsonExtensions {
     val gson: Gson = GsonBuilder()

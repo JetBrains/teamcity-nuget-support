@@ -1,8 +1,6 @@
 package jetbrains.buildServer.nuget.feed.server.json
 
-import jetbrains.buildServer.nuget.common.version.SemanticVersion
 import jetbrains.buildServer.nuget.common.version.VersionUtility
-import jetbrains.buildServer.nuget.feed.server.MetadataConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
@@ -20,14 +18,14 @@ class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetF
         val skip = request.getParameter("skip")?.toIntOrNull()
         val take = request.getParameter("take")?.toIntOrNull() ?: NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE
         val prerelease = request.getParameter("prerelease")?.toBoolean() ?: false
-        val includeSemVer2 = request.getParameter(MetadataConstants.SEMANTIC_VERSION)?.let {
-            SemanticVersion.valueOf(it)?.let {
-                it >= VERSION_20
-            }
-        } ?: false
+        val includeSemVer2 = request.includeSemVer2()
 
         val results = (if (query.isNullOrEmpty()) {
-            nuGetFeed.getAll(includeSemVer2)
+            if (!prerelease) {
+                nuGetFeed.find(mapOf(NuGetPackageAttributes.IS_PRERELEASE to false.toString()), includeSemVer2)
+            } else {
+                nuGetFeed.getAll(includeSemVer2)
+            }
         } else {
             nuGetFeed.search(query, "", prerelease, includeSemVer2)
         }).groupBy { it.packageInfo.id }
@@ -41,7 +39,7 @@ class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetF
 
         keys.take(take).forEach {
             results[it]?.let { packages ->
-                val entry = packages.first()
+                val entry = packages.last()
                 val packageUrl = "$rootUrl${request.servletPath}/registration1/${it.toLowerCase()}/"
                 val versions = packages.map {
                     val version = VersionUtility.normalizeVersion(it.version)
@@ -75,9 +73,5 @@ class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetF
         }
 
         response.writeJson(JsonSearchResponse(totalHits, data))
-    }
-
-    companion object {
-        private val VERSION_20 = SemanticVersion.valueOf("2.0.0")!!
     }
 }

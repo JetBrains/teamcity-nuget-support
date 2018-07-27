@@ -40,7 +40,7 @@ class JsonPackageContentHandler(private val feedFactory: NuGetFeedFactory) : NuG
         val results = feed.find(mapOf(
                 NuGetPackageAttributes.ID to id,
                 NuGetPackageAttributes.VERSION to version
-        ))
+        ), true)
 
         if (results.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Package $id:$version not found")

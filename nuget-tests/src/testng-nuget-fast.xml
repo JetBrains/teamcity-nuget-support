@@ -144,6 +144,7 @@
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonPackageContentTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonRegistrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonSearchQueryTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonAutocompleteTest"/>
     </classes>
   </test>
 </suite>

@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServletResponse
 open class JsonRequestHandler(serviceIndexHandler: JsonServiceIndexHandler,
                               searchQueryHandler: JsonSearchQueryHandler,
                               packageMetadata: JsonRegistrationHandler,
-                              flatcontainer: JsonPackageContentHandler) : NuGetFeedHandler {
+                              flatcontainer: JsonPackageContentHandler,
+                              autocomplete: JsonAutocompleteHandler) : NuGetFeedHandler {
     private val myHandlers = HashMap<String, NuGetFeedHandler>()
 
     init {
@@ -16,6 +17,7 @@ open class JsonRequestHandler(serviceIndexHandler: JsonServiceIndexHandler,
         myHandlers["query"] = searchQueryHandler
         myHandlers["registration1"] = packageMetadata
         myHandlers["flatcontainer"] = flatcontainer
+        myHandlers["autocomplete"] = autocomplete
     }
 
     override fun handleRequest(feedData: NuGetFeedData, request: HttpServletRequest, response: HttpServletResponse) {

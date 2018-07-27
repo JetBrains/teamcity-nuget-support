@@ -167,7 +167,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       new JsonServiceIndexHandler(),
       new JsonSearchQueryHandler(myFeedFactory),
       new JsonRegistrationHandler(myFeedFactory),
-      new JsonPackageContentHandler(myFeedFactory)
+      new JsonPackageContentHandler(myFeedFactory),
+      new JsonAutocompleteHandler(myFeedFactory)
     );
     myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);
   }
