@@ -32,15 +32,16 @@ public class NuGetFeed {
   }
 
   @NotNull
-  public List<NuGetIndexEntry> getAll() {
-    return myIndex.getAll();
+  public List<NuGetIndexEntry> getAll(final boolean includeSemVer2) {
+    return filterSemVer2Packages(myIndex.getAll(), includeSemVer2);
   }
 
   @NotNull
-  public List<NuGetIndexEntry> find(@NotNull final Map<String, String> query) {
+  public List<NuGetIndexEntry> find(@NotNull final Map<String, String> query,
+                                    final boolean includeSemVer2) {
     if (query.size() == 2 && query.containsKey(ID) && query.containsKey(VERSION)) {
       final String key = NuGetUtils.getPackageKey(query.get(ID), query.get(VERSION));
-      return myIndex.getByKey(key);
+      return filterSemVer2Packages(myIndex.getByKey(key), includeSemVer2);
     }
 
     final Map<String, String> map = new HashMap<>(query);
@@ -49,7 +50,7 @@ public class NuGetFeed {
       map.remove(VERSION);
     }
 
-    return myIndex.find(map);
+    return filterSemVer2Packages(myIndex.find(map), includeSemVer2);
   }
 
   @NotNull
@@ -67,19 +68,15 @@ public class NuGetFeed {
     final String searchDetails = builder.toString();
     LOG.debug(searchDetails);
 
-    final List<NuGetIndexEntry> foundPackages = searchPackages(searchTerm,
+    final List<NuGetIndexEntry> foundPackages = filterSemVer2Packages(searchPackages(searchTerm,
       filterByTargetFramework ? targetFramework : "",
       includePrerelease
-    );
+    ), includeSemVer2);
+
     final List<NuGetIndexEntry> packages = CollectionsUtil.filterCollection(foundPackages, nugetPackage -> {
       final Map<String, String> nugetPackageAttributes = nugetPackage.getAttributes();
       final String id = nugetPackageAttributes.get(ID);
       final String version = nugetPackageAttributes.get(VERSION);
-      if (!includeSemVer2 && nugetPackage.isSemanticVersion2()) {
-        LOG.debug(String.format("Skipped package (id:%s, version:%s) since it has semver 2.0.", id, version));
-        return false;
-      }
-
       final String isPrerelease = nugetPackageAttributes.get(IS_PRERELEASE);
       final String frameworkConstraints = nugetPackageAttributes.get(TEAMCITY_FRAMEWORK_CONSTRAINTS);
       if (!includePrerelease && Boolean.parseBoolean(isPrerelease)) {
@@ -119,12 +116,7 @@ public class NuGetFeed {
 
   @NotNull
   public List<NuGetIndexEntry> findPackagesById(@NotNull final String id, final boolean includeSemVer2) {
-    List<NuGetIndexEntry> packages = myIndex.find(CollectionsUtil.asMap(ID, id));
-    if (!includeSemVer2) {
-      packages = CollectionsUtil.filterCollection(packages, data -> !data.isSemanticVersion2());
-    }
-    LOG.debug(String.format("Found %s packages for id %s, semVer2.0 filtering: %s", packages.size(), id, includeSemVer2));
-    return packages;
+    return filterSemVer2Packages(myIndex.find(CollectionsUtil.asMap(ID, id)), includeSemVer2);
   }
 
   @NotNull
@@ -193,12 +185,7 @@ public class NuGetFeed {
       query.put(IS_PRERELEASE, "false");
     }
 
-    for (NuGetIndexEntry indexEntry : myIndex.find(query)) {
-      if (!includeSemVer2 && indexEntry.isSemanticVersion2()) {
-        LOG.debug(String.format("Skipped package (id:%s, version:%s) since it has semver 2.0.", requestedPackageId, indexEntry.getVersion()));
-        continue;
-      }
-
+    for (NuGetIndexEntry indexEntry : find(query, includeSemVer2)) {
       if (match(indexEntry, requestedVersion, includePreRelease, frameworkConstraints, versionConstraint)) {
         LOG.debug(String.format("Matched package (id:%s version:%s): %s", requestedPackageId, requestedVersion, indexEntry));
         result.add(indexEntry);
@@ -241,5 +228,9 @@ public class NuGetFeed {
 
     final SemanticVersion semanticVersion = (SemanticVersion) version;
     return (versionConstraint == null || versionConstraint.satisfies(semanticVersion)) && requestedVersion.compareTo(version) < 0;
+  }
+
+  private List<NuGetIndexEntry> filterSemVer2Packages(List<NuGetIndexEntry> packages, boolean includeSemVer2) {
+    return includeSemVer2 ? packages : CollectionsUtil.filterCollection(packages, data -> !data.isSemanticVersion2());
   }
 }

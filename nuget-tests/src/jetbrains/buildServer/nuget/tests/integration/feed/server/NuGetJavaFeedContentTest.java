@@ -298,6 +298,30 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     assertContainsPackageVersion(response, "1.0.0.42.0");
   }
 
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testGetPackagesWithSemVer10(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    enableDebug();
+    addMockPackage("MyPackage", "1.0.0.0");
+    addMockPackage("MyPackage", "1.0.0.1+metadata");
+
+    String responseBody = openRequest("Packages?semVerLevel='1.0.0'");
+    assertContainsPackageVersion(responseBody, "1.0.0.0");
+    assertNotContainsPackageVersion(responseBody, "1.0.0.1+metadata");
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testGetPackagesWithSemVer20(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    enableDebug();
+    addMockPackage("MyPackage", "1.0.0.0");
+    addMockPackage("MyPackage", "1.0.0.1+metadata");
+
+    String responseBody = openRequest("Packages?semVerLevel='2.0.0'");
+    assertContainsPackageVersion(responseBody, "1.0.0.0");
+    assertContainsPackageVersion(responseBody, "1.0.0.1+metadata");
+  }
+
   private String replaceXml(@NotNull final String text) {
     return text
             .replace("http://nuget.org/api/v2/", "BASE_URI/")

@@ -88,9 +88,12 @@ public class OlingoDataSource {
    * @return data
    */
   @NotNull
-  public List<?> readData(@NotNull final EdmEntitySet entitySet) throws ODataHttpException, EdmException {
+  public List<?> readAllData(@NotNull final EdmEntitySet entitySet,
+                             @NotNull final Map<String, String> parameters) throws ODataHttpException, EdmException {
     if (MetadataConstants.ENTITY_SET_NAME.equals(entitySet.getName())) {
-      return myFeed.getAll();
+      //noinspection unchecked
+      final boolean includeSemVer2 = includeSemVer2((Map)parameters);
+      return myFeed.getAll(includeSemVer2);
     }
 
     throw new ODataNotImplementedException();
@@ -100,12 +103,13 @@ public class OlingoDataSource {
    * Retrieves entities with a limited set of properties.
    *
    * @param entitySet is a target entity set
-   * @param keys      required proeprties.
+   * @param keys      required properties.
    * @return data
    */
   @NotNull
-  public Object readData(@NotNull final EdmEntitySet entitySet,
-                         @NotNull final Map<String, Object> keys) throws ODataHttpException, EdmException {
+  public Object readDataWithKeys(@NotNull final EdmEntitySet entitySet,
+                                 @NotNull final Map<String, Object> keys,
+                                 @NotNull final Map<String, String> parameters) throws ODataHttpException, EdmException {
     if (MetadataConstants.ENTITY_SET_NAME.equals(entitySet.getName())) {
       if (keys.isEmpty()) {
         throw new ODataNotImplementedException();
@@ -116,7 +120,9 @@ public class OlingoDataSource {
         query.put(key, (String) keys.get(key));
       }
 
-      final List<NuGetIndexEntry> result = myFeed.find(query);
+      //noinspection unchecked
+      final boolean includeSemVer2 = includeSemVer2((Map)parameters);
+      final List<NuGetIndexEntry> result = myFeed.find(query, includeSemVer2);
       if (result.size() > 0) {
         return result.get(0);
       } else {
@@ -136,9 +142,9 @@ public class OlingoDataSource {
    * @return data.
    */
   @NotNull
-  public Object readData(@NotNull final EdmFunctionImport function,
-                         @NotNull final Map<String, Object> parameters,
-                         @Nullable final Map<String, Object> keys) throws ODataHttpException, EdmException {
+  public Object executeFunction(@NotNull final EdmFunctionImport function,
+                                @NotNull final Map<String, Object> parameters,
+                                @Nullable final Map<String, Object> keys) throws ODataHttpException, EdmException {
     final OlingoFeedFunction handler = myFunctions.get(function.getName());
     if (handler == null) {
       throw new ODataNotImplementedException();
@@ -161,12 +167,12 @@ public class OlingoDataSource {
   }
 
   private boolean includeSemVer2(Map<String, Object> parameters) {
-    boolean semVer20 = false;
-    final String semVerLevel = (String)parameters.get(MetadataConstants.SEMANTIC_VERSION);
+    String semVerLevel = (String)parameters.get(MetadataConstants.SEMANTIC_VERSION);
     if (semVerLevel != null) {
+      semVerLevel = StringUtil.trimEnd(StringUtil.trimStart(semVerLevel, "'"), "'");
       final SemanticVersion version = SemanticVersion.valueOf(semVerLevel);
-      semVer20 = version != null && version.compareTo(VERSION_20) >= 0;
+      return version != null && version.compareTo(VERSION_20) >= 0;
     }
-    return semVer20;
+    return false;
   }
 }

@@ -16,13 +16,19 @@
 
 package jetbrains.buildServer.nuget.feed.server.odata4j;
 
+import jetbrains.buildServer.nuget.common.version.SemanticVersion;
+import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
 import jetbrains.buildServer.nuget.feed.server.odata4j.functions.NuGetFeedFunctions;
 import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.producer.ODataProducer;
 import org.odata4j.stax2.XMLFactoryProvider2;
 import org.odata4j.stax2.xppimpl.XmlPullXMLFactoryProvider2;
+
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -30,6 +36,7 @@ import org.odata4j.stax2.xppimpl.XmlPullXMLFactoryProvider2;
  */
 public class NuGetProducerHolder {
   private final NuGetFeedInMemoryProducer myProducer;
+  private final SemanticVersion VERSION_20 = Objects.requireNonNull(SemanticVersion.valueOf("2.0.0"));
 
   public NuGetProducerHolder(@NotNull final NuGetFeed feed) {
     final NuGetFeedFunctions functions = new NuGetFeedFunctions(feed);
@@ -38,11 +45,24 @@ public class NuGetProducerHolder {
     //.NET OData WCF client
     XMLFactoryProvider2.setInstance(new XmlPullXMLFactoryProvider2());
     myProducer = new NuGetFeedInMemoryProducer(feed, functions);
-    myProducer.register(() -> CollectionsUtil.convertCollection(feed.getAll(), PackageEntityEx::new));
+    myProducer.register((context) -> {
+      boolean includeSemVer2 = includeSemVer2(context.getQueryInfo().customOptions);
+      return CollectionsUtil.convertCollection(feed.getAll(includeSemVer2), PackageEntityEx::new);
+    });
   }
 
   @NotNull
   public ODataProducer getProducer() {
     return myProducer;
+  }
+
+  private boolean includeSemVer2(final Map<String, String> params) {
+    String semVerLevel = params.get(MetadataConstants.SEMANTIC_VERSION);
+    if (semVerLevel != null) {
+      semVerLevel = StringUtil.trimEnd(StringUtil.trimStart(semVerLevel, "'"), "'");
+      final SemanticVersion version = SemanticVersion.valueOf(semVerLevel);
+      return version != null && version.compareTo(VERSION_20) >= 0;
+    }
+    return false;
   }
 }
