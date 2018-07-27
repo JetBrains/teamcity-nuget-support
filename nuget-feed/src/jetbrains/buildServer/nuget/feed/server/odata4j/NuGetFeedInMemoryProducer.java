@@ -30,17 +30,14 @@ import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.core4j.Enumerable;
-import org.core4j.Func;
+import org.core4j.Func1;
 import org.jetbrains.annotations.NotNull;
 import org.odata4j.core.OEntityKey;
 import org.odata4j.core.OFunctionParameter;
 import org.odata4j.core.OProperty;
 import org.odata4j.edm.EdmFunctionImport;
 import org.odata4j.exceptions.NotImplementedException;
-import org.odata4j.producer.BaseResponse;
-import org.odata4j.producer.ODataContext;
-import org.odata4j.producer.PropertyPathHelper;
-import org.odata4j.producer.QueryInfo;
+import org.odata4j.producer.*;
 import org.odata4j.producer.inmemory.*;
 
 import java.util.HashMap;
@@ -66,12 +63,22 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
     evaluation = new NuGetExpressionEvaluator();
   }
 
-  public void register(Func<Iterable<PackageEntity>> getFunc) {
-    register(PackageEntity.class,
+  public void register(Func1<RequestContext, Iterable<PackageEntity>> getFunc) {
+    final Class<PackageEntity> entityClass = PackageEntity.class;
+    final PropertyModel model1 = new BeanBasedPropertyModel(entityClass, true);
+    final PropertyModel model2 = new EnumsAsStringsPropertyModelDelegate(model1);
+    register(entityClass,
+      model2,
       MetadataConstants.ENTITY_SET_NAME,
       myApiVersion.name() + MetadataConstants.ENTITY_TYPE_NAME,
+      null,
       getFunc,
       PackageEntity.KeyPropertyNames);
+  }
+
+  @Override
+  public EntitiesResponse getEntities(ODataContext context, String entitySetName, QueryInfo queryInfo) {
+    return super.getEntities(context, entitySetName, getQueryInfo(queryInfo));
   }
 
   @Override
@@ -140,7 +147,7 @@ public class NuGetFeedInMemoryProducer extends InMemoryProducer {
       query.put(property.getName(), (String) property.getValue());
     }
 
-    final List<NuGetIndexEntry> result = myFeed.find(query);
+    final List<NuGetIndexEntry> result = myFeed.find(query, true);
     if (result.size() > 0) {
       return new PackageEntityEx(result.get(0));
     } else {

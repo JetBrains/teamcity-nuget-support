@@ -78,7 +78,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
         uriInfo.getStartEntitySet(),
         uriInfo.getKeyPredicates(),
         uriInfo.getFunctionImport(),
-        mapFunctionParameters(uriInfo.getFunctionImportParameters())
+        mapFunctionParameters(uriInfo.getFunctionImportParameters()),
+        uriInfo.getCustomQueryOptions()
       ), source -> NuGetMapper.mapPackage((NuGetIndexEntry) source, pathInfo.getServiceRoot())));
     } catch (final ODataNotFoundException e) {
       LOG.infoAndDebugDetails("Package not found", e);
@@ -172,8 +173,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
         uriInfo.getStartEntitySet(),
         uriInfo.getKeyPredicates(),
         uriInfo.getFunctionImport(),
-        mapFunctionParameters(uriInfo.getFunctionImportParameters())
-      ), source -> NuGetMapper.mapPackage((NuGetIndexEntry) source, serviceRoot)));
+        mapFunctionParameters(uriInfo.getFunctionImportParameters()),
+        uriInfo.getCustomQueryOptions()), source -> NuGetMapper.mapPackage((NuGetIndexEntry) source, serviceRoot)));
     } catch (final ODataNotFoundException e) {
       LOG.infoAndDebugDetails("Package not found", e);
       data.clear();
@@ -211,8 +212,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       uriInfo.getStartEntitySet(),
       uriInfo.getKeyPredicates(),
       uriInfo.getFunctionImport(),
-      mapFunctionParameters(uriInfo.getFunctionImportParameters())
-    ), serviceRoot);
+      mapFunctionParameters(uriInfo.getFunctionImportParameters()),
+      uriInfo.getCustomQueryOptions()), serviceRoot);
 
     if (!appliesFilter(data, uriInfo.getFilter())) {
       throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
@@ -229,8 +230,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       uriInfo.getStartEntitySet(),
       uriInfo.getKeyPredicates(),
       uriInfo.getFunctionImport(),
-      mapFunctionParameters(uriInfo.getFunctionImportParameters())
-    );
+      mapFunctionParameters(uriInfo.getFunctionImportParameters()),
+      uriInfo.getCustomQueryOptions());
 
     return ODataResponse.fromResponse(EntityProvider.writeText(appliesFilter(data, uriInfo.getFilter()) ? "1" : "0")).build();
   }
@@ -289,8 +290,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       uriInfo.getStartEntitySet(),
       uriInfo.getKeyPredicates(),
       uriInfo.getFunctionImport(),
-      mapFunctionParameters(uriInfo.getFunctionImportParameters())
-    ), context.getPathInfo().getServiceRoot());
+      mapFunctionParameters(uriInfo.getFunctionImportParameters()),
+      uriInfo.getCustomQueryOptions()), context.getPathInfo().getServiceRoot());
 
     // if (!appliesFilter(data, uriInfo.getFilter()))
     if (data == null) {
@@ -329,8 +330,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       uriInfo.getStartEntitySet(),
       uriInfo.getKeyPredicates(),
       uriInfo.getFunctionImport(),
-      mapFunctionParameters(uriInfo.getFunctionImportParameters())
-    ), context.getPathInfo().getServiceRoot());
+      mapFunctionParameters(uriInfo.getFunctionImportParameters()),
+      uriInfo.getCustomQueryOptions()), context.getPathInfo().getServiceRoot());
 
     // if (!appliesFilter(data, uriInfo.getFilter()))
     if (data == null) {
@@ -396,7 +397,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     final EdmFunctionImport functionImport = uriInfo.getFunctionImport();
     final EdmType type = functionImport.getReturnType().getType();
 
-    final Object data = myDataSource.readData(
+    final Object data = myDataSource.executeFunction(
       functionImport,
       mapFunctionParameters(uriInfo.getFunctionImportParameters()),
       null);
@@ -433,7 +434,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     final EdmFunctionImport functionImport = uriInfo.getFunctionImport();
     final EdmSimpleType type = (EdmSimpleType) functionImport.getReturnType().getType();
 
-    final Object data = NuGetMapper.mapPackage((NuGetIndexEntry) myDataSource.readData(
+    final Object data = NuGetMapper.mapPackage((NuGetIndexEntry) myDataSource.executeFunction(
       functionImport,
       mapFunctionParameters(uriInfo.getFunctionImportParameters()),
       null), context.getPathInfo().getServiceRoot());
@@ -477,8 +478,11 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     }
   }
 
-  private Object retrieveData(final EdmEntitySet startEntitySet, final List<KeyPredicate> keyPredicates,
-                              final EdmFunctionImport functionImport, final Map<String, Object> functionImportParameters) throws ODataException {
+  private Object retrieveData(final EdmEntitySet startEntitySet,
+                              final List<KeyPredicate> keyPredicates,
+                              final EdmFunctionImport functionImport,
+                              final Map<String, Object> functionImportParameters,
+                              final Map<String, String> customQueryOptions) throws ODataException {
     final Map<String, Object> keys = mapKey(keyPredicates);
     final ODataContext context = getContext();
     Object data;
@@ -486,12 +490,12 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     final int timingHandle = context.startRuntimeMeasurement(getClass().getSimpleName(), "retrieveData");
     try {
       if (functionImport != null) {
-        data = myDataSource.readData(functionImport, functionImportParameters, keys);
+        data = myDataSource.executeFunction(functionImport, functionImportParameters, keys);
       } else {
         if (keys.isEmpty()) {
-          data = myDataSource.readData(startEntitySet);
+          data = myDataSource.readAllData(startEntitySet, customQueryOptions);
         } else {
-          data = myDataSource.readData(startEntitySet, keys);
+          data = myDataSource.readDataWithKeys(startEntitySet, keys, customQueryOptions);
         }
       }
     } finally {

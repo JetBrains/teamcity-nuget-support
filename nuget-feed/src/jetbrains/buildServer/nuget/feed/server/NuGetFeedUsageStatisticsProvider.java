@@ -93,7 +93,7 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
     int count = 0;
     final Set<String> packagesCounter = new HashSet<>();
     final NuGetFeed feed = myFeedFactory.createFeed(NuGetFeedData.DEFAULT);
-    for (NuGetIndexEntry indexEntry : feed.getAll()) {
+    for (NuGetIndexEntry indexEntry : feed.getAll(true)) {
       packagesCounter.add(indexEntry.getAttributes().get("Id"));
       count++;
     }
