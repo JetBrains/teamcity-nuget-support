@@ -287,10 +287,25 @@ public class VersionUtility {
     return false;
   }
 
+  @NotNull
+  public static String normalizeVersion(@NotNull PackageVersion version) {
+    if (version instanceof SemanticVersion) {
+      return normalizeVersion((SemanticVersion)version);
+    } {
+      final String versionString = version.toString();
+      return StringUtil.notEmpty(normalizeVersion(versionString), versionString);
+    }
+  }
+
   @Nullable
   public static String normalizeVersion(@NotNull String versionString) {
     final SemanticVersion semanticVersion = SemanticVersion.valueOf(versionString);
     if(semanticVersion == null) return null;
+    return normalizeVersion(semanticVersion);
+  }
+
+  @NotNull
+  public static String normalizeVersion(@NotNull SemanticVersion semanticVersion) {
     final Version version = semanticVersion.getVersion();
     return String.format("%d.%d.%d%s%s",
             version.getMajor(),

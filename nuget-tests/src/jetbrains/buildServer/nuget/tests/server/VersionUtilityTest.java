@@ -201,4 +201,13 @@ public class VersionUtilityTest extends BaseTestCase {
     PackageVersion version2 = VersionUtility.valueOf("1.0.0-rel.2");
     Assert.assertEquals(version2.getLevel(), SemVerLevel.V2);
   }
+
+  @Test
+  void normalizeSemVer2() {
+    Assert.assertEquals(VersionUtility.normalizeVersion("1.0.01"), "1.0.1");
+    Assert.assertEquals(VersionUtility.normalizeVersion("1.0.0.0"), "1.0.0");
+    Assert.assertEquals(VersionUtility.normalizeVersion("1.0"), "1.0.0");
+    Assert.assertEquals(VersionUtility.normalizeVersion("1.0.0+BuildAgent1"), "1.0.0");
+    Assert.assertEquals(VersionUtility.normalizeVersion("1.0.0-alpha.1.2.30+BuildAgent1"), "1.0.0-alpha.1.2.30");
+  }
 }

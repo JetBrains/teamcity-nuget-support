@@ -1,6 +1,7 @@
 package jetbrains.buildServer.nuget.feed.server.json
 
 import jetbrains.buildServer.nuget.common.index.PackageConstants
+import jetbrains.buildServer.nuget.common.version.VersionUtility
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
@@ -64,13 +65,13 @@ class JsonPackageContentHandler(private val feedFactory: NuGetFeedFactory) : NuG
     }
 
     private fun getVersions(feed: NuGetFeed, response: HttpServletResponse, id: String) {
-        val results = feed.findPackagesById(id)
+        val results = feed.findPackagesById(id, true)
         if (results.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Package $id not found")
             return
         }
 
-        val versions = results.map { it.getVersion() }
+        val versions = results.map { VersionUtility.normalizeVersion(it.version) }
         response.writeJson(JsonPackageVersions(versions))
     }
 

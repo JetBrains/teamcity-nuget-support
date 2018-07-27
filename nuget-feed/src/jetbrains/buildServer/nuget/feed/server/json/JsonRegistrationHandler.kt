@@ -1,6 +1,7 @@
 package jetbrains.buildServer.nuget.feed.server.json
 
 import jetbrains.buildServer.nuget.common.index.PackageConstants
+import jetbrains.buildServer.nuget.common.version.VersionUtility
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
@@ -50,7 +51,7 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
     }
 
     private fun getAllRegistrations(feed: NuGetFeed, request: HttpServletRequest, response: HttpServletResponse, id: String) {
-        val results = feed.findPackagesById(id)
+        val results = feed.findPackagesById(id, true)
         if (results.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Package $id not found")
             return
@@ -58,7 +59,8 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
 
         val rootUrl = WebUtil.getRootUrl(request)
         val items = results.map {
-            val registrationUrl = "$rootUrl${request.servletPath}/registration1/$id/${it.getVersion()}.json"
+            val version = VersionUtility.normalizeVersion(it.version)
+            val registrationUrl = "$rootUrl${request.servletPath}/registration1/$id/$version.json"
             val downloadUrl = "$rootUrl${it.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}"
             JsonRegistrationPackage(
                     registrationUrl,
@@ -75,8 +77,8 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
         val registrationPage = JsonRegistrationPage(
                 "$rootUrl${request.servletPath}${request.pathInfo}",
                 results.size,
-                lower = results.first().getVersion(),
-                upper = results.last().getVersion(),
+                lower = VersionUtility.normalizeVersion(results.first().version),
+                upper = VersionUtility.normalizeVersion(results.last().version),
                 items = items
         )
         val registration = JsonRegistrationResponse(

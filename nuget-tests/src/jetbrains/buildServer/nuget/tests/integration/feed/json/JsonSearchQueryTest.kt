@@ -45,4 +45,24 @@ class JsonSearchQueryTest : JsonFeedIntegrationTestBase() {
         assertContainsPackageVersion(responseBody, "1.0.0")
         assertContainsPackageVersion(responseBody, "2.0.0")
     }
+
+    @Test
+    fun find_semver10_packages() {
+        addMockPackage("MyPackage", "1.0.0.0")
+        addMockPackage("OtherPackage", "2.0.0.0+metadata")
+
+        val responseBody = openRequest("query")
+        assertContainsPackageVersion(responseBody, "1.0.0")
+        assertNotContainsPackageVersion(responseBody, "2.0.0")
+    }
+
+    @Test
+    fun find_semver20_packages() {
+        addMockPackage("MyPackage", "1.0.0.0")
+        addMockPackage("OtherPackage", "2.0.0.0+metadata")
+
+        val responseBody = openRequest("query/?semVerLevel=2.0.0")
+        assertContainsPackageVersion(responseBody, "1.0.0")
+        assertContainsPackageVersion(responseBody, "2.0.0")
+    }
 }

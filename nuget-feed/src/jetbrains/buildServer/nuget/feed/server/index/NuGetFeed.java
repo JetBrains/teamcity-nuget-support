@@ -37,6 +37,16 @@ public class NuGetFeed {
   }
 
   @NotNull
+  public List<NuGetIndexEntry> getAll(final boolean includeSemVer2) {
+    final List<NuGetIndexEntry> packages = myIndex.getAll();
+    if (includeSemVer2) {
+      return packages;
+    }
+
+    return CollectionsUtil.filterCollection(packages, nugetPackage -> !nugetPackage.isSemanticVersion2());
+  }
+
+  @NotNull
   public List<NuGetIndexEntry> find(@NotNull final Map<String, String> query) {
     if (query.size() == 2 && query.containsKey(ID) && query.containsKey(VERSION)) {
       final String key = NuGetUtils.getPackageKey(query.get(ID), query.get(VERSION));
