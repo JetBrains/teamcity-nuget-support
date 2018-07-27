@@ -10,8 +10,11 @@ class SystemInformationImpl : SystemInformation {
     override val userName: String by lazy {
         if (SystemInfo.isWindows) {
             try {
-                Class.forName("com.sun.security.auth.module.NTSystem")
-                return@lazy com.sun.security.auth.module.NTSystem().name
+                Class.forName("com.sun.security.auth.module.NTSystem")?.let { ntSystemClass ->
+                    val ntSystem = ntSystemClass.newInstance()
+                    val getNameMethod = ntSystem.javaClass.getMethod("getName")
+                    return@lazy getNameMethod.invoke(ntSystem) as String
+                }
             } catch (ignored: ClassNotFoundException) {
             }
         }
