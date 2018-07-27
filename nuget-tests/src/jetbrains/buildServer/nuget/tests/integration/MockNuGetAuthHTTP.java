@@ -16,6 +16,9 @@
 
 package jetbrains.buildServer.nuget.tests.integration;
 
+import com.intellij.openapi.util.io.StreamUtil;
+import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
+import jetbrains.buildServer.nuget.feed.server.json.JsonServiceIndexHandler;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedCredentials;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.HttpAuthServer;
@@ -43,6 +46,15 @@ public class MockNuGetAuthHTTP {
   private String myUsername;
   private String myPassword;
   private AtomicBoolean myIsAuthorized;
+  private NuGetAPIVersion myApiVersion;
+
+  public MockNuGetAuthHTTP() {
+    this(NuGetAPIVersion.V2);
+  }
+
+  public MockNuGetAuthHTTP(NuGetAPIVersion apiVersion) {
+    myApiVersion = apiVersion;
+  }
 
   @NotNull
   public String getSourceUrl() {
@@ -98,6 +110,15 @@ public class MockNuGetAuthHTTP {
         if (path == null) return createStreamResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found".getBytes("utf-8"));
         log("NuGet request path: " + path);
 
+        if (myApiVersion != NuGetAPIVersion.V3) {
+          return getODataResponse(path);
+        } else {
+          return getJsonResponse(path);
+        }
+      }
+
+      @NotNull
+      private Response getODataResponse(String path) throws IOException {
         final List<String> xml = Arrays.asList("DataServiceVersion: 1.0;", "Content-Type: application/xml;charset=utf-8");
         final List<String> atom = Arrays.asList("DataServiceVersion: 2.0;", "Content-Type: application/atom+xml;charset=utf-8");
 
@@ -122,6 +143,23 @@ public class MockNuGetAuthHTTP {
         }
 
         return createStringResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found");
+      }
+
+      private Response getJsonResponse(String path) throws IOException {
+        if (path.contains("/index.json")) {
+          try (InputStream is = JsonServiceIndexHandler.class.getResourceAsStream("/feed-metadata/NuGet-V3.json")) {
+            String pattern = StreamUtil.readText(is);
+            String sourceUrl = StringUtil.trimEnd(mySourceUrl, "/");
+            String text = String.format(pattern, sourceUrl, sourceUrl);
+            return createStringResponse(STATUS_LINE_200, Collections.emptyList(), text);
+          }
+        }
+
+        if (path.endsWith("/flatcontainer/finecollection/2.2.1/finecollection.2.2.1.nupkg")) {
+          return getFileResponse(Paths.getTestDataPath("feed/mock/FineCollection.1.0.189.152.nupkg"), Arrays.asList("Content-Type: application/zip"));
+        }
+
+        return createStringResponse(STATUS_LINE_404, Collections.emptyList(), "Not found");
       }
 
       @NotNull

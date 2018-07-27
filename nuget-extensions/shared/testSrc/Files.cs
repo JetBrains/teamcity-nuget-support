@@ -32,6 +32,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourCachedNuGetExe_4_0 = PathSearcher.SearchFile("packages/NuGet.CommandLine.4.0.0-rtm-2283/tools/NuGet.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_4_1 = PathSearcher.SearchFile("packages/NuGet.CommandLine.4.1.0/tools/NuGet.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_4_3 = PathSearcher.SearchFile("packages/NuGet.CommandLine.4.3.0/tools/NuGet.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_4_8 = PathSearcher.SearchFile("packages/NuGet.CommandLine.4.8.0*/tools/NuGet.exe");
     private static readonly Lazy<string> ourCachedNuGetRunnerPath = PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
@@ -75,6 +76,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string NuGetExe_4_0 { get { return ourCachedNuGetExe_4_0.Value; } }
     public static string NuGetExe_4_1 { get { return ourCachedNuGetExe_4_1.Value; } }
     public static string NuGetExe_4_3 { get { return ourCachedNuGetExe_4_3.Value; } }
+    public static string NuGetExe_4_8 { get { return ourCachedNuGetExe_4_8.Value; } }
     public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
 
     public static string GetNuGetExe(NuGetVersion version)
