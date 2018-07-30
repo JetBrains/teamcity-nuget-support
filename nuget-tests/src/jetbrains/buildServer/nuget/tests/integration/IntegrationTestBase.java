@@ -23,6 +23,7 @@ import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.ExtensionHolder;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
 import jetbrains.buildServer.agent.*;
+import jetbrains.buildServer.dotNet.DotNetConstants;
 import jetbrains.buildServer.nuget.agent.commands.NuGetActionFactory;
 import jetbrains.buildServer.nuget.agent.commands.impl.*;
 import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
@@ -187,12 +188,15 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myPsm = m.mock(PackageSourceManager.class);
 
     final Map<String, String> configParameters = new TreeMap<>();
+    if (!SystemInfo.isWindows) {
+      configParameters.put(DotNetConstants.MONO_JIT, "/usr/bin/mono-sgen");
+    }
     final Map<String, String> envParameters = new TreeMap<>(System.getenv());
     envParameters.put("ComSpec", cmd);
 
     m.checking(new Expectations(){{
       allowing(myContext).getBuildParameters(); will(returnValue(myBuildParametersMap));
-      allowing(myContext).getConfigParameters(); will(returnValue(Collections.emptyMap()));
+      allowing(myContext).getConfigParameters(); will(returnValue(configParameters));
       allowing(myContext).getWorkingDirectory(); will(returnValue(myRoot));
       allowing(myContext).getBuild(); will(returnValue(myBuild));
       allowing(myContext).addEnvironmentVariable(with(any(String.class)), with(any(String.class)));
