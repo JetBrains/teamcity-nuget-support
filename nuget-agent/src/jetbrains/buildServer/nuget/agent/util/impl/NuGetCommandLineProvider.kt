@@ -20,8 +20,6 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
                                private val myCommandLineExecutor: CommandLineExecutor,
                                private val mySystemInformation: SystemInformation) {
 
-    private val myVersions = ConcurrentHashMap<String, SemanticVersion>()
-
     fun getProgramCommandLine(context: BuildRunnerContext,
                               executable: String,
                               args: Collection<String>,
@@ -113,5 +111,6 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
         private val NUGET_VERSION_3_5 = SemanticVersion.valueOf("3.5.0")!!
         private val NUGET_UNKNOWN_VERSION = SemanticVersion.valueOf("0.0.0")!!
         private val NUGET_VERSION_REGEX = Regex("NuGet Version:\\s([\\d\\.]+)", RegexOption.IGNORE_CASE)
+        private val myVersions = ConcurrentHashMap<String, SemanticVersion>()
     }
 }
