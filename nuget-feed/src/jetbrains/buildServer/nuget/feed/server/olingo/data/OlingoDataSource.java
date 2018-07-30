@@ -46,7 +46,7 @@ public class OlingoDataSource {
   public OlingoDataSource(@NotNull final NuGetFeed feed) {
     myFeed = feed;
 
-    myFunctions.put(MetadataConstants.SEARCH_FUNCTION_NAME, parameters -> {
+    myFunctions.put(MetadataConstants.SEARCH_FUNCTION_NAME, (parameters, queryParams) -> {
       final String searchTerm = (String) parameters.get(MetadataConstants.SEARCH_TERM);
       final String targetFramework = (String) parameters.get(MetadataConstants.TARGET_FRAMEWORK);
       final boolean includePrerelease = NuGetAPIVersion.shouldUseV2() && getBooleanValue(parameters.get(MetadataConstants.INCLUDE_PRERELEASE));
@@ -54,22 +54,22 @@ public class OlingoDataSource {
         throw new UriSyntaxException(UriSyntaxException.MISSINGPARAMETER);
       }
 
-      final boolean includeSemVer2 = includeSemVer2(parameters);
+      final boolean includeSemVer2 = includeSemVer2(queryParams);
       return myFeed.search(searchTerm, targetFramework, includePrerelease, includeSemVer2);
     });
 
-    myFunctions.put(MetadataConstants.FIND_PACKAGES_BY_ID_FUNCTION_NAME, parameters -> {
+    myFunctions.put(MetadataConstants.FIND_PACKAGES_BY_ID_FUNCTION_NAME, (parameters, queryParams) -> {
       final String id = (String) parameters.get(MetadataConstants.ID);
       if (id == null) {
         throw new UriSyntaxException(UriSyntaxException.MISSINGPARAMETER);
       }
 
-      final boolean includeSemVer2 = includeSemVer2(parameters);
+      final boolean includeSemVer2 = includeSemVer2(queryParams);
       return myFeed.findPackagesById(id, includeSemVer2);
     });
 
-    myFunctions.put(MetadataConstants.GET_UPDATES_FUNCTION_NAME, parameters -> {
-      final boolean includeSemVer2 = includeSemVer2(parameters);
+    myFunctions.put(MetadataConstants.GET_UPDATES_FUNCTION_NAME, (parameters, queryParams) -> {
+      final boolean includeSemVer2 = includeSemVer2(queryParams);
       return myFeed.getUpdates(
         getStringValue(parameters.get(MetadataConstants.PACKAGE_IDS)),
         getStringValue(parameters.get(MetadataConstants.VERSIONS)),
@@ -138,24 +138,24 @@ public class OlingoDataSource {
    *
    * @param function   is a function reference.
    * @param parameters is a list of parameters.
-   * @param keys       is a list of keys to select.
+   * @param queryParams is a list of query parameters.
    * @return data.
    */
   @NotNull
   public Object executeFunction(@NotNull final EdmFunctionImport function,
                                 @NotNull final Map<String, Object> parameters,
-                                @Nullable final Map<String, Object> keys) throws ODataHttpException, EdmException {
+                                @NotNull final Map<String, String> queryParams) throws ODataHttpException, EdmException {
     final OlingoFeedFunction handler = myFunctions.get(function.getName());
     if (handler == null) {
       throw new ODataNotImplementedException();
     }
 
-    return handler.handle(parameters);
+    return handler.handle(parameters, queryParams);
   }
 
   private interface OlingoFeedFunction {
     @NotNull
-    Object handle(@NotNull final Map<String, Object> parameters) throws ODataHttpException;
+    Object handle(@NotNull final Map<String, Object> parameters, @NotNull Map<String, String> queryParams) throws ODataHttpException;
   }
 
   private static String getStringValue(@Nullable Object value) {
@@ -166,10 +166,9 @@ public class OlingoDataSource {
     return value != null ? (Boolean) value : false;
   }
 
-  private boolean includeSemVer2(Map<String, Object> parameters) {
-    String semVerLevel = (String)parameters.get(MetadataConstants.SEMANTIC_VERSION);
+  private boolean includeSemVer2(Map<String, String> parameters) {
+    final String semVerLevel = parameters.get(MetadataConstants.SEMANTIC_VERSION);
     if (semVerLevel != null) {
-      semVerLevel = StringUtil.trimEnd(StringUtil.trimStart(semVerLevel, "'"), "'");
       final SemanticVersion version = SemanticVersion.valueOf(semVerLevel);
       return version != null && version.compareTo(VERSION_20) >= 0;
     }

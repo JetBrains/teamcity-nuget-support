@@ -400,7 +400,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     final Object data = myDataSource.executeFunction(
       functionImport,
       mapFunctionParameters(uriInfo.getFunctionImportParameters()),
-      null);
+      uriInfo.getCustomQueryOptions());
 
     Object value;
     if (type.getKind() == EdmTypeKind.SIMPLE) {
@@ -437,7 +437,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     final Object data = NuGetMapper.mapPackage((NuGetIndexEntry) myDataSource.executeFunction(
       functionImport,
       mapFunctionParameters(uriInfo.getFunctionImportParameters()),
-      null), context.getPathInfo().getServiceRoot());
+      uriInfo.getCustomQueryOptions()), context.getPathInfo().getServiceRoot());
 
     if (data == null) {
       throw new ODataNotFoundException(ODataHttpException.COMMON);
@@ -490,7 +490,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     final int timingHandle = context.startRuntimeMeasurement(getClass().getSimpleName(), "retrieveData");
     try {
       if (functionImport != null) {
-        data = myDataSource.executeFunction(functionImport, functionImportParameters, keys);
+        data = myDataSource.executeFunction(functionImport, functionImportParameters, customQueryOptions);
       } else {
         if (keys.isEmpty()) {
           data = myDataSource.readAllData(startEntitySet, customQueryOptions);

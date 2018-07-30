@@ -162,7 +162,7 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     addMockPackage("new-stable", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "3"));
     addMockPackage("newest-semver-20", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "4.0.0+metadata"));
 
-    final String responseBody = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''&semVerLevel='1.0.0'");
+    final String responseBody = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''&semVerLevel=1.0.0");
     assertNotContainsPackageVersion(responseBody, "1.0");
     assertNotContainsPackageVersion(responseBody, "2.0");
     assertContainsPackageVersion(responseBody, "3.0");
@@ -177,7 +177,7 @@ public class GetUpdatesFunctionIntegrationTest extends NuGetJavaFeedIntegrationT
     addMockPackage("new-stable", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "3"));
     addMockPackage("newest-semver-20", CollectionsUtil.asMap(ID, "foo", IS_PRERELEASE, Boolean.FALSE.toString(), VERSION, "4.0.0+metadata"));
 
-    final String responseBody = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''&semVerLevel='2.0.0'");
+    final String responseBody = openRequest("GetUpdates()?packageIds='foo'&versions='2.0.0.0'&includePrerelease=true&includeAllVersions=false&targetFrameworks=''&versionConstraints=''&semVerLevel=2.0.0");
     assertNotContainsPackageVersion(responseBody, "1.0");
     assertNotContainsPackageVersion(responseBody, "2.0");
     assertNotContainsPackageVersion(responseBody, "3.0");

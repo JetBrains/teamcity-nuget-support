@@ -270,7 +270,7 @@ public class SearchFunctionIntegrationTest extends NuGetJavaFeedIntegrationTestB
       IS_LATEST_VERSION, "true",
       IS_ABSOLUTE_LATEST_VERSION, "false"));
 
-    String response = openRequest("Search()?searchTerm='aaa'&targetFramework='net45'&includePrerelease=false&semVerLevel='1.0.0'");
+    String response = openRequest("Search()?searchTerm='aaa'&targetFramework='net45'&includePrerelease=false&semVerLevel=1.0.0");
     assertContainsPackageVersion(response, "1.0.0");
     assertNotContainsPackageVersion(response, "1.1.0+metadata");
   }
@@ -291,7 +291,7 @@ public class SearchFunctionIntegrationTest extends NuGetJavaFeedIntegrationTestB
       IS_LATEST_VERSION, "false",
       IS_ABSOLUTE_LATEST_VERSION, "false"));
 
-    String response = openRequest("Search()?searchTerm='aaa'&targetFramework='net45'&includePrerelease=false&semVerLevel='2.0.0'");
+    String response = openRequest("Search()?searchTerm='aaa'&targetFramework='net45'&includePrerelease=false&semVerLevel=2.0.0");
     assertContainsPackageVersion(response, "1.0.0");
     assertContainsPackageVersion(response, "1.1.0+metadata");
   }

@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.feed.server.odata4j.ODataUtilities;
 import jetbrains.buildServer.nuget.feed.server.odata4j.PackagesEntitySet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,7 @@ import java.util.Map;
 /**
  * @author Evgeniy.Koshkin
  */
-public class GetUpdatesFunction extends NuGetFeedFunctionBase {
+public class GetUpdatesFunction implements NuGetFeedFunction {
 
   private final Logger LOG = Logger.getInstance(getClass().getName());
   private final NuGetFeed myFeed;
@@ -63,13 +64,12 @@ public class GetUpdatesFunction extends NuGetFeedFunctionBase {
         new EdmFunctionParameter.Builder().setName(MetadataConstants.INCLUDE_PRERELEASE).setType(EdmSimpleType.BOOLEAN),
         new EdmFunctionParameter.Builder().setName(MetadataConstants.INCLUDE_ALL_VERSIONS).setType(EdmSimpleType.BOOLEAN),
         new EdmFunctionParameter.Builder().setName(MetadataConstants.TARGET_FRAMEWORKS).setType(EdmSimpleType.STRING),
-        new EdmFunctionParameter.Builder().setName(MetadataConstants.VERSION_CONSTRAINTS).setType(EdmSimpleType.STRING),
-        new EdmFunctionParameter.Builder().setName(MetadataConstants.SEMANTIC_VERSION).setType(EdmSimpleType.STRING));
+        new EdmFunctionParameter.Builder().setName(MetadataConstants.VERSION_CONSTRAINTS).setType(EdmSimpleType.STRING));
   }
 
   @Nullable
   public Iterable<NuGetIndexEntry> call(@NotNull EdmType returnType, @NotNull Map<String, OFunctionParameter> params, @Nullable QueryInfo queryInfo) {
-    final boolean includeSemVer2 = includeSemVer2(params);
+    final boolean includeSemVer2 = ODataUtilities.includeSemVer2(queryInfo);
     return myFeed.getUpdates(
       extractStringParameterValue(params, MetadataConstants.PACKAGE_IDS),
       extractStringParameterValue(params, MetadataConstants.VERSIONS),

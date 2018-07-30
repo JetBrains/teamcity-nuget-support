@@ -60,6 +60,7 @@ public class BuildProcessTestCase extends LoggingTestCase {
       status = proc.waitFor();
     } catch (RunBuildException e) {
       Assert.fail("Failed with exception " + e);
+      e.printStackTrace(System.err);
     }
 
     Assert.assertNotNull(status);

@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.feed.server.odata4j.ODataUtilities;
 import jetbrains.buildServer.nuget.feed.server.odata4j.PackagesEntitySet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,7 @@ import java.util.Map;
 /**
  * @author Evgeniy.Koshkin
  */
-public class FindPackagesByIdFunction extends NuGetFeedFunctionBase {
+public class FindPackagesByIdFunction implements NuGetFeedFunction {
 
   private final Logger LOG = Logger.getInstance(getClass().getName());
   private final NuGetFeed myFeed;
@@ -59,8 +60,7 @@ public class FindPackagesByIdFunction extends NuGetFeedFunctionBase {
       .setHttpMethod(MetadataConstants.HTTP_METHOD_GET)
       .setReturnType(returnType)
       .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID).setType(EdmSimpleType.STRING))
-      .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID_UPPER_CASE).setType(EdmSimpleType.STRING))
-      .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.SEMANTIC_VERSION).setType(EdmSimpleType.STRING));
+      .addParameters(new EdmFunctionParameter.Builder().setName(MetadataConstants.ID_UPPER_CASE).setType(EdmSimpleType.STRING));
   }
 
   @Nullable
@@ -81,7 +81,7 @@ public class FindPackagesByIdFunction extends NuGetFeedFunctionBase {
     final OSimpleObject idObjectCasted = (OSimpleObject) id;
     final String packageId = idObjectCasted.getValue().toString();
 
-    final boolean includeSemVer2 = includeSemVer2(params);
+    final boolean includeSemVer2 = ODataUtilities.includeSemVer2(queryInfo);
     return myFeed.findPackagesById(packageId, includeSemVer2);
   }
 }
