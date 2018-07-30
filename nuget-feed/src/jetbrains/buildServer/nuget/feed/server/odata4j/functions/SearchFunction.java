@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.feed.server.odata4j.functions;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.feed.server.odata4j.ODataUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.odata4j.core.OFunctionParameter;
@@ -35,7 +36,7 @@ import static jetbrains.buildServer.nuget.feed.server.MetadataConstants.*;
 /**
  * @author Evgeniy.Koshkin
  */
-public class SearchFunction extends NuGetFeedFunctionBase {
+public class SearchFunction implements NuGetFeedFunction {
   private static final Logger LOG = Logger.getInstance(SearchFunction.class.getName());
   private final NuGetFeed myFeed;
 
@@ -58,8 +59,7 @@ public class SearchFunction extends NuGetFeedFunctionBase {
       .setReturnType(returnType)
       .addParameters(new EdmFunctionParameter.Builder().setName(SEARCH_TERM).setType(EdmSimpleType.STRING),
         new EdmFunctionParameter.Builder().setName(TARGET_FRAMEWORK).setType(EdmSimpleType.STRING),
-        new EdmFunctionParameter.Builder().setName(INCLUDE_PRERELEASE).setType(EdmSimpleType.BOOLEAN),
-        new EdmFunctionParameter.Builder().setName(SEMANTIC_VERSION).setType(EdmSimpleType.STRING));
+        new EdmFunctionParameter.Builder().setName(INCLUDE_PRERELEASE).setType(EdmSimpleType.BOOLEAN));
   }
 
   @Nullable
@@ -104,7 +104,7 @@ public class SearchFunction extends NuGetFeedFunctionBase {
     }
     final OSimpleObject includePreReleaseCasted = (OSimpleObject) includePreReleaseParamValue;
     final boolean includePreRelease = Boolean.parseBoolean(includePreReleaseCasted.getValue().toString());
-    final boolean includeSemVer2 = includeSemVer2(params);
+    final boolean includeSemVer2 = ODataUtilities.includeSemVer2(queryInfo);
     return myFeed.search(searchTerm, targetFramework, includePreRelease, includeSemVer2);
   }
 }

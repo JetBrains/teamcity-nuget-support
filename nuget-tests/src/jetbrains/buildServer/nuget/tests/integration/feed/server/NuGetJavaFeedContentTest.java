@@ -305,7 +305,7 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     addMockPackage("MyPackage", "1.0.0.0");
     addMockPackage("MyPackage", "1.0.0.1+metadata");
 
-    String responseBody = openRequest("Packages?semVerLevel='1.0.0'");
+    String responseBody = openRequest("Packages?semVerLevel=1.0.0");
     assertContainsPackageVersion(responseBody, "1.0.0.0");
     assertNotContainsPackageVersion(responseBody, "1.0.0.1+metadata");
   }
@@ -317,7 +317,7 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
     addMockPackage("MyPackage", "1.0.0.0");
     addMockPackage("MyPackage", "1.0.0.1+metadata");
 
-    String responseBody = openRequest("Packages?semVerLevel='2.0.0'");
+    String responseBody = openRequest("Packages?semVerLevel=2.0.0");
     assertContainsPackageVersion(responseBody, "1.0.0.0");
     assertContainsPackageVersion(responseBody, "1.0.0.1+metadata");
   }

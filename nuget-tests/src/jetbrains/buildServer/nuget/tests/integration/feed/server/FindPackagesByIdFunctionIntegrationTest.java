@@ -77,7 +77,7 @@ public class FindPackagesByIdFunctionIntegrationTest extends NuGetJavaFeedIntegr
     addMockPackage("MyPackage", "1.0.0.0");
     addMockPackage("MyPackage", "1.0.0.1+metadata");
 
-    String responseBody = openRequest("FindPackagesById()?id='MyPackage'&semVerLevel='1.0.0'");
+    String responseBody = openRequest("FindPackagesById()?id='MyPackage'&semVerLevel=1.0.0");
     assertContainsPackageVersion(responseBody, "1.0.0.0");
     assertNotContainsPackageVersion(responseBody, "1.0.0.1+metadata");
   }
@@ -89,7 +89,7 @@ public class FindPackagesByIdFunctionIntegrationTest extends NuGetJavaFeedIntegr
     addMockPackage("MyPackage", "1.0.0.0");
     addMockPackage("MyPackage", "1.0.0.1+metadata");
 
-    String responseBody = openRequest("FindPackagesById()?id='MyPackage'&semVerLevel='2.0.0'");
+    String responseBody = openRequest("FindPackagesById()?id='MyPackage'&semVerLevel=2.0.0");
     assertContainsPackageVersion(responseBody, "1.0.0.0");
     assertContainsPackageVersion(responseBody, "1.0.0.1+metadata");
   }
@@ -108,7 +108,7 @@ public class FindPackagesByIdFunctionIntegrationTest extends NuGetJavaFeedIntegr
     } else {
       skipToken = "'MyPackage','1.0.0.1+metadata'";
     }
-    String responseBody = openRequest("FindPackagesById()?id='MyPackage'&$skiptoken=" + skipToken + "&semVerLevel='2.0.0'");
+    String responseBody = openRequest("FindPackagesById()?id='MyPackage'&$skiptoken=" + skipToken + "&semVerLevel=2.0.0");
     assertNotContainsPackageVersion(responseBody, "1.0.0.0");
     assertNotContainsPackageVersion(responseBody, "1.0.0.1+metadata");
     assertContainsPackageVersion(responseBody, "1.0.0.2+metadata");
