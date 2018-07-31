@@ -48,8 +48,8 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
                 // NuGet 3.5+ does not properly work under SYSTEM account on Windows:
                 // https://github.com/NuGet/Home/issues/4277
                 if (version >= NUGET_VERSION_3_5 && mySystemInformation.isWindows &&
-                    "SYSTEM".equals(mySystemInformation.userName, true) &&
-                    !context.buildParameters.environmentVariables.containsKey(NUGET_PACKAGES_ENV)) {
+                        "SYSTEM".equals(mySystemInformation.userName, true) &&
+                        !context.buildParameters.environmentVariables.containsKey(NUGET_PACKAGES_ENV)) {
                     val packagesPath = File(context.build.buildTempDirectory, ".nuget/packages")
                     buildLogger.message("Setting '$NUGET_PACKAGES_ENV' environment variable to '$packagesPath'")
                     context.addEnvironmentVariable(NUGET_PACKAGES_ENV, packagesPath.path)
@@ -75,35 +75,46 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
     private fun getExecutableAndArguments(executable: String,
                                           args: Collection<String>,
                                           context: BuildRunnerContext): Pair<String, MutableList<String>> {
-      val arguments = args.toMutableList()
-      if (!mySystemInformation.isWindows) {
-          context.configParameters[DotNetConstants.MONO_JIT]?.let { monoPath ->
-              if (monoPath.isNotEmpty()) {
-                  arguments.add(0, executable)
-                  return monoPath to arguments
-              }
-          }
-      }
+        val arguments = args.toMutableList()
+        if (!mySystemInformation.isWindows) {
+            context.configParameters[DotNetConstants.MONO_JIT]?.let { monoPath ->
+                if (monoPath.isNotEmpty()) {
+                    arguments.add(0, executable)
+                    return monoPath to arguments
+                }
+            }
+        }
 
-      return executable to arguments
+        return executable to arguments
     }
 
     private fun getNugetVersion(executable: String, context: BuildRunnerContext): SemanticVersion {
-      val (executablePath, arguments) = getExecutableAndArguments(executable, emptyList(), context)
-      val commandLine = GeneralCommandLine().apply {
-          this.exePath = executablePath
-          this.addParameters(arguments)
-      }
+        // Try to get version from executable path
+        NUGET_PATH_REGEX.find(executable.replace("\\", "/"))?.let {
+            val (version) = it.destructured
+            SemanticVersion.valueOf(version)?.let {
+                return it
+            }
+        }
 
-      val result = myCommandLineExecutor.execute(commandLine)
-      if (result.exitCode == 0) {
-          NUGET_VERSION_REGEX.find(result.stdout)?.let {
-              val (version) = it.destructured
-              return SemanticVersion.valueOf(version)!!
-          }
-      }
+        // Try to get version from NuGet output
+        val (executablePath, arguments) = getExecutableAndArguments(executable, emptyList(), context)
+        val commandLine = GeneralCommandLine().apply {
+            this.exePath = executablePath
+            this.addParameters(arguments)
+        }
 
-      return NUGET_UNKNOWN_VERSION
+        val result = myCommandLineExecutor.execute(commandLine)
+        if (result.exitCode == 0) {
+            NUGET_VERSION_REGEX.find(result.stdout)?.let {
+                val (version) = it.destructured
+                SemanticVersion.valueOf(version)?.let {
+                    return it
+                }
+            }
+        }
+
+        return NUGET_UNKNOWN_VERSION
     }
 
     companion object {
@@ -113,5 +124,6 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
         private val NUGET_VERSION_3_5 = SemanticVersion.valueOf("3.5.0")!!
         private val NUGET_UNKNOWN_VERSION = SemanticVersion.valueOf("0.0.0")!!
         private val NUGET_VERSION_REGEX = Regex("NuGet Version:\\s([\\d\\.]+)", RegexOption.IGNORE_CASE)
+        private val NUGET_PATH_REGEX = Regex("\\/NuGet\\.CommandLine\\.([^\\/]+)\\/tools\\/NuGet\\.exe\$", RegexOption.IGNORE_CASE)
     }
 }

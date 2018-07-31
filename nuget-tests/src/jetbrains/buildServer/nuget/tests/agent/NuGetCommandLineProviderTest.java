@@ -249,4 +249,25 @@ public class NuGetCommandLineProviderTest extends BaseTestCase {
     args.add(0, executable);
     Assert.assertEquals(commandLine.getArguments(), args);
   }
+
+  @Test
+  public void getCommandLineForNuGetVersionFromPath() throws RunBuildException {
+    CommandLineExecutor executor = m.mock(CommandLineExecutor.class);
+
+    NuGetCommandLineProvider provider = new NuGetCommandLineProvider(myNugetProvider, executor, mySystemInfo);
+    List<String> args = new ArrayList<>(Arrays.asList("arg1", "arg2"));
+    String executable = "tools\\NuGet.CommandLine.4.8.0-preview4.5311+3e83c3efe81f6e0611882812e863c1d2470e079a\\tools\\nuget.exe";
+
+    m.checking(new Expectations() {{
+      allowing(mySystemInfo).isWindows(); will(returnValue(true));
+      allowing(mySystemInfo).getUserName(); will(returnValue("name"));
+    }});
+
+    ProgramCommandLine commandLine = provider.getProgramCommandLine(myRootContext, executable, args, myWorkDir, Collections.emptyMap());
+
+    Assert.assertNotNull(commandLine);
+    Assert.assertEquals(commandLine.getWorkingDirectory(), myWorkDir.getPath());
+    Assert.assertEquals(commandLine.getExecutablePath(), executable);
+    Assert.assertEquals(commandLine.getArguments(), args);
+  }
 }
