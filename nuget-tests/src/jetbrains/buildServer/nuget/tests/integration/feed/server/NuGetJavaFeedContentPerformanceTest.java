@@ -75,7 +75,7 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
             "?$filter=(((Id%20ne%20null)%20and%20substringof('mm',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('mm',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20mm%20',tolower(Tags)))" +
                     "&$orderby=Id" +
                     "&$skip=0" +
-                    "&$top=30");
+                    "&$top=30&odata-debug=html");
   }
 
   @Test(dataProvider = "nugetFeedLibrariesData")
@@ -100,15 +100,17 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
     Assert.assertEquals(myIndex.getAll().size(), sz);
 
     final AtomicReference<String> s = new AtomicReference<>();
-    assertTime(time, "aaa", 5, () -> {
-      String req = openRequest("Packages()" + query);
-      s.set(req);
-    });
-
-    final String req = s.get();
-    System.out.println("req.length() = " + req.length());
-    System.out.println(req);
-    System.out.println(XmlUtil.to_s(XmlUtil.from_s(req)));
+    try {
+      assertTime(time, "aaa", 5, () -> {
+        String req = openRequest("Packages()" + query);
+        s.set(req);
+      });
+    } finally {
+      final String req = s.get();
+      System.out.println("req.length() = " + req.length());
+      System.out.println(req);
+      System.out.println(XmlUtil.to_s(XmlUtil.from_s(req)));
+    }
   }
 }
 
