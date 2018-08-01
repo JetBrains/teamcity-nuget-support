@@ -40,6 +40,7 @@ import jetbrains.buildServer.nuget.common.PackageInfoLoader;
 import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProviderBase;
+import jetbrains.buildServer.nuget.common.version.Version;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,10 +76,10 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected BuildParametersMap myBuildParametersMap;
   protected CommandlineBuildProcessFactory myExecutor;
   protected NuGetTeamCityProvider myNuGetTeamCityProvider;
-  protected String cmd;
   protected Set<PackageSource> myGlobalSources;
   private ExtensionHolder myExtensionHolder;
   protected PackageSourceManager myPsm;
+  private Version myNuGetMono = new Version(3, 3, 0);
 
   @NotNull
   protected String getCommandsOutput() {
@@ -107,13 +108,11 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     final List<Object[]> data = new ArrayList<Object[]>();
     for (NuGet value : values) {
       if(!SystemInfo.isWindows) {
-        if(!((value.major == 3 && value.minor != 2) || (value.major == 2 && value.minor == 8))) {
+        if(value.version.compareTo(myNuGetMono) < 0) {
           continue;
         }
       }
 
-      if (value.major < lowerBound.major) continue;
-      if (value.major == lowerBound.major && value.minor < lowerBound.minor) continue;
       data.add(new Object[]{value});
     }
     return data.toArray(new Object[data.size()][]);
@@ -184,7 +183,6 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myNuGetTeamCityProvider = new NuGetTeamCityProviderBase(extensionsPath);
     myExtensionHolder = m.mock(ExtensionHolder.class);
 
-    cmd = System.getenv("ComSpec");
     myPsm = m.mock(PackageSourceManager.class);
 
     final Map<String, String> configParameters = new TreeMap<>();
@@ -192,7 +190,6 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       configParameters.put(DotNetConstants.MONO_JIT, "/usr/bin/mono-sgen");
     }
     final Map<String, String> envParameters = new TreeMap<>(System.getenv());
-    envParameters.put("ComSpec", cmd);
 
     m.checking(new Expectations(){{
       allowing(myContext).getBuildParameters(); will(returnValue(myBuildParametersMap));

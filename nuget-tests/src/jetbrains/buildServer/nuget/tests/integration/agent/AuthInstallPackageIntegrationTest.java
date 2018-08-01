@@ -71,8 +71,6 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_auth_restore(@NotNull final NuGet nuget) throws RunBuildException {
-    if (nuget == NuGet.NuGet_3_3) TestNGUtil.skip("NuGet 3.3 has problems with authentication");
-
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
     fetchPackages(nuget);

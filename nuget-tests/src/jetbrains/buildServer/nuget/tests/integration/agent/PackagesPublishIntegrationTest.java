@@ -117,11 +117,6 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_publish_packages_mock_http(@NotNull final NuGet nuget) throws IOException, RunBuildException {
-    if (!SystemInfo.isWindows && !(nuget.major == 3 && nuget.minor >= 4)) {
-      TestNGUtil.skip("Not supported for mono");
-      return;
-    }
-
     final AtomicBoolean hasPUT = new AtomicBoolean();
     final SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(3000).build();
     ServerBootstrap bootstrap = ServerBootstrap.bootstrap().setSocketConfig(socketConfig).setServerInfo("TEST/1.1")
@@ -155,12 +150,6 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_publish_packages_mock_http_auth(@NotNull final NuGet nuget) throws IOException, RunBuildException {
-    //enableDebug();
-    if (!SystemInfo.isWindows && !(nuget.major == 3 && nuget.minor >= 4)) {
-      TestNGUtil.skip("Not supported for mono");
-      return;
-    }
-
     final String username = "u-" + StringUtil.generateUniqueHash();
     final String password = "p-" + StringUtil.generateUniqueHash();
     final AtomicBoolean hasPUT = new AtomicBoolean();

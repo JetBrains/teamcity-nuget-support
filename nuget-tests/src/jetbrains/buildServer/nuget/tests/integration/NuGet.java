@@ -44,12 +44,10 @@ public enum NuGet {
   NuGet_4_0(4,0),
   NuGet_4_8(4,8);
 
-  public final int major;
-  public final int minor;
+  public final Version version;
 
   NuGet(int major, int minor) {
-    this.major = major;
-    this.minor = minor;
+    version = new Version(major, minor, 0);
   }
 
   @NotNull
@@ -95,7 +93,7 @@ public enum NuGet {
   private static final Version VERBOSITY_VERSION = new Version(2, 0, 0);
 
   public void makeOutputVerbose(GeneralCommandLine cmd) {
-    if (VERBOSITY_VERSION.compareTo(new Version(this.major, this.minor, 0)) < 0) {
+    if (VERBOSITY_VERSION.compareTo(version) < 0) {
       cmd.addParameter("-Verbosity");
       cmd.addParameter("detailed");
     } else {
