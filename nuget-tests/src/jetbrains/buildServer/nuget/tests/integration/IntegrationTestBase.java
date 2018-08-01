@@ -30,8 +30,6 @@ import jetbrains.buildServer.nuget.agent.dependencies.NuGetPackagesCollector;
 import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.*;
 import jetbrains.buildServer.nuget.agent.parameters.*;
-import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
-import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.agent.util.impl.CommandLineExecutorImpl;
 import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandBuildProcessFactory;
 import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandLineProvider;
@@ -73,13 +71,12 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected NuGetPackagesCollector myCollector;
   protected NuGetActionFactory myActionFactory;
   private BuildProcess myMockProcess;
-  protected BuildParametersMap myBuildParametersMap;
-  protected CommandlineBuildProcessFactory myExecutor;
+  private BuildParametersMap myBuildParametersMap;
   protected NuGetTeamCityProvider myNuGetTeamCityProvider;
-  protected Set<PackageSource> myGlobalSources;
+  private Set<PackageSource> myGlobalSources;
   private ExtensionHolder myExtensionHolder;
   protected PackageSourceManager myPsm;
-  private Version myNuGetMono = new Version(3, 3, 0);
+  protected Version myNuGet33 = new Version(3, 3, 0);
 
   @NotNull
   protected String getCommandsOutput() {
@@ -91,24 +88,27 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     return myCommandsWarnings.toString();
   }
 
-
-  public static final String NUGET_VERSIONS = "nuget_versions";
-  public static final String NUGET_VERSIONS_15p = "nuget_versions_15p";
-  public static final String NUGET_VERSIONS_16p = "nuget_versions_16p";
-  public static final String NUGET_VERSIONS_17p = "nuget_versions_17p";
-  public static final String NUGET_VERSIONS_18p = "nuget_versions_18p";
-  public static final String NUGET_VERSIONS_20p = "nuget_versions_20p";
-  public static final String NUGET_VERSIONS_27p = "nuget_versions_27p";
-  public static final String NUGET_VERSIONS_28p = "nuget_versions_28p";
-  public static final String NUGET_VERSIONS_48p = "nuget_versions_48p";
+  protected static final String NUGET_VERSIONS = "nuget_versions";
+  protected static final String NUGET_VERSIONS_15p = "nuget_versions_15p";
+  protected static final String NUGET_VERSIONS_16p = "nuget_versions_16p";
+  protected static final String NUGET_VERSIONS_17p = "nuget_versions_17p";
+  protected static final String NUGET_VERSIONS_18p = "nuget_versions_18p";
+  protected static final String NUGET_VERSIONS_20p = "nuget_versions_20p";
+  protected static final String NUGET_VERSIONS_27p = "nuget_versions_27p";
+  protected static final String NUGET_VERSIONS_28p = "nuget_versions_28p";
+  protected static final String NUGET_VERSIONS_48p = "nuget_versions_48p";
 
   @NotNull
   protected Object[][] versionsFrom(@NotNull final NuGet lowerBound) {
     final NuGet[] values =  NuGet.values();
-    final List<Object[]> data = new ArrayList<Object[]>();
+    final List<Object[]> data = new ArrayList<>();
     for (NuGet value : values) {
+      if (value.version.compareTo(lowerBound.version) < 0) {
+        continue;
+      }
+
       if(!SystemInfo.isWindows) {
-        if(value.version.compareTo(myNuGetMono) < 0) {
+        if(value.version.compareTo(myNuGet33) < 0) {
           continue;
         }
       }
@@ -272,7 +272,6 @@ public class IntegrationTestBase extends BuildProcessTestCase {
             new PackageInfoLoader()
     );
 
-    myExecutor = executingFactory();
     myActionFactory = new LoggingNuGetActionFactoryImpl(
       new NuGetActionFactoryImpl(
         new NuGetCommandBuildProcessFactory(
@@ -291,7 +290,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     // Add an access to run NuGet.exe
     for (NuGet nuGetVersion : NuGet.values()) {
       final String nuGet = nuGetVersion.getPath().getPath();
-      enableExecution(nuGet, null);
+      enableExecution(nuGet);
     }
 
     try {
@@ -308,7 +307,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
   private void arrangeNuGetPackageSource(final String command) throws Exception {
     final String nugetPath = NuGet.NuGet_2_8.getPath().getPath();
-    enableExecution(nugetPath, null);
+    enableExecution(nugetPath);
 
     final GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(nugetPath);
@@ -357,45 +356,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     return Paths.getTestDataPath("integration/" + path);
   }
 
-  @NotNull
-  private CommandlineBuildProcessFactory executingFactory() {
-    return (hostContext, program, argz, workingDir, additionalEnvironment) -> new BuildProcessBase() {
-      @NotNull
-      @Override
-      protected BuildFinishedStatus waitForImpl() {
-        if (!SystemInfo.isWindows) {
-          enableExecution(program, workingDir.getAbsolutePath());
-        }
-
-        GeneralCommandLine cmd = new GeneralCommandLine();
-        cmd.setExePath(program);
-        for (String arg : argz) {
-          cmd.addParameter(arg.replaceAll("%+", "%"));
-        }
-        cmd.setWorkingDirectory(workingDir);
-
-        Map<String, String> env = new HashMap<>();
-        env.putAll(System.getenv());
-        env.putAll(additionalEnvironment);
-        cmd.setEnvParams(env);
-
-        System.out.println("Run: " + cmd.getCommandLineString());
-
-        ExecResult result = SimpleCommandLineProcessRunner.runCommand(cmd, new byte[0]);
-
-        System.out.println(result.getStdout());
-        System.out.println(result.getStderr());
-
-        myCommandsOutput.append(result.getStdout()).append("\n\n").append(result.getStderr()).append("\n\n");
-
-        return result.getExitCode() == 0
-                ? BuildFinishedStatus.FINISHED_SUCCESS
-                : BuildFinishedStatus.FINISHED_FAILED;
-      }
-    };
-  }
-
-  protected static void enableExecution(@NotNull final String filePath, @Nullable final String baseDir) {
+  static void enableExecution(@NotNull final String filePath) {
     if(SystemInfo.isWindows) {
       return;
     }
@@ -411,9 +372,6 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     commandLine.setExePath("chmod");
     commandLine.addParameter("+x");
     commandLine.addParameter(canonicalFilePath);
-    if (baseDir != null) {
-      commandLine.setWorkDirectory(baseDir);
-    }
 
     final ExecResult execResult = SimpleCommandLineProcessRunner.runCommand(commandLine, null);
     if (execResult.getExitCode() != 0) {
