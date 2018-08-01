@@ -76,7 +76,6 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   private Set<PackageSource> myGlobalSources;
   private ExtensionHolder myExtensionHolder;
   protected PackageSourceManager myPsm;
-  protected Version myNuGet33 = new Version(3, 3, 0);
 
   @NotNull
   protected String getCommandsOutput() {
@@ -108,7 +107,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       }
 
       if(!SystemInfo.isWindows) {
-        if(value.version.compareTo(myNuGet33) < 0) {
+        if(value.version.compareTo(NuGet.NuGet_3_3.version) < 0) {
           continue;
         }
       }

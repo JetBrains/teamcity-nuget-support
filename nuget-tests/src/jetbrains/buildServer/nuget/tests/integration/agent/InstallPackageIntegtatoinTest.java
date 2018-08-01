@@ -87,6 +87,10 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS_17p)
   public void test_01_online_sources_no_cache(@NotNull final NuGet nuget) throws RunBuildException {
+    if (!SystemInfo.isWindows && nuget.version.equals(NuGet.NuGet_3_3.version)) {
+      TestNGUtil.skip("nuget 3.3 hangs on Linux");
+    }
+
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
     fetchPackages(new File(myRoot, "sln1-lib.sln"), Collections.<String>emptyList(), false, true, false, nuget,
@@ -106,6 +110,10 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_01_online_sources_no_cache_restore(@NotNull final NuGet nuget) throws RunBuildException {
+    if (!SystemInfo.isWindows && nuget.version.equals(NuGet.NuGet_3_3.version)) {
+      TestNGUtil.skip("nuget 3.3 hangs on Linux");
+    }
+
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01.zip"), "", myRoot);
 
@@ -126,7 +134,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_forConfig(@NotNull final NuGet nuget) throws RunBuildException {
-    if (!SystemInfo.isWindows) {
+    if (!SystemInfo.isWindows && nuget.version.compareTo(NuGet.NuGet_4_8.version) < 0) {
       TestNGUtil.skip("nuget update command works only on Windows");
     }
 
@@ -177,7 +185,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_01_online_sources_update_safe(@NotNull final NuGet nuget) throws RunBuildException {
-    if (!SystemInfo.isWindows) {
+    if (!SystemInfo.isWindows && nuget.version.compareTo(NuGet.NuGet_4_8.version) < 0) {
       TestNGUtil.skip("nuget update command works only on Windows");
     }
 
@@ -196,7 +204,7 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
 
   @Test(dataProvider = NUGET_VERSIONS_17p)
   public void test_prerelease_local(@NotNull final NuGet nuget) throws RunBuildException {
-    if (!SystemInfo.isWindows) {
+    if (!SystemInfo.isWindows && nuget.version.compareTo(NuGet.NuGet_4_8.version) < 0) {
       TestNGUtil.skip("nuget update command works only on Windows");
     }
 
@@ -326,6 +334,10 @@ public class InstallPackageIntegtatoinTest extends InstallPackageIntegrationTest
   @TestFor(issues = "TW-21061")
   @Test(dataProvider = NUGET_VERSIONS_17p)
   public void test_solution_wide_online_sources(@NotNull final NuGet nuget) throws RunBuildException {
+    if (!SystemInfo.isWindows && nuget.version.equals(NuGet.NuGet_3_3.version)) {
+      TestNGUtil.skip("nuget 3.3 hangs on Linux");
+    }
+
     ArchiveUtil.unpackZip(getTestDataPath("test-shared-packages.zip"), "", myRoot);
 
     fetchPackages(new File(myRoot, "ConsoleApplication1.sln"), Collections.<String>emptyList(), false, false, false, nuget,
