@@ -18,6 +18,8 @@ package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.common.version.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -209,5 +211,47 @@ public class VersionUtilityTest extends BaseTestCase {
     Assert.assertEquals(VersionUtility.normalizeVersion("1.0"), "1.0.0");
     Assert.assertEquals(VersionUtility.normalizeVersion("1.0.0+BuildAgent1"), "1.0.0");
     Assert.assertEquals(VersionUtility.normalizeVersion("1.0.0-alpha.1.2.30+BuildAgent1"), "1.0.0-alpha.1.2.30");
+  }
+
+  @DataProvider
+  public Object[][] frameworkNames() {
+    return new Object[][]{
+      {".NETPlatform5.0", new FrameworkName(".NETPlatform", new Version(5,0,0), "")},
+      {"Windows8.0", new FrameworkName("Windows", new Version(8,0,0), "")},
+      {".NETFramework4.5", new FrameworkName(".NETFramework", new Version(4,5,0), "")},
+      {"MonoAndroid1.0", new FrameworkName("MonoAndroid", new Version(1,0,0), "")},
+      {"MonoTouch1.0", new FrameworkName("MonoTouch", new Version(1,0,0), "")},
+      {"WindowsPhone8.0", new FrameworkName("WindowsPhone", new Version(8,0,0), "")},
+      {"WindowsPhoneApp8.1", new FrameworkName("WindowsPhoneApp", new Version(8,1,0), "")},
+      {"Xamarin.iOS1.0", new FrameworkName("Xamarin.iOS", new Version(1,0,0), "")},
+      {"Xamarin.Mac2.0", new FrameworkName("Xamarin.Mac", new Version(2,0,0), "")},
+      {".NETCore5.0", new FrameworkName(".NETCore", new Version(5,0,0), "")},
+      {".NETStandard1.3", new FrameworkName(".NETStandard", new Version(1,3,0), "")},
+      {".NETCoreApp2.0", new FrameworkName(".NETCoreApp", new Version(2,0,0), "")},
+      {"net462", new FrameworkName(".NETFramework", new Version(4,6,2), "")},
+      {"sl3-wp", new FrameworkName("Silverlight", new Version(3,0,0), "WindowsPhone")},
+      {"sl4-wp71", new FrameworkName("Silverlight", new Version(4,0,0), "WindowsPhone71")},
+      {"wpa81", new FrameworkName("WindowsPhoneApp", new Version(8,1,0), "")},
+      {"windowsphone70", new FrameworkName("WindowsPhone", new Version(7,0,0), "")},
+      {"netcore451", new FrameworkName(".NETCore", new Version(4,5,1), "")},
+      {"netmf", new FrameworkName(".NETMicroFramework", new Version(0,0,0), "")},
+      {"win10", new FrameworkName("Windows", new Version(1,0,0), "")},
+      {"wp75", new FrameworkName("WindowsPhone", new Version(7,5,0), "")},
+      {"netstandard1.6", new FrameworkName(".NETStandard", new Version(1,6,0), "")},
+      {"netcoreapp1.1", new FrameworkName(".NETCoreApp", new Version(1,1,0), "")},
+      {"uap10.0", new FrameworkName("uap", new Version(10,0,0), "")},
+      {"blah", null}
+    };
+  }
+
+  @Test(dataProvider = "frameworkNames")
+  void testParseFrameworkName(@NotNull final String name, @Nullable FrameworkName framework) {
+    final FrameworkName result = VersionUtility.parseFrameworkName(name);
+    if (framework == null) {
+      Assert.assertNull(result);
+    } else {
+      Assert.assertNotNull(result);
+      Assert.assertEquals(result, framework);
+    }
   }
 }

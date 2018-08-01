@@ -43,6 +43,11 @@ public class VersionUtility {
 
   private static final String NET_FRAMEWORK_IDENTIFIER = ".NETFramework";
   private static final String NET_CORE_FRAMEWORK_IDENTIFIER = ".NETCore";
+  private static final String NET_PLATFORM_FRAMEWORK_IDENTIFIER = ".NETPlatform";
+  private static final String NET_STANDARD_FRAMEWORK_IDENTIFIER = ".NETStandard";
+  private static final String NET_STANDARD_APP_FRAMEWORK_IDENTIFIER = ".NETStandardApp";
+  private static final String NET_CORE_APP_FRAMEWORK_IDENTIFIER = ".NETCoreApp";
+  private static final String NET_MICRO_FRAMEWORK_IDENTIFIER = ".NETMicroFramework";
   public static final String PORTABLE_FRAMEWORK_IDENTIFIER = ".NETPortable";
   private static final String ASP_NET_FRAMEWORK_IDENTIFIER = "ASP.Net";
   private static final String ASP_NET_CORE_FRAMEWORK_IDENTIFIER = "ASP.NetCore";
@@ -60,13 +65,32 @@ public class VersionUtility {
           ".NETCore", NET_CORE_FRAMEWORK_IDENTIFIER,
           "WinRT", NET_CORE_FRAMEWORK_IDENTIFIER,     // 'WinRT' is now deprecated. Use 'Windows' or 'win' instead.
 
+          // .NET Platform
+          ".NETPlatform", NET_PLATFORM_FRAMEWORK_IDENTIFIER,
+          "dotnet", NET_PLATFORM_FRAMEWORK_IDENTIFIER,
+
+          // .NET Standard
+          ".NETStandard", NET_STANDARD_FRAMEWORK_IDENTIFIER,
+          "netstandard", NET_STANDARD_FRAMEWORK_IDENTIFIER,
+
+          // .NET Standard APp
+          ".NETStandardApp", NET_STANDARD_APP_FRAMEWORK_IDENTIFIER,
+
+          // .NET Core App
+          ".NETCoreApp", NET_CORE_APP_FRAMEWORK_IDENTIFIER,
+          "netcoreapp", NET_CORE_APP_FRAMEWORK_IDENTIFIER,
+
           // .NET Micro Framework
-          ".NETMicroFramework", ".NETMicroFramework",
-          "netmf", ".NETMicroFramework",
+          ".NETMicroFramework", NET_MICRO_FRAMEWORK_IDENTIFIER,
+          "netmf", NET_MICRO_FRAMEWORK_IDENTIFIER,
+
+          // dotnet
+          "DNX", "DNX",
+          "DNXCore", "DNXCore",
 
           // Silverlight
           "SL", SILVERLIGHT_IDENTIFIER,
-          SILVERLIGHT_IDENTIFIER, SILVERLIGHT_IDENTIFIER,
+          "Silverlight", SILVERLIGHT_IDENTIFIER,
 
           // Portable Class Libraries
           ".NETPortable", PORTABLE_FRAMEWORK_IDENTIFIER,
@@ -82,6 +106,10 @@ public class VersionUtility {
           // Windows
           "Windows", "Windows",
           "win", "Windows",
+          "uap", "uap",
+
+          // Tizen
+          "Tizen", "Tizen",
 
           // ASP.Net
           "aspnet", ASP_NET_FRAMEWORK_IDENTIFIER,
@@ -112,7 +140,9 @@ public class VersionUtility {
           "Xamarin.XboxThreeSixty", "Xamarin.Xbox360",
           "XamarinXboxThreeSixty", "Xamarin.Xbox360",
           "Xamarin.XboxOne", "Xamarin.XboxOne",
-          "XamarinXboxOne", "Xamarin.XboxOne"));
+          "XamarinXboxOne", "Xamarin.XboxOne",
+          "Xamarin.WatchOS", "Xamarin.WatchOS",
+          "Xamarin.TVOS", "Xamarin.TVOS"));
 
   private static final Map<String, String> KNOWN_PROFILES =  new CaseInsensitiveMap<String>(CollectionsUtil.asMap(
           "Client", "Client",
@@ -232,37 +262,46 @@ public class VersionUtility {
         profilePart = KNOWN_PROFILES.get(profilePart);
     }
 
-    Version version = Version.EMPTY;
-
-    if (versionPart != null) {
-      try {
-        Integer.parseInt(versionPart);
-        int length = versionPart.length();
-        if (length > 4) {
-          versionPart = versionPart.substring(0, 4);
-        }
-        // Make sure it has at least 2 digits so it parses as a valid version
-        String paddedVersion = length > 2 ? versionPart : versionPart + StringUtil.repeatSymbol('0', 2 - length);
-        versionPart = StringUtil.join(splitByChar(paddedVersion), ".");
-      } catch (NumberFormatException ex) {
-        LOG.debug("Failed to parse framework version from string " + frameworkNameString, ex);
-        return null;
-      }
-
-      version = Version.valueOf(versionPart);
-      if(version == null){
-        if (StringUtil.isEmpty(identifierPart) || !StringUtil.isEmpty(versionPart)){
-          return null;
-        }
-        version = Version.EMPTY;
-      }
-    }
+    Version version = getVersion(versionPart);
+    if (version == null) return null;
 
     if (StringUtil.isEmpty(identifierPart)){
       identifierPart = NET_FRAMEWORK_IDENTIFIER;
     }
 
     return new FrameworkName(identifierPart, version, profilePart);
+  }
+
+  @Nullable
+  private static Version getVersion(String versionPart) {
+    Version version = Version.EMPTY;
+    if (versionPart != null) {
+      if (!versionPart.contains(".")) {
+        try {
+          Integer.parseInt(versionPart);
+          int length = versionPart.length();
+          if (length > 4) {
+            versionPart = versionPart.substring(0, 4);
+          }
+          // Make sure it has at least 2 digits so it parses as a valid version
+          String paddedVersion = length > 2 ? versionPart : versionPart + StringUtil.repeatSymbol('0', 2 - length);
+          versionPart = StringUtil.join(splitByChar(paddedVersion), ".");
+        } catch (NumberFormatException ex) {
+          LOG.debug("Failed to parse framework version from string " + versionPart, ex);
+          return null;
+        }
+      }
+
+      version = Version.valueOf(versionPart);
+      if (version == null) {
+        if (!StringUtil.isEmpty(versionPart)) {
+          return null;
+        }
+        version = Version.EMPTY;
+      }
+    }
+
+    return version;
   }
 
   public static boolean isPackageCompatibleWithFrameworks(Set<String> projectFrameworks, final Set<String> packageFrameworkConstraints) {
