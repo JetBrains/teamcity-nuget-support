@@ -59,7 +59,7 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
     setODataSerializer(library);
     do_test_list_packages(
             5000,
-            0.4,
+            2,
             "?$filter=(((Id%20ne%20null)%20and%20substringof('mm',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('mm',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20mm%20',tolower(Tags)))" +
                     "&$orderby=Id" +
                     "&$skip=0" +
@@ -71,11 +71,11 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
     setODataSerializer(library);
     do_test_list_packages(
             50000,
-            0.6,
+            5,
             "?$filter=(((Id%20ne%20null)%20and%20substringof('mm',tolower(Id)))%20or%20((Description%20ne%20null)%20and%20substringof('mm',tolower(Description))))%20or%20((Tags%20ne%20null)%20and%20substringof('%20mm%20',tolower(Tags)))" +
                     "&$orderby=Id" +
                     "&$skip=0" +
-                    "&$top=30&odata-debug=html");
+                    "&$top=30");
   }
 
   @Test(dataProvider = "nugetFeedLibrariesData")
