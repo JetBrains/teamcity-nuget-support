@@ -119,7 +119,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
     }
 
     final String packageName = FilenameUtils.removeExtension(toolPackage.getName());
-    final String toolId = normalizeToolPackageName(packageName);
+    final String toolId = ToolIdUtils.getPackageId(packageName);
     final String nugetVersion = ToolIdUtils.getPackageVersion(packageName);
     if (StringUtil.isEmpty(nugetVersion)) {
       return GetPackageVersionResult.error(String.format("Failed to determine NuGet version based on its package file name %s. Checked package %s", toolPackage.getName(), toolPackage.getAbsolutePath()));
@@ -156,6 +156,6 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
   @NotNull
   @Override
   public String normalizeToolPackageName(@NotNull String toolPackageName) {
-    return ToolIdUtils.getPackageId(toolPackageName);
+    return ToolIdUtils.getPackageId(FilenameUtils.removeExtension(toolPackageName)) + FeedConstants.NUGET_EXTENSION;
   }
 }
