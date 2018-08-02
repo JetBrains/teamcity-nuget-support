@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.*;
 
 import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_COMMANDLINE;
-import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_COMMANDLINE_TO_LOWER_CASE;
 
 /**
  * Created by Evgeniy.Koshkin on 15-Jan-16.
@@ -78,15 +77,14 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
     @Override
     public String getValidPackageDescription() {
       return "Specify the path to a NuGet package (.nupkg file) with the <em>tools/NuGet.exe</em> file inside.\n" +
-              "<br/>Download the <em>NuGet.Commandline.&lt;VERSION&gt;.nupkg</em> file from\n" +
-              "<a href=\"http://nuget.org/packages/NuGet.CommandLine\" target=\"_blank\">NuGet.org</a> and upload it here";
+        "<br/>Download the <em>NuGet.Commandline.&lt;VERSION&gt;.nupkg</em> file from\n" +
+        "<a href=\"http://nuget.org/packages/NuGet.CommandLine\" target=\"_blank\">NuGet.org</a> and upload it here";
     }
   };
 
-  @NotNull private final AvailableToolsState myAvailableTools;
-  @NotNull private final NuGetToolDownloader myToolDownloader;
-
-  @NotNull private final ToolUnpacker myUnpacker = new ToolUnpacker();
+  private final AvailableToolsState myAvailableTools;
+  private final NuGetToolDownloader myToolDownloader;
+  private final ToolUnpacker myUnpacker = new ToolUnpacker();
 
   public NuGetServerToolProvider(@NotNull AvailableToolsState availableTools,
                                  @NotNull NuGetToolDownloader toolDownloader) {
@@ -111,7 +109,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
     if (!FeedConstants.NUGET_TOOL_FILE_FILTER.accept(toolPackage)) {
       return GetPackageVersionResult.error(String.format("File %s is not a valid NuGet redistributable package since its name do not suite.", toolPackage.getAbsolutePath()));
     }
-    if(FeedConstants.PACKAGE_FILE_FILTER.accept(toolPackage)){
+    if (FeedConstants.PACKAGE_FILE_FILTER.accept(toolPackage)) {
       try {
         NuGetPackageValidationUtil.validatePackage(toolPackage);
       } catch (ToolException e) {
@@ -120,9 +118,10 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
       }
     }
 
-    final String toolId = FilenameUtils.removeExtension(normalizeToolPackageName(toolPackage.getName()));
-    final String nugetVersion = ToolIdUtils.getPackageVersion(toolPackage);
-    if(StringUtil.isEmpty(nugetVersion)){
+    final String packageName = FilenameUtils.removeExtension(toolPackage.getName());
+    final String toolId = normalizeToolPackageName(packageName);
+    final String nugetVersion = ToolIdUtils.getPackageVersion(packageName);
+    if (StringUtil.isEmpty(nugetVersion)) {
       return GetPackageVersionResult.error(String.format("Failed to determine NuGet version based on its package file name %s. Checked package %s", toolPackage.getName(), toolPackage.getAbsolutePath()));
     }
     return GetPackageVersionResult.version(new SimpleToolVersion(NUGET_TOOL_TYPE, nugetVersion, toolId));
@@ -133,10 +132,10 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
   public File fetchToolPackage(@NotNull ToolVersion toolVersion, @NotNull File targetDirectory) throws ToolException {
     final String id = toolVersion.getId();
     final DownloadableToolVersion downloadableNuGetTool = CollectionsUtil.findFirst(myAvailableTools.getAvailable(FetchToolsPolicy.ReturnCached).getFetchedTools(), data -> data.getId().equals(id));
-    if(downloadableNuGetTool == null){
+    if (downloadableNuGetTool == null) {
       throw new ToolException("Failed to fetch tool " + toolVersion + ". Download source info wasn't prefetched.");
     }
-    final File location = new  File(targetDirectory, downloadableNuGetTool.getDestinationFileName());
+    final File location = new File(targetDirectory, downloadableNuGetTool.getDestinationFileName());
     myToolDownloader.downloadTool(downloadableNuGetTool, location);
     return location;
   }
@@ -144,7 +143,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
   @Override
   public void unpackToolPackage(@NotNull File toolPackage, @NotNull File targetDirectory) throws ToolException {
     try {
-      if(FeedConstants.EXE_FILE_FILTER.accept(toolPackage)){
+      if (FeedConstants.EXE_FILE_FILTER.accept(toolPackage)) {
         FileUtil.copy(toolPackage, new File(targetDirectory, FeedConstants.PATH_TO_NUGET_EXE));
       } else {
         myUnpacker.extractPackage(toolPackage, targetDirectory);
@@ -157,8 +156,6 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
   @NotNull
   @Override
   public String normalizeToolPackageName(@NotNull String toolPackageName) {
-    if(toolPackageName.startsWith(NUGET_COMMANDLINE)) return toolPackageName;
-    if(!toolPackageName.toLowerCase().startsWith(NUGET_COMMANDLINE_TO_LOWER_CASE)) return toolPackageName;
-    return NUGET_COMMANDLINE + toolPackageName.substring(NUGET_COMMANDLINE.length());
+    return ToolIdUtils.getPackageId(toolPackageName);
   }
 }

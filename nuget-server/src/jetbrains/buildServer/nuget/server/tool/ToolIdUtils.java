@@ -19,10 +19,8 @@ package jetbrains.buildServer.nuget.server.tool;
 import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import jetbrains.buildServer.util.StringUtil;
-import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,14 +35,26 @@ public class ToolIdUtils {
   );
 
   @NotNull
-  public static String getPackageVersion(@NotNull File toolPackage) {
-    final String toolPackageNameWithoutExtension = FilenameUtils.removeExtension(toolPackage.getName());
-    final Matcher matcher = NuGetPackageVersionPattern.matcher(toolPackageNameWithoutExtension);
+  public static String getPackageVersion(@NotNull String packageName) {
+    final Matcher matcher = NuGetPackageVersionPattern.matcher(packageName);
     if (matcher.matches()) {
       final String version = matcher.group(1);
       final String normalizedVersion = VersionUtility.normalizeVersion(version);
       return StringUtil.notEmpty(normalizedVersion, version);
     }
-    return toolPackageNameWithoutExtension;
+    return packageName;
+  }
+
+  @NotNull
+  public static String getPackageId(@NotNull String packageName) {
+    final Matcher matcher = NuGetPackageVersionPattern.matcher(packageName);
+    if (matcher.matches()) {
+      final String version = matcher.group(1);
+      final String normalizedVersion = VersionUtility.normalizeVersion(version);
+      return String.format("%s.%s",
+        FeedConstants.NUGET_COMMANDLINE,
+        StringUtil.notEmpty(normalizedVersion, version));
+    }
+    return packageName;
   }
 }
