@@ -117,6 +117,10 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_publish_packages_mock_http(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    if (!SystemInfo.isWindows && nuget == NuGet.NuGet_3_3) {
+      TestNGUtil.skip("NuGet 3.3 on Mono has problems with pack command");
+    }
+
     final AtomicBoolean hasPUT = new AtomicBoolean();
     final SocketConfig socketConfig = SocketConfig.custom().setSoTimeout(3000).build();
     ServerBootstrap bootstrap = ServerBootstrap.bootstrap().setSocketConfig(socketConfig).setServerInfo("TEST/1.1")
@@ -150,6 +154,10 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_publish_packages_mock_http_auth(@NotNull final NuGet nuget) throws IOException, RunBuildException {
+    if (!SystemInfo.isWindows && nuget == NuGet.NuGet_3_3) {
+      TestNGUtil.skip("NuGet 3.3 on Mono has problems with pack command");
+    }
+
     final String username = "u-" + StringUtil.generateUniqueHash();
     final String password = "p-" + StringUtil.generateUniqueHash();
     final AtomicBoolean hasPUT = new AtomicBoolean();

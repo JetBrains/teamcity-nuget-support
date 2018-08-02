@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration.agent;
 
+import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
@@ -56,7 +57,7 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
   protected PackagesInstallParameters myInstallParameters;
   protected PackagesUpdateParameters myUpdateParameters;
   protected PackagesInstallMode myInstallMode;
-
+  protected List<String> myCommandLineArguments;
 
   @BeforeMethod
   @Override
@@ -67,6 +68,7 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
     myUpdateParameters = m.mock(PackagesUpdateParameters.class);
 
     myInstallMode = PackagesInstallMode.VIA_INSTALL;
+    myCommandLineArguments = new ArrayList<>();
 
     m.checking(new Expectations(){{
       allowing(myInstallParameters).getNuGetParameters();
@@ -110,6 +112,10 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
                              @Nullable Collection<NuGetPackageInfo> detectedPackages,
                              @Nullable BuildFinishedStatus status) throws RunBuildException {
 
+    if (!SystemInfo.isWindows && nuget == NuGet.NuGet_4_8) {
+      myCommandLineArguments.addAll(Arrays.asList("-Verbosity", "detailed"));
+    }
+
     m.checking(new Expectations() {{
       allowing(myParametersFactory).loadNuGetFetchParameters(myContext);
       will(returnValue(myFetchParameters));
@@ -125,7 +131,7 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
       allowing(myFetchParameters).getNuGetPackageSources();
       will(returnValue(sources));
       allowing(myFetchParameters).getCustomCommandline();
-      will(returnValue(Collections.emptyList()));
+      will(returnValue(myCommandLineArguments));
       allowing(myInstallParameters).getExcludeVersion();
       will(returnValue(excludeVersion));
       allowing(myInstallParameters).getNoCache();
