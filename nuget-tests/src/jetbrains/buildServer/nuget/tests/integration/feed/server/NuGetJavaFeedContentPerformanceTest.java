@@ -83,7 +83,7 @@ public class NuGetJavaFeedContentPerformanceTest extends NuGetJavaFeedIntegratio
     setODataSerializer(library);
     do_test_list_packages(
             50000,
-            0.4,
+            2,
             "?$filter=IsLatestVersion" +
                     "&$orderby=Id" +
                     "&$skip=0" +
