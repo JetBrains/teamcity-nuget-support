@@ -60,7 +60,7 @@ public class RepositoryPathResolverImpl implements RepositoryPathResolver {
     final Collection<File> configs = locateNugetConfigsNearSolutionFile(workingDirectory, solutionHomeDir);
 
     if(configs.isEmpty()) {
-      LOG.warn("Failed to find NuGet.config file near solution " + solutionFile + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".");
+      LOG.info("NuGet.config file not found near solution " + solutionFile + ". Packages will be downloaded into default path: " + defaultRepositoryPath + ".");
       return defaultRepositoryPath;
     }
 
