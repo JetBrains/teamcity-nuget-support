@@ -1,5 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using NuGet.Common;
 using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
@@ -15,19 +17,19 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     /// <summary>
     /// Initializes a new instance of the <see cref="GetAuthenticationCredentialsRequestHandler"/> class.
     /// </summary>
-    /// <param name="logger">A <see cref="TraceSource"/> to use for logging.</param>
+    /// <param name="plugin">A <see cref="PluginController"/> to use for logging.</param>
     /// <param name="credentialProvider">An <see cref="ICredentialProvider"/> containing credential provider.</param>
-    public GetAuthenticationCredentialsRequestHandler(TraceSource logger, ICredentialProvider credentialProvider)
-      : base(logger)
+    public GetAuthenticationCredentialsRequestHandler(PluginController plugin, ICredentialProvider credentialProvider)
+      : base(plugin)
     {
       _credentialProvider = credentialProvider ?? throw new ArgumentNullException(nameof(credentialProvider));
     }
 
-    public override GetAuthenticationCredentialsResponse HandleRequest(GetAuthenticationCredentialsRequest request)
+    public override async Task<GetAuthenticationCredentialsResponse> HandleRequestAsync(GetAuthenticationCredentialsRequest request)
     {
       try
       {
-        var response = _credentialProvider.HandleRequest(request);
+        var response = await _credentialProvider.HandleRequestAsync(request);
         if (response != null && response.ResponseCode == MessageResponseCode.Success)
         {
           return response;
@@ -35,7 +37,7 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
       }
       catch (Exception e)
       {
-        Logger.Error($"Failed to acquire session token. {e}");
+        await Plugin.LogMessageAsync(LogLevel.Error, $"Failed to acquire credentials: {e}");
 
         return new GetAuthenticationCredentialsResponse(
           username: null,

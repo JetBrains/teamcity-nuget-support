@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Threading.Tasks;
+using NuGet.Common;
 using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
@@ -15,21 +16,28 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     /// <summary>
     /// Initializes a new instance of the <see cref="GetOperationClaimsRequestHandler"/> class.
     /// </summary>
-    /// <param name="logger">A <see cref="TraceSource"/> to use for logging.</param>
+    /// <param name="plugin">A <see cref="PluginController"/> to use for logging.</param>
     /// <param name="credentialProvider">An <see cref="ICredentialProvider"/> containing credential provider.</param>
-    public GetOperationClaimsRequestHandler(TraceSource logger, ICredentialProvider credentialProvider):base(logger)
+    public GetOperationClaimsRequestHandler(PluginController plugin, ICredentialProvider credentialProvider) : base(plugin)
     {
       myCredentialProvider = credentialProvider;
     }
 
-    public override GetOperationClaimsResponse HandleRequest(GetOperationClaimsRequest request)
+    public override async Task<GetOperationClaimsResponse> HandleRequestAsync(GetOperationClaimsRequest request)
     {
       var operationClaims = new List<OperationClaim>();
-      if (request.PackageSourceRepository == null && request.ServiceIndex == null ||
-          Uri.TryCreate(request.PackageSourceRepository, UriKind.Absolute, out Uri uri) &&
-          myCredentialProvider.CanProvideCredentials(uri))
+      try
       {
-        operationClaims.Add(OperationClaim.Authentication);
+        if (request.PackageSourceRepository == null && request.ServiceIndex == null ||
+            Uri.TryCreate(request.PackageSourceRepository, UriKind.Absolute, out Uri uri) &&
+            await myCredentialProvider.CanProvideCredentialsAsync(uri))
+        {
+          operationClaims.Add(OperationClaim.Authentication);
+        }
+      }
+      catch (Exception e)
+      {
+        await Plugin.LogMessageAsync(LogLevel.Error, $"Failed to execute credentials provider: {e}");
       }
 
       return new GetOperationClaimsResponse(operationClaims);

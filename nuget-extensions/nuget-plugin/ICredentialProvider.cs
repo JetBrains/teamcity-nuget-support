@@ -15,13 +15,13 @@ namespace JetBrains.TeamCity.NuGet
     /// </summary>
     /// <param name="uri">The <see cref="Uri"/> of the package feed.</param>
     /// <returns><code>true</code> if this implementation can provide credentials, otherwise <code>false</code>.</returns>
-    bool CanProvideCredentials(Uri uri);
+    Task<bool> CanProvideCredentialsAsync(Uri uri);
 
     /// <summary>
     /// Handles a <see cref="GetAuthenticationCredentialsRequest"/>.
     /// </summary>
     /// <param name="request">A <see cref="GetAuthenticationCredentialsRequest"/> object containing details about the request.</param>
-    /// <returns>A <see cref="GetAuthenticationCredentialsResponse"/> object containg details about a response.</returns>
-    GetAuthenticationCredentialsResponse HandleRequest(GetAuthenticationCredentialsRequest request);
+    /// <returns>A <see cref="GetAuthenticationCredentialsResponse"/> object containing details about a response.</returns>
+    Task<GetAuthenticationCredentialsResponse> HandleRequestAsync(GetAuthenticationCredentialsRequest request);
   }
 }

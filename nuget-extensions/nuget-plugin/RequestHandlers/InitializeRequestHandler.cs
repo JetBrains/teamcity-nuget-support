@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using System.Threading.Tasks;
 using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
@@ -11,15 +11,15 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     /// <summary>
     /// Initializes a new instance of the <see cref="InitializeRequestHandler"/> class.
     /// </summary>
-    /// <param name="logger">A <see cref="TraceSource"/> to use for logging.</param>
-    public InitializeRequestHandler(TraceSource logger)
-      : base(logger)
+    /// <param name="plugin">A <see cref="PluginController"/> to use for logging.</param>
+    public InitializeRequestHandler(PluginController plugin)
+      : base(plugin)
     {
     }
 
-    public override InitializeResponse HandleRequest(InitializeRequest request)
+    public override Task<InitializeResponse> HandleRequestAsync(InitializeRequest request)
     {
-      return new InitializeResponse(MessageResponseCode.Success);
+      return Task.FromResult(new InitializeResponse(MessageResponseCode.Success));
     }
   }
 }

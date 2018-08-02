@@ -1,30 +1,11 @@
-﻿#region LICENSE
-
-// /*
-//  * Copyright 2000-2018 JetBrains s.r.o.
-//  *
-//  * Licensed under the Apache License, Version 2.0 (the "License");
-//  * you may not use this file except in compliance with the License.
-//  * You may obtain a copy of the License at
-//  *
-//  * http://www.apache.org/licenses/LICENSE-2.0
-//  *
-//  * Unless required by applicable law or agreed to in writing, software
-//  * distributed under the License is distributed on an "AS IS" BASIS,
-//  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//  * See the License for the specific language governing permissions and
-//  * limitations under the License.
-//  */
-
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using JetBrains.TeamCity.NuGet.ExtendedCommands;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
+using NuGet.Common;
 using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet
@@ -32,10 +13,15 @@ namespace JetBrains.TeamCity.NuGet
   internal class TeamCityCredentialProvider : ICredentialProvider
   {
     private const string NugetFeedsEnv = "TEAMCITY_NUGET_FEEDS";
+    private const string CouldProvideCredentialsForUriFromTheSource = "Could provide credentials for URI {0} from the source {1}";
+    private const string CouldNotProvideCredentialsForUri = "Could not provide credentials for URI {0}";
+    private const string FoundCredentialsForUriFromSource = "Found credentials for URI {0} from source {1}";
+    private const string CredentialsForUriNotFound = "Credentials for URI {0} not found";
+    private readonly PluginController _plugin;
 
-    internal TeamCityCredentialProvider(TraceSource traceSource)
+    internal TeamCityCredentialProvider(PluginController plugin)
     {
-      Logger = traceSource ?? new TraceSource(nameof(TeamCityCredentialProvider));
+      _plugin = plugin;
 
       var teamCityFeedsPath = Environment.GetEnvironmentVariable(NugetFeedsEnv);
       var nugetSources = new List<INuGetSource>();
@@ -48,28 +34,27 @@ namespace JetBrains.TeamCity.NuGet
       NuGetSources = nugetSources;
     }
 
-    /// <summary>
-    /// Gets a <see cref="TraceSource"/> to use for logging.
-    /// </summary>
-    private TraceSource Logger { get; }
-
-    /// <summary>
-    /// Gets a <see cref="TraceSource"/> to use for logging.
-    /// </summary>
     private List<INuGetSource> NuGetSources { get; }
 
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    public bool CanProvideCredentials(Uri uri)
+    public async Task<bool> CanProvideCredentialsAsync(Uri uri)
     {
-      return GetSource(uri) != null;
+      var foundSource = GetSource(uri);
+      if (foundSource == null)
+      {
+        await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CouldNotProvideCredentialsForUri, uri));
+        return false;
+      }
+
+      await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CouldProvideCredentialsForUriFromTheSource, uri, foundSource.Source));
+      return true;
     }
 
-    /// <inheritdoc cref="IDisposable.Dispose"/>
-    public GetAuthenticationCredentialsResponse HandleRequest(GetAuthenticationCredentialsRequest request)
+    public async Task<GetAuthenticationCredentialsResponse> HandleRequestAsync(GetAuthenticationCredentialsRequest request)
     {
       var source = GetSource(request.Uri);
       if (source != null)
       {
+        await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(FoundCredentialsForUriFromSource, request.Uri, source.Source));
         return new GetAuthenticationCredentialsResponse(
           source.Username,
           source.Password,
@@ -78,6 +63,7 @@ namespace JetBrains.TeamCity.NuGet
           MessageResponseCode.Success);
       }
 
+      await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CredentialsForUriNotFound, request.Uri));
       return new GetAuthenticationCredentialsResponse(null, null, null, null, MessageResponseCode.NotFound);
     }
 

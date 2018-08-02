@@ -11,7 +11,7 @@ namespace JetBrains.TeamCity.NuGet
   internal static class Program
   {
     private static readonly TraceSource Logger = new TraceSource("CredentialPlugin");
-
+    
     public static async Task<int> Main(string[] args)
     {
       DebugBreakIfPluginDebuggingIsEnabled();
@@ -24,24 +24,25 @@ namespace JetBrains.TeamCity.NuGet
                                   eventArgs.Cancel = true;
                                 };
 
-      var credentialProvider = new TeamCityCredentialProvider(Logger);
+      var pluginController = new PluginController();
+      var credentialProvider = new TeamCityCredentialProvider(pluginController);
       var requestHandlers = new RequestHandlerCollection
                             {
                               {
                                 MessageMethod.GetAuthenticationCredentials,
-                                new GetAuthenticationCredentialsRequestHandler(Logger, credentialProvider)
+                                new GetAuthenticationCredentialsRequestHandler(pluginController, credentialProvider)
                               },
                               {
                                 MessageMethod.GetOperationClaims,
-                                new GetOperationClaimsRequestHandler(Logger, credentialProvider)
+                                new GetOperationClaimsRequestHandler(pluginController, credentialProvider)
                               },
                               {
                                 MessageMethod.SetLogLevel,
-                                new SetLogLevelHandler(Logger)
+                                new SetLogLevelHandler(pluginController)
                               },
                               {
                                 MessageMethod.Initialize, 
-                                new InitializeRequestHandler(Logger)
+                                new InitializeRequestHandler(pluginController)
                               },
                             };
 
@@ -53,6 +54,7 @@ namespace JetBrains.TeamCity.NuGet
           .CreateFromCurrentProcessAsync(requestHandlers, ConnectionOptions.CreateDefault(), CancellationToken.None)
           .ConfigureAwait(continueOnCapturedContext: false))
         {
+          pluginController.Connection = plugin.Connection;
           await RunNuGetPluginsAsync(plugin, Logger, tokenSource.Token)
             .ConfigureAwait(continueOnCapturedContext: false);
         }
@@ -77,7 +79,7 @@ namespace JetBrains.TeamCity.NuGet
           isNonInteractive: true,
           canShowDialog: false
         );
-        var response = getAuthenticationCredentialsRequestHandler.HandleRequest(request);
+        var response = getAuthenticationCredentialsRequestHandler.HandleRequestAsync(request).GetAwaiter().GetResult();
 
         Console.WriteLine(response?.Username);
         Console.WriteLine(response?.Password);

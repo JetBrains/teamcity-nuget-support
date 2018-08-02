@@ -1,32 +1,29 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
 {
   internal abstract class RequestHandlerBase<TRequest, TResponse> : IRequestHandler where TResponse : class
   {
-    protected RequestHandlerBase(TraceSource logger)
+    protected RequestHandlerBase(PluginController plugin)
     {
-      Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+      Plugin = plugin;
     }
 
-    public TraceSource Logger { get; }
+    protected PluginController Plugin { get; }
 
     public CancellationToken CancellationToken { get; }
 
-    public Task HandleResponseAsync(IConnection connection, Message message, IResponseHandler responseHandler,
+    public async Task HandleResponseAsync(IConnection connection, Message message, IResponseHandler responseHandler,
       CancellationToken cancellationToken)
     {
       TRequest request = MessageUtilities.DeserializePayload<TRequest>(message);
-      TResponse response = HandleRequest(request);
+      TResponse response = await HandleRequestAsync(request).ConfigureAwait(false);
 
-      return responseHandler.SendResponseAsync(message, response, cancellationToken);
+      await responseHandler.SendResponseAsync(message, response, cancellationToken).ConfigureAwait(false);
     }
 
-    public abstract TResponse HandleRequest(TRequest request);
+    public abstract Task<TResponse> HandleRequestAsync(TRequest request);
   }
 }
