@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.tool.ToolIdUtils;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -28,17 +29,25 @@ import static jetbrains.buildServer.nuget.common.FeedConstants.NUGET_EXTENSION;
  * @author Evgeniy.Koshkin
  */
 public class ToolIdUtilsTest extends BaseTestCase {
-  @Test
-  public void testGetPackageVersion() throws Exception {
-    assertEquals("1.2.3", ToolIdUtils.getPackageVersion(packageOfName("NuGet.CommandLine.1.2.3")));
-    assertEquals("2.3.4.5", ToolIdUtils.getPackageVersion(packageOfName("NuGet.CommandLine.2.3.4.5")));
-    assertEquals("2.3.4.5-alpha", ToolIdUtils.getPackageVersion(packageOfName("NuGet.CommandLine.2.3.4.5-alpha")));
-    assertEquals("win-x86-commandline.3.2.0", ToolIdUtils.getPackageVersion(packageOfName("win-x86-commandline.3.2.0")));
-    assertEquals("win-x86-commandline.3.2.0-rc", ToolIdUtils.getPackageVersion(packageOfName("win-x86-commandline.3.2.0-rc")));
-    assertEquals("2.3.4.5-alpha", ToolIdUtils.getPackageVersion(packageOfName("NuGet.CommandLine.2.3.4.5-alpha")));
-    assertEquals("NuGet.Hack.2.3.4.5-alpha", ToolIdUtils.getPackageVersion(packageOfName("NuGet.Hack.2.3.4.5-alpha")));
-    assertEquals("1.2.3", ToolIdUtils.getPackageVersion(packageOfName("nuget.commandline.1.2.3")));
-    assertEquals("1.2.3", ToolIdUtils.getPackageVersion(packageOfName("NUGET.COMMANDLINE.1.2.3")));
+
+  @DataProvider
+  public Object[][] packageNames() {
+    return new Object[][]{
+      {"NuGet.CommandLine.1.2.3", "1.2.3"},
+      {"NuGet.CommandLine.2.3.4.5", "2.3.4.5", },
+      {"NuGet.CommandLine.2.3.4.5-alpha", "2.3.4.5-alpha"},
+      {"win-x86-commandline.3.2.0", "win-x86-commandline.3.2.0"},
+      {"win-x86-commandline.3.2.0-rc", "win-x86-commandline.3.2.0-rc"},
+      {"NuGet.Hack.2.3.4.5-alpha", "NuGet.Hack.2.3.4.5-alpha"},
+      {"nuget.commandline.1.2.3", "1.2.3"},
+      {"NUGET.COMMANDLINE.1.2.3", "1.2.3"},
+      {"NuGet.CommandLine.4.8.0-rtm.5369+9f75ce12e9d1e153c7a087f6d01cc09861effe26", "4.8.0-rtm.5369"},
+    };
+  }
+
+  @Test(dataProvider = "packageNames")
+  public void testGetPackageVersion(final String packageName, final String expectedName) throws Exception {
+    assertEquals(expectedName, ToolIdUtils.getPackageVersion(packageOfName(packageName)));
   }
 
   private File packageOfName(String packageName) {

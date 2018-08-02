@@ -16,24 +16,34 @@
 
 package jetbrains.buildServer.nuget.server.tool;
 
-import com.intellij.openapi.util.text.StringUtil;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.common.version.VersionUtility;
+import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Evgeniy.Koshkin
  */
 public class ToolIdUtils {
+
+  private static Pattern NuGetPackageVersionPattern = Pattern.compile(
+    String.format("%s\\.(.+)", FeedConstants.NUGET_COMMANDLINE),
+    Pattern.CASE_INSENSITIVE
+  );
+
   @NotNull
   public static String getPackageVersion(@NotNull File toolPackage) {
     final String toolPackageNameWithoutExtension = FilenameUtils.removeExtension(toolPackage.getName());
-    final String toolPackageNameWithoutExtensionToLowerCase = toolPackageNameWithoutExtension.toLowerCase();
-    if (toolPackageNameWithoutExtensionToLowerCase.startsWith(FeedConstants.NUGET_COMMANDLINE_TO_LOWER_CASE + ".")) {
-      return toolPackageNameWithoutExtensionToLowerCase.substring(FeedConstants.NUGET_COMMANDLINE_TO_LOWER_CASE.length() + 1);
+    final Matcher matcher = NuGetPackageVersionPattern.matcher(toolPackageNameWithoutExtension);
+    if (matcher.matches()) {
+      final String version = matcher.group(1);
+      final String normalizedVersion = VersionUtility.normalizeVersion(version);
+      return StringUtil.notEmpty(normalizedVersion, version);
     }
     return toolPackageNameWithoutExtension;
   }
