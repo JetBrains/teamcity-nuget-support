@@ -29,7 +29,7 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     {
       try
       {
-        var response = await _credentialProvider.HandleRequestAsync(request);
+        var response = await _credentialProvider.HandleRequestAsync(request).ConfigureAwait(false);
         if (response != null && response.ResponseCode == MessageResponseCode.Success)
         {
           return response;
@@ -37,7 +37,7 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
       }
       catch (Exception e)
       {
-        await Plugin.LogMessageAsync(LogLevel.Error, $"Failed to acquire credentials: {e}");
+        await Plugin.LogMessageAsync(LogLevel.Error, $"Failed to acquire credentials: {e}").ConfigureAwait(false);
 
         return new GetAuthenticationCredentialsResponse(
           username: null,

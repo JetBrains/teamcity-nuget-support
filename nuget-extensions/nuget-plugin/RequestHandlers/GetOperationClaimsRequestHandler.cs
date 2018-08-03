@@ -30,14 +30,14 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
       {
         if (request.PackageSourceRepository == null && request.ServiceIndex == null ||
             Uri.TryCreate(request.PackageSourceRepository, UriKind.Absolute, out Uri uri) &&
-            await myCredentialProvider.CanProvideCredentialsAsync(uri))
+            await myCredentialProvider.CanProvideCredentialsAsync(uri).ConfigureAwait(false))
         {
           operationClaims.Add(OperationClaim.Authentication);
         }
       }
       catch (Exception e)
       {
-        await Plugin.LogMessageAsync(LogLevel.Error, $"Failed to execute credentials provider: {e}");
+        await Plugin.LogMessageAsync(LogLevel.Error, $"Failed to execute credentials provider: {e}").ConfigureAwait(false);
       }
 
       return new GetOperationClaimsResponse(operationClaims);

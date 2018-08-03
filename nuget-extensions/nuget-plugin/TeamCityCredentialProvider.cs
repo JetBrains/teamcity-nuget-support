@@ -41,11 +41,11 @@ namespace JetBrains.TeamCity.NuGet
       var foundSource = GetSource(uri);
       if (foundSource == null)
       {
-        await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CouldNotProvideCredentialsForUri, uri));
+        await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CouldNotProvideCredentialsForUri, uri)).ConfigureAwait(false);
         return false;
       }
 
-      await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CouldProvideCredentialsForUriFromTheSource, uri, foundSource.Source));
+      await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CouldProvideCredentialsForUriFromTheSource, uri, foundSource.Source)).ConfigureAwait(false);
       return true;
     }
 
@@ -54,7 +54,7 @@ namespace JetBrains.TeamCity.NuGet
       var source = GetSource(request.Uri);
       if (source != null)
       {
-        await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(FoundCredentialsForUriFromSource, request.Uri, source.Source));
+        await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(FoundCredentialsForUriFromSource, request.Uri, source.Source)).ConfigureAwait(false);
         return new GetAuthenticationCredentialsResponse(
           source.Username,
           source.Password,
@@ -63,7 +63,7 @@ namespace JetBrains.TeamCity.NuGet
           MessageResponseCode.Success);
       }
 
-      await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CredentialsForUriNotFound, request.Uri));
+      await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CredentialsForUriNotFound, request.Uri)).ConfigureAwait(false);
       return new GetAuthenticationCredentialsResponse(null, null, null, null, MessageResponseCode.NotFound);
     }
 
