@@ -18,13 +18,13 @@ namespace JetBrains.TeamCity.NuGet
         return false;
       }
 
-      Task.Run(async () =>
-               {
-                 await Connection.SendRequestAndReceiveResponseAsync<LogRequest, LogResponse>(
-                   MessageMethod.Log,
-                   new LogRequest(level, message),
-                   CancellationToken.None).ConfigureAwait(false);
-               });
+//      Task.Run(async () =>
+//               {
+//                 await Connection.SendRequestAndReceiveResponseAsync<LogRequest, LogResponse>(
+//                   MessageMethod.Log,
+//                   new LogRequest(level, message),
+//                   CancellationToken.None).ConfigureAwait(false);
+//               });
 
       return true;
     }
