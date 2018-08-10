@@ -23,16 +23,6 @@ import jetbrains.buildServer.serverSide.packages.RepositoryConstants;
  *         Date: 31.10.11 11:56
  */
 public class PackagesConstants {
-  public static final String NUGET_SERVER_ENABLED_CHECKBOX = "nugetServer.enabled";
-  public static final String NUGET_SERVER_URL = "nugetServer.url";
-
-  public String getNugetServerEnabledCheckbox() {
-    return NUGET_SERVER_ENABLED_CHECKBOX;
-  }
-
-  public String getNugetServerUrl() {
-    return NUGET_SERVER_URL;
-  }
 
   public String getType() {
       return RepositoryConstants.REPOSITORY_TYPE_KEY;

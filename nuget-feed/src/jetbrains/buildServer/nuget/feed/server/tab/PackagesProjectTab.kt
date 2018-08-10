@@ -1,9 +1,8 @@
 package jetbrains.buildServer.nuget.feed.server.tab
 
 import jetbrains.buildServer.controllers.admin.projects.EditProjectTab
-import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
+import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.serverSide.SProject
-import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.serverSide.crypt.RSACipher
 import jetbrains.buildServer.serverSide.packages.RepositoryRegistry
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
@@ -15,15 +14,22 @@ import javax.servlet.http.HttpServletRequest
 class PackagesProjectTab(pagePlaces: PagePlaces,
                          private val myDescriptor: PluginDescriptor,
                          private val myRepositoryRegistry: RepositoryRegistry,
-                         private val myRepositoryManager: RepositoryManager)
+                         private val myRepositoryManager: RepositoryManager,
+                         private val myServerSettings: NuGetServerSettings)
     : EditProjectTab(pagePlaces, "packages", myDescriptor.getPluginResourcesPath("packagesProjectTab.jsp"), FEEDS_TITLE) {
 
     init {
         setPosition(PositionConstraint.after("artifactsStorage", "versionedSettings"))
-        addJsFile(myDescriptor.getPluginResourcesPath("feedServer.js"))
         addJsFile(myDescriptor.getPluginResourcesPath("packages.js"))
-        addCssFile(myDescriptor.getPluginResourcesPath("feedServer.css"))
+        addCssFile(myDescriptor.getPluginResourcesPath("packages.css"))
         register()
+    }
+
+    override fun isAvailable(request: HttpServletRequest): Boolean {
+        if (!super.isAvailable(request)) return false
+        return if (myRepositoryRegistry.types.size > 1) {
+            true
+        } else myServerSettings.isNuGetServerEnabled
     }
 
     override fun fillModel(model: MutableMap<String, Any>, request: HttpServletRequest) {
@@ -37,9 +43,6 @@ class PackagesProjectTab(pagePlaces: PagePlaces,
     }
 
     override fun getTabTitle(request: HttpServletRequest): String {
-        if (TeamCityProperties.getBooleanOrTrue(NuGetFeedConstants.PROP_NUGET_FEED_USE_DEFAULT)) {
-            return super.getTabTitle(request)
-        }
         val numRepositories = getProject(request)?.let {
             myRepositoryManager.getRepositories(it, false).size
         } ?: 0

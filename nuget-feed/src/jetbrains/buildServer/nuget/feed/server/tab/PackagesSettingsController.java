@@ -21,7 +21,6 @@ import jetbrains.buildServer.controllers.*;
 import jetbrains.buildServer.controllers.admin.projects.PluginPropertiesUtil;
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.nuget.feed.server.PermissionChecker;
-import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.identifiers.IdentifiersUtil;
 import jetbrains.buildServer.serverSide.impl.DuplicateIdException;
@@ -95,7 +94,6 @@ public class PackagesSettingsController extends BaseFormXmlController {
         myPostActions.add(new SaveRepositoryAction());
         myPostActions.add(new AddRepositoryAction());
         myPostActions.add(new DeleteRepositoryAction());
-        myPostActions.add(new NuGetFeedAction());
     }
 
     private void notEmpty(Map<String, String> parameters, String name, String displayName, List<InvalidProperty> invalidProperties) {
@@ -156,75 +154,6 @@ public class PackagesSettingsController extends BaseFormXmlController {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Request handler was not found");
         } catch (IOException e) {
             LOG.infoAndDebugDetails("Failed to set response status", e);
-        }
-    }
-
-    final class NuGetFeedAction implements ControllerAction {
-
-        @Override
-        public boolean canProcess(@NotNull HttpServletRequest request) {
-            return "nugetFeedIndexing".equals(request.getParameter("action"));
-        }
-
-        @Override
-        public void process(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @Nullable Element element) {
-            final SProject project = getProject(request);
-            try {
-                if (project == null) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Project was not found");
-                    return;
-                }
-
-                if (project.isReadOnly()) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Project is read-only");
-                    return;
-                }
-
-                final String type = request.getParameter("type");
-                if (StringUtil.isEmpty(type)) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Repository type not found");
-                    return;
-                }
-
-                RepositoryType registryType = myRepositoryRegistry.findType(type);
-                if (registryType == null) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Repository type not found");
-                    return;
-                }
-
-                final String name = request.getParameter("name");
-                if (StringUtil.isEmpty(name)) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, registryType.getName() + "name is not found");
-                    return;
-                }
-
-                Repository repository = myRepositoryManager.getRepository(project, type, name);
-                if (!(repository instanceof NuGetRepository)) {
-                    response.sendError(HttpServletResponse.SC_BAD_REQUEST, registryType.getName() + "name is not found");
-                    return;
-                }
-
-                final NuGetRepository nuGetRepository = (NuGetRepository) repository;
-                final String value = request.getParameter("enabled");
-                final boolean enabled;
-                if (!StringUtil.isEmptyOrSpaces(value)) {
-                    enabled = Boolean.valueOf(value);
-                } else {
-                    enabled = false;
-                }
-
-                nuGetRepository.setIndexPackages(enabled);
-                myRepositoryManager.updateRepository(project, name, nuGetRepository);
-
-                final String feedReference = String.format("Automatic NuGet feed indexing in project %s", StringUtil.notEmpty(project.getName(), project.getExternalId()));
-                if (enabled) {
-                    LOG.info(feedReference + " was enabled. Newly published .nupkg files in project and subprojects will be added to the feed.");
-                } else {
-                    LOG.info(feedReference + " was disabled. Newly published .nupkg files in project and subprojects will not be longer added to the feed.");
-                }
-            } catch (IOException e) {
-                LOG.infoAndDebugDetails("Failed to send response", e);
-            }
         }
     }
 

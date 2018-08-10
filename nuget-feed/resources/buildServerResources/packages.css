@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-.nugetEnableFeedDialog {
-  width: 60em;
+.authEndpoints {
+    float: right;
 }
 
-table.nugetSettings {
-  width: 60em;
+.authEndpoints a.selected {
+    color: #3f3f3f;
+    text-decoration: none;
+    font-weight: bold;
+    cursor:default;
 }
 
-table.nugetSettings th {
-  width: 15em;
-}
-
-table.nugetSettings td div {
-  font-weight: bold;
+table.packageSources .details ul {
+    padding-left: 20px;
+    margin: 0;
 }

@@ -27,8 +27,7 @@ BS.Packages = {
   },
 
   deleteRepository: function (projectId, projectName, type, typeName, name) {
-    var feedName = name === "default" ? "" : "'" + name + "'";
-    var text = "<p>Delete the " + typeName + " with all contents from the '" +
+    var text = "<p>Delete the " + typeName + " '" + name + "' with all contents from the '" +
       $j("<span />").text(projectName).html() + "' project?</p>" +
       "<p>This will also remove all package indexer build features pointing at this " + typeName + ".</p>";
     var url = this.getPageUrl();
@@ -36,7 +35,7 @@ BS.Packages = {
       text: text,
       actionButtonText: "Delete",
       cancelButtonText: 'Cancel',
-      title: "Delete " + feedName + " " + typeName,
+      title: "Delete " + typeName,
       action: function () {
         var completed = $j.Deferred();
         BS.ajaxRequest(url, {
@@ -59,6 +58,14 @@ BS.Packages = {
         BS.reload(true);
       }
     });
+  },
+
+  showUrls: function(authType) {
+    $j(".authEndpoints a").removeClass('selected');
+    $j('.authEndpoints a.' + authType).addClass('selected');
+    $j('table.packageSources .details ul').hide();
+    $j('table.packageSources .details ul.' + authType).show();
+    return false;
   }
 };
 
@@ -117,7 +124,6 @@ BS.Packages.AddRepositoryForm = OO.extend(BS.PluginPropertiesForm, OO.extend(BS.
     BS.PasswordFormSaver.save(this, url, OO.extend(BS.ErrorsAwareListener, {
       onCompleteSave: function (form, responseXML, err) {
         that.setSaving(false);
-        debugger
         var wereErrors = BS.XMLResponse.processErrors(responseXML, {
           onInvalidProperties: function () {
             alert('Invalid repository parameters');

@@ -2,6 +2,7 @@ package jetbrains.buildServer.serverSide.packages;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -43,5 +44,13 @@ public abstract class Repository {
         return myParameters;
     }
 
-    public abstract List<String> getUrlPaths();
+    @NotNull
+    public String getParametersDescription() {
+      return "";
+    }
+
+    @NotNull
+    public List<String> getUrlPaths() {
+      return Collections.emptyList();
+    }
 }

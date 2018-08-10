@@ -8,17 +8,17 @@ import jetbrains.buildServer.serverSide.packages.RepositoryType
 class NuGetRepository(type: RepositoryType, private val project: SProject, parameters: Map<String, String>)
     : Repository(type, project.projectId, parameters) {
 
+    override fun getParametersDescription(): String {
+        return "Automatic NuGet packages indexing: ${if (indexPackages) "enabled" else "disabled"}"
+    }
+
     override fun getUrlPaths(): List<String> = NuGetUtils.getProjectFeedPaths(project.externalId, name)
 
     var indexPackages: Boolean
         get() {
-            return parameters[INDEX_PACKAGES]?.toBoolean() ?: false
+            return parameters[NuGetRepositoryParams.INDEX_PACKAGES]?.toBoolean() ?: false
         }
         set(value) {
-            parameters[INDEX_PACKAGES] = value.toString()
+            parameters[NuGetRepositoryParams.INDEX_PACKAGES] = value.toString()
         }
-
-    companion object {
-        const val INDEX_PACKAGES = "indexPackages"
-    }
 }

@@ -19,14 +19,11 @@ package jetbrains.buildServer.nuget.feed.server.tab
 import jetbrains.buildServer.RootUrlHolder
 import jetbrains.buildServer.controllers.AuthorizationInterceptor
 import jetbrains.buildServer.controllers.BaseController
-import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.PermissionChecker
-import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
-import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
-import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.auth.LoginConfiguration
 import jetbrains.buildServer.serverSide.packages.RepositoryRegistry
+import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.web.openapi.PluginDescriptor
 import jetbrains.buildServer.web.openapi.WebControllerManager
 import org.springframework.web.servlet.ModelAndView
@@ -42,7 +39,6 @@ class PackagesController(auth: AuthorizationInterceptor,
                          web: WebControllerManager,
                          private val myDescriptor: PluginDescriptor,
                          private val myLoginConfiguration: LoginConfiguration,
-                         private val mySettings: NuGetServerSettings,
                          private val myRootUrlHolder: RootUrlHolder,
                          private val myRepositoryRegistry: RepositoryRegistry,
                          private val myRepositoriesManager: RepositoryManager,
@@ -68,13 +64,6 @@ class PackagesController(auth: AuthorizationInterceptor,
         }
         mv.model["project"] = project
         mv.model["repositories"] = repositories
-        val projectRepository = repositories.filter {
-            it.repository is NuGetRepository
-        }.firstOrNull {
-            it.repository.name == NuGetFeedData.DEFAULT_FEED_ID
-        }
-        mv.model["defaultFeed"] = projectRepository
-        mv.model["hasDefaultFeedIndexing"] = (projectRepository?.repository as? NuGetRepository)?.indexPackages ?: false
         mv.model["repositoryTypes"] = myRepositoryRegistry.types
 
         mv.model["statusRefreshUrl"] = myIncludePath

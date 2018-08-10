@@ -15,9 +15,6 @@
                         <c:choose>
                             <c:when test="${feed.repository.name ne 'default'}">
                                 <c:out value="${feed.project.name}/${feed.repository.name}"/>
-                                <c:if test="${not empty feed.repository.description}">
-                                    (${feed.repository.description})
-                                </c:if>
                             </c:when>
                             <c:otherwise>
                                 <c:out value="${feed.project.name}"/>

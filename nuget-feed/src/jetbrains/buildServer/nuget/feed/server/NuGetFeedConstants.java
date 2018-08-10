@@ -30,7 +30,6 @@ public class NuGetFeedConstants {
   public static final String PROP_NUGET_FEED_CACHE_SIZE = "teamcity.nuget.feed.response.cache.size";
   public static final String PROP_NUGET_FEED_ENABLED = "teamcity.nuget.feed.enabled";
   public static final String PROP_NUGET_FEED_CACHED_SERVLETS = "teamcity.nuget.feed.cached.servlets";
-  public static final String PROP_NUGET_FEED_USE_DEFAULT = "teamcity.nuget.feed.useDefault";
   public static final String NUGET_FEED_API_VERSION = "teamcity.nuget.feed.apiVersion";
   public static final int NUGET_FEED_PACKAGE_SIZE = 100;
 

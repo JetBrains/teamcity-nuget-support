@@ -10,7 +10,7 @@ import jetbrains.buildServer.web.openapi.PluginDescriptor
 class NuGetRepositoryType(repositoryRegistry: RepositoryRegistry,
                           pluginDescriptor: PluginDescriptor) : RepositoryType() {
 
-    private val editParametersUrl = pluginDescriptor.getPluginResourcesPath("editNuGetRepository.html")
+    private val editParametersUrl = pluginDescriptor.getPluginResourcesPath("editNuGetRepository.jsp")
 
     init {
         repositoryRegistry.register(this)
