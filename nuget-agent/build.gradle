@@ -16,6 +16,7 @@ teamcity {
                     include '**/*Newtonsoft*.dll'
                     include '**/*PowerArgs*.dll'
                     include '**/NuGet.*.dll'
+                    exclude '**/*.json'
                 }
             }
         }
