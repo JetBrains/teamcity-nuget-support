@@ -16,17 +16,16 @@
 
 package jetbrains.buildServer.nuget.tests.integration.agent;
 
+import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
-import jetbrains.buildServer.nuget.common.PackagesUpdateMode;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.tests.integration.MockNuGetAuthHTTP;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jmock.Expectations;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -65,6 +64,10 @@ public class AuthInstallPackageFeedV3IntegrationTest extends InstallPackageInteg
 
   @Test(dataProvider = NUGET_VERSIONS_48p)
   public void test_auth_restore(@NotNull final NuGet nuget) throws RunBuildException {
+    if (!SystemInfo.isWindows && nuget == NuGet.NuGet_4_8) {
+      TestNGUtil.skip("Credentials plugin in NuGet 4.8 does not work on Mono");
+    }
+
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
     fetchPackages(nuget);

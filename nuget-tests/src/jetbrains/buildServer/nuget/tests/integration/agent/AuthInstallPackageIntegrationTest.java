@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration.agent;
 
+import com.intellij.openapi.util.SystemInfo;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.TestNGUtil;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
@@ -63,6 +64,9 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_install(@NotNull final NuGet nuget) throws RunBuildException {
     if (nuget == NuGet.NuGet_3_3) TestNGUtil.skip("NuGet 3.3 has problems with authentication");
+    if (!SystemInfo.isWindows && nuget == NuGet.NuGet_4_8) {
+      TestNGUtil.skip("Credentials plugin in NuGet 4.8 does not work on Mono");
+    }
 
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
     fetchPackages(nuget);
@@ -71,6 +75,10 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
   public void test_auth_restore(@NotNull final NuGet nuget) throws RunBuildException {
+    if (!SystemInfo.isWindows && nuget == NuGet.NuGet_4_8) {
+      TestNGUtil.skip("Credentials plugin in NuGet 4.8 does not work on Mono");
+    }
+
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
     fetchPackages(nuget);
@@ -80,6 +88,9 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_auth_update(@NotNull final NuGet nuget) throws RunBuildException {
     if (nuget == NuGet.NuGet_3_3) TestNGUtil.skip("NuGet 3.3 has problems with authentication");
+    if (!SystemInfo.isWindows && nuget == NuGet.NuGet_4_8) {
+      TestNGUtil.skip("Credentials plugin in NuGet 4.8 does not work on Mono");
+    }
 
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
 

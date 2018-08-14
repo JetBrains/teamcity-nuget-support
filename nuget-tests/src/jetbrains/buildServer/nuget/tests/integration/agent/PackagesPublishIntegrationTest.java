@@ -44,7 +44,6 @@ import org.apache.http.impl.bootstrap.ServerBootstrap;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
-import org.hamcrest.text.StringContains;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.testng.Assert;
@@ -154,8 +153,13 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
   public void test_publish_packages_mock_http_auth(@NotNull final NuGet nuget) throws IOException, RunBuildException {
-    if (!SystemInfo.isWindows && nuget == NuGet.NuGet_3_3) {
-      TestNGUtil.skip("NuGet 3.3 on Mono has problems with pack command");
+    if (!SystemInfo.isWindows) {
+      if (nuget == NuGet.NuGet_3_3) {
+        TestNGUtil.skip("NuGet 3.3 on Mono has problems with pack command");
+      }
+      if (nuget == NuGet.NuGet_4_8) {
+        TestNGUtil.skip("Credentials plugin in NuGet 4.8 does not work on Mono");
+      }
     }
 
     final String username = "u-" + StringUtil.generateUniqueHash();
