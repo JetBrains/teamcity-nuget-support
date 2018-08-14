@@ -86,7 +86,7 @@
     "@type": "LegacyGallery/2.0.0",
     "comment": "Legacy gallery using the V2 protocol."
   }, {
-    "@id": "%2$s/package",
+    "@id": "%2$s",
     "@type": "PackagePublish/2.0.0",
     "comment": "Legacy gallery publish endpoint using the V2 protocol."
   }
