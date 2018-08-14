@@ -110,6 +110,12 @@ public class IntegrationTestBase extends BuildProcessTestCase {
         if(value.version.compareTo(NuGet.NuGet_3_3.version) < 0) {
           continue;
         }
+
+        if (value.version.equals(NuGet.NuGet_4_8.version)) {
+          // NuGet 4.8 does not work on Mono
+          // https://github.com/NuGet/Home/issues/6486#issuecomment-412595870
+          continue;
+        }
       }
 
       data.add(new Object[]{value});
