@@ -18,9 +18,10 @@ import java.io.IOException
 
 class NuGetCredentialsProvider(events: EventDispatcher<AgentLifeCycleListener>,
                                private val packageSourceManager: PackageSourceManager,
-                               private val provider: NuGetTeamCityProvider) {
+                               provider: NuGetTeamCityProvider) : AgentLifeCycleAdapter() {
 
     private val myRunnersWithPlugin: Map<String, String>
+    private val myRunnersWithCredentialsProvider: Map<String, String>
     private var mySourcesFile: File? = null
 
     init {
@@ -31,45 +32,53 @@ class NuGetCredentialsProvider(events: EventDispatcher<AgentLifeCycleListener>,
                 "VS.Solution" to provider.pluginFxPath,
                 "MSBuild" to provider.pluginFxPath
         )
-        events.addListener(object : AgentLifeCycleAdapter() {
-            override fun beforeRunnerStart(runner: BuildRunnerContext) {
-                if (!myRunnersWithPlugin.containsKey(runner.runType)) {
-                    return
+        myRunnersWithCredentialsProvider = hashMapOf(
+                PackagesConstants.INSTALL_RUN_TYPE to provider.credentialProviderHomeDirectory.path,
+                PackagesConstants.PUBLISH_RUN_TYPE to provider.credentialProviderHomeDirectory.path
+        )
+
+        events.addListener(this)
+    }
+
+    override fun beforeRunnerStart(runner: BuildRunnerContext) {
+        val runType = runner.runType
+        if (!myRunnersWithPlugin.containsKey(runType) &&
+            !myRunnersWithCredentialsProvider.containsKey(runType)) {
+            return
+        }
+
+        val packageSources = packageSourceManager.getGlobalPackageSources(runner.build)
+        if (LOG.isDebugEnabled) {
+            LOG.debug("Provided credentials for NuGet packages sources: " + packageSources.joinToString { it.source })
+        }
+
+        try {
+            FileUtil.createTempFile(runner.build.agentTempDirectory, "nuget-sources", ".xml", true)?.let {
+                PackageSourceUtil.writeSources(it, packageSources)
+                runner.addEnvironmentVariable(TEAMCITY_NUGET_FEEDS_ENV_VAR, it.path)
+
+                myRunnersWithCredentialsProvider[runType]?.let { credentialsProviderPath ->
+                    LOG.debug("Set credentials provider location to $credentialsProviderPath")
+                    runner.addEnvironmentVariable(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, credentialsProviderPath)
                 }
 
-                val packageSources = packageSourceManager.getGlobalPackageSources(runner.build)
-                if (LOG.isDebugEnabled) {
-                    LOG.debug("Provided credentials for NuGet packages sources: " + packageSources.joinToString { it.source })
+                myRunnersWithPlugin[runType]?.let { pluginPaths ->
+                    LOG.debug("Set credentials plugin paths to $pluginPaths")
+                    runner.addEnvironmentVariable(NUGET_PLUGIN_PATH_ENV_VAR, pluginPaths)
                 }
 
-                try {
-                    FileUtil.createTempFile(runner.build.agentTempDirectory, "nuget-sources", ".xml", true)?.let {
-                        PackageSourceUtil.writeSources(it, packageSources)
-                        runner.addEnvironmentVariable(TEAMCITY_NUGET_FEEDS_ENV_VAR, it.path)
-
-                        val credentialsProviderPath = provider.credentialProviderHomeDirectory.absolutePath
-                        LOG.debug("Set credentials provider location to $credentialsProviderPath")
-                        runner.addEnvironmentVariable(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, credentialsProviderPath)
-
-                        myRunnersWithPlugin[runner.runType]?.let { pluginPaths ->
-                            LOG.debug("Set credentials plugin paths to $pluginPaths")
-                            runner.addEnvironmentVariable(NUGET_PLUGIN_PATH_ENV_VAR, pluginPaths)
-                        }
-
-                        mySourcesFile = it
-                    }
-                } catch (e: IOException) {
-                    throw RunBuildException("Failed to create temp file for NuGet sources. " + e.message, e)
-                }
+                mySourcesFile = it
             }
+        } catch (e: IOException) {
+            throw RunBuildException("Failed to create temp file for NuGet sources. " + e.message, e)
+        }
+    }
 
-            override fun runnerFinished(runner: BuildRunnerContext, status: BuildFinishedStatus) {
-                mySourcesFile?.let {
-                    FileUtil.delete(it)
-                    mySourcesFile = null
-                }
-            }
-        })
+    override fun runnerFinished(runner: BuildRunnerContext, status: BuildFinishedStatus) {
+        mySourcesFile?.let {
+            FileUtil.delete(it)
+            mySourcesFile = null
+        }
     }
 
     companion object {

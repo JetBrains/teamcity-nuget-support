@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.common.exec;
 
+import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -35,23 +36,27 @@ public class NuGetTeamCityProviderBase implements NuGetTeamCityProvider {
 
   @NotNull
   public final File getNuGetRunnerPath() {
-    return new File(myNugetBinariesRoot, "bin/JetBrains.TeamCity.NuGetRunner.exe");
+    return getCanonicalFile("bin/JetBrains.TeamCity.NuGetRunner.exe");
   }
 
   @NotNull
   @Override
   public String getPluginCorePath() {
-    return  myNugetBinariesRoot.getAbsolutePath() + "/bin/credential-plugin/netcoreapp2.0/CredentialProvider.TeamCity.dll";
+    return getCanonicalFile("/bin/credential-plugin/netcoreapp2.0/CredentialProvider.TeamCity.dll").getPath();
   }
 
   @NotNull
   @Override
   public String getPluginFxPath() {
-    return  myNugetBinariesRoot.getAbsolutePath() + "/bin/credential-plugin/net46/CredentialProvider.TeamCity.exe";
+    return getCanonicalFile("/bin/credential-plugin/net46/CredentialProvider.TeamCity.exe").getPath();
   }
 
   @NotNull
   public File getCredentialProviderHomeDirectory() {
-    return new File(myNugetBinariesRoot, "bin/credential-provider");
+    return getCanonicalFile("bin/credential-provider");
+  }
+
+  private File getCanonicalFile(final String path) {
+    return FileUtil.getCanonicalFile(new File(myNugetBinariesRoot, path));
   }
 }
