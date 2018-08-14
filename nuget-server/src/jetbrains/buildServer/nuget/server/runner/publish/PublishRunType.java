@@ -100,7 +100,7 @@ public class PublishRunType extends NuGetRunType {
     StringBuilder sb = new StringBuilder();
     final String source = parameters.get(NUGET_PUBLISH_SOURCE);
     if (!StringUtil.isEmptyOrSpaces(source)) {
-      sb.append("Publish to:").append(source).append("\n");
+      sb.append("Publish to: ").append(source).append("\n");
     }
 
     final String packages = parameters.get(NUGET_PUBLISH_FILES);
