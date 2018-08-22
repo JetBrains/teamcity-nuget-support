@@ -91,8 +91,7 @@ public class OlingoDataSource {
   public List<?> readAllData(@NotNull final EdmEntitySet entitySet,
                              @NotNull final Map<String, String> parameters) throws ODataHttpException, EdmException {
     if (MetadataConstants.ENTITY_SET_NAME.equals(entitySet.getName())) {
-      //noinspection unchecked
-      final boolean includeSemVer2 = includeSemVer2((Map)parameters);
+      final boolean includeSemVer2 = includeSemVer2(parameters);
       return myFeed.getAll(includeSemVer2);
     }
 
@@ -121,7 +120,7 @@ public class OlingoDataSource {
       }
 
       //noinspection unchecked
-      final boolean includeSemVer2 = includeSemVer2((Map)parameters);
+      final boolean includeSemVer2 = includeSemVer2(parameters);
       final List<NuGetIndexEntry> result = myFeed.find(query, includeSemVer2);
       if (result.size() > 0) {
         return result.get(0);
@@ -166,8 +165,11 @@ public class OlingoDataSource {
     return value != null ? (Boolean) value : false;
   }
 
-  private boolean includeSemVer2(Map<String, String> parameters) {
-    final String semVerLevel = parameters.get(MetadataConstants.SEMANTIC_VERSION);
+  private boolean includeSemVer2(final Map<String, String> parameters) {
+    final Map<String, String> queryParams = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    queryParams.putAll(parameters);
+
+    final String semVerLevel = queryParams.get(MetadataConstants.SEMANTIC_VERSION);
     if (semVerLevel != null) {
       final SemanticVersion version = SemanticVersion.valueOf(semVerLevel);
       return version != null && version.compareTo(VERSION_20) >= 0;
