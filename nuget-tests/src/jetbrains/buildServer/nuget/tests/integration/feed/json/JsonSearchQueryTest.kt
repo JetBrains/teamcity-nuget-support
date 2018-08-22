@@ -65,4 +65,14 @@ class JsonSearchQueryTest : JsonFeedIntegrationTestBase() {
         assertContainsPackageVersion(responseBody, "1.0.0")
         assertContainsPackageVersion(responseBody, "2.0.0")
     }
+
+    @Test
+    fun find_semver20_packages_case_insensitive() {
+        addMockPackage("MyPackage", "1.0.0.0")
+        addMockPackage("OtherPackage", "2.0.0.0+metadata")
+
+        val responseBody = openRequest("query/?semverlevel=2.0.0")
+        assertContainsPackageVersion(responseBody, "1.0.0")
+        assertContainsPackageVersion(responseBody, "2.0.0")
+    }
 }

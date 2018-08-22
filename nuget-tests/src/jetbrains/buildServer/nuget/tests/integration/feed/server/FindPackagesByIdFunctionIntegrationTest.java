@@ -95,6 +95,18 @@ public class FindPackagesByIdFunctionIntegrationTest extends NuGetJavaFeedIntegr
   }
 
   @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testFindPackageWithSemVer20CaseInsensitive(final NugetFeedLibrary library) throws Exception {
+    setODataSerializer(library);
+    enableDebug();
+    addMockPackage("MyPackage", "1.0.0.0");
+    addMockPackage("MyPackage", "1.0.0.1+metadata");
+
+    String responseBody = openRequest("FindPackagesById()?id='MyPackage'&semverlevel=2.0.0");
+    assertContainsPackageVersion(responseBody, "1.0.0.0");
+    assertContainsPackageVersion(responseBody, "1.0.0.1+metadata");
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
   public void testFindPackageWithSemVer20SkipToken(final NugetFeedLibrary library) throws Exception {
     setODataSerializer(library);
     enableDebug();

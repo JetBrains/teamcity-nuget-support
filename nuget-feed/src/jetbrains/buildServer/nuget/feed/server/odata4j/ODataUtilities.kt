@@ -11,7 +11,10 @@ object ODataUtilities {
     @JvmStatic
     fun includeSemVer2(queryInfo: QueryInfo?): Boolean {
         if (queryInfo != null) {
-            val semVerLevel = queryInfo.customOptions[MetadataConstants.SEMANTIC_VERSION]
+            val queryParams = TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER)
+            queryParams.putAll(queryInfo.customOptions)
+
+            val semVerLevel = queryParams[MetadataConstants.SEMANTIC_VERSION]
             if (semVerLevel != null) {
                 val version = SemanticVersion.valueOf(semVerLevel)
                 return version != null && version >= VERSION_20
