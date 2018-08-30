@@ -96,6 +96,10 @@ internal fun HttpServletRequest.includeSemVer2(): Boolean {
     } ?: false
 }
 
+internal fun HttpServletRequest.getRootUrl(): String {
+    return this.requestURL.removeSuffix(this.requestURI).toString()
+}
+
 private val VERSION_20 = SemanticVersion.valueOf("2.0.0")!!
 
 object JsonExtensions {

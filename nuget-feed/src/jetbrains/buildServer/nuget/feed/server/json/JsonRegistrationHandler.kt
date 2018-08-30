@@ -7,7 +7,6 @@ import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedFactory
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
-import jetbrains.buildServer.web.util.WebUtil
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -39,7 +38,7 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
         }
 
         val entry = results.first()
-        val rootUrl = WebUtil.getRootUrl(request)
+        val rootUrl = request.getRootUrl()
         val downloadUrl = "$rootUrl${entry.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}"
         val packageResponse = entry.toRegistrationEntry(
                 "$rootUrl${request.servletPath}${request.pathInfo}",
@@ -57,7 +56,7 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
             return
         }
 
-        val rootUrl = WebUtil.getRootUrl(request)
+        val rootUrl = request.getRootUrl()
         val items = results.map {
             val version = VersionUtility.normalizeVersion(it.version)
             val registrationUrl = "$rootUrl${request.servletPath}/registration1/$id/$version.json"

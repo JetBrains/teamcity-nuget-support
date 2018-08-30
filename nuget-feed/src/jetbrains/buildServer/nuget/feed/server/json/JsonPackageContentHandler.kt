@@ -7,7 +7,6 @@ import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedFactory
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
-import jetbrains.buildServer.web.util.WebUtil
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -48,7 +47,7 @@ class JsonPackageContentHandler(private val feedFactory: NuGetFeedFactory) : NuG
         }
 
         val entry = results.first()
-        val rootUrl = WebUtil.getRootUrl(request)
+        val rootUrl = request.getRootUrl()
         val downloadUrl = entry.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]
         val redirectUrl = when(extension) {
             "nupkg" -> "$rootUrl$downloadUrl"

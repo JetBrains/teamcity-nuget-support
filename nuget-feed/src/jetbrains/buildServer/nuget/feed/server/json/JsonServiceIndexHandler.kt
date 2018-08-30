@@ -15,7 +15,7 @@ class JsonServiceIndexHandler : NuGetFeedHandler {
 
         val feedPathV3 = request.servletPath
         val feedPathV2 = feedPathV3.replaceAfterLast("/", "v2")
-        val rootUrl = WebUtil.getRootUrl(request)
+        val rootUrl = request.getRootUrl()
 
         val responseText = JsonServiceIndexHandler::class.java.getResourceAsStream("/feed-metadata/NuGet-V3.json").use {
             it.bufferedReader().readText()

@@ -6,14 +6,13 @@ import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedFactory
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
-import jetbrains.buildServer.web.util.WebUtil
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetFeedHandler {
     override fun handleRequest(feedData: NuGetFeedData, request: HttpServletRequest, response: HttpServletResponse) {
         val nuGetFeed = feedFactory.createFeed(feedData)
-        val rootUrl = WebUtil.getRootUrl(request)
+        val rootUrl = request.getRootUrl()
         val query = request.getParameter("q")
         val skip = request.getParameter("skip")?.toIntOrNull()
         val take = request.getParameter("take")?.toIntOrNull() ?: NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE
