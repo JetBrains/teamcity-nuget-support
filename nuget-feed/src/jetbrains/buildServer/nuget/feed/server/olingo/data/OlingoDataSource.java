@@ -121,9 +121,7 @@ public class OlingoDataSource {
         query.put(key, (String) keys.get(key));
       }
 
-      //noinspection unchecked
-      final boolean includeSemVer2 = includeSemVer2(parameters);
-      final List<NuGetIndexEntry> result = myFeed.find(query, includeSemVer2);
+      final List<NuGetIndexEntry> result = myFeed.find(query, true);
       if (result.size() > 0) {
         return result.get(0);
       } else {
