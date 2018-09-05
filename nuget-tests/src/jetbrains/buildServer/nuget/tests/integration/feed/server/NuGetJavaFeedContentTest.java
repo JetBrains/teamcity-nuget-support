@@ -197,6 +197,15 @@ public class NuGetJavaFeedContentTest extends NuGetJavaFeedIntegrationTestBase {
   }
 
   @Test(dataProvider = "nugetFeedLibrariesData")
+  public void testGetByIdWithSemVer20(final NugetFeedLibrary library) throws IOException {
+    setODataSerializer(library);
+    addMockPackage("MyPackage", "1.0.0.1-beta-1.0.2");
+
+    final String s = openRequest("Packages(Id='MyPackage',Version='1.0.0.1-beta-1.0.2')");
+    Assert.assertTrue(s.contains("<title type=\"text\">MyPackage</title>"));
+  }
+
+  @Test(dataProvider = "nugetFeedLibrariesData")
   public void testVSRequests(final NugetFeedLibrary library) {
     setODataSerializer(library);
     String[] reqs = {
