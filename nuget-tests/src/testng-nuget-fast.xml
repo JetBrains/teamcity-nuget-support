@@ -86,6 +86,7 @@
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.feed.FrameworkConstraintsCalculatorTest"/>
       <class name="jetbrains.buildServer.nuget.tests.feed.NuGetUtilsTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.feed.NuGetCsrfCheckTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.SystemInfoTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.VersionConstraintTest"/>
       <class name="jetbrains.buildServer.nuget.tests.server.VersionUtilityTest"/>

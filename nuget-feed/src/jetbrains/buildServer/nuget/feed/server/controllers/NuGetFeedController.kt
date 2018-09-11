@@ -105,16 +105,6 @@ class NuGetFeedController(web: WebControllerManager,
             return null
         }
 
-        // Try to reset all "set-cookie" headers
-        // Issue: TW-56608
-        if (!response.isCommitted) {
-            try {
-                response.reset()
-            } catch (e: Exception) {
-                LOG.warnAndDebugDetails("Failed to reset response", e)
-            }
-        }
-
         val feedData = NuGetFeedData(project.projectId, feedId)
         val startTime = Date().time
         try {

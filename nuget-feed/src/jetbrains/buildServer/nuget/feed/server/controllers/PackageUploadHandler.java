@@ -68,6 +68,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
   private static final String INVALID_PACKAGE_CONTENTS = "Invalid NuGet package contents";
   private static final String ARTIFACT_PUBLISHING_FAILED = "[Artifacts publishing failed]";
   private static final String DEFAULT_PATH_FORMAT = "nuget/packages/{0}/{1}/{0}.{1}.nupkg";
+  public static final String NUGET_APIKEY_HEADER = "x-nuget-apikey";
   private final RunningBuildsCollection myRunningBuilds;
   private final MetadataStorage myStorage;
   private final PackageAnalyzer myPackageAnalyzer;
@@ -121,7 +122,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
                             final HttpServletResponse response,
                             final boolean replace,
                             final NuGetFeedData feedData) throws IOException {
-    final RunningBuildEx build = getRunningBuild(request.getHeader("x-nuget-apikey"));
+    final RunningBuildEx build = getRunningBuild(request.getHeader(NUGET_APIKEY_HEADER));
     if (build == null) {
       LOG.debug(INVALID_TOKEN_VALUE);
       response.sendError(HttpServletResponse.SC_FORBIDDEN, INVALID_TOKEN_VALUE);
