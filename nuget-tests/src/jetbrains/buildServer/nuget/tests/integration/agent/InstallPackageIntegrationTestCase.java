@@ -24,7 +24,8 @@ import jetbrains.buildServer.agent.impl.AgentEventDispatcher;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesInstallParameters;
 import jetbrains.buildServer.nuget.agent.parameters.PackagesUpdateParameters;
-import jetbrains.buildServer.nuget.agent.runner.NuGetCredentialsProvider;
+import jetbrains.buildServer.nuget.agent.runner.credentials.NuGetCredentialsPathProvider;
+import jetbrains.buildServer.nuget.agent.runner.credentials.NuGetCredentialsProvider;
 import jetbrains.buildServer.nuget.agent.runner.install.PackagesInstallerRunner;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.LocateNuGetConfigProcessFactory;
@@ -144,7 +145,7 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
 
     AgentEventDispatcher eventDispatcher = new AgentEventDispatcher();
     final NuGetCredentialsProvider provider = new NuGetCredentialsProvider(
-      eventDispatcher, myPsm, myNuGetTeamCityProvider
+      eventDispatcher, myPsm, Collections.singletonList(new NuGetCredentialsPathProvider(myNuGetTeamCityProvider))
     );
     try {
       eventDispatcher.getMulticaster().beforeRunnerStart(myContext);

@@ -26,7 +26,8 @@ import jetbrains.buildServer.agent.BuildFinishedStatus;
 import jetbrains.buildServer.agent.BuildProcess;
 import jetbrains.buildServer.agent.impl.AgentEventDispatcher;
 import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
-import jetbrains.buildServer.nuget.agent.runner.NuGetCredentialsProvider;
+import jetbrains.buildServer.nuget.agent.runner.credentials.NuGetCredentialsPathProvider;
+import jetbrains.buildServer.nuget.agent.runner.credentials.NuGetCredentialsProvider;
 import jetbrains.buildServer.nuget.agent.runner.publish.PackagesPublishRunner;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.impl.CompositeBuildProcessImpl;
@@ -55,6 +56,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -81,7 +83,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     }});
     myEventDispatcher = new AgentEventDispatcher();
     final NuGetCredentialsProvider provider = new NuGetCredentialsProvider(
-      myEventDispatcher, myPsm, myNuGetTeamCityProvider
+      myEventDispatcher, myPsm, Collections.singletonList(new NuGetCredentialsPathProvider(myNuGetTeamCityProvider))
     );
   }
 

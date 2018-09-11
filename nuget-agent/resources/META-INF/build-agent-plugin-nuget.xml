@@ -33,7 +33,10 @@
 
 
   <bean class="jetbrains.buildServer.nuget.agent.runner.EnabledPackagesOptionSetter"/>
-  <bean class="jetbrains.buildServer.nuget.agent.runner.NuGetCredentialsProvider"/>
+  <bean class="jetbrains.buildServer.nuget.agent.runner.credentials.DotNetCredentialsPathProvider"/>
+  <bean class="jetbrains.buildServer.nuget.agent.runner.credentials.MsBuildCredentialsPathProvider"/>
+  <bean class="jetbrains.buildServer.nuget.agent.runner.credentials.NuGetCredentialsPathProvider"/>
+  <bean class="jetbrains.buildServer.nuget.agent.runner.credentials.NuGetCredentialsProvider"/>
 
   <bean class="jetbrains.buildServer.nuget.agent.exec.AgentNuGetTeamCityProvider"/>
 
