@@ -1,22 +1,31 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.TeamCity.NuGet.Logging;
 using JetBrains.TeamCity.NuGet.RequestHandlers;
+using NuGet.Common;
 using NuGet.Protocol.Plugins;
+using ILogger = JetBrains.TeamCity.NuGet.Logging.ILogger;
 
 namespace JetBrains.TeamCity.NuGet
 {
   internal static class Program
   {
-    private static readonly TraceSource Logger = new TraceSource("CredentialPlugin");
-    
     public static async Task<int> Main(string[] args)
     {
       DebugBreakIfPluginDebuggingIsEnabled();
 
       var tokenSource = new CancellationTokenSource();
+      var multiLogger = new MultiLogger();
+
+      var fileLogger = GetFileLogger();
+      if (fileLogger != null)
+      {
+        multiLogger.Add(fileLogger);
+      }
 
       Console.CancelKeyPress += (sender, eventArgs) =>
                                 {
@@ -24,39 +33,37 @@ namespace JetBrains.TeamCity.NuGet
                                   eventArgs.Cancel = true;
                                 };
 
-      var pluginController = new PluginController();
-      var credentialProvider = new TeamCityCredentialProvider(pluginController);
+      var credentialProvider = new TeamCityCredentialProvider(multiLogger);
       var requestHandlers = new RequestHandlerCollection
                             {
                               {
                                 MessageMethod.GetAuthenticationCredentials,
-                                new GetAuthenticationCredentialsRequestHandler(pluginController, credentialProvider)
+                                new GetAuthenticationCredentialsRequestHandler(multiLogger, credentialProvider)
                               },
                               {
                                 MessageMethod.GetOperationClaims,
-                                new GetOperationClaimsRequestHandler(pluginController, credentialProvider)
+                                new GetOperationClaimsRequestHandler(multiLogger, credentialProvider)
                               },
                               {
                                 MessageMethod.SetLogLevel,
-                                new SetLogLevelHandler(pluginController)
+                                new SetLogLevelHandler(multiLogger)
                               },
                               {
                                 MessageMethod.Initialize, 
-                                new InitializeRequestHandler(pluginController)
+                                new InitializeRequestHandler(multiLogger)
                               },
                             };
 
       if (String.Equals(args.SingleOrDefault(), "-plugin", StringComparison.OrdinalIgnoreCase))
       {
-        Logger.Info("Running in plug-in mode");
+        multiLogger.Log(LogLevel.Verbose, "Running in plug-in mode");
 
         using (IPlugin plugin = await PluginFactory
           .CreateFromCurrentProcessAsync(requestHandlers, ConnectionOptions.CreateDefault(), CancellationToken.None)
           .ConfigureAwait(continueOnCapturedContext: false))
         {
-          pluginController.Connection = plugin.Connection;
-          await RunNuGetPluginsAsync(plugin, Logger, tokenSource.Token)
-            .ConfigureAwait(continueOnCapturedContext: false);
+          multiLogger.Add(new PluginConnectionLogger(plugin.Connection));
+          await RunNuGetPluginsAsync(plugin, multiLogger, tokenSource.Token).ConfigureAwait(continueOnCapturedContext: false);
         }
 
         return 0;
@@ -65,7 +72,7 @@ namespace JetBrains.TeamCity.NuGet
       if (requestHandlers.TryGet(MessageMethod.GetAuthenticationCredentials, out IRequestHandler requestHandler) &&
           requestHandler is GetAuthenticationCredentialsRequestHandler getAuthenticationCredentialsRequestHandler)
       {
-        Logger.Info("Running in stand-alone mode");
+        multiLogger.Log(LogLevel.Verbose, "Running in stand-alone mode");
 
         if (args.Length == 0)
         {
@@ -91,14 +98,14 @@ namespace JetBrains.TeamCity.NuGet
       return -1;
     }
 
-    private static async Task RunNuGetPluginsAsync(IPlugin plugin, TraceSource traceSource, CancellationToken cancellationToken)
+    private static async Task RunNuGetPluginsAsync(IPlugin plugin, ILogger logger, CancellationToken cancellationToken)
     {
       SemaphoreSlim semaphore = new SemaphoreSlim(0);
 
       plugin.Connection.Faulted += (sender, a) =>
                                    {
-                                     traceSource.Error($"Faulted on message: {a.Message?.Type} {a.Message?.Method} {a.Message?.RequestId}");
-                                     traceSource.Error(a.Exception.ToString());
+                                     logger.Log(LogLevel.Error, $"Faulted on message: {a.Message?.Type} {a.Message?.Method} {a.Message?.RequestId}");
+                                     logger.Log(LogLevel.Error, a.Exception.ToString());
                                    };
 
       plugin.Closed += (sender, a) => semaphore.Release();
@@ -108,7 +115,7 @@ namespace JetBrains.TeamCity.NuGet
 
       if (!complete)
       {
-        Logger.Error("Timed out waiting for plug-in operations to complete");
+        logger.Log(LogLevel.Error, "Timed out waiting for plug-in operations to complete");
       }
     }
 
@@ -121,6 +128,21 @@ namespace JetBrains.TeamCity.NuGet
           Thread.Sleep(100);
         }
       }
+    }
+    
+    private static FileLogger GetFileLogger()
+    {
+      var location = Environment.GetEnvironmentVariable("NUGET_PLUGIN_LOG_PATH");
+      if (string.IsNullOrEmpty(location))
+      {
+        return null;
+      }
+
+      Directory.CreateDirectory(Path.GetDirectoryName(location));
+      var fileLogger = new FileLogger(location);
+      fileLogger.SetLogLevel(LogLevel.Verbose);
+
+      return fileLogger;
     }
   }
 }

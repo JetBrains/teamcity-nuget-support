@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using JetBrains.TeamCity.NuGet.ExtendedCommands;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 using NuGet.Common;
 using NuGet.Protocol.Plugins;
+using ILogger = JetBrains.TeamCity.NuGet.Logging.ILogger;
 
 namespace JetBrains.TeamCity.NuGet
 {
@@ -17,11 +17,11 @@ namespace JetBrains.TeamCity.NuGet
     private const string CouldNotProvideCredentialsForUri = "Could not provide credentials for URI {0}";
     private const string FoundCredentialsForUriFromSource = "Found credentials for URI {0} from source {1}";
     private const string CredentialsForUriNotFound = "Credentials for URI {0} not found";
-    private readonly PluginController _plugin;
+    private readonly ILogger _logger;
 
-    internal TeamCityCredentialProvider(PluginController plugin)
+    internal TeamCityCredentialProvider(ILogger logger)
     {
-      _plugin = plugin;
+      _logger = logger;
 
       var teamCityFeedsPath = Environment.GetEnvironmentVariable(NugetFeedsEnv);
       var nugetSources = new List<INuGetSource>();
@@ -36,25 +36,25 @@ namespace JetBrains.TeamCity.NuGet
 
     private List<INuGetSource> NuGetSources { get; }
 
-    public async Task<bool> CanProvideCredentialsAsync(Uri uri)
+    public bool CanProvideCredentials(Uri uri)
     {
       var foundSource = GetSource(uri);
       if (foundSource == null)
       {
-        await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CouldNotProvideCredentialsForUri, uri)).ConfigureAwait(false);
+        _logger.Log(LogLevel.Verbose, string.Format(CouldNotProvideCredentialsForUri, uri));
         return false;
       }
 
-      await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CouldProvideCredentialsForUriFromTheSource, uri, foundSource.Source)).ConfigureAwait(false);
+      _logger.Log(LogLevel.Verbose, string.Format(CouldProvideCredentialsForUriFromTheSource, uri, foundSource.Source));
       return true;
     }
 
-    public async Task<GetAuthenticationCredentialsResponse> HandleRequestAsync(GetAuthenticationCredentialsRequest request)
+    public GetAuthenticationCredentialsResponse HandleRequest(GetAuthenticationCredentialsRequest request)
     {
       var source = GetSource(request.Uri);
       if (source != null)
       {
-        await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(FoundCredentialsForUriFromSource, request.Uri, source.Source)).ConfigureAwait(false);
+        _logger.Log(LogLevel.Verbose, string.Format(FoundCredentialsForUriFromSource, request.Uri, source.Source));
         return new GetAuthenticationCredentialsResponse(
           source.Username,
           source.Password,
@@ -63,7 +63,7 @@ namespace JetBrains.TeamCity.NuGet
           MessageResponseCode.Success);
       }
 
-      await _plugin.LogMessageAsync(LogLevel.Debug, string.Format(CredentialsForUriNotFound, request.Uri)).ConfigureAwait(false);
+      _logger.Log(LogLevel.Verbose, string.Format(CredentialsForUriNotFound, request.Uri));
       return new GetAuthenticationCredentialsResponse(null, null, null, null, MessageResponseCode.NotFound);
     }
 

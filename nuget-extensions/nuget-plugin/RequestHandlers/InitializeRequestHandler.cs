@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using JetBrains.TeamCity.NuGet.Logging;
 using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
@@ -11,9 +12,9 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     /// <summary>
     /// Initializes a new instance of the <see cref="InitializeRequestHandler"/> class.
     /// </summary>
-    /// <param name="plugin">A <see cref="PluginController"/> to use for logging.</param>
-    public InitializeRequestHandler(PluginController plugin)
-      : base(plugin)
+    /// <param name="logger">A <see cref="ILogger"/> to use for logging.</param>
+    public InitializeRequestHandler(ILogger logger)
+      : base(logger)
     {
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using JetBrains.TeamCity.NuGet.Logging;
 using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
@@ -8,13 +9,13 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
   /// </summary>
   internal class SetLogLevelHandler : RequestHandlerBase<SetLogLevelRequest, SetLogLevelResponse>
   {
-    public SetLogLevelHandler(PluginController plugin) : base(plugin)
+    public SetLogLevelHandler(ILogger logger) : base(logger)
     {
     }
 
     public override Task<SetLogLevelResponse> HandleRequestAsync(SetLogLevelRequest request)
     {
-      Plugin.Logging = request.LogLevel;
+      Logger.SetLogLevel(request.LogLevel);
       return Task.FromResult(new SetLogLevelResponse(MessageResponseCode.Success));
     }
   }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet
@@ -15,13 +13,13 @@ namespace JetBrains.TeamCity.NuGet
     /// </summary>
     /// <param name="uri">The <see cref="Uri"/> of the package feed.</param>
     /// <returns><code>true</code> if this implementation can provide credentials, otherwise <code>false</code>.</returns>
-    Task<bool> CanProvideCredentialsAsync(Uri uri);
+    bool CanProvideCredentials(Uri uri);
 
     /// <summary>
     /// Handles a <see cref="GetAuthenticationCredentialsRequest"/>.
     /// </summary>
     /// <param name="request">A <see cref="GetAuthenticationCredentialsRequest"/> object containing details about the request.</param>
     /// <returns>A <see cref="GetAuthenticationCredentialsResponse"/> object containing details about a response.</returns>
-    Task<GetAuthenticationCredentialsResponse> HandleRequestAsync(GetAuthenticationCredentialsRequest request);
+    GetAuthenticationCredentialsResponse HandleRequest(GetAuthenticationCredentialsRequest request);
   }
 }
