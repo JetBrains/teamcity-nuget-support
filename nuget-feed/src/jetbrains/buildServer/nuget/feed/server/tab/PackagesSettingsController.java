@@ -79,13 +79,15 @@ public class PackagesSettingsController extends BaseFormXmlController {
 
         myDefaultProcessor = parameters -> {
             final List<InvalidProperty> invalidProperties = new ArrayList<>();
-            notEmpty(parameters, RepositoryConstants.REPOSITORY_TYPE_KEY, "Repository type", invalidProperties);
-            notEmpty(parameters, RepositoryConstants.REPOSITORY_NAME_KEY, "Name", invalidProperties);
-            String name = parameters.get(RepositoryConstants.REPOSITORY_NAME_KEY);
-            try {
+            notEmpty(parameters, RepositoryConstants.REPOSITORY_TYPE_KEY, "repository type", invalidProperties);
+            notEmpty(parameters, RepositoryConstants.REPOSITORY_NAME_KEY, "name", invalidProperties);
+            if (invalidProperties.isEmpty()) {
+              String name = parameters.get(RepositoryConstants.REPOSITORY_NAME_KEY);
+              try {
                 IdentifiersUtil.validateExternalId(name, "Name");
-            } catch (Exception e) {
+              } catch (Exception e) {
                 invalidProperties.add(new InvalidProperty(RepositoryConstants.REPOSITORY_NAME_KEY, e.getMessage()));
+              }
             }
             return invalidProperties;
         };
@@ -98,7 +100,7 @@ public class PackagesSettingsController extends BaseFormXmlController {
 
     private void notEmpty(Map<String, String> parameters, String name, String displayName, List<InvalidProperty> invalidProperties) {
         if (StringUtil.isEmpty(parameters.get(name))) {
-            invalidProperties.add(new InvalidProperty(name, displayName + " should not be empty"));
+            invalidProperties.add(new InvalidProperty(name, String.format("The %s must be specified", displayName)));
         }
     }
 
