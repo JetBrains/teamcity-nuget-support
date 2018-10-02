@@ -37,7 +37,9 @@ class CommandLineBuildSession(private val myCommandLine: ProgramCommandLine,
     }
 
     override fun onErrorOutput(text: String) {
-        buildLogger.error(text)
+        if (text.isNotBlank()) {
+            buildLogger.error(text)
+        }
     }
 
     override fun processFinished(exitCode: Int) {
