@@ -4,6 +4,7 @@ import jetbrains.buildServer.BaseTestCase
 import jetbrains.buildServer.nuget.common.PackageLoadException
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildMetadataProviderImpl
+import jetbrains.buildServer.serverSide.CurrentNodeInfo
 import jetbrains.buildServer.serverSide.SBuild
 import jetbrains.buildServer.serverSide.ServerResponsibilityImpl
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact
@@ -56,6 +57,7 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val buildArtifacts = m.mock(BuildArtifacts::class.java)
         val buildArtifact = m.mock(BuildArtifact::class.java)
         val build = m.mock(SBuild::class.java)
+        CurrentNodeInfo.init()
         val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
         val artifactsDir = createTempDir()
 
@@ -212,6 +214,7 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val packagesArtifact = m.mock(BuildArtifact::class.java , "packagesArtifact")
         val buildArtifact = m.mock(BuildArtifact::class.java)
         val build = m.mock(SBuild::class.java)
+        CurrentNodeInfo.init()
         val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
         val artifactsDir = createTempDir()
         val packagesFile = artifactsDir.toPath().resolve(PACKAGES_PATH)
