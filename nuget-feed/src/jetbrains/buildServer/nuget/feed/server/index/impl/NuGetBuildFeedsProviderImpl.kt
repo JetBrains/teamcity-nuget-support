@@ -23,17 +23,21 @@ class NuGetBuildFeedsProviderImpl(private val myProjectManager: ProjectManager,
         }
 
         // Add projects from NuGet Package Indexer build features
-        build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).forEach { feature ->
-            feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED]?.let {
-                NuGetUtils.feedIdToData(it)?.let {
-                    val project = myProjectManager.findProjectByExternalId(it.first)
-                    if (project != null && myRepositoryManager.hasRepository(project, PackageConstants.NUGET_PROVIDER_ID, it.second)) {
-                        nugetFeeds.add(NuGetFeedData(project.projectId, it.second))
-                    } else {
-                        LOG.warn("Could not find '${it.second}' NuGet feed for '${it.first}' project.")
+        try {
+            build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).forEach { feature ->
+                feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED]?.let {
+                    NuGetUtils.feedIdToData(it)?.let {
+                        val project = myProjectManager.findProjectByExternalId(it.first)
+                        if (project != null && myRepositoryManager.hasRepository(project, PackageConstants.NUGET_PROVIDER_ID, it.second)) {
+                            nugetFeeds.add(NuGetFeedData(project.projectId, it.second))
+                        } else {
+                            LOG.warn("Could not find '${it.second}' NuGet feed for '${it.first}' project.")
+                        }
                     }
                 }
             }
+        } catch (e: Exception) {
+            LOG.warnAndDebugDetails("Unable to get list of build #${build.buildId} features", e)
         }
 
         return nugetFeeds
