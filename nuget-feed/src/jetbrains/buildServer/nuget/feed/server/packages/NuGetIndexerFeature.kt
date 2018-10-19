@@ -133,7 +133,7 @@ class NuGetIndexerFeature(pluginDescriptor: PluginDescriptor,
             }
         } ?: "<Unknown>"
 
-        return "Indexing packages into ${StringUtil.escapeHTML(feedName, true)} NuGet feed"
+        return "Indexing packages into $feedName NuGet feed"
     }
 
     override fun getParametersProcessor(): PropertiesProcessor? {
