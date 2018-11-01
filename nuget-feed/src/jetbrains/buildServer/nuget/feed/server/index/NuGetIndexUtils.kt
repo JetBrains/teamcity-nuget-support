@@ -9,7 +9,6 @@ import jetbrains.buildServer.serverSide.SProject
 import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.serverSide.impl.LogUtil
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
-import kotlin.coroutines.experimental.buildSequence
 
 object NuGetIndexUtils {
     private val LOG = Logger.getInstance(NuGetIndexUtils::class.java.name)
@@ -30,8 +29,8 @@ object NuGetIndexUtils {
         return indexingEnabled
     }
 
-    fun findFeedsWithIndexing(project: SProject?, repositoryManager: RepositoryManager) = buildSequence {
-        project?.let {
+    fun findFeedsWithIndexing(project: SProject?, repositoryManager: RepositoryManager) = sequence {
+        project?.let { project ->
             yieldAll(repositoryManager.getRepositories(project, true)
                 .filterIsInstance<NuGetRepository>()
                 .filter { it.indexPackages })

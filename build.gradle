@@ -1,12 +1,16 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.2.30"
+    id "org.jetbrains.kotlin.jvm" version "1.3.0"
+}
+
+repositories {
+    mavenCentral()
 }
 
 ext {
     versionNumber = project.hasProperty('versionNumber') ? property('versionNumber') : 'SNAPSHOT-' + new Date().format('yyyyMMddHHmmss')
     projectIds = ['group': 'teamcity-nuget-support', 'version': versionNumber]
 
-    teamcityVersion = project.findProperty('teamcityVersion') ?: '2018.1'
+    teamcityVersion = project.findProperty('teamcityVersion') ?: '2018.2-SNAPSHOT'
     teamcityDir = project.findProperty('teamcityDir') ?: "$rootDir/servers/TeamCity-${teamcityVersion}"
     if (teamcityDir == null || !file(teamcityDir).isDirectory()) {
         throw new InvalidUserDataException('Please, execute gradle task `:nuget-server:installTeamCity` ' +
@@ -32,8 +36,6 @@ allprojects {
 subprojects { subproject ->
     if (!subproject.name.endsWith("extensions")) {
         apply plugin: "kotlin"
-
-        kotlin { experimental { coroutines 'enable' } }
 
         sourceSets {
             main {
