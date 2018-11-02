@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.feed.server
 
 import jetbrains.buildServer.BuildAuthUtil
 import jetbrains.buildServer.agent.AgentRuntimeProperties
-import jetbrains.buildServer.nuget.common.NuGetServerConstants
 import jetbrains.buildServer.nuget.common.NuGetServerConstants.*
 import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
 import jetbrains.buildServer.parameters.ReferencesResolverUtil
@@ -77,12 +76,13 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
             val project = myProjectManager.findProjectById(repository.projectId) ?: return@forEach
             NuGetAPIVersion.values().forEach { version ->
                 val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, repository.name, version)
-                val feedId = "${project.externalId}.${repository.name}.${version.name.toLowerCase()}"
-
                 authTypes.forEach { authType ->
+                    val referenceName = NuGetUtils.getProjectFeedReference(
+                            authType, project.externalId, repository.name, version
+                    )
                     val reference = ReferencesResolverUtil.makeReference(AgentRuntimeProperties.TEAMCITY_SERVER_URL) +
                             WebUtil.combineContextPath("/$authType/", feedPath)
-                    parameters["${NuGetServerConstants.FEED_REF_PREFIX}$authType.$feedId"] = reference
+                    parameters[referenceName] = reference
                 }
             }
         }

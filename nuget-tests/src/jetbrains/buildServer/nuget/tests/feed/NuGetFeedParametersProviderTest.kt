@@ -34,6 +34,7 @@ class NuGetFeedParametersProviderTest {
         val repositoryType = m.mock(RepositoryType::class.java)
         val loginConfiguration = m.mock(LoginConfiguration::class.java)
         val projectId = "projectId"
+        val projectExtId = "projectExtId"
 
         val parametersProvider = NuGetFeedParametersProvider(
                 serverSettings, projectManager, repositoryManager, loginConfiguration
@@ -57,7 +58,7 @@ class NuGetFeedParametersProviderTest {
                 will(returnValue(projectId))
 
                 allowing(project).externalId
-                will(returnValue(projectId))
+                will(returnValue(projectExtId))
 
                 allowing(projectManager).findProjectById(projectId)
                 will(returnValue(project))
@@ -76,9 +77,9 @@ class NuGetFeedParametersProviderTest {
         val parameters = parametersProvider.getParameters(build, false)
 
         Assert.assertEquals(parameters, mapOf(
-                "teamcity.nuget.feed.httpAuth.projectId.default.v1" to "%teamcity.serverUrl%/httpAuth/app/nuget/feed/projectId/default/v1",
-                "teamcity.nuget.feed.httpAuth.projectId.default.v2" to "%teamcity.serverUrl%/httpAuth/app/nuget/feed/projectId/default/v2",
-                "teamcity.nuget.feed.httpAuth.projectId.default.v3" to "%teamcity.serverUrl%/httpAuth/app/nuget/feed/projectId/default/v3/index.json",
+                "teamcity.nuget.feed.httpAuth.projectExtId.default.v1" to "%teamcity.serverUrl%/httpAuth/app/nuget/feed/projectExtId/default/v1",
+                "teamcity.nuget.feed.httpAuth.projectExtId.default.v2" to "%teamcity.serverUrl%/httpAuth/app/nuget/feed/projectExtId/default/v2",
+                "teamcity.nuget.feed.httpAuth.projectExtId.default.v3" to "%teamcity.serverUrl%/httpAuth/app/nuget/feed/projectExtId/default/v3/index.json",
                 "teamcity.nuget.feed.api.key" to ""
         ))
     }

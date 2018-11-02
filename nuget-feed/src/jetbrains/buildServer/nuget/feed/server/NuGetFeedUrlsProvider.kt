@@ -1,19 +1,16 @@
 package jetbrains.buildServer.nuget.feed.server
 
-import jetbrains.buildServer.RootUrlHolder
 import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
+import jetbrains.buildServer.parameters.ReferencesResolverUtil
 import jetbrains.buildServer.serverSide.DataItem
 import jetbrains.buildServer.serverSide.ProjectDataFetcher
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.auth.LoginConfiguration
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.util.browser.Browser
-import jetbrains.buildServer.web.util.WebUtil
-import javax.ws.rs.core.UriBuilder
 
 class NuGetFeedUrlsProvider(private val myProjectManager: ProjectManager,
                             private val myRepositoryManager: RepositoryManager,
-                            private val myRootUrlHolder: RootUrlHolder,
                             private val myLoginConfiguration: LoginConfiguration) : ProjectDataFetcher {
 
     override fun getType() = "NuGetFeedUrls"
@@ -23,21 +20,28 @@ class NuGetFeedUrlsProvider(private val myProjectManager: ProjectManager,
         val buildTypeByExternalId = myProjectManager.findBuildTypeByExternalId(segments.first())
                 ?: return mutableListOf()
 
-        val uriBuilder = UriBuilder.fromUri(myRootUrlHolder.rootUrl)
-        val prefix = if (WebUtil.GUEST_AUTH_PREFIX.contains(segments.last()) && myLoginConfiguration.isGuestLoginAllowed) {
-            WebUtil.GUEST_AUTH_PREFIX
+        val authType = if (GUEST_AUTH == segments.last() && myLoginConfiguration.isGuestLoginAllowed) {
+            GUEST_AUTH
         } else {
-            WebUtil.HTTP_AUTH_PREFIX
+            HTTP_AUTH
         }
 
         return myRepositoryManager.getRepositories(buildTypeByExternalId.project, true)
                 .filterIsInstance<NuGetRepository>()
-                .flatMap {
-                    it.urlPaths.map {
-                        WebUtil.combineContextPath(prefix, it)
-                    }
-                }.map {
-                    DataItem(uriBuilder.replacePath(it).build().toString(), null)
+                .flatMap { repository ->
+                    myProjectManager.findProjectById(repository.projectId)?.let { project ->
+                        NuGetAPIVersion.values().map { version ->
+                            val feedReference = NuGetUtils.getProjectFeedReference(
+                                    authType, project.externalId, repository.name, version
+                            )
+                            DataItem(ReferencesResolverUtil.makeReference(feedReference), null)
+                        }
+                    } ?: emptyList()
                 }.toMutableList()
+    }
+
+    companion object {
+        const val GUEST_AUTH = "guestAuth"
+        const val HTTP_AUTH = "httpAuth"
     }
 }

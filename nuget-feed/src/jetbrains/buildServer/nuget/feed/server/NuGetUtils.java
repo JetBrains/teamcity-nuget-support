@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.feed.server;
 
+import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.util.CollectionsUtil;
@@ -98,5 +99,22 @@ public class NuGetUtils {
       return new Pair<>(parts.get(0), parts.get(1));
     }
     return null;
+  }
+
+  /**
+   * @return a reference on project feed with selected authType.
+   */
+  @NotNull
+  public static String getProjectFeedReference(@NotNull final String authType,
+                                               @NotNull final String projectId,
+                                               @NotNull final String name,
+                                               @NotNull final NuGetAPIVersion version) {
+    return String.format("%s%s.%s.%s.%s",
+      NuGetServerConstants.FEED_REF_PREFIX,
+      authType,
+      projectId,
+      name,
+      version.name().toLowerCase()
+    );
   }
 }
