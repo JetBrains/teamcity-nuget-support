@@ -16,7 +16,7 @@
 
 package jetbrains.buildServer.nuget.server;
 
-import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.ServerExtension;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,6 +27,5 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface TriggerUrlPostProcessor extends ServerExtension {
   @NotNull
-  String updateTriggerUrl(@NotNull BuildTriggerDescriptor context,
-                          @NotNull String url);
+  String updateTriggerUrl(@NotNull SBuildType buildType, @NotNull String url);
 }

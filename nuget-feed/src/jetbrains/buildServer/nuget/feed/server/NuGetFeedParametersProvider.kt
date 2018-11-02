@@ -1,69 +1,100 @@
+/*
+ * Copyright 2000-2017 JetBrains s.r.o.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package jetbrains.buildServer.nuget.feed.server
 
-import jetbrains.buildServer.RootUrlHolder
+import jetbrains.buildServer.BuildAuthUtil
 import jetbrains.buildServer.agent.AgentRuntimeProperties
 import jetbrains.buildServer.nuget.common.NuGetServerConstants
-import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
-import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils
+import jetbrains.buildServer.nuget.common.NuGetServerConstants.*
 import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
 import jetbrains.buildServer.parameters.ReferencesResolverUtil
-import jetbrains.buildServer.serverSide.BuildStartContext
-import jetbrains.buildServer.serverSide.BuildStartContextProcessor
 import jetbrains.buildServer.serverSide.ProjectManager
+import jetbrains.buildServer.serverSide.SBuild
+import jetbrains.buildServer.serverSide.SBuildType
+import jetbrains.buildServer.serverSide.SRunningBuild
+import jetbrains.buildServer.serverSide.auth.LoginConfiguration
+import jetbrains.buildServer.serverSide.crypt.EncryptUtil
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
+import jetbrains.buildServer.serverSide.parameters.AbstractBuildParametersProvider
 import jetbrains.buildServer.web.util.WebUtil
-import javax.ws.rs.core.UriBuilder
 
 /**
- * Provides build parameters required for TeamCity credentials provider
- * to use TeamCity NuGet feeds in NuGet CLI without NuGet Feed Credentials
- * build feature.
+ * @author Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 07.10.11 17:52
  */
 class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
                                   private val myProjectManager: ProjectManager,
                                   private val myRepositoryManager: RepositoryManager,
-                                  private val myRootUrlHolder: RootUrlHolder)
-    : BuildStartContextProcessor {
+                                  private val myLoginConfiguration: LoginConfiguration)
+    : AbstractBuildParametersProvider() {
 
-    override fun updateParameters(context: BuildStartContext) {
+    override fun getParameters(build: SBuild, emulationMode: Boolean): Map<String, String> {
         if (!mySettings.isNuGetServerEnabled) {
-            return
+            return emptyMap()
         }
 
-        val build = context.build
-
-        // Check whether we should index NuGet packages for build
-        val buildProject = myProjectManager.findProjectById(build.projectId)
-        if (build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).isNotEmpty() ||
-            NuGetIndexUtils.isIndexingEnabledForBuild(build) &&
-            NuGetIndexUtils.findFeedsWithIndexing(buildProject, myRepositoryManager).any()) {
-            context.addSharedParameter(NuGetServerConstants.FEED_AGENT_SIDE_INDEXING, "true")
+        val properties = mutableMapOf<String, String>()
+        build.buildType?.let {
+            properties.putAll(getBuildTypeParameters(it))
         }
 
-        // Add NuGet feed references
-        myProjectManager.findProjectById(build.projectId)?.let {
-            val repositories = myRepositoryManager
-                .getRepositories(it, true)
+        if (build is SRunningBuild) {
+            val buildToken = String.format("%s:%s", BuildAuthUtil.makeUserId(build.getBuildId()), build.agentAccessCode)
+            properties[FEED_REFERENCE_AGENT_API_KEY_PROVIDED] = EncryptUtil.scramble(buildToken)
+        } else {
+            properties[FEED_REFERENCE_AGENT_API_KEY_PROVIDED] = ""
+        }
+
+        return properties
+    }
+
+    fun getBuildTypeParameters(buildType: SBuildType): Map<String, String> {
+        if (!mySettings.isNuGetServerEnabled) {
+            return emptyMap()
+        }
+
+        val parameters = mutableMapOf<String, String>()
+        val repositories = myRepositoryManager
+                .getRepositories(buildType.project, true)
                 .filterIsInstance<NuGetRepository>()
 
-            repositories.forEach {
-                val project = myProjectManager.findProjectById(it.projectId) ?: return
-                val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, it.name)
-                val feedSuffix = if (it.name == NuGetFeedData.DEFAULT_FEED_ID) {
-                    project.externalId
-                } else {
-                    "${project.externalId}.${it.name}"
+        val authTypes = getAuthTypes()
+        repositories.forEach { repository ->
+            val project = myProjectManager.findProjectById(repository.projectId) ?: return@forEach
+            NuGetAPIVersion.values().forEach { version ->
+                val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, repository.name, version)
+                val feedId = "${project.externalId}.${repository.name}.${version.name.toLowerCase()}"
+
+                authTypes.forEach { authType ->
+                    val reference = ReferencesResolverUtil.makeReference(AgentRuntimeProperties.TEAMCITY_SERVER_URL) +
+                            WebUtil.combineContextPath("/$authType/", feedPath)
+                    parameters["${NuGetServerConstants.FEED_REF_PREFIX}$authType.$feedId"] = reference
                 }
-                val httpAuthFeedPath = WebUtil.combineContextPath(WebUtil.HTTP_AUTH_PREFIX, feedPath)
-                context.addSharedParameter(
-                        NuGetServerConstants.FEED_REF_PREFIX + feedSuffix + NuGetServerConstants.FEED_REF_URL_SUFFIX,
-                        ReferencesResolverUtil.makeReference(AgentRuntimeProperties.TEAMCITY_SERVER_URL) + httpAuthFeedPath
-                )
-                context.addSharedParameter(
-                        NuGetServerConstants.FEED_REF_PREFIX + feedSuffix + NuGetServerConstants.FEED_REF_PUBLIC_URL_SUFFIX,
-                        UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
-                )
             }
+        }
+
+        return parameters
+    }
+
+    private fun getAuthTypes() : Set<String> {
+        return if (myLoginConfiguration.isGuestLoginAllowed) {
+            setOf("httpAuth", "guestAuth")
+        } else {
+            setOf("httpAuth")
         }
     }
 }

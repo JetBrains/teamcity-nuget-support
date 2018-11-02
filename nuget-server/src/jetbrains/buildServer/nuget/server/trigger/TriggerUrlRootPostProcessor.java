@@ -17,9 +17,9 @@
 package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.RootUrlHolder;
-import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.nuget.server.TriggerUrlPostProcessor;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
+import jetbrains.buildServer.serverSide.SBuildType;
 import org.jetbrains.annotations.NotNull;
 
 import static jetbrains.buildServer.agent.AgentRuntimeProperties.TEAMCITY_SERVER_URL;
@@ -37,7 +37,7 @@ public class TriggerUrlRootPostProcessor implements TriggerUrlPostProcessor {
   }
 
   @NotNull
-  public String updateTriggerUrl(@NotNull BuildTriggerDescriptor context, @NotNull String source) {
+  public String updateTriggerUrl(@NotNull SBuildType buildType, @NotNull String source) {
     if (!ReferencesResolverUtil.mayContainReference(source)) return source;
     return source.replace(ReferencesResolverUtil.makeReference(TEAMCITY_SERVER_URL), myHolder.getRootUrl());
   }

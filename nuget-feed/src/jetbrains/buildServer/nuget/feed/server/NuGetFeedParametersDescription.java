@@ -24,11 +24,11 @@ import org.jetbrains.annotations.NotNull;
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
  *         Date: 09.02.12 18:55
  */
-public class NuGetServerPropertiesDescription extends AbstractParameterDescriptionProvider {
+public class NuGetFeedParametersDescription extends AbstractParameterDescriptionProvider {
   @Override
   public String describe(@NotNull String paramName) {
-    if (NuGetServerConstants.FEED_URL_PATTERN.matcher(paramName).find()) {
-      return "Contains URL to TeamCity provided NuGet feed with basic authentication";
+    if (NuGetServerConstants.FEED_PARAM_PATTERN.matcher(paramName).find()) {
+      return "Contains TeamCity provided NuGet feed URL";
     }
     if (paramName.equals(NuGetServerConstants.FEED_REFERENCE_AGENT_API_KEY_PROVIDED)) {
       return "Contains API key to push packages into TeamCity provided NuGet feed";

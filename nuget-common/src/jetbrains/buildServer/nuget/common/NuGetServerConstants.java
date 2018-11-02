@@ -16,6 +16,9 @@
 
 package jetbrains.buildServer.nuget.common;
 
+import jetbrains.buildServer.agent.Constants;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.regex.Pattern;
 
 /**
@@ -31,9 +34,18 @@ public class NuGetServerConstants {
   public static final String FEED_INDEXING_ENABLED_PROP = "teamcity.nuget.index.packages";
   public static final String FEED_AGENT_SIDE_INDEXING = "teamcity.nuget.feed.agentSideIndexing";
 
-  public static final Pattern FEED_URL_PATTERN = Pattern.compile(String.format("^%s.*(%s|%s)$",
-      NuGetServerConstants.FEED_REF_PREFIX.replace(".", "\\."),
-      NuGetServerConstants.FEED_REF_URL_SUFFIX.replace(".", "\\."),
-      NuGetServerConstants.FEED_REF_PUBLIC_URL_SUFFIX.replace(".", "\\.")
+  public static final Pattern FEED_PARAM_AUTH_PATTERN = Pattern.compile(String.format("^%s.*(%s|%s)$",
+    escapeDots(Constants.SYSTEM_PREFIX + NuGetServerConstants.FEED_REF_PREFIX),
+    escapeDots(NuGetServerConstants.FEED_REF_URL_SUFFIX),
+    escapeDots(NuGetServerConstants.FEED_REF_PUBLIC_URL_SUFFIX)
   ));
+
+  public static final Pattern FEED_PARAM_PATTERN = Pattern.compile(String.format("^%s.*\\.v\\d$",
+    escapeDots(NuGetServerConstants.FEED_REF_PREFIX)
+  ));
+
+  @NotNull
+  private static String escapeDots(@NotNull final String value) {
+    return value.replace(".", "\\.");
+  }
 }

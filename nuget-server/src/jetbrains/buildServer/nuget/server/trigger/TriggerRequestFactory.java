@@ -98,7 +98,7 @@ public class TriggerRequestFactory {
     }
     else {
       for (TriggerUrlPostProcessor urlPostProcessor : myExtensionHolder.getExtensions(TriggerUrlPostProcessor.class)) {
-        source = urlPostProcessor.updateTriggerUrl(descriptor, source);
+        source = urlPostProcessor.updateTriggerUrl(context.getBuildType(), source);
       }
     }
 

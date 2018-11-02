@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.agent;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.agent.AgentBuildFeature;
 import jetbrains.buildServer.agent.AgentRunningBuildEx;
+import jetbrains.buildServer.agent.Constants;
 import jetbrains.buildServer.agent.impl.BuildParametersMapImpl;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSourceManager;
 import jetbrains.buildServer.nuget.agent.parameters.impl.PackageSourceManagerImpl;
@@ -49,8 +50,8 @@ public class PackageSourceManagerTest extends BaseTestCase {
     private static final String AGENT_BASED_URL = "agent";
     private static final String SERVER_BASED_URL = "server";
     private static final Map<String, String> PARAMETERS = CollectionsUtil.asMap(
-      FEED_REF_PREFIX + "_Root" + FEED_REF_URL_SUFFIX, AGENT_BASED_URL,
-      FEED_REF_PREFIX + "_Root" + FEED_REF_PUBLIC_URL_SUFFIX, SERVER_BASED_URL);
+      Constants.SYSTEM_PREFIX + FEED_REF_PREFIX + "_Root" + FEED_REF_URL_SUFFIX, AGENT_BASED_URL,
+      Constants.SYSTEM_PREFIX + FEED_REF_PREFIX + "_Root" + FEED_REF_PUBLIC_URL_SUFFIX, SERVER_BASED_URL);
     private List<AgentBuildFeature> myFeatures;
 
     private PackageSourceManager mySources;
@@ -161,10 +162,10 @@ public class PackageSourceManagerTest extends BaseTestCase {
       final AgentRunningBuildEx runningBuild = myBuild;
       myParameters.clear();
       myParameters.putAll(CollectionsUtil.asMap(
-              FEED_REF_PREFIX + "_Root.url", "url1",
-              FEED_REF_PREFIX + "_Root.publicUrl", "url2",
-              FEED_REF_PREFIX + "_Root", "url3",
-              FEED_REFERENCE_AGENT_API_KEY_PROVIDED, "key"
+             Constants.SYSTEM_PREFIX + FEED_REF_PREFIX + "_Root.url", "url1",
+             Constants.SYSTEM_PREFIX + FEED_REF_PREFIX + "_Root.publicUrl", "url2",
+             Constants.SYSTEM_PREFIX + FEED_REF_PREFIX + "_Root", "url3",
+             FEED_REFERENCE_AGENT_API_KEY_PROVIDED, "key"
       ));
 
       final List<PackageSource> packageSources = getPackageSourcesOfRunningBuild(runningBuild);
