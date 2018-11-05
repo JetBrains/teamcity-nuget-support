@@ -77,8 +77,6 @@ public class PackageSourceManagerTest extends BaseTestCase {
             will(returnValue(Collections.emptyList()));
             allowing(myBuild).getBuildFeaturesOfType(PackagesConstants.AUTH_FEATURE_TYPE);
             will(returnValue(myFeatures));
-            allowing(myBuild).getSharedConfigParameters();
-            will(returnValue(myParameters));
             allowing(myBuild).getSharedBuildParameters();
             will(returnValue(new BuildParametersMapImpl(myParameters)));
             allowing(myBuild).getAccessUser();

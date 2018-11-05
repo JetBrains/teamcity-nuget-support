@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.agent.parameters.impl;
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.agent.AgentBuildFeature;
 import jetbrains.buildServer.agent.AgentRunningBuild;
+import jetbrains.buildServer.agent.Constants;
 import jetbrains.buildServer.nuget.agent.parameters.PackageSourceManager;
 import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
@@ -54,9 +55,9 @@ public class PackageSourceManagerImpl implements PackageSourceManager {
       result.put(normalizeUrl(feed), source(feed, user, pass));
     }
 
-    final Map<String, String> parameters = build.getSharedConfigParameters();
+    final Map<String, String> parameters = build.getSharedBuildParameters().getSystemProperties();
     for (String key : parameters.keySet()) {
-      if (NuGetServerConstants.FEED_PARAM_AUTH_PATTERN.matcher(key).find()) {
+      if (NuGetServerConstants.FEED_PARAM_AUTH_PATTERN.matcher(Constants.SYSTEM_PREFIX + key).find()) {
         final String feedUrl = parameters.get(key);
         if (StringUtil.isEmptyOrSpaces(feedUrl)) {
           LOG.debug("Failed to resolve TeamCity NuGet feed url via config parameter " + key);
