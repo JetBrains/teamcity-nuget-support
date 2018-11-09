@@ -19,18 +19,20 @@ class NuGetFeedUrlsProvider(private val myProjectManager: ProjectManager,
     override fun retrieveData(browser: Browser, queryString: String): MutableList<DataItem> {
         val parameters = getParameters(queryString)
         val project = getProject(parameters) ?: return mutableListOf()
-        val authType = getAuthType(parameters)
+        val authTypes = getAuthTypes(parameters)
         val apiVersions = getApiVersions(parameters)
 
         return myRepositoryManager.getRepositories(project, true)
                 .filterIsInstance<NuGetRepository>()
                 .flatMap { repository ->
                     myProjectManager.findProjectById(repository.projectId)?.let { project ->
-                        apiVersions.map { version ->
-                            val feedReference = NuGetUtils.getProjectFeedReference(
-                                    authType, project.externalId, repository.name, version
-                            )
-                            DataItem(ReferencesResolverUtil.makeReference(feedReference), null)
+                        apiVersions.flatMap { version ->
+                            authTypes.map { authType ->
+                                val feedReference = NuGetUtils.getProjectFeedReference(
+                                        authType, project.externalId, repository.name, version
+                                )
+                                DataItem(ReferencesResolverUtil.makeReference(feedReference), null)
+                            }
                         }
                     } ?: emptyList()
                 }.toMutableList()
@@ -47,12 +49,15 @@ class NuGetFeedUrlsProvider(private val myProjectManager: ProjectManager,
         return NuGetAPIVersion.values().toSet()
     }
 
-    private fun getAuthType(parameters: Map<String, String>): String {
-        return if (GUEST_AUTH == parameters["authType"] && myLoginConfiguration.isGuestLoginAllowed) {
-            GUEST_AUTH
-        } else {
-            HTTP_AUTH
+    private fun getAuthTypes(parameters: Map<String, String>): Set<String> {
+        parameters["authTypes"]?.let { authTypes ->
+            val types = authTypes.split(";").toMutableSet()
+            if (types.contains(GUEST_AUTH) && !myLoginConfiguration.isGuestLoginAllowed) {
+                types.remove(GUEST_AUTH)
+            }
+            return types
         }
+        return setOf(HTTP_AUTH)
     }
 
     private fun getProject(parameters: Map<String, String>): SProject? {
