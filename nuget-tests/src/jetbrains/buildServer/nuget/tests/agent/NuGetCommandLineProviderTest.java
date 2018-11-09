@@ -270,4 +270,124 @@ public class NuGetCommandLineProviderTest extends BaseTestCase {
     Assert.assertEquals(commandLine.getExecutablePath(), executable);
     Assert.assertEquals(commandLine.getArguments(), args);
   }
+
+  @Test
+  public void getCommandLineForNuGet47OnWindowsWithoutCredentialsPlugin() throws RunBuildException {
+    CommandLineExecutor executor = m.mock(CommandLineExecutor.class);
+
+    NuGetCommandLineProvider provider = new NuGetCommandLineProvider(myNugetProvider, executor, mySystemInfo);
+    List<String> args = new ArrayList<>(Arrays.asList("arg1", "arg2"));
+    String executable = "nuget.exe";
+    ExecResult result = new ExecResult();
+    result.setExitCode(0);
+    result.setStdout("NuGet Version: 4.7.0");
+    String packagesPath = "/path/to/packages";
+    myEnvironmentVariables.put("NUGET_PACKAGES", packagesPath);
+    myEnvironmentVariables.put("NUGET_PLUGIN_PATHS", "/path");
+
+    m.checking(new Expectations() {{
+      allowing(mySystemInfo).isWindows(); will(returnValue(true));
+      allowing(mySystemInfo).getUserName(); will(returnValue("user"));
+      oneOf(executor).execute(with(any(GeneralCommandLine.class))); will(returnValue(result));
+    }});
+
+    ProgramCommandLine commandLine = provider.getProgramCommandLine(myRootContext, executable, args, myWorkDir, Collections.emptyMap());
+
+    Assert.assertNotNull(commandLine);
+    Assert.assertEquals(commandLine.getWorkingDirectory(), myWorkDir.getPath());
+    Assert.assertEquals(commandLine.getExecutablePath(), executable);
+    Assert.assertEquals(commandLine.getArguments(), args);
+    Assert.assertEquals(commandLine.getEnvironment().get("NUGET_PACKAGES"), packagesPath);
+    Assert.assertFalse(commandLine.getEnvironment().containsKey("NUGET_PLUGIN_PATHS"));
+  }
+
+  @Test
+  public void getCommandLineForNuGet48OnWindowsWithCredentialsPlugin() throws RunBuildException {
+    CommandLineExecutor executor = m.mock(CommandLineExecutor.class);
+
+    NuGetCommandLineProvider provider = new NuGetCommandLineProvider(myNugetProvider, executor, mySystemInfo);
+    List<String> args = new ArrayList<>(Arrays.asList("arg1", "arg2"));
+    String executable = "nuget.exe";
+    ExecResult result = new ExecResult();
+    result.setExitCode(0);
+    result.setStdout("NuGet Version: 4.8.0");
+    String packagesPath = "/path/to/packages";
+    myEnvironmentVariables.put("NUGET_PACKAGES", packagesPath);
+    myEnvironmentVariables.put("NUGET_PLUGIN_PATHS", "/path");
+
+    m.checking(new Expectations() {{
+      allowing(mySystemInfo).isWindows(); will(returnValue(true));
+      allowing(mySystemInfo).getUserName(); will(returnValue("user"));
+      oneOf(executor).execute(with(any(GeneralCommandLine.class))); will(returnValue(result));
+    }});
+
+    ProgramCommandLine commandLine = provider.getProgramCommandLine(myRootContext, executable, args, myWorkDir, Collections.emptyMap());
+
+    Assert.assertNotNull(commandLine);
+    Assert.assertEquals(commandLine.getWorkingDirectory(), myWorkDir.getPath());
+    Assert.assertEquals(commandLine.getExecutablePath(), executable);
+    Assert.assertEquals(commandLine.getArguments(), args);
+    Assert.assertEquals(commandLine.getEnvironment().get("NUGET_PACKAGES"), packagesPath);
+    Assert.assertEquals(commandLine.getEnvironment().get("NUGET_PLUGIN_PATHS"), "/path");
+  }
+
+  @Test
+  public void getCommandLineForNuGet48OnMonoWithoutCredentialsPlugin() throws RunBuildException {
+    CommandLineExecutor executor = m.mock(CommandLineExecutor.class);
+
+    NuGetCommandLineProvider provider = new NuGetCommandLineProvider(myNugetProvider, executor, mySystemInfo);
+    List<String> args = new ArrayList<>(Arrays.asList("arg1", "arg2"));
+    String executable = "nuget.exe";
+    ExecResult result = new ExecResult();
+    result.setExitCode(0);
+    result.setStdout("NuGet Version: 4.8.0");
+    String packagesPath = "/path/to/packages";
+    myEnvironmentVariables.put("NUGET_PACKAGES", packagesPath);
+    myEnvironmentVariables.put("NUGET_PLUGIN_PATHS", "/path");
+
+    m.checking(new Expectations() {{
+      allowing(mySystemInfo).isWindows(); will(returnValue(false));
+      allowing(mySystemInfo).getUserName(); will(returnValue("user"));
+      oneOf(executor).execute(with(any(GeneralCommandLine.class))); will(returnValue(result));
+    }});
+
+    ProgramCommandLine commandLine = provider.getProgramCommandLine(myRootContext, executable, args, myWorkDir, Collections.emptyMap());
+
+    Assert.assertNotNull(commandLine);
+    Assert.assertEquals(commandLine.getWorkingDirectory(), myWorkDir.getPath());
+    Assert.assertEquals(commandLine.getExecutablePath(), executable);
+    Assert.assertEquals(commandLine.getArguments(), args);
+    Assert.assertEquals(commandLine.getEnvironment().get("NUGET_PACKAGES"), packagesPath);
+    Assert.assertFalse(commandLine.getEnvironment().containsKey("NUGET_PLUGIN_PATHS"));
+  }
+
+  @Test
+  public void getCommandLineForNuGet49OnMonoWithCredentialsPlugin() throws RunBuildException {
+    CommandLineExecutor executor = m.mock(CommandLineExecutor.class);
+
+    NuGetCommandLineProvider provider = new NuGetCommandLineProvider(myNugetProvider, executor, mySystemInfo);
+    List<String> args = new ArrayList<>(Arrays.asList("arg1", "arg2"));
+    String executable = "nuget.exe";
+    ExecResult result = new ExecResult();
+    result.setExitCode(0);
+    result.setStdout("NuGet Version: 4.9.0");
+    String packagesPath = "/path/to/packages";
+    myEnvironmentVariables.put("NUGET_PACKAGES", packagesPath);
+    myEnvironmentVariables.put("NUGET_PLUGIN_PATHS", "/path");
+
+    m.checking(new Expectations() {{
+      allowing(mySystemInfo).isWindows(); will(returnValue(false));
+      allowing(mySystemInfo).getUserName(); will(returnValue("user"));
+      oneOf(executor).execute(with(any(GeneralCommandLine.class))); will(returnValue(result));
+    }});
+
+    ProgramCommandLine commandLine = provider.getProgramCommandLine(myRootContext, executable, args, myWorkDir, Collections.emptyMap());
+
+    Assert.assertNotNull(commandLine);
+    Assert.assertEquals(commandLine.getWorkingDirectory(), myWorkDir.getPath());
+    Assert.assertEquals(commandLine.getExecutablePath(), executable);
+    Assert.assertEquals(commandLine.getArguments(), args);
+    Assert.assertEquals(commandLine.getEnvironment().get("NUGET_PACKAGES"), packagesPath);
+    Assert.assertEquals(commandLine.getEnvironment().get("NUGET_PLUGIN_PATHS"), "/path");
+  }
 }

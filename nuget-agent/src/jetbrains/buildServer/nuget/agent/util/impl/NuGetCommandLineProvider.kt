@@ -7,6 +7,7 @@ import jetbrains.buildServer.agent.runner.SimpleProgramCommandLine
 import jetbrains.buildServer.dotNet.DotNetConstants
 import jetbrains.buildServer.nuget.agent.util.CommandLineExecutor
 import jetbrains.buildServer.nuget.agent.util.SystemInformation
+import jetbrains.buildServer.nuget.common.auth.NuGetAuthConstants.*
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider
 import jetbrains.buildServer.nuget.common.version.SemanticVersion
 import java.io.File
@@ -29,6 +30,7 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
                               env: Map<String, String>): ProgramCommandLine {
         var (executablePath, arguments) = getExecutableAndArguments(executable, args, context)
         val buildLogger = context.build.buildLogger
+        val environment = context.buildParameters.environmentVariables.toMutableMap()
         val version = myVersions.getOrPut(executable) { getNugetVersion(executable, context) }
 
         // Since NuGet 2.0 for authentication could be used NuGet runner.
@@ -52,20 +54,25 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
                         !context.buildParameters.environmentVariables.containsKey(NUGET_PACKAGES_ENV)) {
                     val packagesPath = File(context.build.buildTempDirectory, ".nuget/packages")
                     buildLogger.message("Setting '$NUGET_PACKAGES_ENV' environment variable to '$packagesPath'")
-                    context.addEnvironmentVariable(NUGET_PACKAGES_ENV, packagesPath.path)
+                    environment[NUGET_PACKAGES_ENV] = packagesPath.path
                     buildLogger.message("##teamcity[setParameter name='env.$NUGET_PACKAGES_ENV' value='$packagesPath']")
+                }
+
+                // NuGet < 4.8 and NuGet < 4.9 on Mono does not support credentials plugin,
+                // so we need to remove environment variable to prevent runtime errors
+                if (version < NUGET_VERSION_4_8 ||
+                    version < NUGET_VERSION_4_9 && !mySystemInformation.isWindows) {
+                    environment.remove(NUGET_PLUGIN_PATH_ENV_VAR)
                 }
             }
         }
 
         // Disable interactive mode for credentials requests
-        context.addEnvironmentVariable("NUGET_EXE_NO_PROMPT", "true")
-        for ((key, value) in env) {
-            context.addEnvironmentVariable(key, value)
-        }
+        environment["NUGET_EXE_NO_PROMPT"] = "true"
+        environment.putAll(env)
 
         return SimpleProgramCommandLine(
-                context.buildParameters.environmentVariables,
+                environment,
                 workingDir.path,
                 executablePath,
                 arguments
@@ -122,6 +129,8 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
         private val NUGET_VERSION_2_0 = SemanticVersion.valueOf("2.0.0")!!
         private val NUGET_VERSION_3_3 = SemanticVersion.valueOf("3.3.0")!!
         private val NUGET_VERSION_3_5 = SemanticVersion.valueOf("3.5.0")!!
+        private val NUGET_VERSION_4_8 = SemanticVersion.valueOf("4.8.0")!!
+        private val NUGET_VERSION_4_9 = SemanticVersion.valueOf("4.9.0")!!
         private val NUGET_UNKNOWN_VERSION = SemanticVersion.valueOf("0.0.0")!!
         private val NUGET_VERSION_REGEX = Regex("NuGet Version:\\s([\\d\\.]+)", RegexOption.IGNORE_CASE)
         private val NUGET_PATH_REGEX = Regex("\\/NuGet\\.CommandLine\\.([^\\/]+)\\/tools\\/NuGet\\.exe\$", RegexOption.IGNORE_CASE)
