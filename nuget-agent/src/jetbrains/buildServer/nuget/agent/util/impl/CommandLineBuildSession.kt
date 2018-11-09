@@ -29,10 +29,10 @@ class CommandLineBuildSession(private val myCommandLine: ProgramCommandLine,
     override fun beforeProcessStarted() {}
 
     override fun onStandardOutput(text: String) {
-        if (text.startsWith("WARNING")) {
-            buildLogger.warning(text)
-        } else {
-            buildLogger.message(text)
+        when {
+            WARNING_REGEX.matches(text) -> buildLogger.warning(text)
+            ERROR_REGEX.matches(text) -> buildLogger.error(text)
+            else -> buildLogger.message(text)
         }
     }
 
@@ -60,5 +60,10 @@ class CommandLineBuildSession(private val myCommandLine: ProgramCommandLine,
 
     private val buildLogger: BuildProgressLogger by lazy {
         myHostContext.build.buildLogger
+    }
+
+    companion object {
+        private val WARNING_REGEX = Regex("WARNING.+|(:\\swarning\\s[a-z\\d]*:\\s)", RegexOption.IGNORE_CASE)
+        private val ERROR_REGEX = Regex("ERROR.+|(:\\serror\\s[a-z\\d]*:\\s)", RegexOption.IGNORE_CASE)
     }
 }
