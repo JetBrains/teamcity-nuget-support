@@ -17,12 +17,23 @@ class NuGetFeedUrlsProvider(private val myProjectManager: ProjectManager,
     override fun getType() = "NuGetFeedUrls"
 
     override fun retrieveData(browser: Browser, queryString: String): MutableList<DataItem> {
+        val feeds = mutableListOf<DataItem>()
         val parameters = getParameters(queryString)
-        val project = getProject(parameters) ?: return mutableListOf()
-        val authTypes = getAuthTypes(parameters)
         val apiVersions = getApiVersions(parameters)
 
-        return myRepositoryManager.getRepositories(project, true)
+        // Add global NuGet feeds
+        feeds += apiVersions.mapNotNull { version ->
+            when(version) {
+                NuGetAPIVersion.V2 -> DataItem(NUGET_V2_URL, null)
+                NuGetAPIVersion.V3 -> DataItem(NUGET_V3_URL, null)
+                else -> null
+            }
+        }
+
+        // Add TeamCity NuGet feeds
+        val project = getProject(parameters) ?: return feeds
+        val authTypes = getAuthTypes(parameters)
+        feeds += myRepositoryManager.getRepositories(project, true)
                 .filterIsInstance<NuGetRepository>()
                 .flatMap { repository ->
                     myProjectManager.findProjectById(repository.projectId)?.let { project ->
@@ -35,7 +46,9 @@ class NuGetFeedUrlsProvider(private val myProjectManager: ProjectManager,
                             }
                         }
                     } ?: emptyList()
-                }.toMutableList()
+                }
+
+        return feeds
     }
 
     private fun getApiVersions(parameters: Map<String, String>): Set<NuGetAPIVersion> {
@@ -85,5 +98,7 @@ class NuGetFeedUrlsProvider(private val myProjectManager: ProjectManager,
     companion object {
         const val GUEST_AUTH = "guestAuth"
         const val HTTP_AUTH = "httpAuth"
+        const val NUGET_V2_URL = "https://www.nuget.org/api/v2"
+        const val NUGET_V3_URL = "https://api.nuget.org/v3/index.json"
     }
 }
