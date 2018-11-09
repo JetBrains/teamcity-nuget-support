@@ -33,6 +33,29 @@
             $j(BS.Util.escapeId('exclude-version')).toggleClass('hidden', restoreMode === '${ib.restoreCommandModeRestoreValue}');
 
             BS.MultilineProperties.updateVisible();
+        },
+        getFeedUrlQueryString: function () {
+            var parameters = {
+                apiVersions: "v2;v3"
+            };
+            var search = window.location.search.substring(1).split('&');
+            search.forEach(function (value) {
+                var buildTypeMatch = value.match(/id=buildType:(.*)/);
+                if (buildTypeMatch) {
+                    parameters["buildType"] = buildTypeMatch[1]
+                }
+                var templateMatch = value.match(/id=template:(.*)/);
+                if (templateMatch) {
+                    parameters["template"] = templateMatch[1]
+                }
+            });
+
+            return Object.keys(parameters).reduce(function (previous, key) {
+                if (previous) {
+                    previous += "&";
+                }
+                return previous + key + "=" + parameters[key];
+            }, "");
         }
     };
 
@@ -99,8 +122,8 @@
                                linkTitle="Sources"
                                cols="60" rows="5"
                                expanded="${true}"/>
-      <button id="buildTypeId" style="display: none"></button>
-      <bs:projectData type="NuGetFeedUrls" sourceFieldId="buildTypeId"
+      <button id="queryString" style="display: none"></button>
+      <bs:projectData type="NuGetFeedUrls" sourceFieldId="queryString"
                       targetFieldId="${ib.nuGetSourcesKey}" popupTitle="Select TeamCity NuGet feeds"/>
       <span class="smallNote">
         Leave blank to use NuGet.org<br />
@@ -167,5 +190,5 @@
 
 <script type="text/javascript">
     BS.NugetParametersForm.updateElements();
-    $('buildTypeId').value = window.location.search.substring(1).split('&').grep(/id=buildType:(.*)/).join('').split(':')[1];
+    $('queryString').value = encodeURIComponent(BS.NugetParametersForm.getFeedUrlQueryString());
 </script>

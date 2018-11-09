@@ -5,6 +5,7 @@ import jetbrains.buildServer.parameters.ReferencesResolverUtil
 import jetbrains.buildServer.serverSide.DataItem
 import jetbrains.buildServer.serverSide.ProjectDataFetcher
 import jetbrains.buildServer.serverSide.ProjectManager
+import jetbrains.buildServer.serverSide.SProject
 import jetbrains.buildServer.serverSide.auth.LoginConfiguration
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.util.browser.Browser
@@ -15,22 +16,17 @@ class NuGetFeedUrlsProvider(private val myProjectManager: ProjectManager,
 
     override fun getType() = "NuGetFeedUrls"
 
-    override fun retrieveData(browser: Browser, buildTypeId: String): MutableList<DataItem> {
-        val segments = buildTypeId.split(":")
-        val buildTypeByExternalId = myProjectManager.findBuildTypeByExternalId(segments.first())
-                ?: return mutableListOf()
+    override fun retrieveData(browser: Browser, queryString: String): MutableList<DataItem> {
+        val parameters = getParameters(queryString)
+        val project = getProject(parameters) ?: return mutableListOf()
+        val authType = getAuthType(parameters)
+        val apiVersions = getApiVersions(parameters)
 
-        val authType = if (GUEST_AUTH == segments.last() && myLoginConfiguration.isGuestLoginAllowed) {
-            GUEST_AUTH
-        } else {
-            HTTP_AUTH
-        }
-
-        return myRepositoryManager.getRepositories(buildTypeByExternalId.project, true)
+        return myRepositoryManager.getRepositories(project, true)
                 .filterIsInstance<NuGetRepository>()
                 .flatMap { repository ->
                     myProjectManager.findProjectById(repository.projectId)?.let { project ->
-                        NuGetAPIVersion.values().map { version ->
+                        apiVersions.map { version ->
                             val feedReference = NuGetUtils.getProjectFeedReference(
                                     authType, project.externalId, repository.name, version
                             )
@@ -38,6 +34,47 @@ class NuGetFeedUrlsProvider(private val myProjectManager: ProjectManager,
                         }
                     } ?: emptyList()
                 }.toMutableList()
+    }
+
+    private fun getApiVersions(parameters: Map<String, String>): Set<NuGetAPIVersion> {
+        parameters["apiVersions"]?.let { apiVersions ->
+            val versions = apiVersions.split(";").toSet()
+            return NuGetAPIVersion.values().filter {
+                versions.contains(it.name.toLowerCase())
+            }.toSet()
+        }
+
+        return NuGetAPIVersion.values().toSet()
+    }
+
+    private fun getAuthType(parameters: Map<String, String>): String {
+        return if (GUEST_AUTH == parameters["authType"] && myLoginConfiguration.isGuestLoginAllowed) {
+            GUEST_AUTH
+        } else {
+            HTTP_AUTH
+        }
+    }
+
+    private fun getProject(parameters: Map<String, String>): SProject? {
+        parameters["buildType"]?.let { buildType ->
+            return myProjectManager.findBuildTypeByExternalId(buildType)?.project
+        }
+        parameters["template"]?.let { template ->
+            return myProjectManager.findBuildTypeTemplateByExternalId(template)?.project
+        }
+        return null
+    }
+
+    private fun getParameters(queryString: String): Map<String, String> {
+        val parameters = mutableMapOf<String, String>()
+        queryString.split("&").forEach { pair ->
+            val segments = pair.split("=")
+            if (segments.size != 2 || segments.any { it.isEmpty() }) {
+                return@forEach
+            }
+            parameters[segments[0]] = segments[1]
+        }
+        return parameters
     }
 
     companion object {

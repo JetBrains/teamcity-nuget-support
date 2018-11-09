@@ -35,6 +35,31 @@
       textarea.text(packageFile);
     }
   };
+  BS.NugetParametersForm = {
+      getFeedUrlQueryString: function () {
+          var parameters = {
+              apiVersions: "v2;v3"
+          };
+          var search = window.location.search.substring(1).split('&');
+          search.forEach(function (value) {
+              var buildTypeMatch = value.match(/id=buildType:(.*)/);
+              if (buildTypeMatch) {
+                  parameters["buildType"] = buildTypeMatch[1]
+              }
+              var templateMatch = value.match(/id=template:(.*)/);
+              if (templateMatch) {
+                  parameters["template"] = templateMatch[1]
+              }
+          });
+
+          return Object.keys(parameters).reduce(function (previous, key) {
+              if (previous) {
+                  previous += "&";
+              }
+              return previous + key + "=" + parameters[key];
+          }, "");
+      }
+  }
 </script>
 
 <tr>
@@ -70,8 +95,8 @@
   <th>Package source:</th>
   <td>
     <props:textProperty name="${ib.nuGetSourceKey}" className="longField"/>
-    <button id="buildTypeId" style="display: none"></button>
-    <bs:projectData type="NuGetFeedUrls" sourceFieldId="buildTypeId" selectionMode="single"
+    <button id="queryString" style="display: none"></button>
+    <bs:projectData type="NuGetFeedUrls" sourceFieldId="queryString" selectionMode="single"
                     targetFieldId="${ib.nuGetSourceKey}" popupTitle="Select TeamCity NuGet feed" />
       <span class="smallNote">
         Specify the NuGet packages feed URL to push packages to. Leave blank to let NuGet decide what package repository to use.<br />
@@ -114,6 +139,6 @@
     BS.Util.show(img);
     BS.Util.place(img, x, y);
 
-    $('buildTypeId').value = window.location.search.substring(1).split('&').grep(/id=buildType:(.*)/).join('').split(':')[1];
+    $('queryString').value = encodeURIComponent(BS.NugetParametersForm.getFeedUrlQueryString());
   });
 </script>
