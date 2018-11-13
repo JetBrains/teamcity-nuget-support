@@ -50,6 +50,8 @@ public class ComputeExternalBuildIdTransformation implements PackageTransformati
     if (externalBuildTypeId == null) return Status.SKIP;
 
     builder.setBuildTypeExternalId(externalBuildTypeId.getExternalId());
+    builder.setProjectExternalId(externalBuildTypeId.getProjectExternalId());
+
     return Status.CONTINUE;
   }
 

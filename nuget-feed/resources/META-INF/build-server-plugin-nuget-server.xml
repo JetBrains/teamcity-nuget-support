@@ -6,7 +6,6 @@
 
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProviderImpl"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetPackageDownloadController"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.NuGetCsrfCheck"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.NuGetFeedAuthParametersProvider"/>

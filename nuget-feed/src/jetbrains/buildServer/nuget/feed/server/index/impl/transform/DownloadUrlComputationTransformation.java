@@ -41,9 +41,17 @@ public class DownloadUrlComputationTransformation implements PackageTransformati
 
     while (relPath.startsWith("/")) relPath = relPath.substring(1);
     relPath = StringUtil.replace(relPath, "+", "%2B");
-    final String downloadUrl = NuGetServerSettings.PATH_PREFIX +
-      "/download/" + buildTypeExternalId + "/" + builder.getBuildId() + ":id/" + relPath;
+
+    final String downloadUrl = NuGetServerSettings.PROJECT_PATH + "/" +
+      builder.getFeedId() +
+      "/download/" +
+      buildTypeExternalId +
+      "/" +
+      builder.getBuildId() +
+      ":id/" +
+      relPath;
     builder.setDownloadUrl(downloadUrl);
+
     return Status.CONTINUE;
   }
 

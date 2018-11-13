@@ -83,6 +83,7 @@
       <class name="jetbrains.buildServer.nuget.tests.DotNetConstantsTest"/>
 
       <!-- misc -->
+      <class name="jetbrains.buildServer.nuget.tests.feed.DownloadUrlComputationTransformationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.feed.LocalNuGetPackageItemsFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.feed.FrameworkConstraintsCalculatorTest"/>
       <class name="jetbrains.buildServer.nuget.tests.feed.NuGetUtilsTest"/>

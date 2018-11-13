@@ -58,7 +58,7 @@ class NuGetFeedController(web: WebControllerManager,
             return NuGetResponseUtil.nugetFeedIsDisabled(response)
         }
 
-        val (feedPath, projectId, feedId, apiVersion) = getPathComponents(request)
+        val (feedPath, projectId, feedId, apiMethod) = getPathComponents(request)
         if (projectId.isEmpty() || feedId.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid request to NuGet Feed")
             return null
@@ -75,8 +75,6 @@ class NuGetFeedController(web: WebControllerManager,
             return null
         }
 
-        // Set NuGet feed API version
-        request.setAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION, NuGetAPIVersion.valueOf(apiVersion))
         val requestWrapper = object : RequestWrapper(request, feedPath) {
             override fun getQueryString(): String? {
                 val queryString = super.getQueryString()
@@ -96,6 +94,20 @@ class NuGetFeedController(web: WebControllerManager,
         val path = requestPath.substring(feedPath.length)
         val query = requestWrapper.queryString
         val pathAndQuery = "${requestWrapper.method} $path" + if (query != null) "?$query" else ""
+
+        // Process package download request
+        if (apiMethod == "DOWNLOAD") {
+            val artifactDownloadUrl = "/repository/download$path"
+            val dispatcher = request.getRequestDispatcher(artifactDownloadUrl)
+            if (dispatcher != null) {
+                LOG.debug(String.format("Forwarding download package request from %s to %s", requestPath, artifactDownloadUrl))
+                dispatcher.forward(request, response)
+            }
+            return null
+        }
+
+        // Set NuGet feed API version
+        requestWrapper.setAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION, NuGetAPIVersion.valueOf(apiMethod))
 
         val feedHandler = myFeedProvider.getHandler(requestWrapper)
         if (feedHandler == null) {
@@ -119,12 +131,15 @@ class NuGetFeedController(web: WebControllerManager,
 
     private fun getPathComponents(request: HttpServletRequest): List<String> {
         val pathInfo = WebUtil.getPathWithoutAuthenticationType(request)
+
+        // Try to match per-project feed reference, e.g. /app/nuget/feed/_Root/default/...
         val result = FEED_PATH_PATTERN.find(pathInfo)
         if (result != null) {
             val (feedPath, projectId, feedId, apiVersion) = result.destructured
             return listOf(feedPath, projectId, feedId, apiVersion.toUpperCase())
         }
 
+        // Try to handle request to global feed, e.g. /app/nuget/v1/FeedService.svc/...
         val version = TeamCityProperties.getProperty(NuGetFeedConstants.PROP_NUGET_API_VERSION, NUGET_API_V2)
         val apiVersion = if (NUGET_API_V2.equals(version, true)) "V2" else "V1"
 
@@ -140,7 +155,7 @@ class NuGetFeedController(web: WebControllerManager,
     companion object {
         private val LOG = Logger.getInstance(NuGetFeedController::class.java.name)
         private val QUERY_ID = Regex("^(id=)(.*)", RegexOption.IGNORE_CASE)
-        private val FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.PROJECT_PATH + "/([^/]+)/([^/]+)/(v[123]))")
+        private val FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.PROJECT_PATH + "/([^/]+)/([^/]+)/(v[123]|download))")
         private const val UNSUPPORTED_REQUEST = "Unsupported NuGet feed request"
         private const val NUGET_API_V2 = "v2"
     }
