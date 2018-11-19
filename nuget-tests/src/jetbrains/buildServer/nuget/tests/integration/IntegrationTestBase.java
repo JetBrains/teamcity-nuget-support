@@ -38,7 +38,6 @@ import jetbrains.buildServer.nuget.common.PackageInfoLoader;
 import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProviderBase;
-import jetbrains.buildServer.nuget.common.version.Version;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,7 +64,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected Mockery m;
   protected AgentRunningBuild myBuild;
   protected BuildRunnerContext myContext;
-  protected BuildProgressLogger myLogger;
+  protected FlowLogger myLogger;
   protected PackagesParametersFactory myParametersFactory;
   protected NuGetFetchParameters myFetchParameters;
   protected NuGetPackagesCollector myCollector;
@@ -213,6 +212,10 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       allowing(myMockProcess).waitFor();
       will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
 
+      allowing(myLogger).getFlowLogger(with(any(String.class)));
+      will(returnValue(myLogger));
+      allowing(myLogger).startFlow();
+      allowing(myLogger).disposeFlow();
       allowing(myLogger).message(with(any(String.class)));
       will(new CustomAction("Log message") {
         public Object invoke(Invocation invocation) {
