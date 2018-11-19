@@ -1,20 +1,29 @@
 package jetbrains.buildServer.nuget.agent.util.impl
 
+import jetbrains.buildServer.BuildProblemTypes
 import jetbrains.buildServer.agent.BuildFinishedStatus
-import jetbrains.buildServer.agent.BuildProgressLogger
 import jetbrains.buildServer.agent.BuildRunnerContext
+import jetbrains.buildServer.agent.FlowGenerator
+import jetbrains.buildServer.agent.FlowLogger
+import jetbrains.buildServer.agent.problems.ExitCodeProblemBuilder
 import jetbrains.buildServer.agent.runner.*
+import jetbrains.buildServer.problems.BuildProblemUtil
 
 /**
  * Executes command line and logs output.
  */
 class CommandLineBuildSession(private val myCommandLine: ProgramCommandLine,
-                              private val myHostContext: BuildRunnerContext)
+                              private val myRunnerContext: BuildRunnerContext)
     : ProcessListenerAdapter(), MultiCommandBuildSession, CommandExecution {
     private var myExecuted: Boolean = false
     private var myExitCode: Int = 0
+    private lateinit var myFlowId: String
+    private var myHasBuildProblems = false
 
-    override fun sessionStarted() {}
+    override fun sessionStarted() {
+        myFlowId = FlowGenerator.generateNewFlow()
+        buildLogger.startFlow()
+    }
 
     override fun getNextCommand(): CommandExecution? {
         if (!myExecuted) {
@@ -31,14 +40,21 @@ class CommandLineBuildSession(private val myCommandLine: ProgramCommandLine,
     override fun onStandardOutput(text: String) {
         when {
             WARNING_REGEX.matches(text) -> buildLogger.warning(text)
-            ERROR_REGEX.matches(text) -> buildLogger.error(text)
+            ERROR_REGEX.matches(text) -> {
+                buildLogger.logBuildProblem(BuildProblemUtil.createBuildProblem(
+                        BuildProblemTypes.TC_ERROR_MESSAGE_TYPE,
+                        text,
+                        myCommandLine.workingDirectory
+                ))
+                myHasBuildProblems = true
+            }
             else -> buildLogger.message(text)
         }
     }
 
     override fun onErrorOutput(text: String) {
         if (text.isNotBlank()) {
-            buildLogger.error(text)
+            buildLogger.warning(text)
         }
     }
 
@@ -47,7 +63,24 @@ class CommandLineBuildSession(private val myCommandLine: ProgramCommandLine,
     }
 
     override fun sessionFinished(): BuildFinishedStatus? {
-        return if (myExitCode == 0) BuildFinishedStatus.FINISHED_SUCCESS else BuildFinishedStatus.FINISHED_FAILED
+        return try {
+            if (myExitCode == 0) {
+                if (myHasBuildProblems) {
+                    BuildFinishedStatus.FINISHED_WITH_PROBLEMS
+                } else {
+                    BuildFinishedStatus.FINISHED_SUCCESS
+                }
+            } else {
+                val exitCodeProblemBuilder = ExitCodeProblemBuilder()
+                        .setExitCode(myExitCode)
+                        .setBuildRunnerContext(myRunnerContext)
+                        .setProcessFlowId(myFlowId)
+                buildLogger.logBuildProblem(exitCodeProblemBuilder.build())
+                BuildFinishedStatus.FINISHED_WITH_PROBLEMS
+            }
+        } finally {
+            buildLogger.disposeFlow()
+        }
     }
 
     override fun interruptRequested(): TerminationAction {
@@ -58,12 +91,12 @@ class CommandLineBuildSession(private val myCommandLine: ProgramCommandLine,
         return true
     }
 
-    private val buildLogger: BuildProgressLogger by lazy {
-        myHostContext.build.buildLogger
+    private val buildLogger: FlowLogger by lazy {
+        myRunnerContext.build.buildLogger.getFlowLogger(myFlowId)
     }
 
     companion object {
-        private val WARNING_REGEX = Regex("WARNING.+|(:\\swarning\\s[a-z\\d]*:\\s)", RegexOption.IGNORE_CASE)
-        private val ERROR_REGEX = Regex("ERROR.+|(:\\serror\\s[a-z\\d]*:\\s)", RegexOption.IGNORE_CASE)
+        private val WARNING_REGEX = Regex("^(WARNING|.+\\:\\swarning\\s(?:[a-z]+[a-z0-9]*)?\\:).+$", RegexOption.IGNORE_CASE)
+        private val ERROR_REGEX = Regex("^(ERROR.+|.+\\:\\serror\\s(?:[a-z]+[a-z0-9]*)?\\:).+", RegexOption.IGNORE_CASE)
     }
 }
