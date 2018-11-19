@@ -21,7 +21,6 @@ import jetbrains.buildServer.nuget.common.version.VersionUtility;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
-import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +42,6 @@ public class NuGetPackageBuilder {
   private final NuGetFeedData myFeedData;
   private final Map<String, String> myMetadata;
   private String myBuildTypeExtId = null;
-  private String myProjectExtId = null;
 
   public NuGetPackageBuilder(@NotNull final NuGetFeedData feedData, @NotNull final BuildMetadataEntry entry) {
     myFeedData = feedData;
@@ -64,7 +62,7 @@ public class NuGetPackageBuilder {
   }
 
   public String getFeedId() {
-    final String projectId = StringUtil.notEmpty(myProjectExtId, myFeedData.getProjectId());
+    final String projectId = myFeedData.getProjectExtId();
     return String.format("%s/%s", projectId, myFeedData.getFeedId());
   }
 
@@ -103,10 +101,6 @@ public class NuGetPackageBuilder {
 
   public void setBuildTypeExternalId(@NotNull String externalId) {
     myBuildTypeExtId = externalId;
-  }
-
-  public void setProjectExternalId(@NotNull String externalId) {
-    myProjectExtId = externalId;
   }
 
   public void setDownloadUrl(@NotNull final String downloadUrl) {

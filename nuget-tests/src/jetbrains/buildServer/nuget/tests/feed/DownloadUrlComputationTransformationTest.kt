@@ -24,9 +24,8 @@ class DownloadUrlComputationTransformationTest {
         )
         val entryKey = EntryKey(buildId, "key")
         val entryValue = BuildMetadataEntryImpl(entryKey, EntryImpl(true, parameters))
-        val packageBuilder = NuGetPackageBuilder(NuGetFeedData("projectId", "feedId"), entryValue)
+        val packageBuilder = NuGetPackageBuilder(NuGetFeedData("projectId", projectExtId, "feedId"), entryValue)
         packageBuilder.setBuildTypeExternalId(buildTypeExtId)
-        packageBuilder.setProjectExternalId(projectExtId)
 
         DownloadUrlComputationTransformation().applyTransformation(packageBuilder)
 
@@ -48,9 +47,8 @@ class DownloadUrlComputationTransformationTest {
         )
         val entryKey = EntryKey(buildId, "key")
         val entryValue = BuildMetadataEntryImpl(entryKey, EntryImpl(true, parameters))
-        val packageBuilder = NuGetPackageBuilder(NuGetFeedData("projectId", "feedId"), entryValue)
+        val packageBuilder = NuGetPackageBuilder(NuGetFeedData("projectId", projectExtId, "feedId"), entryValue)
         packageBuilder.setBuildTypeExternalId(buildTypeExtId)
-        packageBuilder.setProjectExternalId(projectExtId)
 
         DownloadUrlComputationTransformation().applyTransformation(packageBuilder)
 

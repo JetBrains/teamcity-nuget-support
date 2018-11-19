@@ -3,7 +3,10 @@ package jetbrains.buildServer.nuget.feed.server.index
 import jetbrains.buildServer.nuget.common.index.PackageConstants
 import java.util.*
 
-class NuGetFeedData(val projectId: String, val feedId: String) {
+class NuGetFeedData(val projectId: String, val projectExtId: String, val feedId: String) {
+
+    constructor(projectId: String, feedId: String) : this(projectId, projectId, feedId)
+
     val key: String by lazy {
         return@lazy if (projectId == DEFAULT_PROJECT_ID && feedId == DEFAULT_FEED_ID) {
             PackageConstants.NUGET_PROVIDER_ID

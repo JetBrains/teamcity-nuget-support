@@ -253,7 +253,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     // Packages must not exists in the feed if `replace=true` query parameter was not specified
     if (!replace && myStorage.getEntriesByKey(feedData.getKey(), key).hasNext()) {
       throw new PackageExistsException(String.format("NuGet package %s:%s already exists in the project %s feed %s",
-              id, version, feedData.getProjectId(), feedData.getFeedId())
+              id, version, feedData.getProjectExtId(), feedData.getFeedId())
       );
     }
 
@@ -302,7 +302,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       myStorage.addBuildEntry(build.getBuildId(), feedData.getKey(), key, metadata, !build.isPersonal());
     } catch (Throwable e) {
       LOG.warnAndDebugDetails(String.format("Failed to update metadata for build %s in project %s feed %s. Error: %s",
-        build, feedData.getProjectId(), feedData.getFeedId(), e.getMessage()), e);
+        build, feedData.getProjectExtId(), feedData.getFeedId(), e.getMessage()), e);
       throw e;
     } finally {
       LOG.debug(String.format("Added metadata entry for package %s in build %s", key, LogUtil.describe(build)));

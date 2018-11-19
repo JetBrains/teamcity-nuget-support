@@ -32,8 +32,6 @@ import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.apache.http.HttpStatus;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
-import org.jmock.api.Invocation;
-import org.jmock.lib.action.CustomAction;
 import org.springframework.web.servlet.mvc.Controller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -68,6 +66,8 @@ public class NuGetFeedControllerTest {
             will(returnValue(project));
 
             allowing(project).getProjectId();
+            will(returnValue("_Root"));
+            allowing(project).getExternalId();
             will(returnValue("_Root"));
 
             allowing(repositoryManager).hasRepository(with(project), with(any(String.class)), with(any(String.class)));
@@ -149,6 +149,8 @@ public class NuGetFeedControllerTest {
             will(returnValue(project));
 
             allowing(project).getProjectId();
+            will(returnValue("_Root"));
+            allowing(project).getExternalId();
             will(returnValue("_Root"));
 
             allowing(repositoryManager).hasRepository(with(project), with(any(String.class)), with(any(String.class)));
