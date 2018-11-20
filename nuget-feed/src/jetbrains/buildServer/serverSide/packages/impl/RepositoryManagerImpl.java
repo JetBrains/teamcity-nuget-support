@@ -4,6 +4,7 @@ import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
+import jetbrains.buildServer.serverSide.impl.ProjectFeatureDescriptorFactory;
 import jetbrains.buildServer.serverSide.impl.ProjectFeatureDescriptorImpl;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
@@ -11,6 +12,7 @@ import jetbrains.buildServer.serverSide.packages.Repository;
 import jetbrains.buildServer.serverSide.packages.RepositoryConstants;
 import jetbrains.buildServer.serverSide.packages.RepositoryRegistry;
 import jetbrains.buildServer.serverSide.packages.RepositoryType;
+import jetbrains.buildServer.util.CachingTypedIdGenerator;
 import jetbrains.buildServer.util.CollectionsUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +21,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-public class RepositoryManagerImpl implements RepositoryManager {
+public class RepositoryManagerImpl implements RepositoryManager, CachingTypedIdGenerator {
 
     private final RepositoryRegistry myRepositoryRegistry;
     private final ProjectManager myProjectManager;
@@ -27,16 +29,18 @@ public class RepositoryManagerImpl implements RepositoryManager {
 
     public RepositoryManagerImpl(@NotNull final RepositoryRegistry repositoryRegistry,
                                  @NotNull final ProjectManager projectManager,
-                                 @NotNull final MetadataStorage metadataStorage) {
+                                 @NotNull final MetadataStorage metadataStorage,
+                                 @NotNull final ProjectFeatureDescriptorFactory descriptorFactory) {
         myRepositoryRegistry = repositoryRegistry;
         myProjectManager = projectManager;
         myMetadataStorage = metadataStorage;
+        descriptorFactory.registerGenerator(RepositoryConstants.PACKAGES_FEATURE_TYPE, this);
     }
 
     @Override
     public void addRepository(@NotNull SProject project, @NotNull Repository repository) {
         project.addFeature(new ProjectFeatureDescriptorImpl(
-                getRepositoryNamePrefix(repository.getType().getType()) + repository.getName(),
+                getProjectFeatureName(repository.getType().getType(), repository.getName()),
                 RepositoryConstants.PACKAGES_FEATURE_TYPE,
                 repository.getParameters(),
                 project.getProjectId()
@@ -47,14 +51,14 @@ public class RepositoryManagerImpl implements RepositoryManager {
     @Nullable
     @Override
     public Repository getRepository(@NotNull SProject project, @NotNull String type, @NotNull String name) {
-        final SProjectFeatureDescriptor descriptor = project.findFeatureById(getRepositoryNamePrefix(type) + name);
+        final SProjectFeatureDescriptor descriptor = project.findFeatureById(getProjectFeatureName(type, name));
         if (descriptor == null) return null;
         return getRepository(descriptor);
     }
 
     @Override
     public void removeRepository(@NotNull SProject project, @NotNull String type, @NotNull String name) {
-        final SProjectFeatureDescriptor feature = project.findFeatureById(getRepositoryNamePrefix(type) + name);
+        final SProjectFeatureDescriptor feature = project.findFeatureById(getProjectFeatureName(type, name));
         if (feature == null) {
             throw new IllegalArgumentException(String.format("Package repository %s not found", name));
         }
@@ -84,13 +88,13 @@ public class RepositoryManagerImpl implements RepositoryManager {
 
     @Override
     public boolean hasRepository(@NotNull SProject project, @NotNull String type, @NotNull String name) {
-        return project.findFeatureById(getRepositoryNamePrefix(type) + name) != null;
+        return project.findFeatureById(getProjectFeatureName(type, name)) != null;
     }
 
     @Override
     public void updateRepository(@NotNull SProject project, @NotNull String oldName, @NotNull Repository repository) {
         final String type = repository.getType().getType();
-        final SProjectFeatureDescriptor feature = project.findFeatureById(getRepositoryNamePrefix(type) + oldName);
+        final SProjectFeatureDescriptor feature = project.findFeatureById(getProjectFeatureName(type, oldName));
         if (feature == null) {
             throw new IllegalArgumentException(String.format("Package repository %s not found", oldName));
         }
@@ -130,7 +134,23 @@ public class RepositoryManagerImpl implements RepositoryManager {
     }
 
     @NotNull
-    private static String getRepositoryNamePrefix(@NotNull String type) {
-        return String.format("%s-%s-", RepositoryConstants.PACKAGES_ID_PREFIX, type);
+    private static String getProjectFeatureName(@NotNull String type, @NotNull String name) {
+        return String.format("%s-%s-%s", RepositoryConstants.PACKAGES_ID_PREFIX, type, name);
+    }
+
+    @Override
+    public void addGeneratedId(@NotNull String id) {
+    }
+
+    @Nullable
+    @Override
+    public String newId(@NotNull Map<String, String> parameters) {
+        final String type = parameters.get(RepositoryConstants.REPOSITORY_TYPE_KEY);
+        if (type == null) return null;
+
+        final String name = parameters.get(RepositoryConstants.REPOSITORY_NAME_KEY);
+        if (name == null) return null;
+
+        return getProjectFeatureName(type, name);
     }
 }
