@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.integration;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.util.SystemInfo;
 import com.intellij.openapi.util.io.StreamUtil;
+import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.ExecResult;
 import jetbrains.buildServer.ExtensionHolder;
 import jetbrains.buildServer.SimpleCommandLineProcessRunner;
@@ -194,6 +195,9 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       allowing(myContext).getConfigParameters(); will(returnValue(configParameters));
       allowing(myContext).getWorkingDirectory(); will(returnValue(myRoot));
       allowing(myContext).getBuild(); will(returnValue(myBuild));
+      allowing(myContext).getId(); will(returnValue("id"));
+      allowing(myContext).getName(); will(returnValue("name"));
+      allowing(myContext).getRunType(); will(returnValue("runType"));
       allowing(myContext).addEnvironmentVariable(with(any(String.class)), with(any(String.class)));
       will(new CustomAction("Add env parameter") {
         public Object invoke(Invocation invocation) {
@@ -245,6 +249,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       will(returnValue("123"));
       allowing(myLogger).getFlowLogger(with(any(String.class)));
       will(returnValue(myLogger));
+      allowing(myLogger).logBuildProblem(with(any(BuildProblemData.class)));
 
       allowing(myBuild).getBuildId(); will(returnValue(42L));
       allowing(myBuild).getSharedConfigParameters(); will(returnValue(Collections.unmodifiableMap(configParameters)));
