@@ -149,6 +149,10 @@ class CommandLineBuildSessionTest {
                 exactly(errors.size).of(commandLine).workingDirectory
                 will(returnValue("dir"))
                 exactly(errors.size).of(flowLogger).logBuildProblem(with(any(BuildProblemData::class.java)))
+
+                errors.forEach {
+                    oneOf(flowLogger).warning(it)
+                }
             }
         })
 
