@@ -41,7 +41,6 @@ class CommandLineBuildSession(private val myCommandLine: ProgramCommandLine,
         when {
             WARNING_REGEX.matches(text) -> buildLogger.warning(text)
             ERROR_REGEX.matches(text) -> {
-                buildLogger.warning(text)
                 buildLogger.logBuildProblem(BuildProblemUtil.createBuildProblem(
                         BuildProblemTypes.TC_ERROR_MESSAGE_TYPE,
                         text,
