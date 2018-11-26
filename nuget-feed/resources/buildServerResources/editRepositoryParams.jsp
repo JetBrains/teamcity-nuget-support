@@ -7,6 +7,9 @@
         <th><label for="${cons.name}">Name: <l:star/></label></th>
         <td>
             <props:textProperty name="${cons.name}" className="longField"/>
+            <span class="smallNote">
+                The name should start with latin letter and contain only latin letters, digits and underscores.
+            </span>
             <span class="error" id="error_${cons.name}"></span>
         </td>
     </tr>
@@ -14,7 +17,7 @@
         <th><label for="${cons.description}">Description:</label></th>
         <td>
             <props:textProperty name="${cons.description}" className="longField"/>
-            <span class="smallNote">The optional description for NuGet feed.</span>
+            <span class="smallNote">The optional description for ${repositoryType.name}.</span>
             <span class="error" id="error_${cons.description}"></span>
         </td>
     </tr>
