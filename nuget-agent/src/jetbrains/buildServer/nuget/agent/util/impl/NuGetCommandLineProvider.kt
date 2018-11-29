@@ -1,6 +1,7 @@
 package jetbrains.buildServer.nuget.agent.util.impl
 
 import com.intellij.execution.configurations.GeneralCommandLine
+import jetbrains.buildServer.RunBuildException
 import jetbrains.buildServer.agent.BuildRunnerContext
 import jetbrains.buildServer.agent.runner.ProgramCommandLine
 import jetbrains.buildServer.agent.runner.SimpleProgramCommandLine
@@ -43,6 +44,11 @@ class NuGetCommandLineProvider(private val myNugetProvider: NuGetTeamCityProvide
                 buildLogger.warning("You use NuGet $version. Feed authentication is only supported from NuGet $NUGET_VERSION_2_0")
             }
             version < NUGET_VERSION_3_3 -> {
+                if (!mySystemInformation.isWindows) {
+                    throw RunBuildException("Only NuGet 3.3 and higher is compatible with Mono runtime.").apply {
+                        isLogStacktrace = false
+                    }
+                }
                 arguments.add(0, executablePath)
                 executablePath = myNugetProvider.nuGetRunnerPath.path
             }

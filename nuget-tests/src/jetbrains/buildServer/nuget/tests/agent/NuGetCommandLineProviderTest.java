@@ -143,6 +143,25 @@ public class NuGetCommandLineProviderTest extends BaseTestCase {
     Assert.assertEquals(commandLine.getArguments(), args);
   }
 
+  @Test(expectedExceptions = RunBuildException.class)
+  public void getCommandLineForNuGet28OnMono() {
+    CommandLineExecutor executor = m.mock(CommandLineExecutor.class);
+
+    NuGetCommandLineProvider provider = new NuGetCommandLineProvider(myNugetProvider, executor, mySystemInfo);
+    List<String> args = new ArrayList<>(Arrays.asList("arg1", "arg2"));
+    String executable = "nuget.exe";
+    ExecResult result = new ExecResult();
+    result.setExitCode(0);
+    result.setStdout("NuGet Version: 2.8.0");
+
+    m.checking(new Expectations() {{
+      oneOf(executor).execute(with(any(GeneralCommandLine.class))); will(returnValue(result));
+      allowing(mySystemInfo).isWindows(); will(returnValue(false));
+    }});
+
+    provider.getProgramCommandLine(myRootContext, executable, args, myWorkDir, Collections.emptyMap());
+  }
+
   @Test
   public void getCommandLineForNuGetFrom33() throws RunBuildException {
     CommandLineExecutor executor = m.mock(CommandLineExecutor.class);
