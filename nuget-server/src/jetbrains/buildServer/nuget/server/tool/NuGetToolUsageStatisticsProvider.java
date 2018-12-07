@@ -20,7 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.tools.ToolVersion;
 import jetbrains.buildServer.tools.installed.ToolsRegistry;
 import jetbrains.buildServer.tools.usage.ToolUsageCalculator;
-import jetbrains.buildServer.tools.usage.ToolVersionUsage;
+import jetbrains.buildServer.tools.usage.ToolVersionUsages;
 import jetbrains.buildServer.usageStatistics.impl.providers.BaseExtensionUsageStatisticsProvider;
 import jetbrains.buildServer.util.positioning.PositionAware;
 import jetbrains.buildServer.util.positioning.PositionConstraint;
@@ -80,10 +80,8 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
       return;
     }
     for (ToolVersion nugetVersion : nugetVersions){
-      for (ToolVersionUsage usage : myToolUsageCalculator.getUsages(nugetVersion)){
-        final String version = usage.getToolVersion().getVersion();
-        usagesCollectorCallback.addUsage(version, version);
-      }
+      ToolVersionUsages usages = myToolUsageCalculator.getUsages(nugetVersion);
+      usagesCollectorCallback.setUsagesCount(nugetVersion.getVersion(), nugetVersion.getVersion(), usages.getAllUsagesCount());
     }
   }
 
@@ -91,7 +89,7 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
   protected int getTotalUsagesCount(@NotNull Map<ExtensionType, Integer> extensionUsages) {
     int result = 0;
     for (ToolVersion nugetVersion : myToolsRegistry.getInstalledTools(NUGET_TOOL_TYPE)){
-      result += myToolUsageCalculator.getUsages(nugetVersion).size();
+      result += myToolUsageCalculator.getUsages(nugetVersion).getAllUsagesCount();
     }
     return result;
   }
