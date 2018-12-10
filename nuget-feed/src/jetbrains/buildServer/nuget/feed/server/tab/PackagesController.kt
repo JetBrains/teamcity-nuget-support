@@ -60,7 +60,10 @@ class PackagesController(auth: AuthorizationInterceptor,
 
         val project = getProject(request)
         val repositories = myRepositoriesManager.getRepositories(project, false).map {
-            ProjectRepository(it, project, myRootUrlHolder.rootUrl)
+            val usages = myRepositoryRegistry.findUsagesProvider(it.type.type)
+                    ?.getUsages(it, MAX_USAGES_COUNT)?.take(MAX_USAGES_COUNT)
+                    ?: emptyList()
+            ProjectRepository(it, project, myRootUrlHolder.rootUrl, usages)
         }
         mv.model["project"] = project
         mv.model["repositories"] = repositories
@@ -75,4 +78,8 @@ class PackagesController(auth: AuthorizationInterceptor,
 
     private fun getProject(request: HttpServletRequest) =
             myProjectManager.findProjectByExternalId(request.getParameter("projectId"))!!
+
+    companion object {
+        private const val MAX_USAGES_COUNT = 100
+    }
 }

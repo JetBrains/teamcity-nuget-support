@@ -102,7 +102,19 @@
                         <td class="details">
                             <c:set var="parametersDescription" value="${entry.repository.parametersDescription}"/>
                             <c:if test="${not empty parametersDescription}">
-                                <c:out value="${parametersDescription}" /><br/>
+                                <c:out value="${parametersDescription}" />
+                                <c:if test="${entry.usagesCount gt 0}">
+                                    <span style="float: right">has <c:choose>
+                                        <c:when test="${entry.usagesCount ge 100}">
+                                            100+
+                                        </c:when>
+                                        <c:otherwise>
+                                            ${entry.usagesCount}
+                                        </c:otherwise>
+                                    </c:choose> usage<bs:s val="${entry.usagesCount}"/>
+                                    </span>
+                                </c:if>
+                                <br/>
                             </c:if>
                             <ul class="httpAuth">
                                 <c:forEach var="url" items="${entry.httpAuthUrls}" varStatus="loop">
@@ -128,14 +140,14 @@
                         <td class="edit">
                             <c:if test="${not project.readOnly and canEdit}">
                                 <p style="margin-top: 0">
-                                    <a href="" onclick="BS.Packages.AddRepositoryForm.showDialog('${entry.project.externalId}', '${entry.repository.type.type}', '${entry.repository.type.name}', '${entry.repository.name}'); return false;">Edit</a>
+                                    <a href="" onclick="BS.Packages.AddRepositoryForm.showDialog('${entry.project.externalId}', '${entry.repository.type.type}', '${entry.repository.type.name}', '${entry.repository.name}', ${entry.usagesCount}); return false;">Edit</a>
                                 </p>
                             </c:if>
                         </td>
                         <td class="edit">
                             <c:if test="${not project.readOnly and canEdit}">
                                 <p style="margin-top: 0">
-                                    <a href="" onclick="BS.Packages.deleteRepository('${entry.project.externalId}', '${entry.project.name}', '${entry.repository.type.type}', '${entry.repository.type.name}', '${entry.repository.name}'); return false;">Delete</a>
+                                    <a href="" onclick="BS.Packages.deleteRepository('${entry.project.externalId}', '${entry.project.name}', '${entry.repository.type.type}', '${entry.repository.type.name}', '${entry.repository.name}', ${entry.usagesCount}); return false;">Delete</a>
                                 </p>
                             </c:if>
                         </td>
@@ -159,6 +171,7 @@
                 saveCommand="BS.Packages.AddRepositoryForm.submit(); return false;">
 
     <div id="newRepositoryDiv"></div>
+    <div id="usagesNoteDiv"></div>
     <input type="hidden" name="publicKey" value="${publicKey}"/>
 
     <div class="popupSaveButtonsBlock">
