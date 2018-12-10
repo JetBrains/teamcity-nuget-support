@@ -9,8 +9,13 @@ public interface RepositoryRegistry {
 
     void register(@NotNull RepositoryType repositoryType);
 
+    void register(@NotNull RepositoryUsagesProvider usagesProvider);
+
     @Nullable
     RepositoryType findType(@NotNull String type);
+
+    @Nullable
+    RepositoryUsagesProvider findUsagesProvider(@NotNull String type);
 
     @NotNull
     Collection<RepositoryType> getTypes();
