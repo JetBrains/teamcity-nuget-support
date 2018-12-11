@@ -40,8 +40,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
           var json = output.GetStringBuilder().ToString();
           var response = JsonConvert.DeserializeObject<CredentialProviderResponse>(json);
 
-          Assert.AreEqual(response.Message,
-            "NuGet feed credentials file contains no sources with credentials specified");
+          Assert.AreEqual("NuGet feed credentials file contains no credentials for URL http://jb.com/", response.Message);
         });
     }
 
@@ -225,6 +224,76 @@ namespace JetBrains.TeamCity.NuGet.Tests
       var response = JsonConvert.DeserializeObject<CredentialProviderResponse>(json);
 
       Assert.IsTrue(response.Message.StartsWith("Failed to load NuGet feed credentials file on path"));
+    }
+
+    [Test]
+    public void TestSourceUrlNormalization()
+    {
+      TempFilesHolder.WithTempDirectory(
+        home =>
+        {
+          var sourcesFile = Path.Combine(home, "sources.xml");
+          File.WriteAllText(sourcesFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                         "<sources>\n" +
+                                         "<source source=\"http://jb.com:80\" username=\"name\" password=\"pass\" />\n" +
+                                         "</sources>\n");
+
+          Environment.SetEnvironmentVariable(TEAMCITY_NUGET_FEEDS, sourcesFile);
+          var output = new StringWriter();
+          var defaultOutput = Console.Out;
+          Console.SetOut(output);
+
+          try
+          {
+            Assert.AreEqual(0, Program.Main(new[] { "-uri", "http://jb.com" }));
+          }
+          finally
+          {
+            Environment.SetEnvironmentVariable(TEAMCITY_NUGET_FEEDS, "");
+            Console.SetOut(defaultOutput);
+          }
+
+          var json = output.GetStringBuilder().ToString();
+          var response = JsonConvert.DeserializeObject<CredentialProviderResponse>(json);
+
+          Assert.AreEqual(response.Username, "name");
+          Assert.AreEqual(response.Password, "pass");
+        });
+    }
+
+    [Test]
+    public void TestRequestUrlNormalization()
+    {
+      TempFilesHolder.WithTempDirectory(
+        home =>
+        {
+          var sourcesFile = Path.Combine(home, "sources.xml");
+          File.WriteAllText(sourcesFile, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                                         "<sources>\n" +
+                                         "<source source=\"http://jb.com\" username=\"name\" password=\"pass\" />\n" +
+                                         "</sources>\n");
+
+          Environment.SetEnvironmentVariable(TEAMCITY_NUGET_FEEDS, sourcesFile);
+          var output = new StringWriter();
+          var defaultOutput = Console.Out;
+          Console.SetOut(output);
+
+          try
+          {
+            Assert.AreEqual(0, Program.Main(new[] { "-uri", "http://jb.com:80" }));
+          }
+          finally
+          {
+            Environment.SetEnvironmentVariable(TEAMCITY_NUGET_FEEDS, "");
+            Console.SetOut(defaultOutput);
+          }
+
+          var json = output.GetStringBuilder().ToString();
+          var response = JsonConvert.DeserializeObject<CredentialProviderResponse>(json);
+
+          Assert.AreEqual(response.Username, "name");
+          Assert.AreEqual(response.Password, "pass");
+        });
     }
   }
 }

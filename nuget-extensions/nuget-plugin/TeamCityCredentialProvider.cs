@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using JetBrains.TeamCity.NuGet.ExtendedCommands;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 using NuGet.Common;
@@ -24,21 +23,21 @@ namespace JetBrains.TeamCity.NuGet
       _logger = logger;
 
       var teamCityFeedsPath = Environment.GetEnvironmentVariable(NugetFeedsEnv);
-      var nugetSources = new List<INuGetSource>();
       if (!string.IsNullOrEmpty(teamCityFeedsPath) && File.Exists(teamCityFeedsPath))
       {
-        INuGetSources sources = XmlSerializerHelper.Load<NuGetSources>(teamCityFeedsPath);
-        nugetSources.AddRange(sources.Sources.Where(x => x.HasCredentials));
+        NuGetSources = XmlSerializerHelper.Load<NuGetSources>(teamCityFeedsPath);
       }
-
-      NuGetSources = nugetSources;
+      else
+      {
+        NuGetSources = new NuGetSources();
+      }
     }
 
-    private List<INuGetSource> NuGetSources { get; }
+    private INuGetSources NuGetSources { get; }
 
     public bool CanProvideCredentials(Uri uri)
     {
-      var foundSource = GetSource(uri);
+      var foundSource = NuGetSources.FindSource(uri);
       if (foundSource == null)
       {
         _logger.Log(LogLevel.Verbose, string.Format(CouldNotProvideCredentialsForUri, uri));
@@ -51,7 +50,7 @@ namespace JetBrains.TeamCity.NuGet
 
     public GetAuthenticationCredentialsResponse HandleRequest(GetAuthenticationCredentialsRequest request)
     {
-      var source = GetSource(request.Uri);
+      var source = NuGetSources.FindSource(request.Uri);
       if (source != null)
       {
         _logger.Log(LogLevel.Verbose, string.Format(FoundCredentialsForUriFromSource, request.Uri, source.Source));
@@ -65,17 +64,6 @@ namespace JetBrains.TeamCity.NuGet
 
       _logger.Log(LogLevel.Verbose, string.Format(CredentialsForUriNotFound, request.Uri));
       return new GetAuthenticationCredentialsResponse(null, null, null, null, MessageResponseCode.NotFound);
-    }
-
-    private INuGetSource GetSource(Uri uri)
-    {
-      var requestUrl = uri.AbsoluteUri;
-      if (!requestUrl.EndsWith("/"))
-      {
-        requestUrl += "/";
-      }
-      
-      return NuGetSources.FirstOrDefault(x => requestUrl.StartsWith(x.Source, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <inheritdoc cref="IDisposable.Dispose"/>
