@@ -44,7 +44,7 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
       sb.AppendFormat("Feed: {0}", Source);
       if (!string.IsNullOrEmpty(Username))
       {
-        sb.AppendFormat("User: {0}, Password", Username);
+        sb.AppendFormat(", User: {0}, Password", Username);
       }
       return sb.ToString();
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using JetBrains.TeamCity.NuGet.ExtendedCommands;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
 using PowerArgs;
@@ -40,32 +39,19 @@ namespace JetBrains.TeamCity.NuGet.CredentialProvider
         else
         {
           INuGetSources nuGetSources = XmlSerializerHelper.Load<NuGetSources>(path);
-          var sources = nuGetSources.Sources.Where(x => x.HasCredentials).ToArray();
-          if (sources.Length == 0)
+          
+          var targetSource = nuGetSources.FindSource(request.Uri);
+          if (targetSource == null)
           {
-            response.Message = "NuGet feed credentials file contains no sources with credentials specified";
+            response.Message = "NuGet feed credentials file contains no credentials for URL " + request.Uri;
             exitCode = ExitCode.ProviderNotApplicable;
           }
           else
           {
-            var requestUri = request.Uri.AbsoluteUri;
-            if (!requestUri.EndsWith("/"))
-            {
-              requestUri += "/";
-            }
-            var targetSource = sources.FirstOrDefault(x => requestUri.StartsWith(x.Source, StringComparison.OrdinalIgnoreCase));
-            if (targetSource == null)
-            {
-              response.Message = "NuGet feed credentials file contains no credentials for URL " + request.Uri;
-              exitCode = ExitCode.ProviderNotApplicable;
-            }
-            else
-            {
-              response.Username = targetSource.Username;
-              response.Password = targetSource.Password;
-              response.Message = "Success";
-              exitCode = ExitCode.Success;
-            }
+            response.Username = targetSource.Username;
+            response.Password = targetSource.Password;
+            response.Message = "Success";
+            exitCode = ExitCode.Success;
           }
         }
 
