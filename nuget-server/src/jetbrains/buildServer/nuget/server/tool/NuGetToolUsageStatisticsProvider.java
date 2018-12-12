@@ -80,7 +80,7 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
       return;
     }
     for (ToolVersion nugetVersion : nugetVersions){
-      ToolVersionUsages usages = myToolUsageCalculator.getUsages(nugetVersion);
+      ToolVersionUsages usages = myToolUsageCalculator.getAllUsages(nugetVersion);
       usagesCollectorCallback.setUsagesCount(nugetVersion.getVersion(), nugetVersion.getVersion(), usages.getAllUsagesCount());
     }
   }
@@ -89,7 +89,7 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
   protected int getTotalUsagesCount(@NotNull Map<ExtensionType, Integer> extensionUsages) {
     int result = 0;
     for (ToolVersion nugetVersion : myToolsRegistry.getInstalledTools(NUGET_TOOL_TYPE)){
-      result += myToolUsageCalculator.getUsages(nugetVersion).getAllUsagesCount();
+      result += myToolUsageCalculator.getAllUsages(nugetVersion).getAllUsagesCount();
     }
     return result;
   }
