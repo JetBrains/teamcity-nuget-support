@@ -99,7 +99,7 @@ public class PackagesPublishIntegrationTest extends IntegrationTestBase {
     final File home = createTempDir();
     final File pkg1 = new File(home, "a.b.c.4.3.zpoo"){{createNewFile(); }};
     final BuildProcess p = callPublishRunnerEx(nuget, pkg1);
-    assertRunSuccessfully(p, BuildFinishedStatus.FINISHED_FAILED);
+    assertRunSuccessfully(p, BuildFinishedStatus.FINISHED_WITH_PROBLEMS);
 
     Assert.assertTrue(getCommandsWarnings().contains(".zpoo"));
 

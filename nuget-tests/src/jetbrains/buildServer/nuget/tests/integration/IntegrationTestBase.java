@@ -197,7 +197,6 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       allowing(myContext).getBuild(); will(returnValue(myBuild));
       allowing(myContext).getId(); will(returnValue("id"));
       allowing(myContext).getName(); will(returnValue("name"));
-      allowing(myContext).getRunType(); will(returnValue("runType"));
       allowing(myContext).addEnvironmentVariable(with(any(String.class)), with(any(String.class)));
       will(new CustomAction("Add env parameter") {
         public Object invoke(Invocation invocation) {
