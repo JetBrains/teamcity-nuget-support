@@ -53,7 +53,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       @NotNull
       public Collection<String> getCustomCommandline() {
-        return getMultilineParameter(context, NUGET_RESTORE_CUSOM_COMMANDLINE);
+        return getMultilineParameter(context, NUGET_RESTORE_CUSOM_COMMANDLINE, true);
       }
 
       @NotNull
@@ -122,14 +122,29 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
   @NotNull
   private Collection<String> getMultilineParameter(@NotNull final BuildRunnerContext context,
                                                    @NotNull final String nugetSources) {
-    String sources = getParameter(context, nugetSources);
-    if (sources == null) return Collections.emptyList();
+    return getMultilineParameter(context, nugetSources, false);
+  }
 
-    List<String> list = new ArrayList<String>();
-    for (String _source : sources.split("[\\r\\n]+")) {
-      for (String source : StringUtil.splitCommandArgumentsAndUnquote(_source)) {
-        if (!StringUtil.isEmptyOrSpaces(source)) {
-          list.add(source);
+  @NotNull
+  private Collection<String> getMultilineParameter(@NotNull final BuildRunnerContext context,
+                                                   @NotNull final String key,
+                                                   final boolean spitBySpaces) {
+    final String value = getParameter(context, key);
+    if (StringUtil.isEmptyOrSpaces(value)) {
+      return Collections.emptyList();
+    }
+
+    final List<String> list = new ArrayList<String>();
+    for (String line : StringUtil.splitByLines(value)) {
+      if (spitBySpaces) {
+        for (String argument : StringUtil.splitCommandArgumentsAndUnquote(line)) {
+          if (!StringUtil.isEmptyOrSpaces(argument)) {
+            list.add(argument);
+          }
+        }
+      } else {
+        if (!StringUtil.isEmptyOrSpaces(line)) {
+          list.add(line.trim());
         }
       }
     }
@@ -202,7 +217,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       @NotNull
       public Collection<String> getCustomCommandline() {
-        return getMultilineParameter(context, NUGET_UPDATE_CUSOM_COMMANDLINE);
+        return getMultilineParameter(context, NUGET_UPDATE_CUSOM_COMMANDLINE, true);
       }
     };
   }
@@ -226,7 +241,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       @NotNull
       public Collection<String> getCustomCommandline() {
-        return getMultilineParameter(context, NUGET_PUSH_CUSTOM_COMMANDLINE);
+        return getMultilineParameter(context, NUGET_PUSH_CUSTOM_COMMANDLINE, true);
       }
 
       @NotNull
@@ -256,7 +271,7 @@ public class PackagesParametersFactoryImpl implements PackagesParametersFactory 
 
       @NotNull
       public Collection<String> getCustomCommandline() {
-        return getMultilineParameter(context, NUGET_PACK_CUSOM_COMMANDLINE);
+        return getMultilineParameter(context, NUGET_PACK_CUSOM_COMMANDLINE, true);
       }
 
       @NotNull
