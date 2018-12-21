@@ -49,11 +49,7 @@ public class CommandFactoryImpl implements CommandFactory {
     argz.add(FileUtil.getCanonicalFile(outputDir).getPath());
 
     final NuGetFetchParameters nugetFetchParams = params.getNuGetParameters();
-    for (String cmd : nugetFetchParams.getCustomCommandline()) {
-      if (!argz.contains(cmd) && !argz.contains(cmd.toLowerCase())) {
-        argz.add(cmd);
-      }
-    }
+    argz.addAll(nugetFetchParams.getCustomCommandline());
 
     return executeNuGet(nugetFetchParams, nugetFetchParams.getNuGetPackageSources(), argz, packagesConfig.getParentFile(), Collections.singletonMap(EnabledPackagesOptionSetter.ENABLE_NUGET_PACKAGE_RESTORE, "True"), factory);
   }
@@ -68,11 +64,7 @@ public class CommandFactoryImpl implements CommandFactory {
     }
 
     final NuGetFetchParameters nugetFetchParams = params.getNuGetParameters();
-    for (String cmd : nugetFetchParams.getCustomCommandline()) {
-      if (!argz.contains(cmd) && !argz.contains(cmd.toLowerCase())) {
-        argz.add(cmd);
-      }
-    }
+    argz.addAll(nugetFetchParams.getCustomCommandline());
 
     return executeNuGet(nugetFetchParams, nugetFetchParams.getNuGetPackageSources(), argz, solutionFile.getParentFile(), factory);
   }
@@ -89,11 +81,7 @@ public class CommandFactoryImpl implements CommandFactory {
       argz.add("-Prerelease");
     }
 
-    for (String cmd : params.getCustomCommandline()) {
-      if (!argz.contains(cmd) && !argz.contains(cmd.toLowerCase())) {
-        argz.add(cmd);
-      }
-    }
+    argz.addAll(params.getCustomCommandline());
 
     argz.add("-RepositoryPath");
     argz.add(FileUtil.getCanonicalFile(targetFolder).getPath());
@@ -164,10 +152,8 @@ public class CommandFactoryImpl implements CommandFactory {
       arguments.add(prop);
     }
 
-    for (String cmd : params.getCustomCommandline()) {
-      //TODO: check if -Build was added
-      arguments.add(cmd);
-    }
+    //TODO: check if -Build was added
+    arguments.addAll(params.getCustomCommandline());
 
     return executeNuGet(params, Collections.<String>emptyList(), arguments, specFile.getParentFile(), factory);
   }
@@ -185,11 +171,7 @@ public class CommandFactoryImpl implements CommandFactory {
       arguments.add(apiKey);
     }
 
-    for (String cmd : params.getCustomCommandline()) {
-      if (!arguments.contains(cmd) && !arguments.contains(cmd.toLowerCase())) {
-        arguments.add(cmd);
-      }
-    }
+    arguments.addAll(params.getCustomCommandline());
 
     final String source = params.getPublishSource();
     final List<String> sources = StringUtil.isEmptyOrSpaces(source)

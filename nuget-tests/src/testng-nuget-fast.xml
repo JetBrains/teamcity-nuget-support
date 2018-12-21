@@ -102,6 +102,7 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.LocateNuGetConfigBuildProcessTest"/>
 
 
+      <class name="jetbrains.buildServer.nuget.tests.agent.CommandFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetInstallPackageActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetRestorePackageActionFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.RepositoryPathResolverTest"/>
