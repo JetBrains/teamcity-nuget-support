@@ -28,5 +28,5 @@ On Windows to build nuget extensions should be installed Microsoft Build Tools.
 On Linux for that should be installed 'mono-devel' package.
 
 # Contributions
-We appreciate all kinds of feedback, so please feel free to send a PR or write [an issue](https://github.com/JetBrains/teamcity-nuget-support/issues).
+We appreciate all kinds of feedback, so please feel free to send a PR or [file an issue](https://youtrack.jetbrains.com/newIssue?project=TW&c=Subsystem%20plugin%3A%20NuGet).
 
