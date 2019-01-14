@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.common.FeedConstants;
 import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.spec.NuspecFileContent;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.ZipSlipAwareZipInputStream;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * @author Evgeniy.Koshkin
@@ -60,9 +60,9 @@ public class NuGetPackageStructureVisitor {
 
   public void visit(@NotNull InputStream stream) throws PackageLoadException {
     if(myAnalysers.isEmpty()) return;
-    ZipInputStream zipInputStream = null;
+    ZipSlipAwareZipInputStream zipInputStream = null;
     try {
-      zipInputStream = new ZipInputStream(new BufferedInputStream(stream));
+      zipInputStream = new ZipSlipAwareZipInputStream(new BufferedInputStream(stream));
       ZipEntry zipEntry;
       while ((zipEntry = zipInputStream.getNextEntry()) != null) {
         if(zipEntry.isDirectory()) continue;
@@ -90,7 +90,7 @@ public class NuGetPackageStructureVisitor {
   }
 
   @Nullable
-  private NuspecFileContent readNuspecFileContent(final ZipInputStream finalZipInputStream) throws IOException {
+  private NuspecFileContent readNuspecFileContent(final ZipSlipAwareZipInputStream finalZipInputStream) throws IOException {
     try {
       final Element document = FileUtil.parseDocument(new InputStream() {
         @Override

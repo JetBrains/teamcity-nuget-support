@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.spec.NuspecFileContent;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
+import jetbrains.buildServer.util.ZipSlipAwareZipInputStream;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -63,11 +63,11 @@ public class PackageInfoLoader {
 
   @Nullable
   private static Element parseNuSpec(@NotNull final File nupkg) throws PackageLoadException {
-    ZipInputStream zos = null;
+    ZipSlipAwareZipInputStream zos = null;
     InputStream stream = null;
     try {
       stream = new FileInputStream(nupkg);
-      zos = new ZipInputStream(new BufferedInputStream(stream));
+      zos = new ZipSlipAwareZipInputStream(new BufferedInputStream(stream));
       ZipEntry ze;
       while ((ze = zos.getNextEntry()) != null) {
         if (ze.getName().endsWith(FeedConstants.NUSPEC_FILE_EXTENSION)) {
@@ -88,7 +88,7 @@ public class PackageInfoLoader {
     return null;
   }
 
-  private static void close(@Nullable final ZipInputStream zos) {
+  private static void close(@Nullable final ZipSlipAwareZipInputStream zos) {
     if (zos != null) {
       try {
         zos.close();
