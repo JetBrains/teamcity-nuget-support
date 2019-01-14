@@ -32,6 +32,7 @@ import jetbrains.buildServer.nuget.tests.agent.mock.MockPackParameters;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
 import jetbrains.buildServer.nuget.tests.integration.NuGet;
 import jetbrains.buildServer.util.FileUtil;
+import jetbrains.buildServer.util.ZipSlipAwareZipInputStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
@@ -43,7 +44,6 @@ import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -142,7 +142,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
 
     final File nupkg = nupkgs()[0];
 
-    ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(nupkg)));
+    ZipSlipAwareZipInputStream zis = new ZipSlipAwareZipInputStream(new BufferedInputStream(new FileInputStream(nupkg)));
     for(ZipEntry ze; (ze = zis.getNextEntry()) != null;) {
       System.out.println(ze.getName());
     }
@@ -167,7 +167,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
     Assert.assertTrue(nupkgs().length == 1, "There should be only one package created");
     final File nupkg = nupkgs()[0];
 
-    ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(nupkg)));
+    ZipSlipAwareZipInputStream zis = new ZipSlipAwareZipInputStream(new BufferedInputStream(new FileInputStream(nupkg)));
     for(ZipEntry ze; (ze = zis.getNextEntry()) != null;) {
       System.out.println(ze.getName());
     }
@@ -196,7 +196,7 @@ public class PackIntegrationTest extends IntegrationTestBase {
       System.out.println("s = " + s);
     }
 
-    ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(nupkgs()[0])));
+    ZipSlipAwareZipInputStream zis = new ZipSlipAwareZipInputStream(new BufferedInputStream(new FileInputStream(nupkgs()[0])));
     for(ZipEntry ze; (ze = zis.getNextEntry()) != null;) {
       System.out.println(ze.getName());
     }

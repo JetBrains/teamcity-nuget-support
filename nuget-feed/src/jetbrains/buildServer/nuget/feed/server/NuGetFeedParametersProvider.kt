@@ -21,10 +21,7 @@ import jetbrains.buildServer.agent.AgentRuntimeProperties
 import jetbrains.buildServer.nuget.common.NuGetServerConstants.*
 import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
 import jetbrains.buildServer.parameters.ReferencesResolverUtil
-import jetbrains.buildServer.serverSide.ProjectManager
-import jetbrains.buildServer.serverSide.SBuild
-import jetbrains.buildServer.serverSide.SBuildType
-import jetbrains.buildServer.serverSide.SRunningBuild
+import jetbrains.buildServer.serverSide.*
 import jetbrains.buildServer.serverSide.auth.LoginConfiguration
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
@@ -39,7 +36,8 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
                                   private val myProjectManager: ProjectManager,
                                   private val myRepositoryManager: RepositoryManager,
                                   private val myLoginConfiguration: LoginConfiguration)
-    : AbstractBuildParametersProvider() {
+    : AbstractBuildParametersProvider(), BuildStartContextProcessor {
+
 
     override fun getParameters(build: SBuild, emulationMode: Boolean): Map<String, String> {
         if (!mySettings.isNuGetServerEnabled) {
@@ -52,6 +50,9 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
         }
 
         if (build is SRunningBuild) {
+            build.buildType?.let {
+                properties.putAll(getFallbackParameters(it))
+            }
             val buildToken = String.format("%s:%s", BuildAuthUtil.makeUserId(build.getBuildId()), build.agentAccessCode)
             properties[FEED_REFERENCE_AGENT_API_KEY_PROVIDED] = EncryptUtil.scramble(buildToken)
         } else {
@@ -59,6 +60,18 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
         }
 
         return properties
+    }
+
+    override fun updateParameters(context: BuildStartContext) {
+        if (!mySettings.isNuGetServerEnabled) {
+            return
+        }
+
+        context.build.buildType?.let {
+            getFallbackParameters(it).forEach { key, value ->
+                context.addSharedParameter(key, value)
+            }
+        }
     }
 
     fun getBuildTypeParameters(buildType: SBuildType): Map<String, String> {
@@ -83,6 +96,31 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
                     val reference = ReferencesResolverUtil.makeReference(AgentRuntimeProperties.TEAMCITY_SERVER_URL) +
                             WebUtil.combineContextPath("/$authType/", feedPath)
                     parameters[referenceName] = reference
+                }
+            }
+        }
+
+        return parameters
+    }
+
+    private fun getFallbackParameters(buildType: SBuildType): Map<String, String> {
+        val parameters = mutableMapOf<String, String>()
+
+        // Add fallback for global nuget feed parameters
+        buildType.undefinedParameters.let { undefinedParameters ->
+            "teamcity.nuget.feed.server".let {
+                if (undefinedParameters.contains(it)) {
+                    parameters[it] = ReferencesResolverUtil.makeReference("teamcity.nuget.feed.guestAuth._Root.default.v2")
+                }
+            }
+            "teamcity.nuget.feed.auth.server".let {
+                if (undefinedParameters.contains(it)) {
+                    parameters[it] = ReferencesResolverUtil.makeReference("teamcity.nuget.feed.httpAuth._Root.default.v2")
+                }
+            }
+            "system.teamcity.nuget.feed.auth.serverRootUrlBased.server".let {
+                if (undefinedParameters.contains(it)) {
+                    parameters[it] = ReferencesResolverUtil.makeReference("teamcity.nuget.feed.httpAuth._Root.default.v2")
                 }
             }
         }
