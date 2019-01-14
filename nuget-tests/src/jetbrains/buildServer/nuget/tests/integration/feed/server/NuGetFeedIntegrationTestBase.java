@@ -17,7 +17,6 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.google.common.collect.Lists;
-import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedGetMethodFactory;
 import jetbrains.buildServer.nuget.feedReader.impl.NuGetFeedHttpClientHolder;
@@ -126,23 +125,19 @@ public abstract class NuGetFeedIntegrationTestBase extends IntegrationTestBase {
       will(returnValue(packageFile.getName()));
     }});
 
-    try {
-      final LocalNuGetPackageItemsFactory packageItemsFactory = new LocalNuGetPackageItemsFactory();
-      final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
-      final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
+    final LocalNuGetPackageItemsFactory packageItemsFactory = new LocalNuGetPackageItemsFactory();
+    final FrameworkConstraintsCalculator frameworkConstraintsCalculator = new FrameworkConstraintsCalculator();
+    final List<NuGetPackageStructureAnalyser> analysers = Lists.newArrayList(frameworkConstraintsCalculator, packageItemsFactory);
 
-      new NuGetPackageStructureVisitor(analysers).visit(new FileInputStream(packageFile));
+    new NuGetPackageStructureVisitor(analysers).visit(new FileInputStream(packageFile));
 
-      final Map<String, String> map = packageItemsFactory.getItems();
-      map.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints()));
-      map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
-      map.put(TEAMCITY_BUILD_TYPE_ID, "bt_" + packageFile.getName());
-      map.put("TeamCityDownloadUrl", "some-download-url/" + packageFile.getName());
-      map.put(NuGetPackageAttributes.IS_LATEST_VERSION, String.valueOf(isLatest));
-      return map;
-    } catch (PackageLoadException e) {
-      throw new RuntimeException(e);
-    }
+    final Map<String, String> map = packageItemsFactory.getItems();
+    map.put(TEAMCITY_FRAMEWORK_CONSTRAINTS, FrameworkConstraints.convertToString(frameworkConstraintsCalculator.getPackageConstraints()));
+    map.put(TEAMCITY_ARTIFACT_RELPATH, "some/package/download/" + packageFile.getName());
+    map.put(TEAMCITY_BUILD_TYPE_ID, "bt_" + packageFile.getName());
+    map.put("TeamCityDownloadUrl", "some-download-url/" + packageFile.getName());
+    map.put(NuGetPackageAttributes.IS_LATEST_VERSION, String.valueOf(isLatest));
+    return map;
   }
 
   @NotNull
