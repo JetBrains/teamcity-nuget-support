@@ -18,7 +18,6 @@ package jetbrains.buildServer.nuget.common.index;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.nuget.common.FeedConstants;
-import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.spec.NuspecFileContent;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.ZipSlipAwareZipInputStream;
@@ -46,19 +45,7 @@ public class NuGetPackageStructureVisitor {
     myAnalysers = analysers;
   }
 
-//  public void visit(@NotNull BuildArtifact artifact) throws PackageLoadException {
-//    InputStream inputStream = null;
-//    try {
-//      inputStream = artifact.getInputStream();
-//      visit(inputStream);
-//    } catch (IOException e) {
-//      throw new PackageLoadException(e.getMessage(), e);
-//    } finally {
-//      FileUtil.close(inputStream);
-//    }
-//  }
-
-  public void visit(@NotNull InputStream stream) throws PackageLoadException {
+  public void visit(@NotNull InputStream stream) {
     if(myAnalysers.isEmpty()) return;
     ZipSlipAwareZipInputStream zipInputStream = null;
     try {
@@ -99,7 +86,7 @@ public class NuGetPackageStructureVisitor {
         }
 
         @Override
-        public void close() throws IOException {
+        public void close() {
           //do nothing, should avoid stream closing by xml parse util
         }
       }, false);
