@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  Copyright 2000 - 2019 JetBrains s.r.o.
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License").
+  ~  See LICENSE in the project root for license information.
+  -->
+
+<dsl-extension kind="buildStep" type="jb.nuget.publish" generateDslJar="true">
+    <class name="NuGetPublishStep">
+        <description>
+            A [NuGet publish step](https://confluence.jetbrains.com/display/TCDL/NuGet+Publish) to run nuget push command
+        </description>
+    </class>
+    <function name="nuGetPublish">
+        <description>
+            Adds a [NuGet publish step](https://confluence.jetbrains.com/display/TCDL/NuGet+Publish) to run nuget push command
+            @see NuGetPublishStep
+        </description>
+    </function>
+    <params>
+        <param name="nuget.path" dslName="toolPath">
+            <description>Specify path to NuGet.exe.</description>
+        </param>
+        <param name="nuget.publish.files" dslName="packages">
+            <description>A newline-separated list of NuGet package files (.nupkg) to push to the NuGet feed.</description>
+        </param>
+        <param name="nuget.publish.source" dslName="serverUrl" mandatory="true">
+            <description>Specify the NuGet packages feed URL to push packages to.</description>
+        </param>
+        <param name="secure:nuget.api.key" dslName="apiKey" mandatory="true">
+            <description>Specify the API key to access a NuGet packages feed.</description>
+        </param>
+        <param name="nuget.push.commandline" dslName="args">
+            <description>Enter additional parameters to use when calling nuget push command.</description>
+        </param>
+    </params>
+</dsl-extension>
