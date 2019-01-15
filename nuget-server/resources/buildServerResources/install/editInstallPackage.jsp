@@ -108,7 +108,7 @@
     <th><label for="${ib.restoreCustomCommandline}">Command line parameters:</label></th>
     <td>
       <props:textProperty name="${ib.restoreCustomCommandline}" className="longField" expandable="true"/>
-      <span class="smallNote">Enter additional parameters to use when calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Restore_command">nuget restore</a> command</span>
+      <span class="smallNote">Enter additional parameters to use when calling <a href="https://docs.microsoft.com/en-us/nuget/tools/cli-ref-restore">nuget restore</a> command</span>
       <span id="error_${ib.restoreCustomCommandline}" class="error"></span>
     </td>
   </tr>
@@ -182,7 +182,7 @@
     <th><label for="${ib.updateCustomCommandline}">Command line parameters:</label></th>
     <td>
       <props:textProperty name="${ib.updateCustomCommandline}" className="longField" expandable="true"/>
-      <span class="smallNote">Enter additional parameters to use when calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#Update_Command">nuget update</a> command</span>
+      <span class="smallNote">Enter additional parameters to use when calling <a href="https://docs.microsoft.com/en-us/nuget/tools/cli-ref-update">nuget update</a> command</span>
       <span id="error_${ib.updateCustomCommandline}" class="error"></span>
     </td>
   </tr>
