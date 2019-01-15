@@ -167,11 +167,12 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
       eventDispatcher.getMulticaster().runnerFinished(myContext, BuildFinishedStatus.FINISHED_SUCCESS);
     }
 
-    System.out.println(myCollector.getUsedPackages());
+    System.out.println(myCollector.getPackages());
     if (detectedPackages != null) {
       Assert.assertEquals(
-              new TreeSet<NuGetPackageInfo>(myCollector.getUsedPackages().getUsedPackages()),
-              new TreeSet<NuGetPackageInfo>(detectedPackages));
+        new TreeSet<>(myCollector.getPackages().getUsedPackages()),
+        new TreeSet<>(detectedPackages)
+      );
     }
 
     m.assertIsSatisfied();

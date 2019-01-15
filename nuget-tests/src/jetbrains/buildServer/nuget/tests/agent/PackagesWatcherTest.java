@@ -27,7 +27,6 @@ import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollecto
 import jetbrains.buildServer.nuget.agent.dependencies.impl.NuGetPackagesCollectorImpl;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.PackagesInfoUploader;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.PackagesWatcher;
-import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
 import jetbrains.buildServer.util.EventDispatcher;
 import jetbrains.buildServer.util.FileUtil;
@@ -93,9 +92,9 @@ public class PackagesWatcherTest extends BaseTestCase {
     final String empty = serializePackages();
 
     final Map<String, Object[]> arguments = new HashMap<String, Object[]>();
-    arguments.put("getUsedPackages", null);
+    arguments.put("getPackages", null);
     arguments.put("addCreatedPackage", new Object[]{"aaa", "22.3.4"});
-    arguments.put("addDependenyPackage", new Object[]{"aaa", "22.3.4", "ff"});
+    arguments.put("addUsedPackage", new Object[]{"aaa", "22.3.4", "ff"});
     arguments.put("addPublishedPackage", new Object[]{"aaa", "22.3.4", "ff"});
 
     for (Method method : NuGetPackagesCollector.class.getMethods()) {
@@ -151,7 +150,7 @@ public class PackagesWatcherTest extends BaseTestCase {
       oneOf(watcher).addNewArtifactsPath(with(new NuGetUploadPathMatcher(tempDir)));
     }});
 
-    collector.addDependenyPackage("aaa", "1.2.4", null);
+    collector.addUsedPackage("aaa", "1.2.4", null);
     multicaster.beforeBuildFinish(build, BuildFinishedStatus.FINISHED_FAILED);
 
     m.assertIsSatisfied();
@@ -187,27 +186,27 @@ public class PackagesWatcherTest extends BaseTestCase {
 
   private void addAllDependencies() {
     collector.addCreatedPackage("aaa", "22.3.4");
-    collector.addDependenyPackage("aaa", "22.3.4", "x");
+    collector.addUsedPackage("aaa", "22.3.4", "x");
     collector.addPublishedPackage("aaa", "22.3.4", "x");
   }
 
   private void assertEmpty() {
-    Assert.assertTrue(collector.getUsedPackages().getCreatedPackages().isEmpty());
-    Assert.assertTrue(collector.getUsedPackages().getUsedPackages().isEmpty());
-    Assert.assertTrue(collector.getUsedPackages().getPublishedPackages().isEmpty());
+    Assert.assertTrue(collector.getPackages().getCreatedPackages().isEmpty());
+    Assert.assertTrue(collector.getPackages().getUsedPackages().isEmpty());
+    Assert.assertTrue(collector.getPackages().getPublishedPackages().isEmpty());
   }
 
   private void assertNotEmpty() {
-    Assert.assertFalse(collector.getUsedPackages().getCreatedPackages().isEmpty());
-    Assert.assertFalse(collector.getUsedPackages().getUsedPackages().isEmpty());
-    Assert.assertFalse(collector.getUsedPackages().getPublishedPackages().isEmpty());
+    Assert.assertFalse(collector.getPackages().getCreatedPackages().isEmpty());
+    Assert.assertFalse(collector.getPackages().getUsedPackages().isEmpty());
+    Assert.assertFalse(collector.getPackages().getPublishedPackages().isEmpty());
   }
 
   @NotNull
   private String serializePackages() throws IOException {
     PackageDependenciesStore s = new PackageDependenciesStore();
     final File file = createTempFile();
-    s.save(collector.getUsedPackages(), file);
+    s.save(collector.getPackages(), file);
     return new String(FileUtil.loadFileText(file));
   }
 

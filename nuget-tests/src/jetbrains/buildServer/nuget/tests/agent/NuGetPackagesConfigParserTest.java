@@ -77,12 +77,13 @@ public class NuGetPackagesConfigParserTest extends BaseTestCase {
     NuGetPackagesCollectorImpl i = new NuGetPackagesCollectorImpl(configuration);
     p.parseNuGetPackages(Paths.getTestDataPath("config/" + testData), i);
 
-    if (packages.length != i.getUsedPackages().getUsedPackages().size()) {
-      System.out.println(i.getUsedPackages());
+    if (packages.length != i.getPackages().getUsedPackages().size()) {
+      System.out.println(i.getPackages());
     }
 
     Assert.assertEquals(
-            new TreeSet<NuGetPackageInfo>(i.getUsedPackages().getUsedPackages()),
-            new TreeSet<NuGetPackageInfo>(Arrays.asList(packages)));
+      new TreeSet<>(i.getPackages().getUsedPackages()),
+      new TreeSet<>(Arrays.asList(packages))
+    );
   }
 }

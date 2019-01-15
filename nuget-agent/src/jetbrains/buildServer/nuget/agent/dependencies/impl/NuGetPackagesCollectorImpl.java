@@ -41,7 +41,7 @@ public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
   }
 
 
-  public void addDependenyPackage(@NotNull String packageId, @NotNull String version, @Nullable String allowedVersions) {
+  public void addUsedPackage(@NotNull String packageId, @NotNull String version, @Nullable String allowedVersions) {
     myUsedPackages.add(new NuGetPackageInfo(packageId, version));
   }
 
@@ -58,7 +58,7 @@ public class NuGetPackagesCollectorImpl implements NuGetPackagesCollectorEx {
   }
 
   @NotNull
-  public PackageDependencies getUsedPackages() {
+  public PackageDependencies getPackages() {
     return new PackageDependencies(myUsedPackages, myCreatedPackages, myPublishedPackages);
   }
 

@@ -45,11 +45,11 @@ public class PackagesWatcher {
 
       @Override
       public void beforeBuildFinish(@NotNull AgentRunningBuild build, @NotNull BuildFinishedStatus buildStatus) {
-        PackageDependencies packages = collector.getUsedPackages();
-        if (packages.getUsedPackages().isEmpty()) return;
+        PackageDependencies packages = collector.getPackages();
+        if (packages.isEmpty()) return;
 
         try {
-          uploader.uploadDepectedPackages(build, packages);
+          uploader.uploadDetectedPackages(build, packages);
         } catch (IOException e) {
           LOG.warnAndDebugDetails("Failed to generate and upload list of used NuGet packages. " + e.getMessage(), e);
         }

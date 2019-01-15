@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2017 JetBrains s.r.o.
+ * Copyright 2000-2019 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.TreeSet;
 
 /**
- * Represent list of downloaded dependecies of a build
+ * Represent list of downloaded dependencies of a build
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 19.07.11 11:41
  */
@@ -62,6 +62,13 @@ public class PackageDependencies {
   @NotNull
   public Collection<SourcePackageInfo> getPublishedPackages() {
     return myPublishedPackages;
+  }
+
+  /**
+   * Returns true if during the build was not used/created/published any packages.
+   */
+  public boolean isEmpty() {
+    return myUsedPackages.isEmpty() && myCreatedPackages.isEmpty() && myPublishedPackages.isEmpty();
   }
 
   @Override

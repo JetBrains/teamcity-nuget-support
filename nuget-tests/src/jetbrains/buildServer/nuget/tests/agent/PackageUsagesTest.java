@@ -152,7 +152,7 @@ public class PackageUsagesTest extends BaseTestCase {
   }
 
   private void assertCollected(@NotNull Collection<String> used, @NotNull Collection<String> created, @NotNull Collection<String> published) {
-    final PackageDependencies ps = myCollector.getUsedPackages();
+    final PackageDependencies ps = myCollector.getPackages();
     final String actualUsed = toString(ps.getUsedPackages());
     final String actualCreated = toString(ps.getCreatedPackages());
     final String actualPublished = toString3(ps.getPublishedPackages());

@@ -32,9 +32,9 @@ public interface NuGetPackagesCollector {
    * @param version version
    * @param allowedVersions version constraint
    */
-  void addDependenyPackage(@NotNull String packageId,
-                           @NotNull String version,
-                           @Nullable String allowedVersions);
+  void addUsedPackage(@NotNull String packageId,
+                      @NotNull String version,
+                      @Nullable String allowedVersions);
 
   /**
    * Adds create package to the list of packages
@@ -57,5 +57,5 @@ public interface NuGetPackagesCollector {
    * @return sorted list of packages that were registered
    */
   @NotNull
-  public PackageDependencies getUsedPackages();
+  public PackageDependencies getPackages();
 }

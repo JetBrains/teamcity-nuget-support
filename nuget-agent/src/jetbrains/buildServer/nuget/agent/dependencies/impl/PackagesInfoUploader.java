@@ -43,7 +43,7 @@ public class PackagesInfoUploader {
     myStore = store;
   }
 
-  public void uploadDepectedPackages(@NotNull final AgentRunningBuild build,
+  public void uploadDetectedPackages(@NotNull final AgentRunningBuild build,
                                      @NotNull final PackageDependencies infos) throws IOException {
     File tmp = FileUtil.createTempDirectory("nuget", "packages", build.getBuildTempDirectory());
     File content = new File(tmp, NUGET_USED_PACKAGES_FILE);
