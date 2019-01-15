@@ -110,7 +110,7 @@
   <th><label for="${ib.pushCustomCommandline}">Command line parameters:</label></th>
   <td>
     <props:textProperty name="${ib.pushCustomCommandline}" className="longField" expandable="true"/>
-    <span class="smallNote">Enter additional parameters to use when calling <a href="http://docs.nuget.org/docs/reference/command-line-reference#push-command">nuget push</a> command</span>
+    <span class="smallNote">Enter additional parameters to use when calling <a href="https://docs.microsoft.com/en-us/nuget/tools/cli-ref-push">nuget push</a> command</span>
     <span id="error_${ib.pushCustomCommandline}" class="error"></span>
   </td>
 </tr>

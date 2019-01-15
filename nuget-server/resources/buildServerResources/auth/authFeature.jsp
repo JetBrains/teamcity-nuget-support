@@ -28,10 +28,10 @@
 </tr>
 
 <tr>
-  <th><label for="${ab.feedKey}">Feed URI:<l:star/></label></th>
+  <th><label for="${ab.feedKey}">Feed URL:<l:star/></label></th>
   <td>
     <props:textProperty name="${ab.feedKey}" className="longField"/>
-    <span class="smallNote">Specify a NuGet feed URL in the same way as you do in the build</span>
+    <span class="smallNote">Specify a feed URL which credentials will be used in the build</span>
     <span class="error" id="error_${ab.feedKey}"></span>
   </td>
 </tr>
