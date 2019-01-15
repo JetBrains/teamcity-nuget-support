@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~  Copyright 2000 - 2019 JetBrains s.r.o.
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License").
+  ~  See LICENSE in the project root for license information.
+  -->
+
+<dsl-extension kind="buildStep" type="jb.nuget.pack" generateDslJar="true">
+    <class name="NuGetPackStep">
+        <description>
+            A [NuGet pack step](https://confluence.jetbrains.com/display/TCDL/NuGet+Pack) to run nuget pack command
+        </description>
+    </class>
+    <function name="nuGetPack">
+        <description>
+            Adds a [NuGet pack step](https://confluence.jetbrains.com/display/TCDL/NuGet+Pack) to run nuget pack command
+            @see NuGetPackStep
+        </description>
+    </function>
+    <params>
+        <param name="nuget.path" dslName="toolPath">
+            <description>Specify path to NuGet.exe.</description>
+        </param>
+        <param name="nuget.pack.specFile" dslName="paths">
+            <description>Specify paths to .nuspec files and/or to project files.</description>
+        </param>
+        <param name="nuget.pack.prefer.project" dslName="preferProjectPaths" type="boolean" trueValue="true" falseValue="">
+            <description>Use the project file (if exists, i.e. .csproj or .vbproj) for every matched .nuspec file.</description>
+        </param>
+        <param name="nuget.pack.version" dslName="version">
+            <description>Overrides the version number from the .nuspec file.</description>
+        </param>
+        <param name="nuget.pack.project.dir" dslName="baseDir" type="compound">
+            <description>
+                The -BaseDirectory parameter value. Leave blank to use the build checkout directory
+            </description>
+            <option name="customPath" value="explicit">
+                <param name="nuget.pack.base.directory" dslName="path">
+                    <description>Specify the path for -BaseDirectory parameter.</description>
+                </param>
+            </option>
+            <option name="projectPath" value="project">
+                <description>Use project/.nuspec directory.</description>
+            </option>
+        </param>
+        <param name="nuget.pack.output.directory" dslName="outputDir">
+            <description>The path to the output directory for generated NuGet packages.</description>
+        </param>
+        <param name="nuget.pack.output.clean" dslName="cleanOutputDir" type="boolean" trueValue="true" falseValue="">
+            <description>Clean output directory</description>
+        </param>
+        <param name="nuget.pack.as.artifact" dslName="publishPackages" type="boolean" trueValue="true" falseValue="">
+            <description>Publish created packages to build artifacts</description>
+        </param>
+        <param name="nuget.pack.excludes" dslName="excludePaths">
+            <description>Exclude files when creating a package.</description>
+        </param>
+        <param name="nuget.pack.properties" dslName="properties">
+            <description>A semicolon or a newline-separated list of package creation properties.</description>
+        </param>
+        <param name="nuget.pack.pack.mode.tool" dslName="toolPackage" type="boolean" trueValue="true" falseValue="">
+            <description>Create tool package.</description>
+        </param>
+        <param name="nuget.pack.include.sources" dslName="includeSymbols" type="boolean" trueValue="true" falseValue="">
+            <description>Include sources and symbols.</description>
+        </param>
+        <param name="nuget.pack.commandline" dslName="args">
+            <description>Enter additional parameters to use when calling nuget pack command.</description>
+        </param>
+    </params>
+</dsl-extension>
