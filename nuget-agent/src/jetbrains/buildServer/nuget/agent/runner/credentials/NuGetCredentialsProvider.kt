@@ -38,8 +38,10 @@ class NuGetCredentialsProvider(events: EventDispatcher<AgentLifeCycleListener>,
         val pathProvider = myCredentialsPathProviders[runner.runType] ?: return
 
         val packageSources = packageSourceManager.getGlobalPackageSources(runner.build)
+        if (packageSources.isEmpty()) return
+
         if (LOG.isDebugEnabled) {
-            LOG.debug("Provided credentials for NuGet packages sources: " + packageSources.joinToString { it.source })
+            LOG.debug("Will provide credentials for NuGet package sources: " + packageSources.joinToString { it.source })
         }
 
         try {
