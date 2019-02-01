@@ -49,9 +49,13 @@ namespace JetBrains.TeamCity.NuGet
                                 new SetLogLevelHandler(multiLogger)
                               },
                               {
-                                MessageMethod.Initialize, 
+                                MessageMethod.Initialize,
                                 new InitializeRequestHandler(multiLogger)
                               },
+                              {
+                                MessageMethod.SetCredentials,
+                                new SetCredentialsRequestHandler(multiLogger)
+                              }
                             };
 
       if (String.Equals(args.SingleOrDefault(), "-plugin", StringComparison.OrdinalIgnoreCase))
