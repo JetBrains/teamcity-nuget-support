@@ -1,15 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;net46</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.0;netcoreapp1.0;net46</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <AssemblyName>CredentialProvider.TeamCity</AssemblyName>
     <RootNamespace>JetBrains.TeamCity.NuGet</RootNamespace>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="11.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="NuGet.Protocol" Version="4.8.0-rtm.5369" />
+    <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="NuGet.Protocol" Version="4.9.4" />
+    <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" Condition="'$(TargetFramework)' == 'netcoreapp1.0'"/>
+    <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.0" Condition="'$(TargetFramework)' == 'netcoreapp1.0'"/>
     <Compile Include="..\nuget-commands\src\Data\NuGetSource.cs">
       <Link>Data\NuGetSource.cs</Link>
     </Compile>
@@ -32,7 +34,7 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\bin\credential-plugin\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0' or '$(TargetFramework)' == 'netcoreapp1.0'">
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 </Project>
