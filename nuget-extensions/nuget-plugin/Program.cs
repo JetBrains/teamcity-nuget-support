@@ -34,6 +34,7 @@ namespace JetBrains.TeamCity.NuGet
                                 };
 
       var credentialProvider = new TeamCityCredentialProvider(multiLogger);
+      var sdkInfo = new SdkInfo();
       var requestHandlers = new RequestHandlerCollection
                             {
                               {
@@ -42,7 +43,7 @@ namespace JetBrains.TeamCity.NuGet
                               },
                               {
                                 MessageMethod.GetOperationClaims,
-                                new GetOperationClaimsRequestHandler(multiLogger, credentialProvider)
+                                new GetOperationClaimsRequestHandler(multiLogger, credentialProvider, sdkInfo)
                               },
                               {
                                 MessageMethod.SetLogLevel,

@@ -42,7 +42,7 @@ public class NuGetTeamCityProviderBase implements NuGetTeamCityProvider {
   @NotNull
   @Override
   public String getPluginCorePath() {
-    return getCanonicalFile("/bin/credential-plugin/netcoreapp2.0/CredentialProvider.TeamCity.dll").getPath();
+    return getCanonicalFile("/bin/credential-plugin/netcoreapp1.0/CredentialProvider.TeamCity.dll").getPath();
   }
 
   @NotNull
