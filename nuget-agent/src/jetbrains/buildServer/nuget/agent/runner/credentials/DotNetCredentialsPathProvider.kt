@@ -21,7 +21,14 @@ class DotNetCredentialsPathProvider(private val provider: NuGetTeamCityProvider)
             return null
         }
 
-        return provider.pluginCorePath
+        val minSdkVersion = runner.configParameters.keys
+                .filter { it.startsWith("DotNetCoreSDK") }
+                .map { SemanticVersion.valueOf(it.replace("DotNetCoreSDK", "").replace("_Path", "")) }
+                .filter { it != null }
+                .map { it?.version?.major ?: 1}
+                .min() ?: 1
+
+        return provider.getPluginCorePath(minSdkVersion)
     }
 
     companion object {

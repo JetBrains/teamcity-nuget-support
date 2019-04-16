@@ -28,5 +28,5 @@ public interface NuGetTeamCityProvider {
   @NotNull File getNuGetRunnerPath();
   @NotNull File getCredentialProviderHomeDirectory();
   @NotNull String getPluginFxPath();
-  @NotNull String getPluginCorePath();
+  @NotNull String getPluginCorePath(int minSdkVersion);
 }
