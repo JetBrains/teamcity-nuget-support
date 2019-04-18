@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class Repository {
     private final RepositoryType myType;
@@ -26,7 +27,7 @@ public abstract class Repository {
 
     @NotNull
     public String getName() {
-        return myParameters.get(RepositoryConstants.REPOSITORY_NAME_KEY);
+        return sanitize(myParameters.get(RepositoryConstants.REPOSITORY_NAME_KEY));
     }
 
     @NotNull
@@ -36,7 +37,7 @@ public abstract class Repository {
 
     @NotNull
     public String getDescription() {
-        return myParameters.get(RepositoryConstants.REPOSITORY_DESCRIPTION_KEY);
+        return sanitize(myParameters.get(RepositoryConstants.REPOSITORY_DESCRIPTION_KEY));
     }
 
     @NotNull
@@ -52,5 +53,23 @@ public abstract class Repository {
     @NotNull
     public List<String> getUrlPaths() {
       return Collections.emptyList();
+    }
+
+    @SuppressWarnings("DynamicRegexReplaceableByCompiledPattern")
+    @Nullable
+    private static String sanitize(@Nullable final String string) {
+      if(string == null) {
+        return null;
+      }
+
+      return string
+        .replaceAll("(?i)<script.*?>.*?</script.*?>", "")
+        .replaceAll("(?i)<.*?javascript:.*?>.*?</.*?>", "")
+        .replaceAll("(?i)<.*?\\s+on.*?>.*?</.*?>", "")
+        .replace('<', ' ')
+        .replace('>', ' ')
+        .replace('&', ' ')
+        .replace('\'', ' ')
+        .replace('"', ' ');
     }
 }
