@@ -4,6 +4,7 @@ import jetbrains.buildServer.BaseTestCase
 import jetbrains.buildServer.nuget.common.PackageLoadException
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildMetadataProviderImpl
+import jetbrains.buildServer.serverSide.BuildPromotionEx
 import jetbrains.buildServer.serverSide.CurrentNodeInfo
 import jetbrains.buildServer.serverSide.SBuild
 import jetbrains.buildServer.serverSide.ServerResponsibilityImpl
@@ -57,12 +58,23 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val buildArtifacts = m.mock(BuildArtifacts::class.java)
         val buildArtifact = m.mock(BuildArtifact::class.java)
         val build = m.mock(SBuild::class.java)
+        val buildPromotion = m.mock(BuildPromotionEx::class.java)
         CurrentNodeInfo.init()
-        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
+        val responsibility = object : ServerResponsibilityImpl() {
+          override fun isResponsibleForBuild(build: SBuild): Boolean {
+            return true
+          }
+        }
+        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, responsibility)
         val artifactsDir = createTempDir()
 
         m.checking(object : Expectations() {
             init {
+                allowing(build).buildPromotion
+                will(returnValue(buildPromotion))
+
+                allowing(buildPromotion)
+
                 exactly(2).of(build).getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
                 will(returnValue(buildArtifacts))
 
@@ -214,8 +226,14 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val packagesArtifact = m.mock(BuildArtifact::class.java , "packagesArtifact")
         val buildArtifact = m.mock(BuildArtifact::class.java)
         val build = m.mock(SBuild::class.java)
+        val buildPromotion = m.mock(BuildPromotionEx::class.java)
         CurrentNodeInfo.init()
-        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
+        val responsibility = object : ServerResponsibilityImpl() {
+          override fun isResponsibleForBuild(build: SBuild): Boolean {
+            return true
+          }
+        }
+        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, responsibility)
         val artifactsDir = createTempDir()
         val packagesFile = artifactsDir.toPath().resolve(PACKAGES_PATH)
 
@@ -224,6 +242,11 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
 
         m.checking(object : Expectations() {
             init {
+                allowing(build).buildPromotion
+                will(returnValue(buildPromotion))
+
+                allowing(buildPromotion)
+
                 exactly(2).of(build).getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
                 will(returnValue(buildArtifacts))
 
@@ -296,12 +319,18 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val buildArtifacts = m.mock(BuildArtifacts::class.java)
         val buildArtifact = m.mock(BuildArtifact::class.java)
         val build = m.mock(SBuild::class.java)
+        val buildPromotion = m.mock(BuildPromotionEx::class.java)
         val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
         val artifactsDir = createTempDir()
         val packagesFile = artifactsDir.toPath().resolve(PACKAGES_PATH)
 
         m.checking(object : Expectations() {
             init {
+                allowing(build).buildPromotion
+                will(returnValue(buildPromotion))
+
+                allowing(buildPromotion)
+
                 exactly(2).of(build).getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
                 will(returnValue(buildArtifacts))
 
