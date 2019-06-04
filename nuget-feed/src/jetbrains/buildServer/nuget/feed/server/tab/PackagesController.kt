@@ -70,7 +70,7 @@ class PackagesController(auth: AuthorizationInterceptor,
         mv.model["repositoryTypes"] = myRepositoryRegistry.types
 
         mv.model["statusRefreshUrl"] = myIncludePath
-        mv.model["settingsPostUrl"] = request.contextPath ?: "" + mySettingsPath
+        mv.model["settingsPostUrl"] = (request.contextPath ?: "") + mySettingsPath
         mv.model["isGuestEnabled"] = myLoginConfiguration.isGuestLoginAllowed
 
         return mv
