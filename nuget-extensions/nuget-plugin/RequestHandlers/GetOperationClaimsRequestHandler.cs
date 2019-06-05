@@ -26,7 +26,10 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     {
       myCredentialProvider = credentialProvider;
       var hasVersion = sdkInfo.TryGetSdkVersion(out var semanticVersion);
-      mySupportAuthentication = !hasVersion || semanticVersion >= new SemanticVersion(2, 1, 400);      
+      logger.Log(LogLevel.Verbose, hasVersion ? $".NET SDK {semanticVersion} was detected." : ".NET SDK was not detected.");
+
+      mySupportAuthentication = !hasVersion || semanticVersion >= new SemanticVersion(2, 1, 400);
+      logger.Log(LogLevel.Verbose, mySupportAuthentication ? "Authentication is supported." : "Authentication not is supported.");
     }
 
     public override Task<GetOperationClaimsResponse> HandleRequestAsync(GetOperationClaimsRequest request)
