@@ -25,7 +25,8 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     public GetOperationClaimsRequestHandler(ILogger logger, ICredentialProvider credentialProvider, SdkInfo sdkInfo) : base(logger)
     {
       myCredentialProvider = credentialProvider;
-      mySupportAuthentication = sdkInfo.TryGetSdkVersion(out var semanticVersion) && semanticVersion >= new SemanticVersion(2, 1, 400);      
+      var hasVersion = sdkInfo.TryGetSdkVersion(out var semanticVersion);
+      mySupportAuthentication = !hasVersion || semanticVersion >= new SemanticVersion(2, 1, 400);      
     }
 
     public override Task<GetOperationClaimsResponse> HandleRequestAsync(GetOperationClaimsRequest request)
