@@ -36,6 +36,7 @@ public class RequestWrapper implements HttpServletRequest {
     private final String myQueryString;
     private final String myPath;
     private final String myServletPath;
+    private final String myContextPath;
     private final Map<String, Object> myAttributes = new HashMap<>();
     private final Map<String, String> myHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Map<String, String> myParameters = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -44,8 +45,13 @@ public class RequestWrapper implements HttpServletRequest {
     private byte[] myBody;
 
     public RequestWrapper(final String servletPath, String request) {
+      this("", servletPath, request);
+    }
+
+    public RequestWrapper(final String contextPath, final String servletPath, String request) {
         final String path = request.length() > servletPath.length() ? request.substring(servletPath.length() + 1) : "";
         final int queryStringIndex = path.indexOf("?");
+        myContextPath = contextPath;
         myServletPath = servletPath;
         myQueryString = queryStringIndex < 0 ? StringUtil.EMPTY : path.substring(queryStringIndex + 1);
         myPath = queryStringIndex < 0 ? path : path.substring(0, queryStringIndex);
@@ -122,7 +128,7 @@ public class RequestWrapper implements HttpServletRequest {
 
     @Override
     public String getContextPath() {
-        return StringUtil.EMPTY;
+        return myContextPath;
     }
 
     @Override
@@ -152,12 +158,12 @@ public class RequestWrapper implements HttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        return myServletPath + "/" + myPath;
+        return myContextPath + myServletPath + "/" + myPath;
     }
 
     @Override
     public StringBuffer getRequestURL() {
-        UriBuilder builder = UriBuilder.fromPath(myServletPath + "/" + myPath)
+        UriBuilder builder = UriBuilder.fromPath(getRequestURI())
                 .scheme(getScheme()).host(getServerName()).port(myServerPort);
         return new StringBuffer(builder.build().toString());
     }

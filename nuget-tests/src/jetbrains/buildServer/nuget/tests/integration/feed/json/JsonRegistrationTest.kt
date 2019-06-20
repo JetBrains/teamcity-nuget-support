@@ -13,6 +13,8 @@ class JsonRegistrationTest : JsonFeedIntegrationTestBase() {
         val responseBody = openRequest("registration1/mypackage/index.json")
         assertContainsPackageVersion(responseBody, "1.0.0")
         assertContainsPackageVersion(responseBody, "1.1.0")
+        assertContainsIdUrl(responseBody)
+        assertContainsDownloadUrl(responseBody)
     }
 
     @Test
@@ -21,6 +23,8 @@ class JsonRegistrationTest : JsonFeedIntegrationTestBase() {
 
         val responseBody = openRequest("registration1/mypackage/1.0.0.json")
         assertContainsPackageVersion(responseBody, "1.0.0")
+        assertContainsIdUrl(responseBody)
+        assertContainsDownloadUrl(responseBody)
     }
 
     @Test

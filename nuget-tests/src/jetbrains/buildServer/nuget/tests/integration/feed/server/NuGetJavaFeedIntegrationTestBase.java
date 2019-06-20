@@ -65,6 +65,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 
 import static jetbrains.buildServer.nuget.common.index.PackageConstants.NUGET_PROVIDER_ID;
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
@@ -76,6 +78,7 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBase {
   protected static final NuGetFeedData FEED_DATA = NuGetFeedData.DEFAULT;
   protected static final String SERVLET_PATH = "/app/nuget/feed/_Root/default/v2";
+  protected static final String SERVLET_V3_PATH = "/app/nuget/feed/_Root/default/v3";
   protected static final String DOWNLOAD_URL = "/downlaodREpoCon/downlaod-url";
   protected PackagesIndex myIndex;
   protected PackagesIndex myActualIndex;
@@ -86,10 +89,11 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected NuGetFeedProvider myFeedProvider;
   protected NuGetFeedFactory myFeedFactory;
   private int myCount;
+  protected String myContextPath;
 
+  @Parameters({ "contextPath" })
   @BeforeMethod
-  @Override
-  protected void setUp() throws Exception {
+  protected void setUp(@Optional("") final String contextPath) throws Exception {
     super.setUp();
     final Mockery mockery = new Mockery() {{
       setImposteriser(ClassImposteriser.INSTANCE);
@@ -102,6 +106,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     mySettings = m.mock(NuGetServerSettings.class);
     myMetadataStorage = m.mock(MetadataStorage.class);
     myFeedFactory = m.mock(NuGetFeedFactory.class);
+    myContextPath = contextPath;
     final ResponseCache responseCache = m.mock(ResponseCache.class);
     final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
@@ -217,8 +222,10 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   @Override
   protected String getNuGetServerUrl() {
-    return "http://localhost" + NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId(), getAPIVersion()) + "/";
+    return getServerUrl() + NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId(), getAPIVersion()) + "/";
   }
+
+  protected String getServerUrl() { return "http://localhost" + myContextPath; }
 
   protected String getServletPath() {
     return NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId()) + getAPIVersion().name().toLowerCase();
@@ -332,7 +339,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   @NotNull
   protected HttpServletRequest createRequest(@NotNull final String requestUrl, @NotNull final NameValuePair... reqs) {
     final String servletPath = getServletPath();
-    final RequestWrapper requestWrapper = new RequestWrapper(servletPath, servletPath + "/" + requestUrl);
+    final RequestWrapper requestWrapper = new RequestWrapper(myContextPath, servletPath, servletPath + "/" + requestUrl);
     for (NameValuePair req : reqs) {
       requestWrapper.setParameter(req.getName(), req.getValue());
     }
@@ -344,7 +351,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected <T> T execute(@NotNull final HttpRequestBase get, @NotNull final ExecuteAction<T> action) {
     final URI uri = get.getURI();
     final String path = uri.getRawPath() + (StringUtil.isEmpty(uri.getRawQuery()) ? StringUtil.EMPTY : "?" + uri.getRawQuery());
-    final RequestWrapper request = new RequestWrapper(getServletPath(), path);
+    final RequestWrapper request = new RequestWrapper(myContextPath, getServletPath(), path);
 
     final ResponseWrapper response = processRequest(request);
 

@@ -78,6 +78,7 @@
   </test>
 
   <test name="fast tests">
+    <parameter name="contextPath" value="" />
     <classes>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackageSourceWriterTest" />
       <class name="jetbrains.buildServer.nuget.tests.DotNetConstantsTest"/>
@@ -151,6 +152,19 @@
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonRegistrationTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonSearchQueryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonAutocompleteTest"/>
+    </classes>
+  </test>
+
+  <test name="fast tests (with contextPath)">
+    <parameter name="contextPath" value="/teamcity" />
+    <classes>
+      <!-- misc -->
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetFeedProviderTests"/>
+
+      <!-- Feed v3 APIs -->
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonPackageContentTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonRegistrationTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonSearchQueryTest"/>
     </classes>
   </test>
 </suite>

@@ -24,6 +24,8 @@ import org.jmock.Mockery;
 import org.jmock.lib.legacy.ClassImposteriser;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import javax.ws.rs.HttpMethod;
@@ -38,9 +40,11 @@ public class NuGetFeedProviderTests {
 
     private static final String SERVLET_PATH = "/app/nuget/v1/FeedService.svc";
     private NuGetFeedProviderImpl myFeedProvider;
+    private String myContextPath;
 
+    @Parameters({ "contextPath" })
     @BeforeMethod
-    protected void setUp() throws Exception {
+    protected void setUp(final String contextPath) throws Exception {
         final Mockery m = new Mockery() {{
             setImposteriser(ClassImposteriser.INSTANCE);
         }};
@@ -49,10 +53,11 @@ public class NuGetFeedProviderTests {
         final JsonRequestHandler jsonRequestHandler = m.mock(JsonRequestHandler.class);
         final PackageUploadHandler uploadHandler = m.mock(PackageUploadHandler.class);
         myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);
+        myContextPath = contextPath;
     }
 
     public void testGetPackagesHandler() {
-        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
+        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/Packages");
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
 
@@ -61,7 +66,7 @@ public class NuGetFeedProviderTests {
     }
 
     public void testPushPackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/");
         request.setMethod(HttpMethod.PUT);
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
@@ -71,7 +76,7 @@ public class NuGetFeedProviderTests {
     }
 
     public void testBatchRequest() throws Exception {
-        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/$batch");
+        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/$batch");
         request.setMethod(HttpMethod.POST);
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
@@ -81,7 +86,7 @@ public class NuGetFeedProviderTests {
     }
 
     public void testPostPackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
+        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/Packages");
         request.setMethod(HttpMethod.POST);
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
@@ -90,7 +95,7 @@ public class NuGetFeedProviderTests {
     }
 
     public void testUpdatePackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages(Id='id',Version='1.0.0')");
+        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/Packages(Id='id',Version='1.0.0')");
         request.setMethod(HttpMethod.PUT);
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
@@ -99,7 +104,7 @@ public class NuGetFeedProviderTests {
     }
 
     public void testDeletePackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages(Id='id',Version='1.0.0')");
+        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/Packages(Id='id',Version='1.0.0')");
         request.setMethod(HttpMethod.DELETE);
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);

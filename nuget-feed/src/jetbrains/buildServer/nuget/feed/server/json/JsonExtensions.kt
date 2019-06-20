@@ -100,6 +100,10 @@ internal fun HttpServletRequest.getRootUrl(): String {
     return this.requestURL.removeSuffix(this.requestURI).toString()
 }
 
+internal fun HttpServletRequest.getServerUrl(): String {
+    return this.getRootUrl() + (this.contextPath ?: "");
+}
+
 private val VERSION_20 = SemanticVersion.valueOf("2.0.0")!!
 
 object JsonExtensions {
