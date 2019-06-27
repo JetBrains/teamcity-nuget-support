@@ -38,10 +38,10 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
         }
 
         val entry = results.first()
-        val serverUrl = request.getServerUrl()
-        val downloadUrl = "$serverUrl${entry.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}"
+        val rootUrl = request.getRootUrl()
+        val downloadUrl = "$rootUrl${entry.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}"
         val packageResponse = entry.toRegistrationEntry(
-                "$serverUrl${request.servletPath}${request.pathInfo}",
+                "$rootUrl${request.servletPath}${request.pathInfo}",
                 listOf("Package", "catalog:Permalink"),
                 downloadUrl
         )
@@ -56,11 +56,11 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
             return
         }
 
-        val serverUrl = request.getServerUrl()
+        val rootUrl = request.getRootUrl()
         val items = results.map {
             val version = VersionUtility.normalizeVersion(it.version)
-            val registrationUrl = "$serverUrl${request.servletPath}/registration1/$id/$version.json"
-            val downloadUrl = "$serverUrl${it.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}"
+            val registrationUrl = "$rootUrl${request.servletPath}/registration1/$id/$version.json"
+            val downloadUrl = "$rootUrl${it.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}"
             JsonRegistrationPackage(
                     registrationUrl,
                     "Package",
@@ -74,14 +74,14 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
             )
         }
         val registrationPage = JsonRegistrationPage(
-                "$serverUrl${request.servletPath}${request.pathInfo}",
+                "$rootUrl${request.servletPath}${request.pathInfo}",
                 results.size,
                 lower = VersionUtility.normalizeVersion(results.first().version),
                 upper = VersionUtility.normalizeVersion(results.last().version),
                 items = items
         )
         val registration = JsonRegistrationResponse(
-                "$serverUrl${request.servletPath}${request.pathInfo}",
+                "$rootUrl${request.servletPath}${request.pathInfo}",
                 listOf("catalog:CatalogRoot", "PackageRegistration", "catalog:Permalink"),
                 1,
                 listOf(registrationPage)

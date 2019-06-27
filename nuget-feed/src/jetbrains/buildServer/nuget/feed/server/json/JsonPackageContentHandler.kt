@@ -47,13 +47,13 @@ class JsonPackageContentHandler(private val feedFactory: NuGetFeedFactory) : NuG
         }
 
         val entry = results.first()
-        val serverUrl = request.getServerUrl()
+        val rootUrl = request.getRootUrl()
         val downloadUrl = entry.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]
         val redirectUrl = when(extension) {
-            "nupkg" -> "$serverUrl$downloadUrl"
+            "nupkg" -> "$rootUrl$downloadUrl"
             "nuspec" -> {
                 val packageId = entry.attributes[NuGetPackageAttributes.ID]
-                "$serverUrl$downloadUrl!/$packageId.nuspec"
+                "$rootUrl$downloadUrl!/$packageId.nuspec"
             }
             else -> {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unsupported format $extension")

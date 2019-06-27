@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse
 class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetFeedHandler {
     override fun handleRequest(feedData: NuGetFeedData, request: HttpServletRequest, response: HttpServletResponse) {
         val nuGetFeed = feedFactory.createFeed(feedData)
-        val serverUrl = request.getServerUrl()
+        val rootUrl = request.getRootUrl()
         val query = request.getParameter("q")
         val skip = request.getParameter("skip")?.toIntOrNull()
         val take = request.getParameter("take")?.toIntOrNull() ?: NuGetFeedConstants.NUGET_FEED_PACKAGE_SIZE
@@ -39,7 +39,7 @@ class JsonSearchQueryHandler(private val feedFactory: NuGetFeedFactory) : NuGetF
         keys.take(take).forEach {
             results[it]?.let { packages ->
                 val entry = packages.last()
-                val packageUrl = "$serverUrl${request.servletPath}/registration1/${it.toLowerCase()}/"
+                val packageUrl = "$rootUrl${request.servletPath}/registration1/${it.toLowerCase()}/"
                 val versions = packages.map {
                     val version = VersionUtility.normalizeVersion(it.version)
                     JsonPackageVersion(
