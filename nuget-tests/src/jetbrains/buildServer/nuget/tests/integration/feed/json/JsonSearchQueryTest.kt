@@ -10,6 +10,7 @@ class JsonSearchQueryTest : JsonFeedIntegrationTestBase() {
 
         val responseBody = openRequest("query/?q=MyPackage")
         assertContainsPackageVersion(responseBody, "1.0.0")
+        assertContainsCorrectUrls(responseBody)
     }
 
     @Test

@@ -14,12 +14,14 @@ class ProjectRepository(val repository: Repository,
 
     val httpAuthUrls: List<URI>
         get() = repository.urlPaths.map {
-            uriBuilder.replacePath(WebUtil.combineContextPath(WebUtil.HTTP_AUTH_PREFIX, it)).build()
+            val builder = uriBuilder.clone()
+            builder.path(WebUtil.combineContextPath(WebUtil.HTTP_AUTH_PREFIX, it)).build()
         }
 
     val guestAuthUrls: List<URI>
         get() = repository.urlPaths.map {
-            uriBuilder.replacePath(WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, it)).build()
+            val builder = uriBuilder.clone()
+            builder.path(WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, it)).build()
         }
 
     val usagesCount: Int

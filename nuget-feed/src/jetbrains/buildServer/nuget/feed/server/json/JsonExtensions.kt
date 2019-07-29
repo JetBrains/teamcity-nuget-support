@@ -8,10 +8,12 @@ import jetbrains.buildServer.nuget.common.version.SemanticVersion
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
+import jetbrains.buildServer.web.util.WebUtil
 import java.io.OutputStreamWriter
 import java.util.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.ws.rs.core.UriBuilder
 
 internal fun NuGetIndexEntry.toRegistrationEntry(atId: String, atType: List<String>, downloadUrl: String): JsonRegistrationPackageResponse {
     return JsonRegistrationPackageResponse(
@@ -97,9 +99,12 @@ internal fun HttpServletRequest.includeSemVer2(): Boolean {
 }
 
 internal fun HttpServletRequest.getRootUrl(): String {
-    return this.requestURL.removeSuffix(this.requestURI).toString()
+    var rootUrl = WebUtil.getRootUrl(this);
+    if (WebUtil.getServerPort(this) >= 0) {
+        return rootUrl;
+    }
+    return UriBuilder.fromUri(rootUrl).host(WebUtil.getServerName(this)).build().toString();
 }
-
 private val VERSION_20 = SemanticVersion.valueOf("2.0.0")!!
 
 object JsonExtensions {

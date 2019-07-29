@@ -2,7 +2,6 @@ package jetbrains.buildServer.nuget.feed.server.json
 
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
-import jetbrains.buildServer.web.util.WebUtil
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
