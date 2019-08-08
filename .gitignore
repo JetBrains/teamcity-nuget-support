@@ -61,3 +61,4 @@ nuget-extensions/packages/*
 # TeamCity distribution
 /downloads
 /servers
+nuget-extensions/.vs/

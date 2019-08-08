@@ -10,7 +10,6 @@
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" />
     <!--Do not upgrade Newtonsoft.Json! Nuget supports 9.0.1-->
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
-    <PackageReference Include="NuGet.Protocol" Version="4.9.4" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" Condition="'$(TargetFramework)' == 'netcoreapp1.0'"/>
     <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.0" Condition="'$(TargetFramework)' == 'netcoreapp1.0'"/>
     <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" Condition="'$(TargetFramework)' == 'netcoreapp1.0'"/>
@@ -30,6 +29,18 @@
       <Link>Data\XmlSerializerHelper.cs</Link>
     </Compile>
   </ItemGroup>
+  <Choose>
+    <When Condition="'$(TargetFramework)' == 'net46' or '$(TargetFramework)' == 'netcoreapp1.0'">
+      <ItemGroup>
+        <PackageReference Include="NuGet.Protocol" Version="4.9.4" />
+      </ItemGroup>      
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <PackageReference Include="NuGet.Protocol" Version="5.2.0" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net46'">
     <ApplicationIcon>..\..\teamCity.ico</ApplicationIcon>
   </PropertyGroup>
