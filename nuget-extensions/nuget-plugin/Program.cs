@@ -27,6 +27,8 @@ namespace JetBrains.TeamCity.NuGet
         multiLogger.Add(fileLogger);
       }
 
+      multiLogger.Log(LogLevel.Verbose, "Entered nuget credentials plugin");
+
       Console.CancelKeyPress += (sender, eventArgs) =>
                                 {
                                   tokenSource.Cancel();
@@ -63,12 +65,20 @@ namespace JetBrains.TeamCity.NuGet
       {
         multiLogger.Log(LogLevel.Verbose, "Running in plug-in mode");
 
-        using (IPlugin plugin = await PluginFactory
-          .CreateFromCurrentProcessAsync(requestHandlers, ConnectionOptions.CreateDefault(), CancellationToken.None)
-          .ConfigureAwait(continueOnCapturedContext: false))
+        try
         {
-          multiLogger.Add(new PluginConnectionLogger(plugin.Connection));
-          await RunNuGetPluginsAsync(plugin, multiLogger, tokenSource.Token).ConfigureAwait(continueOnCapturedContext: false);
+          using (IPlugin plugin = await PluginFactory
+            .CreateFromCurrentProcessAsync(requestHandlers, ConnectionOptions.CreateDefault(), CancellationToken.None)
+            .ConfigureAwait(continueOnCapturedContext: false))
+          {
+            multiLogger.Add(new PluginConnectionLogger(plugin.Connection));
+            await RunNuGetPluginsAsync(plugin, multiLogger, tokenSource.Token).ConfigureAwait(continueOnCapturedContext: false);
+          }
+        }
+        catch (TaskCanceledException e)
+        {
+          // Multiple source restoration. Request will be cancelled if a package has been successfully restored from another source
+          multiLogger.Log(LogLevel.Verbose, $"Request to credential provider was cancelled. Message: ${e.Message}");
         }
 
         return 0;
