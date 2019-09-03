@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.TeamCity.NuGet.Logging;
@@ -35,9 +37,11 @@ namespace JetBrains.TeamCity.NuGet
                                   eventArgs.Cancel = true;
                                 };
 
+      var semaphore = new SemaphoreSlim(0);
+
       try
       {
-        return MainInternal(tokenSource, multiLogger, args).GetAwaiter().GetResult();
+        return MainInternal(tokenSource, multiLogger, semaphore, args).GetAwaiter().GetResult();
       }
       catch (OperationCanceledException e)
       {
@@ -47,11 +51,33 @@ namespace JetBrains.TeamCity.NuGet
       }
     }
 
-    private static async Task<int> MainInternal(CancellationTokenSource tokenSource, MultiLogger multiLogger, string[] args)
+    private static async Task<int> MainInternal(CancellationTokenSource tokenSource, MultiLogger multiLogger,
+      SemaphoreSlim semaphore, string[] args)
     {
+      Process.GetCurrentProcess().Dispose();
+
       var credentialProvider = new TeamCityCredentialProvider(multiLogger);
       var sdkInfo = new SdkInfo();
-      var requestHandlers = new RequestHandlerCollection
+      var requestHandlers = new RequestHandlerCollection((method, handler) =>
+                                                         {
+                                                           if (method != MessageMethod.Close) return;
+
+                                                           var plugin = GetPlugin(handler);
+
+                                                           multiLogger.Add(new PluginConnectionLogger(plugin.Connection));
+
+                                                           plugin.Connection.Faulted += (sender, a) =>
+                                                                                        {
+                                                                                          multiLogger.Log(
+                                                                                            LogLevel.Error,
+                                                                                            $"Faulted on message: {a.Message?.Type} {a.Message?.Method} {a.Message?.RequestId}");
+                                                                                          multiLogger.Log(
+                                                                                            LogLevel.Error,
+                                                                                            a.Exception.ToString());
+                                                                                        };
+
+                                                           plugin.Closed += (sender, a) => semaphore.Release();
+                                                         })
                             {
                               {
                                 MessageMethod.GetAuthenticationCredentials,
@@ -83,10 +109,15 @@ namespace JetBrains.TeamCity.NuGet
         {
           using (IPlugin plugin = await PluginFactory
             .CreateFromCurrentProcessAsync(requestHandlers, ConnectionOptions.CreateDefault(), CancellationToken.None)
-            .ConfigureAwait(continueOnCapturedContext: false))
+            .ConfigureAwait(false))
           {
-            multiLogger.Add(new PluginConnectionLogger(plugin.Connection));
-            await RunNuGetPluginsAsync(plugin, multiLogger, tokenSource.Token).ConfigureAwait(continueOnCapturedContext: false);
+            bool complete = await semaphore.WaitAsync(TimeSpan.FromDays(1), tokenSource.Token)
+              .ConfigureAwait(continueOnCapturedContext: false);
+
+            if (!complete)
+            {
+              multiLogger.Log(LogLevel.Error, "Timed out waiting for plug-in operations to complete");
+            }
           }
         }
         catch (OperationCanceledException e)
@@ -127,25 +158,24 @@ namespace JetBrains.TeamCity.NuGet
       return -1;
     }
 
-    private static async Task RunNuGetPluginsAsync(IPlugin plugin, ILogger logger, CancellationToken cancellationToken)
+    private static IPlugin GetPlugin(IRequestHandler handler)
     {
-      SemaphoreSlim semaphore = new SemaphoreSlim(0);
-
-      plugin.Connection.Faulted += (sender, a) =>
-                                   {
-                                     logger.Log(LogLevel.Error, $"Faulted on message: {a.Message?.Type} {a.Message?.Method} {a.Message?.RequestId}");
-                                     logger.Log(LogLevel.Error, a.Exception.ToString());
-                                   };
-
-      plugin.Closed += (sender, a) => semaphore.Release();
-
-      bool complete = await semaphore.WaitAsync(TimeSpan.FromDays(1), cancellationToken)
-        .ConfigureAwait(continueOnCapturedContext: false);
-
-      if (!complete)
+      if (!(handler is CloseRequestHandler closeRequestHandler))
       {
-        logger.Log(LogLevel.Error, "Timed out waiting for plug-in operations to complete");
+        throw new InvalidOperationException($"Expected CloseRequestHandler but was ${handler?.GetType()}");
       }
+
+      var pluginField = closeRequestHandler
+        .GetType()
+        .GetField("_plugin", BindingFlags.NonPublic | BindingFlags.GetField | BindingFlags.Instance)
+        ?.GetValue(handler);
+
+      if (!(pluginField is IPlugin plugin))
+      {
+        throw new InvalidOperationException($"Expected IPlugin but was ${pluginField?.GetType()}");
+      }
+
+      return plugin;
     }
 
     private static void DebugBreakIfPluginDebuggingIsEnabled()
