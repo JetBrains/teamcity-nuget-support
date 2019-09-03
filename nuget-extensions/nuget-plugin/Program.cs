@@ -14,7 +14,7 @@ namespace JetBrains.TeamCity.NuGet
 {
   internal static class Program
   {
-    public static async Task<int> Main(string[] args)
+    public static int Main(string[] args)
     {
       DebugBreakIfPluginDebuggingIsEnabled();
 
@@ -35,6 +35,20 @@ namespace JetBrains.TeamCity.NuGet
                                   eventArgs.Cancel = true;
                                 };
 
+      try
+      {
+        return MainInternal(tokenSource, multiLogger, args).GetAwaiter().GetResult();
+      }
+      catch (OperationCanceledException e)
+      {
+        // Multiple source restoration. Request will be cancelled if a package has been successfully restored from another source
+        multiLogger.Log(LogLevel.Verbose, $"Request to credential provider was cancelled. Message: ${e.Message}");
+        return 0;
+      }
+    }
+
+    private static async Task<int> MainInternal(CancellationTokenSource tokenSource, MultiLogger multiLogger, string[] args)
+    {
       var credentialProvider = new TeamCityCredentialProvider(multiLogger);
       var sdkInfo = new SdkInfo();
       var requestHandlers = new RequestHandlerCollection
@@ -75,7 +89,7 @@ namespace JetBrains.TeamCity.NuGet
             await RunNuGetPluginsAsync(plugin, multiLogger, tokenSource.Token).ConfigureAwait(continueOnCapturedContext: false);
           }
         }
-        catch (TaskCanceledException e)
+        catch (OperationCanceledException e)
         {
           // Multiple source restoration. Request will be cancelled if a package has been successfully restored from another source
           multiLogger.Log(LogLevel.Verbose, $"Request to credential provider was cancelled. Message: ${e.Message}");
