@@ -60,6 +60,17 @@ class NuGetCredentialsProvider(events: EventDispatcher<AgentLifeCycleListener>,
                     LOG.debug("Set credentials plugin paths to $pluginPaths")
                     runner.addEnvironmentVariable(NUGET_PLUGIN_PATH_ENV_VAR, pluginPaths)
                 }
+
+                val environmentVariables = runner.buildParameters.environmentVariables;
+                if (!environmentVariables.containsKey(NUGET_PLUGIN_HANDSHAKE_TIMEOUT_IN_SECONDS_ENV_VAR)) {
+                    LOG.debug("Set NUGET handshake timeout to $NUGET_PLUGIN_HANDSHAKE_TIMEOUT_IN_SECONDS")
+                    runner.addEnvironmentVariable(NUGET_PLUGIN_HANDSHAKE_TIMEOUT_IN_SECONDS_ENV_VAR, NUGET_PLUGIN_HANDSHAKE_TIMEOUT_IN_SECONDS.toString())
+                }
+
+                if (!environmentVariables.containsKey(NUGET_PLUGIN_REQUEST_TIMEOUT_IN_SECONDS_ENV_VAR)) {
+                    LOG.debug("Set NUGET request timeout to $NUGET_PLUGIN_REQUEST_TIMEOUT_IN_SECONDS")
+                    runner.addEnvironmentVariable(NUGET_PLUGIN_REQUEST_TIMEOUT_IN_SECONDS_ENV_VAR, NUGET_PLUGIN_REQUEST_TIMEOUT_IN_SECONDS.toString())
+                }
             }
         } catch (e: IOException) {
             throw RunBuildException("Failed to create temp file for NuGet sources. " + e.message, e)
