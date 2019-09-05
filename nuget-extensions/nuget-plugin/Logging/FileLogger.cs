@@ -10,6 +10,7 @@ namespace JetBrains.TeamCity.NuGet.Logging
 {
   internal class FileLogger : LoggerBase
   {
+    private readonly Guid _id = Guid.NewGuid();
     private readonly string _filePath;
 
     internal FileLogger(string filePath)
@@ -21,7 +22,14 @@ namespace JetBrains.TeamCity.NuGet.Logging
     {
       var dateString = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff");
       var logLevelString = logLevel.ToString().ToUpper();
-      File.AppendAllText(_filePath, $"[{dateString}]   {logLevelString} - {message}\n");
+
+      using(var fileStream = new FileStream(_filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
+      using (var stream = new StreamWriter(fileStream))
+      {
+        fileStream.Seek(0, SeekOrigin.End);
+        stream.Write($"[{dateString}][{_id}]   {logLevelString} - {message}\n");
+        fileStream.Flush();
+      }
     }
   }
 }

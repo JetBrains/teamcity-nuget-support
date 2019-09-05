@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
-using JetBrains.TeamCity.NuGet.Logging;
+using NuGet.Common;
 using NuGet.Protocol.Plugins;
+using ILogger = JetBrains.TeamCity.NuGet.Logging.ILogger;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
 {
@@ -12,7 +13,7 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     /// <summary>
     /// Initializes a new instance of the <see cref="InitializeRequestHandler"/> class.
     /// </summary>
-    /// <param name="logger">A <see cref="ILogger"/> to use for logging.</param>
+    /// <param name="logger">A <see cref="Logging.ILogger"/> to use for logging.</param>
     public InitializeRequestHandler(ILogger logger)
       : base(logger)
     {
@@ -20,6 +21,7 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
 
     public override Task<InitializeResponse> HandleRequestAsync(InitializeRequest request)
     {
+      Logger.Log(LogLevel.Verbose, $"Request timeout: {request.RequestTimeout}");
       return Task.FromResult(new InitializeResponse(MessageResponseCode.Success));
     }
   }
