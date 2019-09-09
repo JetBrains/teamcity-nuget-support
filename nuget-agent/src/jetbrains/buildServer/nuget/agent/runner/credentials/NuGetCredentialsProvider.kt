@@ -9,8 +9,10 @@ import jetbrains.buildServer.agent.BuildRunnerContext
 import jetbrains.buildServer.nuget.agent.parameters.PackageSourceManager
 import jetbrains.buildServer.nuget.common.auth.NuGetAuthConstants.*
 import jetbrains.buildServer.nuget.common.auth.PackageSourceUtil
+import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.util.EventDispatcher
 import jetbrains.buildServer.util.FileUtil
+import jetbrains.buildServer.util.StringUtil
 import java.io.File
 import java.io.IOException
 
@@ -35,6 +37,9 @@ class NuGetCredentialsProvider(events: EventDispatcher<AgentLifeCycleListener>,
     }
 
     override fun beforeRunnerStart(runner: BuildRunnerContext) {
+        if (TeamCityProperties.getBoolean("teamcity.nuget.credentialprovider.disabled")) return
+        if (StringUtil.isTrue(runner.configParameters.get("teamcity.nuget.credentialprovider.disabled")?.trim())) return
+
         val pathProvider = myCredentialsPathProviders[runner.runType] ?: return
 
         val packageSources = packageSourceManager.getGlobalPackageSources(runner.build)
