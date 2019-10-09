@@ -9,6 +9,7 @@ import jetbrains.buildServer.serverSide.CurrentNodeInfo
 import jetbrains.buildServer.serverSide.SBuild
 import jetbrains.buildServer.serverSide.ServerResponsibilityImpl
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact
+import jetbrains.buildServer.serverSide.artifacts.BuildArtifactHolder
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifacts
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode
 import org.jmock.Expectations
@@ -25,13 +26,14 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val m = Mockery()
         val packageAnalyzer = m.mock(PackageAnalyzer::class.java)
         val buildArtifacts = m.mock(BuildArtifacts::class.java)
-        val buildArtifact = m.mock(BuildArtifact::class.java)
+        val buildArtifact = m.mock(BuildArtifact::class.java, "json")
         val build = m.mock(SBuild::class.java)
+        val buildArtifactHolder = m.mock(BuildArtifactHolder::class.java)
         val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
 
         m.checking(object : Expectations() {
             init {
-                oneOf(build).getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
+                allowing(build).getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
                 will(returnValue(buildArtifacts))
 
                 oneOf(buildArtifacts).getArtifact(".teamcity/nuget/packages.json")
@@ -39,15 +41,24 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
 
                 oneOf(buildArtifact).inputStream
                 will(returnValue(Files.newInputStream(Paths.get("testData/feed/indexer/.teamcity/nuget/packages.json"))))
+
+                oneOf(buildArtifacts).findArtifact("aa")
+                will(returnValue(buildArtifactHolder))
+
+                oneOf(buildArtifactHolder).isAccessible
+                will(returnValue(true))
+
+                oneOf(buildArtifactHolder).isAvailable
+                will(returnValue(true))
             }
         })
 
-        val packages = metadataProvider.getPackagesMetadata(build)
+        val metadata = metadataProvider.getPackagesMetadata(build)
 
-        Assert.assertTrue(packages.isNotEmpty())
-        val first = packages.first()
-        Assert.assertEquals(first["Id"], "NuGetFeedTest")
-        Assert.assertEquals(first["NormalizedVersion"], "0.0.137")
+        Assert.assertTrue(metadata.packages.isNotEmpty())
+        val first = metadata.packages.first()
+        Assert.assertEquals(first.metadata["Id"], "NuGetFeedTest")
+        Assert.assertEquals(first.metadata["NormalizedVersion"], "0.0.137")
 
         m.assertIsSatisfied()
     }
@@ -126,12 +137,12 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
             }
         })
 
-        val packages = metadataProvider.getPackagesMetadata(build)
+        val metadata = metadataProvider.getPackagesMetadata(build)
 
-        Assert.assertTrue(packages.isNotEmpty())
-        val first = packages.first()
-        Assert.assertEquals(first["Id"], "id")
-        Assert.assertEquals(first["NormalizedVersion"], "1.0.0")
+        Assert.assertTrue(metadata.packages.isNotEmpty())
+        val first = metadata.packages.first()
+        Assert.assertEquals(first.metadata["Id"], "id")
+        Assert.assertEquals(first.metadata["NormalizedVersion"], "1.0.0")
         val packagesFile = artifactsDir.toPath().resolve(PACKAGES_PATH)
         Assert.assertTrue(Files.exists(packagesFile))
         Assert.assertTrue(Files.size(packagesFile) > 0)
@@ -207,10 +218,10 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
             }
         })
 
-        val packages = metadataProvider.getPackagesMetadata(build)
+        val metadata = metadataProvider.getPackagesMetadata(build)
 
-        Assert.assertTrue(packages.isNotEmpty())
-        val first = packages.first()
+        Assert.assertTrue(metadata.packages.isNotEmpty())
+        val first = metadata.packages.first().metadata
         Assert.assertEquals(first["Id"], "id")
         Assert.assertEquals(first["NormalizedVersion"], "1.0.0")
         val packagesFile = artifactsDir.toPath().resolve(PACKAGES_PATH)
@@ -301,12 +312,12 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
             }
         })
 
-        val packages = metadataProvider.getPackagesMetadata(build)
+        val metadata = metadataProvider.getPackagesMetadata(build)
 
-        Assert.assertTrue(packages.isNotEmpty())
-        val first = packages.first()
-        Assert.assertEquals(first["Id"], "id")
-        Assert.assertEquals(first["NormalizedVersion"], "1.0.0")
+        Assert.assertTrue(metadata.packages.isNotEmpty())
+        val first = metadata.packages.first()
+        Assert.assertEquals(first.metadata["Id"], "id")
+        Assert.assertEquals(first.metadata["NormalizedVersion"], "1.0.0")
         Assert.assertTrue(Files.exists(packagesFile))
         Assert.assertTrue(Files.size(packagesFile) > 0)
 
@@ -367,9 +378,9 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
             }
         })
 
-        val packages = metadataProvider.getPackagesMetadata(build)
+        val metadata = metadataProvider.getPackagesMetadata(build)
 
-        Assert.assertTrue(packages.isEmpty())
+        Assert.assertTrue(metadata.packages.isEmpty())
         Assert.assertFalse(Files.exists(packagesFile))
 
         m.assertIsSatisfied()

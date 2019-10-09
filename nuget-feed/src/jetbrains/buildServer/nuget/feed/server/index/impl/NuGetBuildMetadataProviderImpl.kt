@@ -18,12 +18,13 @@ import java.util.*
 class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnalyzer,
                                      private val myServerResponsibility: ServerResponsibility) : NuGetBuildMetadataProvider {
 
-    override fun getPackagesMetadata(build: SBuild): Collection<Map<String, String>> {
-        readBuildMetadata(build)?.let {
-            return it
+    override fun getPackagesMetadata(build: SBuild): Metadata {
+        var metadata: Metadata = readBuildMetadata(build)
+        when (metadata.state) {
+            MetadataState.IsAbsent -> metadata = Metadata(MetadataState.Synchronized, indexBuildPackages(build))
+            MetadataState.Unsynchronized -> metadata = Metadata(MetadataState.Unsynchronized, indexBuildPackages(build))
+            MetadataState.Synchronized -> return metadata
         }
-
-        val metadata = indexBuildPackages(build)
 
         if (myServerResponsibility.isResponsibleForBuild(build)) {
             try {
@@ -36,7 +37,7 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
         return metadata
     }
 
-    private fun indexBuildPackages(build: SBuild): List<Map<String, String>> {
+    private fun indexBuildPackages(build: SBuild): Collection<NuGetPackageData> {
         val nugetArtifacts = HashSet<BuildArtifact>()
         val artifacts = build.getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
 
@@ -56,11 +57,11 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
         }
     }
 
-    private fun writeBuildMetadata(build: SBuild, metadata: List<Map<String, String>>) {
-        if (metadata.isNotEmpty()) {
-            val packages = metadata.mapNotNull {
-                it[PackageConstants.TEAMCITY_ARTIFACT_RELPATH]?.let { path ->
-                    NuGetPackageData(path, it)
+    private fun writeBuildMetadata(build: SBuild, metadata: Metadata) {
+        if (metadata.packages.isNotEmpty()) {
+            val packages = metadata.packages.mapNotNull {
+                it.metadata[PackageConstants.TEAMCITY_ARTIFACT_RELPATH]?.let { path ->
+                    NuGetPackageData(path, it.metadata)
                 }
             }
 
@@ -74,47 +75,58 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
         }
     }
 
-    private fun readBuildMetadata(build: SBuild): Collection<Map<String, String>>? {
+    private fun readBuildMetadata(build: SBuild): Metadata {
         val artifacts = build.getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
         val artifact = artifacts.getArtifact(PackageConstants.PACKAGES_FILE_PATH)
         if (artifact != null) {
             try {
                 val metadata = artifact.inputStream.use {
-                    NuGetPackagesUtil.readPackages(it)?.packages?.let {
-                        it.values
-                    }
+                    NuGetPackagesUtil
+                            .readPackages(it)
+                            ?.let {
+                                list -> list.packages.map {
+                                    packageInfo -> NuGetPackageData(packageInfo.key, packageInfo.value )
+                                }
+                            }
+                            ?.let { packages ->
+                                Metadata(MetadataState.Synchronized, packages)
+                            }
+                            ?: Metadata(MetadataState.Synchronized)
                 }
 
-                val hasAnyUnavailablePackages = metadata?.let {
-                        it.asSequence()
-                        .map { packageMetadata -> packageMetadata[PackageConstants.TEAMCITY_ARTIFACT_RELPATH] }
+                val hasAnyUnavailablePackages =
+                        metadata.packages.asSequence()
+                        .map { pack -> pack.metadata[PackageConstants.TEAMCITY_ARTIFACT_RELPATH] }
                         .filterNotNull()
                         .filter {
                             val packageArtifact = artifacts.findArtifact(it)
                             !packageArtifact.isAvailable || !packageArtifact.isAccessible
                         }
                         .any()
-                } ?: false
 
-                if (!hasAnyUnavailablePackages) {
-                    return metadata
+                if (hasAnyUnavailablePackages) {
+                    deletePackageFile(build)
+                    return Metadata(MetadataState.Unsynchronized)
                 }
+
+                return metadata
             } catch (e: Exception) {
                 LOG.warnAndDebugDetails("Failed to read NuGet packages list for build ${LogUtil.describe(build)}", e)
             }
 
-            if (myServerResponsibility.isResponsibleForBuild(build)) {
-                deletePackageFile(build)
-            }
+            deletePackageFile(build)
         }
-        return null
+
+        return Metadata(MetadataState.IsAbsent)
     }
 
     private fun deletePackageFile(build: SBuild) {
-        FileUtil.delete(File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH))
+        if (myServerResponsibility.isResponsibleForBuild(build)) {
+            FileUtil.delete(File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH))
+        }
     }
 
-    private fun generateMetadataForPackage(build: SBuild, artifact: BuildArtifact): Map<String, String> {
+    private fun generateMetadataForPackage(build: SBuild, artifact: BuildArtifact): NuGetPackageData {
         val metadata = try {
             artifact.inputStream.use {
                 myPackageAnalyzer.analyzePackage(it)
@@ -142,7 +154,7 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
         metadata[NuGetPackageAttributes.LAST_UPDATED] = created
         metadata[NuGetPackageAttributes.PUBLISHED] = created
 
-        return metadata
+        return NuGetPackageData(artifact.relativePath, metadata)
     }
 
     private fun visitArtifacts(artifact: BuildArtifact, packages: MutableSet<BuildArtifact>) {
