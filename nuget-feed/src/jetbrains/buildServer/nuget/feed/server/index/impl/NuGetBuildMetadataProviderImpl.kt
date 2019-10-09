@@ -79,20 +79,39 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
         val artifact = artifacts.getArtifact(PackageConstants.PACKAGES_FILE_PATH)
         if (artifact != null) {
             try {
-                artifact.inputStream.use {
+                val metadata = artifact.inputStream.use {
                     NuGetPackagesUtil.readPackages(it)?.packages?.let {
-                        return it.values
+                        it.values
                     }
+                }
+
+                val hasAnyUnavailablePackages = metadata?.let {
+                        it.asSequence()
+                        .map { packageMetadata -> packageMetadata[PackageConstants.TEAMCITY_ARTIFACT_RELPATH] }
+                        .filterNotNull()
+                        .filter {
+                            val packageArtifact = artifacts.findArtifact(it)
+                            !packageArtifact.isAvailable || !packageArtifact.isAccessible
+                        }
+                        .any()
+                } ?: false
+
+                if (!hasAnyUnavailablePackages) {
+                    return metadata
                 }
             } catch (e: Exception) {
                 LOG.warnAndDebugDetails("Failed to read NuGet packages list for build ${LogUtil.describe(build)}", e)
             }
 
             if (myServerResponsibility.isResponsibleForBuild(build)) {
-                FileUtil.delete(File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH))
+                deletePackageFile(build)
             }
         }
         return null
+    }
+
+    private fun deletePackageFile(build: SBuild) {
+        FileUtil.delete(File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH))
     }
 
     private fun generateMetadataForPackage(build: SBuild, artifact: BuildArtifact): Map<String, String> {

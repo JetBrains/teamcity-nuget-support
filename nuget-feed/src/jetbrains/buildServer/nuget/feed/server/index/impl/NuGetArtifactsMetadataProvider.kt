@@ -64,14 +64,21 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
         LOG.debug("Looking for NuGet packages in ${LogUtil.describe(build)}")
 
         val packages = myMetadataProvider.getPackagesMetadata(build)
-        if (packages.isEmpty()) {
-            return
-        }
-
         val feedNames = targetFeeds.joinToString {
             val projectId = myProjectManager.findProjectById(it.projectId)?.externalId ?: it.projectId
             return@joinToString if (it.feedId == NuGetFeedData.DEFAULT_FEED_ID) projectId else "$projectId/${it.feedId}"
         } + " feed" + if (targetFeeds.size > 1) "s"  else ""
+
+        if (packages.isEmpty()) {
+            for (feedData in targetFeeds) {
+                if (feedData.key != providerId) {
+                    myMetadataStorage.removeBuildEntries(build.buildId, feedData.key)
+                }
+            }
+
+            myReset.resetCache()
+            return
+        }
 
         packages.forEach { metadata ->
             val id = metadata[ID]
