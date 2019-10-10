@@ -78,7 +78,7 @@ public class NuGetServerToolProvider extends ServerToolProviderAdapter {
     public String getValidPackageDescription() {
       return "Specify the path to a NuGet package (.nupkg file) with the <em>tools/NuGet.exe</em> file inside.\n" +
         "<br/>Download the <em>NuGet.Commandline.&lt;VERSION&gt;.nupkg</em> file from\n" +
-        "<a href=\"http://nuget.org/packages/NuGet.CommandLine\" target=\"_blank\">NuGet.org</a> and upload it here";
+        "<a href=\"http://nuget.org/packages/NuGet.CommandLine\" target=\"_blank\" rel=\"noreferrer\">NuGet.org</a> and upload it here";
     }
   };
 
