@@ -75,9 +75,7 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
 
         if (metadata.state == MetadataState.Unsynchronized) {
             for (feedData in targetFeeds) {
-                if (feedData.key != providerId) {
-                    myMetadataStorage.removeBuildEntries(build.buildId, feedData.key)
-                }
+                myMetadataStorage.removeBuildEntries(build.buildId, feedData.key)
             }
 
             myReset.resetCache()
