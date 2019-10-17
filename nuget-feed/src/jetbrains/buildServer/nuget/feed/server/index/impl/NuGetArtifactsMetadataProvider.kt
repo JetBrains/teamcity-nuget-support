@@ -65,6 +65,7 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
 
         val metadata = myMetadataProvider.getPackagesMetadata(build)
         if (metadata.state != MetadataState.Unsynchronized && metadata.packages.isEmpty()) {
+            LOG.debug("Skip NuGet metadata generation for build ${LogUtil.describe(build)}. Metadata state is ${metadata.state}")
             return
         }
 
@@ -74,10 +75,13 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
         } + " feed" + if (targetFeeds.size > 1) "s"  else ""
 
         if (metadata.state == MetadataState.Unsynchronized) {
+            LOG.debug("Metadata state is Unsynchronized, removing buildEntries for build ${LogUtil.describe(build)}")
             for (feedData in targetFeeds) {
+                LOG.debug("Removing buildEntry. Key: ${feedData.key}")
                 myMetadataStorage.removeBuildEntries(build.buildId, feedData.key)
             }
 
+            LOG.debug("Resetting cache")
             myReset.resetCache()
         }
 
