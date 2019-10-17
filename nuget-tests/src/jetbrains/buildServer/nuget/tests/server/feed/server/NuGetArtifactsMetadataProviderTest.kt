@@ -120,16 +120,16 @@ class NuGetArtifactsMetadataProviderTest {
                 oneOf(buildMetadataProvider).getPackagesMetadata(build)
                 will(returnValue(Metadata(MetadataState.Synchronized)))
 
-                exactly(2).of(build).buildId
+                exactly(3).of(build).buildId
                 will(returnValue(1L))
 
                 oneOf(metadataStorage).getBuildEntry(1L, "nuget")
                 will(returnIterator(emptyList<BuildMetadataEntry>()))
 
-                oneOf(build).buildNumber
+                exactly(2).of(build).buildNumber
                 will(returnValue("123"))
 
-                oneOf(build).buildTypeExternalId
+                exactly(2).of(build).buildTypeExternalId
                 will(returnValue("bt"))
             }
         })
