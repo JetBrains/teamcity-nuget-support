@@ -45,11 +45,14 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
                 oneOf(buildArtifacts).findArtifact("aa")
                 will(returnValue(buildArtifactHolder))
 
-                oneOf(buildArtifactHolder).isAccessible
+                exactly(2).of(buildArtifactHolder).isAccessible
                 will(returnValue(true))
 
-                oneOf(buildArtifactHolder).isAvailable
+                exactly(2).of(buildArtifactHolder).isAvailable
                 will(returnValue(true))
+
+                oneOf(buildArtifactHolder).relativePath
+                will(returnValue(""))
             }
         })
 
