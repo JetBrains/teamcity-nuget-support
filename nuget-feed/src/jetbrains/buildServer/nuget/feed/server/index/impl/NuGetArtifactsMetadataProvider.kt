@@ -77,10 +77,8 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
         if (metadata.state == MetadataState.Unsynchronized) {
             LOG.debug("Metadata state is Unsynchronized, removing buildEntries for build ${LogUtil.describe(build)}")
             for (feedData in targetFeeds) {
-                if (feedData.key != providerId) {
-                    LOG.debug("Removing buildEntry. Key: ${feedData.key}")
-                    myMetadataStorage.removeBuildEntries(build.buildId, feedData.key)
-                }
+                LOG.debug("Removing buildEntry. Key: ${feedData.key}")
+                myMetadataStorage.removeBuildEntries(build.buildId, feedData.key)
             }
 
             LOG.debug("Resetting cache")
