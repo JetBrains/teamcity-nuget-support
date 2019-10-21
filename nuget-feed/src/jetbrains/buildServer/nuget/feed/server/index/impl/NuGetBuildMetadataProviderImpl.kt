@@ -100,6 +100,7 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
                         .filterNotNull()
                         .filter {
                             val packageArtifact = artifacts.findArtifact(it)
+                            LOG.debug("Checking artifact by path: '${packageArtifact.relativePath}', isAvailable: ${packageArtifact.isAvailable}, isAccessible: ${packageArtifact.isAccessible}")
                             !packageArtifact.isAvailable || !packageArtifact.isAccessible
                         }
                         .any()
