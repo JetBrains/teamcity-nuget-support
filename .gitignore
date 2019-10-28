@@ -62,3 +62,4 @@ nuget-extensions/packages/*
 /downloads
 /servers
 nuget-extensions/.vs/
+nuget-feed-react-ui/build_react_ui/
