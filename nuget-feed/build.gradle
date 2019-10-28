@@ -30,4 +30,6 @@ dependencies {
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web.jar")
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
     provided "com.github.ben-manes.caffeine:caffeine:2.4.0"
+
+    runtimeOnly project(':nuget-feed-react-ui')
 }

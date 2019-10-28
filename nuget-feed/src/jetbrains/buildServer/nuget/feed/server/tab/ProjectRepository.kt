@@ -1,5 +1,6 @@
 package jetbrains.buildServer.nuget.feed.server.tab
 
+import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepositoryType
 import jetbrains.buildServer.serverSide.SProject
 import jetbrains.buildServer.serverSide.packages.Repository
 import jetbrains.buildServer.web.util.WebUtil
@@ -26,4 +27,7 @@ class ProjectRepository(val repository: Repository,
 
     val usagesCount: Int
         get() = usages.size
+    
+    val canBeListed: Boolean
+        get() = repository.type is NuGetRepositoryType
 }

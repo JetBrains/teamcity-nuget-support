@@ -20,15 +20,20 @@ import jetbrains.buildServer.RootUrlHolder
 import jetbrains.buildServer.controllers.AuthorizationInterceptor
 import jetbrains.buildServer.controllers.BaseController
 import jetbrains.buildServer.nuget.feed.server.PermissionChecker
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedFactory
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.auth.LoginConfiguration
+import jetbrains.buildServer.serverSide.packages.RepositoryConstants
 import jetbrains.buildServer.serverSide.packages.RepositoryRegistry
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.web.openapi.PluginDescriptor
 import jetbrains.buildServer.web.openapi.WebControllerManager
 import org.springframework.web.servlet.ModelAndView
+import java.security.InvalidParameterException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.ws.rs.core.UriBuilder
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -42,7 +47,8 @@ class PackagesController(auth: AuthorizationInterceptor,
                          private val myRootUrlHolder: RootUrlHolder,
                          private val myRepositoryRegistry: RepositoryRegistry,
                          private val myRepositoriesManager: RepositoryManager,
-                         private val myProjectManager: ProjectManager) : BaseController() {
+                         private val myProjectManager: ProjectManager,
+                         private val myFeedFactory: NuGetFeedFactory) : BaseController() {
 
     private val myIncludePath: String = myDescriptor.getPluginResourcesPath("packages/status.html")
     private val mySettingsPath: String = myDescriptor.getPluginResourcesPath("packages/settings.html")
@@ -56,24 +62,63 @@ class PackagesController(auth: AuthorizationInterceptor,
 
     override fun doHandle(request: HttpServletRequest,
                           response: HttpServletResponse): ModelAndView? {
-        val mv = ModelAndView(myDescriptor.getPluginResourcesPath("packagesSettings.jsp"))
+        if ("viewRepository" == request.getParameter("action")) run {
+            val repositoryName = request.getParameter(RepositoryConstants.REPOSITORY_NAME_KEY) ?: throw InvalidParameterException("Repository type must be specified")
+            val project = getProject(request)
+            val repository = myRepositoriesManager
+                    .getRepositories(project, false)
+                    .filter { it.name == repositoryName }
+                    .firstOrNull()
+            if (repository == null) {
+                throw InvalidParameterException("No such nuget repository $repositoryName")
+            }
 
-        val project = getProject(request)
-        val repositories = myRepositoriesManager.getRepositories(project, false).map {
-            val usages = myRepositoryRegistry.findUsagesProvider(it.type.type)
-                    ?.getUsages(it, MAX_USAGES_COUNT)?.take(MAX_USAGES_COUNT)
-                    ?: emptyList()
-            ProjectRepository(it, project, myRootUrlHolder.rootUrl, usages)
+            val feed = myFeedFactory.createFeed(NuGetFeedData(project.projectId, repositoryName))
+            val packages = feed.getAll(true)
+
+            val mv = ModelAndView(myDescriptor.getPluginResourcesPath("viewRepository.jsp"))
+            val model = mv.getModel()
+            val name = request.getParameter("name")
+            val properties = emptyMap<String, String>()
+
+            mv.model["repositoryTypes"] = myRepositoryRegistry.types
+
+            mv.model["statusRefreshUrl"] = myIncludePath
+            mv.model["settingsPostUrl"] = (request.contextPath ?: "") + mySettingsPath
+            mv.model["isGuestEnabled"] = myLoginConfiguration.isGuestLoginAllowed
+            mv.model["packages"] = packages
+            mv.model["reactUiScriptUrl"] = (request.contextPath ?: "") + myDescriptor.getPluginResourcesPath("react-ui/main.js")
+            mv.model["reactUiCssUrl"] = (request.contextPath ?: "") + myDescriptor.getPluginResourcesPath("react-ui/main.css")
+
+            return mv
+        } else {
+            val mv = ModelAndView(myDescriptor.getPluginResourcesPath("packagesSettings.jsp"))
+
+            val project = getProject(request)
+            val repositories = myRepositoriesManager.getRepositories(project, false).map {
+                val usages = myRepositoryRegistry.findUsagesProvider(it.type.type)
+                        ?.getUsages(it, MAX_USAGES_COUNT)?.take(MAX_USAGES_COUNT)
+                        ?: emptyList()
+                ProjectRepository(it, project, myRootUrlHolder.rootUrl, usages)
+            }
+            val baseActionUrl = UriBuilder
+                    .fromUri("/admin/editProject.html")
+                    .queryParam("projectId", request.getParameter("projectId"))
+                    .queryParam("tab", request.getParameter("tab"))
+                    .build()
+                    .toString()
+
+            mv.model["project"] = project
+            mv.model["repositories"] = repositories
+            mv.model["repositoryTypes"] = myRepositoryRegistry.types
+
+            mv.model["statusRefreshUrl"] = myIncludePath
+            mv.model["settingsPostUrl"] = (request.contextPath ?: "") + mySettingsPath
+            mv.model["isGuestEnabled"] = myLoginConfiguration.isGuestLoginAllowed
+            mv.model["baseActionUrl"] = baseActionUrl
+
+            return mv
         }
-        mv.model["project"] = project
-        mv.model["repositories"] = repositories
-        mv.model["repositoryTypes"] = myRepositoryRegistry.types
-
-        mv.model["statusRefreshUrl"] = myIncludePath
-        mv.model["settingsPostUrl"] = (request.contextPath ?: "") + mySettingsPath
-        mv.model["isGuestEnabled"] = myLoginConfiguration.isGuestLoginAllowed
-
-        return mv
     }
 
     private fun getProject(request: HttpServletRequest) =

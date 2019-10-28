@@ -34,7 +34,7 @@ allprojects {
 }
 
 subprojects { subproject ->
-    if (!subproject.name.endsWith("extensions")) {
+    if (!subproject.name.endsWith("extensions") && !subproject.name.endsWith("react-ui")) {
         apply plugin: "kotlin"
 
         sourceSets {

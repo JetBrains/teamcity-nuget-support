@@ -28,6 +28,7 @@
 <jsp:useBean id="repositoryTypes" scope="request" type="java.util.Collection<jetbrains.buildServer.serverSide.packages.RepositoryType>" />
 <jsp:useBean id="project" scope="request" type="jetbrains.buildServer.serverSide.SProject" />
 <jsp:useBean id="publicKey" scope="request" type="java.lang.String"/>
+<jsp:useBean id="baseActionUrl" scope="request" type="java.lang.String"/>
 <jsp:useBean id="fb" class="jetbrains.buildServer.nuget.feed.server.tab.PackagesConstants"/>
 
 <c:set var="numberOfRepositoryTypes" value="${fn:length(repositoryTypes)}"/>
@@ -88,13 +89,34 @@
                     <tr>
                         <td>
                             <c:choose>
-                                <c:when test="${not empty entry.repository.description}">
+                              <c:when test="${entry.canBeListed}">
+                                <c:url var="viewFeedUrl" value="${baseActionUrl}">
+                                  <c:param name="action" value="viewRepository"/>
+                                  <c:param name="name" value="${entry.repository.name}"/>
+                                </c:url>
+                                <a href="${viewFeedUrl}">
+                                  <c:choose>
+                                    <c:when test="${not empty entry.repository.description}">
+                                      <c:out value="${entry.repository.description}" />
+                                    </c:when>
+                                    <c:otherwise>
+                                      <c:out value="${entry.repository.name}" />
+                                    </c:otherwise>
+                                  </c:choose>
+                                </a>
+                              </c:when>
+                              <c:otherwise>
+                                <c:choose>
+                                  <c:when test="${not empty entry.repository.description}">
                                     <c:out value="${entry.repository.description}" />
-                                </c:when>
-                                <c:otherwise>
+                                  </c:when>
+                                  <c:otherwise>
                                     <c:out value="${entry.repository.name}" />
-                                </c:otherwise>
+                                  </c:otherwise>
+                                </c:choose>
+                              </c:otherwise>
                             </c:choose>
+
                             <c:if test="${numberOfRepositoryTypes gt 1}">
                                 (${entry.repository.type.name})
                             </c:if>
@@ -160,7 +182,7 @@
                 <div class="grayNote"><b>Guest authentication</b>: Lists all packages from builds available for the guest<bs:help file="Guest+User"/> user.</div>
             </c:if>
         </c:if>
-    </div>
+    </span>
 
 </bs:refreshable>
 
