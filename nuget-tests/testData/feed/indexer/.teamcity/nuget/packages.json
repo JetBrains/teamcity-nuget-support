@@ -3,8 +3,7 @@
   "packages": {
     "NuGetFeedTest.0.0.137.nupkg": {
       "Id": "NuGetFeedTest",
-      "NormalizedVersion": "0.0.137",
-      "teamcity.artifactPath": "aa"
+      "NormalizedVersion": "0.0.137"
     }
   }
 }
