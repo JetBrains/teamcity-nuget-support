@@ -15,11 +15,10 @@ public interface RepositoryUsagesProvider {
   String getType();
 
   /**
-   * Returns the list of builds where used by repository.
+   * Returns the number of builds where used by repository.
    * @param repository for which will be collected list of usages.
-   * @param count sets the maximum number of builds to return.
    * @return see above.
    */
   @NotNull
-  List<Long> getUsages(@NotNull final Repository repository, @Nullable final Integer count);
+  Long getUsagesCount(@NotNull final Repository repository);
 }

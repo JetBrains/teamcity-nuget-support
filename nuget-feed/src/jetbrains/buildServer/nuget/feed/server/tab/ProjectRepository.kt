@@ -9,7 +9,7 @@ import javax.ws.rs.core.UriBuilder
 class ProjectRepository(val repository: Repository,
                         val project: SProject,
                         rootUrl: String,
-                        private val usages: List<Long>) {
+                        val usagesCount: Long) {
     private val uriBuilder = UriBuilder.fromUri(rootUrl)
 
     val httpAuthUrls: List<URI>
@@ -23,7 +23,4 @@ class ProjectRepository(val repository: Repository,
             val builder = uriBuilder.clone()
             builder.path(WebUtil.combineContextPath(WebUtil.GUEST_AUTH_PREFIX, it)).build()
         }
-
-    val usagesCount: Int
-        get() = usages.size
 }
