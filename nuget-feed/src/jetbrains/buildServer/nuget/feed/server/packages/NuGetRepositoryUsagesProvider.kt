@@ -20,17 +20,10 @@ class NuGetRepositoryUsagesProvider(private val myProjectManager: ProjectManager
         return PackageConstants.NUGET_PROVIDER_ID
     }
 
-    override fun getUsages(repository: Repository, count: Int?): List<Long> {
-        val nuGetRepository = repository as? NuGetRepository ?: return emptyList()
-        val project = myProjectManager.findProjectById(nuGetRepository.projectId) ?: return emptyList()
+    override fun getUsagesCount(repository: Repository): Long {
+        val nuGetRepository = repository as? NuGetRepository ?: return 0
+        val project = myProjectManager.findProjectById(nuGetRepository.projectId) ?: return 0
         val feedData = NuGetFeedData(project.projectId, project.externalId, nuGetRepository.name)
-        return myStorage.getAllEntries(feedData.key).asSequence()
-                .apply {
-                    count?.let {
-                        this.take(count)
-                    }
-                }
-                .map { it.buildId }
-                .toList()
+        return myStorage.getNumberOfEntries(feedData.key).toLong()
     }
 }

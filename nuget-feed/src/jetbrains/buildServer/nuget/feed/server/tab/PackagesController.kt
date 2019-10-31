@@ -61,8 +61,8 @@ class PackagesController(auth: AuthorizationInterceptor,
         val project = getProject(request)
         val repositories = myRepositoriesManager.getRepositories(project, false).map {
             val usages = myRepositoryRegistry.findUsagesProvider(it.type.type)
-                    ?.getUsages(it, MAX_USAGES_COUNT)?.take(MAX_USAGES_COUNT)
-                    ?: emptyList()
+                    ?.getUsagesCount(it)
+                    ?: 0
             ProjectRepository(it, project, myRootUrlHolder.rootUrl, usages)
         }
         mv.model["project"] = project
