@@ -17,7 +17,7 @@ class NuGetPackagePublisher(private val publisher: ArtifactsPublisher) {
         var tempDir: File? = null
         try {
             tempDir = FileUtil.createTempDirectory("packages", "list")
-            val tempFile = File(tempDir, PackageConstants.PACKAGES_LIST_NAME)
+            val tempFile = File(tempDir, PackageConstants.TEMP_PACKAGES_LIST_NAME)
 
             tempFile.outputStream().use {
                 NuGetPackagesUtil.writePackages(NuGetPackagesList(packages), it)

@@ -39,6 +39,9 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
                 oneOf(buildArtifacts).getArtifact(".teamcity/nuget/packages.json")
                 will(returnValue(buildArtifact))
 
+                oneOf(buildArtifacts).getArtifact(".teamcity/nuget/temp.packages.json")
+                will(returnValue(null))
+
                 oneOf(buildArtifact).inputStream
                 will(returnValue(Files.newInputStream(Paths.get("testData/feed/indexer/.teamcity/nuget/packages.json"))))
 
@@ -93,6 +96,9 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
                 will(returnValue(buildArtifacts))
 
                 oneOf(buildArtifacts).getArtifact(".teamcity/nuget/packages.json")
+                will(returnValue(null))
+
+                oneOf(buildArtifacts).getArtifact(".teamcity/nuget/temp.packages.json")
                 will(returnValue(null))
 
                 oneOf(buildArtifacts).rootArtifact
@@ -174,6 +180,9 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
                 will(returnValue(buildArtifacts))
 
                 oneOf(buildArtifacts).getArtifact(".teamcity/nuget/packages.json")
+                will(returnValue(null))
+
+                oneOf(buildArtifacts).getArtifact(".teamcity/nuget/temp.packages.json")
                 will(returnValue(null))
 
                 oneOf(buildArtifacts).rootArtifact
@@ -267,6 +276,9 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
                 oneOf(buildArtifacts).getArtifact(".teamcity/nuget/packages.json")
                 will(returnValue(packagesArtifact))
 
+                oneOf(buildArtifacts).getArtifact(".teamcity/nuget/temp.packages.json")
+                will(returnValue(null))
+
                 oneOf(packagesArtifact).inputStream
                 will(returnValue(Files.newInputStream(packagesFile)))
 
@@ -349,6 +361,9 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
                 will(returnValue(buildArtifacts))
 
                 oneOf(buildArtifacts).getArtifact(".teamcity/nuget/packages.json")
+                will(returnValue(null))
+
+                oneOf(buildArtifacts).getArtifact(".teamcity/nuget/temp.packages.json")
                 will(returnValue(null))
 
                 oneOf(buildArtifacts).rootArtifact
