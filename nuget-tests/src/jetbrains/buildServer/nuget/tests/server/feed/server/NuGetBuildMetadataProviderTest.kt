@@ -12,10 +12,15 @@ import jetbrains.buildServer.serverSide.artifacts.BuildArtifact
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactHolder
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifacts
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifactsViewMode
+import jetbrains.buildServer.util.FileUtil
+import org.hamcrest.Description
 import org.jmock.Expectations
 import org.jmock.Mockery
+import org.jmock.api.Action
+import org.jmock.api.Invocation
 import org.testng.Assert
 import org.testng.annotations.Test
+import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -23,6 +28,70 @@ import java.nio.file.Paths
 class NuGetBuildMetadataProviderTest : BaseTestCase() {
 
     fun readAgentProvidedPackagesList() {
+        val m = Mockery()
+        val packageAnalyzer = m.mock(PackageAnalyzer::class.java)
+        val buildArtifacts = m.mock(BuildArtifacts::class.java)
+        val buildArtifact = m.mock(BuildArtifact::class.java, "json")
+        val buildAgentArtifact = m.mock(BuildArtifact::class.java, "jsonAgent")
+        val build = m.mock(SBuild::class.java)
+        val buildArtifactHolder = m.mock(BuildArtifactHolder::class.java)
+        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
+
+        val tempArtifactsDir = createTempDir()
+        FileUtil.copyDir(Paths.get("testData/feed/indexer").toFile(), tempArtifactsDir)
+
+        m.checking(object : Expectations() {
+            init {
+                allowing(build).getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
+                will(returnValue(buildArtifacts))
+
+                allowing(build).artifactsDirectory
+                will(returnValue(tempArtifactsDir))
+
+                oneOf(buildArtifacts).getArtifact(".teamcity/nuget/packages.json")
+                will(returnValue(buildArtifact))
+
+                oneOf(buildArtifacts).getArtifact(".teamcity/nuget/temp.packages.json")
+                will(returnValue(buildAgentArtifact))
+
+                oneOf(buildArtifact).inputStream
+                will (object : Action {
+                    lateinit var myStream : InputStream
+                    override fun describeTo(description: Description?) {
+                        description?.appendText("returns ");
+                        description?.appendValue(myStream);
+                    }
+                    override fun invoke(invocation: Invocation?): Any {
+                        myStream = Files.newInputStream(Paths.get(tempArtifactsDir.path, ".teamcity/nuget/packages.json"))
+                        return myStream
+                    }
+                })
+
+                oneOf(buildArtifacts).findArtifact("aa")
+                will(returnValue(buildArtifactHolder))
+
+                exactly(2).of(buildArtifactHolder).isAccessible
+                will(returnValue(true))
+
+                exactly(2).of(buildArtifactHolder).isAvailable
+                will(returnValue(true))
+
+                oneOf(buildArtifactHolder).relativePath
+                will(returnValue(""))
+            }
+        })
+
+        val metadata = metadataProvider.getPackagesMetadata(build)
+
+        Assert.assertTrue(metadata.packages.isNotEmpty())
+        val first = metadata.packages.first()
+        Assert.assertEquals(first.metadata["Id"], "NuGetFeedTest")
+        Assert.assertEquals(first.metadata["NormalizedVersion"], "0.0.138")
+
+        m.assertIsSatisfied()
+    }
+
+    fun readServerProvidedPackagesList() {
         val m = Mockery()
         val packageAnalyzer = m.mock(PackageAnalyzer::class.java)
         val buildArtifacts = m.mock(BuildArtifacts::class.java)
