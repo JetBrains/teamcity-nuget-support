@@ -65,6 +65,8 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
                 }
             }
 
+            //Thread.sleep(20000)
+
             val packageFile = File(build.artifactsDirectory, PackageConstants.PACKAGES_FILE_PATH)
             FileUtil.createDir(packageFile.parentFile)
 
@@ -77,6 +79,14 @@ class NuGetBuildMetadataProviderImpl(private val myPackageAnalyzer: PackageAnaly
 
     private fun readBuildMetadata(build: SBuild): Metadata {
         val artifacts = build.getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
+        val tempPackagesArtifact = artifacts.getArtifact(PackageConstants.TEMP_PACKAGES_FILE_PATH)
+        if (tempPackagesArtifact != null) {
+            if (myServerResponsibility.isResponsibleForBuild(build)) {
+                LOG.debug("Renaming temporary packages.json file to reqular one")
+                deletePackageFile(build)
+                FileUtil.renameFileNameOnly(File(build.artifactsDirectory, PackageConstants.TEMP_PACKAGES_FILE_PATH), PackageConstants.PACKAGES_LIST_NAME)
+            }
+        }
         val artifact = artifacts.getArtifact(PackageConstants.PACKAGES_FILE_PATH)
         if (artifact != null) {
             try {

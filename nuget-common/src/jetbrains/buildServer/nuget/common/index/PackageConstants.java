@@ -20,8 +20,19 @@ public class PackageConstants {
     public static final String PACKAGES_LIST_NAME = "packages.json";
 
     /**
+     * The name of TeamCity NuGet temporary packages metadata file.
+     */
+    public static final String TEMP_PACKAGES_LIST_NAME = "temp.packages.json";
+
+    /**
      * The relative path to NuGet packages metadata file.
      */
     public static final String PACKAGES_FILE_PATH = ArtifactsConstants.TEAMCITY_ARTIFACTS_DIR + "/" +
             NUGET_PROVIDER_ID + "/" + PACKAGES_LIST_NAME;
+
+  /**
+   * The relative path to NuGet temporary  packages metadata file.
+   */
+  public static final String TEMP_PACKAGES_FILE_PATH = ArtifactsConstants.TEAMCITY_ARTIFACTS_DIR + "/" +
+                                                  NUGET_PROVIDER_ID + "/" + TEMP_PACKAGES_LIST_NAME;
 }
