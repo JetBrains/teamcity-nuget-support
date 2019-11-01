@@ -1,10 +1,7 @@
 package jetbrains.buildServer.nuget.agent.index
 
 import com.intellij.openapi.diagnostic.Logger
-import jetbrains.buildServer.agent.AgentLifeCycleAdapter
-import jetbrains.buildServer.agent.AgentLifeCycleListener
-import jetbrains.buildServer.agent.AgentRunningBuild
-import jetbrains.buildServer.agent.BuildProgressLogger
+import jetbrains.buildServer.agent.*
 import jetbrains.buildServer.agent.impl.artifacts.ArtifactsBuilderAdapter
 import jetbrains.buildServer.agent.impl.artifacts.ArtifactsCollection
 import jetbrains.buildServer.nuget.common.FeedConstants
@@ -38,6 +35,16 @@ class NugetPackageIndexer(dispatcher: EventDispatcher<AgentLifeCycleListener>,
                 myBuildType = runningBuild.buildTypeId
                 myLogger = runningBuild.buildLogger
             }
+
+            override fun afterAtrifactsPublished(runningBuild: AgentRunningBuild, status: BuildFinishedStatus) {
+                try {
+                    packagePublisher.publishPackages(myPackages)
+                } catch (e: Exception) {
+                    val message = "Failed to write NuGet packages metadata"
+                    myLogger.warning("$message: ${e.message}")
+                    LOG.warnAndDebugDetails(message, e)
+                }
+            }
         })
     }
 
@@ -57,14 +64,6 @@ class NugetPackageIndexer(dispatcher: EventDispatcher<AgentLifeCycleListener>,
                     LOG.warnAndDebugDetails(message, e)
                 }
             }
-        }
-
-        try {
-            packagePublisher.publishPackages(myPackages)
-        } catch (e: Exception) {
-            val message = "Failed to write NuGet packages metadata"
-            myLogger.warning("$message: ${e.message}")
-            LOG.warnAndDebugDetails(message, e)
         }
     }
 

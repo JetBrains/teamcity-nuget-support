@@ -1,11 +1,10 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server
 
+import jetbrains.buildServer.nuget.common.index.NuGetPackageData
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetArtifactsMetadataProvider
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildMetadataProvider
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildFeedsProvider
+import jetbrains.buildServer.nuget.feed.server.index.impl.*
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.SBuild
@@ -119,18 +118,18 @@ class NuGetArtifactsMetadataProviderTest {
                 will(returnValue(setOf(NuGetFeedData.DEFAULT)))
 
                 oneOf(buildMetadataProvider).getPackagesMetadata(build)
-                will(returnValue(emptyList<Map<String, String>>()))
+                will(returnValue(Metadata(MetadataState.Synchronized)))
 
-                exactly(2).of(build).buildId
+                exactly(3).of(build).buildId
                 will(returnValue(1L))
 
                 oneOf(metadataStorage).getBuildEntry(1L, "nuget")
                 will(returnIterator(emptyList<BuildMetadataEntry>()))
 
-                oneOf(build).buildNumber
+                exactly(2).of(build).buildNumber
                 will(returnValue("123"))
 
-                oneOf(build).buildTypeExternalId
+                exactly(2).of(build).buildTypeExternalId
                 will(returnValue("bt"))
             }
         })
@@ -187,7 +186,7 @@ class NuGetArtifactsMetadataProviderTest {
 
                 oneOf(buildMetadataProvider).getPackagesMetadata(build)
 
-                will(returnValue(listOf(packageMetadata)))
+                will(returnValue(Metadata(MetadataState.Synchronized, listOf(NuGetPackageData("nuget.projectId.feed", packageMetadata)))))
 
                 oneOf(storageWriter).addParameters("id.1.0.0", packageMetadata)
 
@@ -250,7 +249,7 @@ class NuGetArtifactsMetadataProviderTest {
 
                 oneOf(buildMetadataProvider).getPackagesMetadata(build)
 
-                will(returnValue(listOf(packageMetadata)))
+                will(returnValue(Metadata(MetadataState.Synchronized, listOf(NuGetPackageData("nuget.projectId.feed", packageMetadata)))))
 
                 oneOf(metadataStorage).addBuildEntry(1L, "nuget.projectId.feed", "id.1.0.0", packageMetadata, true)
 

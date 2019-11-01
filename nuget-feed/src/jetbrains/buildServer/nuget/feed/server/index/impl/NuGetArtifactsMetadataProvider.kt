@@ -63,8 +63,9 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
 
         LOG.debug("Looking for NuGet packages in ${LogUtil.describe(build)}")
 
-        val packages = myMetadataProvider.getPackagesMetadata(build)
-        if (packages.isEmpty()) {
+        val metadata = myMetadataProvider.getPackagesMetadata(build)
+        if (metadata.state != MetadataState.Unsynchronized && metadata.packages.isEmpty()) {
+            LOG.debug("Skip NuGet metadata generation for build ${LogUtil.describe(build)}. Metadata state is ${metadata.state}")
             return
         }
 
@@ -73,21 +74,32 @@ class NuGetArtifactsMetadataProvider(private val myReset: ResponseCacheReset,
             return@joinToString if (it.feedId == NuGetFeedData.DEFAULT_FEED_ID) projectId else "$projectId/${it.feedId}"
         } + " feed" + if (targetFeeds.size > 1) "s"  else ""
 
-        packages.forEach { metadata ->
-            val id = metadata[ID]
-            val version = metadata[NORMALIZED_VERSION]
+        if (metadata.state == MetadataState.Unsynchronized) {
+            LOG.debug("Metadata state is Unsynchronized, removing buildEntries for build ${LogUtil.describe(build)}")
+            for (feedData in targetFeeds) {
+                LOG.debug("Removing buildEntry. Key: ${feedData.key}")
+                myMetadataStorage.removeBuildEntries(build.buildId, feedData.key)
+            }
+
+            LOG.debug("Resetting cache")
+            myReset.resetCache()
+        }
+
+        for (metadata in metadata.packages) {
+            val id = metadata.metadata[ID]
+            val version = metadata.metadata[NORMALIZED_VERSION]
             if (id != null && version != null) {
                 val key = NuGetUtils.getPackageKey(id, version)
-                targetFeeds.forEach { feedData ->
+                for (feedData in targetFeeds) {
                     if (feedData.key == providerId) {
-                        store.addParameters(key, metadata)
+                        store.addParameters(key, metadata.metadata)
                     } else {
-                        myMetadataStorage.addBuildEntry(build.buildId, feedData.key, key, metadata, !build.isPersonal)
+                        myMetadataStorage.addBuildEntry(build.buildId, feedData.key, key, metadata.metadata, !build.isPersonal)
                     }
                 }
                 LOG.info("Added NuGet package $key from build ${LogUtil.describe(build)} into $feedNames")
             } else {
-                LOG.warn("Failed to resolve NuGet package Id, package ignored: ${metadata[TEAMCITY_ARTIFACT_RELPATH]}")
+                LOG.warn("Failed to resolve NuGet package Id, package ignored: ${metadata.metadata[TEAMCITY_ARTIFACT_RELPATH]}")
             }
         }
 
