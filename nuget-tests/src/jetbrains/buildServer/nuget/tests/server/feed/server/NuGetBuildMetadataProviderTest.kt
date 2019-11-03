@@ -56,14 +56,14 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
 
                 oneOf(buildArtifact).inputStream
                 will (object : Action {
-                    lateinit var myStream : InputStream
+                    var myStream : InputStream? = null
                     override fun describeTo(description: Description?) {
                         description?.appendText("returns ");
-                        description?.appendValue(myStream);
+                        description?.appendValue(myStream ?: "No opened stream");
                     }
                     override fun invoke(invocation: Invocation?): Any {
                         myStream = Files.newInputStream(Paths.get(tempArtifactsDir.path, ".teamcity/nuget/packages.json"))
-                        return myStream
+                        return myStream!!
                     }
                 })
 
