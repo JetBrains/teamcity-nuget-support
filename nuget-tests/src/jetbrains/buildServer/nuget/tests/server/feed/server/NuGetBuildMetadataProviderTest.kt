@@ -33,15 +33,32 @@ class NuGetBuildMetadataProviderTest : BaseTestCase() {
         val buildArtifacts = m.mock(BuildArtifacts::class.java)
         val buildArtifact = m.mock(BuildArtifact::class.java, "json")
         val buildAgentArtifact = m.mock(BuildArtifact::class.java, "jsonAgent")
+
         val build = m.mock(SBuild::class.java)
+        CurrentNodeInfo.init()
+
         val buildArtifactHolder = m.mock(BuildArtifactHolder::class.java)
-        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, ServerResponsibilityImpl())
+
+        val buildPromotion = m.mock(BuildPromotionEx::class.java)
+        CurrentNodeInfo.init()
+        val responsibility = object : ServerResponsibilityImpl() {
+            override fun isResponsibleForBuild(build: SBuild): Boolean {
+                return true
+            }
+        }
+
+        val metadataProvider = NuGetBuildMetadataProviderImpl(packageAnalyzer, responsibility)
 
         val tempArtifactsDir = createTempDir()
         FileUtil.copyDir(Paths.get("testData/feed/indexer").toFile(), tempArtifactsDir)
 
         m.checking(object : Expectations() {
             init {
+                allowing(build).buildPromotion
+                will(returnValue(buildPromotion))
+
+                allowing(buildPromotion)
+
                 allowing(build).getArtifacts(BuildArtifactsViewMode.VIEW_ALL)
                 will(returnValue(buildArtifacts))
 
