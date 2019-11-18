@@ -50,8 +50,10 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
         }
 
         if (build is SRunningBuild) {
-            build.buildType?.let {
-                properties.putAll(getFallbackParameters(it))
+            if (TeamCityProperties.getBooleanOrTrue(FEED_PARAMETERS_PROVIDER_ENABLE_FALLBACK_PARAMETERS_FOR_RUNNING_BUILD)) {
+                build.buildType?.let {
+                    properties.putAll(getFallbackParameters(it))
+                }
             }
             val buildToken = String.format("%s:%s", BuildAuthUtil.makeUserId(build.getBuildId()), build.agentAccessCode)
             properties[FEED_REFERENCE_AGENT_API_KEY_PROVIDED] = EncryptUtil.scramble(buildToken)
