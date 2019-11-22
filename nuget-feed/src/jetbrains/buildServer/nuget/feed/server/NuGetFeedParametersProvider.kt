@@ -50,7 +50,7 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
         }
 
         if (build is SRunningBuild) {
-            if (TeamCityProperties.getBooleanOrTrue(FEED_PARAMETERS_PROVIDER_ENABLE_FALLBACK_PARAMETERS_FOR_RUNNING_BUILD)) {
+            if (TeamCityProperties.getBoolean(FEED_PARAMETERS_PROVIDER_ENABLE_FALLBACK_PARAMETERS_FOR_RUNNING_BUILD)) {
                 build.buildType?.let {
                     properties.putAll(getFallbackParameters(it))
                 }
