@@ -56,14 +56,17 @@ class NuGetCredentialsProvider(events: EventDispatcher<AgentLifeCycleListener>,
                 PackageSourceUtil.writeSources(it, packageSources)
                 runner.addEnvironmentVariable(TEAMCITY_NUGET_FEEDS_ENV_VAR, it.path)
 
-                pathProvider.getProviderPath(runner)?.let { credentialsProviderPath ->
-                    LOG.debug("Set credentials provider location to $credentialsProviderPath")
-                    runner.addEnvironmentVariable(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, credentialsProviderPath)
-                }
+                val suppressCredentials = runner.configParameters["TEAMCITY_NUGET_CREDENTIAL"]?.equals("false", true) ?: false
+                if (!suppressCredentials) {
+                    pathProvider.getProviderPath(runner)?.let { credentialsProviderPath ->
+                        LOG.debug("Set credentials provider location to $credentialsProviderPath")
+                        runner.addEnvironmentVariable(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, credentialsProviderPath)
+                    }
 
-                pathProvider.getPluginPath(runner)?.let { pluginPaths ->
-                    LOG.debug("Set credentials plugin paths to $pluginPaths")
-                    runner.addEnvironmentVariable(NUGET_PLUGIN_PATH_ENV_VAR, pluginPaths)
+                    pathProvider.getPluginPath(runner)?.let { pluginPaths ->
+                        LOG.debug("Set credentials plugin paths to $pluginPaths")
+                        runner.addEnvironmentVariable(NUGET_PLUGIN_PATH_ENV_VAR, pluginPaths)
+                    }
                 }
 
                 val environmentVariables = runner.buildParameters.environmentVariables;
