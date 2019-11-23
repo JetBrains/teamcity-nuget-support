@@ -37,8 +37,13 @@ teamcity {
         baseHomeDir = project.serversDir
 
         teamcity_2017_1 {
-            version = '2017.1-SNAPSHOT'
-            downloadUrl = 'https://download.jetbrains.com/teamcity/eap/TeamCity-45965.tar.gz'
+            version = '2017.1'
+            downloadUrl = 'https://download.jetbrains.com/teamcity/TeamCity-2017.1.tar.gz'
+        }
+
+        teamcity_2019_1 {
+            version = '2019.1'
+            downloadUrl = 'https://download.jetbrains.com/teamcity/TeamCity-2019.1.tar.gz'
         }
     }
 }
