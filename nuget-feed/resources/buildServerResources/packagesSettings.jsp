@@ -35,7 +35,7 @@
 
 <bs:refreshable containerId="packages" pageUrl="${statusRefreshUrl}">
 
-    <span class="section noMargin">
+    <div class="section noMargin">
         <h2 style="border: none">
             <c:choose>
                 <c:when test="${numberOfRepositoryTypes gt 1}">
