@@ -274,7 +274,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x1(final NugetFeedLibrary library, @NotNull final NuGet nuget)
-    throws NuGetExecutionException, IOException {
+    throws Throwable {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
       return;
@@ -286,7 +286,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
 
   @Test(dataProvider = NUGET_VERSIONS)
   public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x2(final NugetFeedLibrary library, @NotNull final NuGet nuget)
-    throws NuGetExecutionException, IOException {
+    throws Throwable {
     if (!SystemInfo.isWindows) {
       TestNGUtil.skip("is not supported under mono");
       return;
@@ -296,7 +296,7 @@ public class NuGetJavaFeedIntegrationTest extends NuGetJavaFeedIntegrationTestBa
     doTriggerTest(nuget, packageId_1.toLowerCase(), packageId_2.toUpperCase());
   }
 
-  private void doTriggerTest(@NotNull final NuGet nuget, @NotNull String... packageNames) throws NuGetExecutionException, IOException {
+  private void doTriggerTest(@NotNull final NuGet nuget, @NotNull String... packageNames) throws Throwable {
     ListPackagesCommand cmd = ListPackagesCommandIntegrationTest.createMockCommand(myNuGetTeamCityProvider, createTempDir());
     ListPackagesCommandIntegrationTest.doTriggerTest(cmd, nuget, getNuGetServerUrl(), packageNames);
   }

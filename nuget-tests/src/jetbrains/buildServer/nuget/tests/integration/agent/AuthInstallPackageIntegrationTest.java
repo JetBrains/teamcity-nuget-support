@@ -70,7 +70,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
 
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
     fetchPackages(nuget);
-    Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
+    Assert.assertTrue(myHttp.getIsAuthorized(), "NuGet must authorize");
   }
 
   @Test(dataProvider = NUGET_VERSIONS_28p)
@@ -82,7 +82,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
     fetchPackages(nuget);
-    Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
+    Assert.assertTrue(myHttp.getIsAuthorized(), "NuGet must authorize");
   }
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
@@ -106,7 +106,7 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
 
     fetchPackages(nuget);
 
-    Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
+    Assert.assertTrue(myHttp.getIsAuthorized(), "NuGet must authorize");
   }
 
   private void fetchPackages(@NotNull NuGet nuget) throws RunBuildException {

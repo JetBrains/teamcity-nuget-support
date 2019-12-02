@@ -75,48 +75,52 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
-  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed(@NotNull final NuGet nuget) throws NuGetExecutionException {
-    final SourcePackageReference nunit_all = new SourcePackageReference(null, "NUnit", null);
-    final SourcePackageReference nunit_filter = new SourcePackageReference(null, "NUnit", "(1.1.1.1, 2.5.9.1)");
-    final SourcePackageReference youTrackSharp = new SourcePackageReference(null, "YouTrackSharp", null);
-    final Map<SourcePackageReference, ListPackagesResult> checkForUpdatesResults = myCommand.checkForChanges(
-            nuget.getPath(),
-            Arrays.asList(
-                    nunit_all,
-                    nunit_filter,
-                    youTrackSharp
-            ));
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed(@NotNull final NuGet nuget) throws Throwable {
+    MockNuGetHTTP.executeTest(new MockNuGetHTTP.Action() {
+      public void runTest(@NotNull MockNuGetHTTP http) throws Throwable {
+        final SourcePackageReference nunit_all = new SourcePackageReference(http.getSourceUrl(), "NUnit", null);
+        final SourcePackageReference nunit_filter = new SourcePackageReference(http.getSourceUrl(), "NUnit", "(1.1.1.1, 2.5.9.1)");
+        final SourcePackageReference youTrackSharp = new SourcePackageReference(http.getSourceUrl(), "YouTrackSharp", null);
+        final List<SourcePackageReference> packages = Arrays.asList(
+          nunit_all,
+          nunit_filter,
+          youTrackSharp
+        );
 
-    assertEquals(3, checkForUpdatesResults.size());
-    System.out.println("m = " + checkForUpdatesResults);
+        Map<SourcePackageReference, ListPackagesResult> checkForUpdatesResults = myCommand.checkForChanges(nuget.getPath(), packages);
 
-    for (ListPackagesResult infos : checkForUpdatesResults.values()) {
-      assertNull(infos.getErrorMessage());
-      assertNotEmpty(infos.getCollectedInfos());
-    }
+        assertEquals(3, checkForUpdatesResults.size());
+        System.out.println("m = " + checkForUpdatesResults);
 
-    final Collection<SourcePackageInfo> nAll = checkForUpdatesResults.get(nunit_all).getCollectedInfos();
-    final Collection<SourcePackageInfo> nFilter = checkForUpdatesResults.get(nunit_filter).getCollectedInfos();
-    final Collection<SourcePackageInfo> nYouTrack = checkForUpdatesResults.get(youTrackSharp).getCollectedInfos();
+        for (ListPackagesResult infos : checkForUpdatesResults.values()) {
+          assertNull(infos.getErrorMessage());
+          assertNotEmpty(infos.getCollectedInfos());
+        }
 
-    assertEquals(new ArrayList<SourcePackageInfo>(nAll).toString(), 1, nAll.size());
-    assertEquals(new ArrayList<SourcePackageInfo>(nYouTrack).toString(), 1, nYouTrack.size());
-    assertNotEmpty(nFilter);
+        final Collection<SourcePackageInfo> nAll = checkForUpdatesResults.get(nunit_all).getCollectedInfos();
+        final Collection<SourcePackageInfo> nFilter = checkForUpdatesResults.get(nunit_filter).getCollectedInfos();
+        final Collection<SourcePackageInfo> nYouTrack = checkForUpdatesResults.get(youTrackSharp).getCollectedInfos();
+
+        assertEquals(new ArrayList<SourcePackageInfo>(nAll).toString(), 1, nAll.size());
+        assertEquals(new ArrayList<SourcePackageInfo>(nYouTrack).toString(), 1, nYouTrack.size());
+        assertNotEmpty(nFilter);
+      }
+    });
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
-  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x2(@NotNull final NuGet nuget) throws NuGetExecutionException {
-    doTriggerTest(nuget, FeedConstants.NUGET_FEED_V2, "NUnit", "EasyHttp");
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x2(@NotNull final NuGet nuget) throws Throwable {
+    doTriggerTest(nuget, "NUnit", "YouTrackSharp");
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
-  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x3(@NotNull final NuGet nuget) throws NuGetExecutionException {
-    doTriggerTest(nuget, FeedConstants.NUGET_FEED_V2, "NUnit", "YouTrackSharp", "EASYHTTP");
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x3(@NotNull final NuGet nuget) throws Throwable {
+    doTriggerTest(nuget, "NUnit", "YouTrackSharp", "EASYHTTP");
   }
 
   @Test(dataProvider = NUGET_VERSIONS)
-  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x4(@NotNull final NuGet nuget) throws NuGetExecutionException {
-    doTriggerTest(nuget, FeedConstants.NUGET_FEED_V2, "NUnit", "EasyHttp", "Elmah", "jquery");
+  public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed_x4(@NotNull final NuGet nuget) throws Throwable {
+    doTriggerTest(nuget, "NUnit", "EasyHttp", "Elmah", "jquery");
   }
 
   @Test(dataProvider = NUGET_VERSIONS_20p)
@@ -154,8 +158,8 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
     });
   }
 
-  protected void doTriggerTest(@NotNull final NuGet nuget, @NotNull String feed, @NotNull String... packageNames) throws NuGetExecutionException {
-    doTriggerTest(myCommand, nuget, feed, packageNames);
+  protected void doTriggerTest(@NotNull final NuGet nuget, @NotNull String... packageNames) throws Throwable {
+    doTriggerTest(myCommand, nuget, packageNames);
   }
 
   public static void doTriggerTest(@NotNull ListPackagesCommand myCommand,
@@ -169,6 +173,22 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
     }
 
     assertPackages(allRefs, myCommand.checkForChanges(nuget.getPath(), allRefs));
+  }
+
+  public static void doTriggerTest(@NotNull ListPackagesCommand myCommand,
+                               @NotNull final NuGet nuget,
+                               @NotNull String... packageNames) throws Throwable {
+
+    MockNuGetHTTP.executeTest(new MockNuGetHTTP.Action() {
+      public void runTest(@NotNull MockNuGetHTTP http) throws Throwable {
+        final List<SourcePackageReference> allRefs = new ArrayList<SourcePackageReference>();
+
+        for (String s : packageNames) {
+          allRefs.add(new SourcePackageReference(http.getSourceUrl(), s, null));
+        }
+        assertPackages(allRefs, myCommand.checkForChanges(nuget.getPath(), allRefs));
+      }
+    });
   }
 
   private static void assertPackages(@NotNull List<SourcePackageReference> allRefs,

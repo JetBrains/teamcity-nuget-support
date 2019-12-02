@@ -71,7 +71,7 @@ public class AuthInstallPackageFeedV3IntegrationTest extends InstallPackageInteg
     myInstallMode = PackagesInstallMode.VIA_RESTORE;
     ArchiveUtil.unpackZip(getTestDataPath("test-01-mockFeed.zip"), "", myRoot);
     fetchPackages(nuget);
-    Assert.assertTrue(myHttp.getIsAuthorized().get(), "NuGet must authorize");
+    Assert.assertTrue(myHttp.getIsAuthorized(), "NuGet must authorize");
 
     Assert.assertTrue(getCommandsOutput().contains("Added package 'FineCollection.2.2.1'"));
   }

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<feed xmlns="http://www.w3.org/2005/Atom" 
+      xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+      xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+      xml:base="http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/">
+  <title type="text">Packages</title>
+  <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages()</id>
+  <updated>2019-11-28T13:09:17Z</updated>
+  <link rel="self" title="Packages" href="Packages"/>
+  <entry>
+    <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages(Id=&apos;NUnit&apos;,Version=&apos;2.5.9&apos;)</id>
+    <title type="text">NUnit</title>
+    <summary type="text">NUnit is a unit-testing framework for all .NET languages with a strong TDD focus.</summary>
+    <updated>2019-05-15T00:24:28Z</updated>
+    <author>
+      <name>Charlie Poole, Rob Prouse</name>
+    </author>
+    <link rel="edit" title="V2FeedPackage"
+          href="Packages(Id=&apos;NUnit&apos;,Version=&apos;2.5.9&apos;)"/>
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+    <content type="application/zip"
+             src="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/nunit.2.5.9.nupkg"/>
+    <m:properties xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+                  xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices">
+      <d:Id>NUnit</d:Id>
+      <d:Version>2.5.9</d:Version>
+      <d:NormalizedVersion>2.5.9</d:NormalizedVersion>
+      <d:Authors>Charlie Poole, Rob Prouse</d:Authors>
+      <d:Copyright>Copyright (c) 2019 Charlie Poole, Rob Prouse</d:Copyright>
+      <d:Created m:type="Edm.DateTime">2019-05-15T00:24:28.39+00:00</d:Created>
+      <d:Dependencies>::net35|::net40|::net45|NETStandard.Library:[1.6.1, ):netstandard1.4|System.ComponentModel.TypeConverter:[4.3.0,
+        ):netstandard1.4|System.Reflection.TypeExtensions:[4.4.0, ):netstandard1.4|NETStandard.Library:[2.0.0, ):netstandard2.0
+      </d:Dependencies>
+      <d:Description>NUnit features a fluent assert syntax, parameterized, generic and theory tests and is user-extensible.
+
+        This package includes the NUnit 3 framework assembly, which is referenced by your tests. You will need to install version 3 of the nunit3-console program or a third-party
+        runner that supports NUnit 3 in order to execute tests. Runners intended for use with NUnit 2.x will not run NUnit 3 tests correctly.
+
+        Supported platforms:
+        - .NET Framework 3.5+
+        - .NET Standard 1.4+
+        - .NET Core
+      </d:Description>
+      <d:DownloadCount m:type="Edm.Int32">58040816</d:DownloadCount>
+      <d:GalleryDetailsUrl>https://www.nuget.org/packages/NUnit/2.5.9</d:GalleryDetailsUrl>
+      <d:IconUrl>https://api.nuget.org/v3-flatcontainer/nunit/2.5.9/icon</d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">true</d:IsAbsoluteLatestVersion>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Language>en-US</d:Language>
+      <d:LastUpdated m:type="Edm.DateTime">2019-05-15T00:24:28.39+00:00</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2019-05-15T00:24:28.39+00:00</d:Published>
+      <d:PackageHash>HAhwFxr+Z+PJf8hXzc747NecvsDwEZ+3X8SA5+GIRM43GAy1Ap+TQPMHsWCnisfes5vPZ1/a2md/91u+shoTsQ==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">3463090</d:PackageSize>
+      <d:ProjectUrl>https://nunit.org/</d:ProjectUrl>
+      <d:ReportAbuseUrl>https://www.nuget.org/packages/NUnit/2.5.9/ReportAbuse</d:ReportAbuseUrl>
+      <d:ReleaseNotes>This package includes the NUnit 3 framework assembly, which is referenced by your tests. You will need to install version 3 of the nunit3-console program or a
+        third-party runner that supports NUnit 3 in order to execute tests. Runners intended for use with NUnit 2.x will not run NUnit 3 tests correctly.
+      </d:ReleaseNotes>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Summary>NUnit is a unit-testing framework for all .NET languages with a strong TDD focus.</d:Summary>
+      <d:Tags>nunit test testing tdd framework fluent assert theory plugin addin</d:Tags>
+      <d:Title>NUnit</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">3621112</d:VersionDownloadCount>
+      <d:LastEdited m:type="Edm.DateTime">2019-05-15T00:28:40.61+00:00</d:LastEdited>
+      <d:LicenseUrl>https://www.nuget.org/packages/NUnit/2.5.9/license</d:LicenseUrl>
+      <d:LicenseNames m:null="true"/>
+      <d:LicenseReportUrl m:null="true"/>
+    </m:properties>
+  </entry>
+</feed>
