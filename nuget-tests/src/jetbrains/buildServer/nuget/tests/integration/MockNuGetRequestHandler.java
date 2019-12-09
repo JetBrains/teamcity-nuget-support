@@ -95,14 +95,14 @@ public class MockNuGetRequestHandler {
     return createStringResponse(STATUS_LINE_404, Collections.<String>emptyList(), "Not found");
   }
 
-  private String extractPackagesFilter(final String path) throws UnsupportedEncodingException {
+  private String extractPackagesFilter(String path) throws UnsupportedEncodingException {
+    path = URLDecoder.decode(path, "UTF-8");
     String filterString = null;
     if (path.contains("nuget/packages()") && path.contains(FILTER_QUERY_MARKER)) {
       filterString = path.substring(path.indexOf(FILTER_QUERY_MARKER) + FILTER_QUERY_MARKER.length());
       if (filterString.contains("&")) {
         filterString = filterString.substring(0, filterString.indexOf("&"));
       }
-      filterString = URLDecoder.decode(filterString, "UTF-8");
     } else if (path.contains(KEY_VALUE_QUERY_MARKER)) {
       filterString = extractPackagesFilterFromKeyValues(path);
     } else if (path.contains(FINDPACKAGESBYID_QUERY_MARKER)) {
