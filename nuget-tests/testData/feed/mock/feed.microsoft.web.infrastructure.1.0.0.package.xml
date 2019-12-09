@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<feed xmlns="http://www.w3.org/2005/Atom" 
+      xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+      xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+      xml:base="http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/">
+  <title type="text">Packages</title>
+  <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages()</id>
+  <updated>2019-11-28T13:09:17Z</updated>
+  <link rel="self" title="Packages" href="Packages"/>
+  <entry>
+    <id>http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/microsoft.web.infrastructure.1.0.0.nupkg</id>
+    <link rel="edit" title="V2FeedPackage"
+          href="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/microsoft.web.infrastructure.1.0.0.nupkg"/>
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+    <content type="application/zip"
+             src="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/microsoft.web.infrastructure.1.0.0.nupkg"/>
+
+    <title type="text">Microsoft.Web.Infrastructure</title>
+    <summary type="text">This package contains the Microsoft.Web.Infrastructure assembly that lets you dynamically register HTTP modules at run time.</summary>
+    <updated>2011-09-14T17:56:16Z</updated>
+    <author>
+      <name>Microsoft</name>
+    </author>
+    <m:properties>
+      <d:Id>Microsoft.Web.Infrastructure</d:Id>
+      <d:Version>1.0.0.0</d:Version>
+      <d:NormalizedVersion>1.0.0</d:NormalizedVersion>
+      <d:Authors>Microsoft</d:Authors>
+      <d:Copyright m:null="true"/>
+      <d:Created m:type="Edm.DateTime">2011-09-14T17:56:15.98+00:00</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>This package contains the Microsoft.Web.Infrastructure assembly that lets you dynamically register HTTP modules at run time.</d:Description>
+      <d:DownloadCount m:type="Edm.Int32">58221100</d:DownloadCount>
+      <d:GalleryDetailsUrl>https://www.nuget.org/packages/Microsoft.Web.Infrastructure/1.0.0</d:GalleryDetailsUrl>
+      <d:IconUrl>https://api.nuget.org/v3-flatcontainer/microsoft.web.infrastructure/1.0.0/icon</d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">true</d:IsAbsoluteLatestVersion>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Language m:null="true"/>
+      <d:LastUpdated m:type="Edm.DateTime">2011-09-14T17:56:16.433+00:00</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-09-14T17:56:16.433+00:00</d:Published>
+      <d:PackageHash>Bk+FleE3WkOCB707+eD9npx38gvHCA4FikXSW1ETDa+A0IPrhPTWpu/nLGAGxkkXePVRB+nwjDY1ZOs5aE6YBg==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">34499</d:PackageSize>
+      <d:ProjectUrl>http://www.asp.net/</d:ProjectUrl>
+      <d:ReportAbuseUrl>https://www.nuget.org/packages/Microsoft.Web.Infrastructure/1.0.0/ReportAbuse</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"/>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Summary>This package contains the Microsoft.Web.Infrastructure assembly that lets you dynamically register HTTP modules at run time.</d:Summary>
+      <d:Tags>ASPNETWEBPAGES</d:Tags>
+      <d:Title>Microsoft.Web.Infrastructure</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">58220694</d:VersionDownloadCount>
+      <d:MinClientVersion m:null="true"/>
+      <d:LastEdited m:type="Edm.DateTime">2018-12-13T22:39:43.443+00:00</d:LastEdited>
+      <d:LicenseUrl>http://go.microsoft.com/fwlink/?LinkID=214339</d:LicenseUrl>
+      <d:LicenseNames m:null="true"/>
+      <d:LicenseReportUrl m:null="true"/>
+    </m:properties>
+  </entry>
+</feed>

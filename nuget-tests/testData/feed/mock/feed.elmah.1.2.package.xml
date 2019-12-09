@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+      xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+      xml:base="http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/">
+  <title type="text">Packages</title>
+  <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages()</id>
+  <updated>2019-11-28T13:09:17Z</updated>
+  <link rel="self" title="Packages" href="Packages"/>
+  <entry>
+    <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages(Id=&apos;elmah&apos;,Version=&apos;1.2.0&apos;)</id>
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+    <link rel="edit" title="V2FeedPackage"
+          href="Packages(Id=&apos;elmah&apos;,Version=&apos;1.2.0&apos;)"/>
+    <content type="application/zip"
+             src="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/elmah.1.2.0.nupkg"/>
+
+    <title type="text">elmah</title>
+    <summary type="text">ELMAH with initial configuration for getting started quickly. ELMAH (Error Logging Modules and Handlers) is an application-wide error logging facility that
+      is completely pluggable. It can be dynamically added to a running ASP.NET web application, or even all ASP.NET web applications on a machine, without any need for
+      re-compilation or re-deployment.
+    </summary>
+    <updated>2011-05-20T17:27:39Z</updated>
+    <author>
+      <name>Atif Aziz</name>
+    </author>
+    <m:properties>
+      <d:Id>elmah</d:Id>
+      <d:Version>1.2</d:Version>
+      <d:NormalizedVersion>1.2.0</d:NormalizedVersion>
+      <d:Authors>Atif Aziz</d:Authors>
+      <d:Copyright>Copyright (c) 2004-11 Atif Aziz. All rights reserved.</d:Copyright>
+      <d:Created m:type="Edm.DateTime">2011-05-16T01:39:46.71+00:00</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>ELMAH with initial configuration for getting started quickly. ELMAH (Error Logging Modules and Handlers) is an application-wide error logging facility that is
+        completely pluggable. It can be dynamically added to a running ASP.NET web application, or even all ASP.NET web applications on a machine, without any need for
+        re-compilation or re-deployment.
+      </d:Description>
+      <d:DownloadCount m:type="Edm.Int32">5139904</d:DownloadCount>
+      <d:GalleryDetailsUrl>https://www.nuget.org/packages/elmah/1.2.0</d:GalleryDetailsUrl>
+      <d:IconUrl m:null="true"/>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">false</d:IsAbsoluteLatestVersion>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Language m:null="true"/>
+      <d:LastUpdated m:type="Edm.DateTime">2011-05-20T17:27:39.273+00:00</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-05-20T17:27:39.273+00:00</d:Published>
+      <d:PackageHash>OBx7cVoxlV0Ba0DhXF7ggyrE7VHGH9bACgJHT9ijNSuv7xW0qtMNoMnTxgxriDBGndVfDuETOjDdiGgwtnBM2A==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">98346</d:PackageSize>
+      <d:ProjectUrl>http://elmah.googlecode.com/</d:ProjectUrl>
+      <d:ReportAbuseUrl>https://www.nuget.org/packages/elmah/1.2.0/ReportAbuse</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"/>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Summary>ELMAH with initial configuration for getting started quickly. ELMAH (Error Logging Modules and Handlers) is an application-wide error logging facility that is
+        completely pluggable. It can be dynamically added to a running ASP.NET web application, or even all ASP.NET web applications on a machine, without any need for
+        re-compilation or re-deployment.
+      </d:Summary>
+      <d:Tags>elmah error logging unhandled exception</d:Tags>
+      <d:Title>ELMAH</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">100047</d:VersionDownloadCount>
+      <d:MinClientVersion m:null="true"/>
+      <d:LastEdited m:type="Edm.DateTime">2019-01-04T23:12:58.617+00:00</d:LastEdited>
+      <d:LicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</d:LicenseUrl>
+      <d:LicenseNames m:null="true"/>
+      <d:LicenseReportUrl m:null="true"/>
+    </m:properties>
+  </entry>
+</feed>

@@ -357,6 +357,10 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     });
   }
 
+  protected void clearGlobalSources() {
+    myGlobalSources.clear();
+  }
+
   @NotNull
   protected File getTestDataPath(final String path) {
     return Paths.getTestDataPath("integration/" + path);

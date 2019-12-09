@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<feed xmlns="http://www.w3.org/2005/Atom" 
+      xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+      xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+      xml:base="http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/">
+  <title type="text">Packages</title>
+  <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages()</id>
+  <updated>2019-11-28T13:09:17Z</updated>
+  <link rel="self" title="Packages" href="Packages"/>
+  <entry>
+    <id>http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/ninject.3.0.1.10.nupkg</id>
+    <link rel="edit" title="V2FeedPackage"
+          href="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/ninject.3.0.1.10.nupkg"/>
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+    <content type="application/zip"
+             src="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/ninject.3.0.1.10.nupkg"/>
+
+    <title type="text">Ninject</title>
+    <summary type="text">IoC container for .NET</summary>
+    <updated>2012-05-29T17:16:31Z</updated>
+    <author>
+      <name>Ninject Project Contributors</name>
+    </author>
+    <m:properties>
+      <d:Id>Ninject</d:Id>
+      <d:Version>3.0.1.10</d:Version>
+      <d:NormalizedVersion>3.0.1.10</d:NormalizedVersion>
+      <d:Authors>Ninject Project Contributors</d:Authors>
+      <d:Copyright m:null="true"/>
+      <d:Created m:type="Edm.DateTime">2012-05-29T17:16:31.45+00:00</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>Stop writing monolithic applications that make you feel like you have to move mountains to make the simplest of changes. Ninject helps you use the technique of
+        dependency injection to break your applications into loosely-coupled, highly-cohesive components, and then glue them back together in a flexible manner.
+      </d:Description>
+      <d:DownloadCount m:type="Edm.Int32">12487361</d:DownloadCount>
+      <d:GalleryDetailsUrl>https://www.nuget.org/packages/Ninject/3.0.1.10</d:GalleryDetailsUrl>
+      <d:IconUrl>https://api.nuget.org/v3-flatcontainer/ninject/3.0.1.10/icon</d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">false</d:IsAbsoluteLatestVersion>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Language m:null="true"/>
+      <d:LastUpdated m:type="Edm.DateTime">2012-05-29T17:16:31.45+00:00</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2012-05-29T17:16:31.45+00:00</d:Published>
+      <d:PackageHash>NthgzhVyAyBEk8+m1tkcTEbSvjMzyi6cuyMZcKSXoqw1ZUapCJGXrqCkTr1qF7f6f1A+TUF58suYlNw46OZ79g==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">1383871</d:PackageSize>
+      <d:ProjectUrl>http://www.ninject.org/</d:ProjectUrl>
+      <d:ReportAbuseUrl>https://www.nuget.org/packages/Ninject/3.0.1.10/ReportAbuse</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"/>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">true</d:RequireLicenseAcceptance>
+      <d:Summary>IoC container for .NET</d:Summary>
+      <d:Tags>Ninject ioc di</d:Tags>
+      <d:Title>Ninject</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">1155053</d:VersionDownloadCount>
+      <d:MinClientVersion m:null="true"/>
+      <d:LastEdited m:type="Edm.DateTime">2018-10-15T07:59:21.44+00:00</d:LastEdited>
+      <d:LicenseUrl>https://github.com/ninject/ninject/raw/master/LICENSE.txt</d:LicenseUrl>
+      <d:LicenseNames m:null="true"/>
+      <d:LicenseReportUrl m:null="true"/>
+    </m:properties>
+  </entry>
+</feed>
+

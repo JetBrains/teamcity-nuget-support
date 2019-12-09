@@ -31,11 +31,6 @@ public class MockNuGetHTTP {
   }
 
   @NotNull
-  public String getPackageId() {
-    return "FineCollection";
-  }
-
-  @NotNull
   public String getDownloadUrl() {
     checkServerIsRunning();
     return myHttp.getDownloadUrl();
@@ -88,6 +83,11 @@ public class MockNuGetHTTP {
     System.out.println("[mock feed] " + message);
   }
 
+  public MockNuGetHTTP withPackage(final String packageName, final String version, final String metadataFilePath, final String nupkgDataPath, final boolean isLatestVersion) {
+    myHttp.withPackage(packageName, version, metadataFilePath, nupkgDataPath, isLatestVersion);
+    return this;
+  }
+
   public static interface Action {
     void runTest(@NotNull MockNuGetHTTP http) throws Throwable;
   }
@@ -106,7 +106,7 @@ public class MockNuGetHTTP {
     private String mySourceUrl;
     private String myDownloadUrl;
 
-    private final MockNuGetRequestHandler handler = new MockNuGetRequestHandler(this);
+    private final MockNuGetRequestHandler myHandler = new MockNuGetRequestHandler(this);
 
     @Override
     public NuGetAPIVersion getApiVersion() {
@@ -141,11 +141,15 @@ public class MockNuGetHTTP {
       return getFileResponse(testDataPath, asList);
     }
 
+    public void withPackage(final String packageName, final String version, final String metadataFilePath, final String nupkgDataPath, final boolean isLatestVersion) {
+      myHandler.withPackage(packageName, version, metadataFilePath, nupkgDataPath, isLatestVersion);
+    }
+
     @Override
     protected Response getResponse(final String request) {
       System.out.println(request);
       try {
-        return handler.getResponse(request);
+        return myHandler.getResponse(request);
       } catch (IOException | JDOMException e) {
         e.printStackTrace();
         return createStringResponse(STATUS_LINE_500, new ArrayList<String>(), e.getMessage());

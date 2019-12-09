@@ -95,12 +95,12 @@ public class InstallPackageIntegrationTestCase extends IntegrationTestBase {
   }
 
   protected void fetchPackages(final File sln,
-                             final List<String> sources,
-                             final boolean excludeVersion,
-                             final boolean noCache,
-                             final boolean update,
-                             @NotNull final NuGet nuget,
-                             @Nullable Collection<NuGetPackageInfo> detectedPackages) throws RunBuildException {
+                               final List<String> sources,
+                               final boolean excludeVersion,
+                               final boolean noCache,
+                               final boolean update,
+                               @NotNull final NuGet nuget,
+                               @Nullable Collection<NuGetPackageInfo> detectedPackages) throws RunBuildException {
     fetchPackages(sln, sources, excludeVersion, noCache, update, nuget, detectedPackages, BuildFinishedStatus.FINISHED_SUCCESS);
   }
 

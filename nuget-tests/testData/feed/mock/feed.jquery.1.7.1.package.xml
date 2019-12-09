@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<feed xmlns="http://www.w3.org/2005/Atom" 
+      xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+      xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+      xml:base="http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/">
+  <title type="text">Packages</title>
+  <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages()</id>
+  <updated>2019-11-28T13:09:17Z</updated>
+  <link rel="self" title="Packages" href="Packages"/>
+  <entry>
+    <id>http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/jquery.1.7.1.nupkg</id>
+    <link rel="edit" title="V2FeedPackage"
+          href="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/jquery.1.7.1.nupkg"/>
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+    <content type="application/zip"
+             src="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/jquery.1.7.1.nupkg"/>
+
+    <title type="text">jQuery</title>
+    <summary type="text">jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web
+      development.
+    </summary>
+    <updated>2011-11-23T00:50:53Z</updated>
+    <author>
+      <name>John Resig</name>
+    </author>
+    <m:properties>
+      <d:Id>jQuery</d:Id>
+      <d:Version>1.7.1</d:Version>
+      <d:NormalizedVersion>1.7.1</d:NormalizedVersion>
+      <d:Authors>John Resig</d:Authors>
+      <d:Copyright m:null="true"/>
+      <d:Created m:type="Edm.DateTime">2011-11-23T00:46:32.283+00:00</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>jQuery is a new kind of JavaScript Library.
+        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery
+        is designed to change the way that you write JavaScript.
+      </d:Description>
+      <d:DownloadCount m:type="Edm.Int32">74460093</d:DownloadCount>
+      <d:GalleryDetailsUrl>https://www.nuget.org/packages/jQuery/1.7.1</d:GalleryDetailsUrl>
+      <d:IconUrl>https://api.nuget.org/v3-flatcontainer/jquery/1.7.1/icon</d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">false</d:IsAbsoluteLatestVersion>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Language m:null="true"/>
+      <d:LastUpdated m:type="Edm.DateTime">2011-11-23T00:50:53.247+00:00</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-11-23T00:50:53.247+00:00</d:Published>
+      <d:PackageHash>XZVw1hTpLrBQdIMV3s8Vlmkkz1djXhYdZrF63J72UpZXdcAxGJk8aQpex0NPUcYfIXk1Q+pqtOPNClcSec+vpg==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">249225</d:PackageSize>
+      <d:ProjectUrl>http://jquery.com/</d:ProjectUrl>
+      <d:ReportAbuseUrl>https://www.nuget.org/packages/jQuery/1.7.1/ReportAbuse</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"/>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Summary>jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web
+        development.
+      </d:Summary>
+      <d:Tags>jQuery</d:Tags>
+      <d:Title>jQuery</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">338861</d:VersionDownloadCount>
+      <d:MinClientVersion m:null="true"/>
+      <d:LastEdited m:type="Edm.DateTime">2018-10-15T03:44:55.463+00:00</d:LastEdited>
+      <d:LicenseUrl>http://jquery.org/license</d:LicenseUrl>
+      <d:LicenseNames m:null="true"/>
+      <d:LicenseReportUrl m:null="true"/>
+    </m:properties>
+  </entry>
+</feed>

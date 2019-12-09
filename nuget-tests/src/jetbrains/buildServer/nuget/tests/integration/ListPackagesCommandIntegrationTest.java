@@ -78,6 +78,15 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
   public void test_batch_reportNUnitAndYouTrackSharp_from_default_feed(@NotNull final NuGet nuget) throws Throwable {
     MockNuGetHTTP.executeTest(new MockNuGetHTTP.Action() {
       public void runTest(@NotNull MockNuGetHTTP http) throws Throwable {
+        http
+          .withPackage("NUnit", "2.5.7.10213", "feed/mock/feed.nunit.2.5.7.package.xml", "feed/mock/feed.nunit.2.5.7.nupkg", false)
+          .withPackage("NUnit", "2.5.10.11092", "feed/mock/feed.nunit.2.5.10.package.xml", "feed/mock/feed.nunit.2.5.10.nupkg", true)
+          .withPackage("jQuery", "1.7.1", "feed/mock/feed.jquery.1.7.1.package.xml", "feed/mock/feed.jquery.1.7.1.nupkg", false)
+          .withPackage("jQuery", "1.7.2", "feed/mock/feed.jquery.1.7.2.package.xml", "feed/mock/feed.jquery.1.7.2.nupkg", true)
+          .withPackage("elmah", "1.2.0", "feed/mock/feed.elmah.1.2.package.xml", "feed/mock/feed.elmah.1.2.nupkg", false)
+          .withPackage("elmah", "1.2.2", "feed/mock/feed.elmah.1.2.2.package.xml", "feed/mock/feed.elmah.1.2.2.nupkg", true)
+          .withPackage("YouTrackSharp", "2019.2.4", "feed/mock/feed.youtracksharp.2019.2.4.package.xml", "feed/mock/feed.youtracksharp.2019.2.4.nupkg", true);
+
         final SourcePackageReference nunit_all = new SourcePackageReference(http.getSourceUrl(), "NUnit", null);
         final SourcePackageReference nunit_filter = new SourcePackageReference(http.getSourceUrl(), "NUnit", "(1.1.1.1, 2.5.9.1)");
         final SourcePackageReference youTrackSharp = new SourcePackageReference(http.getSourceUrl(), "YouTrackSharp", null);
@@ -127,6 +136,8 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
   public void test_auth_supported(@NotNull final NuGet nuget) throws Throwable {
     MockNuGetAuthHTTP.executeTest(new MockNuGetAuthHTTP.Action() {
       public void runTest(@NotNull MockNuGetAuthHTTP http) throws Throwable {
+        http
+          .withPackage("FineCollection", "1.0.189.152", "feed/mock/feed.finecollection.1.0.189.152.package.xml", "feed/mock/feed.finecollection.1.0.189.152.nupkg", true);
 
         final List<SourcePackageReference> allRefs = Arrays.asList(
                 new SourcePackageReference(http.getSourceUrl(), http.getCredentials(), http.getPackageId(), null, false)
@@ -181,6 +192,16 @@ public class ListPackagesCommandIntegrationTest extends IntegrationTestBase {
 
     MockNuGetHTTP.executeTest(new MockNuGetHTTP.Action() {
       public void runTest(@NotNull MockNuGetHTTP http) throws Throwable {
+        http
+          .withPackage("NUnit", "2.5.7.10213", "feed/mock/feed.nunit.2.5.7.package.xml", "feed/mock/feed.nunit.2.5.7.nupkg", false)
+          .withPackage("NUnit", "2.5.10.11092", "feed/mock/feed.nunit.2.5.10.package.xml", "feed/mock/feed.nunit.2.5.10.nupkg", true)
+          .withPackage("jQuery", "1.7.1", "feed/mock/feed.jquery.1.7.1.package.xml", "feed/mock/feed.jquery.1.7.1.nupkg", false)
+          .withPackage("jQuery", "1.7.2", "feed/mock/feed.jquery.1.7.2.package.xml", "feed/mock/feed.jquery.1.7.2.nupkg", true)
+          .withPackage("elmah", "1.2.0", "feed/mock/feed.elmah.1.2.package.xml", "feed/mock/feed.elmah.1.2.nupkg", false)
+          .withPackage("elmah", "1.2.2", "feed/mock/feed.elmah.1.2.2.package.xml", "feed/mock/feed.elmah.1.2.2.nupkg", true)
+          .withPackage("YouTrackSharp", "2019.2.4", "feed/mock/feed.youtracksharp.2019.2.4.package.xml", "feed/mock/feed.youtracksharp.2019.2.4.nupkg", true)
+          .withPackage("EASYHTTP", "1.7.0", "feed/mock/feed.easyhttp.1.7.0.package.xml", "feed/mock/feed.easyhttp.1.7.0.nupkg", true);
+
         final List<SourcePackageReference> allRefs = new ArrayList<SourcePackageReference>();
 
         for (String s : packageNames) {

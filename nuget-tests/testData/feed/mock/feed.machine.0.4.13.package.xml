@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<feed xmlns="http://www.w3.org/2005/Atom" 
+      xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+      xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+      xml:base="http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/">
+  <title type="text">Packages</title>
+  <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages()</id>
+  <updated>2019-11-28T13:09:17Z</updated>
+  <link rel="self" title="Packages" href="Packages"/>
+  <entry>
+    <id>http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/machine.specifications.0.4.13.0.nupkg</id>
+    <link rel="edit" title="V2FeedPackage"
+          href="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/machine.specifications.0.4.13.0.nupkg"/>
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+    <content type="application/zip"
+             src="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/machine.specifications.0.4.13.0.nupkg"/>
+    <title type="text">Machine.Specifications</title>
+    <summary type="text">Machine.Specifications Context/Specification framework</summary>
+    <updated>2011-05-14T10:47:19Z</updated>
+    <author>
+      <name>Aaron Jensen, Alexander Groß, et al.</name>
+    </author>
+    <m:properties>
+      <d:Id>Machine.Specifications</d:Id>
+      <d:Version>0.4.13.0</d:Version>
+      <d:NormalizedVersion>0.4.13</d:NormalizedVersion>
+      <d:Authors>Aaron Jensen, Alexander Groß, et al.</d:Authors>
+      <d:Copyright m:null="true"/>
+      <d:Created m:type="Edm.DateTime">2011-05-14T10:47:19.337+00:00</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>Machine.Specifications is a Context/Specification framework geared towards removing language noise and simplifying tests.</d:Description>
+      <d:DownloadCount m:type="Edm.Int32">1004758</d:DownloadCount>
+      <d:GalleryDetailsUrl>https://www.nuget.org/packages/Machine.Specifications/0.4.13</d:GalleryDetailsUrl>
+      <d:IconUrl>https://api.nuget.org/v3-flatcontainer/machine.specifications/0.4.13/icon</d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">false</d:IsAbsoluteLatestVersion>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Language m:null="true"/>
+      <d:LastUpdated m:type="Edm.DateTime">2011-05-14T10:47:19.727+00:00</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-05-14T10:47:19.727+00:00</d:Published>
+      <d:PackageHash>DSxW0/V18wc2MXn6CnQe/SQe6/JZZG0WxWE2cxNzo/LTtiYJNdfkzmnJOb822bB+MQlEk2mNrBeCfO+Y9Yj+GA==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">721578</d:PackageSize>
+      <d:ProjectUrl>http://github.com/machine/machine.specifications</d:ProjectUrl>
+      <d:ReportAbuseUrl>https://www.nuget.org/packages/Machine.Specifications/0.4.13/ReportAbuse</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"/>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Summary>Machine.Specifications Context/Specification framework</d:Summary>
+      <d:Tags>test unit testing context specification bdd tdd</d:Tags>
+      <d:Title>Machine.Specifications</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">70735</d:VersionDownloadCount>
+      <d:MinClientVersion m:null="true"/>
+      <d:LastEdited m:type="Edm.DateTime">2018-10-21T07:06:07.913+00:00</d:LastEdited>
+      <d:LicenseUrl>http://github.com/machine/machine.specifications/blob/master/License.txt</d:LicenseUrl>
+      <d:LicenseNames m:null="true"/>
+      <d:LicenseReportUrl m:null="true"/>
+    </m:properties>
+  </entry>
+</feed>

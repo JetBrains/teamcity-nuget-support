@@ -52,6 +52,10 @@ public class AuthInstallPackageIntegrationTest extends InstallPackageIntegration
     myHttp.start();
     myAuthSource = Collections.singletonList(myHttp.getSourceUrl());
     addGlobalSource(myHttp.getSourceUrl(), myHttp.getUsername(), myHttp.getPassword());
+
+    myHttp
+      .withPackage("FineCollection", "1.0.189.152", "feed/mock/feed.finecollection.1.0.189.152.package.xml", "feed/mock/feed.finecollection.1.0.189.152.nupkg", true);
+
   }
 
   @AfterMethod

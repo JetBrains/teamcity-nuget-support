@@ -7,14 +7,15 @@
   <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages()</id>
   <updated>2019-11-28T13:09:17Z</updated>
   <link rel="self" title="Packages" href="Packages"/>
+
   <entry>
-    <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages(Id=&apos;YouTrackSharp&apos;,Version=&apos;2019.2.4&apos;)</id>
+    <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages(Id=&apos;youtracksharp&apos;,Version=&apos;2019.2.4&apos;)</id>
     <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
     <link rel="edit" title="V2FeedPackage"
-          href="Packages(Id=&apos;NUnit&apos;,Version=&apos;3.12.0&apos;)"/>
-    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+          href="Packages(Id=&apos;youtracksharp&apos;,Version=&apos;2019.2.4&apos;)"/>
     <content type="application/zip"
              src="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/youtracksharp.2019.2.4.nupkg"/>
+
     <title type="text">YouTrackSharp</title>
     <updated>2019-10-23T22:29:58Z</updated>
     <author>
@@ -29,7 +30,7 @@
       <d:Created m:type="Edm.DateTime">2019-10-23T22:29:58.83+00:00</d:Created>
       <d:Dependencies>Newtonsoft.Json:11.0.2:netstandard2.0</d:Dependencies>
       <d:Description>A .NET Library to talk to JetBrains YouTrack.</d:Description>
-      <d:DownloadCount m:type="Edm.Int32">133134</d:DownloadCount>
+      <d:DownloadCount m:type="Edm.Int32">134205</d:DownloadCount>
       <d:GalleryDetailsUrl>https://www.nuget.org/packages/YouTrackSharp/2019.2.4</d:GalleryDetailsUrl>
       <d:IconUrl>https://api.nuget.org/v3-flatcontainer/youtracksharp/2019.2.4/icon</d:IconUrl>
       <d:IsLatestVersion m:type="Edm.Boolean">true</d:IsLatestVersion>
@@ -48,7 +49,7 @@
       <d:Summary></d:Summary>
       <d:Tags>YouTrack JetBrains SDK</d:Tags>
       <d:Title>YouTrackSharp</d:Title>
-      <d:VersionDownloadCount m:type="Edm.Int32">149</d:VersionDownloadCount>
+      <d:VersionDownloadCount m:type="Edm.Int32">180</d:VersionDownloadCount>
       <d:MinClientVersion m:null="true"/>
       <d:LastEdited m:type="Edm.DateTime">2019-10-23T22:31:30.917+00:00</d:LastEdited>
       <d:LicenseUrl>https://www.nuget.org/packages/YouTrackSharp/2019.2.4/license</d:LicenseUrl>

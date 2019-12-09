@@ -103,6 +103,11 @@ public class MockNuGetAuthHTTP {
     myHttp.start();
   }
 
+  public MockNuGetAuthHTTP withPackage(final String packageName, final String version, final String metadataFilePath, final String nupkgDataPath, final boolean isLatestVersion) {
+    myHttp.withPackage(packageName, version, metadataFilePath, nupkgDataPath, isLatestVersion);
+    return this;
+  }
+
   private void checkServerIsRunning() throws Error {
     if (myHttp == null) {
       throw new Error("NuGet mock http server has not been started");
@@ -155,7 +160,7 @@ public class MockNuGetAuthHTTP {
     private String myPassword;
     private final AtomicBoolean myIsAuthorized = new AtomicBoolean(false);
 
-    private final MockNuGetRequestHandler handler = new MockNuGetRequestHandler(this);
+    private final MockNuGetRequestHandler myHandler = new MockNuGetRequestHandler(this);
 
     @Override
     public NuGetAPIVersion getApiVersion() {
@@ -206,10 +211,14 @@ public class MockNuGetAuthHTTP {
       return getFileResponse(testDataPath, asList);
     }
 
+    public void withPackage(final String packageName, final String version, final String metadataFilePath, final String nupkgDataPath, final boolean isLatestVersion) {
+      myHandler.withPackage(packageName, version, metadataFilePath, nupkgDataPath, isLatestVersion);
+    }
+
     @Override
     protected Response getAuthorizedResponse(final String request) throws IOException {
       try {
-        return handler.getResponse(request);
+        return myHandler.getResponse(request);
       } catch (JDOMException e) {
         e.printStackTrace();
         return createStringResponse(STATUS_LINE_500, new ArrayList<String>(), e.getMessage());

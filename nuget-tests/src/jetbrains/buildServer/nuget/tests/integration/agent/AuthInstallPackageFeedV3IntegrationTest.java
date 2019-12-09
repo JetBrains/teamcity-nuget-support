@@ -53,6 +53,8 @@ public class AuthInstallPackageFeedV3IntegrationTest extends InstallPackageInteg
     String feedUrl = StringUtil.trimEnd(myHttp.getSourceUrl(), "/") + "/index.json";
     myAuthSource = Collections.singletonList(feedUrl);
     addGlobalSource(feedUrl, myHttp.getUsername(), myHttp.getPassword());
+    myHttp
+      .withPackage("FineCollection", "2.2.1", "feed/mock/feed.finecollection.2.2.1.package.xml", "feed/mock/feed.finecollection.2.2.1.nupkg", true);
   }
 
   @AfterMethod

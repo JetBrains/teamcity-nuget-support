@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<feed xmlns="http://www.w3.org/2005/Atom" 
+      xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+      xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+      xml:base="http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/">
+  <title type="text">Packages</title>
+  <id>http://buildserver.labs.intellij.net/httpAuth/app/nuget/v1/FeedService.svc/Packages()</id>
+  <updated>2019-11-28T13:09:17Z</updated>
+  <link rel="self" title="Packages" href="Packages"/>
+  <entry>
+    <id>http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/castle.core.3.0.0.3001.nupkg</id>
+    <link rel="edit" title="V2FeedPackage"
+          href="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/castle.core.3.0.0.3001.nupkg"/>
+    <category term="NuGetGallery.V2FeedPackage" scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme"/>
+    <content type="application/zip"
+             src="http://buildserver.labs.intellij.net/httpAuth/repository/download/dm-fc-b/1439179:id/castle.core.3.0.0.3001.nupkg"/>
+
+    <title type="text">Castle.Core</title>
+    <summary type="text">Castle Project Core, including DynamicProxy, Logging Abstractions and DictionaryAdapter</summary>
+    <updated>2011-11-20T09:42:59Z</updated>
+    <author>
+      <name>Castle Project Contributors</name>
+    </author>
+    <m:properties>
+      <d:Id>Castle.Core</d:Id>
+      <d:Version>3.0.0.3001</d:Version>
+      <d:NormalizedVersion>3.0.0.3001</d:NormalizedVersion>
+      <d:Authors>Castle Project Contributors</d:Authors>
+      <d:Copyright>Copyright 2004-2011 Castle Project - http://www.castleproject.org/</d:Copyright>
+      <d:Created m:type="Edm.DateTime">2011-11-20T09:42:57.887+00:00</d:Created>
+      <d:Dependencies></d:Dependencies>
+      <d:Description>Castle Project Core, including DynamicProxy, Logging Abstractions and DictionaryAdapter</d:Description>
+      <d:DownloadCount m:type="Edm.Int32">87424229</d:DownloadCount>
+      <d:GalleryDetailsUrl>https://www.nuget.org/packages/Castle.Core/3.0.0.3001</d:GalleryDetailsUrl>
+      <d:IconUrl>https://api.nuget.org/v3-flatcontainer/castle.core/3.0.0.3001/icon</d:IconUrl>
+      <d:IsLatestVersion m:type="Edm.Boolean">false</d:IsLatestVersion>
+      <d:IsAbsoluteLatestVersion m:type="Edm.Boolean">false</d:IsAbsoluteLatestVersion>
+      <d:IsPrerelease m:type="Edm.Boolean">false</d:IsPrerelease>
+      <d:Language m:null="true"/>
+      <d:LastUpdated m:type="Edm.DateTime">2011-11-20T09:42:59.91+00:00</d:LastUpdated>
+      <d:Published m:type="Edm.DateTime">2011-11-20T09:42:59.91+00:00</d:Published>
+      <d:PackageHash>jld/XT7owvd93Q2i/hgEKAgwiLwBFoLh3oF/GUabFZ8xqM35xK5hWTOslpolxvUse1l3O4MpflM9M87UDaQAFg==</d:PackageHash>
+      <d:PackageHashAlgorithm>SHA512</d:PackageHashAlgorithm>
+      <d:PackageSize m:type="Edm.Int64">681230</d:PackageSize>
+      <d:ProjectUrl>http://www.castleproject.org/</d:ProjectUrl>
+      <d:ReportAbuseUrl>https://www.nuget.org/packages/Castle.Core/3.0.0.3001/ReportAbuse</d:ReportAbuseUrl>
+      <d:ReleaseNotes m:null="true"/>
+      <d:RequireLicenseAcceptance m:type="Edm.Boolean">false</d:RequireLicenseAcceptance>
+      <d:Summary>Castle Project Core, including DynamicProxy, Logging Abstractions and DictionaryAdapter</d:Summary>
+      <d:Tags>castle dynamicproxy dynamic proxy dynamicproxy2 dictionaryadapter emailsender</d:Tags>
+      <d:Title>Castle.Core 3.0 RC 1</d:Title>
+      <d:VersionDownloadCount m:type="Edm.Int32">23327</d:VersionDownloadCount>
+      <d:MinClientVersion m:null="true"/>
+      <d:LastEdited m:type="Edm.DateTime">2018-10-15T04:03:19.09+00:00</d:LastEdited>
+      <d:LicenseUrl>http://www.apache.org/licenses/LICENSE-2.0.html</d:LicenseUrl>
+      <d:LicenseNames m:null="true"/>
+      <d:LicenseReportUrl m:null="true"/>
+    </m:properties>
+  </entry>
+</feed>
