@@ -18,13 +18,13 @@
     <summary type="text">Machine.Specifications Context/Specification framework</summary>
     <updated>2011-05-14T10:47:19Z</updated>
     <author>
-      <name>Aaron Jensen, Alexander Groß, et al.</name>
+      <name>Aaron Jensen, Alexander Gross, et al.</name>
     </author>
     <m:properties>
       <d:Id>Machine.Specifications</d:Id>
       <d:Version>0.4.13.0</d:Version>
       <d:NormalizedVersion>0.4.13</d:NormalizedVersion>
-      <d:Authors>Aaron Jensen, Alexander Groß, et al.</d:Authors>
+      <d:Authors>Aaron Jensen, Alexander Gross, et al.</d:Authors>
       <d:Copyright m:null="true"/>
       <d:Created m:type="Edm.DateTime">2011-05-14T10:47:19.337+00:00</d:Created>
       <d:Dependencies></d:Dependencies>
