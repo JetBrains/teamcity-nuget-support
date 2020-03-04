@@ -20,7 +20,7 @@ import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.build.steps.BuildStepsEditor;
-import jetbrains.buildServer.serverSide.build.steps.StepContext;
+import jetbrains.buildServer.serverSide.impl.SBuildStepDescriptor;
 import jetbrains.buildServer.serverSide.impl.SBuildStepsCollection;
 import jetbrains.buildServer.serverSide.impl.build.steps.BuildStartContextBase;
 import jetbrains.buildServer.serverSide.parameters.types.PasswordsProvider;
@@ -52,7 +52,7 @@ public class NuGetFeedPasswordProvider implements PasswordsProvider {
     if (!(runners instanceof BuildStartContextBase)) return passwords;
 
     final BuildStepsEditor steps = ((BuildStartContextBase)runners).getRootSteps();
-    for (StepContext step : steps.getSteps()) {
+    for (SBuildRunnerDescriptor step : steps.getSteps()) {
       if (!PackagesConstants.PUBLISH_RUN_TYPE.equals(step.getRunType().getType())) continue;
 
       final String apiKey = step.getParameters().get(PackagesConstants.NUGET_API_KEY);
