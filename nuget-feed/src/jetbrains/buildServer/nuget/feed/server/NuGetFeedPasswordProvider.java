@@ -16,20 +16,17 @@
 
 package jetbrains.buildServer.nuget.feed.server;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.build.steps.BuildStepsEditor;
-import jetbrains.buildServer.serverSide.impl.SBuildStepDescriptor;
-import jetbrains.buildServer.serverSide.impl.SBuildStepsCollection;
 import jetbrains.buildServer.serverSide.impl.build.steps.BuildStartContextBase;
 import jetbrains.buildServer.serverSide.parameters.types.PasswordsProvider;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 
 /**
