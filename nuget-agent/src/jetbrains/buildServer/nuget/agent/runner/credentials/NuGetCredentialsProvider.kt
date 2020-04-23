@@ -40,7 +40,10 @@ class NuGetCredentialsProvider(events: EventDispatcher<AgentLifeCycleListener>,
         if (TeamCityProperties.getBoolean("teamcity.nuget.credentialprovider.disabled")) return
         if (StringUtil.isTrue(runner.configParameters.get("teamcity.nuget.credentialprovider.disabled")?.trim())) return
 
-        val pathProvider = myCredentialsPathProviders[runner.runType] ?: return
+        val pathProvider = myCredentialsPathProviders[runner.runType]
+        if (pathProvider == null && !SupportedRunners.contains(runner.runType)) {
+            return
+        }
 
         val packageSources = packageSourceManager.getGlobalPackageSources(runner.build)
         if (packageSources.isEmpty()) return
@@ -56,12 +59,12 @@ class NuGetCredentialsProvider(events: EventDispatcher<AgentLifeCycleListener>,
                 PackageSourceUtil.writeSources(it, packageSources)
                 runner.addEnvironmentVariable(TEAMCITY_NUGET_FEEDS_ENV_VAR, it.path)
 
-                pathProvider.getProviderPath(runner)?.let { credentialsProviderPath ->
+                pathProvider?.getProviderPath(runner)?.let { credentialsProviderPath ->
                     LOG.debug("Set credentials provider location to $credentialsProviderPath")
                     runner.addEnvironmentVariable(NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR, credentialsProviderPath)
                 }
 
-                pathProvider.getPluginPath(runner)?.let { pluginPaths ->
+                pathProvider?.getPluginPath(runner)?.let { pluginPaths ->
                     LOG.debug("Set credentials plugin paths to $pluginPaths")
                     runner.addEnvironmentVariable(NUGET_PLUGIN_PATH_ENV_VAR, pluginPaths)
                 }
@@ -91,5 +94,6 @@ class NuGetCredentialsProvider(events: EventDispatcher<AgentLifeCycleListener>,
 
     companion object {
         private val LOG = Logger.getInstance(NuGetCredentialsProvider::class.java.name)
+        private val SupportedRunners = setOf("dotnet.cli", "dotnet");
     }
 }
