@@ -5,7 +5,7 @@ plugins {
 }
 
 nuget {
-    version = '4.5.0'
+    version = '5.5.1'
 }
 
 nugetRestore {
