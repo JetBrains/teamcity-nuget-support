@@ -1,6 +1,15 @@
 plugins {
 	id 'com.ullink.msbuild' version '3.7'
 	id 'com.ullink.nunit' version '2.0'
+        id 'com.ullink.nuget' version '2.15'
+}
+
+nuget {
+    version = '4.5.0'
+}
+
+nugetRestore {
+	solutionFile = file('nuget-extensions.sln')
 }
 
 msbuild {
