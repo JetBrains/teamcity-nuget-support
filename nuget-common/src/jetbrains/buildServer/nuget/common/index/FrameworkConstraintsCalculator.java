@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.spec.Dependencies;
 import jetbrains.buildServer.nuget.spec.DependencyGroup;
 import jetbrains.buildServer.nuget.spec.FrameworkAssembly;
 import jetbrains.buildServer.nuget.spec.NuspecFileContent;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,11 @@ import java.util.regex.Pattern;
  */
 public class FrameworkConstraintsCalculator implements NuGetPackageStructureAnalyser {
 
+  public static final String MATCH_FROM_ROOT_PROP ="teamcity.nuget.index.package.targetframework.matchfromroot";
+
   private static final Pattern SUBFOLDER_MATCHING_PATTERN = Pattern.compile("(content|lib|build|tools)\\/([^\\/]+)\\/.*");
+  private static final Pattern ROOT_FOLDER_MATCHING_PATTERN = Pattern.compile("^(?:runtime\\/.+\\/)?(content|lib|build|tools)\\/([^\\/]+)\\/.*$");
+
   private static final String LIB_FOLDER = "lib";
 
   private static final Logger LOG = Logger.getInstance(FrameworkConstraintsCalculator.class.getName());
@@ -65,7 +70,7 @@ public class FrameworkConstraintsCalculator implements NuGetPackageStructureAnal
 
   @Nullable
   private String extractTargetFrameworkFromReferenceFilePath(String path) {
-    final Matcher matcher = SUBFOLDER_MATCHING_PATTERN.matcher(path);
+    final Matcher matcher = getFolderMatchingPattern().matcher(path);
     if(!matcher.find()) return null;
     boolean strictMode = matcher.group(1).equalsIgnoreCase(LIB_FOLDER);
     final String frameworkString = matcher.group(2);
@@ -73,6 +78,13 @@ public class FrameworkConstraintsCalculator implements NuGetPackageStructureAnal
       return frameworkString.toLowerCase();
     else
       return null;
+  }
+
+  @NotNull
+  private Pattern getFolderMatchingPattern() {
+    return TeamCityProperties.getBooleanOrTrue(MATCH_FROM_ROOT_PROP)
+      ? ROOT_FOLDER_MATCHING_PATTERN
+      : SUBFOLDER_MATCHING_PATTERN;
   }
 
   @NotNull

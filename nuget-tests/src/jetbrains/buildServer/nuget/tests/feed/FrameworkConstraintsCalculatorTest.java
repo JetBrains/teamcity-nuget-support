@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.common.index.FrameworkConstraintsCalculator;
 import jetbrains.buildServer.nuget.common.index.NuGetPackageStructureAnalyser;
 import jetbrains.buildServer.nuget.common.index.NuGetPackageStructureVisitor;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.FileUtil;
 import org.jetbrains.annotations.NotNull;
@@ -81,6 +82,22 @@ public class FrameworkConstraintsCalculatorTest extends BaseTestCase {
   @Test
   public void shouldProcessSubfoldersWithValidShortFrameworkName() throws Exception {
     assertPackageConstraints(Sets.newHashSet("net40-full", "net40-client", "net40"), "packages/subfolders.nupkg");
+  }
+
+  @Test
+  public void shouldNotProcessSubfoldersLocatedNotAtRoot() throws Exception {
+    assertPackageConstraints(Collections.<String>emptySet(), "packages/subfoldersNotAtRootLevel.nupkg");
+  }
+
+  @Test
+  public void shouldProcessSubfoldersLocatedNotAtRootWithRuntime() throws Exception {
+    assertPackageConstraints(Sets.newHashSet("net40-full", "net40-client", "net40"), "packages/subfoldersNotAtRootLevelWithRuntime.nupkg");
+  }
+
+  @Test
+  public void shouldProcessSubfoldersLocatedNotAtRootForOldMatched() throws Exception {
+    System.setProperty(FrameworkConstraintsCalculator.MATCH_FROM_ROOT_PROP, "false");
+    assertPackageConstraints(Sets.newHashSet("net40-full", "net40-client", "net40"), "packages/subfoldersNotAtRootLevel.nupkg");
   }
 
   @Test
