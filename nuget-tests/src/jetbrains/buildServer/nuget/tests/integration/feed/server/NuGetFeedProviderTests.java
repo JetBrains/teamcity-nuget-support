@@ -41,10 +41,11 @@ public class NuGetFeedProviderTests {
     private static final String SERVLET_PATH = "/app/nuget/v1/FeedService.svc";
     private NuGetFeedProviderImpl myFeedProvider;
     private String myContextPath;
+    private String myAuthenticationType;
 
-    @Parameters({ "contextPath" })
+    @Parameters({ "contextPath", "authenticationType" })
     @BeforeMethod
-    protected void setUp(final String contextPath) throws Exception {
+    protected void setUp(final String contextPath, @Optional("") final String authenticationType) throws Exception {
         final Mockery m = new Mockery() {{
             setImposteriser(ClassImposteriser.INSTANCE);
         }};
@@ -54,10 +55,11 @@ public class NuGetFeedProviderTests {
         final PackageUploadHandler uploadHandler = m.mock(PackageUploadHandler.class);
         myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);
         myContextPath = contextPath;
+        myAuthenticationType = authenticationType;
     }
 
     public void testGetPackagesHandler() {
-        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/Packages");
+        RequestWrapper request = createRequest("/Packages");
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
 
@@ -66,7 +68,7 @@ public class NuGetFeedProviderTests {
     }
 
     public void testPushPackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/");
+        RequestWrapper request = createRequest("/");
         request.setMethod(HttpMethod.PUT);
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
@@ -76,7 +78,7 @@ public class NuGetFeedProviderTests {
     }
 
     public void testBatchRequest() throws Exception {
-        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/$batch");
+        RequestWrapper request = createRequest("/$batch");
         request.setMethod(HttpMethod.POST);
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
@@ -86,7 +88,7 @@ public class NuGetFeedProviderTests {
     }
 
     public void testPostPackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/Packages");
+        RequestWrapper request = createRequest("/Packages");
         request.setMethod(HttpMethod.POST);
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
@@ -95,7 +97,7 @@ public class NuGetFeedProviderTests {
     }
 
     public void testUpdatePackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/Packages(Id='id',Version='1.0.0')");
+        RequestWrapper request = createRequest("/Packages(Id='id',Version='1.0.0')");
         request.setMethod(HttpMethod.PUT);
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
@@ -104,11 +106,18 @@ public class NuGetFeedProviderTests {
     }
 
     public void testDeletePackage() throws Exception {
-        RequestWrapper request = new RequestWrapper(myContextPath, SERVLET_PATH, SERVLET_PATH + "/Packages(Id='id',Version='1.0.0')");
+        RequestWrapper request = createRequest("/Packages(Id='id',Version='1.0.0')");
         request.setMethod(HttpMethod.DELETE);
 
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
 
         Assert.assertNull(handler);
+    }
+
+    private RequestWrapper createRequest(final String path) {
+      return new RequestWrapper(
+        myContextPath,
+        myAuthenticationType + SERVLET_PATH,
+        myContextPath + myAuthenticationType + SERVLET_PATH + path);
     }
 }

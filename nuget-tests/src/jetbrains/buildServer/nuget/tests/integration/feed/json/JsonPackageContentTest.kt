@@ -20,7 +20,7 @@ class JsonPackageContentTest : JsonFeedIntegrationTestBase() {
 
         val response = processRequest(createRequest("flatcontainer/mypackage/1.0.0/mypackage.1.0.0.nupkg"))
         val redirectUrl = response.getHeader("Location")
-        Assert.assertEquals(redirectUrl, "${serverUrl}$DOWNLOAD_URL", "Actual redirect URL: $redirectUrl")
+        Assert.assertEquals(redirectUrl, "${serverUrl}$myAuthenticationType$DOWNLOAD_URL", "Actual redirect URL: $redirectUrl")
     }
 
     @Test
@@ -29,7 +29,7 @@ class JsonPackageContentTest : JsonFeedIntegrationTestBase() {
 
         val response = processRequest(createRequest("flatcontainer/mypackage/1.0.0/mypackage.1.0.0.nuspec"))
         val redirectUrl = response.getHeader("Location")
-        Assert.assertEquals(redirectUrl,"${serverUrl}$DOWNLOAD_URL!/MyPackage.nuspec", "Actual redirect URL: $redirectUrl")
+        Assert.assertEquals(redirectUrl,"${serverUrl}$myAuthenticationType$DOWNLOAD_URL!/MyPackage.nuspec", "Actual redirect URL: $redirectUrl")
     }
 
     @Test

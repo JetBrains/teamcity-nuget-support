@@ -49,7 +49,8 @@ public class RequestWrapper implements HttpServletRequest {
     }
 
     public RequestWrapper(final String contextPath, final String servletPath, String request) {
-        final String path = request.length() > servletPath.length() ? request.substring(servletPath.length() + 1) : "";
+        final String fullServletPath = contextPath + servletPath;
+        final String path = request.length() > fullServletPath.length() ? request.substring(fullServletPath.length() + 1) : "";
         final int queryStringIndex = path.indexOf("?");
         myContextPath = contextPath;
         myServletPath = servletPath;

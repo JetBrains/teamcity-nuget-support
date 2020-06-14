@@ -17,13 +17,18 @@
 package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 
 import com.intellij.openapi.diagnostic.Logger;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
+import jetbrains.buildServer.nuget.feed.server.impl.HttpServletRequestUtil;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
+import jetbrains.buildServer.nuget.feed.server.json.JsonExtensions;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feed.server.olingo.model.NuGetMapper;
 import jetbrains.buildServer.nuget.feed.server.olingo.model.V2FeedPackage;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
+import jetbrains.buildServer.web.util.WebUtil;
 import org.apache.olingo.odata2.api.batch.*;
 import org.apache.olingo.odata2.api.commons.HttpStatusCodes;
 import org.apache.olingo.odata2.api.commons.InlineCount;
@@ -71,6 +76,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     throws ODataException {
     final ODataContext context = getContext();
     final PathInfo pathInfo = context.getPathInfo();
+    final URI rootUrlWithAuthenticationType = getRootUrlWithAuthenticationType(context);
+
     List<V2FeedPackage> data = new ArrayList<>();
 
     try {
@@ -80,7 +87,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
         uriInfo.getFunctionImport(),
         mapFunctionParameters(uriInfo.getFunctionImportParameters()),
         uriInfo.getCustomQueryOptions()
-      ), source -> NuGetMapper.mapPackage((NuGetIndexEntry) source, pathInfo.getServiceRoot())));
+      ), source -> NuGetMapper.mapPackage((NuGetIndexEntry) source, rootUrlWithAuthenticationType)));
     } catch (final ODataNotFoundException e) {
       LOG.infoAndDebugDetails("Package not found", e);
       data.clear();
@@ -142,6 +149,14 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
     context.stopRuntimeMeasurement(timingHandle);
 
     return ODataResponse.fromResponse(response).build();
+  }
+
+  private URI getRootUrlWithAuthenticationType(ODataContext context) {
+    if (context.isInBatchMode()) {
+      context = context.getBatchParentContext();
+    }
+    final HttpServletRequest request = (HttpServletRequest) context.getParameter(ODataContext.HTTP_SERVLET_REQUEST_OBJECT);
+    return URI.create(HttpServletRequestUtil.getRootUrlWithAuthenticationType(request));
   }
 
   private String getSkipToken(GetEntitySetUriInfo uriInfo) {

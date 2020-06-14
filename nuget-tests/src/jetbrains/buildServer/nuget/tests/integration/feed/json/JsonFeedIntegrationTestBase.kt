@@ -23,22 +23,22 @@ open class JsonFeedIntegrationTestBase : NuGetJavaFeedIntegrationTestBase() {
     }
 
     fun assertContainsDataIdUrl(responseBody: String?) {
-        assertContains(responseBody, "\"data\":[{\"@id\":\"${serverUrl}${SERVLET_V3_PATH}");
+        assertContains(responseBody, "\"data\":[{\"@id\":\"${serverUrl}${myAuthenticationType}${SERVLET_V3_PATH}");
     }
 
     fun assertContainsDataIdVersionsUrl(responseBody: String?) {
-        assertContains(responseBody, "\"versions\":[{\"@id\":\"${serverUrl}${SERVLET_V3_PATH}");
+        assertContains(responseBody, "\"versions\":[{\"@id\":\"${serverUrl}${myAuthenticationType}${SERVLET_V3_PATH}");
     }
 
     fun assertContainsRegistrationUrl(responseBody: String?) {
-        assertContains(responseBody, "\"registration\":\"${serverUrl}${SERVLET_V3_PATH}");
+        assertContains(responseBody, "\"registration\":\"${serverUrl}${myAuthenticationType}${SERVLET_V3_PATH}");
     }
 
     fun assertContainsIdUrl(responseBody: String?) {
-        assertContains(responseBody, "{\"@id\":\"${serverUrl}${SERVLET_V3_PATH}");
+        assertContains(responseBody, "{\"@id\":\"${serverUrl}${myAuthenticationType}${SERVLET_V3_PATH}");
     }
 
     fun assertContainsDownloadUrl(responseBody: String?) {
-        assertContains(responseBody, "\"packageContent\":\"${serverUrl}${DOWNLOAD_URL}");
+        assertContains(responseBody, "\"packageContent\":\"${serverUrl}${myAuthenticationType}${DOWNLOAD_URL}");
     }
 }

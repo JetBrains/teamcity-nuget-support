@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
+import jetbrains.buildServer.web.util.WebUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joda.time.LocalDateTime;
@@ -41,11 +42,11 @@ public final class NuGetMapper {
    * Maps nuget package entry.
    *
    * @param indexEntry is an entry.
-   * @param requestUri is a request URL.
+   * @param rootUriWithAuthenticattionType is a root URL with context and authentication type.
    * @return package.
    */
   @Nullable
-  public static V2FeedPackage mapPackage(@Nullable final NuGetIndexEntry indexEntry, @NotNull final URI requestUri) {
+  public static V2FeedPackage mapPackage(@Nullable final NuGetIndexEntry indexEntry, @NotNull final URI rootUriWithAuthenticattionType) {
     if (indexEntry == null) {
       return null;
     }
@@ -79,20 +80,14 @@ public final class NuGetMapper {
     feedPackage.setLicenseUrl(getValue(attributes, LICENSE_URL));
     feedPackage.setLicenseNames(getValue(attributes, LICENSE_NAMES));
     feedPackage.setLicenseReportUrl(getValue(attributes, LICENSE_REPORT_URL));
-    feedPackage.setTeamCityDownloadUrl(getDownloadUrl(requestUri, attributes));
+    feedPackage.setTeamCityDownloadUrl(getDownloadUrl(rootUriWithAuthenticattionType, attributes));
 
     return feedPackage;
   }
 
-  private static String getDownloadUrl(@NotNull URI requestUri, Map<String, String> attributes) {
-    final String authSchema = StringUtil.split(requestUri.getPath(), "/").get(0);
+  private static String getDownloadUrl(@NotNull URI rootUriWithAuthenticationType, Map<String, String> attributes) {
     final String artifactPath = getValue(attributes, PackageConstants.TEAMCITY_DOWNLOAD_URL);
-    final String downloadPath = String.format("/%s%s", authSchema, artifactPath);
-    return UriBuilder
-            .fromUri(requestUri)
-            .replacePath(downloadPath)
-            .build()
-            .toString();
+    return rootUriWithAuthenticationType.toString() + artifactPath;
   }
 
   private static String getValue(@NotNull final Map<String, String> attributes, @NotNull final String key) {

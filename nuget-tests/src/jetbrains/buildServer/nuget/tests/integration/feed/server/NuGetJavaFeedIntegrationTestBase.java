@@ -45,6 +45,7 @@ import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
+import jetbrains.buildServer.web.util.PathModifiers;
 import org.apache.http.NameValuePair;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.methods.HttpRequestBase;
@@ -90,10 +91,14 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected NuGetFeedFactory myFeedFactory;
   private int myCount;
   protected String myContextPath;
+  protected String myAuthenticationType;
 
-  @Parameters({ "contextPath" })
+  @Parameters({ "contextPath", "authenticationType" })
   @BeforeMethod
-  protected void setUp(@Optional("") final String contextPath) throws Exception {
+  protected void setUp(
+    @Optional("") final String contextPath,
+    @Optional("") final String authenticationType
+  ) throws Exception {
     super.setUp();
     final Mockery mockery = new Mockery() {{
       setImposteriser(ClassImposteriser.INSTANCE);
@@ -107,6 +112,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myMetadataStorage = m.mock(MetadataStorage.class);
     myFeedFactory = m.mock(NuGetFeedFactory.class);
     myContextPath = contextPath;
+    myAuthenticationType = authenticationType;
     final ResponseCache responseCache = m.mock(ResponseCache.class);
     final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
@@ -176,6 +182,26 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       new JsonAutocompleteHandler(myFeedFactory)
     );
     myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);
+
+    final PathModifiers pathModifiers = new PathModifiers();
+    pathModifiers.init();
+    pathModifiers.registerPathModifier(new PathModifiers.PathModifier() {
+      @Override
+      public boolean matches(@NotNull final String path) {
+        if (StringUtil.isEmptyOrSpaces(myAuthenticationType) || StringUtil.isEmptyOrSpaces(path)) {
+          return false;
+        }
+        return path.startsWith(myAuthenticationType + "/");
+      }
+
+      @Override
+      public String modifyPath(@NotNull final String path) {
+        if (StringUtil.isEmptyOrSpaces(path)) {
+          return path;
+        }
+        return path.substring(myAuthenticationType.length());
+      }
+    });
   }
 
   @NotNull
@@ -222,13 +248,13 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
   @Override
   protected String getNuGetServerUrl() {
-    return getServerUrl() + NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId(), getAPIVersion()) + "/";
+    return getServerUrl() + myAuthenticationType + NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId(), getAPIVersion()) + "/";
   }
 
   protected String getServerUrl() { return "http://localhost" + myContextPath; }
 
   protected String getServletPath() {
-    return NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId()) + getAPIVersion().name().toLowerCase();
+    return myAuthenticationType + NuGetUtils.getProjectFeedPath(FEED_DATA.getProjectId(), FEED_DATA.getFeedId()) + getAPIVersion().name().toLowerCase();
   }
 
   protected NuGetIndexEntry addPackage(@NotNull final File file, boolean isLatest) throws IOException {
@@ -339,7 +365,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   @NotNull
   protected HttpServletRequest createRequest(@NotNull final String requestUrl, @NotNull final NameValuePair... reqs) {
     final String servletPath = getServletPath();
-    final RequestWrapper requestWrapper = new RequestWrapper(myContextPath, servletPath, servletPath + "/" + requestUrl);
+    final RequestWrapper requestWrapper = new RequestWrapper(myContextPath, servletPath, myContextPath + servletPath + "/" + requestUrl);
     for (NameValuePair req : reqs) {
       requestWrapper.setParameter(req.getName(), req.getValue());
     }

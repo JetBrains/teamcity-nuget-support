@@ -39,7 +39,7 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
 
         val entry = results.first()
         val rootUrl = request.getRootUrl()
-        val downloadUrl = "$rootUrl${entry.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}"
+        val downloadUrl = "${request.getRootUrlWithAuthenticationType()}${entry.packageDownloadUrl}"
         val packageResponse = entry.toRegistrationEntry(
                 "$rootUrl${request.servletPath}${request.pathInfo}",
                 listOf("Package", "catalog:Permalink"),
@@ -57,10 +57,11 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory) : NuGet
         }
 
         val rootUrl = request.getRootUrl()
+        val rootUrlWithAuthenticationType = request.getRootUrlWithAuthenticationType()
         val items = results.map {
             val version = VersionUtility.normalizeVersion(it.version)
             val registrationUrl = "$rootUrl${request.servletPath}/registration1/$id/$version.json"
-            val downloadUrl = "$rootUrl${it.attributes[PackageConstants.TEAMCITY_DOWNLOAD_URL]}"
+            val downloadUrl = "$rootUrlWithAuthenticationType${it.packageDownloadUrl}"
             JsonRegistrationPackage(
                     registrationUrl,
                     "Package",
