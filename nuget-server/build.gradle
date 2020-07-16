@@ -55,7 +55,6 @@ dependencies {
     compile project(':nuget-feed')
     compile project(':nuget-server-common')
 
-    compile 'commons-io:commons-io:2.6'
     provided 'com.google.code.gson:gson:2.4'
     provided 'org.apache.httpcomponents:httpcore:4.3.3'
     provided 'org.apache.httpcomponents:httpclient:4.3.6'
