@@ -1,5 +1,5 @@
 plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.3.0"
+    id "org.jetbrains.kotlin.jvm" version "1.3.72"
 }
 
 repositories {
@@ -67,15 +67,11 @@ subprojects { subproject ->
         }
 
         test.useTestNG()
-        jar.version = null
+        jar.archiveVersion = null
 
         tasks.withType(JavaCompile) {
             sourceCompatibility = "1.8"
             targetCompatibility = "1.8"
         }
     }
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.9'
 }
