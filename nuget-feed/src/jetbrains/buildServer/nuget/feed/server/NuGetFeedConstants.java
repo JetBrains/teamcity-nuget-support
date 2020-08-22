@@ -30,8 +30,13 @@ public class NuGetFeedConstants {
   public static final String PROP_NUGET_FEED_CACHE_SIZE = "teamcity.nuget.feed.response.cache.size";
   public static final String PROP_NUGET_FEED_ENABLED = "teamcity.nuget.feed.enabled";
   public static final String PROP_NUGET_FEED_CACHED_SERVLETS = "teamcity.nuget.feed.cached.servlets";
+  public static final String PROP_NUGET_FEED_MAX_REQUESTS = "teamcity.nuget.feed.requests.maxRequests";
+  public static final String PROP_NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT = "teamcity.nuget.feed.requests.pending.processing.timeout";
+
   public static final String NUGET_FEED_API_VERSION = "teamcity.nuget.feed.apiVersion";
   public static final int NUGET_FEED_PACKAGE_SIZE = 100;
+  public static final int NUGET_FEED_MAX_REQUESTS = 20;
+  public static final Long NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT = 600L;
 
   public static final String NUGET_INDEXER_TYPE = "NuGetPackagesIndexer";
   public static final String NUGET_INDEXER_FEED = "feed";

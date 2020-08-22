@@ -25,12 +25,15 @@ import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
-import jetbrains.buildServer.serverSide.*
+import jetbrains.buildServer.serverSide.ProjectManager
+import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.web.openapi.WebControllerManager
 import jetbrains.buildServer.web.util.WebUtil
 import org.springframework.web.servlet.ModelAndView
 import java.util.*
+import java.util.concurrent.Semaphore
+import java.util.concurrent.TimeUnit
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.HttpMethod
@@ -45,6 +48,10 @@ class NuGetFeedController(web: WebControllerManager,
                           private val myProjectManager: ProjectManager,
                           private val myRepositoryManager: RepositoryManager)
     : BaseController() {
+
+    val myRequestSemaphore = Semaphore(
+            TeamCityProperties.getInteger(NuGetFeedConstants.PROP_NUGET_FEED_MAX_REQUESTS, NuGetFeedConstants.NUGET_FEED_MAX_REQUESTS),
+            false)
 
     init {
         setSupportedMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE)
@@ -121,7 +128,22 @@ class NuGetFeedController(web: WebControllerManager,
         val startTime = Date().time
         try {
             myRequestsList.reportFeedRequest(pathAndQuery)
-            feedHandler.handleRequest(feedData, requestWrapper, response)
+
+            val timeout = TeamCityProperties.getLong(
+                    NuGetFeedConstants.PROP_NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT,
+                    NuGetFeedConstants.NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT)
+            if (myRequestSemaphore.tryAcquire(timeout, TimeUnit.SECONDS)) {
+                try {
+                    feedHandler.handleRequest(feedData, requestWrapper, response)
+                }
+                finally {
+                    myRequestSemaphore.release()
+                }
+            } else {
+                LOG.warn("Could not start to process NuGet reqest during $timeout sec, request: ${WebUtil.getRequestDump(request)}|${request.requestURI}")
+                response.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, REQUEST_TIMEOUT)
+                return null
+            }
         } finally {
             myRequestsList.reportFeedRequestFinished(pathAndQuery, Date().time - startTime)
         }
@@ -157,6 +179,7 @@ class NuGetFeedController(web: WebControllerManager,
         private val QUERY_ID = Regex("^(id=)(.*)", RegexOption.IGNORE_CASE)
         private val FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.PROJECT_PATH + "/([^/]+)/([^/]+)/(v[123]|download))")
         private const val UNSUPPORTED_REQUEST = "Unsupported NuGet feed request"
+        private const val REQUEST_TIMEOUT = "NuGet feed request timeout"
         private const val NUGET_API_V2 = "v2"
     }
 }
