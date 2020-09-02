@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.server.settings.NuGetSettingsReader;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.ServerPaths;
+import jetbrains.buildServer.serverSide.ServerResponsibility;
 import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.tools.installed.ToolPaths;
 import jetbrains.buildServer.util.FileUtil;
@@ -56,17 +57,21 @@ public class NuGetServerToolPreProcessor extends ServerToolPreProcessorAdapter {
   private final DefaultToolVersions myDefaultToolVersions;
   @NotNull
   private final ProjectManager myProjectManager;
+  @NotNull
+  private final ServerResponsibility myServerResponsibility;
 
   public NuGetServerToolPreProcessor(@NotNull final ServerPaths serverPaths,
                                      @NotNull final ToolPaths toolPaths,
                                      @NotNull final NuGetSettingsManager nugetSettings,
                                      @NotNull final DefaultToolVersions defaultToolVersions,
-                                     @NotNull final ProjectManager projectManager) {
+                                     @NotNull final ProjectManager projectManager,
+                                     @NotNull ServerResponsibility myServerResponsibility) {
     myServerPaths = serverPaths;
     myToolPaths = toolPaths;
     myNugetSettings = nugetSettings;
     myDefaultToolVersions = defaultToolVersions;
     myProjectManager = projectManager;
+    this.myServerResponsibility = myServerResponsibility;
   }
 
   @NotNull
@@ -77,7 +82,9 @@ public class NuGetServerToolPreProcessor extends ServerToolPreProcessorAdapter {
 
   @Override
   public void doBeforeServerStartup() throws ToolException {
-    moveOldInstalledNugets();
+    if (myServerResponsibility.canManageServerConfig()) {
+      moveOldInstalledNugets();
+    }
   }
 
   @Override
