@@ -44,9 +44,6 @@
       <props:multilineProperty name="${ib.packSpecFile}" linkTitle="Specification or project files" cols="60" rows="5" expanded="${true}">
       <jsp:attribute name="afterTextField"><bs:vcsTree callback="appendSpecificationFile" treeId="${ib.packSpecFile}"/></jsp:attribute>
       </props:multilineProperty>
-      <script type="text/javascript">
-        BS.Util.hide($('vcsTreeControl_${ib.packSpecFile}'));
-      </script>
       <span class="smallNote">Specify paths to .nuspec files and/or to Visual Studio project files (i.e. .csproj or .vbproj). MSBuild-style wildcards are supported</span>
       <span id="error_${ib.packSpecFile}" class="error"></span>
     </td>
@@ -186,28 +183,3 @@
   BS.NuGet.PackRunnerSettings.onBaseDirModeChange();
 </script>
 
-<script type="text/javascript">
-  $j(document).ready(function() {
-    //move vcs-tree icon to the left from textarea, after completion icon
-    var img = $('vcsTreeControl_${ib.packSpecFile}');
-    if (!img) {
-      //there is no icon when no vcs roots configured
-      return;
-    }
-    img.remove();
-    img.style.position = 'absolute';
-
-    var textarea = $('${ib.packSpecFile}');
-    var dim = textarea.getDimensions(),
-        layout = textarea.getLayout();
-
-    var xshift = dim.width + 20; // Put next to the completion icon
-    var pos = textarea.positionedOffset();
-
-    textarea.parentNode.appendChild(img);
-    var x = pos[0] + xshift + layout.get('margin-left');
-    var y = pos[1] + 3 + layout.get('margin-top');
-    BS.Util.show(img);
-    BS.Util.place(img, x, y);
-  });
-</script>

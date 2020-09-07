@@ -69,10 +69,7 @@
                              cols="60" rows="5"
                              expanded="${true}">
       <jsp:attribute name="afterTextField"><bs:vcsTree callback="appendPackageToUpload" treeId="${ib.nuGetPublishFilesKey}"/></jsp:attribute>
-    </props:multilineProperty>    
-    <script type="text/javascript">
-      BS.Util.hide($('vcsTreeControl_${ib.nuGetPublishFilesKey}'));
-    </script>
+    </props:multilineProperty>
     <span class="smallNote">A newline-separated list of NuGet package files (.nupkg) to push to the NuGet feed. Wildcards are supported.</span>
     <span class="error" id="error_${ib.nuGetPublishFilesKey}"></span>
   </td>
@@ -117,28 +114,6 @@
 
 <script type="text/javascript">
   $j(document).ready(function() {
-    //move vcs-tree icon to the left from textarea, after completion icon
-    var img = $('vcsTreeControl_${ib.nuGetPublishFilesKey}');
-    if (!img) {
-      //there is no icon when no vcs roots configured
-      return;
-    }
-    img.remove();
-    img.style.position = 'absolute';
-
-    var textarea = $('${ib.nuGetPublishFilesKey}');
-    var dim = textarea.getDimensions(),
-        layout = textarea.getLayout();
-
-    var xshift = dim.width + 20; // Put next to the completion icon
-    var pos = textarea.positionedOffset();
-
-    textarea.parentNode.appendChild(img);
-    var x = pos[0] + xshift + layout.get('margin-left');
-    var y = pos[1] + 3 + layout.get('margin-top');
-    BS.Util.show(img);
-    BS.Util.place(img, x, y);
-
     $('queryString').value = encodeURIComponent(BS.NugetParametersForm.getFeedUrlQueryString());
   });
 </script>
