@@ -25,14 +25,19 @@ import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
 import jetbrains.buildServer.nuget.feed.server.controllers.serviceFeed.NuGetServiceFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests;
+import jetbrains.buildServer.nuget.feed.server.controllers.serviceFeed.NuGetServiceFeedHandlerContext;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.apache.http.HttpStatus;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.springframework.web.multipart.support.AbstractMultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.Controller;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -47,6 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 public class NuGetFeedControllerTest {
 
     private static final String SERVLET_PATH = "/app/nuget/v1/FeedService.svc";
+    private static final String SERVICE_FEED_BASE_PATH = "/app/nuget/feed/publishPackageServiceFeed";
 
     public void testWithHandler() throws Exception {
         Mockery m = new Mockery();
@@ -178,4 +184,84 @@ public class NuGetFeedControllerTest {
 
         m.assertIsSatisfied();
     }
+
+    public void shouldServiceFeedHandleIncorrectProjectId() throws Exception {
+      Mockery m = new Mockery();
+      WebControllerManager web = m.mock(WebControllerManager.class);
+      NuGetServerSettings settings = m.mock(NuGetServerSettings.class);
+      NuGetFeedProvider provider = m.mock(NuGetFeedProvider.class);
+      ProjectManager projectManager = m.mock(ProjectManager.class);
+      RepositoryManager repositoryManager = m.mock(RepositoryManager.class);
+      NuGetServiceFeedHandler serviceFeedHandler = m.mock(NuGetServiceFeedHandler.class);
+
+      m.checking(new Expectations(){{
+        oneOf(settings).isNuGetServerEnabled(); will(returnValue(true));
+
+        exactly(2).of(web).registerController(with(any(String.class)), with(any(Controller.class)));
+
+        oneOf(projectManager).findProjectByExternalId(with("Invalid"));
+        will(returnValue(null));
+      }});
+
+      Controller controller = new NuGetFeedController(web, settings,
+                                                      new RecentNuGetRequests(), provider, projectManager, repositoryManager, serviceFeedHandler);
+      RequestWrapper request = new RequestWrapper(SERVICE_FEED_BASE_PATH, SERVICE_FEED_BASE_PATH + "/Invalid/");
+      ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+      controller.handleRequest(request, response);
+
+      m.assertIsSatisfied();
+      Assert.assertEquals(response.getStatus(), 404);
+    }
+
+  public void shouldServiceFeedHandleRequest() throws Exception {
+    Mockery m = new Mockery();
+    WebControllerManager web = m.mock(WebControllerManager.class);
+    NuGetServerSettings settings = m.mock(NuGetServerSettings.class);
+    NuGetFeedProvider provider = m.mock(NuGetFeedProvider.class);
+    ProjectManager projectManager = m.mock(ProjectManager.class);
+    RepositoryManager repositoryManager = m.mock(RepositoryManager.class);
+    NuGetServiceFeedHandler serviceFeedHandler = m.mock(NuGetServiceFeedHandler.class);
+    SProject project = m.mock(SProject.class);
+    String projectId = "ProjectId";
+    RequestWrapper request = new RequestWrapper(SERVICE_FEED_BASE_PATH, SERVICE_FEED_BASE_PATH + "/" + projectId + "/");
+    ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+    m.checking(new Expectations(){{
+      oneOf(settings).isNuGetServerEnabled(); will(returnValue(true));
+
+      exactly(2).of(web).registerController(with(any(String.class)), with(any(Controller.class)));
+
+      oneOf(projectManager).findProjectByExternalId(with(projectId));
+      will(returnValue(project));
+
+      oneOf(serviceFeedHandler).handleRequest(with(createContextMatcher(projectId)),
+                                              with(any(HttpServletRequest.class)),
+                                              with(equal(response)));
+    }});
+
+    Controller controller = new NuGetFeedController(web, settings,
+                                                    new RecentNuGetRequests(), provider, projectManager, repositoryManager, serviceFeedHandler);
+
+    controller.handleRequest(request, response);
+
+    m.assertIsSatisfied();
+  }
+
+  private Matcher<NuGetServiceFeedHandlerContext> createContextMatcher(String projectId) {
+    return new BaseMatcher<NuGetServiceFeedHandlerContext>() {
+
+      @Override
+      public void describeTo(Description description) {
+        description.appendText("NuGetServiceFeedHandlerContext.ProjectId should mathch:").appendValue(projectId);
+      }
+
+      @Override
+      public boolean matches(Object o) {
+        if (!(o instanceof NuGetServiceFeedHandlerContext)) return false;
+        NuGetServiceFeedHandlerContext value = (NuGetServiceFeedHandlerContext)o;
+        return value.getProjectId().equals(projectId);
+      }
+    };
+  }
 }

@@ -39,13 +39,18 @@ class NuGetServiceFeedUploadMetadataHandlerImpl(
 
         for (targetFeed in targetFeeds) {
             try {
-                LOG.debug("Adding metadata entry for package $key in build ${jetbrains.buildServer.log.LogUtil.describe(build)}")
+                if (LOG.isDebugEnabled) {
+                    LOG.debug("Adding metadata entry for package $key in build ${jetbrains.buildServer.log.LogUtil.describe(build)}")
+                }
+
                 myStorage.addBuildEntry(build.buildId, targetFeed.key, key, metadata, !build.isPersonal)
+
+                if (LOG.isDebugEnabled) {
+                    LOG.debug("Added metadata entry for package $key in build ${jetbrains.buildServer.log.LogUtil.describe(build)}")
+                }
             } catch (e: Throwable) {
                 LOG.warnAndDebugDetails("Failed to update metadata for build $build in project ${targetFeed.projectExtId} feed ${targetFeed.feedId}. Error: ${e.message}", e)
                 throw e
-            } finally {
-                LOG.debug("Added metadata entry for package $key in build ${jetbrains.buildServer.log.LogUtil.describe(build)}")
             }
         }
     }
