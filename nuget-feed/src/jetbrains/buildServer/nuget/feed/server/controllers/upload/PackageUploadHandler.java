@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package jetbrains.buildServer.nuget.feed.server.controllers;
+package jetbrains.buildServer.nuget.feed.server.controllers.upload;
 
 import com.intellij.openapi.diagnostic.Logger;
 import jetbrains.buildServer.BuildAuthUtil;
@@ -27,7 +27,6 @@ import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
-import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils;
 import jetbrains.buildServer.serverSide.RunningBuildEx;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
@@ -35,7 +34,6 @@ import jetbrains.buildServer.serverSide.ServerSettings;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
-import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -61,7 +59,8 @@ import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 /**
  * NuGet package upload handler.
  */
-public class PackageUploadHandler implements NuGetFeedHandler {
+public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext> implements
+                                                                                  NuGetFeedUploadHandler<TContext> {
 
   private static final Logger LOG = Logger.getInstance(PackageUploadHandler.class.getName());
   private static final String INVALID_TOKEN_VALUE = "Invalid token value";
@@ -70,25 +69,25 @@ public class PackageUploadHandler implements NuGetFeedHandler {
   private static final String DEFAULT_PATH_FORMAT = "nuget/packages/{0}/{1}/{0}.{1}.nupkg";
   public static final String NUGET_APIKEY_HEADER = "x-nuget-apikey";
   private final RunningBuildsCollection myRunningBuilds;
-  private final MetadataStorage myStorage;
   private final PackageAnalyzer myPackageAnalyzer;
   private final ResponseCacheReset myCacheReset;
   private final ServerSettings myServerSettings;
+  private final NuGetFeedUploadMetadataHandler<TContext> myMetadataHandler;
 
   public PackageUploadHandler(@NotNull final RunningBuildsCollection runningBuilds,
-                              @NotNull final MetadataStorage storage,
                               @NotNull final PackageAnalyzer packageAnalyzer,
                               @NotNull final ResponseCacheReset cacheReset,
-                              @NotNull final ServerSettings serverSettings) {
+                              @NotNull final ServerSettings serverSettings,
+                              @NotNull final NuGetFeedUploadMetadataHandler<TContext> metadataHandler) {
     myRunningBuilds = runningBuilds;
-    myStorage = storage;
     myPackageAnalyzer = packageAnalyzer;
     myCacheReset = cacheReset;
     myServerSettings = serverSettings;
+    myMetadataHandler = metadataHandler;
   }
 
   @Override
-  public void handleRequest(@NotNull final NuGetFeedData feedData,
+  public void handleRequest(@NotNull final TContext context,
                             @NotNull final HttpServletRequest request,
                             @NotNull final HttpServletResponse response) throws Exception {
     final String contentType = request.getContentType();
@@ -98,7 +97,6 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       return;
     }
 
-    final boolean replace = "true".equalsIgnoreCase(request.getParameter("replace"));
     final CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
     final File uploadDirectory = getUploadDirectory();
     multipartResolver.setUploadTempDir(new FileSystemResource(uploadDirectory));
@@ -106,7 +104,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     try {
       LOG.debug("NuGet package upload handler has started");
       servletRequest = multipartResolver.resolveMultipart(request);
-      handleUpload(servletRequest, response, replace, feedData);
+      handleUpload(servletRequest, response, context);
     } catch (Throwable e) {
       LOG.warnAndDebugDetails("Unhandled error while processing NuGet package upload: " + e.getMessage(), e);
       throw e;
@@ -120,8 +118,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
 
   private void handleUpload(final MultipartHttpServletRequest request,
                             final HttpServletResponse response,
-                            final boolean replace,
-                            final NuGetFeedData feedData) throws IOException {
+                            final TContext context) throws IOException {
     final RunningBuildEx build = getRunningBuild(request.getHeader(NUGET_APIKEY_HEADER));
     if (build == null) {
       LOG.debug(INVALID_TOKEN_VALUE);
@@ -178,7 +175,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     }
 
     try {
-      processPackage(build, file, replace, feedData);
+      processPackage(request, response, build, file, context);
     } catch (PackageLoadException e) {
       LOG.debug("Invalid NuGet package: " + e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, INVALID_PACKAGE_CONTENTS);
@@ -228,9 +225,11 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     return build;
   }
 
-  private void processPackage(@NotNull final RunningBuildEx build,
+  private void processPackage(@NotNull final MultipartHttpServletRequest request,
+                              @NotNull final HttpServletResponse response,
+                              @NotNull final RunningBuildEx build,
                               @NotNull final MultipartFile file,
-                              final boolean replace, NuGetFeedData feedData) throws Exception {
+                              @NotNull final TContext context) throws Exception {
     final Map<String, String> metadata;
     InputStream inputStream = null;
 
@@ -250,12 +249,8 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     }
 
     final String key = NuGetUtils.getPackageKey(id, version);
-    // Packages must not exists in the feed if `replace=true` query parameter was not specified
-    if (!replace && myStorage.getEntriesByKey(feedData.getKey(), key).hasNext()) {
-      throw new PackageExistsException(String.format("NuGet package %s:%s already exists in the project %s feed %s",
-              id, version, feedData.getProjectExtId(), feedData.getFeedId())
-      );
-    }
+
+    myMetadataHandler.validate(request, response, context, build, key, metadata);
 
     String path;
     try {
@@ -283,7 +278,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
     }
 
     LOG.info(String.format("Publishing nuget package %s:%s at path '%s' as artifact for build %s into feed %s",
-      id, version, path, LogUtil.describe(build), feedData));
+      id, version, path, LogUtil.describe(build), context.getFeedName()));
     try {
       inputStream = file.getInputStream();
       build.publishArtifact(path, inputStream);
@@ -297,16 +292,7 @@ public class PackageUploadHandler implements NuGetFeedHandler {
       FileUtil.close(inputStream);
     }
 
-    try {
-      LOG.debug(String.format("Adding metadata entry for package %s in build %s", key, LogUtil.describe(build)));
-      myStorage.addBuildEntry(build.getBuildId(), feedData.getKey(), key, metadata, !build.isPersonal());
-    } catch (Throwable e) {
-      LOG.warnAndDebugDetails(String.format("Failed to update metadata for build %s in project %s feed %s. Error: %s",
-        build, feedData.getProjectExtId(), feedData.getFeedId(), e.getMessage()), e);
-      throw e;
-    } finally {
-      LOG.debug(String.format("Added metadata entry for package %s in build %s", key, LogUtil.describe(build)));
-    }
+    myMetadataHandler.handleMetadata(request, response, context, build, key, metadata);
 
     myCacheReset.resetCache();
   }

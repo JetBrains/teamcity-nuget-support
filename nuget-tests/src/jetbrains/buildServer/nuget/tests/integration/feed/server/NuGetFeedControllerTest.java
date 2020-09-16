@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
+import jetbrains.buildServer.nuget.feed.server.controllers.serviceFeed.NuGetServiceFeedHandler;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
 import jetbrains.buildServer.serverSide.ProjectManager;
@@ -55,6 +56,7 @@ public class NuGetFeedControllerTest {
         NuGetFeedHandler handler = m.mock(NuGetFeedHandler.class);
         ProjectManager projectManager = m.mock(ProjectManager.class);
         RepositoryManager repositoryManager = m.mock(RepositoryManager.class);
+        NuGetServiceFeedHandler serviceFeedHandler = m.mock(NuGetServiceFeedHandler.class);
         SProject project = m.mock(SProject.class);
 
         m.checking(new Expectations(){{
@@ -82,7 +84,7 @@ public class NuGetFeedControllerTest {
         }});
 
         Controller controller = new NuGetFeedController(web, settings,
-                new RecentNuGetRequests(), provider, projectManager, repositoryManager);
+                new RecentNuGetRequests(), provider, projectManager, repositoryManager, serviceFeedHandler);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -98,6 +100,7 @@ public class NuGetFeedControllerTest {
         NuGetFeedProvider provider = m.mock(NuGetFeedProvider.class);
         ProjectManager projectManager = m.mock(ProjectManager.class);
         RepositoryManager repositoryManager = m.mock(RepositoryManager.class);
+        NuGetServiceFeedHandler serviceFeedHandler = m.mock(NuGetServiceFeedHandler.class);
         SProject project = m.mock(SProject.class);
 
         m.checking(new Expectations(){{
@@ -120,7 +123,7 @@ public class NuGetFeedControllerTest {
         }});
 
         Controller controller = new NuGetFeedController(web, settings,
-                new RecentNuGetRequests(), provider, projectManager, repositoryManager);
+                new RecentNuGetRequests(), provider, projectManager, repositoryManager, serviceFeedHandler);
         RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/Packages");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -138,6 +141,7 @@ public class NuGetFeedControllerTest {
         NuGetFeedHandler handler = m.mock(NuGetFeedHandler.class);
         ProjectManager projectManager = m.mock(ProjectManager.class);
         RepositoryManager repositoryManager = m.mock(RepositoryManager.class);
+        NuGetServiceFeedHandler serviceFeedHandler = m.mock(NuGetServiceFeedHandler.class);
         SProject project = m.mock(SProject.class);
 
         m.checking(new Expectations(){{
@@ -165,7 +169,7 @@ public class NuGetFeedControllerTest {
         }});
 
         Controller controller = new NuGetFeedController(web, settings,
-                new RecentNuGetRequests(), provider, projectManager, repositoryManager);
+                new RecentNuGetRequests(), provider, projectManager, repositoryManager, serviceFeedHandler);
         String feedPath = NuGetUtils.getProjectFeedPath(NuGetFeedData.DEFAULT.getProjectId(), NuGetFeedData.DEFAULT.getFeedId(), NuGetAPIVersion.V2);
         RequestWrapper request = new RequestWrapper(feedPath, SERVLET_PATH + "/Packages");
         ResponseWrapper response = new ResponseWrapper(new MockResponse());

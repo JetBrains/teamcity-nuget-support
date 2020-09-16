@@ -24,6 +24,8 @@ import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RecentNuGetRequests
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper
+import jetbrains.buildServer.nuget.feed.server.controllers.serviceFeed.NuGetServiceFeedHandler
+import jetbrains.buildServer.nuget.feed.server.controllers.serviceFeed.NuGetServiceFeedHandlerContext
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.TeamCityProperties
@@ -46,7 +48,8 @@ class NuGetFeedController(web: WebControllerManager,
                           private val myRequestsList: RecentNuGetRequests,
                           private val myFeedProvider: NuGetFeedProvider,
                           private val myProjectManager: ProjectManager,
-                          private val myRepositoryManager: RepositoryManager)
+                          private val myRepositoryManager: RepositoryManager,
+                          private val myServiceFeedHandler: NuGetServiceFeedHandler)
     : BaseController() {
 
     val myRequestSemaphore = Semaphore(
@@ -63,6 +66,10 @@ class NuGetFeedController(web: WebControllerManager,
                           response: HttpServletResponse): ModelAndView? {
         if (!mySettings.isNuGetServerEnabled) {
             return NuGetResponseUtil.nugetFeedIsDisabled(response)
+        }
+
+        if (isPublishPackageServiceFeed(request)) {
+            return handlePublishPackageService(request, response)
         }
 
         val (feedPath, projectId, feedId, apiMethod) = getPathComponents(request)
@@ -82,7 +89,71 @@ class NuGetFeedController(web: WebControllerManager,
             return null
         }
 
-        val requestWrapper = object : RequestWrapper(request, feedPath) {
+        val requestWrapper = createRequestWrapper(request, feedPath)
+
+        // Process package download request
+        if (apiMethod == "DOWNLOAD") {
+            val artifactDownloadUrl = "/repository/download${getRelativeRequestPath(requestWrapper, feedPath)})"
+            val dispatcher = request.getRequestDispatcher(artifactDownloadUrl)
+            if (dispatcher != null) {
+                LOG.debug(String.format("Forwarding download package request from %s to %s", getRequestPath(requestWrapper), artifactDownloadUrl))
+                dispatcher.forward(request, response)
+            }
+            return null
+        }
+
+        // Set NuGet feed API version
+        requestWrapper.setAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION, NuGetAPIVersion.valueOf(apiMethod))
+
+        val feedHandler = myFeedProvider.getHandler(requestWrapper)
+        if (feedHandler == null) {
+            LOG.debug(String.format("%s: %s", UNSUPPORTED_REQUEST, formatRequestUrl(requestWrapper, feedPath)))
+            // error response according to OData spec for unsupported operations (modification operations)
+            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, UNSUPPORTED_REQUEST)
+            return null
+        }
+
+        handleRequest(requestWrapper, response, feedPath) {
+            handlerRequest, handlerResponse ->
+            val feedData = NuGetFeedData(project.projectId, project.externalId, feedId)
+            feedHandler.handleRequest(feedData, handlerRequest, handlerResponse)
+        }
+
+        return null
+    }
+
+    private fun handleRequest(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            mappingPath: String,
+            handler: (HttpServletRequest, HttpServletResponse) -> Unit
+    ) {
+        val formattedRequestUrl = formatRequestUrl(request, mappingPath)
+        val startTime = Date().time
+        try {
+            myRequestsList.reportFeedRequest(formattedRequestUrl)
+
+            val timeout = TeamCityProperties.getLong(
+                    NuGetFeedConstants.PROP_NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT,
+                    NuGetFeedConstants.NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT)
+            if (myRequestSemaphore.tryAcquire(timeout, TimeUnit.SECONDS)) {
+                try {
+                    handler(request, response)
+                }
+                finally {
+                    myRequestSemaphore.release()
+                }
+            } else {
+                LOG.warn("Could not start to process NuGet reqest during $timeout sec, request: ${WebUtil.getRequestDump(request)}|${request.requestURI}")
+                response.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, REQUEST_TIMEOUT)
+            }
+        } finally {
+            myRequestsList.reportFeedRequestFinished(formattedRequestUrl, Date().time - startTime)
+        }
+    }
+
+    private fun createRequestWrapper(request: HttpServletRequest, mappingPath: String): RequestWrapper {
+        return object : RequestWrapper(request, mappingPath) {
             override fun getQueryString(): String? {
                 val queryString = super.getQueryString()
                 return if (queryString == null || !super.getRequestURI().endsWith("FindPackagesById()")) {
@@ -94,61 +165,23 @@ class NuGetFeedController(web: WebControllerManager,
                 }
             }
         }
+    }
 
+    private fun getRequestPath(requestWrapper: HttpServletRequest) : String {
         var requestPath = WebUtil.getPathWithoutAuthenticationType(requestWrapper)
         if (!requestPath.startsWith("/")) requestPath = "/$requestPath"
+        return requestPath
+    }
 
-        val path = requestPath.substring(feedPath.length)
+    private fun getRelativeRequestPath(requestWrapper: HttpServletRequest, mappingPath: String) : String {
+        val requestPath = getRequestPath(requestWrapper)
+        return requestPath.substring(mappingPath.length)
+    }
+
+    private fun formatRequestUrl(requestWrapper: HttpServletRequest, mappingPath: String): String {
         val query = requestWrapper.queryString
-        val pathAndQuery = "${requestWrapper.method} $path" + if (query != null) "?$query" else ""
-
-        // Process package download request
-        if (apiMethod == "DOWNLOAD") {
-            val artifactDownloadUrl = "/repository/download$path"
-            val dispatcher = request.getRequestDispatcher(artifactDownloadUrl)
-            if (dispatcher != null) {
-                LOG.debug(String.format("Forwarding download package request from %s to %s", requestPath, artifactDownloadUrl))
-                dispatcher.forward(request, response)
-            }
-            return null
-        }
-
-        // Set NuGet feed API version
-        requestWrapper.setAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION, NuGetAPIVersion.valueOf(apiMethod))
-
-        val feedHandler = myFeedProvider.getHandler(requestWrapper)
-        if (feedHandler == null) {
-            LOG.debug(String.format("%s: %s", UNSUPPORTED_REQUEST, pathAndQuery))
-            // error response according to OData spec for unsupported operations (modification operations)
-            response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, UNSUPPORTED_REQUEST)
-            return null
-        }
-
-        val feedData = NuGetFeedData(project.projectId, project.externalId, feedId)
-        val startTime = Date().time
-        try {
-            myRequestsList.reportFeedRequest(pathAndQuery)
-
-            val timeout = TeamCityProperties.getLong(
-                    NuGetFeedConstants.PROP_NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT,
-                    NuGetFeedConstants.NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT)
-            if (myRequestSemaphore.tryAcquire(timeout, TimeUnit.SECONDS)) {
-                try {
-                    feedHandler.handleRequest(feedData, requestWrapper, response)
-                }
-                finally {
-                    myRequestSemaphore.release()
-                }
-            } else {
-                LOG.warn("Could not start to process NuGet reqest during $timeout sec, request: ${WebUtil.getRequestDump(request)}|${request.requestURI}")
-                response.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, REQUEST_TIMEOUT)
-                return null
-            }
-        } finally {
-            myRequestsList.reportFeedRequestFinished(pathAndQuery, Date().time - startTime)
-        }
-
-        return null
+        val path = getRelativeRequestPath(requestWrapper, mappingPath)
+        return "${requestWrapper.method} $path" + if (query != null) "?$query" else ""
     }
 
     private fun getPathComponents(request: HttpServletRequest): List<String> {
@@ -174,10 +207,49 @@ class NuGetFeedController(web: WebControllerManager,
         ) else listOf("", NuGetFeedData.DEFAULT.projectId, NuGetFeedData.DEFAULT.feedId, apiVersion)
     }
 
+    private fun isPublishPackageServiceFeed(request: HttpServletRequest): Boolean {
+        val pathInfo = WebUtil.getPathWithoutAuthenticationType(request)
+        return SERVICE_FEED_PATH_PATTERN.matches(pathInfo)
+    }
+
+    private fun handlePublishPackageService(request: HttpServletRequest, response: HttpServletResponse): ModelAndView? {
+        val pathInfo = WebUtil.getPathWithoutAuthenticationType(request)
+        val pathInfoMatch = SERVICE_FEED_PATH_PATTERN.find(pathInfo)
+        if (pathInfoMatch == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid request to NuGet Feed")
+            return null
+        }
+
+        val (mappingPath, projectId) = pathInfoMatch.destructured
+        if (mappingPath.isEmpty() || projectId.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid request to NuGet Feed")
+            return null
+        }
+
+        val project = myProjectManager.findProjectByExternalId(projectId)
+        if (project == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "NuGet Feed project $projectId not found")
+            return null
+        }
+
+        val requestWrapper = createRequestWrapper(request, mappingPath)
+        handleRequest(requestWrapper, response, mappingPath) {
+            handlerRequest, handlerResponse ->
+                val context = object : NuGetServiceFeedHandlerContext {
+                    override val projectId: String
+                        get() = projectId
+                }
+                myServiceFeedHandler.handleRequest(context, handlerRequest, handlerResponse)
+        }
+
+        return null
+    }
+
     companion object {
         private val LOG = Logger.getInstance(NuGetFeedController::class.java.name)
         private val QUERY_ID = Regex("^(id=)(.*)", RegexOption.IGNORE_CASE)
         private val FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.PROJECT_PATH + "/([^/]+)/([^/]+)/(v[123]|download))")
+        private val SERVICE_FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.SERVICE_FEED_PATH + "/([^/]+)/)", RegexOption.IGNORE_CASE)
         private const val UNSUPPORTED_REQUEST = "Unsupported NuGet feed request"
         private const val REQUEST_TIMEOUT = "NuGet feed request timeout"
         private const val NUGET_API_V2 = "v2"

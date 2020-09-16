@@ -27,10 +27,11 @@ import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
-import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler;
-import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProvider;
-import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedProviderImpl;
-import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
+import jetbrains.buildServer.nuget.feed.server.controllers.*;
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedStdUploadHandler;
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadHandlerStdContext;
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadMetadataHandler;
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.PackageUploadHandler;
 import jetbrains.buildServer.nuget.feed.server.index.*;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
@@ -92,6 +93,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   private int myCount;
   protected String myContextPath;
   protected String myAuthenticationType;
+  protected NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerStdContext> myMetadataHandler;
 
   @Parameters({ "contextPath", "authenticationType" })
   @BeforeMethod
@@ -113,6 +115,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myFeedFactory = m.mock(NuGetFeedFactory.class);
     myContextPath = contextPath;
     myAuthenticationType = authenticationType;
+    myMetadataHandler = m.mock(NuGetFeedUploadMetadataHandler.class);
+
     final ResponseCache responseCache = m.mock(ResponseCache.class);
     final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
@@ -172,8 +176,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
 
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myFeedFactory, responseCache);
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(myFeedFactory, responseCache);
-    final PackageUploadHandler uploadHandler = new PackageUploadHandler(runningBuilds, myMetadataStorage,
-            packageAnalyzer, cacheReset, serverSettings);
+    final NuGetFeedStdUploadHandler uploadHandler =
+      new NuGetFeedStdUploadHandler(new PackageUploadHandler<NuGetFeedUploadHandlerStdContext>(runningBuilds, packageAnalyzer, cacheReset, serverSettings, myMetadataHandler));
     final JsonRequestHandler jsonRequestHandler = new JsonRequestHandler(
       new JsonServiceIndexHandler(),
       new JsonSearchQueryHandler(myFeedFactory),
