@@ -14,8 +14,6 @@ import jetbrains.buildServer.nuget.common.PackageLoadException
 import jetbrains.buildServer.nuget.common.PackagePublishException
 import jetbrains.buildServer.nuget.common.index.NuGetPackageData
 import jetbrains.buildServer.util.EventDispatcher
-import org.apache.commons.httpclient.HttpMethod
-import org.apache.http.client.HttpClient
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -162,7 +160,7 @@ class NuGetPackageServiceFeedPublisherTest {
 
                 oneOf(buildLogger).logMessage(with(createLogMessageMatcher(BLOCK_START, BLOCK_NAME, BLOCK_TYPE)))
                 oneOf(buildLogger).logMessage(with(createLogMessageMatcher(BLOCK_END, BLOCK_NAME, BLOCK_TYPE)))
-                oneOf(buildLogger).exception(with(createPackagePublishExceptionMatcher<PackagePublishException>(
+                oneOf(buildLogger).exception(with(createExceptionMatcher<PackagePublishException>(
                         "Failed to publush NuGet package. Server returned StatusCode: $statusCode, Response: $message")))
                 oneOf(buildLogger).buildFailureDescription("Failed to publish NuGet packages")
 
@@ -209,7 +207,7 @@ class NuGetPackageServiceFeedPublisherTest {
 
                 oneOf(buildLogger).logMessage(with(createLogMessageMatcher(BLOCK_START, BLOCK_NAME, BLOCK_TYPE)))
                 oneOf(buildLogger).logMessage(with(createLogMessageMatcher(BLOCK_END, BLOCK_NAME, BLOCK_TYPE)))
-                oneOf(buildLogger).exception(with(createPackagePublishExceptionMatcher<PackageLoadException>("Test Error")))
+                oneOf(buildLogger).exception(with(createExceptionMatcher<PackageLoadException>("Test Error")))
                 oneOf(buildLogger).buildFailureDescription("Failed to publish NuGet packages")
 
                 oneOf(myFeedTransport).sendPackage(withNotNull(equal(apiKey), ""), withNotNull(createFileMatcher(filePath), File("x")))
@@ -243,7 +241,7 @@ class NuGetPackageServiceFeedPublisherTest {
 
                 oneOf(buildLogger).logMessage(with(createLogMessageMatcher(BLOCK_START, BLOCK_NAME, BLOCK_TYPE)))
                 oneOf(buildLogger).logMessage(with(createLogMessageMatcher(BLOCK_END, BLOCK_NAME, BLOCK_TYPE)))
-                oneOf(buildLogger).exception(with(createPackagePublishExceptionMatcher<IOException>("Test Error")))
+                oneOf(buildLogger).exception(with(createExceptionMatcher<IOException>("Test Error")))
                 oneOf(buildLogger).buildFailureDescription("Failed to publish NuGet packages")
             }
         })
@@ -299,7 +297,7 @@ class NuGetPackageServiceFeedPublisherTest {
         }
     }
 
-    private fun<E: Throwable> createPackagePublishExceptionMatcher(message: String): Matcher<E> {
+    private fun<E: Throwable> createExceptionMatcher(message: String): Matcher<E> {
         return object: BaseMatcher<E>() {
             override fun describeTo(description: Description?) {
                 description?.appendText("Expecting exception: $message")

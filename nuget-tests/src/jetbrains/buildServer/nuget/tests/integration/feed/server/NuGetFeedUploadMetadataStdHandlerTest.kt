@@ -19,12 +19,12 @@ import javax.servlet.http.HttpServletResponse
 
 @Test
 class NuGetFeedUploadMetadataStdHandlerTest {
-    private var myContext: NuGetFeedUploadHandlerStdContext? = null
-    private var myResponse: HttpServletResponse? = null
-    private var myBuild: RunningBuildEx? = null
-    private var myRequest: MultipartHttpServletRequest? = null
-    private var myStorage: MetadataStorage? = null
-    private var m : Mockery? = null
+    private lateinit var myContext: NuGetFeedUploadHandlerStdContext
+    private lateinit var myResponse: HttpServletResponse
+    private lateinit var myBuild: RunningBuildEx
+    private lateinit var myRequest: MultipartHttpServletRequest
+    private lateinit var myStorage: MetadataStorage
+    private lateinit var m : Mockery
 
     @DataProvider
     fun replaceDataProvider(): Array<Array<out Any?>> {
@@ -37,15 +37,15 @@ class NuGetFeedUploadMetadataStdHandlerTest {
     @BeforeMethod
     fun setupMethod() {
         m = Mockery()
-        myStorage = m!!.mock(MetadataStorage::class.java)
-        myRequest = m!!.mock(MultipartHttpServletRequest::class.java)
-        myResponse = m!!.mock(HttpServletResponse::class.javaObjectType)
-        myBuild = m!!.mock(RunningBuildEx::class.java)
-        myContext = m!!.mock(NuGetFeedUploadHandlerStdContext::class.java)
+        myStorage = m.mock(MetadataStorage::class.java)
+        myRequest = m.mock(MultipartHttpServletRequest::class.java)
+        myResponse = m.mock(HttpServletResponse::class.javaObjectType)
+        myBuild = m.mock(RunningBuildEx::class.java)
+        myContext = m.mock(NuGetFeedUploadHandlerStdContext::class.java)
 
-        m!!.checking(object: Expectations() {
+        m.checking(object: Expectations() {
             init {
-                allowing(myContext!!).feedData;
+                allowing(myContext).feedData;
                 will(returnValue(NuGetFeedData(PROJECT_ID, FEED_ID)))
             }
         })
@@ -58,20 +58,21 @@ class NuGetFeedUploadMetadataStdHandlerTest {
         val key = "packageId"
         val metadata = HashMap<String, String>()
 
-        m!!.checking(object: Expectations() {
+        m.checking(object: Expectations() {
             init {
-                oneOf(myRequest!!).getParameter("replace")
+                oneOf(myRequest).getParameter("replace")
                 will(returnValue(replace))
 
-                allowing(myStorage!!).getEntriesByKey("nuget.$PROJECT_ID.$FEED_ID", key)
+                allowing(myStorage).getEntriesByKey("nuget.$PROJECT_ID.$FEED_ID", key)
                 will(returnValue(emptyList<BuildMetadataEntry>().iterator()))
             }
         })
 
         // When
-        instance.validate(myRequest!! , myResponse!!, myContext!!, myBuild!!, key, metadata)
+        instance.validate(myRequest , myResponse, myContext, myBuild, key, metadata)
 
         // Then
+        m.assertIsSatisfied()
     }
 
     @Test
@@ -81,21 +82,22 @@ class NuGetFeedUploadMetadataStdHandlerTest {
         val key = "packageId"
         val metadata = HashMap<String, String>()
 
-        m!!.checking(object: Expectations() {
+        m.checking(object: Expectations() {
             init {
-                oneOf(myRequest!!).getParameter("replace")
+                oneOf(myRequest).getParameter("replace")
                 will(returnValue("true"))
 
-                allowing(myStorage!!).getEntriesByKey("nuget.$PROJECT_ID.$FEED_ID", key)
-                will(returnValue(listOf<BuildMetadataEntry>(m!!.mock(BuildMetadataEntry::class.java)).iterator()))
+                allowing(myStorage).getEntriesByKey("nuget.$PROJECT_ID.$FEED_ID", key)
+                will(returnValue(listOf<BuildMetadataEntry>(m.mock(BuildMetadataEntry::class.java)).iterator()))
             }
         })
 
 
         // When
-        instance.validate(myRequest!! , myResponse!!, myContext!!, myBuild!!, key, metadata)
+        instance.validate(myRequest , myResponse, myContext, myBuild, key, metadata)
 
         // Then
+        m.assertIsSatisfied()
     }
 
     @Test
@@ -105,21 +107,22 @@ class NuGetFeedUploadMetadataStdHandlerTest {
         val key = "packageId"
         val metadata = HashMap<String, String>()
 
-        m!!.checking(object: Expectations() {
+        m.checking(object: Expectations() {
             init {
-                oneOf(myRequest!!).getParameter("replace")
+                oneOf(myRequest).getParameter("replace")
                 will(returnValue("false"))
 
-                allowing(myStorage!!).getEntriesByKey("nuget.$PROJECT_ID.$FEED_ID", key)
-                will(returnValue(listOf<BuildMetadataEntry>(m!!.mock(BuildMetadataEntry::class.java)).iterator()))
+                allowing(myStorage).getEntriesByKey("nuget.$PROJECT_ID.$FEED_ID", key)
+                will(returnValue(listOf<BuildMetadataEntry>(m.mock(BuildMetadataEntry::class.java)).iterator()))
             }
         })
 
         // When
-        val action = { instance.validate(myRequest!! , myResponse!!, myContext!!, myBuild!!, key, metadata) }
+        val action = { instance.validate(myRequest , myResponse, myContext, myBuild, key, metadata) }
 
         // Then
         Assert.assertThrows(PackageExistsException::class.java, action)
+        m.assertIsSatisfied()
     }
 
     @Test
@@ -131,27 +134,28 @@ class NuGetFeedUploadMetadataStdHandlerTest {
         val isPersonal = true
         val metadata = HashMap<String, String>()
 
-        m!!.checking(object: Expectations() {
+        m.checking(object: Expectations() {
             init {
-                oneOf(myBuild!!).buildId
+                oneOf(myBuild).buildId
                 will(returnValue(buildId))
 
-                oneOf(myBuild!!).isPersonal
+                oneOf(myBuild).isPersonal
                 will(returnValue(isPersonal))
 
-                oneOf(myStorage!!).addBuildEntry(buildId, "nuget.$PROJECT_ID.$FEED_ID", key, metadata, !isPersonal)
+                oneOf(myStorage).addBuildEntry(buildId, "nuget.$PROJECT_ID.$FEED_ID", key, metadata, !isPersonal)
             }
         })
 
 
         // When
-        instance.handleMetadata(myRequest!! , myResponse!!, myContext!!, myBuild!!, key, metadata)
+        instance.handleMetadata(myRequest , myResponse, myContext, myBuild, key, metadata)
 
         // Then
+        m.assertIsSatisfied()
     }
 
     private fun createInstance() : NuGetFeedUploadMetadataStdHandlerImpl {
-        return NuGetFeedUploadMetadataStdHandlerImpl(myStorage!!)
+        return NuGetFeedUploadMetadataStdHandlerImpl(myStorage)
     }
 
     private companion object {

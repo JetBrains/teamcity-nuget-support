@@ -41,7 +41,9 @@ class PublishPackageServiceMessageHandler(
             }
 
             override fun runnerFinished(runner: BuildRunnerContext, status: BuildFinishedStatus) {
-                publishPackages()
+                if (status == BuildFinishedStatus.FINISHED_SUCCESS) {
+                    publishPackages()
+                }
                 clearPackages()
             }
         })
@@ -85,15 +87,15 @@ class PublishPackageServiceMessageHandler(
             stream = file.inputStream()
             var metadata = myPackageAnalyzer.analyzePackage(stream)
 
-            var id = metadata.get(ID)
-            var version  = metadata.get(NORMALIZED_VERSION)
+            var id = metadata.getOrDefault(ID, "")
+            var version  = metadata.getOrDefault(NORMALIZED_VERSION, "")
 
             // Package must have id and version specified
             if (StringUtil.isEmptyOrSpaces(id) || StringUtil.isEmptyOrSpaces(version)) {
                 throw PackageLoadException("Lack of Id or Version in NuGet package specification")
             }
 
-            val key = PackageKey(id!!.toLowerCase(), VersionUtility.normalizeVersion(version!!)?.toLowerCase())
+            val key = PackageKey(id.toLowerCase(), VersionUtility.normalizeVersion(version)?.toLowerCase())
             val data = NuGetPackageData(file.absolutePath, metadata)
             return key to data
         }

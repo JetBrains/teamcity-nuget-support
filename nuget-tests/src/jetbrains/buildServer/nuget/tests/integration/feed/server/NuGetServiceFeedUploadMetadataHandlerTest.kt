@@ -16,15 +16,15 @@ import javax.servlet.http.HttpServletResponse
 
 @Test
 class NuGetServiceFeedUploadMetadataHandlerTest {
-    private var myIsPersonal: Boolean? = null
-    private var myBuildId: Long? = null
-    private var myFeedsProvider: NuGetBuildFeedsProvider? = null
-    private var myContext: NuGetServiceFeedUploadHandlerContext? = null
-    private var myResponse: HttpServletResponse? = null
-    private var myBuild: RunningBuildEx? = null
-    private var myRequest: MultipartHttpServletRequest? = null
-    private var myStorage: MetadataStorage? = null
-    private var m : Mockery? = null
+    private var myIsPersonal: Boolean = false
+    private var myBuildId: Long = 123L
+    private lateinit var myFeedsProvider: NuGetBuildFeedsProvider
+    private lateinit var myContext: NuGetServiceFeedUploadHandlerContext
+    private lateinit var myResponse: HttpServletResponse
+    private lateinit var myBuild: RunningBuildEx
+    private lateinit var myRequest: MultipartHttpServletRequest
+    private lateinit var myStorage: MetadataStorage
+    private lateinit var m : Mockery
 
     @DataProvider
     fun targetFeedsProvider(): Array<Array<out Any?>> {
@@ -41,27 +41,27 @@ class NuGetServiceFeedUploadMetadataHandlerTest {
     @BeforeMethod
     fun setupMethod() {
         m = Mockery()
-        myStorage = m!!.mock(MetadataStorage::class.java)
-        myRequest = m!!.mock(MultipartHttpServletRequest::class.java)
-        myResponse = m!!.mock(HttpServletResponse::class.javaObjectType)
-        myBuild = m!!.mock(RunningBuildEx::class.java)
-        myContext = m!!.mock(NuGetServiceFeedUploadHandlerContext::class.java)
-        myFeedsProvider = m!!.mock(NuGetBuildFeedsProvider::class.java)
+        myStorage = m.mock(MetadataStorage::class.java)
+        myRequest = m.mock(MultipartHttpServletRequest::class.java)
+        myResponse = m.mock(HttpServletResponse::class.javaObjectType)
+        myBuild = m.mock(RunningBuildEx::class.java)
+        myContext = m.mock(NuGetServiceFeedUploadHandlerContext::class.java)
+        myFeedsProvider = m.mock(NuGetBuildFeedsProvider::class.java)
         myBuildId = 123L
         myIsPersonal = true
 
-        m!!.checking(object: Expectations() {
+        m.checking(object: Expectations() {
             init {
-                allowing(myBuild!!).buildId
+                allowing(myBuild).buildId
                 will(returnValue(myBuildId))
 
-                allowing(myBuild!!).buildNumber
+                allowing(myBuild).buildNumber
                 will(returnValue("Build Number"))
 
-                allowing(myBuild!!).buildTypeExternalId
+                allowing(myBuild).buildTypeExternalId
                 will(returnValue("Build TYpe External Id"))
 
-                allowing(myBuild!!).isPersonal
+                allowing(myBuild).isPersonal
                 will(returnValue(myIsPersonal))
             }
         })
@@ -74,25 +74,26 @@ class NuGetServiceFeedUploadMetadataHandlerTest {
         val key = "packageId"
         val metadata = HashMap<String, String>()
 
-        m!!.checking(object: Expectations() {
+        m.checking(object: Expectations() {
             init {
-                oneOf(myFeedsProvider!!).getFeeds(myBuild!!)
+                oneOf(myFeedsProvider).getFeeds(myBuild)
                 will(returnValue(targetFeeds))
 
                 for(feed in targetFeeds) {
-                    oneOf(myStorage!!).addBuildEntry(myBuildId!!, "nuget.${feed.projectId}.${feed.feedId}", key, metadata, !myIsPersonal!!)
+                    oneOf(myStorage).addBuildEntry(myBuildId, "nuget.${feed.projectId}.${feed.feedId}", key, metadata, !myIsPersonal)
                 }
             }
         })
 
 
         // When
-        instance.handleMetadata(myRequest!! , myResponse!!, myContext!!, myBuild!!, key, metadata)
+        instance.handleMetadata(myRequest , myResponse, myContext, myBuild, key, metadata)
 
         // Then
+        m.assertIsSatisfied()
     }
 
     private fun createInstance() : NuGetServiceFeedUploadMetadataHandlerImpl {
-        return NuGetServiceFeedUploadMetadataHandlerImpl(myStorage!!, myFeedsProvider!!)
+        return NuGetServiceFeedUploadMetadataHandlerImpl(myStorage, myFeedsProvider)
     }
 }
