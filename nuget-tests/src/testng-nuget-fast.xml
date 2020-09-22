@@ -147,6 +147,7 @@
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetFeedProviderTests"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.PackageUploadHandlerTests"/>
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetFeedUploadMetadataStdHandlerTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.integration.feed.server.NuGetServiceFeedUploadMetadataHandlerTest"/>
 
       <!-- Feed v3 APIs -->
       <class name="jetbrains.buildServer.nuget.tests.integration.feed.json.JsonPackageContentTest"/>

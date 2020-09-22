@@ -56,6 +56,16 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadMetadataStdHandlerImpl"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedStdUploadHandler"/>
 
+  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.serviceFeed.NuGetServiceFeedHandlerImpl">
+    <constructor-arg>
+      <bean class="jetbrains.buildServer.nuget.feed.server.controllers.upload.PackageUploadHandler">
+        <constructor-arg>
+          <bean class="jetbrains.buildServer.nuget.feed.server.controllers.serviceFeed.upload.NuGetServiceFeedUploadMetadataHandlerImpl"/>
+        </constructor-arg>
+      </bean>
+    </constructor-arg>
+  </bean>
+
   <bean class="jetbrains.buildServer.nuget.feed.server.PermissionChecker"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.TriggerUrlSelfPostProcessor"/>
