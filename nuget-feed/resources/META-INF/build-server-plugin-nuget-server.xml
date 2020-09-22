@@ -52,7 +52,9 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonRegistrationHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonPackageContentHandler"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonAutocompleteHandler"/>
-  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.upload.PackageUploadHandler"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadMetadataStdHandlerImpl"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedStdUploadHandler"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.PermissionChecker"/>
 

@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import jetbrains.buildServer.nuget.feed.server.controllers.*;
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedStdUploadHandler;
 import jetbrains.buildServer.nuget.feed.server.json.JsonRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler;
 import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
@@ -52,7 +53,7 @@ public class NuGetFeedProviderTests {
         final ODataRequestHandler oDataRequestHandler = m.mock(ODataRequestHandler.class);
         final OlingoRequestHandler olingoRequestHandler = m.mock(OlingoRequestHandler.class);
         final JsonRequestHandler jsonRequestHandler = m.mock(JsonRequestHandler.class);
-        final PackageUploadHandler uploadHandler = m.mock(PackageUploadHandler.class);
+        final NuGetFeedStdUploadHandler uploadHandler = m.mock(NuGetFeedStdUploadHandler.class);
         myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);
         myContextPath = contextPath;
         myAuthenticationType = authenticationType;
@@ -74,7 +75,7 @@ public class NuGetFeedProviderTests {
         NuGetFeedHandler handler = myFeedProvider.getHandler(request);
 
         Assert.assertNotNull(handler);
-        Assert.assertTrue(handler instanceof PackageUploadHandler);
+        Assert.assertTrue(handler instanceof NuGetFeedStdUploadHandler);
     }
 
     public void testBatchRequest() throws Exception {

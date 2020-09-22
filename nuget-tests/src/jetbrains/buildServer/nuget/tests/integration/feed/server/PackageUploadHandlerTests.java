@@ -16,35 +16,40 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
-import jetbrains.buildServer.BuildProblemData;
-import jetbrains.buildServer.controllers.MockResponse;
-import jetbrains.buildServer.nuget.common.index.PackageConstants;
-import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
-import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
-import jetbrains.buildServer.nuget.feed.server.controllers.PackageUploadHandler;
-import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
-import jetbrains.buildServer.nuget.common.index.NuGetPackageAnalyzer;
-import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData;
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
-import jetbrains.buildServer.serverSide.*;
-import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
-import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
-import jetbrains.buildServer.serverSide.metadata.impl.metadata.BuildMetadataEntryImpl;
-import jetbrains.buildServer.serverSide.metadata.impl.metadata.EntryImpl;
-import jetbrains.buildServer.serverSide.metadata.impl.metadata.EntryKey;
-import jetbrains.buildServer.util.CollectionsUtil;
-import jetbrains.buildServer.util.FileUtil;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import jetbrains.buildServer.BuildProblemData;
+import jetbrains.buildServer.controllers.MockResponse;
+import jetbrains.buildServer.nuget.common.PackageExistsException;
+import jetbrains.buildServer.nuget.common.index.NuGetPackageAnalyzer;
+import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
+import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadHandlerContext;
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadMetadataHandler;
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.PackageUploadHandler;
+import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
+import jetbrains.buildServer.serverSide.RunningBuildEx;
+import jetbrains.buildServer.serverSide.RunningBuildsCollection;
+import jetbrains.buildServer.serverSide.ServerSettings;
+import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
+import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
+import jetbrains.buildServer.util.CollectionsUtil;
+import jetbrains.buildServer.util.FileUtil;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.support.AbstractMultipartHttpServletRequest;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  * @author Dmitry.Tretyakov
@@ -61,7 +66,12 @@ public class PackageUploadHandlerTests {
     "\r\n" +
     "Hello\r\n" +
     "--3576595b-8e57-4d70-91bb-701d5aab54ea--\r\n";
-  private static final NuGetFeedData FEED_DATA = NuGetFeedData.DEFAULT;
+  private static final NuGetFeedUploadHandlerContext FEED_DATA = new NuGetFeedUploadHandlerContext() {
+    @Override
+    public String getFeedName() {
+      return "TestFeed";
+    }
+  };
 
   public void testNonMultipartRequest() throws Exception {
     Mockery m = new Mockery();
@@ -70,9 +80,10 @@ public class PackageUploadHandlerTests {
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler = m.mock(NuGetFeedUploadMetadataHandler.class);
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler = new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,
+      packageAnalyzer, cacheReset, serverSettings, metadataHandler);
     RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -90,9 +101,12 @@ public class PackageUploadHandlerTests {
     PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
     RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -121,9 +135,13 @@ public class PackageUploadHandlerTests {
     PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
+
     RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -153,6 +171,8 @@ public class PackageUploadHandlerTests {
     PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -164,8 +184,9 @@ public class PackageUploadHandlerTests {
       will(returnValue(Arrays.asList(tempDirectory)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
     RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -187,6 +208,8 @@ public class PackageUploadHandlerTests {
     PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -203,8 +226,9 @@ public class PackageUploadHandlerTests {
       will(returnValue(Arrays.asList(tempDirectory)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
     RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -232,6 +256,8 @@ public class PackageUploadHandlerTests {
     PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -251,8 +277,9 @@ public class PackageUploadHandlerTests {
       will(returnValue(Arrays.asList(tempDirectory)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
     RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -274,6 +301,8 @@ public class PackageUploadHandlerTests {
     PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -293,8 +322,9 @@ public class PackageUploadHandlerTests {
       will(returnValue(Arrays.asList(tempDirectory)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
     RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -316,6 +346,8 @@ public class PackageUploadHandlerTests {
     PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -334,8 +366,9 @@ public class PackageUploadHandlerTests {
       will(returnValue(Arrays.asList(tempDirectory)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
     RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -357,6 +390,8 @@ public class PackageUploadHandlerTests {
     PackageAnalyzer packageAnalyzer = new NuGetPackageAnalyzer();
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -375,8 +410,9 @@ public class PackageUploadHandlerTests {
       will(returnValue(Arrays.asList(tempDirectory)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
     RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
     ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
@@ -398,9 +434,14 @@ public class PackageUploadHandlerTests {
     PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
     Map<String, String> metadata = CollectionsUtil.asMap(
       NuGetPackageAttributes.ID, "Id",
       NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
+
+    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+    ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -421,10 +462,6 @@ public class PackageUploadHandlerTests {
       will(returnValue("code"));
       one(build).getBuildOwnParameters();
       will(returnValue(Collections.emptyMap()));
-      oneOf(metadataStorage).getEntriesByKey(
-        PackageConstants.NUGET_PROVIDER_ID,
-        "id.1.0.0");
-      will(returnIterator());
       oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
       will(throwException(new IOException("Failure")));
 
@@ -433,12 +470,19 @@ public class PackageUploadHandlerTests {
       oneOf(serverSettings).getArtifactDirectories();
       File tempDirectory = FileUtil.createTempDirectory("PackageUploadHandlerTests", "test");
       will(returnValue(Arrays.asList(tempDirectory)));
+
+      oneOf(metadataHandler).validate(
+        with(createMather(request)),
+        with(equal(response)),
+        with(equal(FEED_DATA)),
+        with(equal(build)),
+        with(equal("id.1.0.0")),
+        with(equal(metadata)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
-    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
-    ResponseWrapper response = new ResponseWrapper(new MockResponse());
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
@@ -454,13 +498,17 @@ public class PackageUploadHandlerTests {
     Mockery m = new Mockery();
     RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     RunningBuildEx build = m.mock(RunningBuildEx.class);
-    MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
     PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
     Map<String, String> metadata = CollectionsUtil.asMap(
       NuGetPackageAttributes.ID, "Id",
       NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
+
+    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+    ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -473,26 +521,26 @@ public class PackageUploadHandlerTests {
       will(returnValue(ArtifactsUploadLimit.UNLIMITED));
       oneOf(packageAnalyzer).analyzePackage(with(any(InputStream.class)));
       will(returnValue(metadata));
-      oneOf(metadataStorage).getEntriesByKey(
-          PackageConstants.NUGET_PROVIDER_ID,
-        "id.1.0.0"
-      );
-      will(returnIterator(new BuildMetadataEntryImpl(
-        new EntryKey(1, "key"),
-        new EntryImpl(true, Collections.emptyMap()))
-      ));
 
       oneOf(serverSettings).getRootUrl();
       will(returnValue("http://localhost:8111"));
       oneOf(serverSettings).getArtifactDirectories();
       File tempDirectory = FileUtil.createTempDirectory("PackageUploadHandlerTests", "test");
       will(returnValue(Arrays.asList(tempDirectory)));
+
+      oneOf(metadataHandler).validate(
+        with(createMather(request)),
+        with(equal(response)),
+        with(equal(FEED_DATA)),
+        with(equal(build)),
+        with(equal("id.1.0.0")),
+        with(equal(metadata)));
+      will(throwException(new PackageExistsException("Package already exists")));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
-    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
-    ResponseWrapper response = new ResponseWrapper(new MockResponse());
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
@@ -508,13 +556,17 @@ public class PackageUploadHandlerTests {
     Mockery m = new Mockery();
     RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     RunningBuildEx build = m.mock(RunningBuildEx.class);
-    MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
     PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
     Map<String, String> metadata = CollectionsUtil.asMap(
       NuGetPackageAttributes.ID, "Id",
       NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
+
+    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+    ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -529,17 +581,11 @@ public class PackageUploadHandlerTests {
       will(returnValue("hash"));
       oneOf(build).getBuildTypeId();
       will(returnValue("type"));
-      oneOf(build).getBuildId();
-      will(returnValue(3641L));
       oneOf(build).getAgentAccessCode();
       will(returnValue("code"));
-      oneOf(build).isPersonal();
-      will(returnValue(false));
       one(build).getBuildOwnParameters();
       will(returnValue(Collections.emptyMap()));
       oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
-      oneOf(metadataStorage).addBuildEntry(with(any(Long.class)), with(any(String.class)),
-        with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
       oneOf(cacheReset).resetCache();
 
       oneOf(serverSettings).getRootUrl();
@@ -547,12 +593,28 @@ public class PackageUploadHandlerTests {
       oneOf(serverSettings).getArtifactDirectories();
       File tempDirectory = FileUtil.createTempDirectory("PackageUploadHandlerTests", "test");
       will(returnValue(Arrays.asList(tempDirectory)));
+
+      oneOf(metadataHandler).validate(
+        with(createMather(request)),
+        with(equal(response)),
+        with(equal(FEED_DATA)),
+        with(equal(build)),
+        with(equal("id.1.0.0")),
+        with(equal(metadata)));
+
+      oneOf(metadataHandler).handleMetadata(
+        with(createMather(request)),
+        with(equal(response)),
+        with(equal(FEED_DATA)),
+        with(equal(build)),
+        with(equal("id.1.0.0")),
+        with(equal(metadata)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
-    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
-    ResponseWrapper response = new ResponseWrapper(new MockResponse());
+
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
@@ -568,13 +630,16 @@ public class PackageUploadHandlerTests {
     Mockery m = new Mockery();
     RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     RunningBuildEx build = m.mock(RunningBuildEx.class);
-    MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
     PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
     Map<String, String> metadata = CollectionsUtil.asMap(
       NuGetPackageAttributes.ID, "Id",
       NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
+    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+    ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -589,21 +654,11 @@ public class PackageUploadHandlerTests {
       will(returnValue("hash"));
       oneOf(build).getBuildTypeId();
       will(returnValue("type"));
-      oneOf(build).getBuildId();
-      will(returnValue(3641L));
       oneOf(build).getAgentAccessCode();
       will(returnValue("code"));
-      oneOf(build).isPersonal();
-      will(returnValue(false));
       one(build).getBuildOwnParameters();
       will(returnValue(Collections.emptyMap()));
-      oneOf(metadataStorage).getEntriesByKey(
-        PackageConstants.NUGET_PROVIDER_ID,
-        "id.1.0.0");
-      will(returnIterator());
       oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
-      oneOf(metadataStorage).addBuildEntry(with(any(Long.class)), with(any(String.class)),
-        with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
       oneOf(cacheReset).resetCache();
 
       oneOf(serverSettings).getRootUrl();
@@ -611,12 +666,27 @@ public class PackageUploadHandlerTests {
       oneOf(serverSettings).getArtifactDirectories();
       File tempDirectory = FileUtil.createTempDirectory("PackageUploadHandlerTests", "test");
       will(returnValue(Arrays.asList(tempDirectory)));
+
+      oneOf(metadataHandler).validate(
+        with(createMather(request)),
+        with(equal(response)),
+        with(equal(FEED_DATA)),
+        with(equal(build)),
+        with(equal("id.1.0.0")),
+        with(equal(metadata)));
+
+      oneOf(metadataHandler).handleMetadata(
+        with(createMather(request)),
+        with(equal(response)),
+        with(equal(FEED_DATA)),
+        with(equal(build)),
+        with(equal("id.1.0.0")),
+        with(equal(metadata)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
-    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
-    ResponseWrapper response = new ResponseWrapper(new MockResponse());
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
@@ -631,13 +701,17 @@ public class PackageUploadHandlerTests {
     Mockery m = new Mockery();
     RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     RunningBuildEx build = m.mock(RunningBuildEx.class);
-    MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
     PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
     Map<String, String> metadata = CollectionsUtil.asMap(
       NuGetPackageAttributes.ID, "Id",
       NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
+
+    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+    ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -652,33 +726,38 @@ public class PackageUploadHandlerTests {
       will(returnValue("hash"));
       oneOf(build).getBuildTypeId();
       will(returnValue("type"));
-      oneOf(build).getBuildId();
-      will(returnValue(3641L));
       oneOf(build).getAgentAccessCode();
       will(returnValue("code"));
-      oneOf(build).isPersonal();
-      will(returnValue(false));
       one(build).getBuildOwnParameters();
       will(returnValue(Collections.emptyMap()));
-      oneOf(metadataStorage).getEntriesByKey(
-          PackageConstants.NUGET_PROVIDER_ID,
-        "id.1.0.0");
-      will(returnIterator());
       oneOf(build).publishArtifact(with(any(String.class)), with(any(InputStream.class)));
-      oneOf(metadataStorage).addBuildEntry(with(any(Long.class)), with(any(String.class)),
-        with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
       oneOf(cacheReset).resetCache();
       oneOf(serverSettings).getRootUrl();
       will(returnValue("http://localhost:8111"));
       oneOf(serverSettings).getArtifactDirectories();
       File tempDirectory = FileUtil.createTempDirectory("PackageUploadHandlerTests", "test");
       will(returnValue(Arrays.asList(tempDirectory)));
+
+      oneOf(metadataHandler).validate(
+        with(createMather(request)),
+        with(equal(response)),
+        with(equal(FEED_DATA)),
+        with(equal(build)),
+        with(equal("id.1.0.0")),
+        with(equal(metadata)));
+
+      oneOf(metadataHandler).handleMetadata(
+        with(createMather(request)),
+        with(equal(response)),
+        with(equal(FEED_DATA)),
+        with(equal(build)),
+        with(equal("id.1.0.0")),
+        with(equal(metadata)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
-    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
-    ResponseWrapper response = new ResponseWrapper(new MockResponse());
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
@@ -693,13 +772,17 @@ public class PackageUploadHandlerTests {
     Mockery m = new Mockery();
     RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
     RunningBuildEx build = m.mock(RunningBuildEx.class);
-    MetadataStorage metadataStorage = m.mock(MetadataStorage.class);
     PackageAnalyzer packageAnalyzer = m.mock(PackageAnalyzer.class);
     ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
     ServerSettings serverSettings = m.mock(ServerSettings.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
     Map<String, String> metadata = CollectionsUtil.asMap(
       NuGetPackageAttributes.ID, "Id",
       NuGetPackageAttributes.NORMALIZED_VERSION, "1.0.0");
+
+    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+    ResponseWrapper response = new ResponseWrapper(new MockResponse());
 
     m.checking(new Expectations() {{
       oneOf(runningBuilds).findRunningBuildById(3641L);
@@ -714,21 +797,11 @@ public class PackageUploadHandlerTests {
       will(returnValue("hash"));
       oneOf(build).getBuildTypeId();
       will(returnValue("type"));
-      oneOf(build).getBuildId();
-      will(returnValue(3641L));
       oneOf(build).getAgentAccessCode();
       will(returnValue("code"));
-      oneOf(build).isPersonal();
-      will(returnValue(false));
       one(build).getBuildOwnParameters();
       will(returnValue(CollectionsUtil.asMap(NuGetFeedConstants.PROP_NUGET_FEED_PUBLISH_PATH, "{0}.{1}.nupkg")));
-      oneOf(metadataStorage).getEntriesByKey(
-          PackageConstants.NUGET_PROVIDER_ID,
-        "id.1.0.0");
-      will(returnIterator());
       oneOf(build).publishArtifact(with(equal("Id.1.0.0.nupkg")), with(any(InputStream.class)));
-      oneOf(metadataStorage).addBuildEntry(with(any(Long.class)), with(any(String.class)),
-        with(any(String.class)), with(any(Map.class)), with(any(Boolean.class)));
       oneOf(cacheReset).resetCache();
 
       oneOf(serverSettings).getRootUrl();
@@ -736,12 +809,27 @@ public class PackageUploadHandlerTests {
       oneOf(serverSettings).getArtifactDirectories();
       File tempDirectory = FileUtil.createTempDirectory("PackageUploadHandlerTests", "test");
       will(returnValue(Arrays.asList(tempDirectory)));
+
+      oneOf(metadataHandler).validate(
+        with(createMather(request)),
+        with(equal(response)),
+        with(equal(FEED_DATA)),
+        with(equal(build)),
+        with(equal("id.1.0.0")),
+        with(equal(metadata)));
+
+      oneOf(metadataHandler).handleMetadata(
+        with(createMather(request)),
+        with(equal(response)),
+        with(equal(FEED_DATA)),
+        with(equal(build)),
+        with(equal("id.1.0.0")),
+        with(equal(metadata)));
     }});
 
-    PackageUploadHandler handler = new PackageUploadHandler(runningBuilds, metadataStorage,
-      packageAnalyzer, cacheReset, serverSettings);
-    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
-    ResponseWrapper response = new ResponseWrapper(new MockResponse());
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds,packageAnalyzer, cacheReset,
+                                                              serverSettings, metadataHandler);
 
     request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
     request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
@@ -750,5 +838,21 @@ public class PackageUploadHandlerTests {
     handler.handleRequest(FEED_DATA, request, response);
 
     m.assertIsSatisfied();
+  }
+
+  private Matcher<MultipartHttpServletRequest> createMather(HttpServletRequest request) {
+    return new BaseMatcher<MultipartHttpServletRequest>() {
+      @Override
+      public boolean matches(Object o) {
+        if (!(o instanceof AbstractMultipartHttpServletRequest)) return false;
+        AbstractMultipartHttpServletRequest value = (AbstractMultipartHttpServletRequest)o;
+        return request.equals(value.getRequest());
+      }
+
+      @Override
+      public void describeTo(Description description) {
+        description.appendText("MultipartHttpServletRequest");
+      }
+    };
   }
 }

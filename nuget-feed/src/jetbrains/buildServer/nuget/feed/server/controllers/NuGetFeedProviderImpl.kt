@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.feed.server.controllers
 
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedStdUploadHandler
 import jetbrains.buildServer.nuget.feed.server.json.JsonRequestHandler
 import jetbrains.buildServer.nuget.feed.server.odata4j.ODataRequestHandler
 import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler
@@ -32,7 +33,7 @@ import javax.servlet.http.HttpServletRequest
 class NuGetFeedProviderImpl(private val myODataRequestHandler: ODataRequestHandler,
                             private val myOlingoRequestHandler: OlingoRequestHandler,
                             private val myJsonRequestHandler: JsonRequestHandler,
-                            uploadHandler: PackageUploadHandler) : NuGetFeedProvider {
+                            private val myUploadHandler: NuGetFeedStdUploadHandler) : NuGetFeedProvider {
     private val myHandlers: MutableMap<String, NuGetFeedProvider>
 
     private val feedHandler: NuGetFeedHandler
@@ -53,7 +54,7 @@ class NuGetFeedProviderImpl(private val myODataRequestHandler: ODataRequestHandl
         }
         myHandlers["put"] = NuGetFeedProvider { request ->
             if ("/" == request.pathInfo) {
-                uploadHandler
+                myUploadHandler
             } else {
                 null
             }

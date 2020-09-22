@@ -1,6 +1,7 @@
 package jetbrains.buildServer.nuget.feed.server.controllers
 
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.PackageUploadHandler
 import jetbrains.buildServer.web.CsrfCheck
 import javax.servlet.http.HttpServletRequest
 
