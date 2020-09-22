@@ -50,4 +50,9 @@
   </bean>
   <bean class="jetbrains.buildServer.nuget.agent.index.NuGetPackagePathProvider"/>
   <bean class="jetbrains.buildServer.nuget.agent.index.NugetPackageIndexer"/>
+
+  <bean class="jetbrains.buildServer.nuget.agent.serviceMessages.NuGetPackageServiceFeedPublisherImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.serviceMessages.NuGetPackageServiceFeedUrlProviderImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.serviceMessages.NuGetPackageServiceFeedTransportProviderImpl"/>
+  <bean class="jetbrains.buildServer.nuget.agent.serviceMessages.PublishPackageServiceMessageHandler"/>
 </beans>

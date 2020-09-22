@@ -111,6 +111,8 @@
       <class name="jetbrains.buildServer.nuget.tests.agent.NuGetPushActoinFactoryTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.PackageSourceManagerTest"/>
       <class name="jetbrains.buildServer.nuget.tests.agent.index.NuGetPackagePathProviderTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.serviceMessages.NuGetPackageServiceFeedPublisherTest"/>
+      <class name="jetbrains.buildServer.nuget.tests.agent.serviceMessages.PublishPackageServiceMessageHandlerTest"/>
 
       <class name="jetbrains.buildServer.nuget.tests.common.PackageDependenciesStoreTest"/>
 
