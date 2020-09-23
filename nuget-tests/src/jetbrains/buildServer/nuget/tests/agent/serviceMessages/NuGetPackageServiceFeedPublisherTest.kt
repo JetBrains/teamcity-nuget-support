@@ -1,5 +1,6 @@
 package jetbrains.buildServer.nuget.tests.agent.serviceMessages
 
+import jetbrains.buildServer.BuildAuthUtil
 import jetbrains.buildServer.agent.AgentLifeCycleListener
 import jetbrains.buildServer.agent.AgentRunningBuild
 import jetbrains.buildServer.agent.BuildProgressLogger
@@ -14,6 +15,7 @@ import jetbrains.buildServer.nuget.agent.serviceMessages.NuGetPackageServiceFeed
 import jetbrains.buildServer.nuget.common.PackageLoadException
 import jetbrains.buildServer.nuget.common.PackagePublishException
 import jetbrains.buildServer.nuget.common.index.NuGetPackageData
+import jetbrains.buildServer.serverSide.crypt.EncryptUtil
 import jetbrains.buildServer.util.EventDispatcher
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
@@ -27,6 +29,7 @@ import java.io.IOException
 
 @Test
 class NuGetPackageServiceFeedPublisherTest {
+    private lateinit var myApiKey: String
     private lateinit var myFeedTransport: NuGetPackageServiceFeedTransport
     private lateinit var myFeedTransportProvider: NuGetPackageServiceFeedTransportProvider
     private lateinit var myDispatcher: EventDispatcher<AgentLifeCycleListener>
@@ -43,6 +46,7 @@ class NuGetPackageServiceFeedPublisherTest {
 
         val buildId = 123L
         val accessCode = "AccessCode"
+        myApiKey = createApiKey(buildId, accessCode)
 
         m.checking(object: Expectations() {
             init {
@@ -62,7 +66,6 @@ class NuGetPackageServiceFeedPublisherTest {
         val buildLogger = m.mock(BuildProgressLogger::class.java)
         val flowLogger = m.mock(FlowLogger::class.java)
         val transportResponse = m.mock(NuGetPackageServiceFeedResponse::class.java)
-        val apiKey = "zxxbe88b7ae8ef92315f0040f7f6522a0f95620386a9e80510527d95acc8db0af8b"
         val filePath = "testPackage.nupkg"
 
         m.checking(object: Expectations() {
@@ -83,7 +86,7 @@ class NuGetPackageServiceFeedPublisherTest {
                 oneOf(flowLogger).logMessage(with(createLogMessageMatcher(BLOCK_END, BLOCK_NAME, BLOCK_TYPE)))
                 oneOf(flowLogger).disposeFlow()
 
-                oneOf(myFeedTransport).sendPackage(withNotNull(equal(apiKey), ""), withNotNull(createFileMatcher(filePath), File("x")))
+                oneOf(myFeedTransport).sendPackage(withNotNull(equal(myApiKey), ""), withNotNull(createFileMatcher(filePath), File("x")))
                 will(returnValue(transportResponse))
 
                 oneOf(transportResponse).isSuccessful
@@ -107,7 +110,6 @@ class NuGetPackageServiceFeedPublisherTest {
         val buildLogger = m.mock(BuildProgressLogger::class.java)
         val flowLogger = m.mock(FlowLogger::class.java)
         val transportResponse = m.mock(NuGetPackageServiceFeedResponse::class.java)
-        val apiKey = "zxxbe88b7ae8ef92315f0040f7f6522a0f95620386a9e80510527d95acc8db0af8b"
         val packages = listOf(
                 NuGetPackageData("testPackage1.nupkg", emptyMap()),
                 NuGetPackageData("testPackage2.nupkg", emptyMap()),
@@ -132,7 +134,7 @@ class NuGetPackageServiceFeedPublisherTest {
 
                 for(path in packages.map { it.path }) {
                     oneOf(flowLogger).message("Publishing $path package")
-                    oneOf(myFeedTransport).sendPackage(withNotNull(equal(apiKey), ""), withNotNull(createFileMatcher(path), File("x")))
+                    oneOf(myFeedTransport).sendPackage(withNotNull(equal(myApiKey), ""), withNotNull(createFileMatcher(path), File("x")))
                     will(returnValue(transportResponse))
                 }
 
@@ -157,7 +159,6 @@ class NuGetPackageServiceFeedPublisherTest {
         val buildLogger = m.mock(BuildProgressLogger::class.java)
         val flowLogger = m.mock(FlowLogger::class.java)
         val transportResponse = m.mock(NuGetPackageServiceFeedResponse::class.java)
-        val apiKey = "zxxbe88b7ae8ef92315f0040f7f6522a0f95620386a9e80510527d95acc8db0af8b"
         val filePath = "testPackage.nupkg"
         val statusCode = 123
         val message = "Test Error"
@@ -183,7 +184,7 @@ class NuGetPackageServiceFeedPublisherTest {
                 oneOf(flowLogger).buildFailureDescription("Failed to publish NuGet packages")
                 oneOf(flowLogger).disposeFlow()
 
-                oneOf(myFeedTransport).sendPackage(withNotNull(equal(apiKey), ""), withNotNull(createFileMatcher(filePath), File("x")))
+                oneOf(myFeedTransport).sendPackage(withNotNull(equal(myApiKey), ""), withNotNull(createFileMatcher(filePath), File("x")))
                 will(returnValue(transportResponse))
 
                 oneOf(transportResponse).isSuccessful
@@ -212,7 +213,6 @@ class NuGetPackageServiceFeedPublisherTest {
         val instance = createInstance()
         val buildLogger = m.mock(BuildProgressLogger::class.java)
         val flowLogger = m.mock(FlowLogger::class.java)
-        val apiKey = "zxxbe88b7ae8ef92315f0040f7f6522a0f95620386a9e80510527d95acc8db0af8b"
         val filePath = "testPackage.nupkg"
 
         m.checking(object: Expectations() {
@@ -235,7 +235,7 @@ class NuGetPackageServiceFeedPublisherTest {
                 oneOf(flowLogger).buildFailureDescription("Failed to publish NuGet packages")
                 oneOf(flowLogger).disposeFlow()
 
-                oneOf(myFeedTransport).sendPackage(withNotNull(equal(apiKey), ""), withNotNull(createFileMatcher(filePath), File("x")))
+                oneOf(myFeedTransport).sendPackage(withNotNull(equal(myApiKey), ""), withNotNull(createFileMatcher(filePath), File("x")))
                 will(throwException(PackageLoadException("Test Error")))
             }
         })
@@ -342,6 +342,11 @@ class NuGetPackageServiceFeedPublisherTest {
                 return value.message == message
             }
         }
+    }
+
+    private fun createApiKey(buildId: Long, accessCode: String): String {
+        val buildToken = String.format("%s:%s", BuildAuthUtil.makeUserId(buildId), accessCode)
+        return EncryptUtil.scramble(buildToken)
     }
 
     private companion object {
