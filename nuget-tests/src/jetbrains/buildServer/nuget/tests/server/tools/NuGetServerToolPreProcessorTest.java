@@ -42,7 +42,7 @@ public class NuGetServerToolPreProcessorTest extends BaseTestCase {
     final ToolPaths toolPaths = m.mock(ToolPaths.class);
     final ServerResponsibility serverResponsibility = m.mock(ServerResponsibility.class);
     m.checking(new Expectations(){{
-      allowing(serverResponsibility).canManageServerConfig(); will(returnValue(true));
+      allowing(serverResponsibility).canManageServerConfiguration(); will(returnValue(true));
     }});
     myToolPreProcessor = new NuGetServerToolPreProcessor(new ServerPaths(createTempDir()), toolPaths, null, null, null, serverResponsibility);
   }

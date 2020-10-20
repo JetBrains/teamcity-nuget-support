@@ -82,7 +82,7 @@ public class NuGetServerToolPreProcessor extends ServerToolPreProcessorAdapter {
 
   @Override
   public void doBeforeServerStartup() throws ToolException {
-    if (myServerResponsibility.canManageServerConfig()) {
+    if (myServerResponsibility.canManageServerConfiguration()) {
       moveOldInstalledNugets();
     }
   }
