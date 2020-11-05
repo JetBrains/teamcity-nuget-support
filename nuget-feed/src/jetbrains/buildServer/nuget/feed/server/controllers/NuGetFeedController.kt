@@ -93,7 +93,7 @@ class NuGetFeedController(web: WebControllerManager,
 
         // Process package download request
         if (apiMethod == "DOWNLOAD") {
-            val artifactDownloadUrl = "/repository/download${getRelativeRequestPath(requestWrapper, feedPath)})"
+            val artifactDownloadUrl = "/repository/download${getRelativeRequestPath(requestWrapper, feedPath)}"
             val dispatcher = request.getRequestDispatcher(artifactDownloadUrl)
             if (dispatcher != null) {
                 LOG.debug(String.format("Forwarding download package request from %s to %s", getRequestPath(requestWrapper), artifactDownloadUrl))
