@@ -28,4 +28,5 @@ nunit {
 	useX86 = true
 }
 
+msbuild.dependsOn nugetRestore
 nunit.dependsOn msbuild
