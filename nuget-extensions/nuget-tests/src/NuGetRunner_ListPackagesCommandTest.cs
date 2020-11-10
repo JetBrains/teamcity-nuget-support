@@ -10,8 +10,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_ListPublic(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p1("NUnit")));
-      var mpdes = PackagesCount(doc, "NUnit");
+      var doc = DoTestWithSpec(version, Serialize(p1("Microsoft.Build")));
+      var mpdes = PackagesCount(doc, "Microsoft.Build");
       
       if (version > NuGetVersion.NuGet_1_4)
         Assert.True(mpdes == 1);
@@ -25,21 +25,21 @@ namespace JetBrains.TeamCity.NuGet.Tests
       var doc = DoTestWithSpec(
         version,
         Serialize(
-          new[] {"NUnit", "YouTrackSharp", "Machine.Specifications", "jquery", "ninject"}
+          new[] { "Microsoft.Build", "Microsoft.Build.Engine", "Microsoft.Build.Runtime", "jquery", "ninject"}
             .Select(x => p1(x))));
       
-      Assert.True(PackagesCount(doc, "NUnit") == 1);
-      Assert.True(PackagesCount(doc, "YouTrackSharp") == 1);
-      Assert.True(PackagesCount(doc, "jquery") == 1);
+      Assert.True(PackagesCount(doc, "Microsoft.Build") == 1);
+      Assert.True(PackagesCount(doc, "Microsoft.Build.Engine") == 1);
+      Assert.True(PackagesCount(doc, "Microsoft.Build.Runtime") == 1);
     }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_ListPublic_Multiple_sameIds(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p1("NUnit"), p1("NUnit", "(1.1.1,2.5.8]")));
+      var doc = DoTestWithSpec(version, Serialize(p1("Microsoft.Build"), p1("Microsoft.Build", "[15.1.546,15.4.8]")));
 
-      var notVersioned = doc.SelectNodes("//package[@id='NUnit' and not(@versions='(1.1.1,2.5.8]')]//package-entry").Count;
-      var versioned = doc.SelectNodes("//package[@id='NUnit' and @versions='(1.1.1,2.5.8]']//package-entry").Count;
+      var notVersioned = doc.SelectNodes("//package[@id='Microsoft.Build' and not(@versions='[15.1.546,15.4.8]')]//package-entry").Count;
+      var versioned = doc.SelectNodes("//package[@id='Microsoft.Build' and @versions='[15.1.546,15.4.8]']//package-entry").Count;
 
       Assert.True(versioned > 0);
       Assert.True(notVersioned > 0);
@@ -57,16 +57,16 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
     public void TestCommand_ListPublicVersions_v1(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p1("NUnit", "(1.1.1,2.5.8]")));
-      Assert.False(doc.OuterXml.Contains("version=\"2.5.10"));
+      var doc = DoTestWithSpec(version, Serialize(p1("Microsoft.Build", "(15.1.546,15.4.8]")));
+      Assert.False(doc.OuterXml.Contains("version=\"15.5.179"));
       Console.Out.WriteLine("Result: " + doc.OuterXml);
     }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions16p")]
     public void TestCommand_ListPublicVersions_v2(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p2("NUnit", "(1.1.1,2.5.8]")));
-      Assert.False(doc.OuterXml.Contains("version=\"2.5.10"));
+      var doc = DoTestWithSpec(version, Serialize(p2("Microsoft.Build", "(15.1.546,15.4.8]")));
+      Assert.False(doc.OuterXml.Contains("version=\"15.1.546"));
     }
 
     [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
@@ -104,10 +104,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
     [Test, TestCaseSource(typeof(Files), "NuGetVersions18p")]
     public void TestCommand_TeamListPublic_Web_Prerelease(NuGetVersion version)
     {
-      var doc = DoTestWithSpec(version, Serialize(p2("CassiniDev", includePrerelease: true)));
-      Assert.True(doc.OuterXml.Contains("version=\"5.0.2-"));
+      var doc = DoTestWithSpec(version, Serialize(p2("Microsoft.Build", includePrerelease: true)));
+      Assert.True(doc.OuterXml.Contains("version=\"16.5.0-preview-19612-02"));
 
-      Assert.IsTrue(PackagesCount(doc, "CassiniDev") == 1);
+      Assert.IsTrue(PackagesCount(doc, "Microsoft.Build") == 1);
     }
 
   }

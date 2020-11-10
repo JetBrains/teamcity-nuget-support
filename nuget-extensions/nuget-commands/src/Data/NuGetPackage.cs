@@ -24,7 +24,18 @@ namespace JetBrains.TeamCity.NuGet.ExtendedCommands.Data
               var spec = VersionSpec;
               if (string.IsNullOrWhiteSpace(spec)) return True;
               var pSpec = VersionUtility.ParseVersionSpec(spec);
-              return xx => new[] {xx}.FindByVersion(pSpec).Any();
+              return delegate(IPackage xx)
+                     {
+                       try
+                       {
+                         return new[] {xx}.FindByVersion(pSpec).Any();
+                       }
+                       catch (FormatException e)
+                       {
+                         Console.Out.WriteLine("Error: {0}, Package version: {1}", e, xx.VersionString());
+                         return false;
+                       }
+                     };
             }
             catch (Exception e)
             {
