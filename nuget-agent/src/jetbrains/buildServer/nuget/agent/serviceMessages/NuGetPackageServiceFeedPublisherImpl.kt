@@ -41,14 +41,20 @@ class NuGetPackageServiceFeedPublisherImpl (
                 val apiKey = createApiKey(build)
                 val transport = myFeedTransportProvider.createTransport(build)
 
+                val failedToPublish = mutableListOf<NuGetPackageData>()
                 for (nuGetPackage in packages) {
                     logger.message("Publishing ${nuGetPackage.path} package")
 
                     val file = File(nuGetPackage.path)
                     val response = transport.sendPackage(apiKey, file)
                     if (!response.isSuccessful) {
-                        throw PackagePublishException("Failed to publish NuGet package. Server returned StatusCode: ${response.statusCode}, Response: ${response.message}")
+                        failedToPublish.add(nuGetPackage)
+                        Loggers.AGENT.debug("Failed publishing ${nuGetPackage.path} package StatusCode: ${response.statusCode}, response: ${response.message}")
                     }
+                }
+
+                if (failedToPublish.any()) {
+                    throw PackagePublishException("Failed to publish NuGet package(s) ${failedToPublish.joinToString(", ") { "\"${it.path}\"" }}.")
                 }
             }
             catch (e: Throwable) {

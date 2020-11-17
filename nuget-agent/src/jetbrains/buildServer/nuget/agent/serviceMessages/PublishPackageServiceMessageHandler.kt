@@ -40,9 +40,7 @@ class PublishPackageServiceMessageHandler(
             }
 
             override fun runnerFinished(runner: BuildRunnerContext, status: BuildFinishedStatus) {
-                if (status == BuildFinishedStatus.FINISHED_SUCCESS) {
-                    publishPackages()
-                }
+                publishPackages()
                 clearPackages()
             }
 
@@ -126,7 +124,11 @@ class PublishPackageServiceMessageHandler(
     private fun publishPackages() {
         if (myPackagesMap.isEmpty()) return;
 
-        myPackagePublisher.publishPackages(myPackagesMap.values)
+        try {
+            myPackagePublisher.publishPackages(myPackagesMap.values)
+        } finally {
+            clearPackages()
+        }
     }
 
     private data class PackageKey (val name: String, val version: String?)

@@ -179,7 +179,7 @@ class NuGetPackageServiceFeedPublisherTest {
 
                 oneOf(flowLogger).logMessage(with(createLogMessageMatcher(BLOCK_START, BLOCK_NAME, BLOCK_TYPE)))
                 oneOf(flowLogger).logMessage(with(createLogMessageMatcher(BLOCK_END, BLOCK_NAME, BLOCK_TYPE)))
-                oneOf(flowLogger).error(with(createStingMatcher("Failed to publish NuGet package. Server returned StatusCode: $statusCode, Response: $message")))
+                oneOf(flowLogger).error(with(createStingMatcher("Failed to publish NuGet package(s) \"testPackage.nupkg\".")))
                 oneOf(flowLogger).disposeFlow()
 
                 oneOf(myFeedTransport).sendPackage(withNotNull(equal(myApiKey), ""), withNotNull(createFileMatcher(filePath), File("x")))
@@ -188,7 +188,7 @@ class NuGetPackageServiceFeedPublisherTest {
                 oneOf(transportResponse).isSuccessful
                 will(returnValue(false))
 
-                oneOf(transportResponse).statusCode
+                allowing(transportResponse).statusCode
                 will(returnValue(statusCode))
 
                 oneOf(transportResponse).message
