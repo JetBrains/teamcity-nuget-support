@@ -293,8 +293,7 @@ class PublishPackageServiceMessageHandlerTest : BaseTestCase() {
                     will(throwException(PackageLoadException("Test Error")))
                 }
 
-                oneOf(myLogger).exception(with(createExceptionMatcher<PackageLoadException>("Test Error")))
-                oneOf(myLogger).buildFailureDescription("Could not read NuGet package")
+                oneOf(myLogger).buildFailureDescription(with(any(String::class.java)))
             }
         })
 
@@ -330,8 +329,7 @@ class PublishPackageServiceMessageHandlerTest : BaseTestCase() {
                 oneOf(myBuild).checkoutDirectory
                 will(returnValue(checkoutDirectory))
 
-                oneOf(myLogger).exception(with(any(FileNotFoundException::class.java)))
-                oneOf(myLogger).buildFailureDescription("Could not read NuGet package")
+                oneOf(myLogger).buildFailureDescription(with(any(String()::class.java)))
             }
         })
 

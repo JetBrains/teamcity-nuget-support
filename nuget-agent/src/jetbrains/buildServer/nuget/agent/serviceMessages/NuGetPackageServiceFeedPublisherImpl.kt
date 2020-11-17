@@ -47,14 +47,13 @@ class NuGetPackageServiceFeedPublisherImpl (
                     val file = File(nuGetPackage.path)
                     val response = transport.sendPackage(apiKey, file)
                     if (!response.isSuccessful) {
-                        throw PackagePublishException("Failed to publush NuGet package. Server returned StatusCode: ${response.statusCode}, Response: ${response.message}")
+                        throw PackagePublishException("Failed to publish NuGet package. Server returned StatusCode: ${response.statusCode}, Response: ${response.message}")
                     }
                 }
-            } catch (e: Throwable) {
-                val message = "Failed to publish NuGet packages"
-                logger.exception(e)
-                Loggers.AGENT.warnAndDebugDetails(message, e)
-                logger.buildFailureDescription(message)
+            }
+            catch (e: Throwable) {
+                logger.error(e.message)
+                Loggers.AGENT.warnAndDebugDetails("Failed to publish NuGet packages", e)
             }
         }
     }

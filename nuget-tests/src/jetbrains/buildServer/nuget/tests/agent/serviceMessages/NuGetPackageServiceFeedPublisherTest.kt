@@ -179,9 +179,7 @@ class NuGetPackageServiceFeedPublisherTest {
 
                 oneOf(flowLogger).logMessage(with(createLogMessageMatcher(BLOCK_START, BLOCK_NAME, BLOCK_TYPE)))
                 oneOf(flowLogger).logMessage(with(createLogMessageMatcher(BLOCK_END, BLOCK_NAME, BLOCK_TYPE)))
-                oneOf(flowLogger).exception(with(createExceptionMatcher<PackagePublishException>(
-                        "Failed to publush NuGet package. Server returned StatusCode: $statusCode, Response: $message")))
-                oneOf(flowLogger).buildFailureDescription("Failed to publish NuGet packages")
+                oneOf(flowLogger).error(with(createStingMatcher("Failed to publish NuGet package. Server returned StatusCode: $statusCode, Response: $message")))
                 oneOf(flowLogger).disposeFlow()
 
                 oneOf(myFeedTransport).sendPackage(withNotNull(equal(myApiKey), ""), withNotNull(createFileMatcher(filePath), File("x")))
@@ -231,8 +229,7 @@ class NuGetPackageServiceFeedPublisherTest {
 
                 oneOf(flowLogger).logMessage(with(createLogMessageMatcher(BLOCK_START, BLOCK_NAME, BLOCK_TYPE)))
                 oneOf(flowLogger).logMessage(with(createLogMessageMatcher(BLOCK_END, BLOCK_NAME, BLOCK_TYPE)))
-                oneOf(flowLogger).exception(with(createExceptionMatcher<PackageLoadException>("Test Error")))
-                oneOf(flowLogger).buildFailureDescription("Failed to publish NuGet packages")
+                oneOf(flowLogger).error("Test Error")
                 oneOf(flowLogger).disposeFlow()
 
                 oneOf(myFeedTransport).sendPackage(withNotNull(equal(myApiKey), ""), withNotNull(createFileMatcher(filePath), File("x")))
@@ -271,8 +268,7 @@ class NuGetPackageServiceFeedPublisherTest {
                 oneOf(flowLogger).startFlow()
                 oneOf(flowLogger).logMessage(with(createLogMessageMatcher(BLOCK_START, BLOCK_NAME, BLOCK_TYPE)))
                 oneOf(flowLogger).logMessage(with(createLogMessageMatcher(BLOCK_END, BLOCK_NAME, BLOCK_TYPE)))
-                oneOf(flowLogger).exception(with(createExceptionMatcher<IOException>("Test Error")))
-                oneOf(flowLogger).buildFailureDescription("Failed to publish NuGet packages")
+                oneOf(flowLogger).error("Test Error")
                 oneOf(flowLogger).disposeFlow()
             }
         })
@@ -340,6 +336,20 @@ class NuGetPackageServiceFeedPublisherTest {
 
                 if (value == null) return false
                 return value.message == message
+            }
+        }
+    }
+
+    private fun createStingMatcher(text: String): Matcher<String> {
+        return object: BaseMatcher<String>() {
+            override fun describeTo(description: Description?) {
+                description?.appendText("Expecting text: $text")
+            }
+
+            override fun matches(o: Any?): Boolean {
+                @Suppress("UNCHECKED_CAST")
+                val value = o as String? ?: return false
+                return value == text
             }
         }
     }

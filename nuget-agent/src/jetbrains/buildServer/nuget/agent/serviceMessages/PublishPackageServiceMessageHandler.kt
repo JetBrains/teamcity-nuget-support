@@ -87,9 +87,8 @@ class PublishPackageServiceMessageHandler(
         }
         catch(e: Throwable) {
             var message = "Could not read NuGet package. File path: $path. Message: ${e.message}"
-            logger.exception(e)
             Loggers.AGENT.warnAndDebugDetails(message, e)
-            logger.buildFailureDescription("Could not read NuGet package")
+            logger.buildFailureDescription(message)
         }
     }
 
