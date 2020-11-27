@@ -20,7 +20,9 @@ msbuild {
 	projectName = project.name
 
 	// targets to execute (/t:Clean;Restore;Build, no default)
-	targets = ['Clean', 'Restore', 'Build']
+	targets = ['Clean', 'Build']
+
+        ext["r"] = null
 }
 
 nunit {
