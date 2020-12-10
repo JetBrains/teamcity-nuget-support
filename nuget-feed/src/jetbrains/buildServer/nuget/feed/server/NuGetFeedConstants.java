@@ -36,7 +36,7 @@ public class NuGetFeedConstants {
   public static final String NUGET_FEED_API_VERSION = "teamcity.nuget.feed.apiVersion";
   public static final int NUGET_FEED_PACKAGE_SIZE = 100;
   public static final int NUGET_FEED_MAX_REQUESTS = 20;
-  public static final Long NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT = 600L;
+  public static final Long NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT = 60L;
 
   public static final String NUGET_INDEXER_TYPE = "NuGetPackagesIndexer";
   public static final String NUGET_INDEXER_FEED = "feed";
