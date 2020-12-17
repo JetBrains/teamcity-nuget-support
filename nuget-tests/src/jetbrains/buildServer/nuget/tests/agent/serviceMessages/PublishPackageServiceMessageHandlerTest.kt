@@ -1,6 +1,8 @@
 package jetbrains.buildServer.nuget.tests.agent.serviceMessages
 
 import jetbrains.buildServer.BaseTestCase
+import jetbrains.buildServer.BuildProblemData
+import jetbrains.buildServer.BuildProblemDataEx
 import jetbrains.buildServer.agent.*
 import jetbrains.buildServer.agent.impl.AgentEventDispatcher
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessage
@@ -13,6 +15,7 @@ import jetbrains.buildServer.nuget.common.PackageLoadException
 import jetbrains.buildServer.nuget.common.index.NuGetPackageData
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
+import jetbrains.buildServer.problems.BuildProblemTypesEx
 import jetbrains.buildServer.util.EventDispatcher
 import jetbrains.buildServer.util.FileUtil
 import org.hamcrest.BaseMatcher
@@ -293,7 +296,11 @@ class PublishPackageServiceMessageHandlerTest : BaseTestCase() {
                     will(throwException(PackageLoadException("Test Error")))
                 }
 
-                oneOf(myLogger).buildFailureDescription(with(any(String::class.java)))
+                oneOf(myLogger).logBuildProblem(
+                        withNotNull(
+                                createBuildProblemMatcher("Could not read NuGet package. File path: CommonServiceLocator.1.0.nupkg.", BuildProblemTypesEx.TC_BUILD_FAILURE_TYPE),
+                                BuildProblemData.createBuildProblem("i", "i", "d")
+                        ))
             }
         })
 
@@ -329,7 +336,11 @@ class PublishPackageServiceMessageHandlerTest : BaseTestCase() {
                 oneOf(myBuild).checkoutDirectory
                 will(returnValue(checkoutDirectory))
 
-                oneOf(myLogger).buildFailureDescription(with(any(String()::class.java)))
+                oneOf(myLogger).logBuildProblem(
+                        withNotNull(
+                                createBuildProblemMatcher("Could not read NuGet package. File path: CommonServiceLocator.1.0.nupkg-1.", BuildProblemTypesEx.TC_BUILD_FAILURE_TYPE),
+                                BuildProblemData.createBuildProblem("i", "i", "d")
+                        ))
             }
         })
 
@@ -416,6 +427,24 @@ class PublishPackageServiceMessageHandlerTest : BaseTestCase() {
 
                 if (value == null) return false
                 return value.message == message
+            }
+        }
+    }
+
+    private fun createBuildProblemMatcher(message: String, problemType: String): Matcher<BuildProblemData> {
+        return object: BaseMatcher<BuildProblemData>() {
+            override fun describeTo(description: Description?) {
+                description?.appendText("Expecting BuildProblemData: $message, Type: $problemType")
+            }
+
+            override fun matches(o: Any?): Boolean {
+                @Suppress("UNCHECKED_CAST")
+                val value = o as BuildProblemData?
+
+                if (value == null) return false
+                return value.type == problemType &&
+                        value.identity == message.hashCode().toString() &&
+                        value.description == message
             }
         }
     }

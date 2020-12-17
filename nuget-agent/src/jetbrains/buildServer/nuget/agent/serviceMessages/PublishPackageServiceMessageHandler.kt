@@ -1,5 +1,6 @@
 package jetbrains.buildServer.nuget.agent.serviceMessages
 
+import jetbrains.buildServer.BuildProblemData
 import jetbrains.buildServer.agent.*
 import jetbrains.buildServer.log.Loggers
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessage
@@ -11,6 +12,7 @@ import jetbrains.buildServer.nuget.common.index.PackageAnalyzer
 import jetbrains.buildServer.nuget.common.version.VersionUtility
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.ID
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.NORMALIZED_VERSION
+import jetbrains.buildServer.problems.BuildProblemTypesEx
 import jetbrains.buildServer.util.EventDispatcher
 import jetbrains.buildServer.util.FileUtil
 import jetbrains.buildServer.util.StringUtil
@@ -82,11 +84,12 @@ class PublishPackageServiceMessageHandler(
             myPackagesMap.put(keyToDataPair.first, keyToDataPair.second)
 
             Loggers.AGENT.debug("Service message $MESSAGE_NAME sucessfully handled")
-        }
-        catch(e: Throwable) {
+        } catch (e: Throwable) {
             var message = "Could not read NuGet package. File path: $path. Message: ${e.message}"
             Loggers.AGENT.warnAndDebugDetails(message, e)
-            logger.buildFailureDescription(message)
+
+            var buildProblemText = "Could not read NuGet package. File path: $path."
+            logger.logBuildProblem(BuildProblemData.createBuildProblem(buildProblemText.hashCode().toString(), BuildProblemTypesEx.TC_BUILD_FAILURE_TYPE, buildProblemText))
         }
     }
 
