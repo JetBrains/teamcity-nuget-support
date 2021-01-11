@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NuGet">
-      <HintPath>..\packages\NuGet.CommandLine.4.0.0-rtm-2283\tools\NuGet.exe</HintPath>
+      <HintPath>..\packages\NuGet.CommandLine.4.1.0\tools\NuGet.exe</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
