@@ -96,6 +96,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
   protected static final String NUGET_VERSIONS_27p = "nuget_versions_27p";
   protected static final String NUGET_VERSIONS_28p = "nuget_versions_28p";
   protected static final String NUGET_VERSIONS_48p = "nuget_versions_48p";
+  private static final NuGet MIN_TESTABLE_VERSION = NuGet.NuGet_3_5;
 
   @NotNull
   protected Object[][] versionsFrom(@NotNull final NuGet lowerBound) {
@@ -110,6 +111,10 @@ public class IntegrationTestBase extends BuildProcessTestCase {
         if(value.version.compareTo(NuGet.NuGet_3_3.version) < 0) {
           continue;
         }
+      }
+
+      if (value.version.compareTo(MIN_TESTABLE_VERSION.version) < 0) {
+        continue;
       }
 
       data.add(new Object[]{value});

@@ -13,6 +13,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
 {
   public static class Files
   {
+    private const NuGetVersion NuGet_Test_Min_Version = NuGetVersion.NuGet_3_5;
     private static readonly Lazy<string> ourCachedNuGetExe_1_4 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.4.20615.182/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_1_5 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.5.21005.9019/tools/nuget.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_1_6 = PathSearcher.SearchFile("packages/NuGet.CommandLine.1.6.0/tools/NuGet.exe");
@@ -30,7 +31,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourCachedNuGetExe_3_5 = PathSearcher.SearchFile("packages/NuGet.CommandLine.3.5.0/tools/NuGet.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_4_1 = PathSearcher.SearchFile("packages/NuGet.CommandLine.4.1.0/tools/NuGet.exe");
     private static readonly Lazy<string> ourCachedNuGetExe_4_3 = PathSearcher.SearchFile("packages/NuGet.CommandLine.4.3.0/tools/NuGet.exe");
-    private static readonly Lazy<string> ourCachedNuGetExe_4_8 = PathSearcher.SearchFile("packages/NuGet.CommandLine.4.8.2/tools/NuGet.exe");
+    private static readonly Lazy<string> ourCachedNuGetExe_5_8 = PathSearcher.SearchFile("packages/NuGet.CommandLine.5.8.0/tools/NuGet.exe");
     private static readonly Lazy<string> ourCachedNuGetRunnerPath = PathSearcher.SearchFile("JetBrains.TeamCity.NuGetRunner.exe", "bin/JetBrains.TeamCity.NuGetRunner.exe");
     private static readonly Lazy<string> ourLocalFeed = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed");
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
@@ -72,7 +73,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string NuGetExe_3_5 { get { return ourCachedNuGetExe_3_5.Value; } }
     public static string NuGetExe_4_1 { get { return ourCachedNuGetExe_4_1.Value; } }
     public static string NuGetExe_4_3 { get { return ourCachedNuGetExe_4_3.Value; } }
-    public static string NuGetExe_4_8 { get { return ourCachedNuGetExe_4_8.Value; } }
+    public static string NuGetExe_5_8 {  get { return ourCachedNuGetExe_5_8.Value; } }
     public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
 
     public static string GetNuGetExe(NuGetVersion version)
@@ -113,6 +114,8 @@ namespace JetBrains.TeamCity.NuGet.Tests
           return NuGetExe_4_1;
         case NuGetVersion.NuGet_4_3:
           return NuGetExe_4_3;
+        case NuGetVersion.NuGet_5_8:
+          return NuGetExe_5_8;
         case NuGetVersion.NuGet_CommandLine_Package_Latest:
             return ourCachedNuGet_CommandLinePackage_Last.Value;
         default:
@@ -130,16 +133,13 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     private static string FetchLatestNuGetCommandline()
     {
-      var version = GetLatestRtmVersion();
       var temp = CreateTempPath();
       ProcessExecutor.Result result = null;
       
-      for (int i = 2; i > 0; i--)
+      for (var i = 2; i > 0; i--)
       {
-        result = ProcessExecutor.ExecuteProcess(NuGetExe_4_3, "install", "NuGet.commandline",
-            "-Source", NuGetConstants.DefaultFeedUrl_v2,
-            "-Source", NuGetConstants.NuGetDevFeed,
-            "-Version", version,
+        result = ProcessExecutor.ExecuteProcess(NuGetExe_5_8, "install", "NuGet.commandline",
+            "-Source", NuGetConstants.DefaultFeedUrl_v3,
             "-ExcludeVersion", "-OutputDirectory", temp,
             "-Verbosity", "detailed")
           .Dump().AssertNoErrorOutput();
@@ -154,74 +154,35 @@ namespace JetBrains.TeamCity.NuGet.Tests
       return nugetPath;
     }
 
-    private static string GetLatestRtmVersion()
-    {
-      String version = "4.3.0";
-      
-      try
-      {
-        var url = "https://dotnet.myget.org/F/nuget-build/api/v2/FindPackagesById?id='NuGet.CommandLine'&$skiptoken='NuGet.CommandLine','4.5.0-rtm-4681'";
-        do
-        {
-          using (var reader = XmlReader.Create(url))
-          {
-            var feed = SyndicationFeed.Load(reader);
-            foreach (var package in feed.Items)
-            {
-              var id = package.Id;
-              if (String.IsNullOrEmpty(id)) continue;
-
-              var match = Version.Match(id);
-              if (match.Success)
-              {
-                var value = match.Groups[1].Value;
-                if (value.Contains("rtm"))
-                {
-                  if (String.Compare(value, version, StringComparison.Ordinal) > 0)
-                  {
-                    version = value;
-                  }
-                }
-              }
-            }
-            var nextLink = feed.Links.FirstOrDefault(p => p.RelationshipType == "next");
-            url = nextLink != null ? nextLink.Uri.ToString() : null;
-          }
-        } while (!string.IsNullOrEmpty(url));
-      }
-      catch (Exception e)
-      {
-        Console.WriteLine(e);
-      }
-
-      return version;
-    }
-
     public static NuGetVersion[] NuGetVersions
     {
-      get { return AllNuGets().ToArray(); }
+      get { return GetTestableVersions().ToArray(); }
     }
 
-    private static IEnumerable<NuGetVersion> AllNuGets()
+    private static IEnumerable<NuGetVersion> GetTestableVersions()
     {
-      return Enum.GetValues(typeof (NuGetVersion)).Cast<NuGetVersion>();
+      return Enum.GetValues(typeof (NuGetVersion)).Cast<NuGetVersion>().Where(x => x >= NuGet_Test_Min_Version);
     }
 
     public static NuGetVersion[] NuGetVersions15p
     {
-      get { return AllNuGets().Where(x => x >= NuGetVersion.NuGet_1_5).ToArray(); }
+      get { return GetTestableVersions().Where(x => x >= NuGetVersion.NuGet_1_5).ToArray(); }
     }
 
     public static NuGetVersion[] NuGetVersions16p
     {
-      get { return AllNuGets().Where(x => x >= NuGetVersion.NuGet_1_6).ToArray(); }
+      get { return GetTestableVersions().Where(x => x >= NuGetVersion.NuGet_1_6).ToArray(); }
     }
 
     public static NuGetVersion[] NuGetVersions18p
     {
-      get { return AllNuGets().Where(x => x >= NuGetVersion.NuGet_1_8).ToArray(); }
+      get { return GetTestableVersions().Where(x => x >= NuGetVersion.NuGet_1_8).ToArray(); }
     }
 
+    public static NuGetVersion[] NuGetVersions58p
+    {
+      get { return GetTestableVersions().Where(x => x >= NuGetVersion.NuGet_5_8).ToArray(); }
+    }
   }
 
   public enum NuGetVersion
@@ -238,14 +199,12 @@ namespace JetBrains.TeamCity.NuGet.Tests
     NuGet_2_6 = 13,
     NuGet_2_7 = 14,
     NuGet_2_8 = 15,
-    NuGet_3_2 = 16,
     NuGet_3_3 = 17,
     NuGet_3_4 = 18,
     NuGet_3_5 = 19,
-    NuGet_4_0 = 20,
     NuGet_4_1 = 21,
     NuGet_4_3 = 22,
-
+    NuGet_5_8 = 23,
 
     NuGet_CommandLine_Package_Latest = 999
   }

@@ -23,9 +23,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 
 /**
-* Created by Eugene Petrenko (eugene.petrenko@gmail.com)
-* Date: 31.08.11 10:39
-*/
+ * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
+ * Date: 31.08.11 10:39
+ */
 public enum NuGet {
   NuGet_1_6(1,6),
   NuGet_1_7(1,7),
@@ -37,12 +37,13 @@ public enum NuGet {
   NuGet_2_6(2,6),
   NuGet_2_7(2,7),
   NuGet_2_8(2,8),
-  NuGet_3_2(3,2),
   NuGet_3_3(3,3),
   NuGet_3_4(3,4),
   NuGet_3_5(3,5),
-  NuGet_4_0(4,0),
-  NuGet_4_8(4,8);
+  NuGet_4_1(4, 1),
+  NuGet_4_3(4, 3),
+  NuGet_4_8(4,8),
+  NuGet_5_8(5,8);
 
   public final Version version;
 
@@ -73,18 +74,20 @@ public enum NuGet {
         return Paths.getPackagesPath("NuGet.CommandLine.2.7.0/tools/NuGet.exe");
       case NuGet_2_8:
         return Paths.getPackagesPath("NuGet.CommandLine.2.8.6/tools/NuGet.exe");
-      case NuGet_3_2:
-        return Paths.getPackagesPath("NuGet.CommandLine.3.2.0/tools/nuget.exe");
       case NuGet_3_3:
         return Paths.getPackagesPath("NuGet.CommandLine.3.3.0/tools/NuGet.exe");
       case NuGet_3_4:
         return Paths.getPackagesPath("NuGet.CommandLine.3.4.4-rtm-final/tools/NuGet.exe");
       case NuGet_3_5:
-        return Paths.getPackagesPath("NuGet.CommandLine.3.5.0-rtm-1938/tools/NuGet.exe");
-      case NuGet_4_0:
-        return Paths.getPackagesPath("NuGet.CommandLine.4.0.0-rtm-2283/tools/NuGet.exe");
+        return Paths.getPackagesPath("NuGet.CommandLine.3.5.0/tools/NuGet.exe");
+      case NuGet_4_1:
+        return Paths.getPackagesPath("NuGet.CommandLine.4.1.0/tools/NuGet.exe");
+      case NuGet_4_3:
+        return Paths.getPackagesPath("NuGet.CommandLine.4.3.0/tools/NuGet.exe");
       case NuGet_4_8:
-        return Paths.getPackagesPath("NuGet.CommandLine.4.8.0-rtm.5369/tools/NuGet.exe");
+        return Paths.getPackagesPath("NuGet.CommandLine.4.8.2/tools/NuGet.exe");
+      case NuGet_5_8:
+        return Paths.getPackagesPath("NuGet.CommandLine.5.8.0/tools/NuGet.exe");
       default:
         throw new IllegalArgumentException("Failed to find nuget " + this);
     }

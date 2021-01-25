@@ -70,6 +70,11 @@ namespace JetBrains.TeamCity.NuGet.Tests
       return p(NuGetConstants.DefaultFeedUrl_v2, id, version, includePrerelease);
     }
 
+    protected static Package p3(string id, string version = null, bool? includePrerelease = null)
+    {
+      return p(NuGetConstants.DefaultFeedUrl_v3, id, version, includePrerelease);
+    }
+
     protected static int PackagesCount(XmlDocument doc, string id)
     {
       var p = doc.SelectNodes("//package[@id='" + id + "']//package-entry");
