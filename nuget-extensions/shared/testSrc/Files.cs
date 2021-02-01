@@ -161,7 +161,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
 
     private static IEnumerable<NuGetVersion> GetTestableVersions()
     {
-      return Enum.GetValues(typeof (NuGetVersion)).Cast<NuGetVersion>().Where(x => x >= NuGet_Test_Min_Version);
+      return Enum.GetValues(typeof (NuGetVersion)).Cast<NuGetVersion>().Where(x => x >= NuGet_Test_Min_Version && x <= NuGetVersion.NuGet_4_3);
     }
 
     public static NuGetVersion[] NuGetVersions15p

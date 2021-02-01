@@ -117,6 +117,10 @@ public class IntegrationTestBase extends BuildProcessTestCase {
         continue;
       }
 
+      if (value.version.compareTo(NuGet.NuGet_5_8.version) >= 0) {
+        continue;
+      }
+
       data.add(new Object[]{value});
     }
     return data.toArray(new Object[data.size()][]);
