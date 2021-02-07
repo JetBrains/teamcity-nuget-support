@@ -33,7 +33,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.True(PackagesCount(doc, "Microsoft.Build.Runtime") == 1);
     }
 
-    [Test, TestCaseSource(typeof(Files), "NuGetVersions58p"), Ignore]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions58p")]
     public void TestCommand_ListPublic_Multiple_V3(NuGetVersion version)
     {
       var doc = DoTestWithSpec(
@@ -68,7 +68,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       }
     }
 
-    [Test, TestCaseSource(typeof(Files), "NuGetVersions58p"), Ignore]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions58p")]
     public void TestCommand_ListPublic_Multiple_sameIds_V3(NuGetVersion version)
     {
       var doc = DoTestWithSpec(version, Serialize(p3("Microsoft.Build"), p1("Microsoft.Build", "[15.1.548,15.4.8]")));
@@ -96,7 +96,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.False(doc.OuterXml.Contains("version=\"15.1.548"));
     }
 
-    [Test, TestCaseSource(typeof(Files), "NuGetVersions58p"), Ignore]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions58p")]
     public void TestCommand_ListPublicVersions_v3(NuGetVersion version)
     {
       var doc = DoTestWithSpec(version, Serialize(p3("Microsoft.Build", "(15.1.548,15.4.8]")));
@@ -144,7 +144,7 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.IsTrue(PackagesCount(doc, "CassiniDev") == 1);
     }
 
-    [Test, TestCaseSource(typeof(Files), "NuGetVersions58p"), Ignore]
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions58p")]
     public void TestCommand_TeamListPublic_Web_Prerelease_v3(NuGetVersion version)
     {
       var doc = DoTestWithSpec(version, Serialize(p3("CassiniDev", includePrerelease: true)));
