@@ -17,6 +17,7 @@ teamcity {
                     include '**/*PowerArgs*.dll'
                     include '**/NuGet.*.dll'
                     include '**/credential-plugin/**/*'                    
+                    include '**/System.ValueTuple.dll'
                     exclude '**/*.pdb'
                     exclude '**/credential-plugin/netcoreapp*/CredentialProvider.TeamCity.exe'
                     exclude '**/*.deps.json'
