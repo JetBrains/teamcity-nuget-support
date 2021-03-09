@@ -42,7 +42,11 @@ public class NuGetTeamCityProviderBase implements NuGetTeamCityProvider {
   @NotNull
   @Override
   public String getPluginCorePath(int minSdkVersion) {
-    return getCanonicalFile("/bin/credential-plugin/netcoreapp" + minSdkVersion + ".0/CredentialProvider.TeamCity.dll").getPath();
+    if(minSdkVersion <= 3) {
+      return getCanonicalFile("/bin/credential-plugin/netcoreapp" + minSdkVersion + ".0/CredentialProvider.TeamCity.dll").getPath();
+    }
+
+    return getCanonicalFile("/bin/credential-plugin/net" + minSdkVersion + ".0/CredentialProvider.TeamCity.dll").getPath();
   }
 
   @NotNull
