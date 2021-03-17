@@ -79,6 +79,16 @@ namespace JetBrains.TeamCity.NuGet.Tests
         return this;
       }
 
+      public Result AssertErrorContains(params string[] text)
+      {
+        foreach (var _ in text)
+        {
+          var s = _.Trim();
+          Assert.IsTrue(Error.Contains(s), "Process Output must contain {0}. Output: {1}", s, Output);
+        }
+        return this;
+      }
+
       public Result AssertNoErrorOutput()
       {
         Assert.IsTrue(string.IsNullOrWhiteSpace(Error), String.Format("Error recieved - {0}", Error));
@@ -88,6 +98,12 @@ namespace JetBrains.TeamCity.NuGet.Tests
       public Result AssertExitedSuccessfully()
       {
         Assert.That(ExitCode, Is.EqualTo(0));
+        return this;
+      }
+
+      public Result AssertExitCode(int expectedExitCode)
+      {
+        Assert.That(ExitCode, Is.EqualTo(expectedExitCode));
         return this;
       }
 

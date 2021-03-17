@@ -9,6 +9,7 @@ namespace JetBrains.TeamCity.NuGetRunner
   {
     private static readonly Version NuGet35Version = new Version(3, 5);
     private static readonly string NugetPackagesPath = "NUGET_PACKAGES";
+    private const string ForceVerificationCommandArgument = "-v";
 
     static int Main(string[] args)
     {
@@ -29,33 +30,42 @@ namespace JetBrains.TeamCity.NuGetRunner
       Console.Out.WriteLine("JetBrains TeamCity NuGet Runner " + typeof (Program).Assembly.GetName().Version);
       if (args.Length < 2) return Usage();
 
-      string nuget = args[0];
-      var runner = new NuGetRunner(nuget);
-      ConfigureExtensions(runner);
-      CheckEnvironment(runner);
-
-      Console.Out.WriteLine("Starting NuGet.exe {1} from {0}", runner.NuGetAssembly.GetAssemblyPath(),
-        runner.NuGetVersion);
-
-      switch (args[1])
+      var forceVerification = false;
+      if (ForceVerificationCommandArgument.Equals(args[0], StringComparison.OrdinalIgnoreCase))
       {
-        case "---TeamCity.DumpExtensionsPath":
-          Console.Out.WriteLine("ExtensionsPath: {0}", runner.LocateNuGetExtensionsPath() ?? "null");
-          return 0;
-        case "--TeamCity.NuGetVersion":
-          Console.Out.WriteLine("TeamCity.NuGetVersion: " + runner.NuGetVersion);
-          Console.Out.WriteLine();
+        forceVerification = true;
+        args = args.Skip(1).ToArray();
+      }
 
-          if (args.Length >= 3)
-          {
-            string path = args[2];
-            File.WriteAllText(path, runner.NuGetVersion.ToString());
-          }
+      string nuget = args[0];
+      using (var runner = new NuGetRunner(nuget, forceVerification))
+      {
+        ConfigureExtensions(runner);
+        CheckEnvironment(runner);
 
-          return 0;
+        Console.Out.WriteLine("Starting NuGet.exe {1} from {0}", runner.NuGetAssembly.GetAssemblyPath(),
+          runner.NuGetVersion);
 
-        default:
-          return runner.Run(args.Skip(1).ToArray());
+        switch (args[1])
+        {
+          case "---TeamCity.DumpExtensionsPath":
+            Console.Out.WriteLine("ExtensionsPath: {0}", runner.LocateNuGetExtensionsPath() ?? "null");
+            return 0;
+          case "--TeamCity.NuGetVersion":
+            Console.Out.WriteLine("TeamCity.NuGetVersion: " + runner.NuGetVersion);
+            Console.Out.WriteLine();
+
+            if (args.Length >= 3)
+            {
+              string path = args[2];
+              File.WriteAllText(path, runner.NuGetVersion.ToString());
+            }
+
+            return 0;
+
+          default:
+            return runner.Run(args.Skip(1).ToArray());
+        }
       }
     }
 

@@ -37,7 +37,9 @@ namespace JetBrains.TeamCity.NuGet.Tests
     private static readonly Lazy<string> ourLocalFeed_1_4 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.4");
     private static readonly Lazy<string> ourLocalFeed_1_8 = PathSearcher.SearchDirectory("nuget-tests/testData/localFeed_1.8");    
     private static readonly Lazy<string> ourCachedNuGet_CommandLinePackage_Last = new Lazy<string>(FetchLatestNuGetCommandline, LazyThreadSafetyMode.PublicationOnly);
-    
+    private static readonly Lazy<string> wrongAssemblyNameNuGet = PathSearcher.SearchFile("nuget-tests/testData/assemblies/wrongName/NuGet.exe");
+    private static readonly Lazy<string> wrongAssemblyStrongNameNuGet = PathSearcher.SearchFile("nuget-tests/testData/assemblies/wrongStrongName/NuGet.exe");
+
     // Example: https://dotnet.myget.org/F/nuget-build/api/v2/Packages(Id='NuGet.CommandLine',Version='3.2.0')
     private static readonly Regex Version = new Regex("Version='([^']+)'", RegexOptions.Compiled);
 
@@ -75,6 +77,10 @@ namespace JetBrains.TeamCity.NuGet.Tests
     public static string NuGetExe_4_3 { get { return ourCachedNuGetExe_4_3.Value; } }
     public static string NuGetExe_5_8 {  get { return ourCachedNuGetExe_5_8.Value; } }
     public static string NuGetRunnerExe { get { return ourCachedNuGetRunnerPath.Value; } }
+
+    public static string WrongAssemblyNameNuGet { get { return wrongAssemblyNameNuGet.Value; } }
+
+    public static string WrongAssemblyStrongNameNuGet { get { return wrongAssemblyStrongNameNuGet.Value; } }
 
     public static string GetNuGetExe(NuGetVersion version)
     {

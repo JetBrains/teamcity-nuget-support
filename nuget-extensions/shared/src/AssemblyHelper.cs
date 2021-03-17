@@ -25,5 +25,26 @@ namespace JetBrains.TeamCity.NuGetRunner
     {
       return GetAssemblyPath(type.Assembly);
     }
+
+    public static IDisposable LockAssembly(string path)
+    {
+      var stream = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+      return new AssemblyLocker(stream);
+    }
+
+    private class AssemblyLocker : IDisposable
+    {
+      private readonly FileStream myStream;
+
+      public AssemblyLocker(FileStream stream)
+      {
+        myStream = stream;
+      }
+
+      public void Dispose()
+      {
+        myStream.Close();
+      }
+    }
   }
 }
