@@ -4,12 +4,18 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Linq;
+using System.Security;
 
 namespace JetBrains.TeamCity.NuGetRunner
 {
-  public class NuGetRunner
+  public class NuGetRunner : IDisposable
   {
+    private const string NuGetName = "NuGet";
+
+    private static readonly byte[] ExpectedPublicKeyToken = { 0x31, 0xbf, 0x38, 0x56, 0xad, 0x36, 0x4e, 0x35 };
+    
     private readonly string myNuGetExe;
+    private readonly bool myForceVerification;
     private readonly Assembly myNuGetAssembly;
     private readonly List<EventHandler> myStartEvents = new List<EventHandler>();
     private readonly List<EventHandler> myFinishEvents = new List<EventHandler>();
@@ -20,11 +26,16 @@ namespace JetBrains.TeamCity.NuGetRunner
                                                             "NUGET_CREDENTIALPROVIDERS_PATH"
                                                           };
 
-    public NuGetRunner(string NuGetExe)
+    private readonly IDisposable myAssemblyLocker;
+
+    public NuGetRunner(string NuGetExe, bool forceVerification)
     {
       myNuGetExe = NuGetExe;
+      myForceVerification = forceVerification;
       if (!File.Exists(NuGetExe))
         throw new NuGetLoadException("Failed to find NuGet.exe at " + myNuGetExe);
+
+      myAssemblyLocker = AssemblyHelper.LockAssembly(myNuGetExe);
 
       try
       {
@@ -32,6 +43,7 @@ namespace JetBrains.TeamCity.NuGetRunner
       }
       catch (Exception e)
       {
+        myAssemblyLocker.Dispose();
         throw new NuGetLoadException("Failed to load NuGet assembly into AppDomain. " + e.Message, e);
       }
     }
@@ -84,6 +96,12 @@ namespace JetBrains.TeamCity.NuGetRunner
 
       try
       {
+        if (myForceVerification)
+        {
+          VerifyNuGetAssembly();
+          AssemblyStrongNameHelper.VerifyStrongName(myNuGetExe);
+        }
+
         var process = new Process();
         var pi = process.StartInfo;
         pi.FileName = myNuGetExe;
@@ -123,6 +141,24 @@ namespace JetBrains.TeamCity.NuGetRunner
       {
         CallEvents(Enumerable.Reverse(myFinishEvents));
       }
+    }
+
+    private void VerifyNuGetAssembly()
+    {
+      if (NuGetName != myNuGetAssembly.GetName().Name)
+      {
+        throw new VerificationException($"Unexpected NuGet assembly: {myNuGetAssembly.GetName().FullName}");
+      }
+      var publicKeyToken = myNuGetAssembly.GetName().GetPublicKeyToken();
+      if (!ExpectedPublicKeyToken.SequenceEqual(publicKeyToken))
+      {
+        throw new VerificationException($"Unexpected NuGet assembly: {myNuGetAssembly.GetName().FullName}");
+      }
+    }
+
+    public void Dispose()
+    {
+      myAssemblyLocker.Dispose();
     }
   }
 }

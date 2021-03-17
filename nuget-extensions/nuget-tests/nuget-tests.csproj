@@ -60,6 +60,9 @@
     <Compile Include="..\shared\src\AssemblyHelper.cs">
       <Link>src\Shared\AssemblyHelper.cs</Link>
     </Compile>
+    <Compile Include="..\shared\src\AssemblyStrongNameHelper.cs">
+      <Link>src\Shared\AssemblyStrongNameHelper.cs</Link>
+    </Compile>
     <Compile Include="..\shared\testSrc\Files.cs">
       <Link>src\Shared\Files.cs</Link>
     </Compile>
@@ -69,6 +72,7 @@
     <Compile Include="..\shared\testSrc\ProcessExecutor.cs">
       <Link>src\Shared\ProcessExecutor.cs</Link>
     </Compile>
+    <Compile Include="src\AssemblyStrongNameHelperTest.cs" />
     <Compile Include="src\NuGetConstants.cs" />
     <Compile Include="src\NuGetCredentialsProviderTest.cs" />
     <Compile Include="src\NuGetRunnerTest.cs" />

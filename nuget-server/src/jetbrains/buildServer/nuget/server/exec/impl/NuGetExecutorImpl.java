@@ -29,6 +29,7 @@ import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
 import jetbrains.buildServer.nuget.server.util.TempFilesUtil;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -40,6 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.NUGET_CLI_FORCE_ASSEMBLY_VALIDATION_ARG;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.NUGET_CLI_FORCE_ASSEMBLY_VALIDATION_PROP;
 import static jetbrains.buildServer.nuget.common.auth.NuGetAuthConstants.NUGET_CREDENTIALPROVIDERS_PATH_ENV_VAR;
 import static jetbrains.buildServer.nuget.common.auth.NuGetAuthConstants.TEAMCITY_NUGET_FEEDS_ENV_VAR;
 
@@ -71,6 +74,11 @@ public class NuGetExecutorImpl implements NuGetExecutor {
 
     GeneralCommandLine cmd = new GeneralCommandLine();
     cmd.setExePath(myNuGetTeamCityProvider.getNuGetRunnerPath().getAbsolutePath());
+
+    if (TeamCityProperties.getBooleanOrTrue(NUGET_CLI_FORCE_ASSEMBLY_VALIDATION_PROP)) {
+      cmd.addParameter(NUGET_CLI_FORCE_ASSEMBLY_VALIDATION_ARG);
+    }
+
     cmd.addParameter(nugetExePath.getPath());
     cmd.addParameters(arguments);
 

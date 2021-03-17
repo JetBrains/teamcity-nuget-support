@@ -23,6 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -51,6 +52,9 @@
     </Compile>
     <Compile Include="..\shared\src\AssemblyHelper.cs">
       <Link>src\Shared\AssemblyHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\shared\src\AssemblyStrongNameHelper.cs">
+      <Link>src\Shared\AssemblyStrongNameHelper.cs</Link>
     </Compile>
     <Compile Include="src\CommandLineHelper.cs" />
     <Compile Include="src\NuGetInstallExtensions4.cs" />

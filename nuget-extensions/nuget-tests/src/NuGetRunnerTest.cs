@@ -136,6 +136,51 @@ namespace JetBrains.TeamCity.NuGet.Tests
       Assert.IsFalse(failed);
     }
 
-  }
+    [Test, TestCaseSource(typeof(Files), "NuGetVersions")]
+    public void TestExcuteNuGet_ShouldVerifyNuGetAssembly(NuGetVersion version)
+    {
+      TempFilesHolder.WithTempDirectory(
+        home =>
+        {
+          var destNuGet = Path.Combine(home, "NuGet.exe");
+          File.Copy(Files.GetNuGetExe(version), destNuGet);
 
+          ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, "-v", destNuGet, "TeamCity.Ping")
+            .Dump()
+            .AssertExitedSuccessfully();
+        });
+    }
+
+    [Test]
+    public void TestExcuteNuGet_ShouldVerifyWrongNuGetAssemblyName()
+    {
+      TempFilesHolder.WithTempDirectory(
+        home =>
+        {
+          var destNuGet = Path.Combine(home, "NuGet.exe");
+          File.Copy(Files.WrongAssemblyNameNuGet, destNuGet);
+
+          ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, "-v", destNuGet, "TeamCity.Ping")
+            .Dump()
+            .AssertErrorContains("Unexpected NuGet assembly: CsLex, Version=777.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325")
+            .AssertExitCode(2);
+        });
+    }
+
+    [Test]
+    public void TestExcuteNuGet_ShouldVerifyWrongNuGetAssemblyStrongName()
+    {
+      TempFilesHolder.WithTempDirectory(
+        home =>
+        {
+          var destNuGet = Path.Combine(home, "NuGet.exe");
+          File.Copy(Files.WrongAssemblyStrongNameNuGet, destNuGet);
+
+          ProcessExecutor.ExecuteProcess(Files.NuGetRunnerExe, "-v", destNuGet, "TeamCity.Ping")
+            .Dump()
+            .AssertErrorContains("Unexpected NuGet assembly: CsLex, Version=777.0.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325")
+            .AssertExitCode(2);
+        });
+    }
+  }
 }

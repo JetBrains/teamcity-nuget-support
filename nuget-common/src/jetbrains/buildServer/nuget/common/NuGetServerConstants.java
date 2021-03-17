@@ -34,6 +34,8 @@ public class NuGetServerConstants {
   public static final String FEED_INDEXING_ENABLED_PROP = "teamcity.nuget.index.packages";
   public static final String FEED_AGENT_SIDE_INDEXING = "teamcity.nuget.feed.agentSideIndexing";
   public static final String FEED_PARAMETERS_PROVIDER_ENABLE_FALLBACK_PARAMETERS_FOR_RUNNING_BUILD = "nuget.feed.parameters.provider.enable.fallback.for.running.build";
+  public static final String NUGET_CLI_FORCE_ASSEMBLY_VALIDATION_PROP = "teamcity.nuget.cli.force.assembly.validation";
+  public static final String NUGET_CLI_FORCE_ASSEMBLY_VALIDATION_ARG = "-v";
 
   public static final Pattern FEED_PARAM_AUTH_PATTERN = Pattern.compile(String.format("^%s.*(%s|%s)$",
     escapeDots(Constants.SYSTEM_PREFIX + NuGetServerConstants.FEED_REF_PREFIX),
