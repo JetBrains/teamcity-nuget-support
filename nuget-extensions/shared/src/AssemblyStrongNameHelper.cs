@@ -9,6 +9,8 @@ namespace JetBrains.TeamCity.NuGetRunner
   {
     public static void VerifyStrongName(string path)
     {
+      if (Environment.OSVersion.Platform != PlatformID.Win32NT) return;
+
       var strongName = GetStrongNameService();
       var wasVerified = strongName.StrongNameSignatureVerificationEx(path, true);
       if (!wasVerified)
