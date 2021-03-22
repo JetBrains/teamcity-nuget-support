@@ -24,6 +24,7 @@ import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
 import jetbrains.buildServer.buildTriggers.PolledTriggerContext;
 import jetbrains.buildServer.nuget.common.FeedConstants;
+import jetbrains.buildServer.nuget.common.NuGetServerConstants;
 import jetbrains.buildServer.nuget.server.TriggerUrlPostProcessor;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
@@ -127,6 +128,8 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     params.put(TriggerConstants.NUGET_PATH_PARAM_NAME, path);
     params.put(TriggerConstants.PACKAGE, "NUnit");
+
+    setInternalProperty(NuGetServerConstants.NUGET_SERVER_CLI_PATH_WHITELIST_PROP, path);
   }
 
   @Test
@@ -588,6 +591,18 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
 
     Assert.assertNull(checker.checkChanges(context));
     m.assertIsSatisfied();
+  }
+
+  @Test
+  public void test_should_throw_error_if_custom_tool_path_is_not_allowed() {
+    setInternalProperty(NuGetServerConstants.NUGET_SERVER_CLI_PATH_WHITELIST_PROP, "nuget.exe;nuget");
+
+    try {
+      checker.checkChanges(context);
+      Assert.fail("Exception is expected");
+    } catch (BuildTriggerException e) {
+      Assert.assertTrue(e.getMessage().contains("Path is not allowed."));
+    }
   }
 
   private static class Expectations extends org.jmock.Expectations {

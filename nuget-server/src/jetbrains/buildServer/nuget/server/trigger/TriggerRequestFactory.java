@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.server.trigger;
 
+import java.util.*;
 import jetbrains.buildServer.ExtensionHolder;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
@@ -27,16 +28,18 @@ import jetbrains.buildServer.nuget.server.tool.NuGetServerToolProvider;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequest;
 import jetbrains.buildServer.nuget.server.trigger.impl.PackageCheckRequestFactory;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeFactory;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.tools.ServerToolManager;
+import jetbrains.buildServer.tools.ToolVersionReference;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Map;
 
 import static jetbrains.buildServer.nuget.common.FeedConstants.PATH_TO_NUGET_EXE;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.NUGET_SERVER_CLI_PATH_WHITELIST_DEFAULT;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.NUGET_SERVER_CLI_PATH_WHITELIST_PROP;
 import static jetbrains.buildServer.nuget.server.trigger.TriggerConstants.*;
 
 /**
@@ -90,6 +93,16 @@ public class TriggerRequestFactory {
     final File nugetPath = nugetToolPathProvided.isDirectory() ? new File(nugetToolPathProvided, PATH_TO_NUGET_EXE) : nugetToolPathProvided;
     if (!nugetPath.isFile()) {
       throw new BuildTriggerException("Failed to find NuGet.exe at: " + nugetPath);
+    }
+
+    if (!ToolVersionReference.isToolReference(nugetVersionRef)) {
+      final String pathWhitelist = TeamCityProperties.getProperty(NUGET_SERVER_CLI_PATH_WHITELIST_PROP, NUGET_SERVER_CLI_PATH_WHITELIST_DEFAULT).toLowerCase();
+      if (StringUtil.isNotEmpty(pathWhitelist)) {
+        final Set<String> whitelist = new HashSet<String>(Arrays.asList(pathWhitelist.split(";")));
+        if (!whitelist.contains(nugetPath.getPath().toLowerCase())) {
+          throw new BuildTriggerException("Failed to run NuGet.exe at: " + nugetPath + ". Path is not allowed.");
+        }
+      }
     }
 
     String source = descriptorProperties.get(SOURCE);
