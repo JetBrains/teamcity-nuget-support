@@ -22,6 +22,7 @@ import com.intellij.openapi.diagnostic.Logger
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache
+import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
@@ -83,8 +84,12 @@ open class OlingoRequestHandler(private val myFeedFactory: NuGetFeedFactory,
         try {
             servlet.service(request, response)
         } catch (e: Throwable) {
-            LOG.warnAndDebugDetails("Failed to process request", e)
-            throw e
+            if (NuGetFeedController.AsyncRequestExecutor.getAsyncRequestState(request)?.cancelScheduled == true) {
+                LOG.warnAndDebugDetails("Async request has been cancelled due to timeout.", e)
+            } else {
+                LOG.warnAndDebugDetails("Failed to process request", e)
+                throw e
+            }
         }
     }
 

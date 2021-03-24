@@ -20,6 +20,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
+import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController;
 import jetbrains.buildServer.nuget.feed.server.impl.HttpServletRequestUtil;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.json.JsonExtensions;
@@ -60,15 +61,17 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
   private final BeanPropertyAccess myValueAccess;
   private final OlingoDataSource myDataSource;
   private final ExpressionEvaluator myEvaluator;
+  private final NuGetFeedController.AsyncRequestState myAsyncState;
 
-  public NuGetPackagesProcessor(@NotNull final OlingoDataSource dataSource) {
-    this(dataSource, new BeanPropertyAccess());
+  public NuGetPackagesProcessor(@NotNull final OlingoDataSource dataSource, @NotNull final NuGetFeedController.AsyncRequestState asyncState) {
+    this(dataSource, new BeanPropertyAccess(), asyncState);
   }
 
-  public NuGetPackagesProcessor(final OlingoDataSource dataSource, final BeanPropertyAccess valueAccess) {
+  public NuGetPackagesProcessor(final OlingoDataSource dataSource, final BeanPropertyAccess valueAccess, final NuGetFeedController.AsyncRequestState asyncState) {
     myDataSource = dataSource;
     myValueAccess = valueAccess;
     myEvaluator = new ExpressionEvaluator(valueAccess);
+    myAsyncState = asyncState;
   }
 
   @Override
@@ -80,75 +83,83 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
 
     List<V2FeedPackage> data = new ArrayList<>();
 
+    myAsyncState.enterCancellable();
     try {
-      data.addAll(CollectionsUtil.convertCollection((List<?>) retrieveData(
-        uriInfo.getStartEntitySet(),
-        uriInfo.getKeyPredicates(),
-        uriInfo.getFunctionImport(),
-        mapFunctionParameters(uriInfo.getFunctionImportParameters()),
-        uriInfo.getCustomQueryOptions()
-      ), source -> NuGetMapper.mapPackage((NuGetIndexEntry) source, rootUrlWithAuthenticationType)));
-    } catch (final ODataNotFoundException e) {
-      LOG.infoAndDebugDetails("Package not found", e);
-      data.clear();
-    }
-
-    final EdmEntitySet entitySet = uriInfo.getTargetEntitySet();
-    final InlineCount inlineCountType = uriInfo.getInlineCount();
-    final Integer count = applySystemQueryOptions(
-      entitySet,
-      data,
-      uriInfo.getFilter(),
-      inlineCountType,
-      uriInfo.getOrderBy(),
-      getSkipToken(uriInfo),
-      uriInfo.getSkip(),
-      uriInfo.getTop());
-
-
-    String nextLink = null;
-
-    // Limit the number of returned entities and provide a "next" link
-    // if there are further entities.
-    // Almost all system query options in the current request must be carried
-    // over to the URI for the "next" link, with the exception of $skiptoken
-    // and $skip.
-    if (data.size() > SERVER_PAGING_SIZE) {
-      if (uriInfo.getOrderBy() == null
-        && getSkipToken(uriInfo) == null
-        && uriInfo.getSkip() == null
-        && uriInfo.getTop() == null) {
-        sortInDefaultOrder(entitySet, data);
+      Thread.sleep(10000);
+      try {
+        data.addAll(CollectionsUtil.convertCollection((List<?>)retrieveData(
+          uriInfo.getStartEntitySet(),
+          uriInfo.getKeyPredicates(),
+          uriInfo.getFunctionImport(),
+          mapFunctionParameters(uriInfo.getFunctionImportParameters()),
+          uriInfo.getCustomQueryOptions()
+        ), source -> NuGetMapper.mapPackage((NuGetIndexEntry)source, rootUrlWithAuthenticationType)));
+      } catch (final ODataNotFoundException e) {
+        LOG.infoAndDebugDetails("Package not found", e);
+        data.clear();
       }
 
-      nextLink = pathInfo.getRequestUri().toString();
-      nextLink = percentEncodeNextLink(nextLink);
+      final EdmEntitySet entitySet = uriInfo.getTargetEntitySet();
+      final InlineCount inlineCountType = uriInfo.getInlineCount();
+      final Integer count = applySystemQueryOptions(
+        entitySet,
+        data,
+        uriInfo.getFilter(),
+        inlineCountType,
+        uriInfo.getOrderBy(),
+        getSkipToken(uriInfo),
+        uriInfo.getSkip(),
+        uriInfo.getTop());
 
-      nextLink += (nextLink.contains("?") ? "&" : "?")
-        + "$skiptoken=" + getSkipToken(entitySet, data.get(SERVER_PAGING_SIZE - 1));
 
-      data = data.subList(0, Math.min(data.size(), SERVER_PAGING_SIZE));
+      String nextLink = null;
+
+      // Limit the number of returned entities and provide a "next" link
+      // if there are further entities.
+      // Almost all system query options in the current request must be carried
+      // over to the URI for the "next" link, with the exception of $skiptoken
+      // and $skip.
+      if (data.size() > SERVER_PAGING_SIZE) {
+        if (uriInfo.getOrderBy() == null
+            && getSkipToken(uriInfo) == null
+            && uriInfo.getSkip() == null
+            && uriInfo.getTop() == null) {
+          sortInDefaultOrder(entitySet, data);
+        }
+
+        nextLink = pathInfo.getRequestUri().toString();
+        nextLink = percentEncodeNextLink(nextLink);
+
+        nextLink += (nextLink.contains("?") ? "&" : "?")
+                    + "$skiptoken=" + getSkipToken(entitySet, data.get(SERVER_PAGING_SIZE - 1));
+
+        data = data.subList(0, Math.min(data.size(), SERVER_PAGING_SIZE));
+      }
+
+      final EdmEntityType entityType = entitySet.getEntityType();
+      final List<Map<String, Object>> values = new ArrayList<>();
+      for (final Object entryData : data) {
+        values.add(getStructuralTypeValueMap(entryData, entityType));
+      }
+
+      final EntityProviderWriteProperties feedProperties = EntityProviderWriteProperties
+        .serviceRoot(pathInfo.getServiceRoot())
+        .inlineCountType(inlineCountType)
+        .inlineCount(count)
+        .expandSelectTree(UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand()))
+        .nextLink(nextLink)
+        .build();
+
+      final int timingHandle = context.startRuntimeMeasurement("EntityProvider", "writeFeed");
+      final ODataResponse response = EntityProvider.writeFeed(contentType, entitySet, values, feedProperties);
+      context.stopRuntimeMeasurement(timingHandle);
+
+      return ODataResponse.fromResponse(response).build();
+    } catch (InterruptedException ex) {
+      throw new ODataException(ex);
+    } finally {
+      myAsyncState.leaveCancellable();
     }
-
-    final EdmEntityType entityType = entitySet.getEntityType();
-    final List<Map<String, Object>> values = new ArrayList<>();
-    for (final Object entryData : data) {
-      values.add(getStructuralTypeValueMap(entryData, entityType));
-    }
-
-    final EntityProviderWriteProperties feedProperties = EntityProviderWriteProperties
-      .serviceRoot(pathInfo.getServiceRoot())
-      .inlineCountType(inlineCountType)
-      .inlineCount(count)
-      .expandSelectTree(UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand()))
-      .nextLink(nextLink)
-      .build();
-
-    final int timingHandle = context.startRuntimeMeasurement("EntityProvider", "writeFeed");
-    final ODataResponse response = EntityProvider.writeFeed(contentType, entitySet, values, feedProperties);
-    context.stopRuntimeMeasurement(timingHandle);
-
-    return ODataResponse.fromResponse(response).build();
   }
 
   private URI getRootUrlWithAuthenticationType(ODataContext context) {

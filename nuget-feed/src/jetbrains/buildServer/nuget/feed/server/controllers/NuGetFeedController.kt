@@ -30,12 +30,17 @@ import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
+import jetbrains.buildServer.util.executors.ExecutorsFactory
 import jetbrains.buildServer.web.openapi.WebControllerManager
 import jetbrains.buildServer.web.util.WebUtil
 import org.springframework.web.servlet.ModelAndView
+import java.time.Clock
+import java.time.LocalDateTime
 import java.util.*
-import java.util.concurrent.Semaphore
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
+import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicReference
+import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import javax.ws.rs.HttpMethod
@@ -52,14 +57,32 @@ class NuGetFeedController(web: WebControllerManager,
                           private val myServiceFeedHandler: NuGetServiceFeedHandler)
     : BaseController() {
 
-    val myRequestSemaphore = Semaphore(
+    private var myExecutor: AsyncRequestExecutor
+    private var myExecutorService: ExecutorService;
+    private val myRequestSemaphore = Semaphore(
             TeamCityProperties.getInteger(NuGetFeedConstants.PROP_NUGET_FEED_MAX_REQUESTS, NuGetFeedConstants.NUGET_FEED_MAX_REQUESTS),
             false)
+
+    private val handleRequest: (HttpServletRequest, HttpServletResponse, String, (HttpServletRequest, HttpServletResponse) -> Unit) -> Unit
+        get() = if (TeamCityProperties.getBooleanOrTrue(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_ENABLED)) ::handleRequestAsync
+        else ::handleRequestSync
 
     init {
         setSupportedMethods(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE)
         web.registerController(NuGetServerSettings.DEFAULT_PATH + "/**", this)
         web.registerController(NuGetServerSettings.PROJECT_PATH + "/**", this)
+
+        myExecutorService = ExecutorsFactory.newFixedDaemonExecutor(
+                "NuGet requests executor",
+                0,
+                TeamCityProperties.getInteger(NuGetFeedConstants.PROP_NUGET_FEED_MAX_REQUESTS, NuGetFeedConstants.NUGET_FEED_MAX_REQUESTS),
+                TeamCityProperties.getInteger(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_QUEUE_CAPACITY, NuGetFeedConstants.NUGET_FEED_REQUEST_QUEUE_CAPACITY));
+
+        myExecutor = AsyncRequestExecutor(
+                myExecutorService,
+                ExecutorsFactory.newFixedScheduledDaemonExecutor("NuGet requests timeouts", 1),
+                1)
+        myExecutor.start()
     }
 
     override fun doHandle(request: HttpServletRequest,
@@ -69,7 +92,8 @@ class NuGetFeedController(web: WebControllerManager,
         }
 
         if (isPublishPackageServiceFeed(request)) {
-            return handlePublishPackageService(request, response)
+            handlePublishPackageService(request, response)
+            return null
         }
 
         val (feedPath, projectId, feedId, apiMethod) = getPathComponents(request)
@@ -113,8 +137,7 @@ class NuGetFeedController(web: WebControllerManager,
             return null
         }
 
-        handleRequest(requestWrapper, response, feedPath) {
-            handlerRequest, handlerResponse ->
+        handleRequest(requestWrapper, response, feedPath) { handlerRequest, handlerResponse ->
             val feedData = NuGetFeedData(project.projectId, project.externalId, feedId)
             feedHandler.handleRequest(feedData, handlerRequest, handlerResponse)
         }
@@ -122,7 +145,50 @@ class NuGetFeedController(web: WebControllerManager,
         return null
     }
 
-    private fun handleRequest(
+    private fun handleRequestAsync(
+            request: HttpServletRequest,
+            response: HttpServletResponse,
+            mappingPath: String,
+            handler: (HttpServletRequest, HttpServletResponse) -> Unit
+    ) {
+        myExecutor.execute(request, response, object : AsyncRequestHandler {
+            override fun handle(asyncContext: AsyncRequestExecutorContext) {
+                val asyncRequest = asyncContext.request as HttpServletRequest
+                val asyncResponse = asyncContext.response as HttpServletResponse
+                val formattedRequestUrl = formatRequestUrl(asyncRequest, mappingPath)
+                val startTime = Date().time
+                try {
+                    myRequestsList.reportFeedRequest(formattedRequestUrl)
+                    handler(asyncRequest, asyncResponse)
+                } finally {
+                    myRequestsList.reportFeedRequestFinished(formattedRequestUrl, Date().time - startTime)
+                }
+            }
+
+            override fun onRejected(asyncContext: AsyncRequestExecutorContext) {
+                val asyncResponse = (asyncContext.response as HttpServletResponse)
+                if (!asyncResponse.isCommitted) {
+                    asyncResponse.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, SERVICE_UNAVAILABLE)
+                }
+            }
+
+            override fun onError(asyncContext: AsyncRequestExecutorContext, throwable: Throwable) {
+                val asyncResponse = (asyncContext.response as HttpServletResponse)
+                if (!asyncResponse.isCommitted) {
+                    asyncResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
+                }
+            }
+
+            override fun onTimeout(asyncContext: AsyncRequestExecutorContext) {
+                val asyncResponse = (asyncContext.response as HttpServletResponse)
+                if (!asyncResponse.isCommitted) {
+                    asyncResponse.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, SERVICE_UNAVAILABLE)
+                }
+            }
+        }, 1)
+    }
+
+    private fun handleRequestSync(
             request: HttpServletRequest,
             response: HttpServletResponse,
             mappingPath: String,
@@ -233,7 +299,7 @@ class NuGetFeedController(web: WebControllerManager,
         }
 
         val requestWrapper = createRequestWrapper(request, mappingPath)
-        handleRequest(requestWrapper, response, mappingPath) {
+        handleRequestAsync(requestWrapper, response, mappingPath) {
             handlerRequest, handlerResponse ->
                 val context = object : NuGetServiceFeedHandlerContext {
                     override val projectId: String
@@ -252,6 +318,262 @@ class NuGetFeedController(web: WebControllerManager,
         private val SERVICE_FEED_PATH_PATTERN = Regex("(.*" + NuGetServerSettings.SERVICE_FEED_PATH + "/([^/]+)/)", RegexOption.IGNORE_CASE)
         private const val UNSUPPORTED_REQUEST = "Unsupported NuGet feed request"
         private const val REQUEST_TIMEOUT = "NuGet feed request timeout"
+        private const val SERVICE_UNAVAILABLE = "NuGet feed temporary unavailable"
+        private const val INTERNAL_SERVER_ERROR = "NuGet feed internal error"
         private const val NUGET_API_V2 = "v2"
+    }
+
+    interface  AsyncRequestExecutorContext {
+        val request: ServletRequest
+        val response: ServletResponse
+    }
+
+    interface AsyncRequestTimeoutHandler {
+        fun onTimeout(asyncContext: AsyncRequestExecutorContext): Unit
+    }
+
+    interface AsyncRequestHandler : AsyncRequestTimeoutHandler {
+        fun handle(asyncContext: AsyncRequestExecutorContext): Unit
+        fun onRejected(asyncContext: AsyncRequestExecutorContext): Unit
+        fun onError(asyncContext: AsyncRequestExecutorContext, throwable: Throwable): Unit
+    }
+
+    interface AsyncRequestState {
+        val cancelScheduled : Boolean
+            get
+        val cancelling : Boolean
+            get
+        fun enterCancellable()
+        fun leaveCancellable()
+    }
+
+    class AsyncRequestExecutor(
+            private val myExecutorService: ExecutorService,
+            private val myScheduledExecutorService: ScheduledExecutorService,
+            private val myTimeoutInSec: Long
+    ) {
+        private val tasks = ConcurrentHashMap.newKeySet<TaskItem>();
+
+        fun start() {
+            myScheduledExecutorService.scheduleAtFixedRate({
+                try {
+                    val expiredTasks = tasks.filter { it.isExpired && it.canBeCancelled }.toList()
+                    for (task in expiredTasks) {
+                        if (tasks.remove(task)) {
+                            if (task.isDone) continue
+                            task.scheduleCancel()
+                        }
+                    }
+                }
+                catch(throwable: Throwable) {
+                    LOG.warn("Exception has been occured in scheduler", throwable)
+                }
+            }, 0, 300, TimeUnit.MILLISECONDS)
+        }
+
+        fun execute(request: HttpServletRequest, response: HttpServletResponse, handler: AsyncRequestHandler, timeoutInSec: Long): Unit {
+            var asyncContext = request.startAsync(request, response)
+            val taskItem = TaskItem(asyncContext, timeoutInSec, handler)
+
+            request.setAttribute(ASYNC_REQUEST_STATE, taskItem)
+
+            asyncContext.addListener(taskItem)
+
+            try {
+                val future = myExecutorService.submit {
+                    try {
+                        Thread.sleep(TeamCityProperties.getLong("teamcity.nuget.sleep", 0))
+                        handler.handle(AsyncRequestExecutorContextImpl(asyncContext))
+                    }
+                    catch(throwable: Throwable) {
+                        if (taskItem.cancelScheduled) {
+                            LOG.debug("Request has been cancelled due to timeout. Error in thread:", throwable)
+                            //asyncContext.timeout = 1
+                        } else {
+                            LOG.warnAndDebugDetails("Error has been occured during processing async request", throwable)
+                            try {
+                                handler.onError(AsyncRequestExecutorContextImpl(asyncContext), throwable)
+                            }
+                            catch(throwable: Throwable) {
+                                LOG.warnAndDebugDetails("Error has been occured", throwable)
+                                val asyncResponse = (asyncContext.response as HttpServletResponse)
+                                if (!asyncResponse.isCommitted) {
+                                    asyncResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        request.removeAttribute(ASYNC_REQUEST_STATE)
+                        if (!taskItem.cancelScheduled) {
+                            try {
+                                asyncContext.complete()
+                            } catch (throwable: Throwable) {
+                                LOG.warnAndDebugDetails("Error has been occured during completing async request", throwable)
+                            }
+                        }
+                    }
+                }
+                
+                taskItem.setFuture(future)
+                tasks.add(taskItem)
+            }
+            catch(exception: RejectedExecutionException) {
+                LOG.warnAndDebugDetails("Cannot start a new async request", exception)
+                try {
+                    handler.onRejected(AsyncRequestExecutorContextImpl(asyncContext))
+                }
+                catch(throwable: Throwable) {
+                    LOG.warnAndDebugDetails("Error has been occured", throwable)
+                    val asyncResponse = (asyncContext.response as HttpServletResponse)
+                    if (!asyncResponse.isCommitted) {
+                        asyncResponse.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, SERVICE_UNAVAILABLE)
+                    }
+                }
+                asyncContext.complete()
+            }
+            catch(throwable: Throwable) {
+                LOG.warnAndDebugDetails("Error has been occured during async request", throwable)
+            }
+        }
+
+        class TaskItem(val asyncContext: AsyncContext, val timeoutInSec: Long, val timeoutHandler: AsyncRequestTimeoutHandler) : AsyncListener, AsyncRequestState {
+            private val myFuture: AtomicReference<Future<*>?> = AtomicReference(null)
+            private val myCancellableRegionDepth = AtomicLong(0)
+
+            private var myTimeoutDateTime: LocalDateTime? = null
+
+            @Volatile
+            private var myCancelScheduled: Boolean = false
+
+            @Volatile
+            private var myCancelling: Boolean = false
+
+            init {
+                if (timeoutInSec > 0)
+                    myTimeoutDateTime = getCurrentDateTime().plusSeconds(timeoutInSec)
+            }
+
+            public override val cancelScheduled: Boolean
+                get() = myCancelScheduled
+
+            public val canBeCancelled: Boolean
+                get() = myCancellableRegionDepth.get() > 0
+
+            override val cancelling: Boolean
+                get() = myCancelling
+
+            public val isExpired: Boolean
+                get() = myTimeoutDateTime != null && myTimeoutDateTime!! <= getCurrentDateTime()
+
+            public val isDone: Boolean
+                get() = myFuture.get().let { it == null || it.isDone }
+
+            public val future: Future<*>?
+                get() = myFuture.get()
+
+            public fun setFuture(future: Future<*>) {
+                if (!myFuture.compareAndSet(null, future))
+                    throw IllegalStateException("future should be set once")
+            }
+
+            public fun scheduleCancel() {
+                myCancelScheduled = true
+                myFuture.get()?.cancel(true)
+            }
+
+            override fun enterCancellable() {
+                myCancellableRegionDepth.incrementAndGet()
+            }
+
+            override fun leaveCancellable() {
+                val depth = myCancellableRegionDepth.get()
+                if (depth == 0L) throw IllegalStateException("leaveCancellable call number shoul be equal to enterCancellable call number. Value ${depth} ")
+
+                if (Thread.currentThread().isInterrupted) {
+                    throw InterruptedException()
+                }
+
+                if (myCancellableRegionDepth.decrementAndGet() != 0L) return
+
+                if (myCancelScheduled) {
+                    myCancelling = true
+                    throw TimeoutException()
+                    //Thread.currentThread().interrupt()
+                    //future?.cancel(true)
+                }
+            }
+
+            override fun onComplete(event: AsyncEvent?) {
+                if (LOG.isDebugEnabled) {
+                    val request = (event?.suppliedRequest as HttpServletRequest?)
+                    LOG.info("Async request completed: ${request?.let { WebUtil.getRequestDump(it)} }|${request?.requestURI}")
+                }
+            }
+
+            override fun onStartAsync(event: AsyncEvent?) {
+                if (LOG.isDebugEnabled) {
+                    val request = (event?.suppliedRequest as HttpServletRequest?)
+                    LOG.info("Async request started: ${request?.let { WebUtil.getRequestDump(it)} }|${request?.requestURI}")
+                }
+            }
+
+            override fun onTimeout(event: AsyncEvent?) {
+                val request = (event?.suppliedRequest as HttpServletRequest?)
+                LOG.warn("Async request timed out: ${request?.let { WebUtil.getRequestDump(it)} }|${request?.requestURI}")
+
+                try {
+                    timeoutHandler.onTimeout(AsyncRequestExecutorContextImpl(asyncContext))
+                }
+                catch (throwable: Throwable) {
+                    // LOG
+                }
+                finally {
+                    asyncContext.complete()
+                }
+            }
+
+            override fun onError(event: AsyncEvent?) {
+                if (myCancelScheduled) return
+
+                val request = (event?.suppliedRequest as HttpServletRequest?)
+                LOG.warn("Async request completed with error. ${request?.let { WebUtil.getRequestDump(it)} }|${request?.requestURI}")
+            }
+
+            private fun getCurrentDateTime(): LocalDateTime = LocalDateTime.now(Clock.systemUTC())
+        }
+
+        class AsyncRequestExecutorContextImpl(private val context: AsyncContext) : AsyncRequestExecutorContext {
+            override val request: ServletRequest
+                get() = context.request
+            override val response: ServletResponse
+                get() = context.response
+        }
+
+        companion object {
+            public val ASYNC_REQUEST_STATE = "TC.AsyncRequest.State"
+
+            public fun getAsyncRequestState(request: HttpServletRequest) : AsyncRequestState? {
+                return request.getAttribute(ASYNC_REQUEST_STATE) as AsyncRequestState?
+            }
+
+            public fun getAsyncRequestStateOrDefault(request: HttpServletRequest) : AsyncRequestState {
+                return (request.getAttribute(ASYNC_REQUEST_STATE) as AsyncRequestState?) ?: NoAsyncState
+            }
+
+            public val NoAsyncState : AsyncRequestState = object : AsyncRequestState {
+                override val cancelScheduled: Boolean
+                    get() = false
+
+                override val cancelling: Boolean
+                    get() = false
+
+                override fun enterCancellable() {
+                }
+
+                override fun leaveCancellable() {
+                }
+            }
+        }
     }
 }

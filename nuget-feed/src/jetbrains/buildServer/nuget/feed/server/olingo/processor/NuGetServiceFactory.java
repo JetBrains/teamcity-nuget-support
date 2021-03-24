@@ -20,6 +20,7 @@ import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
+import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.util.Action;
@@ -52,9 +53,10 @@ public class NuGetServiceFactory extends ODataServiceFactory {
   @Override
   public ODataService createService(final ODataContext context) {
     final HttpServletRequest request = (HttpServletRequest) context.getParameter(ODataContext.HTTP_SERVLET_REQUEST_OBJECT);
+    final NuGetFeedController.AsyncRequestState asyncState = NuGetFeedController.AsyncRequestExecutor.Companion.getAsyncRequestStateOrDefault(request);
     final NuGetAPIVersion apiVersion = (NuGetAPIVersion) request.getAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION);
     final EdmxProvider edmxProvider = EDMX_PROVIDERS.get(apiVersion);
-    return createODataSingleProcessorService(edmxProvider, new NuGetPackagesProcessor(myDataSource));
+    return createODataSingleProcessorService(edmxProvider, new NuGetPackagesProcessor(myDataSource, asyncState));
   }
 
   private static EdmxProvider getEdmProvider(final NuGetAPIVersion version) throws ODataException {
