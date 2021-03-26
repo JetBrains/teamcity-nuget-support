@@ -17,9 +17,11 @@
 package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 
 import com.intellij.openapi.diagnostic.Logger;
+import java.util.concurrent.CancellationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
+import jetbrains.buildServer.nuget.feed.server.controllers.AsyncRequestState;
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController;
 import jetbrains.buildServer.nuget.feed.server.impl.HttpServletRequestUtil;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
@@ -61,13 +63,13 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
   private final BeanPropertyAccess myValueAccess;
   private final OlingoDataSource myDataSource;
   private final ExpressionEvaluator myEvaluator;
-  private final NuGetFeedController.AsyncRequestState myAsyncState;
+  private final AsyncRequestState myAsyncState;
 
-  public NuGetPackagesProcessor(@NotNull final OlingoDataSource dataSource, @NotNull final NuGetFeedController.AsyncRequestState asyncState) {
+  public NuGetPackagesProcessor(@NotNull final OlingoDataSource dataSource, @NotNull final AsyncRequestState asyncState) {
     this(dataSource, new BeanPropertyAccess(), asyncState);
   }
 
-  public NuGetPackagesProcessor(final OlingoDataSource dataSource, final BeanPropertyAccess valueAccess, final NuGetFeedController.AsyncRequestState asyncState) {
+  public NuGetPackagesProcessor(final OlingoDataSource dataSource, final BeanPropertyAccess valueAccess, final AsyncRequestState asyncState) {
     myDataSource = dataSource;
     myValueAccess = valueAccess;
     myEvaluator = new ExpressionEvaluator(valueAccess);
@@ -83,9 +85,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
 
     List<V2FeedPackage> data = new ArrayList<>();
 
-    myAsyncState.enterCancellable();
     try {
-      Thread.sleep(10000);
       try {
         data.addAll(CollectionsUtil.convertCollection((List<?>)retrieveData(
           uriInfo.getStartEntitySet(),
@@ -98,6 +98,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
         LOG.infoAndDebugDetails("Package not found", e);
         data.clear();
       }
+
+      myAsyncState.throwIfCancellationRequested();
 
       final EdmEntitySet entitySet = uriInfo.getTargetEntitySet();
       final InlineCount inlineCountType = uriInfo.getInlineCount();
@@ -139,6 +141,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       final EdmEntityType entityType = entitySet.getEntityType();
       final List<Map<String, Object>> values = new ArrayList<>();
       for (final Object entryData : data) {
+        myAsyncState.throwIfCancellationRequested();
         values.add(getStructuralTypeValueMap(entryData, entityType));
       }
 
@@ -155,10 +158,8 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       context.stopRuntimeMeasurement(timingHandle);
 
       return ODataResponse.fromResponse(response).build();
-    } catch (InterruptedException ex) {
+    } catch (CancellationException ex) {
       throw new ODataException(ex);
-    } finally {
-      myAsyncState.leaveCancellable();
     }
   }
 
