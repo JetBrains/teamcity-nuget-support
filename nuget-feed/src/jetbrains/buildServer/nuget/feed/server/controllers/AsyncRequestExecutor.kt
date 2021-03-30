@@ -12,6 +12,7 @@ import java.time.LocalDateTime
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicReference
+import java.util.concurrent.locks.Lock
 import javax.servlet.AsyncContext
 import javax.servlet.AsyncEvent
 import javax.servlet.AsyncListener
@@ -60,13 +61,12 @@ class AsyncRequestExecutor(
     fun execute(request: HttpServletRequest, response: HttpServletResponse, handler: AsyncRequestHandler, timeoutInSec: Long): Unit {
         val asyncResult = startDeferredResultProcessing(request, response)
         val taskItem = TaskItem(request.asyncContext, asyncResult, timeoutInSec, handler)
-        val notifier = taskItem.asyncContext.request.getAttribute(AsyncContextNotifier.ASYNC_CONTEXT_NOTIFIER) as AsyncContextNotifier?
 
         try {
             val future = myExecutorService.submit {
                 try {
-                    setupThread(taskItem, notifier)
-
+                    setupThread(taskItem)
+                    
                     Thread.sleep(TeamCityProperties.getLong("teamcity.nuget.sleep", 0))
 
                     taskItem.execute();
@@ -93,7 +93,7 @@ class AsyncRequestExecutor(
                         taskItem.complete()
                     }
                     finally {
-                        cleanupThread(taskItem, notifier)
+                        cleanupThread()
                     }
                 }
             }
@@ -132,27 +132,20 @@ class AsyncRequestExecutor(
         return asyncResult
     }
 
-    private fun setupThread(taskItem: TaskItem, notifier: AsyncContextNotifier?) {
+    private fun setupThread(taskItem: TaskItem) {
         TASK_ITEM.set(taskItem)
-
-        val asyncContext = taskItem.asyncContext
-        notifier?.fireSetupThread(AsyncEvent(asyncContext, asyncContext.request, asyncContext.response))
     }
 
-    private fun cleanupThread(taskItem: TaskItem, notifier: AsyncContextNotifier?) {
-        try {
-            val asyncContext = taskItem.asyncContext
-            notifier?.fireCleanupThread(AsyncEvent(asyncContext, asyncContext.request, asyncContext.response))
-        }
-        finally {
-            TASK_ITEM.remove()
-        }
+    private fun cleanupThread() {
+        TASK_ITEM.remove()
     }
 
     class TaskItem(val asyncContext: AsyncContext, val asyncResult: DeferredResult<Any>, val timeoutInSec: Long, val handler: AsyncRequestHandler) : AsyncListener, AsyncRequestState {
+        private var myNotifier: AsyncContextNotifier?
         private val myFuture: AtomicReference<Future<*>?> = AtomicReference(null)
         private val myState = AtomicInteger(NORMAL)
         private val myAsyncState = AtomicInteger(ASYNC_NORMAL)
+        private val myCleanupLock = Object()
 
         @Volatile
         private var myTimeoutDateTime: LocalDateTime? = null
@@ -166,6 +159,8 @@ class AsyncRequestExecutor(
             }
 
             asyncContext.addListener(this)
+
+            myNotifier = asyncContext.request.getAttribute(AsyncContextNotifier.ASYNC_CONTEXT_NOTIFIER) as AsyncContextNotifier?
         }
 
         public val canBeCancelled: Boolean
@@ -210,13 +205,23 @@ class AsyncRequestExecutor(
         }
 
         public fun complete() {
-            if (myAsyncState.get() == ASYNC_NORMAL) {
-                asyncContext.complete()
+            synchronized(myCleanupLock) {
+                val isTimeout = myAsyncState.get() == ASYNC_TEMOUT
+                if (isTimeout) {
+                    myNotifier?.fireCleanupThread(AsyncEvent(asyncContext))
+                } else {
+                    myNotifier?.fireCleanupThread(AsyncEvent(asyncContext, asyncContext.request, asyncContext.response))
+                }
             }
-            asyncResult.setResult(null)
+
+            if (myAsyncState.get() == ASYNC_NORMAL) {
+                asyncResult.setResult(null)
+            }
         }
 
         public fun execute() {
+            myNotifier?.fireSetupThread(AsyncEvent(asyncContext, asyncContext.request, asyncContext.response))
+
             handler.handle(asyncContext)
         }
 
@@ -246,7 +251,9 @@ class AsyncRequestExecutor(
         }
 
         override fun onTimeout(event: AsyncEvent?) {
-            myAsyncState.set(ASYNC_TEMOUT)
+            synchronized(myCleanupLock) {
+                myAsyncState.set(ASYNC_TEMOUT)
+            }
 
             val request = (event?.suppliedRequest as HttpServletRequest?)
             LOG.warn("Async request timed out: ${request?.let { WebUtil.getRequestDump(it)} }|${request?.requestURI}")
@@ -269,7 +276,7 @@ class AsyncRequestExecutor(
             if (isCancellationRequested) return
 
             val request = (event?.suppliedRequest as HttpServletRequest?)
-            LOG.warn("Async request completed with error. ${request?.let { WebUtil.getRequestDump(it)} }|${request?.requestURI}")
+            LOG.warn("Async request completed with error. ${request?.let { WebUtil.getRequestDump(it)} }|${request?.requestURI}", event?.throwable)
         }
 
         private fun getCurrentDateTime(): LocalDateTime = LocalDateTime.now(Clock.systemUTC())

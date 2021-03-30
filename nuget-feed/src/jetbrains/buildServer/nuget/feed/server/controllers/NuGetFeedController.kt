@@ -195,7 +195,7 @@ class NuGetFeedController(web: WebControllerManager,
                     asyncResponse.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, SERVICE_UNAVAILABLE)
                 }
             }
-        }, 1)
+        }, TeamCityProperties.getLong(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_TIMOEUT, 600))
     }
 
     private fun handleRequestSync(

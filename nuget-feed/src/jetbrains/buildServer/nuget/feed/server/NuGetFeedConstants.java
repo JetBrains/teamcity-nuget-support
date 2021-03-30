@@ -34,6 +34,7 @@ public class NuGetFeedConstants {
   public static final String PROP_NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT = "teamcity.nuget.feed.requests.pending.processing.timeout";
   public static final String PROP_NUGET_FEED_ASYNC_REQUEST_QUEUE_CAPACITY = "teamcity.nuget.feed.async.request.queue.capacity";
   public static final String PROP_NUGET_FEED_ASYNC_REQUEST_ENABLED = "teamcity.nuget.feed.async.request.enabled";
+  public static final String PROP_NUGET_FEED_ASYNC_REQUEST_TIMOEUT = "teamcity.nuget.feed.async.request.timeout";
 
   public static final String NUGET_FEED_API_VERSION = "teamcity.nuget.feed.apiVersion";
   public static final int NUGET_FEED_PACKAGE_SIZE = 100;
