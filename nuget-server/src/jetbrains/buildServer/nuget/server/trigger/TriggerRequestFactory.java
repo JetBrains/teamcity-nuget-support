@@ -17,6 +17,7 @@
 package jetbrains.buildServer.nuget.server.trigger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import jetbrains.buildServer.ExtensionHolder;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
@@ -31,6 +32,7 @@ import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeFact
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.tools.ServerToolManager;
 import jetbrains.buildServer.tools.ToolVersionReference;
+import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -98,7 +100,12 @@ public class TriggerRequestFactory {
     if (!ToolVersionReference.isToolReference(nugetVersionRef)) {
       final String pathWhitelist = TeamCityProperties.getProperty(NUGET_SERVER_CLI_PATH_WHITELIST_PROP, NUGET_SERVER_CLI_PATH_WHITELIST_DEFAULT).toLowerCase();
       if (StringUtil.isNotEmpty(pathWhitelist)) {
-        final Set<String> whitelist = new HashSet<String>(Arrays.asList(pathWhitelist.split(";")));
+        final Set<String> whitelist = new HashSet<String>(
+          Arrays.stream(pathWhitelist.split(";"))
+                .map(StringUtil::trim)
+                .filter(StringUtil::isNotEmpty)
+                .map(x -> FileUtil.normalizeSeparator(x))
+                .collect(Collectors.toList()));
         if (!whitelist.contains(nugetPath.getPath().toLowerCase())) {
           throw new BuildTriggerException("Failed to run NuGet.exe at: " + nugetPath + ". Path is not allowed.");
         }
