@@ -31,19 +31,13 @@ import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.util.executors.ExecutorsFactory
-import jetbrains.buildServer.web.AsyncContextNotifier
 import jetbrains.buildServer.web.openapi.WebControllerManager
 import jetbrains.buildServer.web.util.WebUtil
-import org.springframework.web.context.request.async.DeferredResult
-import org.springframework.web.context.request.async.StandardServletAsyncWebRequest
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException
 import org.springframework.web.context.request.async.WebAsyncUtils
 import org.springframework.web.servlet.ModelAndView
-import java.time.Clock
-import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.*
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.concurrent.atomic.AtomicReference
 import javax.servlet.*
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -85,7 +79,7 @@ class NuGetFeedController(web: WebControllerManager,
         myExecutor = AsyncRequestExecutor(
                 myExecutorService,
                 ExecutorsFactory.newFixedScheduledDaemonExecutor("NuGet requests timeouts", 1),
-                1)
+                AsyncRequestTaskTimeoutManagerImpl())
         myExecutor.start()
     }
 
@@ -95,11 +89,6 @@ class NuGetFeedController(web: WebControllerManager,
             return NuGetResponseUtil.nugetFeedIsDisabled(response)
         }
 
-        if (request.dispatcherType == DispatcherType.ASYNC) {
-            if (WebAsyncUtils.getAsyncManager(request).hasConcurrentResult()) {
-                return null;
-            }
-        }
 
         if (isPublishPackageServiceFeed(request)) {
             handlePublishPackageService(request, response)
@@ -161,8 +150,8 @@ class NuGetFeedController(web: WebControllerManager,
             mappingPath: String,
             handler: (HttpServletRequest, HttpServletResponse) -> Unit
     ) {
-        myExecutor.execute(request, response, object : AsyncRequestHandler {
-            override fun handle(asyncContext: AsyncContext) {
+        myExecutor.execute<Unit>(request, response, object : AsyncRequestHandler<Unit> {
+            override fun handle(asyncContext: AsyncContext, context: Array<Any>?): Unit {
                 val asyncRequest = asyncContext.request as HttpServletRequest
                 val asyncResponse = asyncContext.response as HttpServletResponse
                 val formattedRequestUrl = formatRequestUrl(asyncRequest, mappingPath)
@@ -173,29 +162,21 @@ class NuGetFeedController(web: WebControllerManager,
                 } finally {
                     myRequestsList.reportFeedRequestFinished(formattedRequestUrl, Date().time - startTime)
                 }
+                return Unit
             }
 
-            override fun onRejected(asyncContext: AsyncContext) {
-                val asyncResponse = (asyncContext.response as HttpServletResponse)
-                if (!asyncResponse.isCommitted) {
-                    asyncResponse.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, SERVICE_UNAVAILABLE)
-                }
+            override fun onRejected(request: HttpServletRequest, response: HttpServletResponse) {
+                response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, SERVICE_UNAVAILABLE)
             }
 
-            override fun onError(asyncContext: AsyncContext, throwable: Throwable) {
-                val asyncResponse = (asyncContext.response as HttpServletResponse)
-                if (!asyncResponse.isCommitted) {
-                    asyncResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
-                }
+            override fun onError(request: HttpServletRequest, response: HttpServletResponse, throwable: Throwable) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)
             }
 
-            override fun onTimeout(asyncContext: AsyncContext) {
-                val asyncResponse = (asyncContext.response as HttpServletResponse)
-                if (!asyncResponse.isCommitted) {
-                    asyncResponse.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, SERVICE_UNAVAILABLE)
-                }
+            override fun onTimeout(request: HttpServletRequest, response: HttpServletResponse) {
+                response.sendError(HttpServletResponse.SC_REQUEST_TIMEOUT, SERVICE_UNAVAILABLE)
             }
-        }, TeamCityProperties.getLong(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_TIMOEUT, 600))
+        }, TeamCityProperties.getLong(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_TIMOEUT, 600), null)
     }
 
     private fun handleRequestSync(
