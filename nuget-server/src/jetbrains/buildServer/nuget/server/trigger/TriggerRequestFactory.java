@@ -107,7 +107,7 @@ public class TriggerRequestFactory {
                 .map(x -> FileUtil.normalizeSeparator(x))
                 .collect(Collectors.toList()));
         if (!whitelist.contains(nugetPath.getPath().toLowerCase())) {
-          throw new BuildTriggerException("Failed to run NuGet.exe at: " + nugetPath + ". Path is not allowed.");
+          throw new BuildTriggerException("Failed to run NuGet.exe at " + nugetPath + ". The custom NuGet path used by the trigger must be explicitly allowed on the server. Please review the trigger's settings.");
         }
       }
     }
