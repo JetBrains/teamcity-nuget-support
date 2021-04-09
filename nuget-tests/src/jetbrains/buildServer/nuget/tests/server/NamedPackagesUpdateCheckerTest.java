@@ -601,7 +601,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       checker.checkChanges(context);
       Assert.fail("Exception is expected");
     } catch (BuildTriggerException e) {
-      Assert.assertTrue(e.getMessage().contains("Path is not allowed."));
+      Assert.assertTrue(e.getMessage().contains("Failed to run NuGet.exe"));
     }
   }
 
