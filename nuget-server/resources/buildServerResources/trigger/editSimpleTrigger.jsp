@@ -18,12 +18,16 @@
 <%@ taglib prefix="props" tagdir="/WEB-INF/tags/props" %>
 <%@ taglib prefix="l" tagdir="/WEB-INF/tags/layout" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="bs" tagdir="/WEB-INF/tags" %>
 <jsp:useBean id="ib" class="jetbrains.buildServer.nuget.server.trigger.TriggerBean" scope="request"/>
 <jsp:useBean id="canStartNuGetProcesses" type="java.lang.Boolean" scope="request"/>
 <jsp:useBean id="canStartNuGetProcessesMessage" type="java.lang.String" scope="request"/>
 
 <tr>
-  <td colspan="2"><em>The NuGet Dependency Trigger allows starting a new build if a NuGet packages update is detected in the NuGet repository.</em></td>
+  <td colspan="2">
+    <em>The NuGet Dependency Trigger allows starting a new build if a NuGet packages update is detected in the NuGet repository. Note that if a custom NuGet executable is used, it must be explicitly allowed on this server.</em>
+    <bs:help file="NuGet+Dependency+Trigger#Configuring+NuGet+Dependency+Trigger"/>
+  </td>
 </tr>
 
 <jsp:include page="/tools/editToolUsage.html?toolType=${ib.nuGetToolTypeKey}&versionParameterName=${ib.nuGetExeKey}&style=width:20em&toolLocation=server"/>
