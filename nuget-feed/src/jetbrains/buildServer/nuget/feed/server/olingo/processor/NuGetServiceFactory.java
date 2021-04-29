@@ -16,28 +16,30 @@
 
 package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
-import jetbrains.buildServer.nuget.feed.server.controllers.AsyncRequestExecutor;
-import jetbrains.buildServer.nuget.feed.server.controllers.AsyncRequestState;
-import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.util.Action;
-import org.apache.olingo.odata2.api.*;
+import org.apache.olingo.odata2.api.ODataCallback;
+import org.apache.olingo.odata2.api.ODataDebugCallback;
+import org.apache.olingo.odata2.api.ODataService;
+import org.apache.olingo.odata2.api.ODataServiceFactory;
 import org.apache.olingo.odata2.api.edm.EdmTargetPath;
 import org.apache.olingo.odata2.api.edm.FullQualifiedName;
-import org.apache.olingo.odata2.api.edm.provider.*;
+import org.apache.olingo.odata2.api.edm.provider.CustomizableFeedMappings;
+import org.apache.olingo.odata2.api.edm.provider.EntityType;
+import org.apache.olingo.odata2.api.edm.provider.Mapping;
+import org.apache.olingo.odata2.api.edm.provider.Property;
 import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.processor.ODataContext;
 import org.apache.olingo.odata2.core.edm.provider.EdmxProvider;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Creates a new NuGet service.
@@ -55,10 +57,9 @@ public class NuGetServiceFactory extends ODataServiceFactory {
   @Override
   public ODataService createService(final ODataContext context) {
     final HttpServletRequest request = (HttpServletRequest) context.getParameter(ODataContext.HTTP_SERVLET_REQUEST_OBJECT);
-    final AsyncRequestState asyncState = AsyncRequestExecutor.Companion.getAsyncRequestStateOrDefault();
     final NuGetAPIVersion apiVersion = (NuGetAPIVersion) request.getAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION);
     final EdmxProvider edmxProvider = EDMX_PROVIDERS.get(apiVersion);
-    return createODataSingleProcessorService(edmxProvider, new NuGetPackagesProcessor(myDataSource, asyncState));
+    return createODataSingleProcessorService(edmxProvider, new NuGetPackagesProcessor(myDataSource));
   }
 
   private static EdmxProvider getEdmProvider(final NuGetAPIVersion version) throws ODataException {

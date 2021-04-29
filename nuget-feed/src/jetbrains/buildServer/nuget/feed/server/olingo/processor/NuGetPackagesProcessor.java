@@ -17,39 +17,46 @@
 package jetbrains.buildServer.nuget.feed.server.olingo.processor;
 
 import com.intellij.openapi.diagnostic.Logger;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.*;
 import java.util.concurrent.CancellationException;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.UriBuilder;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
-import jetbrains.buildServer.nuget.feed.server.controllers.AsyncRequestState;
-import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedController;
 import jetbrains.buildServer.nuget.feed.server.impl.HttpServletRequestUtil;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
-import jetbrains.buildServer.nuget.feed.server.json.JsonExtensions;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feed.server.olingo.model.NuGetMapper;
 import jetbrains.buildServer.nuget.feed.server.olingo.model.V2FeedPackage;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.StringUtil;
-import jetbrains.buildServer.web.util.WebUtil;
-import org.apache.olingo.odata2.api.batch.*;
+import org.apache.olingo.odata2.api.batch.BatchHandler;
+import org.apache.olingo.odata2.api.batch.BatchRequestPart;
+import org.apache.olingo.odata2.api.batch.BatchResponsePart;
 import org.apache.olingo.odata2.api.commons.HttpStatusCodes;
 import org.apache.olingo.odata2.api.commons.InlineCount;
 import org.apache.olingo.odata2.api.edm.*;
-import org.apache.olingo.odata2.api.ep.*;
-import org.apache.olingo.odata2.api.exception.*;
-import org.apache.olingo.odata2.api.processor.*;
+import org.apache.olingo.odata2.api.ep.EntityProvider;
+import org.apache.olingo.odata2.api.ep.EntityProviderBatchProperties;
+import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties;
+import org.apache.olingo.odata2.api.exception.ODataException;
+import org.apache.olingo.odata2.api.exception.ODataHttpException;
+import org.apache.olingo.odata2.api.exception.ODataNotFoundException;
+import org.apache.olingo.odata2.api.exception.ODataNotImplementedException;
+import org.apache.olingo.odata2.api.processor.ODataContext;
+import org.apache.olingo.odata2.api.processor.ODataRequest;
+import org.apache.olingo.odata2.api.processor.ODataResponse;
+import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
 import org.apache.olingo.odata2.api.uri.ExpandSelectTreeNode;
 import org.apache.olingo.odata2.api.uri.KeyPredicate;
 import org.apache.olingo.odata2.api.uri.PathInfo;
 import org.apache.olingo.odata2.api.uri.UriParser;
-import org.apache.olingo.odata2.api.uri.expression.*;
+import org.apache.olingo.odata2.api.uri.expression.FilterExpression;
+import org.apache.olingo.odata2.api.uri.expression.OrderByExpression;
+import org.apache.olingo.odata2.api.uri.expression.OrderExpression;
+import org.apache.olingo.odata2.api.uri.expression.SortOrder;
 import org.apache.olingo.odata2.api.uri.info.*;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.InputStream;
-import java.net.URI;
-import java.util.*;
 
 /**
  * Implementation of the centralized parts of OData processing,
@@ -63,17 +70,15 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
   private final BeanPropertyAccess myValueAccess;
   private final OlingoDataSource myDataSource;
   private final ExpressionEvaluator myEvaluator;
-  private final AsyncRequestState myAsyncState;
 
-  public NuGetPackagesProcessor(@NotNull final OlingoDataSource dataSource, @NotNull final AsyncRequestState asyncState) {
-    this(dataSource, new BeanPropertyAccess(), asyncState);
+  public NuGetPackagesProcessor(@NotNull final OlingoDataSource dataSource) {
+    this(dataSource, new BeanPropertyAccess());
   }
 
-  public NuGetPackagesProcessor(final OlingoDataSource dataSource, final BeanPropertyAccess valueAccess, final AsyncRequestState asyncState) {
+  public NuGetPackagesProcessor(final OlingoDataSource dataSource, final BeanPropertyAccess valueAccess) {
     myDataSource = dataSource;
     myValueAccess = valueAccess;
     myEvaluator = new ExpressionEvaluator(valueAccess);
-    myAsyncState = asyncState;
   }
 
   @Override
@@ -98,8 +103,6 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
         LOG.infoAndDebugDetails("Package not found", e);
         data.clear();
       }
-
-      myAsyncState.throwIfCancellationRequested();
 
       final EdmEntitySet entitySet = uriInfo.getTargetEntitySet();
       final InlineCount inlineCountType = uriInfo.getInlineCount();
@@ -141,7 +144,6 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       final EdmEntityType entityType = entitySet.getEntityType();
       final List<Map<String, Object>> values = new ArrayList<>();
       for (final Object entryData : data) {
-        myAsyncState.throwIfCancellationRequested();
         values.add(getStructuralTypeValueMap(entryData, entityType));
       }
 
