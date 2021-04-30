@@ -32,14 +32,21 @@ public class NuGetFeedConstants {
   public static final String PROP_NUGET_FEED_CACHED_SERVLETS = "teamcity.nuget.feed.cached.servlets";
   public static final String PROP_NUGET_FEED_MAX_REQUESTS = "teamcity.nuget.feed.requests.maxRequests";
   public static final String PROP_NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT = "teamcity.nuget.feed.requests.pending.processing.timeout";
+  public static final String PROP_NUGET_FEED_ASYNC_REQUEST_QUEUE_CAPACITY = "teamcity.nuget.feed.async.request.queue.capacity";
+  public static final String PROP_NUGET_FEED_ASYNC_REQUEST_ENABLED = "teamcity.nuget.feed.async.request.enabled";
+  public static final String PROP_NUGET_FEED_ASYNC_REQUEST_TIMOEUT = "teamcity.nuget.feed.async.request.timeout";
 
   public static final String NUGET_FEED_API_VERSION = "teamcity.nuget.feed.apiVersion";
   public static final int NUGET_FEED_PACKAGE_SIZE = 100;
   public static final int NUGET_FEED_MAX_REQUESTS = 20;
   public static final Long NUGET_FEED_REQUEST_PENDING_PROCESSING_TIMEOUT = 60L;
+  public static final int NUGET_FEED_REQUEST_QUEUE_CAPACITY = 100;
 
   public static final String NUGET_INDEXER_TYPE = "NuGetPackagesIndexer";
   public static final String NUGET_INDEXER_FEED = "feed";
+
+  public static final String NUGET_FEED_ASYNC_V3_REGISTRATIONS = "nuget/v3/registrations";
+  public static final String NUGET_FEED_ASYNC_DATA_CONTEXT = "nuget.feed.json.data";
 
   @NotNull
   public String getFeed() {
