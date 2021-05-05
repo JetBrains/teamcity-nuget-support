@@ -16,6 +16,7 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import com.google.gson.annotations.JsonAdapter;
 import com.intellij.util.containers.SortedList;
 import jetbrains.buildServer.controllers.MockResponse;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
@@ -94,6 +95,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected String myContextPath;
   protected String myAuthenticationType;
   protected NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerStdContext> myMetadataHandler;
+  private JsonPackageSourceFactory myPackageSourceFactory;
+  private JsonPackageAdapterFactory myAdapterFactory;
 
   @Parameters({ "contextPath", "authenticationType" })
   @BeforeMethod
@@ -116,6 +119,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myContextPath = contextPath;
     myAuthenticationType = authenticationType;
     myMetadataHandler = m.mock(NuGetFeedUploadMetadataHandler.class);
+    myPackageSourceFactory = m.mock(JsonPackageSourceFactory.class);
+    myAdapterFactory = new JsonPackageAdapterFactoryImpl();
 
     final ResponseCache responseCache = m.mock(ResponseCache.class);
     final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
@@ -172,6 +177,10 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       final NuGetFeed feed = new NuGetFeed(myIndexProxy, mySettings);
       allowing(myFeedFactory).createFeed(with(any(NuGetFeedData.class)));
       will(returnValue(feed));
+
+      final JsonPackageSource source = new JsonPackageSourceImpl(feed);
+      allowing(myPackageSourceFactory).create(with(any(NuGetFeed.class)));
+      will(returnValue(source));
     }});
 
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myFeedFactory, responseCache);
@@ -180,9 +189,9 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       new NuGetFeedStdUploadHandler(new PackageUploadHandler<NuGetFeedUploadHandlerStdContext>(runningBuilds, packageAnalyzer, cacheReset, serverSettings, myMetadataHandler));
     final JsonRequestHandler jsonRequestHandler = new JsonRequestHandler(
       new JsonServiceIndexHandler(),
-      new JsonSearchQueryHandler(myFeedFactory),
-      new JsonRegistrationHandler(myFeedFactory),
-      new JsonPackageContentHandler(myFeedFactory),
+      new JsonSearchQueryHandler(myFeedFactory, myPackageSourceFactory, myAdapterFactory),
+      new JsonRegistrationHandler(myFeedFactory, myPackageSourceFactory, myAdapterFactory),
+      new JsonPackageContentHandler(myFeedFactory, myPackageSourceFactory, myAdapterFactory),
       new JsonAutocompleteHandler(myFeedFactory)
     );
     myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);

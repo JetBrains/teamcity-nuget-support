@@ -1,16 +1,17 @@
 package jetbrains.buildServer.nuget.feed.server.json
 
-import jetbrains.buildServer.nuget.common.index.PackageConstants
-import jetbrains.buildServer.nuget.common.version.VersionUtility
+import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
-import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedFactory
-import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
+import jetbrains.buildServer.serverSide.TeamCityProperties
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JsonPackageContentHandler(private val feedFactory: NuGetFeedFactory) : NuGetFeedHandler {
+class JsonPackageContentHandler(
+        private val feedFactory: NuGetFeedFactory,
+        private val packageSourceFactory: JsonPackageSourceFactory,
+        private val adapterFactory: JsonPackageAdapterFactory) : NuGetFeedHandler {
     override fun handleRequest(feedData: NuGetFeedData, request: HttpServletRequest, response: HttpServletResponse) {
         val matchResult = FLAT_CONTAINER_URL.find(request.pathInfo)
         if (matchResult == null) {
@@ -20,57 +21,60 @@ class JsonPackageContentHandler(private val feedFactory: NuGetFeedFactory) : NuG
 
         val (id, version, _, file, extension) = matchResult.destructured
         val feed = feedFactory.createFeed(feedData)
+        val context = JsonNuGetFeedContext(feed, request)
+        val asyncEnabled = TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_ENABLED)
+
         if (version == "index.json" && file.isEmpty()) {
-            getVersions(feed, response, id)
+            if (asyncEnabled) {
+                DispatcherUtils.dispatchGetPackageVersions(request, response, context, id)
+            } else {
+                getVersions(context, response, id)
+            }
         } else if (file == "/$id.$version.") {
-            getContent(feed, request, response, id, version, extension)
+            if (asyncEnabled) {
+                DispatcherUtils.dispatchGetPackageContent(request, response, context, id, version, extension)
+            } else {
+                getContent(context, response, id, version, extension)
+            }
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Requested resource not found")
-            return
         }
     }
 
-    private fun getContent(feed: NuGetFeed,
-                           request: HttpServletRequest,
+    private fun getContent(context: JsonNuGetFeedContext,
                            response: HttpServletResponse,
                            id: String,
                            version: String,
                            extension: String) {
-        val results = feed.find(mapOf(
-                NuGetPackageAttributes.ID to id,
-                NuGetPackageAttributes.VERSION to version
-        ), true)
 
-        if (results.isEmpty()) {
+        val packageSource = packageSourceFactory.create(context.feed)
+        val packages = packageSource.getPackages(id, version)
+        val adapter = adapterFactory.create(context)
+
+        if (packages.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Package $id:$version not found")
             return
         }
 
-        val entry = results.first()
-        val downloadUrl = "${request.getRootUrlWithAuthenticationType()}${entry.packageDownloadUrl}"
-        val redirectUrl = when(extension) {
-            "nupkg" -> "$downloadUrl"
-            "nuspec" -> {
-                val packageId = entry.attributes[NuGetPackageAttributes.ID]
-                "$downloadUrl!/$packageId.nuspec"
-            }
-            else -> {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unsupported format $extension")
-                return
-            }
+        var redirectUrl = adapter.createDownloadContentUrl(packages.first(), extension)
+        if (redirectUrl.isNullOrEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unsupported format $extension")
+            return
         }
         response.sendRedirect(redirectUrl)
     }
 
-    private fun getVersions(feed: NuGetFeed, response: HttpServletResponse, id: String) {
-        val results = feed.findPackagesById(id, true)
-        if (results.isEmpty()) {
+    private fun getVersions(context: JsonNuGetFeedContext, response: HttpServletResponse, id: String) {
+        val packageSource = packageSourceFactory.create(context.feed)
+        val packages = packageSource.getPackages(id)
+        val adapter = adapterFactory.create(context)
+
+        if (packages.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Package $id not found")
             return
         }
 
-        val versions = results.map { VersionUtility.normalizeVersion(it.version) }
-        response.writeJson(JsonPackageVersions(versions))
+        response.writeJson(adapter.createPackageVersionsResponse(packages))
     }
 
     companion object {

@@ -15,5 +15,16 @@ class JsonPackageSourceImpl(private val nugetFeed: NuGetFeed) : JsonPackageSourc
     override fun getPackages(id: String): List<NuGetIndexEntry> {
         return nugetFeed.findPackagesById(id, true)
     }
+
+    override fun searchPackages(query: String?, prerelease: Boolean, includeSemVer2: Boolean): List<NuGetIndexEntry> {
+        if (query.isNullOrEmpty()) {
+            if (!prerelease) {
+                return nugetFeed.find(mapOf(NuGetPackageAttributes.IS_PRERELEASE to false.toString()), includeSemVer2)
+            } else {
+                return nugetFeed.getAll(includeSemVer2)
+            }
+        }
+        return nugetFeed.search(query, "", prerelease, includeSemVer2)
+    }
 }
 

@@ -3,6 +3,7 @@ package jetbrains.buildServer.nuget.feed.server
 import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.util.executors.ExecutorsFactory
 import org.springframework.core.task.AsyncTaskExecutor
+import org.springframework.web.context.request.async.WebAsyncTask
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -32,5 +33,9 @@ class NuGetAsyncTaskExecutor: AsyncTaskExecutor {
 
     override fun execute(task: Runnable) {
         return myExecutorService.execute(task)
+    }
+
+    fun <T> createAsyncTask(callable: () -> T): WebAsyncTask<T> {
+        return WebAsyncTask(TeamCityProperties.getLong(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_TIMOEUT,30000), this, callable)
     }
 }

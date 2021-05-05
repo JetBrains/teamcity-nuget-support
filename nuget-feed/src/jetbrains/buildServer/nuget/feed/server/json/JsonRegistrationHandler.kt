@@ -17,22 +17,19 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory,
             val (id, resource) = matchResult.destructured
             val feed = feedFactory.createFeed(feedData)
             val context = JsonNuGetFeedContext(feed, request)
-            request.setAttribute(NuGetFeedConstants.NUGET_FEED_ASYNC_DATA_CONTEXT, context)
 
             val asyncEnabled = TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_ENABLED)
             if (resource == "index") {
                 if (asyncEnabled) {
-                    val dispatcher = request.getRequestDispatcher("/app/${NuGetFeedConstants.NUGET_FEED_ASYNC_V3_REGISTRATIONS}/${id}")
-                    dispatcher.forward(request, response)
+                    DispatcherUtils.dispatchGetRegistrations(request, response, context, id)
                 } else {
-                    getAllRegistrations(context, response, id)
+                    getAllRegistrations(response, context, id)
                 }
             } else {
                 if (asyncEnabled) {
-                    val dispatcher = request.getRequestDispatcher("/app/${NuGetFeedConstants.NUGET_FEED_ASYNC_V3_REGISTRATIONS}/${id}/${resource}")
-                    dispatcher.forward(request, response)
+                    DispatcherUtils.dispatchGetRegistration(request, response, context, id, resource)
                 } else {
-                    getRegistration(context, response, id, resource)
+                    getRegistration(response, context, id, resource)
                 }
             }
         } else {
@@ -40,7 +37,7 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory,
         }
     }
 
-    private fun getRegistration(context: JsonNuGetFeedContext, response: HttpServletResponse, id: String, version: String) {
+    private fun getRegistration(response: HttpServletResponse, context: JsonNuGetFeedContext, id: String, version: String) {
         val packageSource = packageSourceFactory.create(context.feed)
         val results = packageSource.getPackages(id)
 
@@ -52,7 +49,7 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory,
         }
     }
 
-    private fun getAllRegistrations(context: JsonNuGetFeedContext, response: HttpServletResponse, id: String) {
+    private fun getAllRegistrations(response: HttpServletResponse, context: JsonNuGetFeedContext,id: String) {
         val packageSource = packageSourceFactory.create(context.feed)
         val results = packageSource.getPackages(id)
 
