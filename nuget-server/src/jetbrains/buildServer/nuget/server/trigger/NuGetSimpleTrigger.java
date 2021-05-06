@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.server.trigger;
 
 import jetbrains.buildServer.buildTriggers.*;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
+import jetbrains.buildServer.serverSide.BuildCustomizer;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
@@ -99,7 +100,8 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
       public void triggerBuild(@NotNull PolledTriggerContext context) throws BuildTriggerException {
         final BuildStartReason result = myChecker.checkChanges(context);
         if (result != null) {
-          context.getBuildType().addToQueue(result.getReason());
+          BuildCustomizer buildCustomizer = context.createBuildCustomizer(null);
+          buildCustomizer.createPromotion().addToQueue(result.getReason());
         }
       }
     };
