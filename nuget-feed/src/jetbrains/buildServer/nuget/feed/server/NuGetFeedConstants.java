@@ -45,10 +45,11 @@ public class NuGetFeedConstants {
   public static final String NUGET_INDEXER_TYPE = "NuGetPackagesIndexer";
   public static final String NUGET_INDEXER_FEED = "feed";
 
-  public static final String NUGET_FEED_ASYNC_V3_PACKAGE_REGISTRATIONS = "nuget/v3/registrations";
-  public static final String NUGET_FEED_ASYNC_V3_PACKAGE_SEARCH = "nuget/v3/search";
-  public static final String NUGET_FEED_ASYNC_V3_PACKAGE_VERSIONS = "nuget/v3/versions";
-  public static final String NUGET_FEED_ASYNC_V3_PACKAGE_CONTENT = "nuget/v3/content";
+  public static final String NUGET_FEED_ASYNC_V3 = "nuget/v3/";
+  public static final String NUGET_FEED_ASYNC_V3_PACKAGE_REGISTRATIONS = NUGET_FEED_ASYNC_V3 + "registrations";
+  public static final String NUGET_FEED_ASYNC_V3_PACKAGE_SEARCH = NUGET_FEED_ASYNC_V3 + "search";
+  public static final String NUGET_FEED_ASYNC_V3_PACKAGE_VERSIONS = NUGET_FEED_ASYNC_V3 + "versions";
+  public static final String NUGET_FEED_ASYNC_V3_PACKAGE_CONTENT = NUGET_FEED_ASYNC_V3 + "content";
   public static final String NUGET_FEED_ASYNC_DATA_CONTEXT = "nuget.feed.json.data";
 
   @NotNull

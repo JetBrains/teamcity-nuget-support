@@ -1,5 +1,6 @@
 package jetbrains.buildServer.nuget.feed.server
 
+import com.intellij.openapi.diagnostic.Logger
 import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.util.executors.ExecutorsFactory
 import org.springframework.core.task.AsyncTaskExecutor
@@ -20,22 +21,48 @@ class NuGetAsyncTaskExecutor: AsyncTaskExecutor {
     }
 
     override fun submit(task: Runnable?): Future<*> {
-        return myExecutorService.submit(task)
+        return myExecutorService.submit(wrapRunnable(task))
     }
 
     override fun <T : Any?> submit(task: Callable<T>?): Future<T> {
-        return myExecutorService.submit(task)
+        return myExecutorService.submit(wrapCallable(task))
     }
 
     override fun execute(task: Runnable?, startTimeout: Long) {
-        return myExecutorService.execute(task)
+        return myExecutorService.execute(wrapRunnable(task))
     }
 
     override fun execute(task: Runnable) {
-        return myExecutorService.execute(task)
+        return myExecutorService.execute(wrapRunnable(task))
     }
 
     fun <T> createAsyncTask(callable: () -> T): WebAsyncTask<T> {
         return WebAsyncTask(TeamCityProperties.getLong(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_TIMOEUT,30000), this, callable)
+    }
+
+    private fun wrapRunnable(runnable: Runnable?) : Runnable {
+        return Runnable {
+            try {
+                runnable!!.run()
+            } catch (throwable: Throwable) {
+                LOG.warnAndDebugDetails("Error in NuGet requests executor thread", throwable)
+                throw throwable;
+            }
+        }
+    }
+
+    private fun <T> wrapCallable(callable: Callable<T>?) : Callable<T> {
+        return Callable {
+            try {
+                return@Callable callable!!.call()
+            } catch (throwable: Throwable) {
+                LOG.warnAndDebugDetails("Error in NuGet requests executor thread", throwable)
+                throw throwable
+            }
+        }
+    }
+
+    private companion object {
+        val LOG = Logger.getInstance(NuGetAsyncTaskExecutor::class.java.name)
     }
 }

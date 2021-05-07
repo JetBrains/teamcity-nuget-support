@@ -80,6 +80,10 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonPackageSourceFactoryImpl"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.json.JsonPackageAdapterFactoryImpl"/>
 
+  <bean class="jetbrains.buildServer.nuget.feed.server.json.LoggingInterceptor" scope="prototype"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.json.TimeoutCallableInterceptor" scope="prototype"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.json.CallableInterceptorRegistrar"/>
+
   <mvc:annotation-driven/>
   <context:component-scan base-package="jetbrains.buildServer.nuget.feed.server.json"/>
 </beans>
