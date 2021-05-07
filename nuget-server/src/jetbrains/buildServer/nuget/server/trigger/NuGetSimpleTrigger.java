@@ -113,6 +113,11 @@ public class NuGetSimpleTrigger extends BuildTriggerService {
   }
 
   @Override
+  public boolean supportsBuildCustomization() {
+    return true;
+  }
+
+  @Override
   public PropertiesProcessor getTriggerPropertiesProcessor() {
     return new PropertiesProcessor() {
       public Collection<InvalidProperty> process(Map<String, String> properties) {
