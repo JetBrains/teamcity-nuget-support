@@ -22,8 +22,8 @@ class CallableInterceptorRegistrar(
         pathMatcher.setCaseSensitive(false)
     }
     override fun preHandle(request: HttpServletRequest?, response: HttpServletResponse?, handler: Any?): Boolean {
-        if (request == null || request.dispatcherType == DispatcherType.ASYNC) return true
-        if (!pathMatcher.match("/app/nuget/feed/**", request.pathInfo)) return true
+        if (request?.pathInfo == null || request.dispatcherType == DispatcherType.ASYNC) return true
+        if (!request.pathInfo.startsWith(APP_PATH_PREFIX)) return true
 
         val asyncManager = WebAsyncUtils.getAsyncManager(request)
         val loggingInterceptor = beanFactory.getBean(LoggingInterceptor::class.java)
@@ -32,5 +32,9 @@ class CallableInterceptorRegistrar(
         asyncManager.registerCallableInterceptors(loggingInterceptor, timeoutInterceptor);
 
         return true
+    }
+
+    private companion object {
+        val APP_PATH_PREFIX = "/app/nuget/feed/"
     }
 }

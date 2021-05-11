@@ -13,7 +13,7 @@ class TimeoutCallableInterceptor : CallableProcessingInterceptorAdapter() {
     override fun <T> handleTimeout(request: NativeWebRequest, task: Callable<T>): Any {
         val originalRequest = request.getNativeRequest(HttpServletRequest::class.java)
         if (originalRequest != null) {
-            Loggers.SERVER.warn("Async request timeout. Request: " + WebUtil.getRequestDump(originalRequest))
+            Loggers.SERVER.warn("NuGet async request timeout. Request: " + WebUtil.getRequestDump(originalRequest))
         }
         return ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT).body(HttpStatus.REQUEST_TIMEOUT.reasonPhrase)
     }

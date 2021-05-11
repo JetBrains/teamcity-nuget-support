@@ -43,7 +43,7 @@ class LoggingInterceptor(
     override fun <T : Any?> handleTimeout(request: NativeWebRequest?, task: Callable<T>?): Any {
         try {
             request?.getNativeRequest(HttpServletRequest::class.java)?.let {
-                LOG.warn("Async request timeout. Request: ${WebUtil.getRequestDump(it)}")
+                LOG.warn("NuGet async request timeout. Request: ${WebUtil.getRequestDump(it)}")
             }
             reportRequestTime()
         } catch (throwable: Throwable) {
