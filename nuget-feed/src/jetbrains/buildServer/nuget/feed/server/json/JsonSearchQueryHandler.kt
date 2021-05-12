@@ -16,8 +16,7 @@ class JsonSearchQueryHandler(
         val feed = feedFactory.createFeed(feedData)
         val context = JsonNuGetFeedContext(feed, request)
 
-        val asyncEnabled = TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_ENABLED)
-        if (asyncEnabled) {
+        if (DispatcherUtils.isAsyncEnabled()) {
             DispatcherUtils.dispatchSearchPackages(request, response, context)
         } else {
             searchPackages(request, response, context)

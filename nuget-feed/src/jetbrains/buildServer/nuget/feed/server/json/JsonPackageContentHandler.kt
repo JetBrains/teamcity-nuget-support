@@ -22,16 +22,15 @@ class JsonPackageContentHandler(
         val (id, version, _, file, extension) = matchResult.destructured
         val feed = feedFactory.createFeed(feedData)
         val context = JsonNuGetFeedContext(feed, request)
-        val asyncEnabled = TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_ENABLED)
 
         if (version == "index.json" && file.isEmpty()) {
-            if (asyncEnabled) {
+            if (DispatcherUtils.isAsyncEnabled()) {
                 DispatcherUtils.dispatchGetPackageVersions(request, response, context, id)
             } else {
                 getVersions(context, response, id)
             }
         } else if (file == "/$id.$version.") {
-            if (asyncEnabled) {
+            if (DispatcherUtils.isAsyncEnabled()) {
                 DispatcherUtils.dispatchGetPackageContent(request, response, context, id, version, extension)
             } else {
                 getContent(context, response, id, version, extension)

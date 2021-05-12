@@ -43,6 +43,7 @@ import jetbrains.buildServer.nuget.feed.server.olingo.OlingoRequestHandler;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.ServerSettings;
+import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry;
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage;
 import jetbrains.buildServer.util.CollectionsUtil;
@@ -98,11 +99,12 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   private JsonPackageSourceFactory myPackageSourceFactory;
   private JsonPackageAdapterFactory myAdapterFactory;
 
-  @Parameters({ "contextPath", "authenticationType" })
+  @Parameters({ "contextPath", "authenticationType", "async" })
   @BeforeMethod
   protected void setUp(
     @Optional("") final String contextPath,
-    @Optional("") final String authenticationType
+    @Optional("") final String authenticationType,
+    @Optional("") final String async
   ) throws Exception {
     super.setUp();
     final Mockery mockery = new Mockery() {{
@@ -121,6 +123,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     myMetadataHandler = m.mock(NuGetFeedUploadMetadataHandler.class);
     myPackageSourceFactory = m.mock(JsonPackageSourceFactory.class);
     myAdapterFactory = new JsonPackageAdapterFactoryImpl();
+
+    setInternalProperty(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_ENABLED, "true".equalsIgnoreCase(async));
 
     final ResponseCache responseCache = m.mock(ResponseCache.class);
     final RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);

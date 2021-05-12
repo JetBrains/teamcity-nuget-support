@@ -18,15 +18,14 @@ class JsonRegistrationHandler(private val feedFactory: NuGetFeedFactory,
             val feed = feedFactory.createFeed(feedData)
             val context = JsonNuGetFeedContext(feed, request)
 
-            val asyncEnabled = TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_ENABLED)
             if (resource == "index") {
-                if (asyncEnabled) {
+                if (DispatcherUtils.isAsyncEnabled()) {
                     DispatcherUtils.dispatchGetRegistrations(request, response, context, id)
                 } else {
                     getAllRegistrations(response, context, id)
                 }
             } else {
-                if (asyncEnabled) {
+                if (DispatcherUtils.isAsyncEnabled()) {
                     DispatcherUtils.dispatchGetRegistration(request, response, context, id, resource)
                 } else {
                     getRegistration(response, context, id, resource)

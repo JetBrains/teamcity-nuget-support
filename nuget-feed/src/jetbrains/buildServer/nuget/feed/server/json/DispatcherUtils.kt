@@ -1,11 +1,16 @@
 package jetbrains.buildServer.nuget.feed.server.json
 
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
+import jetbrains.buildServer.serverSide.TeamCityProperties
 import org.springframework.web.util.UriUtils
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 object DispatcherUtils {
+    fun isAsyncEnabled(): Boolean {
+        return TeamCityProperties.getBooleanOrTrue(NuGetFeedConstants.PROP_NUGET_FEED_ASYNC_REQUEST_ENABLED)
+    }
+
     fun setContext(request: HttpServletRequest, context: JsonNuGetFeedContext) {
         request.setAttribute(NuGetFeedConstants.NUGET_FEED_ASYNC_DATA_CONTEXT, context)
     }
