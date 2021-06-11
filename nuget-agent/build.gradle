@@ -11,16 +11,9 @@ teamcity {
         files {
             into('bin') {
                 from (project(':nuget-extensions').file('bin')) {
-                    include '**/*JetBrains*'
-                    include '**/*TeamCity*'
-                    include '**/*Newtonsoft*.dll'
-                    include '**/*PowerArgs*.dll'
-                    include '**/NuGet.*.dll'
-                    include '**/credential-plugin/**/*'                    
-                    include '**/System.ValueTuple.dll'
+                    include '**/*'
                     exclude '**/*.pdb'
                     exclude '**/credential-plugin/netcoreapp*/CredentialProvider.TeamCity.exe'
-                    exclude '**/*.deps.json'
                     exclude '**/*.dev.json'
                 }
             }
