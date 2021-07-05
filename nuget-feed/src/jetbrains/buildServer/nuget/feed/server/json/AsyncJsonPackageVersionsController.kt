@@ -21,7 +21,7 @@ class AsyncJsonPackageVersionsController(
         private val packageSourceFactory: JsonPackageSourceFactory,
         private val adapterFactory: JsonPackageAdapterFactory
 ) {
-    @RequestMapping("/{id:.+}", method = [RequestMethod.GET], produces = ["application/json; charset=UTF-8"])
+    @RequestMapping("/{id:.+}/", method = [RequestMethod.GET], produces = ["application/json; charset=UTF-8"])
     fun getVersions(
             @PathVariable("id") id: String,
             request: HttpServletRequest

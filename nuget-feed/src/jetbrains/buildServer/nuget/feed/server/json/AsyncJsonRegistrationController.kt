@@ -21,7 +21,7 @@ class AsyncJsonRegistrationController(
         private val packageSourceFactory: JsonPackageSourceFactory,
         private val adapterFactory: JsonPackageAdapterFactory
 ) {
-    @RequestMapping("/{id}/{version}", method = [RequestMethod.GET], produces = ["application/json; charset=UTF-8"])
+    @RequestMapping("/{id}/{version}/", method = [RequestMethod.GET], produces = ["application/json; charset=UTF-8"])
     fun getRegistration(
         @PathVariable("id") id: String,
         @PathVariable("version") version: String,
@@ -44,7 +44,7 @@ class AsyncJsonRegistrationController(
         }
     }
 
-    @RequestMapping("/{id}", method = [RequestMethod.GET], produces = ["application/json; charset=UTF-8"])
+    @RequestMapping("/{id:.+}/", method = [RequestMethod.GET], produces = ["application/json; charset=UTF-8"])
     fun getRegistrations(
             @PathVariable("id") id: String,
             request: HttpServletRequest

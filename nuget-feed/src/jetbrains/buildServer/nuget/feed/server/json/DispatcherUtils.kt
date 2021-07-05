@@ -22,14 +22,14 @@ object DispatcherUtils {
     fun dispatchGetRegistrations(request: HttpServletRequest, response: HttpServletResponse, context: JsonNuGetFeedContext, id: String) {
         setContext(request, context)
 
-        val dispatcher = request.getRequestDispatcher("/app/${NuGetFeedConstants.NUGET_FEED_ASYNC_V3_PACKAGE_REGISTRATIONS}/${encode(id)}")
+        val dispatcher = request.getRequestDispatcher("/app/${NuGetFeedConstants.NUGET_FEED_ASYNC_V3_PACKAGE_REGISTRATIONS}/${encode(id)}/")
         dispatcher.forward(request, response)
     }
 
     fun dispatchGetRegistration(request: HttpServletRequest, response: HttpServletResponse, context: JsonNuGetFeedContext, id: String, version: String) {
         setContext(request, context)
 
-        val dispatcher = request.getRequestDispatcher("/app/${NuGetFeedConstants.NUGET_FEED_ASYNC_V3_PACKAGE_REGISTRATIONS}/${encode(id)}/${encode(version)}")
+        val dispatcher = request.getRequestDispatcher("/app/${NuGetFeedConstants.NUGET_FEED_ASYNC_V3_PACKAGE_REGISTRATIONS}/${encode(id)}/${encode(version)}/")
         dispatcher.forward(request, response)
     }
 
@@ -43,14 +43,14 @@ object DispatcherUtils {
     fun dispatchGetPackageVersions(request: HttpServletRequest, response: HttpServletResponse, context: JsonNuGetFeedContext, id: String) {
         setContext(request, context)
 
-        val dispatcher = request.getRequestDispatcher("/app/${NuGetFeedConstants.NUGET_FEED_ASYNC_V3_PACKAGE_VERSIONS}/${encode(id)}")
+        val dispatcher = request.getRequestDispatcher("/app/${NuGetFeedConstants.NUGET_FEED_ASYNC_V3_PACKAGE_VERSIONS}/${encode(id)}/")
         dispatcher.forward(request, response)
     }
 
     fun dispatchGetPackageContent(request: HttpServletRequest, response: HttpServletResponse, context: JsonNuGetFeedContext, id: String, version: String, extension: String) {
         setContext(request, context)
 
-        val dispatcher = request.getRequestDispatcher("/app/${NuGetFeedConstants.NUGET_FEED_ASYNC_V3_PACKAGE_CONTENT}/${encode(id)}/${encode(version)}/${encode(extension)}")
+        val dispatcher = request.getRequestDispatcher("/app/${NuGetFeedConstants.NUGET_FEED_ASYNC_V3_PACKAGE_CONTENT}/${encode(id)}/${encode(version)}/${encode(extension)}/")
         dispatcher.forward(request, response)
     }
 

@@ -23,7 +23,7 @@ class AsyncJsonPackageContentController(
         private val packageSourceFactory: JsonPackageSourceFactory,
         private val adapterFactory: JsonPackageAdapterFactory
 ) {
-    @RequestMapping("/{id}/{version}/{extension}", method = [RequestMethod.GET], produces = ["application/json; charset=UTF-8"])
+    @RequestMapping("/{id}/{version}/{extension}/", method = [RequestMethod.GET], produces = ["application/json; charset=UTF-8"])
     fun getVersions(
             @PathVariable("id") id: String,
             @PathVariable("version") version: String,
