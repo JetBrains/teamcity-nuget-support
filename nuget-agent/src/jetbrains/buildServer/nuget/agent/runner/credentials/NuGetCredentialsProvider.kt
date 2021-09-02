@@ -94,6 +94,6 @@ class NuGetCredentialsProvider(events: EventDispatcher<AgentLifeCycleListener>,
 
     companion object {
         private val LOG = Logger.getInstance(NuGetCredentialsProvider::class.java.name)
-        private val SupportedRunners = setOf("dotnet.cli", "dotnet");
+        private val SupportedRunners = setOf("dotnet.cli", "dotnet", "csharpScript");
     }
 }
