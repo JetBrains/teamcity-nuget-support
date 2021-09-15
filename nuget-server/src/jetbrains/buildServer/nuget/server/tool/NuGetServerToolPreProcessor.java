@@ -28,7 +28,7 @@ import jetbrains.buildServer.serverSide.ServerResponsibility;
 import jetbrains.buildServer.tools.*;
 import jetbrains.buildServer.tools.installed.ToolPaths;
 import jetbrains.buildServer.util.FileUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
