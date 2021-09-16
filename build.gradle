@@ -61,7 +61,6 @@ subprojects { subproject ->
 
         repositories {
             maven { url '../local-repo' }
-            maven { url 'https://repository.apache.org/snapshots/' }
             mavenCentral()
             mavenLocal()
         }
