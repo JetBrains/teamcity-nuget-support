@@ -6,6 +6,7 @@ import com.google.gson.stream.JsonWriter
 import jetbrains.buildServer.nuget.common.index.ODataDataFormat
 import jetbrains.buildServer.nuget.common.version.SemanticVersion
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants
+import jetbrains.buildServer.nuget.feed.server.NuGetUtils
 import jetbrains.buildServer.nuget.feed.server.impl.HttpServletRequestUtil
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
@@ -21,22 +22,26 @@ internal fun NuGetIndexEntry.toRegistrationEntry(atId: String, atType: List<Stri
             atId,
             atType,
             downloadUrl,
-            this.attributes[NuGetPackageAttributes.ID]!!,
-            this.attributes[NuGetPackageAttributes.NORMALIZED_VERSION]!!,
+            this.getValue(NuGetPackageAttributes.ID)!!,
+            this.getValue(NuGetPackageAttributes.NORMALIZED_VERSION)!!,
             this.attributes[NuGetPackageAttributes.IS_PRERELEASE]?.toBoolean() ?: false,
-            this.attributes[NuGetPackageAttributes.AUTHORS],
+            this.getValue(NuGetPackageAttributes.AUTHORS),
             this.getDate(NuGetPackageAttributes.CREATED),
-            this.attributes[NuGetPackageAttributes.DESCRIPTION],
+            this.getValue(NuGetPackageAttributes.DESCRIPTION),
             this.getDependencyGroups(atId),
-            this.attributes[NuGetPackageAttributes.LANGUAGE],
+            this.getValue(NuGetPackageAttributes.LANGUAGE),
             this.getDate(NuGetPackageAttributes.LAST_EDITED),
-            this.attributes[NuGetPackageAttributes.PACKAGE_HASH],
-            this.attributes[NuGetPackageAttributes.PACKAGE_HASH_ALGORITHM],
-            this.attributes[NuGetPackageAttributes.PACKAGE_SIZE]?.toLong(),
+            this.getValue(NuGetPackageAttributes.PACKAGE_HASH),
+            this.getValue(NuGetPackageAttributes.PACKAGE_HASH_ALGORITHM),
+            this.getValue(NuGetPackageAttributes.PACKAGE_SIZE)?.toLong(),
             this.getDate(NuGetPackageAttributes.PUBLISHED),
             this.attributes[NuGetPackageAttributes.REQUIRE_LICENSE_ACCEPTANCE]?.toBoolean() ?: false,
-            this.attributes[NuGetPackageAttributes.SUMMARY]
+            this.getValue(NuGetPackageAttributes.SUMMARY)
     )
+}
+
+internal fun NuGetIndexEntry.getValue(key: String): String? {
+    return NuGetUtils.getValue(this.attributes, key)
 }
 
 private fun NuGetIndexEntry.getDate(key: String): Date {
@@ -50,7 +55,7 @@ private fun NuGetIndexEntry.getDate(key: String): Date {
 
 private fun NuGetIndexEntry.getDependencyGroups(registrationUrl: String): List<JsonPackageDependencyGroup> {
     val groups = LinkedHashMap<String, MutableList<JsonPackageDependency>>()
-    (this.attributes[NuGetPackageAttributes.DEPENDENCIES]?:"").split('|').forEach {
+    (this.getValue(NuGetPackageAttributes.DEPENDENCIES)?:"").split('|').forEach {
         val parts = it.split(':')
         when(parts.size) {
             2 -> {
@@ -58,7 +63,7 @@ private fun NuGetIndexEntry.getDependencyGroups(registrationUrl: String): List<J
                         "$registrationUrl#dependencygroup/${parts[0].toLowerCase()}",
                         "PackageDependency",
                         parts[0],
-                        registrationUrl,
+                        null,
                         parts[1]
                 ))
             }
@@ -67,7 +72,7 @@ private fun NuGetIndexEntry.getDependencyGroups(registrationUrl: String): List<J
                         "$registrationUrl#dependencygroup/${parts[2].toLowerCase()}/${parts[0].toLowerCase()}",
                         "PackageDependency",
                         parts[0],
-                        registrationUrl,
+                        null,
                         parts[1]
                 ))
             }

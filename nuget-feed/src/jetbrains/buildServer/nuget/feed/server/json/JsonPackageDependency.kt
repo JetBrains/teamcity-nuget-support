@@ -8,6 +8,6 @@ data class JsonPackageDependency(
         @SerializedName("@type")
         val atType: String,
         val id: String,
-        val registration: String,
+        val registration: String?,
         val range: String
 )
