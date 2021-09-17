@@ -55,6 +55,7 @@ dependencies {
     implementation project(':nuget-common')
     implementation project(':nuget-feed')
     implementation project(':nuget-server-common')
+    implementation 'org.glassfish.jersey.core:jersey-common:2.22.2'
 
     provided 'com.google.code.gson:gson:2.4'
     provided 'org.apache.httpcomponents:httpcore:4.3.3'
