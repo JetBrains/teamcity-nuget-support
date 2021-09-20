@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dsl-extension kind="trigger" type="nuget.simple" generateDslJar="true">
+    <class name="NuGetDependency">
+        <description>
+            [The NuGet Dependency Trigger](https://www.jetbrains.com/help/teamcity/?NuGet+Dependency+Trigger)
+            allows starting a new build if a NuGet packages update is detected in the NuGet repository.
+            Note that if a custom NuGet executable is used, it must be explicitly allowed on this server.
+        </description>
+    </class>
+    <function name="nuGetDependency">
+        <description>
+            Adds [The NuGet Dependency Trigger](https://www.jetbrains.com/help/teamcity/?NuGet+Dependency+Trigger)
+        </description>
+    </function>
+    <params>
+        <param name="nuget.exe" dslName="nugetExecutable" mandatory="true">
+            <description>
+                A custom path to NuGet.exe. Absolute paths are supported.
+            </description>
+        </param>
+
+        <param name="nuget.source" dslName="feedURL">
+            <description>
+                The NuGet packages feed URL to monitor packages changes.
+                Leave blank to use default NuGet feed.
+            </description>
+        </param>
+
+        <param name="nuget.username" dslName="username">
+            <description>
+                A username to access NuGet feed, leave blank if no authentication is required.
+            </description>
+        </param>
+
+        <param name="secure:nuget.password" dslName="password">
+            <description>
+                A password to access NuGet feed, leave blank if no authentication is required.
+            </description>
+        </param>
+
+        <param name="nuget.package" dslName="packageId" mandatory="true">
+            <description>
+                A Package Id to check for updates.
+            </description>
+        </param>
+
+        <param name="nuget.version" dslName="packageVersion">
+            <description>
+                Specify package version to check. Leave empty to check for latest version.
+            </description>
+        </param>
+
+        <param name="nuget.include.prerelease" dslName="includePrerelease" type="boolean" trueValue="true" falseValue="">
+            <description>
+                Trigger build if pre-release package version is detected.
+            </description>
+        </param>
+    </params>
+</dsl-extension>
