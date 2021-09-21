@@ -26,7 +26,7 @@ import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
 import jetbrains.buildServer.util.XmlUtil;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.http.HttpStatus;
 import org.jdom.*;
 import org.jdom.input.JDOMParseException;

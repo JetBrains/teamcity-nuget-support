@@ -34,7 +34,7 @@ import jetbrains.buildServer.tools.ServerToolManager;
 import jetbrains.buildServer.tools.ToolVersionReference;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
