@@ -13,9 +13,10 @@
         </description>
     </function>
     <params>
-        <param name="nuget.exe" dslName="nugetExecutable" mandatory="true">
+        <param name="nuget.exe" dslName="nugetPath" mandatory="true">
             <description>
                 A custom path to NuGet.exe. Absolute paths are supported.
+                It can reference to Nuget.exe Tool installed via Administration | Tools.
             </description>
         </param>
 
