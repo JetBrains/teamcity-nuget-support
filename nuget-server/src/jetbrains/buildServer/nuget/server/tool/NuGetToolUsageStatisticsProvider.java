@@ -42,11 +42,6 @@ public class NuGetToolUsageStatisticsProvider extends BaseExtensionUsageStatisti
     public String getOrderId() {
       return "nuget_versions";
     }
-
-    @NotNull
-    public PositionConstraint getConstraint() {
-      return PositionConstraint.UNDEFINED;
-    }
   };
 
   @NotNull private final ToolsRegistry myToolsRegistry;

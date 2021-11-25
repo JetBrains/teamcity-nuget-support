@@ -46,11 +46,6 @@ public class NuGetFeedUsageStatisticsProvider extends BaseDefaultUsageStatistics
     public String getOrderId() {
       return "nuget_api_calls";
     }
-
-    @NotNull
-    public PositionConstraint getConstraint() {
-      return PositionConstraint.UNDEFINED;
-    }
   };
 
   private final RecentNuGetRequests myRequests;
