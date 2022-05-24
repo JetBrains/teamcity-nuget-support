@@ -11,6 +11,7 @@ import org.jmock.Mockery
 import org.testng.Assert
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
+import java.util.function.BiFunction
 
 class NuGetPackagePathProviderTest {
 
@@ -18,7 +19,7 @@ class NuGetPackagePathProviderTest {
     fun testPackagePath(path: String, fileName: String, expectedPath: String?) {
         val m = Mockery()
         val extensionHolder = m.mock(ExtensionHolder::class.java)
-        val propertiesHolder = m.mock(InternalPropertiesHolder::class.java)
+        val propertiesHolder = m.mock(BiFunction::class.java)
         val preprocessor = ZipPreprocessor(AgentEventDispatcher(), propertiesHolder)
 
         m.checking(object: Expectations() {
