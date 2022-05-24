@@ -20,7 +20,7 @@ class NuGetPackagePathProviderTest {
         val m = Mockery()
         val extensionHolder = m.mock(ExtensionHolder::class.java)
         val propertiesHolder = m.mock(BiFunction::class.java)
-        val preprocessor = ZipPreprocessor(AgentEventDispatcher(), propertiesHolder)
+        val preprocessor = ZipPreprocessor(AgentEventDispatcher(), createTempDir(), propertiesHolder)
 
         m.checking(object: Expectations() {
             init {
