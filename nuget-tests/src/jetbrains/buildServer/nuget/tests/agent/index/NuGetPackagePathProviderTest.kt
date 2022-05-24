@@ -1,6 +1,7 @@
 package jetbrains.buildServer.nuget.tests.agent.index
 
 import jetbrains.buildServer.ExtensionHolder
+import jetbrains.buildServer.agent.BuildProgressLogger
 import jetbrains.buildServer.agent.InternalPropertiesHolder
 import jetbrains.buildServer.agent.impl.AgentEventDispatcher
 import jetbrains.buildServer.agent.impl.artifacts.ArchivePreprocessor
@@ -19,8 +20,8 @@ class NuGetPackagePathProviderTest {
     fun testPackagePath(path: String, fileName: String, expectedPath: String?) {
         val m = Mockery()
         val extensionHolder = m.mock(ExtensionHolder::class.java)
-        val propertiesHolder = m.mock(BiFunction::class.java)
-        val preprocessor = ZipPreprocessor(AgentEventDispatcher(), createTempDir(), BiFunction<String, String, String> {k, d -> d})
+        val buildProgressLogger = m.mock(BuildProgressLogger::class.java)
+        val preprocessor = ZipPreprocessor(buildProgressLogger, createTempDir(), BiFunction<String, String, String> {k, d -> d})
 
         m.checking(object: Expectations() {
             init {
