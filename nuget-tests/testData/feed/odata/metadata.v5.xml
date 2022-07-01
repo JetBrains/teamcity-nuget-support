@@ -15,7 +15,7 @@
         <Property Name="Created" Type="Edm.DateTime" Nullable="false" />
         <Property Name="Dependencies" Type="Edm.String" />
         <Property Name="Description" Type="Edm.String" />
-        <Property Name="DownloadCount" Type="Edm.Int32" Nullable="false" />
+        <Property Name="DownloadCount" Type="Edm.Int64" Nullable="false" />
         <Property Name="GalleryDetailsUrl" Type="Edm.String" />
         <Property Name="IconUrl" Type="Edm.String" />
         <Property Name="IsLatestVersion" Type="Edm.Boolean" Nullable="false" />
@@ -34,7 +34,7 @@
         <Property Name="Summary" Type="Edm.String" m:FC_KeepInContent="false" />
         <Property Name="Tags" Type="Edm.String" />
         <Property Name="Title" Type="Edm.String" />
-        <Property Name="VersionDownloadCount" Type="Edm.Int32" Nullable="false" />
+        <Property Name="VersionDownloadCount" Type="Edm.Int64" Nullable="false" />
         <Property Name="MinClientVersion" Type="Edm.String" />
         <Property Name="LastEdited" Type="Edm.DateTime" />
         <Property Name="LicenseUrl" Type="Edm.String" />
