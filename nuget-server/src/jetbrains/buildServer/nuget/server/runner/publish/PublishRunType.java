@@ -47,11 +47,13 @@ public class PublishRunType extends NuGetRunType {
     return PackagesConstants.PUBLISH_RUN_TYPE;
   }
 
+  @NotNull
   @Override
   public String getDisplayName() {
     return "NuGet Publish";
   }
 
+  @NotNull
   @Override
   public String getDescription() {
     return "Pushes and publishes NuGet package to a given feed";

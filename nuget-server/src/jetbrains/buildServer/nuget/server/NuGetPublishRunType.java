@@ -22,7 +22,10 @@ import jetbrains.buildServer.serverSide.RunTypeRegistry;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -73,5 +76,10 @@ public class NuGetPublishRunType extends RunType {
   @Override
   public Map<String, String> getDefaultRunnerProperties() {
     return null;
+  }
+
+  @NotNull
+  public Set<String> getTags() {
+    return new HashSet<>(Arrays.asList(".NET", "NuGet"));
   }
 }

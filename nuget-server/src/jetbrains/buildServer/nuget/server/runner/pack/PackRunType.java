@@ -28,8 +28,7 @@ import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.*;
 
@@ -50,11 +49,13 @@ public class PackRunType extends NuGetRunType {
     return PackagesConstants.PACK_RUN_TYPE;
   }
 
+  @NotNull
   @Override
   public String getDisplayName() {
     return "NuGet Pack";
   }
 
+  @NotNull
   @Override
   public String getDescription() {
     return "Creates a NuGet package from a given spec file";

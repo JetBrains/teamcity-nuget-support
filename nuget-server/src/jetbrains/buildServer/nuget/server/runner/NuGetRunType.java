@@ -30,9 +30,7 @@ import jetbrains.buildServer.tools.ToolVersion;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static jetbrains.buildServer.nuget.common.PackagesConstants.NUGET_PATH;
 
@@ -67,6 +65,11 @@ public abstract class NuGetRunType extends RunType {
   @Override
   @NotNull
   public abstract PropertiesProcessor getRunnerPropertiesProcessor();
+
+  @NotNull
+  public Set<String> getTags() {
+    return new HashSet<>(Arrays.asList(".NET", "NuGet"));
+  }
 
   @NotNull
   protected abstract String getEditJsp();
