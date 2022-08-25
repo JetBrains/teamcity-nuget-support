@@ -180,7 +180,7 @@ public class RepositoryManagerImpl implements RepositoryManager, CachingTypedIdG
     }
 
     @Override
-    public void addGeneratedId(@NotNull String id) {
+    public void addGeneratedId(@NotNull String id, @NotNull final Map<String, String> props) {
     }
 
     @Nullable
