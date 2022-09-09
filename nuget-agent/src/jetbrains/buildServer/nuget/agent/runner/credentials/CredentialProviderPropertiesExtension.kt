@@ -1,37 +1,36 @@
 package jetbrains.buildServer.nuget.agent.runner.credentials
 
-import jetbrains.buildServer.agent.AgentLifeCycleAdapter
-import jetbrains.buildServer.agent.AgentLifeCycleListener
-import jetbrains.buildServer.agent.BuildAgent
-import jetbrains.buildServer.agent.ToolProvider
-import jetbrains.buildServer.nuget.common.PackagesConstants
+import jetbrains.buildServer.ExtensionHolder
+import jetbrains.buildServer.agent.config.AgentParametersSupplier
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider
-import jetbrains.buildServer.util.EventDispatcher
 import org.apache.log4j.Logger
 import java.io.File
 
 class CredentialProviderPropertiesExtension(
-        events: EventDispatcher<AgentLifeCycleListener>,
+        extensionHolder: ExtensionHolder,
         private val _nuGetTeamCityProvider: NuGetTeamCityProvider)
-    : AgentLifeCycleAdapter() {
+    : AgentParametersSupplier {
 
     init {
-        events.addListener(this)
+        extensionHolder.registerExtension(AgentParametersSupplier::class.java, javaClass.name, this)
     }
 
-    override fun beforeAgentConfigurationLoaded(agent: BuildAgent) {
+    override fun getParameters(): MutableMap<String, String> {
+        val parameters = mutableMapOf<String, String>()
         LOG.debug("Locating credential providers")
-        addParam(agent,"DotNetCredentialProvider4.0.0_Path", _nuGetTeamCityProvider.pluginFxPath)
+        addParam(parameters,"DotNetCredentialProvider4.0.0_Path", _nuGetTeamCityProvider.pluginFxPath)
         for (version in (1 .. 10).filter { it != 4 }) {
-            addParam(agent,"DotNetCredentialProvider$version.0.0_Path", _nuGetTeamCityProvider.getPluginCorePath(version))
+            addParam(parameters,"DotNetCredentialProvider$version.0.0_Path", _nuGetTeamCityProvider.getPluginCorePath(version))
         }
+
+        return parameters
     }
 
-    private fun addParam(agent: BuildAgent, paramName: String, credentialProviderPath: String) {
+    private fun addParam(parameters: MutableMap<String, String>, paramName: String, credentialProviderPath: String) {
         val credentialProvider = File(credentialProviderPath)
         if (credentialProvider.exists() && credentialProvider.isFile) {
             LOG.info("Found .NET credential provider $paramName at $credentialProviderPath")
-            agent.configuration.addConfigurationParameter(paramName, credentialProviderPath)
+            parameters.put(paramName, credentialProviderPath)
         }
     }
 
