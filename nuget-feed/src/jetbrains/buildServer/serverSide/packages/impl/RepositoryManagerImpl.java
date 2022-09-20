@@ -185,7 +185,7 @@ public class RepositoryManagerImpl implements RepositoryManager, CachingTypedIdG
 
     @Nullable
     @Override
-    public String createNextId(@NotNull Map<String, String> parameters) {
+    public String newId(@NotNull Map<String, String> parameters) {
         final String type = parameters.get(RepositoryConstants.REPOSITORY_TYPE_KEY);
         if (type == null) return null;
 
@@ -198,6 +198,6 @@ public class RepositoryManagerImpl implements RepositoryManager, CachingTypedIdG
   @Nullable
   @Override
   public String showNextId(@NotNull Map<String, String> parameters) {
-    return createNextId(parameters);
+    return newId(parameters);
   }
 }
