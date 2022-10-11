@@ -32,12 +32,12 @@
   <Choose>
     <When Condition="'$(TargetFramework)' == 'net46' or '$(TargetFramework)' == 'netcoreapp1.0'">
       <ItemGroup>
-        <PackageReference Include="NuGet.Protocol" Version="4.9.4" />
+        <PackageReference Include="NuGet.Protocol" Version="4.9.6+a32bce39889f724fbd11cfd12e946f802168b583" />
       </ItemGroup>      
     </When>
     <Otherwise>
       <ItemGroup>
-        <PackageReference Include="NuGet.Protocol" Version="5.2.0" />
+        <PackageReference Include="NuGet.Protocol" Version="4.9.6+a32bce39889f724fbd11cfd12e946f802168b583" />
       </ItemGroup>
     </Otherwise>
   </Choose>
