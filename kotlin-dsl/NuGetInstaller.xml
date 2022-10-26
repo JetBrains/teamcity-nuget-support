@@ -48,7 +48,7 @@
             <description>
                 Uses the NuGet update command to update all packages under solution
             </description>
-            <option name="updateParams" value="true">
+            <option name="updateParams" value="">
                 <param name="nuget.excludeVersion" dslName="excludeVersion" type="boolean" trueValue="true" falseValue="">
                     <description>Exclude version from package folder names</description>
                 </param>
@@ -79,4 +79,33 @@
             <option name="PackagesConfig" value="perConfig"/>
         </enum>
     </types>
+  <examples>
+    <example>
+      <description>
+        Installs all NuGet packages referenced in the Visual Studio solution file "my_solution.sln" including the pre-release packages.
+        Uses default NuGet tool version installed on the TeamCity server.
+      </description>
+      <code>
+        nuGetInstaller {
+          toolPath = "%teamcity.tool.NuGet.CommandLine.DEFAULT%"
+          projects = "my_solution.sln"
+          updatePackages = updateParams {
+            includePreRelease = true
+          }
+        }
+      </code>
+    </example>
+    <example>
+      <description>
+        Installs all NuGet packages referenced in the Visual Studio solution file "my_solution.sln".
+        Uses a custom path to the NuGet executable.
+      </description>
+      <code>
+        nuGetInstaller {
+          toolPath = "&lt;path to NuGet executable on agent>"
+          projects = "my_solution.sln"
+        }
+      </code>
+    </example>
+  </examples>
 </dsl-extension>
