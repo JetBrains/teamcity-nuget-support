@@ -69,4 +69,25 @@
             <description>Enter additional parameters to use when calling nuget pack command.</description>
         </param>
     </params>
+    <examples>
+      <example>
+        <description>
+          Creates NuGet packages according to provided .nuspec files.
+          Uses the default NuGet tool version installed on the TeamCity server.
+          Publishes created packages as TeamCity artifacts.
+        </description>
+        <code>
+          nuGetPack {
+            toolPath = "%teamcity.tool.NuGet.CommandLine.DEFAULT%"
+            paths = """
+              main-packages/packages.nuspec
+              supplemental/packages.nuspec
+            """.trimIndent()
+            outputDir = "target"
+            cleanOutputDir = true
+            publishPackages = true
+          }
+        </code>
+      </example>
+    </examples>
 </dsl-extension>
