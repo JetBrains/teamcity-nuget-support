@@ -35,4 +35,21 @@
             <description>Enter additional parameters to use when calling nuget push command.</description>
         </param>
     </params>
+    <examples>
+      <example>
+          <description>
+              Publishes "target/app.nupkg" NuGet package to "https://api.nuget.org/v3/index.json" NuGet feed.
+              Uses the specified API key for the publishing.
+              Note: instead of an actual API key a [token](https://www.jetbrains.com/help/teamcity/storing-project-settings-in-version-control.html#Storing+Secure+Settings) should be provided.
+          </description>
+          <code>
+              nuGetPublish {
+              toolPath = "%teamcity.tool.NuGet.CommandLine.DEFAULT%"
+              packages = "target/app.nupkg"
+              serverUrl = "https://api.nuget.org/v3/index.json"
+              apiKey = "&lt;a token for an API key>"
+              }
+          </code>
+      </example>
+    </examples>
 </dsl-extension>
