@@ -25,6 +25,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     provided project(':nuget-common')
     provided project(':nuget-server-common')
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-api.jar")
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-impl.jar")
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-api.jar")
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web.jar")

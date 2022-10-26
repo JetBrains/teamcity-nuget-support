@@ -25,6 +25,7 @@ dependencies {
     compile project(':nuget-common')
     compile "org.jetbrains.kotlin:kotlin-stdlib"
     provided "org.jetbrains.teamcity.internal:agent:$teamcityVersion"
+    provided files("${teamcityDir}/buildAgent/lib/agent-openapi.jar")
     provided files("${teamcityDir}/buildAgent/lib/common-impl.jar")
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
 }
