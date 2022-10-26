@@ -30,4 +30,19 @@
       </description>
     </param>
   </params>
+  <examples>
+    <example>
+      <description>
+        Defines a NuGet feed in the project. Watches for any NuGet packages published as artifacts of the builds of this project and adds them to the feed.
+      </description>
+      <code>
+        nuGetFeed {
+          id = "repository-nuget-MyProjectFeed"
+          name = "MyProjectFeed"
+          description = "A feed for all NuGet packages published as artifacts in my project"
+          indexPackages = true
+        }
+      </code>
+    </example>
+  </examples>
 </dsl-extension>

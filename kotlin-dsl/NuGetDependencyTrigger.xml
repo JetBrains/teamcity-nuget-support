@@ -57,4 +57,22 @@
             </description>
         </param>
     </params>
+  <examples>
+    <example>
+      <description>
+        Watches for a change of the package with specified id in the specified NuGet feed.
+        Uses the specified credentials to access the feed and the default NuGet executable installed on the TeamCity server.
+        Note: instead of an actual password a [token](https://www.jetbrains.com/help/teamcity/storing-project-settings-in-version-control.html#Storing+Secure+Settings) should be provided.
+      </description>
+      <code>
+        nuGetDependency {
+          nugetPath = "%teamcity.tool.NuGet.CommandLine.DEFAULT%"
+          feedURL = "&lt;NuGet feed URL>"
+          packageId = "&lt;NuGet package id>"
+          username = "user"
+          password = "&lt;a token representing a password>"
+        }
+      </code>
+    </example>
+  </examples>
 </dsl-extension>

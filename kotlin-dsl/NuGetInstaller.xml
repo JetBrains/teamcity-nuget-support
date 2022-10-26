@@ -83,7 +83,7 @@
     <example>
       <description>
         Installs all NuGet packages referenced in the Visual Studio solution file "my_solution.sln" including the pre-release packages.
-        Uses default NuGet tool version installed on the TeamCity server.
+        Uses the default NuGet tool version installed on the TeamCity server.
       </description>
       <code>
         nuGetInstaller {
