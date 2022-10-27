@@ -44,10 +44,10 @@
           </description>
           <code>
               nuGetPublish {
-              toolPath = "%teamcity.tool.NuGet.CommandLine.DEFAULT%"
-              packages = "target/app.nupkg"
-              serverUrl = "https://api.nuget.org/v3/index.json"
-              apiKey = "&lt;a token for an API key>"
+                toolPath = "%teamcity.tool.NuGet.CommandLine.DEFAULT%"
+                packages = "target/app.nupkg"
+                serverUrl = "https://api.nuget.org/v3/index.json"
+                apiKey = "&lt;a token for an API key>"
               }
           </code>
       </example>
