@@ -82,4 +82,10 @@ public class NuGetPublishRunType extends RunType {
   public Set<String> getTags() {
     return new HashSet<>(Arrays.asList(".NET", "NuGet"));
   }
+
+  @Nullable
+  @Override
+  public String getIconUrl() {
+    return myPluginDescriptor.getPluginResourcesPath("nuget-runner.svg");
+  }
 }

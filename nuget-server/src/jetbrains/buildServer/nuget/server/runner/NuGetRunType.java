@@ -71,6 +71,12 @@ public abstract class NuGetRunType extends RunType {
     return new HashSet<>(Arrays.asList(".NET", "NuGet"));
   }
 
+  @Nullable
+  @Override
+  public String getIconUrl() {
+    return myDescriptor.getPluginResourcesPath("nuget-runner.svg");
+  }
+
   @NotNull
   protected abstract String getEditJsp();
 
