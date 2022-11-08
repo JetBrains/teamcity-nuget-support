@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.rodm.teamcity-server' version '1.1.1'
+    id 'com.github.rodm.teamcity-server' version '1.4.1'
 }
 
 teamcity {
@@ -22,6 +22,11 @@ dependencies {
     testCompile files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web.jar")
     testRuntime files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/db.jar")
     testRuntime files("${teamcityDir}/buildAgent/lib/server-logging.jar")
+    provided "org.jetbrains.teamcity.internal:agent:$teamcityVersion"
+    provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-tools.jar")
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-impl.jar")
 }
 
 sourceSets {

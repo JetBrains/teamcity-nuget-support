@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.rodm.teamcity-common' version '1.1.1'
+    id 'com.github.rodm.teamcity-common' version '1.4.1'
 }
 
 teamcity {
@@ -9,9 +9,10 @@ teamcity {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib"
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
+    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/joda-time.jar")
 }
 
 tasks.withType(JavaCompile) {
-    sourceCompatibility = "1.6"
-    targetCompatibility = "1.6"
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
 }
