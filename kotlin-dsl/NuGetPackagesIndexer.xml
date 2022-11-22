@@ -20,4 +20,16 @@
             </description>
         </param>
     </params>
+    <examples>
+        <example>
+            <description>
+                Enables [NuGet packages indexing](https://confluence.jetbrains.com/display/TCDL/NuGet) for feed NugetFeed/MyFeed
+            </description>
+            <code>
+                nuGetPackagesIndexer {
+                    feed = "NugetFeed/MyFeed"
+                }
+            </code>
+        </example>
+    </examples>
 </dsl-extension>
