@@ -12,7 +12,7 @@ ext {
 
 configurations.implementation {
     exclude group: "javax.ws.rs" // bundling of this dependency causes https://youtrack.jetbrains.com/issue/TW-78779
-    exclude group: "com.google.code.gson" // Gson 2.9 is bundled with TeamCity
+    exclude group: "com.google.code.gson" // without this line Gson of different version than the one bundled with TeamCity appears in the artifact
 }
 
 dependencies {
@@ -27,6 +27,7 @@ dependencies {
     compile "org.apache.olingo:olingo-odata2-api-annotation:$olingoVersion"
     compile "org.apache.olingo:olingo-odata2-core:$olingoVersion"
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    provided 'com.google.code.gson:gson:2.9'
     provided project(':nuget-common')
     provided project(':nuget-server-common')
     provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-api.jar")
