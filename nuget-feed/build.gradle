@@ -12,7 +12,6 @@ ext {
 
 configurations.implementation {
     exclude group: "javax.ws.rs" // bundling of this dependency causes https://youtrack.jetbrains.com/issue/TW-78779
-    exclude group: "com.google.code.gson" // without this line Gson of different version than the one bundled with TeamCity appears in the artifact
 }
 
 dependencies {
