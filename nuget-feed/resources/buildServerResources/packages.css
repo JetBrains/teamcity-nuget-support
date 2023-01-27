@@ -19,7 +19,7 @@
 }
 
 .authEndpoints a.selected {
-    color: #3f3f3f;
+    color: var(--ring-text-color, #1f2326);
     text-decoration: none;
     font-weight: bold;
     cursor:default;
