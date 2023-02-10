@@ -3,67 +3,81 @@ package jetbrains.buildServer.nuget.agent.serviceMessages
 import jetbrains.buildServer.agent.AgentRunningBuild
 import jetbrains.buildServer.agent.impl.artifacts.ArtifactProcessorUtils
 import jetbrains.buildServer.http.HttpUserAgent
+import jetbrains.buildServer.util.HTTPRequestBuilder
+import jetbrains.buildServer.util.HTTPRequestBuilder.DelegatingRequestHandler
 import jetbrains.buildServer.util.StringUtil
-import org.apache.commons.httpclient.Header
-import org.apache.commons.httpclient.HttpClient
-import org.apache.commons.httpclient.HttpMethod
-import org.apache.commons.httpclient.methods.PutMethod
+import jetbrains.buildServer.util.executors.ExecutorsFactory
+import jetbrains.buildServer.util.http.EntityProducer
+import jetbrains.buildServer.util.http.HttpMethod.PUT
 import org.apache.commons.httpclient.methods.RequestEntity
 import org.apache.commons.httpclient.methods.multipart.FilePart
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity
 import org.apache.commons.httpclient.params.HttpMethodParams
+import org.apache.http.HttpEntity
+import org.apache.http.entity.mime.HttpMultipartMode
+import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.jetbrains.annotations.NotNull
 import java.io.File
 import java.util.*
 
 class NuGetPackageServiceFeedTransportProviderImpl(
-        @NotNull private val myUrlProvider: NuGetPackageServiceFeedUrlProvider
+    @NotNull private val myUrlProvider: NuGetPackageServiceFeedUrlProvider
 ) : NuGetPackageServiceFeedTransportProvider {
 
     override fun createTransport(build: AgentRunningBuild): NuGetPackageServiceFeedTransport {
         val serverUrl = myUrlProvider.getUrl(build)
-        val httpClient = ArtifactProcessorUtils.prepareHttpClient(serverUrl, build)
+        val httpClient = ArtifactProcessorUtils.prepareHttpRequest(serverUrl, build)
         return NuGetPackageServiceFeedTransportImpl(httpClient, serverUrl)
     }
 
     private class NuGetPackageServiceFeedTransportImpl(
-            private val myHttpClient: HttpClient,
-            private val myServerUrl: String
+        private val myHttpRequest: HTTPRequestBuilder,
+        private val myServerUrl: String
     ) : NuGetPackageServiceFeedTransport {
+        val myExecutorService by lazy {
+            ExecutorsFactory.newDaemonExecutor("NuGetPackgeServiceFeedTransportProvider")
+        }
+
         override fun sendPackage(apiKey: String, file: File): NuGetPackageServiceFeedResponse {
-            val httpMethod = createHttpMethod(apiKey, file)
-            try {
-                val statusCode = myHttpClient.executeMethod(httpMethod)
-                val response = ArtifactProcessorUtils.readResponse(httpMethod)
-
-                return object: NuGetPackageServiceFeedResponse {
-                    override val statusCode: Int
-                        get() = statusCode
-                    override val message: String
-                        get() = response
-                    override val isSuccessful: Boolean
-                        get() = statusCode == 200 && StringUtil.isEmptyOrSpaces(message)
+            populateRequest(apiKey, file)
+            return DelegatingRequestHandler().doAsyncRequest(myHttpRequest.buildAsync())
+                .get()
+                .use { response ->
+                    val responseBody = response.bodyAsString
+                    object : NuGetPackageServiceFeedResponse {
+                        override val statusCode: Int
+                            get() = response.statusCode
+                        override val message: String
+                            get() = StringUtil.emptyIfNull(responseBody)
+                        override val isSuccessful: Boolean
+                            get() = statusCode == 200 && StringUtil.isEmptyOrSpaces(message)
+                    }
                 }
-            } finally {
-                httpMethod.releaseConnection()
-            }
         }
 
-        private fun createHttpMethod(apiKey: String, file: File): HttpMethod {
-            val params = HttpMethodParams()
-            val put = PutMethod(myServerUrl)
-            put.doAuthentication = true
-            put.addRequestHeader(Header(NUGET_APIKEY_HEADER, apiKey))
-            put.requestEntity = createRequestEntity(file, params)
+        private fun populateRequest(apiKey: String, file: File) {
+            myHttpRequest
+                .withMethod(PUT)
+                .withHeader(NUGET_APIKEY_HEADER, apiKey)
+                .withHeader("User-Agent", HttpUserAgent.getUserAgent())
+                .withData(object : EntityProducer {
+                    override fun entity4(): HttpEntity = createEntity(file)
 
-            HttpUserAgent.addHeader(put)
+                    override fun entity3(): RequestEntity = createLegacyEntity(file)
 
-            return put
+                })
+                .withExecutorService(myExecutorService)
+
         }
 
-        private fun createRequestEntity(file: File, params: HttpMethodParams): RequestEntity {
+        private fun createEntity(file: File): HttpEntity = MultipartEntityBuilder.create()
+            .setMode(HttpMultipartMode.BROWSER_COMPATIBLE)
+            .addBinaryBody(PACKAGE_PART_NAME, file)
+            .build()
+
+        private fun createLegacyEntity(file: File): RequestEntity {
             val parts = Collections.singleton(FilePart(PACKAGE_PART_NAME, file.name, file))
-            return MultipartRequestEntity(parts.toTypedArray(), params)
+            return MultipartRequestEntity(parts.toTypedArray(), HttpMethodParams())
         }
     }
 
