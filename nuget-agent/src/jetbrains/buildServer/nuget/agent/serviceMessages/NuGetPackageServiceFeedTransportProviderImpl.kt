@@ -40,19 +40,19 @@ class NuGetPackageServiceFeedTransportProviderImpl(
 
         override fun sendPackage(apiKey: String, file: File): NuGetPackageServiceFeedResponse {
             populateRequest(apiKey, file)
-            return DelegatingRequestHandler().doAsyncRequest(myHttpRequest.buildAsync())
-                .get()
-                .use { response ->
-                    val responseBody = response.bodyAsString
-                    object : NuGetPackageServiceFeedResponse {
-                        override val statusCode: Int
-                            get() = response.statusCode
-                        override val message: String
-                            get() = StringUtil.emptyIfNull(responseBody)
-                        override val isSuccessful: Boolean
-                            get() = statusCode == 200 && StringUtil.isEmptyOrSpaces(message)
-                    }
+            val request = DelegatingRequestHandler().doSyncRequest(myHttpRequest.build())
+
+            return request.use { response ->
+                val responseBody = response.bodyAsString
+                object : NuGetPackageServiceFeedResponse {
+                    override val statusCode: Int
+                        get() = response.statusCode
+                    override val message: String
+                        get() = StringUtil.emptyIfNull(responseBody)
+                    override val isSuccessful: Boolean
+                        get() = statusCode == 200 && StringUtil.isEmptyOrSpaces(message)
                 }
+            }
         }
 
         private fun populateRequest(apiKey: String, file: File) {
