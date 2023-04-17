@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.server.exec.ListPackagesResult;
 import jetbrains.buildServer.nuget.server.exec.SourcePackageInfo;
 import jetbrains.buildServer.nuget.server.trigger.impl.checker.PackageChecker;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Mockery;
@@ -52,7 +53,7 @@ public abstract class PackageCheckerTestBase<T extends PackageChecker> extends T
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myFeed = m.mock(NuGetFeedClient.class);
     myCommand = m.mock(ListPackagesCommand.class);
     mySettings = m.mock(PackageCheckerSettings.class);

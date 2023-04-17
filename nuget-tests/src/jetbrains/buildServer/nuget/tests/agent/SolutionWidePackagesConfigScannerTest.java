@@ -20,6 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.RunBuildException;
 import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.SolutionWidePackagesConfigScanner;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.TestFor;
 import junit.framework.Assert;
 import org.jmock.Expectations;
@@ -49,7 +50,7 @@ public class SolutionWidePackagesConfigScannerTest extends BaseTestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myHome = createTempDir();
     myPackagesOutput = createTempDir();
     mySln = new File(myHome, "foo.sln");

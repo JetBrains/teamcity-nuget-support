@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResol
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.*;
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -50,7 +51,7 @@ public class LocateNuGetConfigBuildProcessTest extends BuildProcessTestCase {
   protected void setUp() throws Exception {
     super.setUp();
     myRoot = createTempDir();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     log = m.mock(BuildProgressLogger.class);
     ps = m.mock(NuGetFetchParameters.class);
     cb = m.mock(PackagesInstallerCallback.class);

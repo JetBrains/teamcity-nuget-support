@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.common.index.LocalNuGetPackageItemsFactory;
 import jetbrains.buildServer.nuget.common.index.NuGetPackageStructureVisitor;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.CollectionsUtil;
 import jetbrains.buildServer.util.FileUtil;
@@ -45,6 +46,8 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+import static jetbrains.buildServer.nuget.tests.util.TCJMockUtils.createInstance;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 06.09.11 22:11
@@ -57,7 +60,7 @@ public class LocalNuGetPackageItemsFactoryTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = createInstance();
     myStreams = new HashSet<InputStream>();
   }
 

@@ -28,6 +28,7 @@ import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessContinuation;
 import jetbrains.buildServer.nuget.common.PackagesInstallMode;
 import jetbrains.buildServer.nuget.tests.integration.IntegrationTestBase;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+
+import static jetbrains.buildServer.nuget.common.PackagesInstallMode.VIA_INSTALL;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -80,8 +83,8 @@ public abstract class PackageInstallerBuilderTestBase extends IntegrationTestBas
     myProcessesList = new ArrayList<BuildProcess>();
     final InstallStages stages = new InstallStagesImpl(cont("list", myProcessesList));
 
-    m = new Mockery();
-    myInstallMode = PackagesInstallMode.VIA_INSTALL;
+    m = TCJMockUtils.createInstance();
+    myInstallMode = VIA_INSTALL;
     myExecutedProcesses = new ArrayList<String>();
     myActionFactory = m.mock(NuGetActionFactory.class);
     myContext = m.mock(BuildRunnerContext.class);

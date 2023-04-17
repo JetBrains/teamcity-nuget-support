@@ -20,6 +20,7 @@ import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedClient;
 import jetbrains.buildServer.nuget.feedReader.NuGetFeedReader;
 import jetbrains.buildServer.nuget.server.tool.impl.AvailableOnPackagesNugetOrg;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.tools.available.FetchAvailableToolsResult;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -43,7 +44,7 @@ public class AvailableOnPackagesNugetOrgTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myClient = m.mock(NuGetFeedClient.class);
     myReader = m.mock(NuGetFeedReader.class);
 

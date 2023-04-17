@@ -19,12 +19,10 @@ package jetbrains.buildServer.nuget.tests.server;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.TempFolderProvider;
 import jetbrains.buildServer.nuget.common.auth.PackageSource;
-import jetbrains.buildServer.nuget.server.exec.ListPackagesCommand;
-import jetbrains.buildServer.nuget.server.exec.NuGetExecutionException;
-import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
-import jetbrains.buildServer.nuget.server.exec.SourcePackageReference;
+import jetbrains.buildServer.nuget.server.exec.*;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackageCommandProcessor;
 import jetbrains.buildServer.nuget.server.exec.impl.ListPackagesCommandImpl;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.StringUtil;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -51,7 +49,7 @@ public class ListPackagesCommandTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     exec = m.mock(NuGetExecutor.class);
     tmpFiles = m.mock(TempFolderProvider.class);
     cmd = new ListPackagesCommandImpl(exec, tmpFiles);
@@ -81,7 +79,7 @@ public class ListPackagesCommandTest extends BaseTestCase {
         public void describeTo(Description description) {
           description.appendText("Expected commandline: " + StringUtil.join(", ", list));
         }
-      }), with(Collections.<PackageSource>emptyList()), with(any(ListPackageCommandProcessor.class)));
+      }), with(Collections.<PackageSource>emptyList()), with(any(NuGetOutputProcessor.class)));
       will(returnValue(result));
       allowing(tmpFiles).getTempDirectory(); will(returnValue(createTempDir()));
     }});

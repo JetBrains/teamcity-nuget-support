@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.agent.runner.pack.PackRunner;
 import jetbrains.buildServer.nuget.agent.util.BuildProcessBase;
 import jetbrains.buildServer.nuget.tests.agent.mock.MockPackParameters;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
 import junit.framework.Assert;
@@ -41,6 +42,9 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
+import static java.util.Collections.unmodifiableMap;
+import static jetbrains.buildServer.agent.BuildFinishedStatus.FINISHED_SUCCESS;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -66,7 +70,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myActionFactory = m.mock(NuGetActionFactory.class);
     myParametersFactory = m.mock(PackagesParametersFactory.class);
     myCleaner = m.mock(SmartDirectoryCleaner.class);
@@ -93,7 +97,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
       allowing(myLogger).activityFinished(with(any(String.class)), with(any(String.class)));
 
       allowing(myBuild).getBuildId(); will(returnValue(42L));
-      allowing(myBuild).getSharedConfigParameters(); will(returnValue(Collections.unmodifiableMap(myConfigParameters)));
+      allowing(myBuild).getSharedConfigParameters(); will(returnValue(unmodifiableMap(myConfigParameters)));
       allowing(myBuild).addSharedConfigParameter(with(any(String.class)), with(any(String.class)));
       will(new CustomAction("Add config parameter") {
         public Object invoke(Invocation invocation) throws Throwable {
@@ -113,7 +117,7 @@ public class PackRunnerTest extends BuildProcessTestCase {
             @Override
             protected BuildFinishedStatus waitForImpl() throws RunBuildException {
               myDetectedFiles.add(new ArrayList<File>(detectedFiles));
-              return BuildFinishedStatus.FINISHED_SUCCESS;
+              return FINISHED_SUCCESS;
             }
           };
         }

@@ -22,6 +22,7 @@ import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.util.sln.SolutionFileParser;
 import jetbrains.buildServer.nuget.agent.util.sln.impl.SolutionParserImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.FileUtil;
 import junit.framework.Assert;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,7 @@ public class SolutionParserTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myLogger = m.mock(BuildProgressLogger.class);
   }
 

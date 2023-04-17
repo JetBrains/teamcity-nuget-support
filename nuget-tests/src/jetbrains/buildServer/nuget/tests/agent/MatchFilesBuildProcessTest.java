@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.agent.parameters.NuGetPublishParameters;
 import jetbrains.buildServer.nuget.agent.runner.publish.MatchFilesBuildProcess;
 import jetbrains.buildServer.nuget.tests.Strings;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -35,6 +36,8 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static jetbrains.buildServer.nuget.agent.util.MatchFilesBuildProcessBase.Callback;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -56,12 +59,12 @@ public class MatchFilesBuildProcessTest extends BuildProcessTestCase {
   protected void setUp() throws Exception {
     super.setUp();
 
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     files = new ArrayList<String>();
     build = m.mock(AgentRunningBuild.class);
     ctx = m.mock(BuildRunnerContext.class);
     params = m.mock(NuGetPublishParameters.class);
-    cb = m.mock(MatchFilesBuildProcess.Callback.class);
+    cb = m.mock(Callback.class);
 
     match = new MatchFilesBuildProcess(ctx, params, cb);
     root = createTempDir();

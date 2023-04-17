@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestMode;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeFactory;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeTeamCity;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;
@@ -45,7 +46,7 @@ public class CheckRequestModeFactoryTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myInfo = m.mock(SystemInfo.class);
     myFactory = new CheckRequestModeFactory(myInfo);
   }

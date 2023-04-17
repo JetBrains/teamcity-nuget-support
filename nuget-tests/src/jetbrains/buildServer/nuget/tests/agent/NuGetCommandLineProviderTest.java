@@ -30,6 +30,7 @@ import jetbrains.buildServer.nuget.agent.util.CommandLineExecutor;
 import jetbrains.buildServer.nuget.agent.util.SystemInformation;
 import jetbrains.buildServer.nuget.agent.util.impl.NuGetCommandLineProvider;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.api.Invocation;
@@ -62,7 +63,7 @@ public class NuGetCommandLineProviderTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myWorkDir = createTempDir();
     myTempDir = createTempDir();
     myRootContext = m.mock(BuildRunnerContext.class);

@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.server.exec.NuGetExecutor;
 import jetbrains.buildServer.nuget.server.exec.NuGetOutputProcessor;
 import jetbrains.buildServer.nuget.server.exec.impl.NuGetExecutorImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -49,7 +50,7 @@ public class NuGetExecutorTest extends IntegrationTestBase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     info = m.mock(NuGetTeamCityProvider.class);
     mySystemInfo = m.mock(SystemInfo.class);
     myTempDir = m.mock(TempFolderProvider.class);

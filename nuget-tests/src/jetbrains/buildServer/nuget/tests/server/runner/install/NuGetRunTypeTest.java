@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.runner.install;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.runner.NuGetRunType;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.serverSide.InvalidProperty;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.tools.ServerToolManager;
@@ -44,7 +45,7 @@ public abstract class NuGetRunTypeTest<TRunType extends NuGetRunType> extends Ba
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myDescriptor = m.mock(PluginDescriptor.class);
     myToolManager = m.mock(ServerToolManager.class);
     myProjectManager = m.mock(ProjectManager.class);

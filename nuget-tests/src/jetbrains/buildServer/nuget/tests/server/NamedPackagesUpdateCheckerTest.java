@@ -38,6 +38,7 @@ import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeNuGe
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestModeTeamCity;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettingsImpl;
 import jetbrains.buildServer.nuget.server.util.SystemInfo;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.serverSide.BuildTypeEx;
 import jetbrains.buildServer.serverSide.CustomDataStorage;
 import jetbrains.buildServer.serverSide.SProject;
@@ -62,6 +63,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static jetbrains.buildServer.nuget.common.FeedConstants.PATH_TO_NUGET_EXE;
+import static jetbrains.buildServer.nuget.common.NuGetServerConstants.NUGET_SERVER_CLI_PATH_WHITELIST_PROP;
+import static jetbrains.buildServer.nuget.server.trigger.TriggerConstants.NUGET_PATH_PARAM_NAME;
+import static jetbrains.buildServer.nuget.server.trigger.TriggerConstants.PACKAGE;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -88,7 +94,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     super.setUp();
 
     myIsWindows = true;
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     context = m.mock(PolledTriggerContext.class);
     desr = m.mock(BuildTriggerDescriptor.class);
     store = m.mock(CustomDataStorage.class);
@@ -105,7 +111,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     checker = new NamedPackagesUpdateChecker(chk, new TriggerRequestFactory(new CheckRequestModeFactory(si), toolManager, new PackageCheckRequestFactory(new PackageCheckerSettingsImpl()), extensionHolder), new PackagesHashCalculator());
 
     final File nugetHome = createTempDir();
-    nugetFakePath = new File(nugetHome, FeedConstants.PATH_TO_NUGET_EXE);
+    nugetFakePath = new File(nugetHome, PATH_TO_NUGET_EXE);
     assertTrue(nugetFakePath.getParentFile().mkdirs());
     assertTrue(nugetFakePath.createNewFile());
     final String path = nugetFakePath.getPath();
@@ -126,10 +132,10 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       });
     }});
 
-    params.put(TriggerConstants.NUGET_PATH_PARAM_NAME, path);
-    params.put(TriggerConstants.PACKAGE, "NUnit");
+    params.put(NUGET_PATH_PARAM_NAME, path);
+    params.put(PACKAGE, "NUnit");
 
-    setInternalProperty(NuGetServerConstants.NUGET_SERVER_CLI_PATH_WHITELIST_PROP, path);
+    setInternalProperty(NUGET_SERVER_CLI_PATH_WHITELIST_PROP, path);
   }
 
   @Test

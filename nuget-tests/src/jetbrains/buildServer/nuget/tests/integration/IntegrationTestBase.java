@@ -40,6 +40,7 @@ import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProviderBase;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
@@ -53,6 +54,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
+import static com.intellij.openapi.util.SystemInfo.isWindows;
+import static java.lang.System.*;
+import static java.util.Collections.*;
+import static jetbrains.buildServer.agent.BuildFinishedStatus.FINISHED_SUCCESS;
+import static jetbrains.buildServer.dotNet.DotNetConstants.MONO_JIT;
+import static jetbrains.buildServer.nuget.tests.integration.NuGet.values;
+import static jetbrains.buildServer.nuget.tests.integration.Paths.getCredentialProviderHomeDirectory;
 
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -175,7 +184,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myCommandsOutput = new StringBuilder();
     myCommandsWarnings = new StringBuilder();
     myRoot = createTempDir();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myBuild = m.mock(AgentRunningBuild.class);
     myContext = m.mock(BuildRunnerContext.class);
     myLogger = m.mock(FlowLogger.class);
@@ -183,17 +192,17 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     myMockProcess = m.mock(BuildProcess.class);
     myFetchParameters = m.mock(NuGetFetchParameters.class);
     myBuildParametersMap = m.mock(BuildParametersMap.class);
-    File extensionsPath = Paths.getCredentialProviderHomeDirectory().getParentFile().getParentFile();
+    File extensionsPath = getCredentialProviderHomeDirectory().getParentFile().getParentFile();
     myNuGetTeamCityProvider = new NuGetTeamCityProviderBase(extensionsPath);
     myExtensionHolder = m.mock(ExtensionHolder.class);
 
     myPsm = m.mock(PackageSourceManager.class);
 
     final Map<String, String> configParameters = new TreeMap<>();
-    if (!SystemInfo.isWindows) {
-      configParameters.put(DotNetConstants.MONO_JIT, "/usr/bin/mono-sgen");
+    if (!isWindows) {
+      configParameters.put(MONO_JIT, "/usr/bin/mono-sgen");
     }
-    final Map<String, String> envParameters = new TreeMap<>(System.getenv());
+    final Map<String, String> envParameters = new TreeMap<>(getenv());
 
     m.checking(new Expectations(){{
       allowing(myContext).getBuildParameters(); will(returnValue(myBuildParametersMap));
@@ -218,7 +227,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
 
       allowing(myMockProcess).start();
       allowing(myMockProcess).waitFor();
-      will(returnValue(BuildFinishedStatus.FINISHED_SUCCESS));
+      will(returnValue(FINISHED_SUCCESS));
 
       allowing(myLogger).getFlowLogger(with(any(String.class)));
       will(returnValue(myLogger));
@@ -228,7 +237,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       will(new CustomAction("Log message") {
         public Object invoke(Invocation invocation) {
           String message = (String) invocation.getParameter(0);
-          System.out.println(message);
+          out.println(message);
           myCommandsOutput.append(message).append("\n");
           return null;
         }
@@ -237,7 +246,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       will(new CustomAction("Log warning") {
         public Object invoke(Invocation invocation) {
           String message = (String) invocation.getParameter(0);
-          System.out.println(message);
+          out.println(message);
           myCommandsWarnings.append(message).append("\n");
           return null;
         }
@@ -245,7 +254,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       allowing(myLogger).error(with(any(String.class)));
       will(new CustomAction("Log error") {
         public Object invoke(Invocation invocation) {
-          System.err.println((String)invocation.getParameter(0));
+          err.println((String)invocation.getParameter(0));
           return null;
         }
       });
@@ -256,7 +265,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       allowing(myLogger).logBuildProblem(with(any(BuildProblemData.class)));
 
       allowing(myBuild).getBuildId(); will(returnValue(42L));
-      allowing(myBuild).getSharedConfigParameters(); will(returnValue(Collections.unmodifiableMap(configParameters)));
+      allowing(myBuild).getSharedConfigParameters(); will(returnValue(unmodifiableMap(configParameters)));
       allowing(myBuild).addSharedConfigParameter(with(any(String.class)), with(any(String.class)));
       will(new CustomAction("Add config parameter") {
         public Object invoke(Invocation invocation) {
@@ -265,9 +274,9 @@ public class IntegrationTestBase extends BuildProcessTestCase {
         }
       });
 
-      allowing(myPsm).getGlobalPackageSources(myBuild); will(returnValue(Collections.unmodifiableSet(myGlobalSources)));
+      allowing(myPsm).getGlobalPackageSources(myBuild); will(returnValue(unmodifiableSet(myGlobalSources)));
 
-      allowing(myExtensionHolder).getExtensions(with(Expectations.<Class<AgentExtension>>anything())); will(returnValue(Collections.emptyList()));
+      allowing(myExtensionHolder).getExtensions(with(Expectations.<Class<AgentExtension>>anything())); will(returnValue(emptyList()));
     }});
 
     BuildAgentConfiguration configuration = m.mock(BuildAgentConfiguration.class);
@@ -299,7 +308,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     );
 
     // Add an access to run NuGet.exe
-    for (NuGet nuGetVersion : NuGet.values()) {
+    for (NuGet nuGetVersion : values()) {
       final String nuGet = nuGetVersion.getPath().getPath();
       enableExecution(nuGet);
     }

@@ -18,6 +18,7 @@ package jetbrains.buildServer.nuget.tests.server.tools;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.server.tool.NuGetServerToolPreProcessor;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.serverSide.ServerPaths;
 import jetbrains.buildServer.serverSide.ServerResponsibility;
 import jetbrains.buildServer.tools.installed.ToolPaths;
@@ -38,7 +39,7 @@ public class NuGetServerToolPreProcessorTest extends BaseTestCase {
   @BeforeMethod
   public void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     final ToolPaths toolPaths = m.mock(ToolPaths.class);
     final ServerResponsibility serverResponsibility = m.mock(ServerResponsibility.class);
     m.checking(new Expectations(){{

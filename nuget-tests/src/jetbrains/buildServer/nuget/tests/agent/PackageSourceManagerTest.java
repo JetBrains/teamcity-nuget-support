@@ -26,6 +26,7 @@ import jetbrains.buildServer.nuget.agent.parameters.impl.PackageSourceManagerImp
 import jetbrains.buildServer.nuget.common.PackagesConstants;
 import jetbrains.buildServer.nuget.common.auth.PackageSource;
 import jetbrains.buildServer.nuget.server.runner.auth.AuthBean;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.parameters.ReferencesResolverUtil;
 import jetbrains.buildServer.serverSide.SBuild;
 import jetbrains.buildServer.serverSide.parameters.BuildParametersProvider;
@@ -39,7 +40,9 @@ import org.testng.annotations.Test;
 
 import java.util.*;
 
+import static java.util.Collections.emptyList;
 import static jetbrains.buildServer.nuget.common.NuGetServerConstants.*;
+import static jetbrains.buildServer.nuget.common.PackagesConstants.AUTH_FEATURE_TYPE;
 
 /**
  * @author Evgeniy.Koshkin
@@ -64,7 +67,7 @@ public class PackageSourceManagerTest extends BaseTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        m = new Mockery();
+        m = TCJMockUtils.createInstance();
         final BuildParametersProvider parametersProvider = m.mock(BuildParametersProvider.class);
         myBuild = m.mock(AgentRunningBuildEx.class);
         myFeatures = new ArrayList<>();
@@ -74,8 +77,8 @@ public class PackageSourceManagerTest extends BaseTestCase {
             allowing(parametersProvider).getParameters(with(any(SBuild.class)), with(any(Boolean.class)));
             will(returnValue(myParameters));
             allowing(parametersProvider).getParametersAvailableOnAgent(with(any(SBuild.class)));
-            will(returnValue(Collections.emptyList()));
-            allowing(myBuild).getBuildFeaturesOfType(PackagesConstants.AUTH_FEATURE_TYPE);
+            will(returnValue(emptyList()));
+            allowing(myBuild).getBuildFeaturesOfType(AUTH_FEATURE_TYPE);
             will(returnValue(myFeatures));
             allowing(myBuild).getSharedBuildParameters();
             will(returnValue(new BuildParametersMapImpl(myParameters)));

@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResol
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.locate.PackagesConfigScanner;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.FileUtil;
 import junit.framework.Assert;
@@ -49,7 +50,7 @@ public abstract class PackagesConfigScannerTestBase extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myLogger = m.mock(BuildProgressLogger.class);
     m.checking(new Expectations(){{
       allowing(myLogger).message(with(any(String.class)));

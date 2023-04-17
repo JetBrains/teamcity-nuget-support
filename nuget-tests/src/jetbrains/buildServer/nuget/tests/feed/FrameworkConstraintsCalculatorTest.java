@@ -24,6 +24,7 @@ import jetbrains.buildServer.nuget.common.index.FrameworkConstraintsCalculator;
 import jetbrains.buildServer.nuget.common.index.NuGetPackageStructureAnalyser;
 import jetbrains.buildServer.nuget.common.index.NuGetPackageStructureVisitor;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.artifacts.BuildArtifact;
 import jetbrains.buildServer.util.FileUtil;
@@ -56,7 +57,7 @@ public class FrameworkConstraintsCalculatorTest extends BaseTestCase {
   @BeforeMethod
   public void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myStreams = new HashSet<InputStream>();
   }
 

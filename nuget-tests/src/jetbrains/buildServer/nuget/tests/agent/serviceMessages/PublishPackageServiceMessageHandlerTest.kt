@@ -2,7 +2,6 @@ package jetbrains.buildServer.nuget.tests.agent.serviceMessages
 
 import jetbrains.buildServer.BaseTestCase
 import jetbrains.buildServer.BuildProblemData
-import jetbrains.buildServer.BuildProblemDataEx
 import jetbrains.buildServer.agent.*
 import jetbrains.buildServer.agent.impl.AgentEventDispatcher
 import jetbrains.buildServer.messages.serviceMessages.ServiceMessage
@@ -15,6 +14,7 @@ import jetbrains.buildServer.nuget.common.PackageLoadException
 import jetbrains.buildServer.nuget.common.index.NuGetPackageData
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils
 import jetbrains.buildServer.problems.BuildProblemTypesEx
 import jetbrains.buildServer.util.EventDispatcher
 import jetbrains.buildServer.util.FileUtil
@@ -27,7 +27,6 @@ import org.testng.annotations.BeforeMethod
 import org.testng.annotations.DataProvider
 import org.testng.annotations.Test
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.InputStream
 import java.nio.file.Paths
 
@@ -54,7 +53,7 @@ class PublishPackageServiceMessageHandlerTest : BaseTestCase() {
 
     @BeforeMethod
     fun setupMethod() {
-        m = Mockery()
+        m = TCJMockUtils.createInstance()
         myPackagePublisher = m.mock(NuGetPackageServiceFeedPublisher::class.java)
         myPackageAnalyzer = m.mock(PackageAnalyzer::class.java)
         myDispatcher = AgentEventDispatcher()
@@ -73,6 +72,7 @@ class PublishPackageServiceMessageHandlerTest : BaseTestCase() {
                 will(returnValue(myLogger))
             }
         })
+
     }
 
     @Test
@@ -149,6 +149,7 @@ class PublishPackageServiceMessageHandlerTest : BaseTestCase() {
 
                 oneOf(myPackageAnalyzer).analyzePackage(with(any(InputStream::class.java)))
                 will(returnValue(metadata))
+                JavaUtil.addAllowing(this, myPackagePublisher);
             }
         })
 

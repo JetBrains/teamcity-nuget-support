@@ -21,6 +21,7 @@ import jetbrains.buildServer.nuget.server.trigger.impl.CheckablePackage;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceCheckerImpl;
 import jetbrains.buildServer.nuget.server.trigger.impl.source.PackageSourceChecker;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
 import org.jmock.Mockery;
@@ -50,7 +51,7 @@ public class NuGetSourceCheckerTest extends TriggerTestBase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     mySettings = m.mock(PackageCheckerSettings.class);
     myTimeService = m.mock(TimeService.class);
     myCheckerImpl = m.mock(PackageSourceChecker.class);

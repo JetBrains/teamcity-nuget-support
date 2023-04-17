@@ -25,6 +25,7 @@ import jetbrains.buildServer.nuget.server.trigger.impl.queue.PackageChangesCheck
 import jetbrains.buildServer.nuget.server.trigger.impl.queue.PackageCheckQueue;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettingsImpl;
 import jetbrains.buildServer.nuget.server.trigger.impl.source.NuGetSourceChecker;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.TimeService;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -37,6 +38,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ScheduledExecutorService;
+
+import static java.util.Arrays.asList;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -57,7 +60,7 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myIsShutdown = false;
     myChecker1 = m.mock(PackageChecker.class, "checker1");
     myChecker2 = m.mock(PackageChecker.class, "checker2");
@@ -66,7 +69,7 @@ public class PackageChangesCheckerThreadTest extends BaseTestCase {
     myTime = m.mock(TimeService.class);
     mySourceChecker = m.mock(NuGetSourceChecker.class);
 
-    myTask = new PackageChangesCheckerThreadTask(myQueue, myService, Arrays.asList(myChecker1, myChecker2), mySourceChecker);
+    myTask = new PackageChangesCheckerThreadTask(myQueue, myService, asList(myChecker1, myChecker2), mySourceChecker);
 
     m.checking(new Expectations(){{
       allowing(myTime).now(); will(returnValue(1L));

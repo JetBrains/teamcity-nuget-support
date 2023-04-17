@@ -22,6 +22,7 @@ import jetbrains.buildServer.agent.BuildProgressLogger;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolver;
 import jetbrains.buildServer.nuget.agent.runner.install.impl.RepositoryPathResolverImpl;
 import jetbrains.buildServer.nuget.tests.integration.Paths;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.FileUtil;
 import org.jmock.Expectations;
@@ -32,6 +33,8 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+
+import static jetbrains.buildServer.util.FileUtil.writeFileAndReportErrors;
 
 /**
  * @author Eugene Petrenko (eugene.petrenko@gmail.com)
@@ -48,10 +51,10 @@ public class RepositoryPathResolverTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myLogger = m.mock(BuildProgressLogger.class);
     myHome = createTempDir();
-    FileUtil.writeFileAndReportErrors(new File(myHome, PROJECT_SLN), "fake sln file content");
+    writeFileAndReportErrors(new File(myHome, PROJECT_SLN), "fake sln file content");
     myResolver = new RepositoryPathResolverImpl();
 
     m.checking(new Expectations(){{

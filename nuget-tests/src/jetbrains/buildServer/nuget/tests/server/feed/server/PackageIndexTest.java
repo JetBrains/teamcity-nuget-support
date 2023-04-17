@@ -31,6 +31,7 @@ import jetbrains.buildServer.nuget.feed.server.index.impl.transform.SamePackages
 import jetbrains.buildServer.nuget.feed.server.odata4j.entity.PackageEntityAdapter;
 import jetbrains.buildServer.nuget.common.version.SemanticVersion;
 import jetbrains.buildServer.nuget.tests.integration.feed.server.MockExternalIdTransformation;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
 import jetbrains.buildServer.serverSide.auth.Permission;
@@ -51,6 +52,9 @@ import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 import java.util.*;
 
+import static java.util.Arrays.asList;
+import static jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData.DEFAULT;
+import static jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl.PACKAGE_ATTRIBUTES_TO_SEARCH;
 import static jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes.*;
 
 /**
@@ -70,16 +74,16 @@ public class PackageIndexTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myProjectManager = m.mock(ProjectManager.class);
     myContext = m.mock(SecurityContext.class);
     myAuthorityHolder = m.mock(AuthorityHolder.class);
     myStorage = m.mock(MetadataStorage.class);
     final NuGetServerSettings serverSettings = m.mock(NuGetServerSettings.class);
     myIndex = new PackagesIndexImpl(
-            NuGetFeedData.DEFAULT,
+            DEFAULT,
             myStorage,
-            Arrays.asList(
+            asList(
                     new SamePackagesFilterTransformation(),
                     new AccessCheckTransformation(myProjectManager, myContext),
                     new MockExternalIdTransformation(),
@@ -94,7 +98,7 @@ public class PackageIndexTest extends BaseTestCase {
       allowing(myStorage).findEntriesWithValue(
         with(equal("nuget")),
         with(any(String.class)),
-        with(PackagesIndexImpl.PACKAGE_ATTRIBUTES_TO_SEARCH),
+        with(PACKAGE_ATTRIBUTES_TO_SEARCH),
         with(equal(true)));
       will(returnIterator(myEntries));
     }});

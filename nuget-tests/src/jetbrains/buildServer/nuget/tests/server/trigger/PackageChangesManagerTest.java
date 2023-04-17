@@ -23,6 +23,7 @@ import jetbrains.buildServer.nuget.server.trigger.impl.*;
 import jetbrains.buildServer.nuget.server.trigger.impl.mode.CheckRequestMode;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettings;
 import jetbrains.buildServer.nuget.server.trigger.impl.settings.PackageCheckerSettingsImpl;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.TimeService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +49,7 @@ public class PackageChangesManagerTest extends BaseTestCase implements TimeServi
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     final PackageCheckerSettings settings = new PackageCheckerSettingsImpl(){
       @Override
       public long getTriggerPollInterval() {

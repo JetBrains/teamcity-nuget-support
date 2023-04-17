@@ -29,6 +29,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.impl.PackagesInfoUploader;
 import jetbrains.buildServer.nuget.agent.dependencies.impl.PackagesWatcher;
 import jetbrains.buildServer.nuget.common.PackageDependencies;
 import jetbrains.buildServer.nuget.common.PackageDependenciesStore;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.EventDispatcher;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
@@ -49,6 +50,8 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import static jetbrains.buildServer.util.EventDispatcher.create;
+
 /**
  * Created by Eugene Petrenko (eugene.petrenko@gmail.com)
  * Date: 19.07.11 14:10
@@ -64,11 +67,11 @@ public class PackagesWatcherTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     watcher = m.mock(ArtifactsWatcher.class);
     build = m.mock(AgentRunningBuild.class);
 
-    final EventDispatcher<AgentLifeCycleListener> events = EventDispatcher.create(AgentLifeCycleListener.class);
+    final EventDispatcher<AgentLifeCycleListener> events = create(AgentLifeCycleListener.class);
     multicaster = events.getMulticaster();
 
     BuildAgentConfiguration configuration = m.mock(BuildAgentConfiguration.class);

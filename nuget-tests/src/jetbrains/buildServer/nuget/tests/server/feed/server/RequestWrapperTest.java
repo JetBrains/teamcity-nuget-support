@@ -19,6 +19,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server;
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings;
 import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;
@@ -41,7 +42,7 @@ public class RequestWrapperTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     req = m.mock(HttpServletRequest.class);
     wrap = new RequestWrapper(req, PATH);
   }

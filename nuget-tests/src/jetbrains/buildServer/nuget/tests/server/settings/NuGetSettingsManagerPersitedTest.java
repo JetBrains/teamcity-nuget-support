@@ -22,6 +22,7 @@ import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerConf
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsManagerImpl;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsPersistance;
 import jetbrains.buildServer.nuget.server.settings.impl.NuGetSettingsWatcher;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.serverSide.BuildServerListener;
 import jetbrains.buildServer.util.EventDispatcher;
 import jetbrains.buildServer.util.FileUtil;
@@ -53,7 +54,7 @@ public class NuGetSettingsManagerPersitedTest extends NuGetSettingsManagerTest {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    Mockery m = new Mockery();
+    Mockery m = TCJMockUtils.createInstance();
     myConfig = m.mock(NuGetSettingsManagerConfiguration.class);
     myFile = createTempFile();
 

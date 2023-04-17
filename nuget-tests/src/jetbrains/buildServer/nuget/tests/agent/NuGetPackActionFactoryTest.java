@@ -27,6 +27,7 @@ import jetbrains.buildServer.nuget.agent.dependencies.PackageUsages;
 import jetbrains.buildServer.nuget.agent.util.CommandlineBuildProcessFactory;
 import jetbrains.buildServer.nuget.common.PackagesPackDirectoryMode;
 import jetbrains.buildServer.nuget.tests.agent.mock.MockPackParameters;
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.TestFor;
 import org.jmock.Expectations;
@@ -59,7 +60,7 @@ public class NuGetPackActionFactoryTest extends BaseTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    m = new Mockery();
+    m = TCJMockUtils.createInstance();
     myProcessFactory = m.mock(CommandlineBuildProcessFactory.class);
     PackageUsages pu = m.mock(PackageUsages.class);
     i = new NuGetActionFactoryImpl(myProcessFactory, pu, new CommandFactoryImpl());
