@@ -52,9 +52,13 @@
         <p style="margin-top: 0">
             <c:if test="${canEdit}">
                 <c:forEach var="repoType" items="${repositoryTypes}">
-                    <forms:addButton onclick="BS.Packages.AddRepositoryForm.showDialog('${project.externalId}', '${repoType.type}', '${repoType.name}'); return false;">
-                        Add new ${repoType.name}
-                    </forms:addButton>
+                  <c:set var="projectExternalId" value="${fn:escapeXml(project.externalId)}" />
+                  <c:set var="repoTypeType" value="${fn:escapeXml(repoType.type)}" />
+                  <c:set var="repoTypeName" value="${fn:escapeXml(repoType.name)}" />
+
+                  <forms:addButton onclick="BS.Packages.AddRepositoryForm.showDialog('${projectExternalId}', '${repoTypeType}', '${repoTypeName}'); return false;">
+                    Add new ${repoTypeName}
+                  </forms:addButton>
                 </c:forEach>
             </c:if>
             <c:if test="${isGuestEnabled}">
@@ -85,6 +89,12 @@
                     </th>
                 </tr>
                 <c:forEach var="entry" items="${repositories}" varStatus="repositoryLoop">
+                    <c:set var="entryProjectExternalId" value="${fn:escapeXml(entry.project.externalId)}" />
+                    <c:set var="entryProjectName" value="${fn:escapeXml(entry.project.name)}" />
+                    <c:set var="entryRepositoryTypeType" value="${fn:escapeXml(entry.repository.type.type)}" />
+                    <c:set var="entryRepositoryTypeName" value="${fn:escapeXml(entry.repository.type.name)}" />
+                    <c:set var="entryRepositoryName" value="${fn:escapeXml(entry.repository.name)}" />
+                    <c:set var="entryUsagesCount" value="${fn:escapeXml(entry.usagesCount)}" />
                     <tr>
                         <td>
                             <c:choose>
@@ -96,22 +106,22 @@
                                 </c:otherwise>
                             </c:choose>
                             <c:if test="${numberOfRepositoryTypes gt 1}">
-                                (${entry.repository.type.name})
+                                (${entryRepositoryTypeName})
                             </c:if>
                         </td>
                         <td class="details">
                             <c:set var="parametersDescription" value="${entry.repository.parametersDescription}"/>
                             <c:if test="${not empty parametersDescription}">
                                 <c:out value="${parametersDescription}" />
-                                <c:if test="${entry.usagesCount gt 0}">
+                                <c:if test="${entryUsagesCount gt 0}">
                                     <span style="float: right">has <c:choose>
-                                        <c:when test="${entry.usagesCount ge 100}">
+                                        <c:when test="${entryUsagesCount ge 100}">
                                             100+
                                         </c:when>
                                         <c:otherwise>
-                                            ${entry.usagesCount}
+                                            ${entryUsagesCount}
                                         </c:otherwise>
-                                    </c:choose> usage<bs:s val="${entry.usagesCount}"/>
+                                    </c:choose> usage<bs:s val="${entryUsagesCount}"/>
                                     </span>
                                 </c:if>
                                 <br/>
@@ -119,7 +129,7 @@
                             <ul class="httpAuth">
                                 <c:forEach var="url" items="${entry.httpAuthUrls}" varStatus="loop">
                                     <li>
-                                        <c:set var="endpointUrlId" value="http-auth-${entry.repository.type.type}-${entry.repository.name}-${loop.index}"/>
+                                        <c:set var="endpointUrlId" value="http-auth-${entryRepositoryTypeType}-${entryRepositoryTypeName}-${loop.index}"/>
                                         <span id="${endpointUrlId}" class="grayNote"><c:out value="${url}" /></span>
                                         <bs:copy2ClipboardLink dataId="${endpointUrlId}"/>
                                     </li>
@@ -129,7 +139,7 @@
                                 <ul class="guestAuth" style="display: none">
                                     <c:forEach var="url" items="${entry.guestAuthUrls}" varStatus="loop">
                                         <li>
-                                            <c:set var="endpointUrlId" value="guest-auth-${entry.repository.type.type}-${entry.repository.name}-${loop.index}"/>
+                                            <c:set var="endpointUrlId" value="guest-auth-${entryRepositoryTypeType}-${entryRepositoryTypeName}-${loop.index}"/>
                                             <span id="${endpointUrlId}" class="grayNote"><c:out value="${url}" /></span>
                                             <bs:copy2ClipboardLink dataId="${endpointUrlId}"/>
                                         </li>
@@ -140,14 +150,14 @@
                         <td class="edit">
                             <c:if test="${not project.readOnly and canEdit}">
                                 <p style="margin-top: 0">
-                                    <a href="" onclick="BS.Packages.AddRepositoryForm.showDialog('${entry.project.externalId}', '${entry.repository.type.type}', '${entry.repository.type.name}', '${entry.repository.name}', ${entry.usagesCount}); return false;">Edit</a>
+                                    <a href="" onclick="BS.Packages.AddRepositoryForm.showDialog('${entryProjectExternalId}', '${entryRepositoryTypeType}', '${entryRepositoryTypeName}', '${entryRepositoryName}', ${entryUsagesCount}); return false;">Edit</a>
                                 </p>
                             </c:if>
                         </td>
                         <td class="edit">
                             <c:if test="${not project.readOnly and canEdit}">
                                 <p style="margin-top: 0">
-                                    <a href="" onclick="BS.Packages.deleteRepository('${entry.project.externalId}', '${entry.project.name}', '${entry.repository.type.type}', '${entry.repository.type.name}', '${entry.repository.name}', ${entry.usagesCount}); return false;">Delete</a>
+                                    <a href="" onclick="BS.Packages.deleteRepository('${entryProjectExternalId}', '${entryProjectName}', '${entryRepositoryTypeType}', '${entryRepositoryTypeName}', '${entryRepositoryName}', ${entryUsagesCount}); return false;">Delete</a>
                                 </p>
                             </c:if>
                         </td>
