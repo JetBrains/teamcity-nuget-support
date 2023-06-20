@@ -44,9 +44,8 @@
 
   <!-- Packages indexer -->
   <bean class="jetbrains.buildServer.nuget.common.index.NuGetPackageAnalyzer"/>
-  <bean id="webPublisher" class="jetbrains.buildServer.agent.publisher.WebPublisher"/>
   <bean class="jetbrains.buildServer.nuget.agent.index.NuGetPackagePublisher">
-    <constructor-arg index="0" ref="webPublisher"/>
+    <constructor-arg ref="webPublisher"/> <!-- from parent context config -->
   </bean>
   <bean class="jetbrains.buildServer.nuget.agent.index.NuGetPackagePathProvider"/>
   <bean class="jetbrains.buildServer.nuget.agent.index.NugetPackageIndexer"/>
