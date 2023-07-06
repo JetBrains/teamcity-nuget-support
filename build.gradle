@@ -60,7 +60,7 @@ subprojects { subproject ->
         }
 
         repositories {
-            maven { url '../local-repo' }
+            maven { url '../nuget-local-repo' }
             maven { url 'http://repository.apache.org/snapshots/' }
             mavenCentral()
             mavenLocal()
