@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp1.0;netcoreapp2.0;netcoreapp3.0;net5.0;net46;net6.0</TargetFrameworks>
+    <!-- To be able to run on net7.0+ runtime without blowing up the distro -->
+    <RollForward>Major</RollForward>
     <OutputType>Exe</OutputType>
     <AssemblyName>CredentialProvider.TeamCity</AssemblyName>
     <RootNamespace>JetBrains.TeamCity.NuGet</RootNamespace>
