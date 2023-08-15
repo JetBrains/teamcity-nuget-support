@@ -23,7 +23,6 @@ import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.nuget.feed.server.PermissionChecker;
 import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.identifiers.IdentifiersUtil;
-import jetbrains.buildServer.serverSide.impl.DuplicateIdException;
 import jetbrains.buildServer.serverSide.packages.Repository;
 import jetbrains.buildServer.serverSide.packages.RepositoryConstants;
 import jetbrains.buildServer.serverSide.packages.RepositoryRegistry;
