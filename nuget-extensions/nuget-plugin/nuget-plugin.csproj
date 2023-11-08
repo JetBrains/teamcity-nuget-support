@@ -11,7 +11,7 @@
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2020.3.0" />
     <!--Do not upgrade Newtonsoft.Json! Nuget supports 9.0.1-->
-    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" Condition="'$(TargetFramework)' == 'netcoreapp1.0'"/>
     <PackageReference Include="System.Diagnostics.TraceSource" Version="4.3.0" Condition="'$(TargetFramework)' == 'netcoreapp1.0'"/>
     <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" Condition="'$(TargetFramework)' == 'netcoreapp1.0'"/>
