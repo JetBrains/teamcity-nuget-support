@@ -1,9 +1,10 @@
 plugins {
-    id 'com.github.rodm.teamcity-agent' version '1.4.1'
+    id 'io.github.rodm.teamcity-agent' version '1.5.2'
 }
 
 teamcity {
     version = teamcityVersion
+    allowSnapshotVersions = true
 
     agent {
         descriptor = project.file('teamcity-agent-plugin.xml')
@@ -22,12 +23,11 @@ teamcity {
 }
 
 dependencies {
-    compile project(':nuget-common')
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation project(':nuget-common')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
     provided "org.jetbrains.teamcity.internal:agent:$teamcityVersion"
-    provided files("${teamcityDir}/buildAgent/lib/agent-openapi.jar")
-    provided files("${teamcityDir}/buildAgent/lib/common-impl.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
+    provided "org.jetbrains.teamcity:nuget-utils:$teamcityVersion"
+    provided "org.jetbrains.teamcity:common-impl:$teamcityVersion"
 }
 
 agentPlugin.version = null

@@ -1,6 +1,10 @@
+import java.nio.file.Paths
+
 plugins {
     id "org.jetbrains.kotlin.jvm" version "1.6.0"
 }
+
+initializeWorkspace()
 
 repositories {
     mavenCentral()
@@ -10,20 +14,12 @@ ext {
     versionNumber = project.hasProperty('versionNumber') ? property('versionNumber') : 'SNAPSHOT-' + new Date().format('yyyyMMddHHmmss')
     projectIds = ['group': 'teamcity-nuget-support', 'version': versionNumber]
 
-    teamcityVersion = project.findProperty('teamcityVersion') ?: '2022.10'
-    teamcityDir = project.findProperty('teamcityDir') ?: "$rootDir/servers/TeamCity-${teamcityVersion}"
-    if (teamcityDir == null || !file(teamcityDir).isDirectory()) {
-        throw new InvalidUserDataException('Please, execute gradle task `:nuget-server:installTeamCity` ' +
-                'or specify correct `teamcityDir` path in gradle.properties file')
-    }
-    teamcityDir = teamcityDir.replace("\\", "/")
-    if (teamcityDir.endsWith("/")) {
-        teamcityDir = teamcityDir.substring(0, teamcityDir.length() - 5)
-    }
-    println "TeamCity directory: " + teamcityDir
+    teamcityVersion = anyParam('teamcityVersion') ?: '2022.10'
     downloadsDir = project.findProperty('downloads.dir') ?: "$rootDir/downloads"
     serversDir = project.findProperty('servers.dir') ?: "$rootDir/servers"
 }
+
+def localRepo = anyParamPath('TC_LOCAL_REPO')
 
 group = projectIds.group
 version = projectIds.version
@@ -61,7 +57,13 @@ subprojects { subproject ->
 
         repositories {
             maven { url '../nuget-local-repo' }
-            maven { url 'http://repository.apache.org/snapshots/' }
+            if (localRepo) {
+              maven {
+                name = "local-teamcity-artifacts"
+                url "file:///${localRepo}"
+              }
+            }
+            maven { url 'https://repository.apache.org/snapshots/' }
             mavenCentral()
             mavenLocal()
         }
@@ -74,4 +76,41 @@ subprojects { subproject ->
             targetCompatibility = "1.8"
         }
     }
+}
+
+def anyParamPath(String... names) {
+  def param = anyParam(names);
+  if (param == null || param.isEmpty())
+    return null
+  return (Paths.get(param).isAbsolute()) ?
+         Paths.get(param) : getRootDir().toPath().resolve(param)
+}
+
+def anyParam(String... names) {
+  def param
+  try {
+    param = names.findResult {
+      project.hasProperty(it) ? project.getProperty(it) : System.getProperty(it) ?: System.getenv(it) ?: null
+    }
+    if (param == null || param.isEmpty())
+      param = null
+  } finally {
+    println("AnyParam: $names -> $param")
+  }
+  return param
+}
+
+def initializeWorkspace() {
+  if (System.getProperty("idea.active") != null) {
+    println "Attempt to configure workspace in IDEA"
+    def coreVersionProperties = project.projectDir.toPath().parent.parent.resolve(".version.properties")
+    if (coreVersionProperties.toFile().exists()) {
+      def p = new Properties().tap {
+        it.load(new FileInputStream(coreVersionProperties.toFile()))
+      }
+      p.forEach { k,v ->
+        System.setProperty(k, v);
+      }
+    }
+  }
 }

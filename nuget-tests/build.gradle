@@ -1,43 +1,33 @@
 plugins {
-    id 'com.github.rodm.teamcity-server' version '1.4.1'
+    id 'io.github.rodm.teamcity-server' version '1.5.2'
 }
 
 teamcity {
     version = teamcityVersion
+    allowSnapshotVersions = true
 }
 
 dependencies {
-    compile project(':nuget-agent')
-    compile project(':nuget-feed')
-    compile project(':nuget-server')
-    compile project(':nuget-server-common')
-//    testCompile 'jmock:jmock:1.2.0'
-    testCompile 'org.hamcrest:hamcrest-all:1.3'
-    testCompile 'org.hamcrest:hamcrest-library:1.3'
-    testCompile 'cglib:cglib-nodep:2.1_3'
-    testCompile 'org.testng:testng:6.8'
-    testCompile 'org.jmock:jmock:2.6.0'
-    testCompile 'org.jmock:jmock-legacy:2.6.0'
-    testCompile("org.jetbrains.teamcity:tests-support:$teamcityVersion") {
+    implementation project(':nuget-agent')
+    implementation project(':nuget-feed')
+    implementation project(':nuget-server')
+    implementation project(':nuget-server-common')
+    testImplementation 'org.hamcrest:hamcrest-all:1.3'
+    testImplementation 'org.hamcrest:hamcrest-library:1.3'
+    testImplementation 'cglib:cglib-nodep:2.1_3'
+    testImplementation 'org.testng:testng:6.8'
+    testImplementation 'org.jmock:jmock:2.6.0'
+    testImplementation 'org.jmock:jmock-legacy:2.6.0'
+    testImplementation("org.jetbrains.teamcity:tests-support:$teamcityVersion") {
         exclude group: 'cglib', module: 'cglib'
         exclude group: 'org.ow2.asm', module: 'asm'
     }
-    testCompile 'org.apache.httpcomponents:httpcore:4.4.3'
-    testCompile 'commons-fileupload:commons-fileupload:1.3'
-    testCompile files("${teamcityDir}/devPackage/tests/tests-integration.jar")
-    testCompile files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web-core.jar")
-    testCompile files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web.jar")
-    testRuntime files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/db.jar")
-    testRuntime files("${teamcityDir}/buildAgent/lib/server-logging.jar")
+    testImplementation 'org.apache.httpcomponents:httpcore:4.4.3'
+    testImplementation 'commons-fileupload:commons-fileupload:1.3'
+    testImplementation "org.jetbrains.teamcity.internal:integration-test:$teamcityVersion"
     provided "org.jetbrains.teamcity.internal:agent:$teamcityVersion"
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-tools-core.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-tools.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-spring.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-graph.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/plugin-model-common.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-impl.jar")
+    provided "org.jetbrains.teamcity:nuget-utils:$teamcityVersion"
 }
 
 sourceSets {

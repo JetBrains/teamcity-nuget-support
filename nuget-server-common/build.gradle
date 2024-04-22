@@ -1,12 +1,13 @@
 plugins {
-    id 'com.github.rodm.teamcity-server' version '1.4.1'
+    id 'io.github.rodm.teamcity-server' version '1.5.2'
 }
 
 teamcity {
     version = teamcityVersion
+    allowSnapshotVersions = true
 }
 
 dependencies {
-    compile 'commons-lang:commons-lang:2.6'
+    implementation 'commons-lang:commons-lang:2.6'
     provided 'com.google.guava:guava:13.0.1'
 }

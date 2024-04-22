@@ -1,15 +1,16 @@
 plugins {
-    id 'com.github.rodm.teamcity-common' version '1.4.1'
+    id 'io.github.rodm.teamcity-common' version '1.5.2'
 }
 
 teamcity {
     version = teamcityVersion
+    allowSnapshotVersions = true
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/joda-time.jar")
+  implementation "org.jetbrains.kotlin:kotlin-stdlib"
+  provided "org.jetbrains.teamcity:nuget-utils:$teamcityVersion"
+  provided "org.jetbrains.teamcity:common-api:$teamcityVersion"
 }
 
 tasks.withType(JavaCompile) {

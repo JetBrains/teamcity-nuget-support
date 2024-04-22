@@ -1,9 +1,10 @@
 plugins {
-    id 'com.github.rodm.teamcity-server' version '1.4.1'
+    id 'io.github.rodm.teamcity-server' version '1.5.2'
 }
 
 teamcity {
     version = teamcityVersion
+    allowSnapshotVersions = true
 }
 
 ext {
@@ -15,59 +16,22 @@ configurations.implementation {
 }
 
 dependencies {
-    compile 'org.core4j:core4j:0.5'
-    compile 'org.odata4j:odata4j-core:0.8.0-SNAPSHOT'
-    compile 'org.odata4j:odata4j-jersey:0.8.0-SNAPSHOT'
-    compile 'com.sun.jersey:jersey-client:1.11'
-    compile 'com.sun.jersey:jersey-core:1.11'
-    compile 'com.sun.jersey:jersey-server:1.11'
-    compile 'com.sun.jersey:jersey-servlet:1.11'
-    compile "org.apache.olingo:olingo-odata2-api:$olingoVersion"
-    compile "org.apache.olingo:olingo-odata2-api-annotation:$olingoVersion"
-    compile "org.apache.olingo:olingo-odata2-core:$olingoVersion"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.core4j:core4j:0.5'
+    implementation 'org.odata4j:odata4j-core:0.8.0-SNAPSHOT'
+    implementation 'org.odata4j:odata4j-jersey:0.8.0-SNAPSHOT'
+    implementation 'com.sun.jersey:jersey-client:1.11'
+    implementation 'com.sun.jersey:jersey-core:1.11'
+    implementation 'com.sun.jersey:jersey-server:1.11'
+    implementation 'com.sun.jersey:jersey-servlet:1.11'
+    implementation "org.apache.olingo:olingo-odata2-api:$olingoVersion"
+    implementation "org.apache.olingo:olingo-odata2-api-annotation:$olingoVersion"
+    implementation "org.apache.olingo:olingo-odata2-core:$olingoVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     provided 'com.google.code.gson:gson:2.9'
     provided project(':nuget-common')
     provided project(':nuget-server-common')
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/build-version.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-runtime.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/messages.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/patches.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/runtime-util.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/xml-rpc-wrapper.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-vcs.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/utils.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-tools.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-api.jar")
-
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-spring.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-graph.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/plugin-model-common.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-impl.jar")
-
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/issue-tracker-common.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-model.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-openapi.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-common-api.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-openapi-vcs.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-tools-api.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-metrics-api.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/usage-statistics-api.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/usage-statistics-impl.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web-openapi.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/vcs-plugin-api.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/vcs-api.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/patches-low.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/common-graph.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/configs-api.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/federation-open-api.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/buildLog-openapi.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/server-api.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/nuget-utils.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/joda-time.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web.jar")
-    provided files("${teamcityDir}/webapps/ROOT/WEB-INF/lib/web-core.jar")
-    provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
+    provided "org.jetbrains.teamcity:common-api:$teamcityVersion"
+    provided "org.jetbrains.teamcity.internal:web:$teamcityVersion"
+    provided "org.jetbrains.teamcity:nuget-utils:$teamcityVersion"
     provided "com.github.ben-manes.caffeine:caffeine:2.4.0"
 }
