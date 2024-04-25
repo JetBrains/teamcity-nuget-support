@@ -7,10 +7,6 @@ teamcity {
     allowSnapshotVersions = true
 }
 
-ext {
-    olingoVersion = '2.0.10'
-}
-
 configurations.implementation {
     exclude group: "javax.ws.rs" // bundling of this dependency causes https://youtrack.jetbrains.com/issue/TW-78779
 }

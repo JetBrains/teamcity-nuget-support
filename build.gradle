@@ -17,6 +17,7 @@ ext {
     teamcityVersion = anyParam('teamcityVersion') ?: '2022.10'
     downloadsDir = project.findProperty('downloads.dir') ?: "$rootDir/downloads"
     serversDir = project.findProperty('servers.dir') ?: "$rootDir/servers"
+    olingoVersion = '2.0.10'
 }
 
 def localRepo = anyParamPath('TC_LOCAL_REPO')
