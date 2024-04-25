@@ -23,6 +23,7 @@ dependencies {
   testImplementation "org.apache.olingo:olingo-odata2-core:$olingoVersion"
   testImplementation 'org.odata4j:odata4j-jersey:0.8.0-SNAPSHOT'
   testImplementation project(':nuget-feed')
+  testImplementation "org.jetbrains.teamcity:platform-specific:$teamcityVersion"
     testImplementation 'org.hamcrest:hamcrest-all:1.3'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
     testImplementation 'cglib:cglib-nodep:2.1_3'
