@@ -7,7 +7,6 @@ import jetbrains.buildServer.controllers.AuthorizationInterceptor
 import jetbrains.buildServer.controllers.BaseController
 import jetbrains.buildServer.nuget.feed.server.PermissionChecker
 import jetbrains.buildServer.serverSide.ProjectManager
-import jetbrains.buildServer.serverSide.SProject
 import jetbrains.buildServer.serverSide.auth.LoginConfiguration
 import jetbrains.buildServer.serverSide.packages.RepositoryRegistry
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
@@ -45,7 +44,8 @@ class PackagesController(auth: AuthorizationInterceptor,
 
         val project = getProject(request)
 
-        checkPermissions(request, project)
+        val user = SessionUser.getUser(request)
+        myPermChecker.checkViewPermissions(user, project)
 
         val repositories = myRepositoriesManager.getRepositories(project, false).map {
             val usages = myRepositoryRegistry.findUsagesProvider(it.type.type)
@@ -62,19 +62,6 @@ class PackagesController(auth: AuthorizationInterceptor,
         mv.model["isGuestEnabled"] = myLoginConfiguration.isGuestLoginAllowed
 
         return mv
-    }
-
-    private fun checkPermissions(request: HttpServletRequest, project: SProject) {
-        val user = SessionUser.getUser(request);
-        try {
-            // The old way to check permission - allow view server settings only
-            myPermChecker.assertAccess(user)
-        }
-        catch (e: AccessDeniedException) {
-            // Maybe user has edit permission for the particular project? Allow this, too
-            // Need this after the fix of TW-86522, as permissions are now checked on includes, too
-            myPermChecker.assertAccess(project, user)
-        }
     }
 
     private fun getProject(request: HttpServletRequest) =
