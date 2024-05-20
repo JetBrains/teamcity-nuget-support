@@ -18,28 +18,20 @@ public class PermissionChecker {
   public PermissionChecker() {
   }
 
-  public void assertAccess(@Nullable final SProject project, @NotNull final AuthorityHolder holder) {
+  public void checkEditPermissions(@Nullable final SProject project, @NotNull final AuthorityHolder holder) {
     if (project == null) {
       throw new ProjectNotFoundException("Project id was not specified");
     }
 
     if (!AuthUtil.hasProjectPermission(holder, project.getProjectId(), Permission.EDIT_PROJECT)) {
-      throw new AccessDeniedException(holder, "You do not have access to view or update NuGet server settings.");
+      throw new AccessDeniedException(holder, "You do not have access to update NuGet server settings.");
     }
   }
 
   public void checkViewPermissions(@NotNull SUser user, @NotNull SProject project) {
-    try {
-      // The old way to check permission - allow view server settings only
-      if (!AuthUtil.hasGlobalPermission(user, Permission.VIEW_SERVER_SETTINGS)) {
-        throw new AccessDeniedException(user, "You do not have access to view or update NuGet server settings.");
-      }
+    if (!AuthUtil.hasGlobalPermission(user, Permission.VIEW_SERVER_SETTINGS) &&
+        !AuthUtil.hasProjectPermission(user, project.getProjectId(), Permission.VIEW_BUILD_CONFIGURATION_SETTINGS)) {
+      throw new AccessDeniedException(user, "You do not have access to view NuGet server settings.");
     }
-    catch (AccessDeniedException e) {
-      // Maybe user has edit permission for the particular project? Allow this, too
-      // Need this after the fix of TW-86522, as permissions are now checked on includes, too
-      assertAccess(project, user);
-    }
-
   }
 }
