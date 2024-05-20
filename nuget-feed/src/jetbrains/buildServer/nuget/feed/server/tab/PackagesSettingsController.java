@@ -59,7 +59,7 @@ public class PackagesSettingsController extends BaseFormXmlController {
         myRepositoryManager = repositoryManager;
 
         final String path = pluginDescriptor.getPluginResourcesPath("packages/settings.html");
-        auth.addPathBasedPermissionsChecker(path, (authorityHolder, request) -> checker.assertAccess(getProject(request), authorityHolder));
+        auth.addPathBasedPermissionsChecker(path, (authorityHolder, request) -> checker.checkEditPermissions(getProject(request), authorityHolder));
         web.registerController(path, this);
 
         myDefaultProcessor = parameters -> {
