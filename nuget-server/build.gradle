@@ -57,8 +57,8 @@ dependencies {
     implementation project(':nuget-feed')
     implementation project(':nuget-server-common')
 
-    provided 'org.apache.httpcomponents:httpcore:4.4.12'
-    provided 'org.apache.httpcomponents:httpclient:4.5.10'
+    provided 'org.apache.httpcomponents:httpcore:4.4.16'
+    provided 'org.apache.httpcomponents:httpclient:4.5.14'
     provided "com.github.ben-manes.caffeine:caffeine:2.4.0"
     provided "org.jetbrains.teamcity.internal:server:$teamcityVersion"
     provided "org.jetbrains.teamcity.internal:web:$teamcityVersion"
