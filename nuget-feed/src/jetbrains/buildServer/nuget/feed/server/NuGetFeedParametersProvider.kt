@@ -58,15 +58,34 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
         return FEED_REF_PREFIX
     }
 
+    private val fallBackParamsMap = mapOf(
+        Pair("teamcity.nuget.feed.server", ReferencesResolverUtil.makeReference("teamcity.nuget.feed.guestAuth._Root.default.v2")),
+        Pair("teamcity.nuget.feed.auth.server", ReferencesResolverUtil.makeReference("teamcity.nuget.feed.httpAuth._Root.default.v2")),
+        Pair("system.teamcity.nuget.feed.auth.serverRootUrlBased.server", ReferencesResolverUtil.makeReference("teamcity.nuget.feed.httpAuth._Root.default.v2")),
+    )
+
     override fun updateParameters(context: BuildStartContext) {
         if (!mySettings.isNuGetServerEnabled) {
             return
         }
 
-        context.build.buildType?.let {
-            getFallbackParameters(it).forEach { key, value ->
-                context.addSharedParameter(key, value)
+        // we need to check whether there are parameter references to some obsolete parameters
+        // if there are such references and the parameters themselves are not defined explicitly
+        // then we need to add them with a reference to the new parameter name
+        val params = context.sharedParameters
+        val foundObsoleteParams = mutableSetOf<String>()
+        params.forEach { (key, value) ->
+            fallBackParamsMap.keys.forEach { obsoleteParamName ->
+                if (value.contains(ReferencesResolverUtil.makeReference(obsoleteParamName))) {
+                    foundObsoleteParams.add(obsoleteParamName)
+                }
             }
+        }
+
+        if (foundObsoleteParams.isEmpty()) return
+
+        foundObsoleteParams.forEach{ paramName ->
+            params.putIfAbsent(paramName, fallBackParamsMap[paramName])
         }
     }
 
@@ -104,19 +123,9 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
 
         // Add fallback for global nuget feed parameters
         buildType.undefinedParameters.let { undefinedParameters ->
-            "teamcity.nuget.feed.server".let {
-                if (undefinedParameters.contains(it)) {
-                    parameters[it] = ReferencesResolverUtil.makeReference("teamcity.nuget.feed.guestAuth._Root.default.v2")
-                }
-            }
-            "teamcity.nuget.feed.auth.server".let {
-                if (undefinedParameters.contains(it)) {
-                    parameters[it] = ReferencesResolverUtil.makeReference("teamcity.nuget.feed.httpAuth._Root.default.v2")
-                }
-            }
-            "system.teamcity.nuget.feed.auth.serverRootUrlBased.server".let {
-                if (undefinedParameters.contains(it)) {
-                    parameters[it] = ReferencesResolverUtil.makeReference("teamcity.nuget.feed.httpAuth._Root.default.v2")
+            fallBackParamsMap.forEach { (key, value) ->
+                if (undefinedParameters.contains(key)) {
+                    parameters[key] = value
                 }
             }
         }
