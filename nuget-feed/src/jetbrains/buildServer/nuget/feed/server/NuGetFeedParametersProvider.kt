@@ -123,19 +123,9 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
 
         // Add fallback for global nuget feed parameters
         buildType.undefinedParameters.let { undefinedParameters ->
-            "teamcity.nuget.feed.server".let {
-                if (undefinedParameters.contains(it)) {
-                    parameters[it] = ReferencesResolverUtil.makeReference("teamcity.nuget.feed.guestAuth._Root.default.v2")
-                }
-            }
-            "teamcity.nuget.feed.auth.server".let {
-                if (undefinedParameters.contains(it)) {
-                    parameters[it] = ReferencesResolverUtil.makeReference("teamcity.nuget.feed.httpAuth._Root.default.v2")
-                }
-            }
-            "system.teamcity.nuget.feed.auth.serverRootUrlBased.server".let {
-                if (undefinedParameters.contains(it)) {
-                    parameters[it] = ReferencesResolverUtil.makeReference("teamcity.nuget.feed.httpAuth._Root.default.v2")
+            fallBackParamsMap.forEach { (key, value) ->
+                if (undefinedParameters.contains(key)) {
+                    parameters[key] = value
                 }
             }
         }
