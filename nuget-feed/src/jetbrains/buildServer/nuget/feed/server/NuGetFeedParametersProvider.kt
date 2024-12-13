@@ -85,7 +85,7 @@ class NuGetFeedParametersProvider(private val mySettings: NuGetServerSettings,
         if (foundObsoleteParams.isEmpty()) return
 
         foundObsoleteParams.forEach{ paramName ->
-            context.addSharedParameter(paramName, fallBackParamsMap[paramName])
+            context.addSharedParameter(paramName, fallBackParamsMap[paramName]!!)
         }
     }
 
