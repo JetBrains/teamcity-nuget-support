@@ -1,7 +1,10 @@
 import java.nio.file.Paths
+import com.github.jk1.license.render.JsonReportRenderer
+import com.github.jk1.license.filter.LicenseBundleNormalizer
 
 plugins {
     id "org.jetbrains.kotlin.jvm" version "1.6.0"
+    id "com.github.jk1.dependency-license-report" version "1.17"
 }
 
 initializeWorkspace()
@@ -77,6 +80,12 @@ subprojects { subproject ->
             targetCompatibility = "1.8"
         }
     }
+}
+
+licenseReport {
+    renderers = [new JsonReportRenderer('third-party-libraries.json')]
+    excludes = ["org.jetbrains.*", "com.jetbrains.*"]
+    filters = [new LicenseBundleNormalizer(bundlePath: "${project.rootDir}/license-third-party-normalizer.json", createDefaultTransformationRules: false)]
 }
 
 def anyParamPath(String... names) {
