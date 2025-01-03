@@ -84,7 +84,7 @@ subprojects { subproject ->
 
 licenseReport {
     renderers = [new JsonReportRenderer('third-party-libraries.json')]
-    excludes = ["org.jetbrains.*", "com.jetbrains.*"]
+    excludes = ["org.jetbrains.*", "com.jetbrains.*", ".*jackson-bom*"]
     filters = [new LicenseBundleNormalizer(bundlePath: "${project.rootDir}/license-third-party-normalizer.json", createDefaultTransformationRules: false)]
 }
 
