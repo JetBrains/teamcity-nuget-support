@@ -83,7 +83,7 @@
                     targetFieldId="${ib.nuGetSourceKey}" popupTitle="Select TeamCity NuGet feed" />
       <span class="smallNote">
         Specify the NuGet packages feed URL to push packages to. Leave blank to let NuGet decide what package repository to use.<br />
-        To use a TeamCity NuGet feed<bs:help file="Using+TeamCity+as+NuGet+Server"/>, specify the URL from the NuGet feed project settings page.
+        To use a TeamCity NuGet feed<bs:help file="Using+TeamCity+as+NuGet+Feed"/>, specify the URL from the NuGet feed project settings page.
       </span>
     <span class="error" id="error_${ib.nuGetSourceKey}"></span>
   </td>

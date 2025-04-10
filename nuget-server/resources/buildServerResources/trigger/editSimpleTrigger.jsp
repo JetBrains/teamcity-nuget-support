@@ -12,7 +12,7 @@
 <tr>
   <td colspan="2">
     <em>The NuGet Dependency Trigger allows starting a new build if a NuGet packages update is detected in the NuGet repository. Note that if a custom NuGet executable is used, it must be explicitly allowed on this server.</em>
-    <bs:help file="NuGet+Dependency+Trigger#Configuring+NuGet+Dependency+Trigger"/>
+    <bs:help file="configure-nuget-dependency-trigger"/>
   </td>
 </tr>
 
