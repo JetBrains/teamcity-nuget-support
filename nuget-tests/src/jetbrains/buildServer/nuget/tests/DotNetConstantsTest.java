@@ -12,51 +12,15 @@ import java.util.regex.Pattern;
 import static org.assertj.core.api.BDDAssertions.then;
 
 public class DotNetConstantsTest {
-    private static final Pattern ourMonoVersionPattern = Pattern.compile(DotNetConstants.MONO_VERSION_PATTERN);
+    private static final Pattern ourMonoVersionPattern = Pattern.compile(DotNetConstants.MONO_PATH);
     private static final Pattern ourdotNet4_5VersionPattern = Pattern.compile(DotNetConstants.DOTNET4_5VERSION_PATTERN);
     private static final Pattern ourdotNet4VersionPattern = Pattern.compile(DotNetConstants.DOTNET4VERSION_PATTERN);
 
     @DataProvider(name = "monoVersionCases")
     public Object[][] getMonoVersionCases() {
         return new Object[][] {
-                {"Mono3.2_x86", true},
-                {"Mono3.2_x64", true},
-                {"Mono3.2.1_x86", true},
-                {"Mono3.4_x86", true},
-                {"Mono3.10_x86", true},
-                {"Mono3.12.1_x86", true},
-                {"Mono4_x86", true},
-                {"Mono4.0_x86", true},
-                {"Mono4.0.2_x86", true},
-                {"Mono4.2.0_x86", true},
-                {"Mono4.0.4.4_x86", true},
-                {"Mono4.0.5_x86", true},
-                {"Mono4.2.3_x86", true},
-                {"Mono4.6_x86", true},
-                {"Mono4.6.1_x86", true},
-
-                {"Mono3.1.2_x86", false},
-                {"Mono3.1.2_x64", false},
-                {"Mono3.1_x86", false},
-                {"Mono3.1_x64", false},
-                {"Mono3.0_x86", false},
-                {"Mono3.0.12_x86", false},
-                {"Mono3.0_x86", false},
-                {"Mono3_x86", false},
-                {"Mono2.10_x86", false},
-                {"Mono2.10.9_x86", false},
-                {"Mono2.6_x86", false},
-                {"Mono2.6.1_x86", false},
-                {"Mono2.0.1_x86", false},
-                {"Mono2.0_x86", false},
-                {"Mono2_x86", false},
-                {"Mono1.9.1_x86", false},
-                {"Mono1.9.0_x86", false},
-                {"Mono1.9_x86", false},
-                {"Mono1.0.5_x86", false},
-                {"Mono1.0.0_x86", false},
-                {"Mono1.0_x86", false},
-                {"Mono1_x86", false},
+                {"Mono_Path", true},
+                {"NotMono_Path", true},
         };
     }
 

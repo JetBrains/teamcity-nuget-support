@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  *         Date: 23.08.11 18:32
  */
 public abstract class NuGetRunnerBase implements AgentBuildRunner, AgentBuildRunnerInfo {
-  private final Pattern ourRequirementsPattern = Pattern.compile("^(" + DotNetConstants.DOTNET4VERSION_PATTERN + "|" + DotNetConstants.MONO_VERSION_PATTERN + ")$");
+  private final Pattern ourRequirementsPattern = Pattern.compile("^(" + DotNetConstants.DOTNET4VERSION_PATTERN + "|" + DotNetConstants.MONO_PATH + ")$");
   protected final Logger LOG = Logger.getInstance(getClass().getName());
 
   protected final NuGetActionFactory myActionFactory;

@@ -102,7 +102,7 @@ public abstract class NuGetRunType extends RunType {
           else
             dotNetPattern = DotNetConstants.DOTNET4VERSION_PATTERN;
 
-          list.add(new Requirement(RequirementQualifier.EXISTS_QUALIFIER + "(" + dotNetPattern + "|" + DotNetConstants.MONO_VERSION_PATTERN + ")", null, RequirementType.EXISTS));
+          list.add(new Requirement(RequirementQualifier.EXISTS_QUALIFIER + "(" + dotNetPattern + "|" + DotNetConstants.MONO_PATH + ")", null, RequirementType.EXISTS));
         }
       }
     }
