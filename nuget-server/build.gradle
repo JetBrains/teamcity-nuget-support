@@ -1,5 +1,6 @@
 plugins {
-    id 'io.github.rodm.teamcity-server' version '1.5.2'
+    alias(libs.plugins.teamcity.server)
+    alias(libs.plugins.teamcity.environments)
 }
 
 teamcity {
@@ -35,17 +36,13 @@ teamcity {
     }
 
     environments {
-        downloadsDir = project.downloadsDir
-        baseHomeDir = project.serversDir
+        downloadsDir = "teamcity/downloads"
+        baseHomeDir = "teamcity/environments"
+        baseDataDir = "teamcity/data"
 
-        teamcity_2017_1 {
-            version = '2017.1'
-            downloadUrl = 'https://download.jetbrains.com/teamcity/TeamCity-2017.1.tar.gz'
-        }
-
-        teamcity_2019_1 {
-            version = '2019.1'
-            downloadUrl = 'https://download.jetbrains.com/teamcity/TeamCity-2019.1.tar.gz'
+        create(teamcityVersion) {
+            version = teamcityVersion
+            homeDir = "${baseHomeDir}/${teamcity.version}"
         }
     }
 }

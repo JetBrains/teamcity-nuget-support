@@ -1,0 +1,19 @@
+[versions]
+rodm = "1.5.5"
+teamcity = "2025.07"
+jersey = "1.18.6"
+
+[plugins]
+teamcity-server = { id = "io.github.rodm.teamcity-server", version.ref = "rodm" }
+teamcity-environments = { id = "io.github.rodm.teamcity-environments", version.ref = "rodm" }
+teamcity-agent = { id = "io.github.rodm.teamcity-agent", version.ref = "rodm" }
+teamcity-common = { id = "io.github.rodm.teamcity-common", version.ref = "rodm" }
+
+[libraries]
+jersey-client = { group = "com.sun.jersey", name = "jersey-client", version.ref = "jersey" }
+jersey-core = { group = "com.sun.jersey", name = "jersey-core", version.ref = "jersey" }
+jersey-server = { group = "com.sun.jersey", name = "jersey-server", version.ref = "jersey" }
+jersey-servlet = { group = "com.sun.jersey", name = "jersey-servlet", version.ref = "jersey" }
+
+[bundles]
+jersey = ["jersey-core", "jersey-client", "jersey-server", "jersey-servlet"]

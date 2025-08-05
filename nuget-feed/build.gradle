@@ -1,5 +1,5 @@
 plugins {
-    id 'io.github.rodm.teamcity-server' version '1.5.2'
+    alias(libs.plugins.teamcity.server)
 }
 
 teamcity {
@@ -15,10 +15,7 @@ dependencies {
     implementation 'org.core4j:core4j:0.5'
     implementation 'org.odata4j:odata4j-core:0.8.0-SNAPSHOT'
     implementation 'org.odata4j:odata4j-jersey:0.8.0-SNAPSHOT'
-    implementation 'com.sun.jersey:jersey-client:1.11'
-    implementation 'com.sun.jersey:jersey-core:1.11'
-    implementation 'com.sun.jersey:jersey-server:1.11'
-    implementation 'com.sun.jersey:jersey-servlet:1.11'
+    implementation libs.bundles.jersey
     implementation "org.apache.olingo:olingo-odata2-api:$olingoVersion"
     implementation "org.apache.olingo:olingo-odata2-api-annotation:$olingoVersion"
     implementation "org.apache.olingo:olingo-odata2-core:$olingoVersion"

@@ -1,5 +1,5 @@
 plugins {
-    id 'io.github.rodm.teamcity-common' version '1.5.2'
+    alias(libs.plugins.teamcity.common)
 }
 
 teamcity {

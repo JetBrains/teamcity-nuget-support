@@ -59,6 +59,5 @@ nuget-extensions/_ReSharper*
 nuget-extensions/packages/*
 
 # TeamCity distribution
-/downloads
-/servers
+/nuget-server/teamcity/
 nuget-extensions/.vs/
