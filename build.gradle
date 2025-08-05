@@ -17,9 +17,7 @@ ext {
     versionNumber = project.hasProperty('versionNumber') ? property('versionNumber') : 'SNAPSHOT-' + new Date().format('yyyyMMddHHmmss')
     projectIds = ['group': 'teamcity-nuget-support', 'version': versionNumber]
 
-    teamcityVersion = anyParam('teamcityVersion') ?: '2022.10'
-    downloadsDir = project.findProperty('downloads.dir') ?: "$rootDir/downloads"
-    serversDir = project.findProperty('servers.dir') ?: "$rootDir/servers"
+    teamcityVersion = anyParam('teamcityVersion') ?: libs.versions.teamcity.get()
     olingoVersion = '2.0.10'
 }
 
@@ -67,6 +65,14 @@ subprojects { subproject ->
                 url "file:///${localRepo}"
               }
             }
+
+            def locally_installed_tc = file("${rootDir}/nuget-server/teamcity/environments/${teamcityVersion}/webapps/ROOT/WEB-INF/lib")
+            if (locally_installed_tc.exists()) {
+                flatDir {
+                    dirs locally_installed_tc
+                }
+            }
+
             maven { url 'https://repository.apache.org/snapshots/' }
             mavenCentral()
             mavenLocal()

@@ -1,5 +1,5 @@
 plugins {
-    id 'io.github.rodm.teamcity-server' version '1.5.2'
+    alias(libs.plugins.teamcity.server)
 }
 
 teamcity {
@@ -13,10 +13,7 @@ dependencies {
     implementation project(':nuget-server')
     implementation project(':nuget-server-common')
     implementation project(':nuget-common')
-  testImplementation 'com.sun.jersey:jersey-client:1.11'
-  testImplementation 'com.sun.jersey:jersey-core:1.11'
-  testImplementation 'com.sun.jersey:jersey-server:1.11'
-  testImplementation 'com.sun.jersey:jersey-servlet:1.11'
+  testImplementation libs.bundles.jersey
   testImplementation 'org.odata4j:odata4j-core:0.8.0-SNAPSHOT'
   testImplementation "org.apache.olingo:olingo-odata2-api:$olingoVersion"
   testImplementation "org.apache.olingo:olingo-odata2-api-annotation:$olingoVersion"

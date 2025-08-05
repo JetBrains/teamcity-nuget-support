@@ -15,6 +15,7 @@ import java.util.Vector;
  */
 public class ODataServletConfig implements ServletConfig {
   private final Map<String, String> myParameters;
+  private final ServletContext minimalServletContext = new ODataMinimalServletContext();
 
   public ODataServletConfig() {
     myParameters = CollectionsUtil.asMap("com.sun.jersey.config.property.packages", "jetbrains.buildServer.nuget");
@@ -27,7 +28,7 @@ public class ODataServletConfig implements ServletConfig {
 
   @Override
   public ServletContext getServletContext() {
-    return null;
+    return minimalServletContext;
   }
 
   @Override
