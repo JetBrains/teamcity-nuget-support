@@ -222,6 +222,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       will(returnValue(myLogger));
       allowing(myLogger).startFlow();
       allowing(myLogger).disposeFlow();
+      allowing(myLogger).ignoreServiceMessages(with(any(Runnable.class)));
       allowing(myLogger).message(with(any(String.class)));
       will(new CustomAction("Log message") {
         public Object invoke(Invocation invocation) {
