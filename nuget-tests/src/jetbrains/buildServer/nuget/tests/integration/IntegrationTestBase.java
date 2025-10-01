@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static com.intellij.openapi.util.SystemInfo.isWindows;
 import static java.lang.System.*;
@@ -408,6 +409,13 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     }
 
     public boolean addPassword(@NotNull String s) {
+      return false;
+    }
+
+    public void addPasswordsFilter(@NotNull String filterName, @NotNull Function<String, String> filter) {
+    }
+
+    public boolean removePasswordsFilter(@NotNull String filterName) {
       return false;
     }
   }}
