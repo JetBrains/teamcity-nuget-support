@@ -27,6 +27,7 @@ import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProvider;
 import jetbrains.buildServer.nuget.common.exec.NuGetTeamCityProviderBase;
 import jetbrains.buildServer.nuget.tests.util.BuildProcessTestCase;
 import jetbrains.buildServer.nuget.tests.util.TCJMockUtils;
+import jetbrains.buildServer.util.PasswordReplacer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jmock.Expectations;
@@ -210,6 +211,7 @@ public class IntegrationTestBase extends BuildProcessTestCase {
       allowing(myBuild).getCheckoutDirectory();  will(returnValue(myRoot));
       allowing(myBuild).getAgentTempDirectory(); will(returnValue(createTempDir()));
       allowing(myBuild).getBuildTempDirectory(); will(returnValue(createTempDir()));
+      allowing(myBuild).getPasswordReplacer(); will(returnValue(new MockPasswordReplacer()));
 
       allowing(myMockProcess).start();
       allowing(myMockProcess).waitFor();
@@ -386,6 +388,27 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     final ExecResult execResult = SimpleCommandLineProcessRunner.runCommand(commandLine, null);
     if (execResult.getExitCode() != 0) {
       System.out.println("Failed to set executable attribute for " + canonicalFilePath + ": chmod +x exit code is " + execResult.getExitCode());
+    }
+  }
+
+  private static class MockPasswordReplacer implements PasswordReplacer {
+
+    @NotNull
+    public String replacePasswords(@NotNull String s) {
+      return s;
+    }
+
+    public boolean hasPasswords() {
+      return false;
+    }
+
+    @NotNull
+    public Set<String> getPasswords() {
+      return emptySet();
+    }
+
+    public boolean addPassword(@NotNull String s) {
+      return false;
     }
   }
 }
