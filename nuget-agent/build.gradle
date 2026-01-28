@@ -30,8 +30,7 @@ dependencies {
     provided "org.jetbrains.teamcity:common-impl:$teamcityVersion"
 }
 
-agentPlugin.version = null
-agentPlugin.baseName = 'nuget-agent'
+agentPlugin.archiveFileName = 'nuget-agent.zip'
 
 tasks.withType(JavaCompile) {
     sourceCompatibility = "1.8"

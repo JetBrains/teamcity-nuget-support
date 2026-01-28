@@ -1,5 +1,5 @@
 [versions]
-rodm = "1.5.5"
+rodm = "1.5.6"
 teamcity = "2025.07"
 jersey = "1.18.6"
 
