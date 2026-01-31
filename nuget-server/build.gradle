@@ -41,6 +41,7 @@ teamcity {
         baseDataDir = "teamcity/data"
 
         create(teamcityVersion) {
+            version = teamcityVersion
             homeDir = "${baseHomeDir}/${teamcity.version}"
         }
     }
@@ -62,6 +63,7 @@ dependencies {
     provided "org.jetbrains.teamcity:nuget-utils:$teamcityVersion"
 }
 
-serverPlugin.archiveFileName = 'dotNetPackagesSupport.zip'
+serverPlugin.version = null
+serverPlugin.baseName = 'dotNetPackagesSupport'
 
 test.dependsOn(":nuget-tests:test")
