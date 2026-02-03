@@ -73,6 +73,10 @@ subprojects { subproject ->
                 }
             }
 
+            maven {
+                url = 'https://cache-redirector.jetbrains.com/repo.maven.apache.org/maven2'
+            }
+
             maven { url 'https://repository.apache.org/snapshots/' }
             mavenCentral()
             mavenLocal()
