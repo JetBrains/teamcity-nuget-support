@@ -85,9 +85,17 @@ subprojects { subproject ->
         test.useTestNG()
         jar.archiveVersion = null
 
-        tasks.withType(JavaCompile) {
-            sourceCompatibility = "1.8"
-            targetCompatibility = "1.8"
+        def javaVersionVal = JavaVersion.VERSION_1_8
+
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+          kotlinOptions {
+            jvmTarget = "1.8"
+          }
+        }
+
+        tasks.withType(JavaCompile).configureEach {
+          sourceCompatibility = javaVersionVal.toString()
+          targetCompatibility = javaVersionVal.toString()
         }
     }
 }

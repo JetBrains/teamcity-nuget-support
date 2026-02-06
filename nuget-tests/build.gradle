@@ -78,3 +78,23 @@ task performanceTest(type: Test) {
  		suites 'src/testng-nuget-performance.xml'
 	}
 }
+
+tasks.withType(Test).configureEach {
+
+  if (JavaVersion.current().isJava9Compatible()) {
+
+    def requiredOpens = [
+            'java.base/java.lang',
+            'java.base/java.lang.reflect',
+            'java.base/java.io'
+    ]
+
+    requiredOpens.each { module ->
+      def arg = "--add-opens=${module}=ALL-UNNAMED"
+
+      if (!jvmArgs?.contains(arg)) {
+        jvmArgs(arg)
+      }
+    }
+  }
+}
