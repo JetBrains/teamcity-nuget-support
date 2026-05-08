@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using NuGet.Versioning;
 
 namespace JetBrains.TeamCity.NuGet
 {
   internal class SdkInfo
   {
-    public bool TryGetSdkVersion(out SemanticVersion version)
+    public async Task<SdkVersion?> GetSdkVersion()
     {
       try
       {
@@ -16,11 +17,10 @@ namespace JetBrains.TeamCity.NuGet
           var versionFile = Path.Combine(sdkPath, "..", ".version");
           if (File.Exists(versionFile))
           {
-            var lines = File.ReadAllLines(versionFile);
+            var lines = await ReadVersionFileAsync(versionFile);
             if (lines.Length > 1)
             {
-              version = SemanticVersion.Parse(lines[1]);
-              return true;
+              return new SdkVersion(SemanticVersion.Parse(lines[1]));
             }
           }
         }
@@ -29,9 +29,26 @@ namespace JetBrains.TeamCity.NuGet
       {
         // ignored
       }
+      return null;
+    }
 
-      version = default(SemanticVersion);
-      return false;
+    private static Task<string[]> ReadVersionFileAsync(string versionFile)
+    {
+#if NET5_0_OR_GREATER
+      return File.ReadAllLinesAsync(versionFile);
+#else
+      return Task.FromResult(File.ReadAllLines(versionFile));
+#endif
+    }
+  }
+
+  internal struct SdkVersion
+  {
+    public SemanticVersion Version;
+
+    public SdkVersion(SemanticVersion version)
+    {
+      Version = version;
     }
   }
 }

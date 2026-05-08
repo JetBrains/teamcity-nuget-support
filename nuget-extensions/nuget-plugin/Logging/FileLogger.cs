@@ -4,6 +4,7 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using NuGet.Common;
 
 namespace JetBrains.TeamCity.NuGet.Logging
@@ -27,9 +28,31 @@ namespace JetBrains.TeamCity.NuGet.Logging
       using (var stream = new StreamWriter(fileStream))
       {
         fileStream.Seek(0, SeekOrigin.End);
-        stream.Write($"[{dateString}][{_id}]   {logLevelString} - {message}\n");
+        stream.Write($"[{dateString}][{_id}][{FormatCurrentThreadName()}] {logLevelString} - {message}\n");
         fileStream.Flush();
       }
+    }
+
+    private static string FormatCurrentThreadName()
+    {
+      var name = Thread.CurrentThread.Name + "." + Thread.CurrentThread.ManagedThreadId;
+      
+      const int maxLength = 20;
+
+      if (name.Length == maxLength)
+      {
+        return name;
+      }
+      
+      if (name.Length < maxLength)
+      {
+        return name.PadLeft(maxLength);
+      }
+
+      const string separator = "..";
+      var startLength = (maxLength - separator.Length) / 2;
+      var endLength = maxLength - separator.Length - startLength;
+      return name.Substring(0, startLength) + separator + name.Substring(name.Length - endLength);
     }
   }
 }

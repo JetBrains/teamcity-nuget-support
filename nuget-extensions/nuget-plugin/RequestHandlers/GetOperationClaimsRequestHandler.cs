@@ -14,7 +14,8 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
   internal class GetOperationClaimsRequestHandler : RequestHandlerBase<GetOperationClaimsRequest, GetOperationClaimsResponse>
   {
     private readonly ICredentialProvider myCredentialProvider;
-    private readonly bool mySupportAuthentication;
+    private readonly Lazy<Task<bool>> mySupportAuthentication;
+    
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GetOperationClaimsRequestHandler"/> class.
@@ -25,19 +26,15 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     public GetOperationClaimsRequestHandler(ILogger logger, ICredentialProvider credentialProvider, SdkInfo sdkInfo) : base(logger)
     {
       myCredentialProvider = credentialProvider;
-      var hasVersion = sdkInfo.TryGetSdkVersion(out var semanticVersion);
-      logger.Log(LogLevel.Verbose, hasVersion ? $".NET SDK {semanticVersion} was detected." : ".NET SDK was not detected.");
-
-      mySupportAuthentication = !hasVersion || semanticVersion >= new SemanticVersion(2, 1, 400);
-      logger.Log(LogLevel.Verbose, mySupportAuthentication ? "Authentication is supported." : "Authentication not is supported.");
+      mySupportAuthentication = new Lazy<Task<bool>>(() => GetSupportAuthentication(sdkInfo));
     }
 
-    public override Task<GetOperationClaimsResponse> HandleRequestAsync(GetOperationClaimsRequest request)
+    public override async Task<GetOperationClaimsResponse> HandleRequestAsync(GetOperationClaimsRequest request)
     {
       var operationClaims = new List<OperationClaim>();
       try
       {
-        if (mySupportAuthentication)
+        if (await mySupportAuthentication.Value)
         {
           if (request.PackageSourceRepository == null && request.ServiceIndex == null ||
               Uri.TryCreate(request.PackageSourceRepository, UriKind.Absolute, out Uri uri) &&
@@ -52,7 +49,18 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
         Logger.Log(LogLevel.Error, $"Failed to execute credentials provider: {e}");
       }
 
-      return Task.FromResult(new GetOperationClaimsResponse(operationClaims));
+      return new GetOperationClaimsResponse(operationClaims);
+    }
+
+    private async Task<bool> GetSupportAuthentication(SdkInfo sdkInfo)
+    {
+      var semanticVersion = await sdkInfo.GetSdkVersion();
+      Logger.Log(LogLevel.Verbose, semanticVersion.HasValue ? $".NET SDK {semanticVersion.Value.Version} was detected." : ".NET SDK was not detected.");
+
+      var supportAuthentication = !semanticVersion.HasValue || semanticVersion.Value.Version >= new SemanticVersion(2, 1, 400);
+      Logger.Log(LogLevel.Verbose, supportAuthentication ? "Authentication is supported." : "Authentication not is supported.");
+      
+      return supportAuthentication;
     }
   }
 }
