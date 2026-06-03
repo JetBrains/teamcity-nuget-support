@@ -2,10 +2,12 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.TeamCity.NuGet.Compatibility.Connectivity;
+using JetBrains.TeamCity.NuGet.Compatibility.Logging;
+using JetBrains.TeamCity.NuGet.Compatibility.Messages;
+using JetBrains.TeamCity.NuGet.Compatibility.Protocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using NuGet.Common;
-using NuGet.Protocol.Plugins;
 using ILogger = JetBrains.TeamCity.NuGet.Logging.ILogger;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
@@ -43,9 +45,10 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
         $"Handling {requestType} '{message.Method}'. Time elapsed {timer.ElapsedMilliseconds}ms - Payload: {message.Payload.ToString(Formatting.None)}");
       try
       {
-        TResponse response = null;
+        TResponse response;
         try
         {
+          CancellationToken = cancellationToken;
           response = await HandleRequestAsync(request).ConfigureAwait(false);
         }
         catch (Exception ex) when (cancellationToken.IsCancellationRequested)
@@ -59,7 +62,7 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
         if (message.Method != MessageMethod.GetAuthenticationCredentials)
         {
           var logResponse = JsonConvert.SerializeObject(response, _serializerSettings);
-          Logger.Log(LogLevel.Debug, string.Format("Sending response: {0}", logResponse));
+          Logger.Log(LogLevel.Debug, $"Sending response: {logResponse}");
         }
 
         Logger.Log(LogLevel.Verbose,
@@ -69,8 +72,6 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
 
         Logger.Log(LogLevel.Verbose,
           $"Elapsed time after sending response. '{message.Type}' '{message.Method}': {timer.ElapsedMilliseconds}ms");
-
-        CancellationToken = CancellationToken.None;
       }
       catch (Exception ex)
       {
@@ -79,6 +80,7 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
       }
       finally
       {
+        CancellationToken = CancellationToken.None;
         Logger.Log(LogLevel.Verbose,
           $"Handling {requestType} '{message.Method}' done. Time elapsed {timer.ElapsedMilliseconds}ms");
       }

@@ -3,34 +3,111 @@
 // Licensed under the MIT license.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using NuGet.Common;
+using JetBrains.TeamCity.NuGet.Compatibility.Logging;
 
 namespace JetBrains.TeamCity.NuGet.Logging
 {
-  internal class FileLogger : LoggerBase
+  internal class FileLogger : LoggerBase, IDisposable
   {
+    private const int BUFFER_SIZE_THRESHOLD = 10;
+    private const int FLUSH_INTERVAL_MS = 200;
+    
     private readonly Guid _id = Guid.NewGuid();
-    private readonly string _filePath;
+    private readonly object _writeLock = new object();
+    private readonly List<string> _buffer = new List<string>();
+    private readonly FileStream _fileStream;
+    private readonly StreamWriter _writer;
+    private readonly Timer _flushTimer;
+    private bool _disposed;
 
     internal FileLogger(string filePath)
     {
-      _filePath = filePath;
+      var newFilePath = GenerateFilePathWithTimestamp(filePath);
+      _fileStream = new FileStream(newFilePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite);
+      _fileStream.Seek(0, SeekOrigin.End);
+      _writer = new StreamWriter(_fileStream) { AutoFlush = false };
+      _flushTimer = new Timer(Flush, null, TimeSpan.FromMilliseconds(FLUSH_INTERVAL_MS), TimeSpan.FromMilliseconds(FLUSH_INTERVAL_MS));
     }
 
-    protected override void WriteLog(LogLevel logLevel, string message)
+    protected override void WriteLog(DateTime logTimestamp, LogLevel logLevel, string logMessage, bool logNotifyNuGet)
     {
-      var dateString = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff");
+      var dateString = logTimestamp.ToString("yyyy-MM-dd HH:mm:ss,fff");
       var logLevelString = logLevel.ToString().ToUpper();
+      var logLine = $"[{dateString}][{_id}][{FormatCurrentThreadName()}] {logLevelString} - {logMessage}";
 
-      using(var fileStream = new FileStream(_filePath, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite))
-      using (var stream = new StreamWriter(fileStream))
+      lock (_writeLock)
       {
-        fileStream.Seek(0, SeekOrigin.End);
-        stream.Write($"[{dateString}][{_id}][{FormatCurrentThreadName()}] {logLevelString} - {message}\n");
-        fileStream.Flush();
+        if (_disposed)
+        {
+          return;
+        }
+
+        _buffer.Add(logLine);
+        if (_buffer.Count > BUFFER_SIZE_THRESHOLD)
+        {
+          FlushUnsafe();
+        }
       }
+    }
+
+    public void Dispose()
+    {
+      _flushTimer.Dispose();
+      lock (_writeLock)
+      {
+        if (_disposed)
+        {
+          return;
+        }
+
+        FlushUnsafe();
+        _disposed = true;
+        _writer.Dispose();
+        _fileStream.Dispose();
+      }
+    }
+
+    private void Flush(object state)
+    {
+      lock (_writeLock)
+      {
+        if (_disposed)
+        {
+          return;
+        }
+
+        FlushUnsafe();
+      }
+    }
+
+    private void FlushUnsafe()
+    {
+      if (_buffer.Count == 0)
+      {
+        return;
+      }
+
+      foreach (var logLine in _buffer)
+      {
+        _writer.WriteLine(logLine);
+      }
+
+      _buffer.Clear();
+      _writer.Flush();
+    }
+
+    private static string GenerateFilePathWithTimestamp(string filePath)
+    {
+      var directory = Path.GetDirectoryName(filePath);
+      var fileName = Path.GetFileNameWithoutExtension(filePath);
+      var extension = Path.GetExtension(filePath);
+      var encodedSuffix = Convert.ToString(DateTime.Now.Ticks, 16);
+      var newFileName = $"{fileName}_{encodedSuffix}{extension}";
+      var newFilePath = string.IsNullOrEmpty(directory) ? newFileName : Path.Combine(directory, newFileName);
+      return newFilePath;
     }
 
     private static string FormatCurrentThreadName()

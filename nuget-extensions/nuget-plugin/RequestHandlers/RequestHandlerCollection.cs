@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using NuGet.Protocol.Plugins;
+using JetBrains.TeamCity.NuGet.Compatibility.Messages;
+using JetBrains.TeamCity.NuGet.Compatibility.Protocol;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
 {

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
-using NuGet.Common;
-using NuGet.Protocol.Plugins;
+using JetBrains.TeamCity.NuGet.Compatibility.Logging;
+using JetBrains.TeamCity.NuGet.Compatibility.Messages;
+using JetBrains.TeamCity.NuGet.Compatibility.Protocol;
 using ILogger = JetBrains.TeamCity.NuGet.Logging.ILogger;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
@@ -22,6 +23,7 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     public override Task<InitializeResponse> HandleRequestAsync(InitializeRequest request)
     {
       Logger.Log(LogLevel.Verbose, $"Request timeout: {request.RequestTimeout}");
+
       return Task.FromResult(new InitializeResponse(MessageResponseCode.Success));
     }
   }

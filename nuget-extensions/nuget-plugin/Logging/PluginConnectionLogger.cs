@@ -2,10 +2,13 @@
 //
 // Licensed under the MIT license.
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using NuGet.Common;
-using NuGet.Protocol.Plugins;
+using JetBrains.TeamCity.NuGet.Compatibility.Connectivity;
+using JetBrains.TeamCity.NuGet.Compatibility.Logging;
+using JetBrains.TeamCity.NuGet.Compatibility.Messages;
+using JetBrains.TeamCity.NuGet.Compatibility.Protocol;
 
 namespace JetBrains.TeamCity.NuGet.Logging
 {
@@ -18,15 +21,18 @@ namespace JetBrains.TeamCity.NuGet.Logging
       _connection = connection;
     }
 
-    protected override void WriteLog(LogLevel logLevel, string message)
+    protected override void WriteLog(DateTime logTimestamp, LogLevel logLevel, string logMessage, bool logNotifyNuGet)
     {
       // intentionally not awaiting here -- don't want to block forward progress just because we tried to log.
-      _connection
-        .SendRequestAndReceiveResponseAsync<LogRequest, LogResponse>(
-          MessageMethod.Log,
-          new LogRequest(logLevel, $"    {message}"),
-          CancellationToken.None)
-        .ContinueWith(x => x.Exception, TaskContinuationOptions.OnlyOnFaulted);
+      if (logNotifyNuGet && _connection.IsConnected)
+      {
+        _connection
+          .SendRequestAndReceiveResponseAsync<LogRequest, LogResponse>(
+            MessageMethod.Log,
+            new LogRequest(logLevel, $"    {logMessage}"),
+            CancellationToken.None)
+          .ContinueWith(x => x.Exception, TaskContinuationOptions.OnlyOnFaulted);
+      }
     }
   }
 }

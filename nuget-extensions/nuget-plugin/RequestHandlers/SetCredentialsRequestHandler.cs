@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
+using JetBrains.TeamCity.NuGet.Compatibility.Messages;
+using JetBrains.TeamCity.NuGet.Compatibility.Protocol;
 using JetBrains.TeamCity.NuGet.Logging;
-using NuGet.Protocol.Plugins;
 
 namespace JetBrains.TeamCity.NuGet.RequestHandlers
 {
