@@ -1,6 +1,6 @@
 package jetbrains.buildServer.nuget.tests.feed
 
-import jetbrains.buildServer.RootUrlHolder
+import jetbrains.buildServer.ProjectAwareRootUrlResolver
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedAuthParametersProvider
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
@@ -27,7 +27,7 @@ class NuGetFeedAuthParametersProviderTest {
         val serverSettings = m.mock(NuGetServerSettings::class.java)
         val projectManager = m.mock(ProjectManager::class.java)
         val repositoryManager = m.mock(RepositoryManager::class.java)
-        val rootUrlHolder = m.mock(RootUrlHolder::class.java)
+        val rootUrlResolver = m.mock(ProjectAwareRootUrlResolver::class.java)
         val buildStartContext = m.mock(BuildStartContext::class.java)
         val build = m.mock(SRunningBuild::class.java)
         val project = m.mock(SProject::class.java)
@@ -36,7 +36,7 @@ class NuGetFeedAuthParametersProviderTest {
         val projectId = "projectId"
 
         val parametersProvider = NuGetFeedAuthParametersProvider(
-                serverSettings, projectManager, repositoryManager, rootUrlHolder
+                serverSettings, projectManager, repositoryManager, rootUrlResolver
         )
 
         m.checking(object: Expectations() {
@@ -71,7 +71,7 @@ class NuGetFeedAuthParametersProviderTest {
                     }
                 })
 
-                oneOf(rootUrlHolder).rootUrl
+                oneOf(rootUrlResolver).getRootUrlByProjectExternalId(projectId)
                 will(returnValue("http://localhost"))
 
                 oneOf(buildStartContext).addSharedParameter("teamcity.nuget.feed.agentSideIndexing", "true")

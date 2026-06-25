@@ -4,7 +4,7 @@ package jetbrains.buildServer.nuget.tests.server;
 
 import jetbrains.buildServer.BaseTestCase;
 import jetbrains.buildServer.ExtensionHolder;
-import jetbrains.buildServer.RootUrlHolder;
+import jetbrains.buildServer.ProjectAwareRootUrlResolver;
 import jetbrains.buildServer.agent.AgentRuntimeProperties;
 import jetbrains.buildServer.buildTriggers.BuildTriggerDescriptor;
 import jetbrains.buildServer.buildTriggers.BuildTriggerException;
@@ -68,7 +68,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
   private PackageChangesManager chk;
   private Map<String, String> params;
   private File nugetFakePath;
-  private RootUrlHolder myRootUrlHolder;
+  private ProjectAwareRootUrlResolver myRootUrlResolver;
   private BuildTypeEx myBuildType;
   private ProjectEx myProject;
 
@@ -87,7 +87,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     params = new TreeMap<String, String>();
     final ServerToolManager toolManager = m.mock(ServerToolManager.class);
     chk = m.mock(PackageChangesManager.class);
-    myRootUrlHolder = m.mock(RootUrlHolder.class);
+    myRootUrlResolver = m.mock(ProjectAwareRootUrlResolver.class);
     myBuildType = m.mock(BuildTypeEx.class);
     myProject = m.mock(ProjectEx.class);
 
@@ -108,8 +108,9 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
       allowing(context).getBuildType(); will(returnValue(myBuildType));
       allowing(desr).getProperties(); will(returnValue(params));
       allowing(toolManager).getUnpackedToolVersionPath(with(any(ToolType.class)), with(any(String.class)), with(any(SProject.class))); will(returnValue(nugetHome));
-      allowing(extensionHolder).getExtensions(TriggerUrlPostProcessor.class); will(returnValue(Collections.<TriggerUrlPostProcessor>singletonList(new TriggerUrlRootPostProcessor(myRootUrlHolder))));
+      allowing(extensionHolder).getExtensions(TriggerUrlPostProcessor.class); will(returnValue(Collections.<TriggerUrlPostProcessor>singletonList(new TriggerUrlRootPostProcessor(myRootUrlResolver))));
       allowing(myBuildType).getProject(); will(returnValue(myProject));
+      allowing(myBuildType).getExternalId(); will(returnValue("bt1"));
 
       allowing(si).canStartNuGetProcesses(); will(new CustomAction("Return myIsWindows") {
         public Object invoke(Invocation invocation) throws Throwable {
@@ -129,7 +130,7 @@ public class NamedPackagesUpdateCheckerTest extends BaseTestCase {
     params.put(TriggerConstants.SOURCE, "%"+ AgentRuntimeProperties.TEAMCITY_SERVER_URL+"%/a/b/c");
 
     m.checking(new Expectations(){{
-      allowing(myRootUrlHolder).getRootUrl(); will(returnValue("http://some-teamcity-with-nuget.org/jonnyzzz"));
+      allowing(myRootUrlResolver).getRootUrlByBuildTypeExternalId("bt1"); will(returnValue("http://some-teamcity-with-nuget.org/jonnyzzz"));
 
       oneOf(chk).checkPackage(with(req(nugetFakePath, "http://some-teamcity-with-nuget.org/jonnyzzz/a/b/c", "NUnit", null)));
       will(returnValue(CheckResult.fromResult(Arrays.asList(new SourcePackageInfo("src", "pkg", "5.6.87")))));
