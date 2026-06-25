@@ -1,6 +1,6 @@
 package jetbrains.buildServer.nuget.feed.server
 
-import jetbrains.buildServer.RootUrlHolder
+import jetbrains.buildServer.ProjectAwareRootUrlResolver
 import jetbrains.buildServer.agent.AgentRuntimeProperties
 import jetbrains.buildServer.agent.Constants
 import jetbrains.buildServer.nuget.common.NuGetServerConstants
@@ -23,7 +23,7 @@ import javax.ws.rs.core.UriBuilder
 class NuGetFeedAuthParametersProvider(private val mySettings: NuGetServerSettings,
                                       private val myProjectManager: ProjectManager,
                                       private val myRepositoryManager: RepositoryManager,
-                                      private val myRootUrlHolder: RootUrlHolder)
+                                      private val myRootUrlResolver: ProjectAwareRootUrlResolver)
     : BuildStartContextProcessor {
 
     override fun updateParameters(context: BuildStartContext) {
@@ -59,7 +59,7 @@ class NuGetFeedAuthParametersProvider(private val mySettings: NuGetServerSetting
                 )
                 context.addSharedParameter(
                         feedReferencePrefix + feedSuffix + NuGetServerConstants.FEED_REF_PUBLIC_URL_SUFFIX,
-                        UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
+                        UriBuilder.fromUri(myRootUrlResolver.getRootUrlByProjectExternalId(project.externalId)).replacePath(httpAuthFeedPath).build().toString()
                 )
             }
         }

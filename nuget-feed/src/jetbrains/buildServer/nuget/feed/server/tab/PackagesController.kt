@@ -2,7 +2,7 @@
 
 package jetbrains.buildServer.nuget.feed.server.tab
 
-import jetbrains.buildServer.RootUrlHolder
+import jetbrains.buildServer.ProjectAwareRootUrlResolver
 import jetbrains.buildServer.controllers.AuthorizationInterceptor
 import jetbrains.buildServer.controllers.BaseController
 import jetbrains.buildServer.nuget.feed.server.PermissionChecker
@@ -26,7 +26,7 @@ class PackagesController(auth: AuthorizationInterceptor,
                          web: WebControllerManager,
                          private val myDescriptor: PluginDescriptor,
                          private val myLoginConfiguration: LoginConfiguration,
-                         private val myRootUrlHolder: RootUrlHolder,
+                         private val myRootUrlResolver: ProjectAwareRootUrlResolver,
                          private val myRepositoryRegistry: RepositoryRegistry,
                          private val myRepositoriesManager: RepositoryManager,
                          private val myProjectManager: ProjectManager) : BaseController() {
@@ -51,7 +51,7 @@ class PackagesController(auth: AuthorizationInterceptor,
             val usages = myRepositoryRegistry.findUsagesProvider(it.type.type)
                     ?.getUsagesCount(it)
                     ?: 0
-            ProjectRepository(it, project, myRootUrlHolder.rootUrl, usages)
+            ProjectRepository(it, project, myRootUrlResolver.getRootUrlByProjectExternalId(project.externalId), usages)
         }
         mv.model["project"] = project
         mv.model["repositories"] = repositories
