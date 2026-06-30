@@ -61,4 +61,3 @@ nuget-extensions/packages/*
 # TeamCity distribution
 /nuget-server/teamcity/
 nuget-extensions/.vs/
-.kotlin
