@@ -320,7 +320,12 @@ public class IntegrationTestBase extends BuildProcessTestCase {
     enableExecution(nugetPath);
 
     final GeneralCommandLine cmd = new GeneralCommandLine();
-    cmd.setExePath(nugetPath);
+    // local MacOs integration tests: brew install mono &&
+    if (SystemInfo.isMac) {
+      cmd.setExePath("mono");
+      cmd.addParameter(nugetPath);
+    } else
+      cmd.setExePath(nugetPath);
     cmd.addParameter("sources");
     cmd.addParameter(command);
     cmd.addParameter("-Name");
