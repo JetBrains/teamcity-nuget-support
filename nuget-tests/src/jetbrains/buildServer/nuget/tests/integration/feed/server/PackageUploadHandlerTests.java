@@ -2,17 +2,20 @@
 
 package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
+import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import jetbrains.buildServer.BuildProblemData;
 import jetbrains.buildServer.controllers.MockResponse;
 import jetbrains.buildServer.nuget.common.PackageExistsException;
+import jetbrains.buildServer.nuget.common.PackageLoadException;
 import jetbrains.buildServer.nuget.common.index.NuGetPackageAnalyzer;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
@@ -32,6 +35,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
@@ -768,6 +772,62 @@ public class PackageUploadHandlerTests {
     m.assertIsSatisfied();
   }
 
+  public void testUploadReadsPackageFromMultipartRequestWrappedByFeedController() throws Exception {
+    Mockery m = new Mockery();
+    final byte[] packageBytes = "package-content".getBytes(StandardCharsets.UTF_8);
+    final boolean[] packageWasRead = new boolean[1];
+    RunningBuildsCollection runningBuilds = m.mock(RunningBuildsCollection.class);
+    RunningBuildEx build = m.mock(RunningBuildEx.class);
+    ResponseCacheReset cacheReset = m.mock(ResponseCacheReset.class);
+    NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerContext> metadataHandler =
+      m.mock(NuGetFeedUploadMetadataHandler.class);
+    RequestWrapper request = new RequestWrapper(SERVLET_PATH, SERVLET_PATH + "/");
+    ResponseWrapper response = new ResponseWrapper(new MockResponse());
+    MultipartHttpServletRequest multipartRequest = createMultipartRequest(request, packageBytes);
+    HttpServletRequest wrappedRequest = new jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper(multipartRequest, SERVLET_PATH);
+
+    m.checking(new Expectations() {{
+      oneOf(runningBuilds).findRunningBuildById(3641L);
+      will(returnValue(build));
+      one(build).getBuildType();
+      will(returnValue(null));
+      oneOf(build).getAgentAccessCode();
+      will(returnValue("code"));
+      one(build).getArtifactsLimit();
+      will(returnValue(ArtifactsUploadLimit.UNLIMITED));
+    }});
+
+    PackageAnalyzer packageAnalyzer = new PackageAnalyzer() {
+      @NotNull
+      @Override
+      public Map<String, String> analyzePackage(@NotNull InputStream content) throws PackageLoadException {
+        Assert.assertEquals(readStream(content), packageBytes);
+        packageWasRead[0] = true;
+        throw new PackageLoadException("stop after package stream is verified");
+      }
+
+      @NotNull
+      @Override
+      public String getSha512Hash(@NotNull InputStream content) throws PackageLoadException {
+        Assert.fail("Package hash should not be requested when package analysis fails");
+        return "";
+      }
+    };
+
+    PackageUploadHandler<NuGetFeedUploadHandlerContext> handler =
+      new PackageUploadHandler<NuGetFeedUploadHandlerContext>(runningBuilds, packageAnalyzer, cacheReset, metadataHandler);
+
+    request.setContentType("multipart/form-data; boundary=\"3576595b-8e57-4d70-91bb-701d5aab54ea\"");
+    request.setHeader("X-Nuget-ApiKey", "zxxbe88b7ae8ef92315f0040f7f6522a0f98fae6ee1f6bee6a445f2b24babecd2a3");
+    request.setBody("".getBytes());
+
+    handler.handleRequest(FEED_DATA, wrappedRequest, response);
+
+    Assert.assertEquals(response.getStatus(), 400);
+    Assert.assertTrue(packageWasRead[0]);
+    m.assertIsSatisfied();
+  }
+
   private MultipartHttpServletRequest createMultipartRequest(final RequestWrapper request) {
     return createMultipartRequest(request, "package");
   }
@@ -780,6 +840,26 @@ public class PackageUploadHandlerTests {
     final MultiValueMap<String, MultipartFile> files = new LinkedMultiValueMap<String, MultipartFile>();
     files.add(fileParameterName, new TestMultipartFile(fileParameterName, fileParameterName + ".nupkg", REQUEST_BODY.getBytes()));
     return new DefaultMultipartHttpServletRequest(request, files, Collections.<String, String[]>emptyMap(), Collections.<String, String>emptyMap());
+  }
+
+  private MultipartHttpServletRequest createMultipartRequest(final RequestWrapper request, final byte[] content) {
+    final MultiValueMap<String, MultipartFile> files = new LinkedMultiValueMap<String, MultipartFile>();
+    files.add("package", new TestMultipartFile("package", "package.nupkg", content));
+    return new DefaultMultipartHttpServletRequest(request, files, Collections.<String, String[]>emptyMap(), Collections.<String, String>emptyMap());
+  }
+
+  private static byte[] readStream(InputStream inputStream) {
+    try {
+      ByteArrayOutputStream result = new ByteArrayOutputStream();
+      byte[] buffer = new byte[1024];
+      int read;
+      while ((read = inputStream.read(buffer)) >= 0) {
+        result.write(buffer, 0, read);
+      }
+      return result.toByteArray();
+    } catch (IOException e) {
+      throw new AssertionError(e);
+    }
   }
 
   private static class TestMultipartFile implements MultipartFile {

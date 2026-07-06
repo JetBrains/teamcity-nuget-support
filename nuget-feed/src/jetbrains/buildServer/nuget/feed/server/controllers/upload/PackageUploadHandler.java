@@ -13,10 +13,10 @@ import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
+import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils;
 import jetbrains.buildServer.serverSide.RunningBuildEx;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
-import jetbrains.buildServer.serverSide.ServerSettings;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
@@ -70,7 +70,8 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
   public void handleRequest(@NotNull final TContext context,
                             @NotNull final HttpServletRequest request,
                             @NotNull final HttpServletResponse response) throws Exception {
-    if (!(request instanceof MultipartHttpServletRequest)) {
+    final String contentType = request.getContentType();
+    if (contentType == null || !contentType.toLowerCase().startsWith("multipart/")) {
       LOG.debug("Request body should be multipart form data");
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Request body should be multipart form data");
       return;
@@ -78,7 +79,8 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
 
     try {
       LOG.debug("NuGet package upload handler has started");
-      handleUpload((MultipartHttpServletRequest) request, response, context);
+
+      handleUpload(request, response, context);
     } catch (Throwable e) {
       LOG.warnAndDebugDetails("Unhandled error while processing NuGet package upload: " + e.getMessage(), e);
       throw e;
@@ -87,7 +89,7 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
     }
   }
 
-  private void handleUpload(final MultipartHttpServletRequest request,
+  private void handleUpload(final HttpServletRequest request,
                             final HttpServletResponse response,
                             final TContext context) throws IOException {
     final RunningBuildEx build = getRunningBuild(request.getHeader(NUGET_APIKEY_HEADER));
@@ -102,7 +104,14 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
       return;
     }
 
-    final MultipartFile file = request.getFile("package");
+    MultipartHttpServletRequest multipartRequest = getMultipartRequest(request);
+    if (multipartRequest == null) {
+      LOG.debug("Push NuGet package request does not contain package file");
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "NuGet package data not found");
+      return;
+    }
+
+    final MultipartFile file = multipartRequest.getFile("package");
     if (file == null) {
       LOG.debug("Push NuGet package request does not contain package file");
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "NuGet package data not found");
@@ -146,7 +155,7 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
     }
 
     try {
-      processPackage(request, response, build, file, context);
+      processPackage(multipartRequest, response, build, file, context);
     } catch (PackageLoadException e) {
       LOG.debug("Invalid NuGet package: " + e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, INVALID_PACKAGE_CONTENTS);
@@ -157,6 +166,20 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
       LOG.warnAndDebugDetails("Failed to process NuGet package: " + e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to process NuGet package");
     }
+  }
+
+  private static MultipartHttpServletRequest getMultipartRequest(HttpServletRequest request) {
+    if (request instanceof MultipartHttpServletRequest) {
+      return (MultipartHttpServletRequest) request;
+    }
+    if (request instanceof RequestWrapper) {
+      RequestWrapper requestWrapper = (RequestWrapper) request;
+      LOG.debug("Request wrapper class: " + request.getClass().getName());
+      if (requestWrapper.unwrap() instanceof MultipartHttpServletRequest) {
+        return (MultipartHttpServletRequest) requestWrapper.unwrap();
+      }
+    }
+    return null;
   }
 
   @Nullable
