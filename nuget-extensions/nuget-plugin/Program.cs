@@ -14,6 +14,9 @@ namespace JetBrains.TeamCity.NuGet
 {
   internal static class Program
   {
+    private static bool ourShuttingDown;
+    public static bool IsShuttingDown => Volatile.Read(ref ourShuttingDown);
+
     public static int Main(string[] args)
     {
       DebugBreakIfPluginDebuggingIsEnabled();
@@ -31,6 +34,7 @@ namespace JetBrains.TeamCity.NuGet
 
       Console.CancelKeyPress += (sender, eventArgs) =>
                                 {
+                                  multiLogger.Log(LogLevel.Verbose, "Received cancel signal.");
                                   tokenSource.Cancel();
                                   eventArgs.Cancel = true;
                                 };
@@ -44,6 +48,11 @@ namespace JetBrains.TeamCity.NuGet
         // Multiple source restoration. Request will be cancelled if a package has been successfully restored from another source
         multiLogger.Log(LogLevel.Verbose, $"Request to credential provider was cancelled. Message: {e.Message}");
         return 0;
+      }
+      catch (Exception e)
+      {
+        multiLogger.Log(LogLevel.Verbose, $"Request to credential provider failed. Message: {e.Message}");
+        return -1;
       }
     }
 
@@ -81,12 +90,15 @@ namespace JetBrains.TeamCity.NuGet
 
         try
         {
-          using (IPlugin plugin = await PluginFactory
-            .CreateFromCurrentProcessAsync(requestHandlers, ConnectionOptions.CreateDefault(), CancellationToken.None)
+          using (var plugin = await PluginFactory
+            .CreateFromCurrentProcessAsync(requestHandlers, ConnectionOptions.CreateDefault(), tokenSource.Token)
             .ConfigureAwait(continueOnCapturedContext: false))
           {
             multiLogger.Add(new PluginConnectionLogger(plugin.Connection));
-            await RunNuGetPluginsAsync(plugin, multiLogger, tokenSource.Token).ConfigureAwait(continueOnCapturedContext: false);
+            multiLogger.Log(LogLevel.Verbose, "Plugin connected");
+
+            var shutdownTimeout = GetShutdownTimeout();
+            await WaitForPluginExitAsync(plugin, multiLogger, shutdownTimeout).ConfigureAwait(continueOnCapturedContext: false);
           }
         }
         catch (OperationCanceledException e)
@@ -127,24 +139,60 @@ namespace JetBrains.TeamCity.NuGet
       return -1;
     }
 
-    private static async Task RunNuGetPluginsAsync(IPlugin plugin, ILogger logger, CancellationToken cancellationToken)
+    private static TimeSpan GetShutdownTimeout()
     {
-      SemaphoreSlim semaphore = new SemaphoreSlim(0);
+      const int defaultTimeoutSeconds = 120;
+      var timeoutStr = Environment.GetEnvironmentVariable("NUGET_PLUGIN_SHUTDOWN_TIMEOUT_IN_SECONDS");
+
+      return int.TryParse(timeoutStr, out var parsedTimeout)
+        ? TimeSpan.FromSeconds(parsedTimeout)
+        : TimeSpan.FromSeconds(defaultTimeoutSeconds);
+    }
+
+    private static async Task WaitForPluginExitAsync(IPlugin plugin, ILogger logger, TimeSpan shutdownTimeout)
+    {
+      logger.Log(LogLevel.Verbose, "Subscribing on events");
+
+      var beginShutdownTaskSource = new TaskCompletionSource<object>();
+      var endShutdownTaskSource = new TaskCompletionSource<object>();
 
       plugin.Connection.Faulted += (sender, a) =>
                                    {
-                                     logger.Log(LogLevel.Error, $"Faulted on message: {a.Message?.Type} {a.Message?.Method} {a.Message?.RequestId}");
+                                     logger.Log(LogLevel.Error,
+                                       $"Faulted on message: {a.Message?.Type} {a.Message?.Method} {a.Message?.RequestId}");
                                      logger.Log(LogLevel.Error, a.Exception.ToString());
                                    };
 
-      plugin.Closed += (sender, a) => semaphore.Release();
+      plugin.BeforeClose += (sender, args) =>
+                            {
+                              logger.Log(LogLevel.Verbose, "Handling BeforeCLose event");
 
-      bool complete = await semaphore.WaitAsync(TimeSpan.FromDays(1), cancellationToken)
-        .ConfigureAwait(continueOnCapturedContext: false);
+                              Volatile.Write(ref ourShuttingDown, true);
+                              beginShutdownTaskSource.TrySetResult(null);
+                            };
 
-      if (!complete)
+      plugin.Closed += (sender, a) =>
+                       {
+                         logger.Log(LogLevel.Verbose, "Handling Closed event");
+
+                         beginShutdownTaskSource.TrySetResult(null);
+                         endShutdownTaskSource.TrySetResult(null);
+                       };
+
+      logger.Log(LogLevel.Verbose, $"Waiting for plugin exit. Shutdown timeout: {shutdownTimeout}");
+
+      await beginShutdownTaskSource.Task;
+      
+      logger.Log(LogLevel.Verbose, $"Begin shutdown completed.");
+
+      var completedTask = await Task.WhenAny(endShutdownTaskSource.Task, Task.Delay(shutdownTimeout));
+      if (completedTask != endShutdownTaskSource.Task)
       {
         logger.Log(LogLevel.Error, "Timed out waiting for plug-in operations to complete");
+      }
+      else
+      {
+        logger.Log(LogLevel.Verbose, "Plugin operations completed");
       }
     }
 
