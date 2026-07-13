@@ -28,6 +28,7 @@ namespace JetBrains.TeamCity.NuGet.Compatibility.Connectivity
     private bool _disposed;
     private int _nextRequestId;
     private readonly ILogger _logger;
+    private readonly string _requestIdPrefix = $"TC-{Guid.NewGuid()}";
 
     public Dispatcher(IRequestHandlers requestHandlers,
       InboundRequestProcessingHandler inboundRequestProcessingHandler,
@@ -286,7 +287,7 @@ namespace JetBrains.TeamCity.NuGet.Compatibility.Connectivity
 
     private string CreateRequestId()
     {
-      return Interlocked.Increment(ref _nextRequestId).ToString(CultureInfo.InvariantCulture);
+      return $"{_requestIdPrefix}-{Interlocked.Increment(ref _nextRequestId).ToString(CultureInfo.InvariantCulture)}";
     }
   }
 }
