@@ -13,10 +13,10 @@ import jetbrains.buildServer.nuget.feed.server.NuGetUtils;
 import jetbrains.buildServer.nuget.feed.server.cache.ResponseCacheReset;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.common.index.ODataDataFormat;
+import jetbrains.buildServer.nuget.feed.server.controllers.requests.RequestWrapper;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils;
 import jetbrains.buildServer.serverSide.RunningBuildEx;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
-import jetbrains.buildServer.serverSide.ServerSettings;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
@@ -24,14 +24,11 @@ import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
@@ -57,18 +54,15 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
   private final RunningBuildsCollection myRunningBuilds;
   private final PackageAnalyzer myPackageAnalyzer;
   private final ResponseCacheReset myCacheReset;
-  private final ServerSettings myServerSettings;
   private final NuGetFeedUploadMetadataHandler<TContext> myMetadataHandler;
 
   public PackageUploadHandler(@NotNull final RunningBuildsCollection runningBuilds,
                               @NotNull final PackageAnalyzer packageAnalyzer,
                               @NotNull final ResponseCacheReset cacheReset,
-                              @NotNull final ServerSettings serverSettings,
                               @NotNull final NuGetFeedUploadMetadataHandler<TContext> metadataHandler) {
     myRunningBuilds = runningBuilds;
     myPackageAnalyzer = packageAnalyzer;
     myCacheReset = cacheReset;
-    myServerSettings = serverSettings;
     myMetadataHandler = metadataHandler;
   }
 
@@ -83,26 +77,19 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
       return;
     }
 
-    final CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-    final File uploadDirectory = getUploadDirectory();
-    multipartResolver.setUploadTempDir(new FileSystemResource(uploadDirectory));
-    MultipartHttpServletRequest servletRequest = null;
     try {
       LOG.debug("NuGet package upload handler has started");
-      servletRequest = multipartResolver.resolveMultipart(request);
-      handleUpload(servletRequest, response, context);
+
+      handleUpload(request, response, context);
     } catch (Throwable e) {
       LOG.warnAndDebugDetails("Unhandled error while processing NuGet package upload: " + e.getMessage(), e);
       throw e;
     } finally {
       LOG.debug("NuGet package upload handler has finished");
-      if (servletRequest != null) {
-        multipartResolver.cleanupMultipart(servletRequest);
-      }
     }
   }
 
-  private void handleUpload(final MultipartHttpServletRequest request,
+  private void handleUpload(final HttpServletRequest request,
                             final HttpServletResponse response,
                             final TContext context) throws IOException {
     final RunningBuildEx build = getRunningBuild(request.getHeader(NUGET_APIKEY_HEADER));
@@ -117,7 +104,14 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
       return;
     }
 
-    final MultipartFile file = request.getFile("package");
+    MultipartHttpServletRequest multipartRequest = getMultipartRequest(request);
+    if (multipartRequest == null) {
+      LOG.debug("Push NuGet package request does not contain package file");
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "NuGet package data not found");
+      return;
+    }
+
+    final MultipartFile file = multipartRequest.getFile("package");
     if (file == null) {
       LOG.debug("Push NuGet package request does not contain package file");
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, "NuGet package data not found");
@@ -161,7 +155,7 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
     }
 
     try {
-      processPackage(request, response, build, file, context);
+      processPackage(multipartRequest, response, build, file, context);
     } catch (PackageLoadException e) {
       LOG.debug("Invalid NuGet package: " + e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_BAD_REQUEST, INVALID_PACKAGE_CONTENTS);
@@ -172,6 +166,20 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
       LOG.warnAndDebugDetails("Failed to process NuGet package: " + e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to process NuGet package");
     }
+  }
+
+  private static MultipartHttpServletRequest getMultipartRequest(HttpServletRequest request) {
+    if (request instanceof MultipartHttpServletRequest) {
+      return (MultipartHttpServletRequest) request;
+    }
+    if (request instanceof RequestWrapper) {
+      RequestWrapper requestWrapper = (RequestWrapper) request;
+      LOG.debug("Request wrapper class: " + request.getClass().getName());
+      if (requestWrapper.unwrap() instanceof MultipartHttpServletRequest) {
+        return (MultipartHttpServletRequest) requestWrapper.unwrap();
+      }
+    }
+    return null;
   }
 
   @Nullable
@@ -291,17 +299,5 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
     } else {
       return pathParameter;
     }
-  }
-
-  @NotNull
-  private File getUploadDirectory() {
-    final String serverUrl = myServerSettings.getRootUrl();
-    File dir = new File(myServerSettings.getArtifactDirectories().get(0), "_upload_" + FileUtil.fixDirectoryName(serverUrl));
-    final String uploadDir = TeamCityProperties.getPropertyOrNull("teamcity.server.artifacts.uploadDir");
-    if (uploadDir != null) {
-      dir = new File(uploadDir);
-    }
-
-    return dir;
   }
 }

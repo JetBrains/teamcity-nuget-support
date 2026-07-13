@@ -14,7 +14,7 @@ namespace JetBrains.TeamCity.NuGet.Logging
   {
     private const int BUFFER_SIZE_THRESHOLD = 10;
     private const int FLUSH_INTERVAL_MS = 200;
-    
+
     private readonly Guid _id = Guid.NewGuid();
     private readonly object _writeLock = new object();
     private readonly List<string> _buffer = new List<string>();
@@ -113,14 +113,14 @@ namespace JetBrains.TeamCity.NuGet.Logging
     private static string FormatCurrentThreadName()
     {
       var name = Thread.CurrentThread.Name + "." + Thread.CurrentThread.ManagedThreadId;
-      
+
       const int maxLength = 20;
 
       if (name.Length == maxLength)
       {
         return name;
       }
-      
+
       if (name.Length < maxLength)
       {
         return name.PadLeft(maxLength);

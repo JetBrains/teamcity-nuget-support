@@ -187,7 +187,7 @@ namespace JetBrains.TeamCity.NuGet
       logger.Log(LogLevel.Verbose, $"Waiting for plugin exit. Shutdown timeout: {PluginTimeouts.Instance.ShutdownTimeout}");
 
       await beginShutdownTaskSource.Task;
-      
+
       logger.Log(LogLevel.Verbose, $"Begin shutdown completed.");
 
       var completedTask = await Task.WhenAny(endShutdownTaskSource.Task, Task.Delay(PluginTimeouts.Instance.ShutdownTimeout));

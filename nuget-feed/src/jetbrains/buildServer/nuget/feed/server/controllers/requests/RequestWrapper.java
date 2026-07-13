@@ -93,4 +93,8 @@ public class RequestWrapper extends HttpServletRequestWrapper {
     // NuGet client appends forward clash at the end of query string
     return StringUtil.trimEnd(value, FORWARD_SLASH);
   }
+
+  public HttpServletRequest unwrap() {
+    return myRequest;
+  }
 }

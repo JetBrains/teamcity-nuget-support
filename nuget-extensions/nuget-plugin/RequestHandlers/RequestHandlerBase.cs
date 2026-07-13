@@ -38,7 +38,7 @@ namespace JetBrains.TeamCity.NuGet.RequestHandlers
     {
       var timer = new Stopwatch();
       timer.Start();
-      
+
       TRequest request = MessageUtilities.DeserializePayload<TRequest>(message);
       var requestType = message.Type.ToString().ToLower();
       Logger.Log(LogLevel.Verbose,

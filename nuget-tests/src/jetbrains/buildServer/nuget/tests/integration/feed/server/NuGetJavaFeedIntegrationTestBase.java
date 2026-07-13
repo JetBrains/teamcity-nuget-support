@@ -176,7 +176,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myFeedFactory, responseCache);
     final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(myFeedFactory, responseCache);
     final NuGetFeedStdUploadHandler uploadHandler =
-      new NuGetFeedStdUploadHandler(new PackageUploadHandler<NuGetFeedUploadHandlerStdContext>(runningBuilds, packageAnalyzer, cacheReset, serverSettings, myMetadataHandler));
+      new NuGetFeedStdUploadHandler(new PackageUploadHandler<NuGetFeedUploadHandlerStdContext>(runningBuilds, packageAnalyzer, cacheReset, myMetadataHandler));
     final JsonRequestHandler jsonRequestHandler = new JsonRequestHandler(
       new JsonServiceIndexHandler(),
       new JsonSearchQueryHandler(myFeedFactory, myPackageSourceFactory, myAdapterFactory),
