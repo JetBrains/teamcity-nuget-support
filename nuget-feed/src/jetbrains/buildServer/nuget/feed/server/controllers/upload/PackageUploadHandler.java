@@ -19,6 +19,7 @@ import jetbrains.buildServer.serverSide.RunningBuildEx;
 import jetbrains.buildServer.serverSide.RunningBuildsCollection;
 import jetbrains.buildServer.serverSide.TeamCityProperties;
 import jetbrains.buildServer.serverSide.artifacts.limits.ArtifactsUploadLimit;
+import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.crypt.EncryptUtil;
 import jetbrains.buildServer.util.FileUtil;
 import jetbrains.buildServer.util.StringUtil;
@@ -162,6 +163,9 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
     } catch (PackageExistsException e) {
       LOG.debug(e);
       response.sendError(HttpServletResponse.SC_CONFLICT, e.getMessage());
+    } catch (AccessDeniedException e) {
+      LOG.debug(e.getMessage());
+      response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
     } catch (Throwable e) {
       LOG.warnAndDebugDetails("Failed to process NuGet package: " + e.getMessage(), e);
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to process NuGet package");

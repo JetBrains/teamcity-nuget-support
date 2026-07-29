@@ -3,14 +3,21 @@ package jetbrains.buildServer.nuget.feed.server.controllers.upload
 import com.intellij.openapi.diagnostic.Logger
 import jetbrains.buildServer.log.LogUtil
 import jetbrains.buildServer.nuget.common.PackageExistsException
+import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildFeedsProvider
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
 import jetbrains.buildServer.serverSide.RunningBuildEx
+import jetbrains.buildServer.serverSide.auth.AccessDeniedException
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage
 import org.springframework.web.multipart.MultipartHttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class NuGetFeedUploadMetadataStdHandlerImpl(private val myStorage: MetadataStorage) : NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerStdContext> {
+class NuGetFeedUploadMetadataStdHandlerImpl(private val myStorage: MetadataStorage,
+                                            private val myFeedsProvider: NuGetBuildFeedsProvider) : NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerStdContext> {
     override fun validate(request: MultipartHttpServletRequest, response: HttpServletResponse, context: NuGetFeedUploadHandlerStdContext, build: RunningBuildEx, key: String, metadata: MutableMap<String, String>) {
+        if (!myFeedsProvider.hasWritePermissionsToFeed(build, context.feedData)) {
+            throw AccessDeniedException(null, "Build #${build.buildId} may not publish into feed '${context.feedData.projectExtId}/${context.feedData.feedId}'.")
+        }
+
         val replace = "true".equals(request.getParameter("replace"), true);
 
         // Packages must not exists in the feed if `replace=true` query parameter was not specified

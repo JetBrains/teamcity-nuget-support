@@ -5,4 +5,6 @@ import jetbrains.buildServer.serverSide.SBuild
 
 interface NuGetBuildFeedsProvider {
     fun getFeeds(build: SBuild): Set<NuGetFeedData>
+
+    fun hasWritePermissionsToFeed(build: SBuild, feed: NuGetFeedData): Boolean
 }
