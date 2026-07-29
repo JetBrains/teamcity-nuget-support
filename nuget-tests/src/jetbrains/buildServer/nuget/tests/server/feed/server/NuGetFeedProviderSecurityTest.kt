@@ -34,7 +34,7 @@ class NuGetFeedProviderSecurityTest {
         private const val OWN_FEED = "$BUILD_PROJECT/$FEED_NAME"
         private const val INHERITED_FEED = "$PARENT_PROJECT/$FEED_NAME"
         private const val FOREIGN_FEED = "$FOREIGN_PROJECT/$FEED_NAME"
-        private const val MALFORMED_FEED = "a/b/c"
+        private const val ILLEGAL_FEEED_SELECTOR = "a/b/c"
         private const val REPO_NAME_PARAM = "name"
         private const val INDEX_PACKAGES_PARAM = "indexPackages"
     }
@@ -116,13 +116,13 @@ class NuGetFeedProviderSecurityTest {
         m.checking(object : Expectations() {
             init {
                 stubBuildProjectWithVisibleFeeds(buildProject to FEED_NAME)
-                stubFeature(MALFORMED_FEED)
+                stubFeature(ILLEGAL_FEEED_SELECTOR)
             }
         })
 
         val feeds = provider.getFeeds(build)
 
-        Assert.assertTrue(feeds.isEmpty(), "A malformed feed id [$MALFORMED_FEED] must be dropped")
+        Assert.assertTrue(feeds.isEmpty(), "A malformed feed id [$ILLEGAL_FEEED_SELECTOR] must be dropped")
     }
 
     fun packgesAreNotIndexesInNonExistingDefaultFeed() {

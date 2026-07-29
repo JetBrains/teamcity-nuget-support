@@ -1,11 +1,11 @@
 package jetbrains.buildServer.nuget.feed.server.index.impl
 
 import com.intellij.openapi.diagnostic.Logger
-import jetbrains.buildServer.nuget.common.index.PackageConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils
+import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.SBuild
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
@@ -22,16 +22,24 @@ class NuGetBuildFeedsProviderImpl(private val myProjectManager: ProjectManager,
             nugetFeeds.add(NuGetFeedData(it.projectId, it.name))
         }
 
-        // Add projects from NuGet Package Indexer build features
+        val buildProjectAccessibleFeeds = buildProject
+            ?.let { myRepositoryManager.getRepositories(it, true).filterIsInstance<NuGetRepository>() }
+            ?: emptyList()
+
         try {
             build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).forEach { feature ->
-                feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED]?.let {
-                    NuGetUtils.feedIdToData(it)?.let {
-                        val project = myProjectManager.findProjectByExternalId(it.first)
-                        if (project != null && myRepositoryManager.hasRepository(project, PackageConstants.NUGET_PROVIDER_ID, it.second)) {
-                            nugetFeeds.add(NuGetFeedData(project.projectId, it.second))
+                feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED]?.let { feedId ->
+                    NuGetUtils.feedIdToData(feedId)?.let { feedData ->
+                        val feedProjectExtId = feedData.first
+                        val feedName = feedData.second
+                        val feedProject = myProjectManager.findProjectByExternalId(feedProjectExtId)
+                        val visibleToBuild = (feedProject != null && buildProjectAccessibleFeeds.any { it.projectId == feedProject.projectId && it.name == feedName })
+                        if (visibleToBuild) {
+                            nugetFeeds.add(NuGetFeedData(feedProject.projectId, feedName))
                         } else {
-                            LOG.warn("Could not find '${it.second}' NuGet feed for '${it.first}' project.")
+                            LOG.warn("Build #${build.buildId} (project '${build.projectId}') requested NuGet indexing " +
+                                "into feed '$feedProjectExtId/$feedName', which is not visible to the build's project; " +
+                                "skipping. A build may only index into feeds defined in its own project or an ancestor.")
                         }
                     }
                 }
