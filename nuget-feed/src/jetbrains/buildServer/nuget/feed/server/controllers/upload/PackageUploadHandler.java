@@ -50,6 +50,7 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
   private static final String INVALID_TOKEN_VALUE = "Invalid token value";
   private static final String INVALID_PACKAGE_CONTENTS = "Invalid NuGet package contents";
   private static final String ARTIFACT_PUBLISHING_FAILED = "[Artifacts publishing failed]";
+  private static final String NUGET_PACKAGE_PROCESSING_FAILED = "[NuGet package processing failed]";
   private static final String DEFAULT_PATH_FORMAT = "nuget/packages/{0}/{1}/{0}.{1}.nupkg";
   public static final String NUGET_APIKEY_HEADER = "x-nuget-apikey";
   private final RunningBuildsCollection myRunningBuilds;
@@ -165,6 +166,7 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
       response.sendError(HttpServletResponse.SC_CONFLICT, e.getMessage());
     } catch (AccessDeniedException e) {
       LOG.debug(e.getMessage());
+      build.addBuildProblem(BuildProblemData.createBuildProblem(NUGET_PACKAGE_PROCESSING_FAILED + "_accessDenied", NUGET_PACKAGE_PROCESSING_FAILED, e.getMessage()));
       response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
     } catch (Throwable e) {
       LOG.warnAndDebugDetails("Failed to process NuGet package: " + e.getMessage(), e);

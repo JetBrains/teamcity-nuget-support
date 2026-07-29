@@ -30,7 +30,7 @@ class NuGetBuildFeedsProviderImpl(private val myProjectManager: ProjectManager,
                             if (hasWritePermissionsToFeed(build, feed)) {
                                 nugetFeeds.add(feed)
                             } else {
-                                LOG.warn("Build #${build.buildId} (project '${build.projectId}') requested NuGet indexing " +
+                                LOG.debug("Build #${build.buildId} (project '${build.projectId}') requested NuGet indexing " +
                                     "into feed '$feedProjectExtId/$feedName', which is not visible to the build's project; skipping.")
                             }
                         }
