@@ -30,6 +30,7 @@ class NuGetFeedProviderSecurityTest {
         private const val BUILD_PROJECT = "Child"
         private const val PARENT_PROJECT = "Parent"
         private const val FOREIGN_PROJECT = "Foreign"
+        private const val DESCENDANT_PROJECT = "GrandChild"
         private const val FEED_NAME = "packages"
         private const val OWN_FEED = "$BUILD_PROJECT/$FEED_NAME"
         private const val INHERITED_FEED = "$PARENT_PROJECT/$FEED_NAME"
@@ -139,9 +140,41 @@ class NuGetFeedProviderSecurityTest {
         Assert.assertTrue(feeds.isEmpty(), "A default-feed reference with no materialized feed must be dropped")
     }
 
+    fun descendantProjectFeedIsNotWritable() {
+        m.checking(object : Expectations() {
+            init {
+                stubBuildProjectWithVisibleFeeds(buildProject to FEED_NAME)
+            }
+        })
+
+        Assert.assertFalse(provider.hasWritePermissionsToFeed(build, NuGetFeedData(DESCENDANT_PROJECT, FEED_NAME)))
+    }
+
+    fun feedIsNotWritableWhenBuildProjectMissing() {
+        m.checking(object : Expectations() {
+            init {
+                allowing(build).projectId; will(returnValue(BUILD_PROJECT))
+                allowing(projectManager).findProjectById(BUILD_PROJECT); will(returnValue(null))
+            }
+        })
+
+        Assert.assertFalse(provider.hasWritePermissionsToFeed(build, NuGetFeedData(PARENT_PROJECT, FEED_NAME)))
+    }
+
+    fun dropsFeedWhenProjectDoesNotExist() {
+        m.checking(object : Expectations() {
+            init {
+                stubBuildProjectWithVisibleFeeds(buildProject to FEED_NAME)
+                stubFeature(FOREIGN_FEED)
+                allowing(projectManager).findProjectByExternalId(FOREIGN_PROJECT); will(returnValue(null))
+            }
+        })
+
+        Assert.assertTrue(provider.getFeeds(build).isEmpty())
+    }
+
     private fun Expectations.stubBuildProjectWithVisibleFeeds(vararg specs: Pair<SProject, String>) {
         allowing(build).projectId; will(returnValue(BUILD_PROJECT))
-        // 1L - arbitary placeholder, as can be used by any getFeeds(...) (including the ones without permission)
         allowing(build).buildId; will(returnValue(1L))
         allowing(buildProject).projectId; will(returnValue(BUILD_PROJECT))
         allowing(projectManager).findProjectById(BUILD_PROJECT); will(returnValue(buildProject))
