@@ -2,12 +2,14 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server
 
 import jetbrains.buildServer.nuget.common.PackageExistsException
 import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadHandlerStdContext
+import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadHandlerStdContextImpl
 import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadMetadataStdHandlerImpl
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
+import jetbrains.buildServer.nuget.feed.server.index.impl.security.NuGetFeedPermissionChecker
 import jetbrains.buildServer.serverSide.RunningBuildEx
+import jetbrains.buildServer.serverSide.auth.AccessDeniedException
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry
 import jetbrains.buildServer.serverSide.metadata.MetadataStorage
-import org.hamcrest.collection.IsEmptyCollection
 import org.jmock.Expectations
 import org.jmock.Mockery
 import org.springframework.web.multipart.MultipartHttpServletRequest
@@ -24,6 +26,7 @@ class NuGetFeedUploadMetadataStdHandlerTest {
     private lateinit var myBuild: RunningBuildEx
     private lateinit var myRequest: MultipartHttpServletRequest
     private lateinit var myStorage: MetadataStorage
+    private lateinit var myPermissionChecker: NuGetFeedPermissionChecker
     private lateinit var m : Mockery
 
     @DataProvider
@@ -42,11 +45,15 @@ class NuGetFeedUploadMetadataStdHandlerTest {
         myResponse = m.mock(HttpServletResponse::class.javaObjectType)
         myBuild = m.mock(RunningBuildEx::class.java)
         myContext = m.mock(NuGetFeedUploadHandlerStdContext::class.java)
+        myPermissionChecker = m.mock(NuGetFeedPermissionChecker::class.java)
 
         m.checking(object: Expectations() {
             init {
                 allowing(myContext).feedData;
                 will(returnValue(NuGetFeedData(PROJECT_ID, FEED_ID)))
+
+                allowing(myPermissionChecker).canWrite(myBuild, NuGetFeedData(PROJECT_ID, FEED_ID))
+                will(returnValue(true))
             }
         })
     }
@@ -125,6 +132,24 @@ class NuGetFeedUploadMetadataStdHandlerTest {
         m.assertIsSatisfied()
     }
 
+    @Test(expectedExceptions = [AccessDeniedException::class])
+    fun shouldThrowWhenBuildHasNoWritePermissionsToFeed() {
+        val instance = createInstance()
+        val context = NuGetFeedUploadHandlerStdContextImpl(NuGetFeedData("foreign", "foreign", FEED_ID))
+
+        m.checking(object: Expectations() {
+            init {
+                allowing(myBuild).buildId
+                will(returnValue(1L))
+
+                allowing(myPermissionChecker).canWrite(myBuild, NuGetFeedData("foreign", "foreign", FEED_ID))
+                will(returnValue(false))
+            }
+        })
+
+        instance.validate(myRequest, myResponse, context, myBuild, "packageId", HashMap())
+    }
+
     @Test
     fun shouldHandleMetadata() {
         // Given
@@ -155,7 +180,7 @@ class NuGetFeedUploadMetadataStdHandlerTest {
     }
 
     private fun createInstance() : NuGetFeedUploadMetadataStdHandlerImpl {
-        return NuGetFeedUploadMetadataStdHandlerImpl(myStorage)
+        return NuGetFeedUploadMetadataStdHandlerImpl(myStorage, myPermissionChecker)
     }
 
     private companion object {

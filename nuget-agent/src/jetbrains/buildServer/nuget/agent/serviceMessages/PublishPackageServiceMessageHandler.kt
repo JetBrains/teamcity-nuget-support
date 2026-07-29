@@ -83,7 +83,7 @@ class PublishPackageServiceMessageHandler(
             val keyToDataPair = readPackageInfo(file)
             myPackagesMap.put(keyToDataPair.first, keyToDataPair.second)
 
-            Loggers.AGENT.debug("Service message $MESSAGE_NAME sucessfully handled")
+            Loggers.AGENT.debug("Service message $MESSAGE_NAME successfully handled")
         } catch (e: Throwable) {
             var message = "Could not read NuGet package. File path: $path. Message: ${e.message}"
             Loggers.AGENT.warnAndDebugDetails(message, e)
