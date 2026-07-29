@@ -6,32 +6,56 @@ import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils
+import jetbrains.buildServer.nuget.feed.server.index.impl.security.IndexerFeedsResolutionResult
+import jetbrains.buildServer.nuget.feed.server.index.impl.security.NuGetFeedPermissionChecker
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.SBuild
+import jetbrains.buildServer.serverSide.SProject
+import jetbrains.buildServer.serverSide.TeamCityProperties
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 
-class NuGetBuildFeedsProviderImpl(private val myProjectManager: ProjectManager,
-                                  private val myRepositoryManager: RepositoryManager) : NuGetBuildFeedsProvider {
+class NuGetBuildFeedsProviderImpl(
+    private val myProjectManager: ProjectManager,
+    private val myRepositoryManager: RepositoryManager,
+    private val myPermissionChecker: NuGetFeedPermissionChecker
+) : NuGetBuildFeedsProvider {
 
     override fun getFeeds(build: SBuild): Set<NuGetFeedData> {
         val nugetFeeds = hashSetOf<NuGetFeedData>()
+        nugetFeeds.addAll(resolveIndexerFeeds(build).accessible)
+        return nugetFeeds
+    }
 
-        // Add projects with enabled NuGet feed indexing
+    override fun resolveIndexerFeeds(build: SBuild): IndexerFeedsResolutionResult {
         val buildProject = myProjectManager.findProjectById(build.projectId)
-        NuGetIndexUtils.findFeedsWithIndexing(buildProject, myRepositoryManager).forEach {
-            nugetFeeds.add(NuGetFeedData(it.projectId, it.name))
+        val accessible = hashSetOf<NuGetFeedData>()
+        val rejectedIds = arrayListOf<String>()
+
+        val writableFeeds = buildProject?.let { myPermissionChecker.getWritableFeeds(it) } ?: emptySet()
+        val isCrossProjectAccessEnabled = TeamCityProperties.getBoolean(NuGetFeedConstants.PROP_NUGET_FEED_ENABLE_CROSS_PROJECT_ACCESS)
+        val isFeedAccessible: (SProject, NuGetFeedData) -> Boolean = { feedProject, feed ->
+            if (isCrossProjectAccessEnabled) myRepositoryManager.hasRepository(feedProject, PackageConstants.NUGET_PROVIDER_ID, feed.feedId)
+            else feed in writableFeeds
         }
 
-        // Add projects from NuGet Package Indexer build features
+        // Feeds with implicit indexing come from the build project's own hierarchy, so they are always writable.
+        NuGetIndexUtils.findFeedsWithIndexing(buildProject, myRepositoryManager).forEach {
+            accessible.add(NuGetFeedData(it.projectId, it.name))
+        }
+
         try {
             build.getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE).forEach { feature ->
-                feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED]?.let {
-                    NuGetUtils.feedIdToData(it)?.let {
-                        val project = myProjectManager.findProjectByExternalId(it.first)
-                        if (project != null && myRepositoryManager.hasRepository(project, PackageConstants.NUGET_PROVIDER_ID, it.second)) {
-                            nugetFeeds.add(NuGetFeedData(project.projectId, it.second))
+                feature.parameters[NuGetFeedConstants.NUGET_INDEXER_FEED]?.let { feedId ->
+                    NuGetUtils.feedIdToData(feedId)?.let { (feedProjectExtId, feedName) ->
+                        val feedProject = myProjectManager.findProjectByExternalId(feedProjectExtId)
+                        val feed = feedProject?.let {
+                            NuGetFeedData(it.projectId, feedName)
+                        }
+                        if (feed != null && isFeedAccessible(feedProject, feed)) {
+                            accessible.add(feed)
                         } else {
-                            LOG.warn("Could not find '${it.second}' NuGet feed for '${it.first}' project.")
+                            LOG.warn("NuGet feed '$feedName' could not be resolved for project '$feedProjectExtId'. The project or feed may have been deleted.")
+                            rejectedIds.add(feedId)
                         }
                     }
                 }
@@ -39,8 +63,7 @@ class NuGetBuildFeedsProviderImpl(private val myProjectManager: ProjectManager,
         } catch (e: Exception) {
             LOG.warnAndDebugDetails("Unable to get list of build #${build.buildId} features", e)
         }
-
-        return nugetFeeds
+        return IndexerFeedsResolutionResult(accessible, rejectedIds)
     }
 
     companion object {
