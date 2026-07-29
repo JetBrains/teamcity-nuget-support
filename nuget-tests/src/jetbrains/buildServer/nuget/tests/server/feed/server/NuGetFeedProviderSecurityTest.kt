@@ -1,6 +1,5 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server
 
-import jetbrains.buildServer.nuget.common.index.PackageConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildFeedsProviderImpl
@@ -13,6 +12,7 @@ import jetbrains.buildServer.serverSide.packages.RepositoryType
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.util.TestFor
 import org.hamcrest.Description
+import org.jmock.AbstractExpectations.returnValue
 import org.jmock.Expectations
 import org.jmock.Mockery
 import org.jmock.api.Action
@@ -23,14 +23,18 @@ import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
 
 @Test
+@TestFor(issues = ["TW-102355"])
 class NuGetFeedProviderSecurityTest {
 
     companion object {
-        private const val AVAILABLE_PROJECT = "Available"
-        private const val UNAVAILABLE_PROJECT = "Unavailable"
+        private const val BUILD_PROJECT = "Child"
+        private const val PARENT_PROJECT = "Parent"
+        private const val FOREIGN_PROJECT = "Foreign"
         private const val FEED_NAME = "packages"
-        private const val AVAILABLE_FEED = "$AVAILABLE_PROJECT/$FEED_NAME"
-        private const val UNAVAILABLE_FEED = "$UNAVAILABLE_PROJECT/$FEED_NAME"
+        private const val OWN_FEED = "$BUILD_PROJECT/$FEED_NAME"
+        private const val INHERITED_FEED = "$PARENT_PROJECT/$FEED_NAME"
+        private const val FOREIGN_FEED = "$FOREIGN_PROJECT/$FEED_NAME"
+        private const val MALFORMED_FEED = "a/b/c"
         private const val REPO_NAME_PARAM = "name"
         private const val INDEX_PACKAGES_PARAM = "indexPackages"
     }
@@ -40,8 +44,9 @@ class NuGetFeedProviderSecurityTest {
     private lateinit var repositoryManager: RepositoryManager
     private lateinit var repoType: RepositoryType
     private lateinit var build: SBuild
-    private lateinit var availableProject: SProject
-    private lateinit var unavailableProject: SProject
+    private lateinit var buildProject: SProject
+    private lateinit var parentProject: SProject
+    private lateinit var foreignProject: SProject
     private lateinit var feature: SBuildFeatureDescriptor
     private lateinit var provider: NuGetBuildFeedsProviderImpl
 
@@ -52,62 +57,107 @@ class NuGetFeedProviderSecurityTest {
         repositoryManager = m.mock(RepositoryManager::class.java)
         repoType = m.mock(RepositoryType::class.java)
         build = m.mock(SBuild::class.java)
-        availableProject = m.mock(SProject::class.java, "available")
-        unavailableProject = m.mock(SProject::class.java, "unavailable")
+        buildProject = m.mock(SProject::class.java, "child")
+        parentProject = m.mock(SProject::class.java, "parent")
+        foreignProject = m.mock(SProject::class.java, "foreign")
         feature = m.mock(SBuildFeatureDescriptor::class.java)
         provider = NuGetBuildFeedsProviderImpl(projectManager, repositoryManager)
     }
 
-    fun doesNotIndexIntoFeedOutsideBuildProjectVisibility() {
+    fun doesNotIndexIntoUnrelatedProjectFeed() {
         m.checking(object : Expectations() {
             init {
-                allowing(build).projectId; will(returnValue(AVAILABLE_PROJECT))
-                allowing(availableProject).projectId; will(returnValue(AVAILABLE_PROJECT))
-                allowing(unavailableProject).projectId; will(returnValue(UNAVAILABLE_PROJECT))
-
-                allowing(projectManager).findProjectById(AVAILABLE_PROJECT); will(returnValue(availableProject))
-                allowing(repositoryManager).getRepositories(availableProject, true); will(availableFeeds())
-
-                allowing(build).getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE); will(returnValue(listOf(feature)))
-                allowing(feature).parameters; will(returnValue(mapOf(NuGetFeedConstants.NUGET_INDEXER_FEED to UNAVAILABLE_FEED)))
-
-                allowing(projectManager).findProjectByExternalId(UNAVAILABLE_PROJECT); will(returnValue(unavailableProject))
-                allowing(repositoryManager).hasRepository(unavailableProject, PackageConstants.NUGET_PROVIDER_ID, FEED_NAME)
-                will(returnValue(true))
+                stubBuildProjectWithVisibleFeeds(buildProject to FEED_NAME)
+                stubFeature(FOREIGN_FEED)
+                allowing(foreignProject).projectId; will(returnValue(FOREIGN_PROJECT))
+                allowing(projectManager).findProjectByExternalId(FOREIGN_PROJECT); will(returnValue(foreignProject))
             }
         })
 
         val feeds = provider.getFeeds(build)
 
-        Assert.assertFalse(feeds.contains(NuGetFeedData(UNAVAILABLE_PROJECT, FEED_NAME)),
-            "Build must not index into a feed of a project it cannot see")
+        Assert.assertFalse(feeds.contains(NuGetFeedData(FOREIGN_PROJECT, FEED_NAME)),
+            "Build must not index into a feed of an unrelated project it cannot see")
         Assert.assertTrue(feeds.isEmpty(), "No feed is visible to the build, so none must be indexed")
     }
 
-    fun stillIndexesIntoVisibleOwnFeed() {
+    fun indexesIntoOwnFeed() {
         m.checking(object : Expectations() {
             init {
-                allowing(build).projectId; will(returnValue(AVAILABLE_PROJECT))
-                allowing(availableProject).projectId; will(returnValue(AVAILABLE_PROJECT))
-                allowing(projectManager).findProjectById(AVAILABLE_PROJECT); will(returnValue(availableProject))
-                allowing(repositoryManager).getRepositories(availableProject, true); will(availableFeeds())
-                allowing(build).getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE); will(returnValue(listOf(feature)))
-                allowing(feature).parameters; will(returnValue(mapOf(NuGetFeedConstants.NUGET_INDEXER_FEED to AVAILABLE_FEED)))
-                allowing(projectManager).findProjectByExternalId(AVAILABLE_PROJECT); will(returnValue(availableProject))
-                allowing(repositoryManager).hasRepository(availableProject, PackageConstants.NUGET_PROVIDER_ID, FEED_NAME)
-                will(returnValue(true))
+                stubBuildProjectWithVisibleFeeds(buildProject to FEED_NAME)
+                stubFeature(OWN_FEED)
+                allowing(projectManager).findProjectByExternalId(BUILD_PROJECT); will(returnValue(buildProject))
             }
         })
 
         val feeds = provider.getFeeds(build)
 
-        Assert.assertTrue(feeds.contains(NuGetFeedData(AVAILABLE_PROJECT, FEED_NAME)),
-            "A feed visible to the build's own project must remain indexable")
+        Assert.assertTrue(feeds.contains(NuGetFeedData(BUILD_PROJECT, FEED_NAME)),
+            "A feed in the build's own project must remain indexable")
     }
 
-    private fun availableFeeds(): Action = object : Action {
+    fun indexesIntoInheritedAncestorFeed() {
+        m.checking(object : Expectations() {
+            init {
+                stubBuildProjectWithVisibleFeeds(parentProject to FEED_NAME)
+                allowing(parentProject).projectId; will(returnValue(PARENT_PROJECT))
+                stubFeature(INHERITED_FEED)
+                allowing(projectManager).findProjectByExternalId(PARENT_PROJECT); will(returnValue(parentProject))
+            }
+        })
+
+        val feeds = provider.getFeeds(build)
+
+        Assert.assertTrue(feeds.contains(NuGetFeedData(PARENT_PROJECT, FEED_NAME)),
+            "A feed inherited from an ancestor project must remain indexable")
+    }
+
+    fun malformedFeedIdsAreDropped() {
+        m.checking(object : Expectations() {
+            init {
+                stubBuildProjectWithVisibleFeeds(buildProject to FEED_NAME)
+                stubFeature(MALFORMED_FEED)
+            }
+        })
+
+        val feeds = provider.getFeeds(build)
+
+        Assert.assertTrue(feeds.isEmpty(), "A malformed feed id [$MALFORMED_FEED] must be dropped")
+    }
+
+    fun packgesAreNotIndexesInNonExistingDefaultFeed() {
+        m.checking(object : Expectations() {
+            init {
+                stubBuildProjectWithVisibleFeeds(buildProject to FEED_NAME)
+                stubFeature(BUILD_PROJECT)
+                allowing(projectManager).findProjectByExternalId(BUILD_PROJECT); will(returnValue(buildProject))
+            }
+        })
+
+        val feeds = provider.getFeeds(build)
+
+        Assert.assertTrue(feeds.isEmpty(), "A default-feed reference with no materialized feed must be dropped")
+    }
+
+    private fun Expectations.stubBuildProjectWithVisibleFeeds(vararg specs: Pair<SProject, String>) {
+        allowing(build).projectId; will(returnValue(BUILD_PROJECT))
+        // 1L - arbitary placeholder, as can be used by any getFeeds(...) (including the ones without permission)
+        allowing(build).buildId; will(returnValue(1L))
+        allowing(buildProject).projectId; will(returnValue(BUILD_PROJECT))
+        allowing(projectManager).findProjectById(BUILD_PROJECT); will(returnValue(buildProject))
+        allowing(repositoryManager).getRepositories(buildProject, true); will(feedsFrom(*specs))
+    }
+
+    private fun Expectations.stubFeature(feedSelector: String) {
+        allowing(build).getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE); will(returnValue(listOf(feature)))
+        allowing(feature).parameters; will(returnValue(mapOf(NuGetFeedConstants.NUGET_INDEXER_FEED to feedSelector)))
+    }
+
+    private fun feedsFrom(vararg specs: Pair<SProject, String>): Action = object : Action {
         override fun describeTo(description: Description?) = Unit
         override fun invoke(invocation: Invocation?): Any =
-            listOf(NuGetRepository(repoType, availableProject, mapOf(REPO_NAME_PARAM to FEED_NAME, INDEX_PACKAGES_PARAM to "false")))
+            specs.map { (project, name) ->
+                NuGetRepository(repoType, project, mapOf(REPO_NAME_PARAM to name, INDEX_PACKAGES_PARAM to "false"))
+            }
     }
 }
