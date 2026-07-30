@@ -1,4 +1,4 @@
-package jetbrains.buildServer.nuget.feed.server.index.impl
+package jetbrains.buildServer.nuget.feed.server.index.impl.security
 
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.serverSide.SBuild
@@ -8,6 +8,6 @@ interface NuGetFeedPermissionChecker {
     fun canWrite(build: SBuild, feed: NuGetFeedData): Boolean
 
     fun canWrite(buildProject: SProject?, feed: NuGetFeedData): Boolean
-}
 
-data class IndexerFeedsResolutionResult(val accessible: Set<NuGetFeedData>, val rejected: List<String>)
+    fun getWritableFeeds(buildProject: SProject): Set<NuGetFeedData>
+}

@@ -3,7 +3,7 @@ package jetbrains.buildServer.nuget.feed.server.controllers.upload
 import com.intellij.openapi.diagnostic.Logger
 import jetbrains.buildServer.log.LogUtil
 import jetbrains.buildServer.nuget.common.PackageExistsException
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetFeedPermissionChecker
+import jetbrains.buildServer.nuget.feed.server.index.impl.security.NuGetFeedPermissionChecker
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
 import jetbrains.buildServer.serverSide.RunningBuildEx
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException

@@ -1,6 +1,7 @@
 package jetbrains.buildServer.nuget.feed.server.index.impl
 
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
+import jetbrains.buildServer.nuget.feed.server.index.impl.security.IndexerFeedsResolutionResult
 import jetbrains.buildServer.serverSide.SBuild
 
 interface NuGetBuildFeedsProvider {

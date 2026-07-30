@@ -5,13 +5,16 @@ import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils
+import jetbrains.buildServer.nuget.feed.server.index.impl.security.IndexerFeedsResolutionResult
+import jetbrains.buildServer.nuget.feed.server.index.impl.security.NuGetFeedPermissionChecker
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.SBuild
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 
 class NuGetBuildFeedsProviderImpl(private val myProjectManager: ProjectManager,
                                   private val myRepositoryManager: RepositoryManager,
-                                  private val myPermissionChecker: NuGetFeedPermissionChecker) : NuGetBuildFeedsProvider {
+                                  private val myPermissionChecker: NuGetFeedPermissionChecker
+) : NuGetBuildFeedsProvider {
 
     override fun getFeeds(build: SBuild): Set<NuGetFeedData> {
         val nugetFeeds = hashSetOf<NuGetFeedData>()
@@ -24,9 +27,11 @@ class NuGetBuildFeedsProviderImpl(private val myProjectManager: ProjectManager,
         val accessible = hashSetOf<NuGetFeedData>()
         val rejectedIds = arrayListOf<String>()
 
+        val writableFeeds = buildProject?.let { myPermissionChecker.getWritableFeeds(it) } ?: emptySet()
+
         NuGetIndexUtils.findFeedsWithIndexing(buildProject, myRepositoryManager).forEach {
             val feed = NuGetFeedData(it.projectId, it.name)
-            if (myPermissionChecker.canWrite(buildProject, feed)) {
+            if (writableFeeds.contains(feed)) {
                 accessible.add(feed)
             } else {
                 rejectedIds.add(feed.feedId)
@@ -40,7 +45,7 @@ class NuGetBuildFeedsProviderImpl(private val myProjectManager: ProjectManager,
                         val feed = myProjectManager.findProjectByExternalId(feedProjectExtId)?.let {
                             NuGetFeedData(it.projectId, feedName)
                         }
-                        if (feed != null && myPermissionChecker.canWrite(buildProject, feed)) {
+                        if (feed != null && writableFeeds.contains(feed)) {
                             accessible.add(feed)
                         } else {
                             rejectedIds.add(feedId)
