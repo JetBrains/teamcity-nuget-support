@@ -3,7 +3,7 @@ package jetbrains.buildServer.nuget.feed.server.controllers.upload
 import com.intellij.openapi.diagnostic.Logger
 import jetbrains.buildServer.log.LogUtil
 import jetbrains.buildServer.nuget.common.PackageExistsException
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildFeedsProvider
+import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetFeedPermissionChecker
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
 import jetbrains.buildServer.serverSide.RunningBuildEx
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException
@@ -12,9 +12,9 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class NuGetFeedUploadMetadataStdHandlerImpl(private val myStorage: MetadataStorage,
-                                            private val myFeedsProvider: NuGetBuildFeedsProvider) : NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerStdContext> {
+                                            private val myPermissionChecker: NuGetFeedPermissionChecker) : NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerStdContext> {
     override fun validate(request: MultipartHttpServletRequest, response: HttpServletResponse, context: NuGetFeedUploadHandlerStdContext, build: RunningBuildEx, key: String, metadata: MutableMap<String, String>) {
-        if (!myFeedsProvider.hasWritePermissionsToFeed(build, context.feedData)) {
+        if (!myPermissionChecker.canWrite(build, context.feedData)) {
             throw AccessDeniedException(null, "Build #${build.buildId} may not publish into feed '${context.feedData.projectExtId}/${context.feedData.feedId}'.")
         }
 
