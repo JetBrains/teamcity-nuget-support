@@ -166,7 +166,12 @@ public class PackageUploadHandler<TContext extends NuGetFeedUploadHandlerContext
       response.sendError(HttpServletResponse.SC_CONFLICT, e.getMessage());
     } catch (AccessDeniedException e) {
       LOG.debug(e.getMessage());
-      build.addBuildProblem(BuildProblemData.createBuildProblem(NUGET_PACKAGE_PROCESSING_FAILED + "_accessDenied", NUGET_PACKAGE_PROCESSING_FAILED, e.getMessage()));
+      final BuildProblemData problem = BuildProblemData.createBuildProblem(
+        NUGET_PACKAGE_PROCESSING_FAILED + "_accessDenied",
+        NUGET_PACKAGE_PROCESSING_FAILED,
+        e.getMessage()
+      );
+      build.addBuildProblem(problem);
       response.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
     } catch (Throwable e) {
       LOG.warnAndDebugDetails("Failed to process NuGet package: " + e.getMessage(), e);
