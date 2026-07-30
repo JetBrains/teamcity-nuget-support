@@ -5,7 +5,7 @@ import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploa
 import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadHandlerStdContextImpl
 import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadMetadataStdHandlerImpl
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetFeedPermissionChecker
+import jetbrains.buildServer.nuget.feed.server.index.impl.security.NuGetFeedPermissionChecker
 import jetbrains.buildServer.serverSide.RunningBuildEx
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException
 import jetbrains.buildServer.serverSide.metadata.BuildMetadataEntry

@@ -3,7 +3,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildFeedsProviderImpl
-import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetFeedPermissionChecker
+import jetbrains.buildServer.nuget.feed.server.index.impl.security.NuGetFeedPermissionChecker
 import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.SBuild
@@ -13,6 +13,7 @@ import jetbrains.buildServer.serverSide.packages.RepositoryType
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.util.TestFor
 import org.hamcrest.Description
+import org.jmock.AbstractExpectations.returnValue
 import org.jmock.Expectations
 import org.jmock.Mockery
 import org.jmock.api.Action
@@ -69,7 +70,7 @@ class NuGetBuildFeedsProviderTest {
                 allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos())
                 stubFeature(OWN_FEED)
                 allowing(projectManager).findProjectByExternalId(BUILD_PROJECT); will(returnValue(buildProject))
-                allowing(permissionChecker).canWrite(buildProject, NuGetFeedData(BUILD_PROJECT, FEED_NAME)); will(returnValue(true))
+                stubWritableFeeds(NuGetFeedData(BUILD_PROJECT, FEED_NAME))
             }
         })
 
@@ -87,7 +88,7 @@ class NuGetBuildFeedsProviderTest {
                 stubFeature(FOREIGN_FEED)
                 allowing(foreignProject).projectId; will(returnValue(FOREIGN_PROJECT))
                 allowing(projectManager).findProjectByExternalId(FOREIGN_PROJECT); will(returnValue(foreignProject))
-                allowing(permissionChecker).canWrite(buildProject, NuGetFeedData(FOREIGN_PROJECT, FEED_NAME)); will(returnValue(false))
+                stubWritableFeeds()
             }
         })
 
@@ -103,6 +104,7 @@ class NuGetBuildFeedsProviderTest {
                 stubBuildProject()
                 allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos())
                 stubFeature(ILLEGAL_FEED_SELECTOR)
+                stubWritableFeeds()
             }
         })
 
@@ -119,6 +121,7 @@ class NuGetBuildFeedsProviderTest {
                 allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos())
                 stubFeature(FOREIGN_FEED)
                 allowing(projectManager).findProjectByExternalId(FOREIGN_PROJECT); will(returnValue(null))
+                stubWritableFeeds()
             }
         })
 
@@ -133,7 +136,7 @@ class NuGetBuildFeedsProviderTest {
                 stubBuildProject()
                 allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos("impl"))
                 allowing(build).getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE); will(returnValue(emptyList<SBuildFeatureDescriptor>()))
-                allowing(permissionChecker).canWrite(buildProject, NuGetFeedData(BUILD_PROJECT, "impl")); will(returnValue(true))
+                stubWritableFeeds(NuGetFeedData(BUILD_PROJECT, "impl"))
             }
         })
 
@@ -147,7 +150,7 @@ class NuGetBuildFeedsProviderTest {
                 allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos())
                 stubFeature(OWN_FEED)
                 allowing(projectManager).findProjectByExternalId(BUILD_PROJECT); will(returnValue(buildProject))
-                allowing(permissionChecker).canWrite(buildProject, NuGetFeedData(BUILD_PROJECT, FEED_NAME)); will(returnValue(true))
+                stubWritableFeeds(NuGetFeedData(BUILD_PROJECT, FEED_NAME))
             }
         })
 
@@ -158,6 +161,10 @@ class NuGetBuildFeedsProviderTest {
         allowing(build).projectId; will(returnValue(BUILD_PROJECT))
         allowing(buildProject).projectId; will(returnValue(BUILD_PROJECT))
         allowing(projectManager).findProjectById(BUILD_PROJECT); will(returnValue(buildProject))
+    }
+
+    private fun Expectations.stubWritableFeeds(vararg feeds: NuGetFeedData) {
+        allowing(permissionChecker).getWritableFeeds(buildProject); will(returnValue(feeds.toSet()))
     }
 
     private fun Expectations.stubFeature(feedSelector: String) {

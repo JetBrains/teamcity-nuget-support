@@ -11,7 +11,7 @@ interface NuGetBuildFeedsProvider {
     fun getFeeds(build: SBuild): Set<NuGetFeedData>
 
     /**
-     * @returns NuGet fields resolvable by the given build
+     * @returns NuGet fields resolvable (not necessarily accessible) by the given build
      */
     fun resolveIndexerFeeds(build: SBuild): IndexerFeedsResolutionResult
 }
