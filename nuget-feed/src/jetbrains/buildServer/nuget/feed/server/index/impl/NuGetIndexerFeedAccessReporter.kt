@@ -1,5 +1,6 @@
 package jetbrains.buildServer.nuget.feed.server.index.impl
 
+import com.intellij.openapi.diagnostic.Logger
 import jetbrains.buildServer.BuildProblemData
 import jetbrains.buildServer.nuget.feed.server.NuGetServerSettings
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexUtils
@@ -23,7 +24,14 @@ class NuGetIndexerFeedAccessReporter(
             return
         }
 
-        myFeedsProvider.resolveIndexerFeeds(build).rejected.forEach {
+        val rejectedFeeds = try {
+            myFeedsProvider.resolveIndexerFeeds(build).rejected
+        } catch (e: Exception) {
+            LOG.warnAndDebugDetails("Unable to resolve accessible NuGet indexer feeds for build '${build.buildNumber}'", e)
+            emptyList()
+        }
+
+        rejectedFeeds.forEach {
             val problemId = it.hashCode().toUInt().toString(36)
             build.addBuildProblem(
                 BuildProblemData.createBuildProblem(
@@ -39,5 +47,9 @@ class NuGetIndexerFeedAccessReporter(
 
     private fun shouldCheckAccessibleFeeds(build: SRunningBuild): Boolean {
         return mySettings.isNuGetServerEnabled && NuGetIndexUtils.isIndexingEnabledForBuild(build)
+    }
+
+    companion object {
+        private val LOG = Logger.getInstance(NuGetIndexerFeedAccessReporter::class.java.name)
     }
 }
