@@ -1,5 +1,7 @@
 package jetbrains.buildServer.nuget.tests.server.feed.server
 
+import jetbrains.buildServer.BaseTestCase
+import jetbrains.buildServer.nuget.common.index.PackageConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildFeedsProviderImpl
@@ -13,6 +15,7 @@ import jetbrains.buildServer.serverSide.packages.RepositoryType
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
 import jetbrains.buildServer.util.TestFor
 import org.hamcrest.Description
+import org.jmock.AbstractExpectations
 import org.jmock.AbstractExpectations.returnValue
 import org.jmock.Expectations
 import org.jmock.Mockery
@@ -25,7 +28,7 @@ import org.testng.annotations.Test
 
 @Test
 @TestFor(issues = ["TW-102355"])
-class NuGetBuildFeedsProviderTest {
+class NuGetBuildFeedsProviderTest : BaseTestCase() {
 
     companion object {
         private const val BUILD_PROJECT = "Child"
@@ -50,7 +53,8 @@ class NuGetBuildFeedsProviderTest {
     private lateinit var provider: NuGetBuildFeedsProviderImpl
 
     @BeforeMethod
-    fun setUp() {
+    override fun setUp() {
+        super.setUp()
         m = object : Mockery() { init { setImposteriser(ClassImposteriser.INSTANCE) } }
         projectManager = m.mock(ProjectManager::class.java)
         repositoryManager = m.mock(RepositoryManager::class.java)
@@ -96,6 +100,27 @@ class NuGetBuildFeedsProviderTest {
 
         Assert.assertTrue(result.accessible.isEmpty())
         Assert.assertTrue(result.rejected.contains(FOREIGN_FEED))
+    }
+
+    fun resolveAcceptsUnwritableFeatureFeedWhenCrossProjectAccessEnabled() {
+        setInternalProperty(NuGetFeedConstants.PROP_NUGET_FEED_ENABLE_CROSS_PROJECT_ACCESS, true)
+        m.checking(object : Expectations() {
+            init {
+                stubBuildProject()
+                allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos())
+                stubFeature(FOREIGN_FEED)
+                allowing(foreignProject).projectId; will(returnValue(FOREIGN_PROJECT))
+                allowing(projectManager).findProjectByExternalId(FOREIGN_PROJECT); will(returnValue(foreignProject))
+                allowing(repositoryManager).hasRepository(foreignProject, PackageConstants.NUGET_PROVIDER_ID, FEED_NAME)
+                will(returnValue(true))
+                stubWritableFeeds()
+            }
+        })
+
+        val result = provider.resolveIndexerFeeds(build)
+
+        Assert.assertTrue(result.accessible.contains(NuGetFeedData(FOREIGN_PROJECT, FEED_NAME)))
+        Assert.assertTrue(result.rejected.isEmpty())
     }
 
     fun resolveDropsMalformedFeedId() {
@@ -158,18 +183,18 @@ class NuGetBuildFeedsProviderTest {
     }
 
     private fun Expectations.stubBuildProject() {
-        allowing(build).projectId; will(returnValue(BUILD_PROJECT))
-        allowing(buildProject).projectId; will(returnValue(BUILD_PROJECT))
-        allowing(projectManager).findProjectById(BUILD_PROJECT); will(returnValue(buildProject))
+        allowing(build).projectId; will(AbstractExpectations.returnValue(BUILD_PROJECT))
+        allowing(buildProject).projectId; will(AbstractExpectations.returnValue(BUILD_PROJECT))
+        allowing(projectManager).findProjectById(BUILD_PROJECT); will(AbstractExpectations.returnValue(buildProject))
     }
 
     private fun Expectations.stubWritableFeeds(vararg feeds: NuGetFeedData) {
-        allowing(permissionChecker).getWritableFeeds(buildProject); will(returnValue(feeds.toSet()))
+        allowing(permissionChecker).getWritableFeeds(buildProject); will(AbstractExpectations.returnValue(feeds.toSet()))
     }
 
     private fun Expectations.stubFeature(feedSelector: String) {
-        allowing(build).getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE); will(returnValue(listOf(feature)))
-        allowing(feature).parameters; will(returnValue(mapOf(NuGetFeedConstants.NUGET_INDEXER_FEED to feedSelector)))
+        allowing(build).getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE); will(AbstractExpectations.returnValue(listOf(feature)))
+        allowing(feature).parameters; will(AbstractExpectations.returnValue(mapOf(NuGetFeedConstants.NUGET_INDEXER_FEED to feedSelector)))
     }
 
     private fun indexedRepos(vararg names: String): Action = object : Action {
