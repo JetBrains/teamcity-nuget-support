@@ -54,6 +54,7 @@ class NuGetBuildFeedsProviderImpl(
                         if (feed != null && isFeedAccessible(feedProject, feed)) {
                             accessible.add(feed)
                         } else {
+                            LOG.warn("NuGet feed '$feedName' could not be resolved for project '$feedProjectExtId'. The project or feed may have been deleted.")
                             rejectedIds.add(feedId)
                         }
                     }
