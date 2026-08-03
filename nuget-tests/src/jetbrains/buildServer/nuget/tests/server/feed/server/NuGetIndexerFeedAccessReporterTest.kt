@@ -36,7 +36,9 @@ class NuGetIndexerFeedAccessReporterTest {
         m.checking(object : Expectations() {
             init {
                 allowing(dispatcher).addListener(with(any(BuildServerListener::class.java)))
-                allowing(serverSettings).isNuGetServerEnabled; will(returnValue(false))
+
+                allowing(serverSettings).isNuGetServerEnabled; will(returnValue(true))
+                allowing(build).buildType; will(returnValue(null))
             }
         })
         reporter = NuGetIndexerFeedAccessReporter(feedsProvider, serverSettings, dispatcher)
