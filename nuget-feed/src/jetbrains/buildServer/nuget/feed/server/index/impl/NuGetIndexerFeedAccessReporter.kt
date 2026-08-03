@@ -20,7 +20,7 @@ class NuGetIndexerFeedAccessReporter(
     }
 
     override fun buildStarted(build: SRunningBuild) {
-        if (shouldCheckAccessibleFeeds(build)) {
+        if (!shouldCheckAccessibleFeeds(build)) {
             return
         }
 
