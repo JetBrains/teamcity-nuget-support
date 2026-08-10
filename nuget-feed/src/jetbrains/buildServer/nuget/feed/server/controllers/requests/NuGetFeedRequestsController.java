@@ -2,12 +2,11 @@
 
 package jetbrains.buildServer.nuget.feed.server.controllers.requests;
 
-import jetbrains.buildServer.controllers.AuthorizationInterceptor;
 import jetbrains.buildServer.controllers.BaseController;
-import jetbrains.buildServer.controllers.RequestPermissionsChecker;
 import jetbrains.buildServer.serverSide.auth.AccessDeniedException;
 import jetbrains.buildServer.serverSide.auth.AuthUtil;
 import jetbrains.buildServer.serverSide.auth.AuthorityHolder;
+import jetbrains.buildServer.serverSide.auth.SecurityContext;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
@@ -25,25 +24,25 @@ import java.util.Collection;
 public class NuGetFeedRequestsController extends BaseController {
   @NotNull
   private final RecentNuGetRequests myRequests;
+  @NotNull
+  private final SecurityContext mySecurityContext;
 
   public NuGetFeedRequestsController(@NotNull final RecentNuGetRequests requests,
                                      @NotNull final WebControllerManager web,
-                                     @NotNull final AuthorizationInterceptor auth,
+                                     @NotNull final SecurityContext securityContext,
                                      @NotNull final PluginDescriptor descriptor) {
     myRequests = requests;
+    mySecurityContext = securityContext;
     final String path = descriptor.getPluginResourcesPath("recent-packages.html");
     web.registerController(path, this);
-    auth.addPathBasedPermissionsChecker(path, new RequestPermissionsChecker() {
-      public void checkPermissions(@NotNull AuthorityHolder authorityHolder, @NotNull HttpServletRequest request) throws AccessDeniedException {
-        if (!AuthUtil.isSystemAdmin(authorityHolder)) {
-          throw new AccessDeniedException(authorityHolder, "Only SysAdmin may access the page");
-        }
-      }
-    });
   }
 
   @Override
   protected ModelAndView doHandle(@NotNull final HttpServletRequest request, @NotNull final HttpServletResponse response) throws Exception {
+    final AuthorityHolder authorityHolder = mySecurityContext.getAuthorityHolder();
+    if (!AuthUtil.isSystemAdmin(authorityHolder)) {
+      throw new AccessDeniedException(authorityHolder, "Only SysAdmin may access the page");
+    }
     response.setContentType("text/plain");
     response.setCharacterEncoding("utf-8");
     final PrintWriter writer = response.getWriter();
