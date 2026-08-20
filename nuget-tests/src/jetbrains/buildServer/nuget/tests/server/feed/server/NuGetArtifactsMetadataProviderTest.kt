@@ -224,7 +224,7 @@ class NuGetArtifactsMetadataProviderTest {
                 will(returnValue(true))
 
                 oneOf(targetFeedProvider).getFeeds(build)
-                will(returnValue(setOf(NuGetFeedData("projectId", "feed"))))
+                will(returnValue(setOf(NuGetFeedData("projectId", "projectId", "feed"))))
 
                 oneOf(projectManager).findProjectById("projectId")
                 will(returnValue(project))

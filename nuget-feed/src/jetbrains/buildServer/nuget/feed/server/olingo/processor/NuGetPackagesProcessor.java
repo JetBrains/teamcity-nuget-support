@@ -6,7 +6,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
-import jetbrains.buildServer.nuget.feed.server.impl.HttpServletRequestUtil;
+import jetbrains.buildServer.nuget.feed.server.impl.NuGetFeedRootUrlResolver;
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry;
 import jetbrains.buildServer.nuget.feed.server.json.JsonExtensions;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
@@ -29,6 +29,7 @@ import org.apache.olingo.odata2.api.uri.UriParser;
 import org.apache.olingo.odata2.api.uri.expression.*;
 import org.apache.olingo.odata2.api.uri.info.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -46,15 +47,24 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
   private final BeanPropertyAccess myValueAccess;
   private final OlingoDataSource myDataSource;
   private final ExpressionEvaluator myEvaluator;
+  private final NuGetFeedRootUrlResolver myRootUrlResolver;
+  private final String myProjectExternalId;
 
-  public NuGetPackagesProcessor(@NotNull final OlingoDataSource dataSource) {
-    this(dataSource, new BeanPropertyAccess());
+  public NuGetPackagesProcessor(@NotNull final OlingoDataSource dataSource,
+                                @NotNull final NuGetFeedRootUrlResolver rootUrlResolver,
+                                @Nullable final String projectExternalId) {
+    this(dataSource, new BeanPropertyAccess(), rootUrlResolver, projectExternalId);
   }
 
-  public NuGetPackagesProcessor(final OlingoDataSource dataSource, final BeanPropertyAccess valueAccess) {
+  public NuGetPackagesProcessor(final OlingoDataSource dataSource,
+                                final BeanPropertyAccess valueAccess,
+                                @NotNull final NuGetFeedRootUrlResolver rootUrlResolver,
+                                @Nullable final String projectExternalId) {
     myDataSource = dataSource;
     myValueAccess = valueAccess;
     myEvaluator = new ExpressionEvaluator(valueAccess);
+    myRootUrlResolver = rootUrlResolver;
+    myProjectExternalId = projectExternalId;
   }
 
   @Override
@@ -142,7 +152,7 @@ public class NuGetPackagesProcessor extends ODataSingleProcessor {
       context = context.getBatchParentContext();
     }
     final HttpServletRequest request = (HttpServletRequest) context.getParameter(ODataContext.HTTP_SERVLET_REQUEST_OBJECT);
-    return URI.create(HttpServletRequestUtil.getRootUrlWithAuthenticationType(request));
+    return URI.create(myRootUrlResolver.getRootUrlWithAuthenticationType(request, myProjectExternalId));
   }
 
   private String getSkipToken(GetEntitySetUriInfo uriInfo) {

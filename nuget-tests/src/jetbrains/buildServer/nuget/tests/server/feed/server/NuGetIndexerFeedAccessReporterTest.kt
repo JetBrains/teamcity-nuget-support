@@ -61,7 +61,7 @@ class NuGetIndexerFeedAccessReporterTest {
         m.checking(object : Expectations() {
             init {
                 allowing(feedsProvider).resolveIndexerFeeds(build)
-                will(returnValue(IndexerFeedsResolutionResult(setOf(NuGetFeedData("Child", "packages")), emptyList())))
+                will(returnValue(IndexerFeedsResolutionResult(setOf(NuGetFeedData("Child", "Child", "packages")), emptyList())))
                 never(build).addBuildProblem(with(any(BuildProblemData::class.java)))
             }
         })

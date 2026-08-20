@@ -2,10 +2,10 @@
 
 package jetbrains.buildServer.nuget.feed.server.tab
 
-import jetbrains.buildServer.RootUrlHolder
 import jetbrains.buildServer.controllers.AuthorizationInterceptor
 import jetbrains.buildServer.controllers.BaseController
 import jetbrains.buildServer.nuget.feed.server.PermissionChecker
+import jetbrains.buildServer.nuget.feed.server.impl.NuGetFeedRootUrlResolver
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.auth.LoginConfiguration
 import jetbrains.buildServer.serverSide.packages.RepositoryRegistry
@@ -26,7 +26,7 @@ class PackagesController(auth: AuthorizationInterceptor,
                          web: WebControllerManager,
                          private val myDescriptor: PluginDescriptor,
                          private val myLoginConfiguration: LoginConfiguration,
-                         private val myRootUrlHolder: RootUrlHolder,
+                         private val myRootUrlResolver: NuGetFeedRootUrlResolver,
                          private val myRepositoryRegistry: RepositoryRegistry,
                          private val myRepositoriesManager: RepositoryManager,
                          private val myProjectManager: ProjectManager) : BaseController() {
@@ -47,11 +47,12 @@ class PackagesController(auth: AuthorizationInterceptor,
         val user = SessionUser.getUser(request)
         myPermChecker.checkViewPermissions(user, project)
 
+        val rootUrl = myRootUrlResolver.getRootUrl(request, project.externalId)
         val repositories = myRepositoriesManager.getRepositories(project, false).map {
             val usages = myRepositoryRegistry.findUsagesProvider(it.type.type)
                     ?.getUsagesCount(it)
                     ?: 0
-            ProjectRepository(it, project, myRootUrlHolder.rootUrl, usages)
+            ProjectRepository(it, project, rootUrl, usages)
         }
         mv.model["project"] = project
         mv.model["repositories"] = repositories
