@@ -4,6 +4,7 @@ package jetbrains.buildServer.nuget.tests.integration.feed.server;
 
 import com.google.gson.annotations.JsonAdapter;
 import com.intellij.util.containers.SortedList;
+import jetbrains.buildServer.ProjectAwareRootUrlResolver;
 import jetbrains.buildServer.controllers.MockResponse;
 import jetbrains.buildServer.nuget.common.index.PackageAnalyzer;
 import jetbrains.buildServer.nuget.common.index.PackageConstants;
@@ -19,6 +20,7 @@ import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedStdUp
 import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadHandlerStdContext;
 import jetbrains.buildServer.nuget.feed.server.controllers.upload.NuGetFeedUploadMetadataHandler;
 import jetbrains.buildServer.nuget.feed.server.controllers.upload.PackageUploadHandler;
+import jetbrains.buildServer.nuget.feed.server.impl.NuGetFeedRootUrlResolver;
 import jetbrains.buildServer.nuget.feed.server.index.*;
 import jetbrains.buildServer.nuget.feed.server.index.impl.PackagesIndexImpl;
 import jetbrains.buildServer.nuget.feed.server.index.impl.SemanticVersionsComparators;
@@ -70,6 +72,7 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected static final String SERVLET_PATH = "/app/nuget/feed/_Root/default/v2";
   protected static final String SERVLET_V3_PATH = "/app/nuget/feed/_Root/default/v3";
   protected static final String DOWNLOAD_URL = "/downlaodREpoCon/downlaod-url";
+  protected static final String GLOBAL_ROOT_URL = "http://localhost:8111";
   protected PackagesIndex myIndex;
   protected PackagesIndex myActualIndex;
   protected PackagesIndex myIndexProxy;
@@ -83,6 +86,8 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
   protected String myAuthenticationType;
   protected NuGetFeedUploadMetadataHandler<NuGetFeedUploadHandlerStdContext> myMetadataHandler;
   private JsonPackageSourceFactory myPackageSourceFactory;
+  /** Value returned by the mocked {@code getRootUrlByProjectExternalId}; equal to the global URL means "no override". */
+  protected String myProjectRootUrl;
   private JsonPackageAdapterFactory myAdapterFactory;
 
   @Parameters({ "contextPath", "authenticationType", "async" })
@@ -117,6 +122,9 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     final PackageAnalyzer packageAnalyzer = mockery.mock(PackageAnalyzer.class);
     final ResponseCacheReset cacheReset = mockery.mock(ResponseCacheReset.class);
     final ServerSettings serverSettings = mockery.mock(ServerSettings.class);
+    final ProjectAwareRootUrlResolver projectAwareRootUrlResolver = m.mock(ProjectAwareRootUrlResolver.class);
+    final NuGetFeedRootUrlResolver rootUrlResolver = new NuGetFeedRootUrlResolver(projectAwareRootUrlResolver);
+    myProjectRootUrl = GLOBAL_ROOT_URL;
 
     m.checking(new Expectations() {{
       allowing(myIndexProxy).getAll();
@@ -164,6 +172,15 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
       allowing(serverSettings).getRootUrl();
       will(returnValue("http://localhost:8111"));
 
+      allowing(projectAwareRootUrlResolver).getRootUrl();
+      will(returnValue(GLOBAL_ROOT_URL));
+      allowing(projectAwareRootUrlResolver).getRootUrlByProjectExternalId(with(any(String.class)));
+      will(new CustomAction("return the project root URL") {
+        public Object invoke(Invocation invocation) {
+          return myProjectRootUrl;
+        }
+      });
+
       final NuGetFeed feed = new NuGetFeed(myIndexProxy, mySettings);
       allowing(myFeedFactory).createFeed(with(any(NuGetFeedData.class)));
       will(returnValue(feed));
@@ -174,14 +191,14 @@ public class NuGetJavaFeedIntegrationTestBase extends NuGetFeedIntegrationTestBa
     }});
 
     final ODataRequestHandler oDataRequestHandler = new ODataRequestHandler(myFeedFactory, responseCache);
-    final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(myFeedFactory, responseCache);
+    final OlingoRequestHandler olingoRequestHandler = new OlingoRequestHandler(myFeedFactory, responseCache, rootUrlResolver);
     final NuGetFeedStdUploadHandler uploadHandler =
       new NuGetFeedStdUploadHandler(new PackageUploadHandler<NuGetFeedUploadHandlerStdContext>(runningBuilds, packageAnalyzer, cacheReset, myMetadataHandler));
     final JsonRequestHandler jsonRequestHandler = new JsonRequestHandler(
-      new JsonServiceIndexHandler(),
-      new JsonSearchQueryHandler(myFeedFactory, myPackageSourceFactory, myAdapterFactory),
-      new JsonRegistrationHandler(myFeedFactory, myPackageSourceFactory, myAdapterFactory),
-      new JsonPackageContentHandler(myFeedFactory, myPackageSourceFactory, myAdapterFactory),
+      new JsonServiceIndexHandler(rootUrlResolver),
+      new JsonSearchQueryHandler(myFeedFactory, myPackageSourceFactory, myAdapterFactory, rootUrlResolver),
+      new JsonRegistrationHandler(myFeedFactory, myPackageSourceFactory, myAdapterFactory, rootUrlResolver),
+      new JsonPackageContentHandler(myFeedFactory, myPackageSourceFactory, myAdapterFactory, rootUrlResolver),
       new JsonAutocompleteHandler(myFeedFactory)
     );
     myFeedProvider = new NuGetFeedProviderImpl(oDataRequestHandler, olingoRequestHandler, jsonRequestHandler, uploadHandler);

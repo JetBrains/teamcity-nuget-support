@@ -50,9 +50,9 @@ class NuGetFeedUploadMetadataStdHandlerTest {
         m.checking(object: Expectations() {
             init {
                 allowing(myContext).feedData;
-                will(returnValue(NuGetFeedData(PROJECT_ID, FEED_ID)))
+                will(returnValue(NuGetFeedData(PROJECT_ID, PROJECT_ID, FEED_ID)))
 
-                allowing(myPermissionChecker).canWrite(myBuild, NuGetFeedData(PROJECT_ID, FEED_ID))
+                allowing(myPermissionChecker).canWrite(myBuild, NuGetFeedData(PROJECT_ID, PROJECT_ID, FEED_ID))
                 will(returnValue(true))
             }
         })

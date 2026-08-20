@@ -30,10 +30,10 @@ class NuGetServiceFeedUploadMetadataHandlerTest {
     fun targetFeedsProvider(): Array<Array<out Any?>> {
         return arrayOf(
                 arrayOf(setOf<NuGetFeedData>()),
-                arrayOf(setOf<NuGetFeedData>(NuGetFeedData("projectId1", "feedId1"))),
+                arrayOf(setOf<NuGetFeedData>(NuGetFeedData("projectId1", "projectId1", "feedId1"))),
                 arrayOf(setOf<NuGetFeedData>(
-                        NuGetFeedData("projectId1", "feedId1"),
-                        NuGetFeedData("projectId2", "feedId2")
+                        NuGetFeedData("projectId1", "projectId1", "feedId1"),
+                        NuGetFeedData("projectId2", "projectId2", "feedId2")
                 ))
         )
     }
