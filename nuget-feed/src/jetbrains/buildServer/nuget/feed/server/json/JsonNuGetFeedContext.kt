@@ -1,19 +1,24 @@
 package jetbrains.buildServer.nuget.feed.server.json
 
+import jetbrains.buildServer.nuget.feed.server.impl.NuGetFeedRootUrlResolver
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
+import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
 import javax.servlet.http.HttpServletRequest
 
-class JsonNuGetFeedContext(val feed: NuGetFeed, request: HttpServletRequest) {
+class JsonNuGetFeedContext(val feed: NuGetFeed,
+                           feedData: NuGetFeedData,
+                           request: HttpServletRequest,
+                           rootUrlResolver: NuGetFeedRootUrlResolver) {
     val rootUrl: String
     val rootWithAuthenticationTypeUrl: String
     val servletPath: String
     val pathInfo: String
 
     init {
-        rootUrl = request.getRootUrl()
-        rootWithAuthenticationTypeUrl = request.getRootUrlWithAuthenticationType()
+        rootUrl = rootUrlResolver.getRootUrl(request, feedData.projectExtId)
+        rootWithAuthenticationTypeUrl = rootUrlResolver.getRootUrlWithAuthenticationType(request, feedData.projectExtId)
         servletPath = request.servletPath
         pathInfo = request.pathInfo
     }

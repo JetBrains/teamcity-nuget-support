@@ -7,7 +7,6 @@ import jetbrains.buildServer.nuget.common.index.ODataDataFormat
 import jetbrains.buildServer.nuget.common.version.SemanticVersion
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants
 import jetbrains.buildServer.nuget.feed.server.NuGetUtils
-import jetbrains.buildServer.nuget.feed.server.impl.HttpServletRequestUtil
 import jetbrains.buildServer.nuget.feed.server.index.NuGetIndexEntry
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes
 import jetbrains.buildServer.web.util.WebUtil
@@ -102,14 +101,6 @@ internal fun HttpServletRequest.includeSemVer2(): Boolean {
             it >= VERSION_20
         }
     } ?: false
-}
-
-internal fun HttpServletRequest.getRootUrl(): String {
-    return HttpServletRequestUtil.getRootUrl(this);
-}
-
-internal fun HttpServletRequest.getRootUrlWithAuthenticationType(): String {
-    return HttpServletRequestUtil.getRootUrlWithAuthenticationType(this);
 }
 
 private val VERSION_20 = SemanticVersion.valueOf("2.0.0")!!
