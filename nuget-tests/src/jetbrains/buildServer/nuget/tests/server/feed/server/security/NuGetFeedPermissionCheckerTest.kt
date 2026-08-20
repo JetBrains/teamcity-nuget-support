@@ -55,17 +55,17 @@ class NuGetFeedPermissionCheckerTest {
 
     fun canWriteAllowsOwnFeed() {
         m.checking(object : Expectations() { init { stubBuildProjectWithVisibleFeeds(buildProject to FEED_NAME) } })
-        Assert.assertTrue(checker.canWrite(build, NuGetFeedData(BUILD_PROJECT, FEED_NAME)))
+        Assert.assertTrue(checker.canWrite(build, NuGetFeedData(BUILD_PROJECT, BUILD_PROJECT, FEED_NAME)))
     }
 
     fun canWriteDeniesUnrelatedFeed() {
         m.checking(object : Expectations() { init { stubBuildProjectWithVisibleFeeds(buildProject to FEED_NAME) } })
-        Assert.assertFalse(checker.canWrite(build, NuGetFeedData(FOREIGN_PROJECT, FEED_NAME)))
+        Assert.assertFalse(checker.canWrite(build, NuGetFeedData(FOREIGN_PROJECT, FOREIGN_PROJECT, FEED_NAME)))
     }
 
     fun canWriteDeniesDescendantFeed() {
         m.checking(object : Expectations() { init { stubBuildProjectWithVisibleFeeds(buildProject to FEED_NAME) } })
-        Assert.assertFalse(checker.canWrite(build, NuGetFeedData(DESCENDANT_PROJECT, FEED_NAME)))
+        Assert.assertFalse(checker.canWrite(build, NuGetFeedData(DESCENDANT_PROJECT, DESCENDANT_PROJECT, FEED_NAME)))
     }
 
     fun canWriteDeniesWhenBuildProjectMissing() {
@@ -75,7 +75,7 @@ class NuGetFeedPermissionCheckerTest {
                 allowing(projectManager).findProjectById(BUILD_PROJECT); will(returnValue(null))
             }
         })
-        Assert.assertFalse(checker.canWrite(build, NuGetFeedData(PARENT_PROJECT, FEED_NAME)))
+        Assert.assertFalse(checker.canWrite(build, NuGetFeedData(PARENT_PROJECT, PARENT_PROJECT, FEED_NAME)))
     }
 
     private fun Expectations.stubBuildProjectWithVisibleFeeds(vararg specs: Pair<SProject, String>) {

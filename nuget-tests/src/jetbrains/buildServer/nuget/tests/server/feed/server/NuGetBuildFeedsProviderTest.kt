@@ -74,13 +74,13 @@ class NuGetBuildFeedsProviderTest : BaseTestCase() {
                 allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos())
                 stubFeature(OWN_FEED)
                 allowing(projectManager).findProjectByExternalId(BUILD_PROJECT); will(returnValue(buildProject))
-                stubWritableFeeds(NuGetFeedData(BUILD_PROJECT, FEED_NAME))
+                stubWritableFeeds(NuGetFeedData(BUILD_PROJECT, BUILD_PROJECT, FEED_NAME))
             }
         })
 
         val result = provider.resolveIndexerFeeds(build)
 
-        Assert.assertTrue(result.accessible.contains(NuGetFeedData(BUILD_PROJECT, FEED_NAME)))
+        Assert.assertTrue(result.accessible.contains(NuGetFeedData(BUILD_PROJECT, BUILD_PROJECT, FEED_NAME)))
         Assert.assertTrue(result.rejected.isEmpty())
     }
 
@@ -90,7 +90,7 @@ class NuGetBuildFeedsProviderTest : BaseTestCase() {
                 stubBuildProject()
                 allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos())
                 stubFeature(FOREIGN_FEED)
-                allowing(foreignProject).projectId; will(returnValue(FOREIGN_PROJECT))
+                stubForeignProject()
                 allowing(projectManager).findProjectByExternalId(FOREIGN_PROJECT); will(returnValue(foreignProject))
                 stubWritableFeeds()
             }
@@ -109,7 +109,7 @@ class NuGetBuildFeedsProviderTest : BaseTestCase() {
                 stubBuildProject()
                 allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos())
                 stubFeature(FOREIGN_FEED)
-                allowing(foreignProject).projectId; will(returnValue(FOREIGN_PROJECT))
+                stubForeignProject()
                 allowing(projectManager).findProjectByExternalId(FOREIGN_PROJECT); will(returnValue(foreignProject))
                 allowing(repositoryManager).hasRepository(foreignProject, PackageConstants.NUGET_PROVIDER_ID, FEED_NAME)
                 will(returnValue(true))
@@ -119,7 +119,7 @@ class NuGetBuildFeedsProviderTest : BaseTestCase() {
 
         val result = provider.resolveIndexerFeeds(build)
 
-        Assert.assertTrue(result.accessible.contains(NuGetFeedData(FOREIGN_PROJECT, FEED_NAME)))
+        Assert.assertTrue(result.accessible.contains(NuGetFeedData(FOREIGN_PROJECT, FOREIGN_PROJECT, FEED_NAME)))
         Assert.assertTrue(result.rejected.isEmpty())
     }
 
@@ -161,11 +161,11 @@ class NuGetBuildFeedsProviderTest : BaseTestCase() {
                 stubBuildProject()
                 allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos("impl"))
                 allowing(build).getBuildFeaturesOfType(NuGetFeedConstants.NUGET_INDEXER_TYPE); will(returnValue(emptyList<SBuildFeatureDescriptor>()))
-                stubWritableFeeds(NuGetFeedData(BUILD_PROJECT, "impl"))
+                stubWritableFeeds(NuGetFeedData(BUILD_PROJECT, BUILD_PROJECT, "impl"))
             }
         })
 
-        Assert.assertTrue(provider.resolveIndexerFeeds(build).accessible.contains(NuGetFeedData(BUILD_PROJECT, "impl")))
+        Assert.assertTrue(provider.resolveIndexerFeeds(build).accessible.contains(NuGetFeedData(BUILD_PROJECT, BUILD_PROJECT, "impl")))
     }
 
     fun getFeedsReturnsAccessibleFeeds() {
@@ -175,17 +175,23 @@ class NuGetBuildFeedsProviderTest : BaseTestCase() {
                 allowing(repositoryManager).getRepositories(buildProject, true); will(indexedRepos())
                 stubFeature(OWN_FEED)
                 allowing(projectManager).findProjectByExternalId(BUILD_PROJECT); will(returnValue(buildProject))
-                stubWritableFeeds(NuGetFeedData(BUILD_PROJECT, FEED_NAME))
+                stubWritableFeeds(NuGetFeedData(BUILD_PROJECT, BUILD_PROJECT, FEED_NAME))
             }
         })
 
-        Assert.assertTrue(provider.getFeeds(build).contains(NuGetFeedData(BUILD_PROJECT, FEED_NAME)))
+        Assert.assertTrue(provider.getFeeds(build).contains(NuGetFeedData(BUILD_PROJECT, BUILD_PROJECT, FEED_NAME)))
     }
 
     private fun Expectations.stubBuildProject() {
         allowing(build).projectId; will(AbstractExpectations.returnValue(BUILD_PROJECT))
         allowing(buildProject).projectId; will(AbstractExpectations.returnValue(BUILD_PROJECT))
+        allowing(buildProject).externalId; will(AbstractExpectations.returnValue(BUILD_PROJECT))
         allowing(projectManager).findProjectById(BUILD_PROJECT); will(AbstractExpectations.returnValue(buildProject))
+    }
+
+    private fun Expectations.stubForeignProject() {
+        allowing(foreignProject).projectId; will(AbstractExpectations.returnValue(FOREIGN_PROJECT))
+        allowing(foreignProject).externalId; will(AbstractExpectations.returnValue(FOREIGN_PROJECT))
     }
 
     private fun Expectations.stubWritableFeeds(vararg feeds: NuGetFeedData) {
