@@ -16,14 +16,16 @@ public class HttpServletRequestUtil {
   }
 
   public static String getRootUrlWithAuthenticationType(HttpServletRequest request) {
-    final String rootUrl = getRootUrl(request);
+    return getRootUrl(request) + getAuthenticationTypePath(request);
+  }
+
+  public static String getAuthenticationTypePath(HttpServletRequest request) {
     final String pathWithoutContext = WebUtil.getPathWithoutContext(request);
     final String pathWithoutAuthenticationType = WebUtil.getPathWithoutAuthenticationType(request);
     final int index = pathWithoutContext.indexOf(pathWithoutAuthenticationType);
     if (index > 0) {
-      final String authenticationType = pathWithoutContext.substring(0, index);
-      return rootUrl + authenticationType;
+      return pathWithoutContext.substring(0, index);
     }
-    return rootUrl;
+    return "";
   }
 }
