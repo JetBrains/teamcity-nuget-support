@@ -70,7 +70,7 @@ public class RepositoryManagerImpl implements RepositoryManager, CachingTypedIdG
         project.removeFeature(feature.getId());
         project.persist(myConfigActionFactory.createAction(project, "NuGet feed with name \"" + name + "\" was removed"));
 
-        NuGetFeedData feedData = new NuGetFeedData(project.getProjectId(), name);
+        NuGetFeedData feedData = new NuGetFeedData(project.getProjectId(), project.getExternalId(), name);
         Iterator<BuildMetadataEntry> entries = myMetadataStorage.getAllEntries(feedData.getKey());
         while (entries.hasNext()) {
             BuildMetadataEntry entry = entries.next();
@@ -115,7 +115,7 @@ public class RepositoryManagerImpl implements RepositoryManager, CachingTypedIdG
 
             updateFeedReferences(project, new Pair<>(project.getExternalId(), oldName), new Pair<>(project.getExternalId(), repository.getName()));
 
-            NuGetFeedData feedData = new NuGetFeedData(project.getProjectId(), oldName);
+            NuGetFeedData feedData = new NuGetFeedData(project.getProjectId(), project.getExternalId(), oldName);
             Iterator<BuildMetadataEntry> entries = myMetadataStorage.getAllEntries(feedData.getKey());
             while (entries.hasNext()) {
                 BuildMetadataEntry entry = entries.next();

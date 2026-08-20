@@ -40,7 +40,7 @@ class NuGetBuildFeedsProviderImpl(
 
         // Feeds with implicit indexing come from the build project's own hierarchy, so they are always writable.
         NuGetIndexUtils.findFeedsWithIndexing(buildProject, myRepositoryManager).forEach {
-            accessible.add(NuGetFeedData(it.projectId, it.name))
+            accessible.add(NuGetFeedData(it.projectId, it.projectId, it.name))
         }
 
         try {
@@ -49,7 +49,7 @@ class NuGetBuildFeedsProviderImpl(
                     NuGetUtils.feedIdToData(feedId)?.let { (feedProjectExtId, feedName) ->
                         val feedProject = myProjectManager.findProjectByExternalId(feedProjectExtId)
                         val feed = feedProject?.let {
-                            NuGetFeedData(it.projectId, feedName)
+                            NuGetFeedData(it.projectId, it.externalId, feedName)
                         }
                         if (feed != null && isFeedAccessible(feedProject, feed)) {
                             accessible.add(feed)

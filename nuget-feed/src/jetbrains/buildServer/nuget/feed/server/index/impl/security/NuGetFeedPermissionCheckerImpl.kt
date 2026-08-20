@@ -19,5 +19,6 @@ class NuGetFeedPermissionCheckerImpl(private val myProjectManager: ProjectManage
     override fun getWritableFeeds(buildProject: SProject): Set<NuGetFeedData> =
         myRepositoryManager.getRepositories(buildProject, true)
             .filterIsInstance<NuGetRepository>()
-            .mapTo(hashSetOf()) { NuGetFeedData(it.projectId, it.name) }
+            // feed identity is (projectId, feedId); the external id is irrelevant for the comparison below
+            .mapTo(hashSetOf()) { NuGetFeedData(it.projectId, it.projectId, it.name) }
 }

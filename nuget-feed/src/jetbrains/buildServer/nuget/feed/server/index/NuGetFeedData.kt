@@ -3,9 +3,11 @@ package jetbrains.buildServer.nuget.feed.server.index
 import jetbrains.buildServer.nuget.common.index.PackageConstants
 import java.util.*
 
+/**
+ * [projectExtId] is used to build feed and package URLs, so it must be the real project external id
+ * whenever the instance may reach URL generation. Feed identity is [projectId] + [feedId] only.
+ */
 class NuGetFeedData(val projectId: String, val projectExtId: String, val feedId: String) {
-
-    constructor(projectId: String, feedId: String) : this(projectId, projectId, feedId)
 
     val key: String by lazy {
         return@lazy if (projectId == DEFAULT_PROJECT_ID && feedId == DEFAULT_FEED_ID) {
@@ -36,9 +38,10 @@ class NuGetFeedData(val projectId: String, val projectExtId: String, val feedId:
     }
 
     companion object {
+        // the root project uses the same value as its internal and external id
         private const val DEFAULT_PROJECT_ID = "_Root"
         const val DEFAULT_FEED_ID = "default"
         @JvmField
-        val DEFAULT = NuGetFeedData(DEFAULT_PROJECT_ID, DEFAULT_FEED_ID)
+        val DEFAULT = NuGetFeedData(DEFAULT_PROJECT_ID, DEFAULT_PROJECT_ID, DEFAULT_FEED_ID)
     }
 }
