@@ -14,6 +14,9 @@ class NuGetRepository(type: RepositoryType, private val project: SProject, param
 
     override fun getUrlPaths(): List<String> = NuGetUtils.getProjectFeedPaths(project.externalId, name)
 
+    val projectExtId: String
+        get() = project.externalId
+
     var indexPackages: Boolean
         get() {
             return parameters[NuGetRepositoryParams.INDEX_PACKAGES]?.toBoolean() ?: false

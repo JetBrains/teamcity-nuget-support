@@ -47,8 +47,6 @@ class NuGetFeedAuthParametersProvider(private val mySettings: NuGetServerSetting
                 .getRepositories(it, true)
                 .filterIsInstance<NuGetRepository>()
 
-            // repositories may be inherited from ancestor projects, but the URL an agent must use
-            // is the one configured for the project the build belongs to
             val rootUrl = myRootUrlResolver.getRootUrlByProjectInternalId(build.projectId)
 
             repositories.forEach { repository ->

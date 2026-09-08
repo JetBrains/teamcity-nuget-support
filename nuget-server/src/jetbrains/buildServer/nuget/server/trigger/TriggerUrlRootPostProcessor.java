@@ -28,7 +28,6 @@ public class TriggerUrlRootPostProcessor implements TriggerUrlPostProcessor, Pos
   @NotNull
   public String updateTriggerUrl(@NotNull SBuildType buildType, @NotNull String source) {
     if (!ReferencesResolverUtil.mayContainReference(source)) return source;
-    // a project may define the root URL with a trailing slash, while the trigger URL continues with an absolute path
     final String rootUrl = StringUtil.removeTailingSlash(myRootUrlResolver.getRootUrlByProjectExternalId(buildType.getProject().getExternalId()));
     return source.replace(ReferencesResolverUtil.makeReference(TEAMCITY_SERVER_URL), rootUrl);
   }
