@@ -47,10 +47,10 @@ class NuGetFeedAuthParametersProvider(private val mySettings: NuGetServerSetting
                 .getRepositories(it, true)
                 .filterIsInstance<NuGetRepository>()
 
-            val rootUrl = myRootUrlResolver.getRootUrlByProjectInternalId(build.projectId)
-
             repositories.forEach { repository ->
                 val project = myProjectManager.findProjectById(repository.projectId) ?: return@forEach
+                // Note: Repositories may be inherited from ancestor projects, so the feed's project is not necessarily the build's
+                val rootUrl = myRootUrlResolver.getRootUrlByProjectExternalId(project.externalId)
                 val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, repository.name)
                 val feedSuffix = "${project.externalId}.${repository.name}"
                 val httpAuthFeedPath = WebUtil.combineContextPath(WebUtil.HTTP_AUTH_PREFIX, feedPath)
