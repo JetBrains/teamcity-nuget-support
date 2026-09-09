@@ -47,7 +47,7 @@ class PackagesController(auth: AuthorizationInterceptor,
         val user = SessionUser.getUser(request)
         myPermChecker.checkViewPermissions(user, project)
 
-        val rootUrl = myRootUrlResolver.getRootUrl(request, project.externalId)
+        val rootUrl = myRootUrlResolver.getRootUrl(project.externalId)
         val repositories = myRepositoriesManager.getRepositories(project, false).map {
             val usages = myRepositoryRegistry.findUsagesProvider(it.type.type)
                     ?.getUsagesCount(it)
