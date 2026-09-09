@@ -11,6 +11,7 @@ import jetbrains.buildServer.serverSide.BuildStartContext
 import jetbrains.buildServer.serverSide.BuildStartContextProcessor
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
+import jetbrains.buildServer.util.StringUtil
 import jetbrains.buildServer.web.util.WebUtil
 import javax.ws.rs.core.UriBuilder
 
@@ -49,8 +50,6 @@ class NuGetFeedAuthParametersProvider(private val mySettings: NuGetServerSetting
 
             repositories.forEach { repository ->
                 val project = myProjectManager.findProjectById(repository.projectId) ?: return@forEach
-                // Note: Repositories may be inherited from ancestor projects, so the feed's project is not necessarily the build's
-                val rootUrl = myRootUrlResolver.getRootUrlByProjectExternalId(project.externalId)
                 val feedPath = NuGetUtils.getProjectFeedPath(project.externalId, repository.name)
                 val feedSuffix = "${project.externalId}.${repository.name}"
                 val httpAuthFeedPath = WebUtil.combineContextPath(WebUtil.HTTP_AUTH_PREFIX, feedPath)
@@ -59,9 +58,12 @@ class NuGetFeedAuthParametersProvider(private val mySettings: NuGetServerSetting
                         feedReferencePrefix + feedSuffix + NuGetServerConstants.FEED_REF_URL_SUFFIX,
                         ReferencesResolverUtil.makeReference(AgentRuntimeProperties.TEAMCITY_SERVER_URL) + httpAuthFeedPath
                 )
+
+                // Note: Repositories may be inherited from ancestor projects, so the feed's project is not necessarily the build's
+                val rootUrl = StringUtil.removeTailingSlash(myRootUrlResolver.getRootUrlByProjectExternalId(project.externalId))
                 context.addSharedParameter(
                         feedReferencePrefix + feedSuffix + NuGetServerConstants.FEED_REF_PUBLIC_URL_SUFFIX,
-                        UriBuilder.fromUri(rootUrl).replacePath(httpAuthFeedPath).build().toString()
+                        UriBuilder.fromUri(rootUrl).path(httpAuthFeedPath).build().toString()
                 )
             }
         }
