@@ -2,6 +2,7 @@ package jetbrains.buildServer.nuget.feed.server.json
 
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
+import jetbrains.buildServer.nuget.feed.server.impl.NuGetFeedRootUrlResolver
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedFactory
 import jetbrains.buildServer.serverSide.TeamCityProperties
@@ -11,7 +12,8 @@ import javax.servlet.http.HttpServletResponse
 class JsonPackageContentHandler(
         private val feedFactory: NuGetFeedFactory,
         private val packageSourceFactory: JsonPackageSourceFactory,
-        private val adapterFactory: JsonPackageAdapterFactory) : NuGetFeedHandler {
+        private val adapterFactory: JsonPackageAdapterFactory,
+        private val rootUrlResolver: NuGetFeedRootUrlResolver) : NuGetFeedHandler {
     override fun handleRequest(feedData: NuGetFeedData, request: HttpServletRequest, response: HttpServletResponse) {
         val matchResult = FLAT_CONTAINER_URL.find(request.pathInfo)
         if (matchResult == null) {
@@ -21,7 +23,7 @@ class JsonPackageContentHandler(
 
         val (id, version, _, file, extension) = matchResult.destructured
         val feed = feedFactory.createFeed(feedData)
-        val context = JsonNuGetFeedContext(feed, request)
+        val context = JsonNuGetFeedContext(feed, feedData, request, rootUrlResolver)
 
         if (version == "index.json" && file.isEmpty()) {
             if (DispatcherUtils.isAsyncEnabled()) {

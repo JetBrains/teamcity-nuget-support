@@ -6,6 +6,7 @@ import jetbrains.buildServer.nuget.common.index.PackageConstants;
 import jetbrains.buildServer.nuget.feed.server.MetadataConstants;
 import jetbrains.buildServer.nuget.feed.server.NuGetAPIVersion;
 import jetbrains.buildServer.nuget.feed.server.NuGetFeedConstants;
+import jetbrains.buildServer.nuget.feed.server.impl.NuGetFeedRootUrlResolver;
 import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource;
 import jetbrains.buildServer.nuget.feedReader.NuGetPackageAttributes;
 import jetbrains.buildServer.util.Action;
@@ -16,6 +17,8 @@ import org.apache.olingo.odata2.api.edm.provider.*;
 import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.processor.ODataContext;
 import org.apache.olingo.odata2.core.edm.provider.EdmxProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
@@ -31,8 +34,15 @@ public class NuGetServiceFactory extends ODataServiceFactory {
   private static final Map<String, Action<Property>> PROPERTY_CONFIGS;
   private static final Map<NuGetAPIVersion, EdmxProvider> EDMX_PROVIDERS;
 
-  public NuGetServiceFactory(OlingoDataSource dataSource) {
+  private final NuGetFeedRootUrlResolver myRootUrlResolver;
+  private final String myProjectExternalId;
+
+  public NuGetServiceFactory(OlingoDataSource dataSource,
+                             @NotNull NuGetFeedRootUrlResolver rootUrlResolver,
+                             @Nullable String projectExternalId) {
     myDataSource = dataSource;
+    myRootUrlResolver = rootUrlResolver;
+    myProjectExternalId = projectExternalId;
   }
 
   @Override
@@ -40,7 +50,7 @@ public class NuGetServiceFactory extends ODataServiceFactory {
     final HttpServletRequest request = (HttpServletRequest) context.getParameter(ODataContext.HTTP_SERVLET_REQUEST_OBJECT);
     final NuGetAPIVersion apiVersion = (NuGetAPIVersion) request.getAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION);
     final EdmxProvider edmxProvider = EDMX_PROVIDERS.get(apiVersion);
-    return createODataSingleProcessorService(edmxProvider, new NuGetPackagesProcessor(myDataSource));
+    return createODataSingleProcessorService(edmxProvider, new NuGetPackagesProcessor(myDataSource, myRootUrlResolver, myProjectExternalId));
   }
 
   private static EdmxProvider getEdmProvider(final NuGetAPIVersion version) throws ODataException {

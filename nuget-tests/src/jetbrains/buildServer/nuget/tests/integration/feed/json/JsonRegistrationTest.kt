@@ -31,6 +31,18 @@ class JsonRegistrationTest : JsonFeedIntegrationTestBase() {
     }
 
     @Test
+    fun get_package_registrations_with_project_root_url() {
+        myProjectRootUrl = PROJECT_ROOT_URL
+        addMockPackage("MyPackage", "1.0.0.0")
+
+        val responseBody = openRequest("registration1/mypackage/index.json")
+
+        assertContains(responseBody, "{\"@id\":\"$PROJECT_ROOT_URL$myAuthenticationType$SERVLET_V3_PATH")
+        assertContains(responseBody, "\"packageContent\":\"$PROJECT_ROOT_URL$myAuthenticationType$DOWNLOAD_URL")
+        assertNotContains(responseBody, serverUrl, false)
+    }
+
+    @Test
     fun get_not_existing_package_registrations() {
         assertStatusCode(HttpStatus.SC_NOT_FOUND, "registration1/mypackage/index.json")
     }
@@ -105,5 +117,9 @@ class JsonRegistrationTest : JsonFeedIntegrationTestBase() {
                 .dependencies.first()
         Assert.assertEquals(dependency.id, id)
         Assert.assertEquals(dependency.range, range)
+    }
+
+    companion object {
+        private const val PROJECT_ROOT_URL = "https://tenant.example.com"
     }
 }

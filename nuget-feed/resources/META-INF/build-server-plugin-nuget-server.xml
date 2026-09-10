@@ -23,6 +23,7 @@
   <bean class="jetbrains.buildServer.nuget.feed.server.controllers.requests.NuGetFeedRequestsController"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.impl.NuGetServerSettingsImpl"/>
+  <bean class="jetbrains.buildServer.nuget.feed.server.impl.NuGetFeedRootUrlResolver"/>
 
   <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.security.NuGetFeedPermissionCheckerImpl"/>
   <bean class="jetbrains.buildServer.nuget.feed.server.index.impl.NuGetBuildFeedsProviderImpl"/>

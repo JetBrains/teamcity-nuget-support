@@ -1,6 +1,6 @@
 package jetbrains.buildServer.nuget.feed.server
 
-import jetbrains.buildServer.RootUrlHolder
+import jetbrains.buildServer.ProjectAwareRootUrlResolver
 import jetbrains.buildServer.agent.AgentRuntimeProperties
 import jetbrains.buildServer.agent.Constants
 import jetbrains.buildServer.nuget.common.NuGetServerConstants
@@ -11,6 +11,7 @@ import jetbrains.buildServer.serverSide.BuildStartContext
 import jetbrains.buildServer.serverSide.BuildStartContextProcessor
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.packages.impl.RepositoryManager
+import jetbrains.buildServer.util.StringUtil
 import jetbrains.buildServer.web.util.WebUtil
 import javax.ws.rs.core.UriBuilder
 
@@ -23,7 +24,7 @@ import javax.ws.rs.core.UriBuilder
 class NuGetFeedAuthParametersProvider(private val mySettings: NuGetServerSettings,
                                       private val myProjectManager: ProjectManager,
                                       private val myRepositoryManager: RepositoryManager,
-                                      private val myRootUrlHolder: RootUrlHolder)
+                                      private val myRootUrlResolver: ProjectAwareRootUrlResolver)
     : BuildStartContextProcessor {
 
     override fun updateParameters(context: BuildStartContext) {
@@ -57,9 +58,12 @@ class NuGetFeedAuthParametersProvider(private val mySettings: NuGetServerSetting
                         feedReferencePrefix + feedSuffix + NuGetServerConstants.FEED_REF_URL_SUFFIX,
                         ReferencesResolverUtil.makeReference(AgentRuntimeProperties.TEAMCITY_SERVER_URL) + httpAuthFeedPath
                 )
+
+                // Note: Repositories may be inherited from ancestor projects, so the feed's project is not necessarily the build's
+                val rootUrl = StringUtil.removeTailingSlash(myRootUrlResolver.getRootUrlByProjectExternalId(project.externalId))
                 context.addSharedParameter(
                         feedReferencePrefix + feedSuffix + NuGetServerConstants.FEED_REF_PUBLIC_URL_SUFFIX,
-                        UriBuilder.fromUri(myRootUrlHolder.rootUrl).replacePath(httpAuthFeedPath).build().toString()
+                        UriBuilder.fromUri(rootUrl).path(httpAuthFeedPath).build().toString()
                 )
             }
         }

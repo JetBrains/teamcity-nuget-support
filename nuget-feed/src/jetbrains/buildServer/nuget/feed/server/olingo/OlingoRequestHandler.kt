@@ -11,6 +11,7 @@ import jetbrains.buildServer.nuget.feed.server.cache.ResponseCache
 import jetbrains.buildServer.nuget.feed.server.controllers.NuGetFeedHandler
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeed
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
+import jetbrains.buildServer.nuget.feed.server.impl.NuGetFeedRootUrlResolver
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedFactory
 import jetbrains.buildServer.nuget.feed.server.olingo.data.OlingoDataSource
 import jetbrains.buildServer.nuget.feed.server.olingo.processor.NuGetServiceFactory
@@ -26,7 +27,8 @@ import javax.servlet.http.HttpServletResponse
  * Request handler based on Olingo library.
  */
 open class OlingoRequestHandler(private val myFeedFactory: NuGetFeedFactory,
-                                private val myCache: ResponseCache) : NuGetFeedHandler {
+                                private val myCache: ResponseCache,
+                                private val myRootUrlResolver: NuGetFeedRootUrlResolver) : NuGetFeedHandler {
     private val myServletsCache: Cache<String, Pair<ODataServlet, NuGetFeed>>
 
     init {
@@ -63,7 +65,7 @@ open class OlingoRequestHandler(private val myFeedFactory: NuGetFeedFactory,
         } ?: throw Exception("Failed to create servlet")
 
         val apiVersion = request.getAttribute(NuGetFeedConstants.NUGET_FEED_API_VERSION) as NuGetAPIVersion
-        val serviceFactory = NuGetServiceFactory(OlingoDataSource(feed, apiVersion))
+        val serviceFactory = NuGetServiceFactory(OlingoDataSource(feed, apiVersion), myRootUrlResolver, feedData.projectExtId)
         request.setAttribute(ODataServiceFactory.FACTORY_INSTANCE_LABEL, serviceFactory)
 
         try {
