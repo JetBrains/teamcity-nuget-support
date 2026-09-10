@@ -3,6 +3,7 @@ package jetbrains.buildServer.nuget.tests.server.feed.server.security
 import jetbrains.buildServer.nuget.feed.server.index.NuGetFeedData
 import jetbrains.buildServer.nuget.feed.server.index.impl.security.NuGetFeedPermissionCheckerImpl
 import jetbrains.buildServer.nuget.feed.server.packages.NuGetRepository
+import jetbrains.buildServer.nuget.tests.util.TCJMockUtils
 import jetbrains.buildServer.serverSide.ProjectManager
 import jetbrains.buildServer.serverSide.SBuild
 import jetbrains.buildServer.serverSide.SProject
@@ -15,7 +16,6 @@ import org.jmock.Expectations
 import org.jmock.Mockery
 import org.jmock.api.Action
 import org.jmock.api.Invocation
-import org.jmock.lib.legacy.ClassImposteriser
 import org.testng.Assert
 import org.testng.annotations.BeforeMethod
 import org.testng.annotations.Test
@@ -44,7 +44,7 @@ class NuGetFeedPermissionCheckerTest {
 
     @BeforeMethod
     fun setUp() {
-        m = object : Mockery() { init { setImposteriser(ClassImposteriser.INSTANCE) } }
+        m = TCJMockUtils.createInstance()
         projectManager = m.mock(ProjectManager::class.java)
         repositoryManager = m.mock(RepositoryManager::class.java)
         repoType = m.mock(RepositoryType::class.java)
@@ -81,6 +81,7 @@ class NuGetFeedPermissionCheckerTest {
     private fun Expectations.stubBuildProjectWithVisibleFeeds(vararg specs: Pair<SProject, String>) {
         allowing(build).projectId; will(AbstractExpectations.returnValue(BUILD_PROJECT))
         allowing(buildProject).projectId; will(AbstractExpectations.returnValue(BUILD_PROJECT))
+        allowing(buildProject).externalId; will(AbstractExpectations.returnValue(BUILD_PROJECT))
         allowing(projectManager).findProjectById(BUILD_PROJECT); will(AbstractExpectations.returnValue(buildProject))
         allowing(repositoryManager).getRepositories(buildProject, true); will(feedsFrom(*specs))
     }
