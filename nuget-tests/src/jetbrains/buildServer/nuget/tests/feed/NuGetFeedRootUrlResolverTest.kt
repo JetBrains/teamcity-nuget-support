@@ -31,8 +31,17 @@ class NuGetFeedRootUrlResolverTest : BaseTestCase() {
     }
 
     @Test
-    fun testRequestUrlIsUsedWhenProjectDoesNotRedefineRootUrl() {
-        expectProjectRootUrl(PROJECT_EXT_ID, GLOBAL_URL)
+    fun testFeedUrlUsesProjectUrlWhenProjectRedefinesIt() {
+        givenProjectRootUrl(PROJECT_EXT_ID, PROJECT_URL)
+
+        Assertions.assertThat(myResolver.getRootUrl(createRequest(), PROJECT_EXT_ID)).isEqualTo(PROJECT_URL_ORIGIN)
+        Assertions.assertThat(myResolver.getRootUrlWithAuthenticationType(createRequest(), PROJECT_EXT_ID))
+            .isEqualTo("$PROJECT_URL_ORIGIN/httpAuth")
+    }
+
+    @Test
+    fun testFeedUrlUsesRequestUrlWhenProjectDoesNotRedefineIt() {
+        givenProjectRootUrl(PROJECT_EXT_ID, GLOBAL_URL)
 
         Assertions.assertThat(myResolver.getRootUrl(createRequest(), PROJECT_EXT_ID)).isEqualTo(REQUEST_URL)
         Assertions.assertThat(myResolver.getRootUrlWithAuthenticationType(createRequest(), PROJECT_EXT_ID))
@@ -40,26 +49,8 @@ class NuGetFeedRootUrlResolverTest : BaseTestCase() {
     }
 
     @Test
-    fun testProjectUrlOverridesRequestUrl() {
-        expectProjectRootUrl(PROJECT_EXT_ID, PROJECT_URL)
-
-        Assertions.assertThat(myResolver.getRootUrl(createRequest(), PROJECT_EXT_ID)).isEqualTo(PROJECT_URL)
-        Assertions.assertThat(myResolver.getRootUrlWithAuthenticationType(createRequest(), PROJECT_EXT_ID))
-            .isEqualTo("$PROJECT_URL/httpAuth")
-    }
-
-    @Test
-    fun testTrailingSlashOfProjectUrlIsRemoved() {
-        expectProjectRootUrl(PROJECT_EXT_ID, "$PROJECT_URL/")
-
-        Assertions.assertThat(myResolver.getRootUrl(createRequest(), PROJECT_EXT_ID)).isEqualTo(PROJECT_URL)
-        Assertions.assertThat(myResolver.getRootUrlWithAuthenticationType(createRequest(), PROJECT_EXT_ID))
-            .isEqualTo("$PROJECT_URL/httpAuth")
-    }
-
-    @Test
-    fun testUnknownProjectFallsBackToRequestUrl() {
-        expectProjectRootUrl(null, GLOBAL_URL)
+    fun testFeedUrlUsesRequestUrlWhenProjectIsUnknown() {
+        givenProjectRootUrl(null, GLOBAL_URL)
 
         Assertions.assertThat(myResolver.getRootUrl(createRequest(), null)).isEqualTo(REQUEST_URL)
         Assertions.assertThat(myResolver.getRootUrlWithAuthenticationType(createRequest(), null))
@@ -67,28 +58,27 @@ class NuGetFeedRootUrlResolverTest : BaseTestCase() {
     }
 
     @Test
-    fun testRootProjectFeedWithoutOverrideUsesRequestUrl() {
-        expectProjectRootUrl(ROOT_PROJECT_EXT_ID, GLOBAL_URL)
+    fun testAdvertisedUrlUsesProjectUrlWhenProjectRedefinesIt() {
+        givenProjectRootUrl(PROJECT_EXT_ID, PROJECT_URL)
 
-        Assertions.assertThat(myResolver.getRootUrl(createRequest(ROOT_SERVLET_PATH), ROOT_PROJECT_EXT_ID)).isEqualTo(REQUEST_URL)
-        Assertions.assertThat(myResolver.getRootUrlWithAuthenticationType(createRequest(ROOT_SERVLET_PATH), ROOT_PROJECT_EXT_ID))
-            .isEqualTo("$REQUEST_URL/httpAuth")
+        Assertions.assertThat(myResolver.getRootUrl(PROJECT_EXT_ID)).isEqualTo(PROJECT_URL_ORIGIN)
     }
 
     @Test
-    fun testRootProjectFeedWithOverrideUsesProjectUrl() {
-        expectProjectRootUrl(ROOT_PROJECT_EXT_ID, PROJECT_URL)
+    fun testAdvertisedUrlUsesGlobalUrlWhenProjectDoesNotRedefineIt() {
+        givenProjectRootUrl(PROJECT_EXT_ID, GLOBAL_URL)
 
-        Assertions.assertThat(myResolver.getRootUrl(createRequest(ROOT_SERVLET_PATH), ROOT_PROJECT_EXT_ID)).isEqualTo(PROJECT_URL)
-        Assertions.assertThat(myResolver.getRootUrlWithAuthenticationType(createRequest(ROOT_SERVLET_PATH), ROOT_PROJECT_EXT_ID))
-            .isEqualTo("$PROJECT_URL/httpAuth")
+        Assertions.assertThat(myResolver.getRootUrl(PROJECT_EXT_ID)).isEqualTo(GLOBAL_URL_ORIGIN)
     }
 
-    private fun expectProjectRootUrl(projectExtId: String?, projectRootUrl: String) {
+    /**
+     * Configured URLs are stored as typed, so both the project and the global one may carry a trailing slash.
+     */
+    private fun givenProjectRootUrl(projectExtId: String?, projectRootUrl: String, globalRootUrl: String = GLOBAL_URL) {
         myMockery.checking(object : Expectations() {
             init {
                 allowing(myProjectAwareResolver).rootUrl
-                will(returnValue(GLOBAL_URL))
+                will(returnValue(globalRootUrl))
                 allowing(myProjectAwareResolver).getRootUrlByProjectExternalId(projectExtId)
                 will(returnValue(projectRootUrl))
             }
@@ -112,11 +102,11 @@ class NuGetFeedRootUrlResolverTest : BaseTestCase() {
 
     companion object {
         private const val PROJECT_EXT_ID = "Project1"
-        private const val ROOT_PROJECT_EXT_ID = "_Root"
-        private const val GLOBAL_URL = "http://teamcity.example.com"
-        private const val PROJECT_URL = "https://tenant.example.com"
+        private const val GLOBAL_URL_ORIGIN = "http://teamcity.example.com"
+        private const val PROJECT_URL_ORIGIN = "https://tenant.example.com"
+        private const val GLOBAL_URL = "$GLOBAL_URL_ORIGIN/"
+        private const val PROJECT_URL = "$PROJECT_URL_ORIGIN/"
         private const val REQUEST_URL = "http://localhost:8111"
         private const val SERVLET_PATH = "/httpAuth/app/nuget/feed/Project1/default/v3"
-        private const val ROOT_SERVLET_PATH = "/httpAuth/app/nuget/feed/_Root/default/v3"
     }
 }
