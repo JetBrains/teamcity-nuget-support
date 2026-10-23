@@ -1,0 +1,130 @@
+{
+  "title": "NuGet Installer",
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "InputPathControl",
+      "label": "Path to solution file",
+      "scope": "#/properties/projects",
+      "options": {
+        "onlyDirectories": false,
+        "description": "The path to Visual Studio solution file (.sln)"
+      }
+    },
+    {
+      "type": "AdvancedSettingsSection",
+      "elements": [
+        {
+          "type": "ToolVersionControl",
+          "label": "NuGet.exe",
+          "scope": "#/properties/tool-path",
+          "options": {
+            "toolType": "NuGet.CommandLine"
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Restore mode",
+          "scope": "#/properties/mode",
+          "options": {
+            "description": "Select NuGet.exe restore or NuGet.exe install command to restore packages for the solution",
+            "branches": {
+              "install": {
+                "type": "VerticalLayout",
+                "elements": [
+                  {
+                    "type": "Control",
+                    "label": "Exclude version from package folder names",
+                    "scope": "#/properties/exclude-version",
+                    "options": {
+                      "description": "Makes NuGet exclude package version from package folder names. Equivalent to the -ExcludeVersion NuGet.exe command line argument"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Disable looking up packages from local machine cache",
+          "scope": "#/properties/no-cache",
+          "options": {
+            "description": "Equivalent to the -NoCache NuGet.exe command line argument"
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Command line parameters",
+          "scope": "#/properties/args",
+          "options": {
+            "description": "Enter additional parameters to use when calling [nuget restore](https://docs.microsoft.com/en-us/nuget/tools/cli-ref-restore) command"
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Packages sources",
+          "scope": "#/properties/sources",
+          "options": {
+            "multi": true,
+            "description": "Leave blank to use NuGet.org. To use a [TeamCity NuGet feed](https://www.jetbrains.com/help/teamcity/using-teamcity-as-nuget-feed.html), specify the URL from the NuGet feed project settings page. For feeds with authentication configure the [NuGet Feed Credentials](https://www.jetbrains.com/help/teamcity/nuget-feed-credentials.html) build feature"
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Update packages",
+          "scope": "#/properties/update-packages",
+          "options": {
+            "description": "Uses the NuGet update command to update all packages under solution. Package versions and constraints are taken from packages.config files",
+            "branches": {
+              "update-params": {
+                "type": "VerticalLayout",
+                "elements": [
+                  {
+                    "type": "Control",
+                    "label": "Update mode",
+                    "scope": "#/properties/mode",
+                    "options": {
+                      "description": "Select how to update packages: via a call to NuGet.exe update SolutionFile.sln or via calls to NuGet.exe update Packages.Config for each packages.config file under the solution."
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "label": "Include pre-release packages",
+                    "scope": "#/properties/include-pre-release",
+                    "options": {
+                      "description": "Equivalent to the -Prerelease NuGet.exe option"
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "label": "Perform safe update",
+                    "scope": "#/properties/use-safe",
+                    "options": {
+                      "description": "Equivalent to the -Safe NuGet.exe option"
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "label": "Command line parameters",
+                    "scope": "#/properties/args",
+                    "options": {
+                      "description": "Enter additional parameters to use when calling [nuget update](https://docs.microsoft.com/en-us/nuget/tools/cli-ref-update) command"
+                    }
+                  },
+                  {
+                    "type": "Control",
+                    "scope": "#/properties/exclude-version",
+                    "options": {
+                      "hide": true
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

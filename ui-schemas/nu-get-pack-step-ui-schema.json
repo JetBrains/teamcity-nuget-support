@@ -1,0 +1,125 @@
+{
+  "title": "NuGet Pack",
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "InputPathControl",
+      "label": "Specification files",
+      "scope": "#/properties/paths",
+      "options": {
+        "onlyDirectories": false,
+        "multi": true,
+        "description": "Specify paths to .nuspec files and/or to Visual Studio project files (i.e. .csproj or .vbproj). MSBuild-style wildcards are supported"
+      }
+    },
+    {
+      "type": "Control",
+      "label": "Output directory",
+      "scope": "#/properties/output-dir",
+      "options": {
+        "description": "The path to the output directory for generated NuGet packages. See also NuGet Publish build runner"
+      }
+    },
+    {
+      "type": "Control",
+      "label": "Publish created packages to build artifacts",
+      "scope": "#/properties/publish-packages",
+      "options": {
+        "description": "Created packages will be published to the root of artifacts"
+      }
+    },
+    {
+      "type": "AdvancedSettingsSection",
+      "elements": [
+        {
+          "type": "ToolVersionControl",
+          "label": "NuGet.exe",
+          "scope": "#/properties/tool-path",
+          "options": {
+            "toolType": "NuGet.CommandLine"
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Prefer project files to .nuspec",
+          "scope": "#/properties/prefer-project-paths",
+          "options": {
+            "description": "Use the project file (if exists, i.e. .csproj or .vbproj) for every matched .nuspec file"
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Version",
+          "scope": "#/properties/version",
+          "options": {
+            "description": "Overrides the version number from the nuspec file."
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Base directory",
+          "scope": "#/properties/base-dir",
+          "options": {
+            "branches": {
+              "custom-path": {
+                "type": "VerticalLayout",
+                "elements": [
+                  {
+                    "type": "InputPathControl",
+                    "label": "Base directory path",
+                    "scope": "#/properties/path",
+                    "options": {
+                      "onlyDirectories": true,
+                      "description": "The -BaseDirectory parameter value. Leave blank to use the build checkout directory"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Clean output directory",
+          "scope": "#/properties/clean-output-dir"
+        },
+        {
+          "type": "Control",
+          "label": "Exclude files",
+          "scope": "#/properties/exclude-paths",
+          "options": {
+            "multi": true,
+            "description": "Exclude files when creating a package. Equivalent to the NuGet.exe -Exclude argument"
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Properties",
+          "scope": "#/properties/properties",
+          "options": {
+            "multi": true,
+            "description": "A semicolon or a newline-separated list of package creation properties (i.e. key=value) to pass to the NuGet.exe"
+          }
+        },
+        {
+          "type": "Control",
+          "label": "Create tool package",
+          "scope": "#/properties/tool-package"
+        },
+        {
+          "type": "Control",
+          "label": "Include sources and symbols",
+          "scope": "#/properties/include-symbols"
+        },
+        {
+          "type": "Control",
+          "label": "Command line parameters",
+          "scope": "#/properties/args",
+          "options": {
+            "description": "Enter additional parameters to use when calling [nuget pack](https://docs.microsoft.com/en-us/nuget/tools/cli-ref-pack) command"
+          }
+        }
+      ]
+    }
+  ]
+}
