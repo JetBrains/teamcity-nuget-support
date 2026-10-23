@@ -14,6 +14,14 @@
     },
     {
       "type": "Control",
+      "label": "Output directory",
+      "scope": "#/properties/output-dir",
+      "options": {
+        "description": "The path to the output directory for generated NuGet packages. See also NuGet Publish build runner"
+      }
+    },
+    {
+      "type": "Control",
       "label": "Publish created packages to build artifacts",
       "scope": "#/properties/publish-packages",
       "options": {
@@ -68,15 +76,6 @@
                 ]
               }
             }
-          }
-        },
-        {
-          "type": "InputPathControl",
-          "label": "Output directory",
-          "scope": "#/properties/output-dir",
-          "options": {
-            "onlyDirectories": true,
-            "description": "The path to the output directory for generated NuGet packages. See also NuGet Publish build runner"
           }
         },
         {
