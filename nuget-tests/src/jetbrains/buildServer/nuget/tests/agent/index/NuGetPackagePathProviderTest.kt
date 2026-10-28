@@ -21,7 +21,7 @@ class NuGetPackagePathProviderTest {
         val m = Mockery()
         val extensionHolder = m.mock(ExtensionHolder::class.java)
         val buildProgressLogger = m.mock(BuildProgressLogger::class.java)
-        val preprocessor = ZipPreprocessor(buildProgressLogger, createTempDir(), BiFunction<String, String, String> {k, d -> d})
+        val preprocessor = ZipPreprocessor(buildProgressLogger, createTempDir(), createTempDir(), BiFunction<String, String, String> {k, d -> d})
 
         m.checking(object: Expectations() {
             init {
