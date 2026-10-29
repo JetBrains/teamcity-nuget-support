@@ -8,6 +8,7 @@
       "scope": "#/properties/tool-path",
       "options": {
         "toolType": "NuGet.CommandLine",
+        "required": true,
         "placeholder": "/opt/agent/nuget.exe"
       }
     },
