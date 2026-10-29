@@ -3,6 +3,15 @@
   "type": "VerticalLayout",
   "elements": [
     {
+      "type": "ToolVersionControl",
+      "label": "NuGet.exe",
+      "scope": "#/properties/tool-path",
+      "options": {
+        "toolType": "NuGet.CommandLine",
+        "placeholder": "/opt/agent/nuget.exe"
+      }
+    },
+    {
       "type": "InputPathControl",
       "label": "Path to solution file",
       "scope": "#/properties/projects",
@@ -14,14 +23,6 @@
     {
       "type": "AdvancedSettingsSection",
       "elements": [
-        {
-          "type": "ToolVersionControl",
-          "label": "NuGet.exe",
-          "scope": "#/properties/tool-path",
-          "options": {
-            "toolType": "NuGet.CommandLine"
-          }
-        },
         {
           "type": "Control",
           "label": "Restore mode",
