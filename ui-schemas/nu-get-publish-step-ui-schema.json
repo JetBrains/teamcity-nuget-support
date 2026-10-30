@@ -31,16 +31,16 @@
       }
     },
     {
+      "type": "Control",
+      "label": "Package source",
+      "scope": "#/properties/server-url",
+      "options": {
+        "description": "Specify the NuGet packages feed URL to push packages to. Leave blank to let NuGet decide what package repository to use. To use a [TeamCity NuGet feed](https://www.jetbrains.com/help/teamcity/using-teamcity-as-nuget-feed.html), specify the URL from the NuGet feed project settings page."
+      }
+    },
+    {
       "type": "AdvancedSettingsSection",
       "elements": [
-        {
-          "type": "Control",
-          "label": "Package source",
-          "scope": "#/properties/server-url",
-          "options": {
-            "description": "Specify the NuGet packages feed URL to push packages to. Leave blank to let NuGet decide what package repository to use. To use a [TeamCity NuGet feed](https://www.jetbrains.com/help/teamcity/using-teamcity-as-nuget-feed.html), specify the URL from the NuGet feed project settings page."
-          }
-        },
         {
           "type": "Control",
           "label": "Command line parameters",

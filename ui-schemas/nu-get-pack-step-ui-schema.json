@@ -62,6 +62,7 @@
           "label": "Base directory",
           "scope": "#/properties/base-dir",
           "options": {
+            "description": "Leave empty to not add an explicit -BaseDirectory parameter.",
             "branches": {
               "custom-path": {
                 "type": "VerticalLayout",
