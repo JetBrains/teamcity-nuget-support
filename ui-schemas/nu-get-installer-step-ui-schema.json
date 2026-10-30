@@ -29,7 +29,7 @@
           "label": "Restore mode",
           "scope": "#/properties/mode",
           "options": {
-            "description": "Select NuGet.exe restore or NuGet.exe install command to restore packages for the solution",
+            "description": "Leave empty to use NuGet.exe restore (requires NuGet 2.7+), choose Install to use NuGet.exe install.",
             "branches": {
               "install": {
                 "type": "VerticalLayout",
@@ -77,6 +77,7 @@
           "label": "Update packages",
           "scope": "#/properties/update-packages",
           "options": {
+            "hide": true,
             "description": "Uses the NuGet update command to update all packages under solution. Package versions and constraints are taken from packages.config files",
             "branches": {
               "update-params": {
