@@ -2,20 +2,21 @@
 //
 // Licensed under the MIT license.
 
-using System.Collections.Generic;
-using NuGet.Common;
+using System.Collections.Concurrent;
+using JetBrains.TeamCity.NuGet.Compatibility.Logging;
 
 namespace JetBrains.TeamCity.NuGet.Logging
 {
-  internal class MultiLogger : List<ILogger>, ILogger
+  internal class MultiLogger : ILogger
   {
+    private readonly ConcurrentBag<ILogger> _loggers = new ConcurrentBag<ILogger>();
     private LogLevel? _minLogLevel;
-
-    public void Log(LogLevel level, string message)
+    
+    public void Log(LogLevel level, string message, bool notifyNuGet = true)
     {
-      foreach (var logger in this)
+      foreach (var logger in _loggers)
       {
-        logger.Log(level, message);
+        logger.Log(level, message, notifyNuGet);
       }
     }
 
@@ -23,20 +24,20 @@ namespace JetBrains.TeamCity.NuGet.Logging
     {
       _minLogLevel = newLogLevel;
 
-      foreach (var logger in this)
+      foreach (var logger in _loggers)
       {
         logger.SetLogLevel(newLogLevel);
       }
     }
 
-    public new void Add(ILogger logger)
+    public void Add(ILogger logger)
     {
       if (_minLogLevel.HasValue)
       {
         logger.SetLogLevel(_minLogLevel.Value);
       }
 
-      base.Add(logger);
+      _loggers.Add(logger);
     }
   }
 }

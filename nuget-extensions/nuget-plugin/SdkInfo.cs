@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using NuGet.Versioning;
+using JetBrains.TeamCity.NuGet.Compatibility.Versioning;
 
 namespace JetBrains.TeamCity.NuGet
 {

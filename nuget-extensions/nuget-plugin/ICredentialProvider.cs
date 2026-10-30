@@ -1,5 +1,5 @@
 ﻿using System;
-using NuGet.Protocol.Plugins;
+using JetBrains.TeamCity.NuGet.Compatibility.Protocol;
 
 namespace JetBrains.TeamCity.NuGet
 {

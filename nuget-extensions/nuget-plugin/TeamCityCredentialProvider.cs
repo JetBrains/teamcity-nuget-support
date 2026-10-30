@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using JetBrains.TeamCity.NuGet.Compatibility.Logging;
+using JetBrains.TeamCity.NuGet.Compatibility.Messages;
+using JetBrains.TeamCity.NuGet.Compatibility.Protocol;
 using JetBrains.TeamCity.NuGet.ExtendedCommands;
 using JetBrains.TeamCity.NuGet.ExtendedCommands.Data;
-using NuGet.Common;
-using NuGet.Protocol.Plugins;
 using ILogger = JetBrains.TeamCity.NuGet.Logging.ILogger;
 
 namespace JetBrains.TeamCity.NuGet

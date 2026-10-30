@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
-using NuGet.Common;
+using JetBrains.TeamCity.NuGet.Compatibility.Logging;
 
 namespace JetBrains.TeamCity.NuGet.Logging
 {
@@ -14,10 +14,10 @@ namespace JetBrains.TeamCity.NuGet.Logging
     private LogLevel _minLogLevel = LogLevel.Debug;
     private bool _allowLogWrites;
 
-    private ConcurrentQueue<Tuple<LogLevel, string>> _bufferedLogs =
-      new ConcurrentQueue<Tuple<LogLevel, string>>();
+    private ConcurrentQueue<LogItem> _bufferedLogs =
+      new ConcurrentQueue<LogItem>();
 
-    public void Log(LogLevel level, string message)
+    public void Log(LogLevel level, string message, bool notifyNuGet = true)
     {
       if (!_allowLogWrites)
       {
@@ -25,7 +25,7 @@ namespace JetBrains.TeamCity.NuGet.Logging
         var buffer = _bufferedLogs;
         if (buffer != null)
         {
-          buffer.Enqueue(Tuple.Create(level, message));
+          buffer.Enqueue(LogItem.Create(DateTime.Now, level, message, notifyNuGet));
         }
 
         // we could pass this through if buffer is null since the Set message has already come through to unblock us, but
@@ -36,16 +36,15 @@ namespace JetBrains.TeamCity.NuGet.Logging
 
       if (_bufferedLogs != null)
       {
-        ConcurrentQueue<Tuple<LogLevel, string>> buffer = null;
-        buffer = Interlocked.CompareExchange(ref _bufferedLogs, null, _bufferedLogs);
+        var buffer = Interlocked.CompareExchange(ref _bufferedLogs, null, _bufferedLogs);
 
         if (buffer != null)
         {
           foreach (var log in buffer)
           {
-            if (log.Item1 >= _minLogLevel)
+            if (log.Level >= _minLogLevel)
             {
-              WriteLog(log.Item1, log.Item2);
+              WriteLog(log.Timestamp, log.Level, log.Message, log.NotifyNuGet);
             }
           }
         }
@@ -53,7 +52,7 @@ namespace JetBrains.TeamCity.NuGet.Logging
 
       if (level >= _minLogLevel)
       {
-        WriteLog(level, message);
+        WriteLog(DateTime.Now, level, message, notifyNuGet);
       }
     }
 
@@ -63,6 +62,27 @@ namespace JetBrains.TeamCity.NuGet.Logging
       _allowLogWrites = true;
     }
 
-    protected abstract void WriteLog(LogLevel logLevel, string message);
+    protected abstract void WriteLog(DateTime logTimestamp, LogLevel logLevel, string logMessage, bool logNotifyNuGet);
+    
+    private class LogItem
+    {
+      public DateTime Timestamp { get; }
+      public LogLevel Level { get; }
+      public string Message { get; }
+      public bool NotifyNuGet { get; }
+      
+      private LogItem(DateTime timestamp, LogLevel level, string message, bool notifyNuGet)
+      {
+        Timestamp = timestamp;
+        Level = level;
+        Message = message;
+        NotifyNuGet = notifyNuGet;
+      }
+      
+      public static LogItem Create(DateTime timestamp, LogLevel level, string message, bool notifyNuGet)
+      {
+        return new LogItem(timestamp, level, message, notifyNuGet);
+      }
+    }
   }
 }
