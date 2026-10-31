@@ -1,0 +1,55 @@
+{
+  "title": "NuGet Publish",
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "ToolVersionControl",
+      "label": "NuGet.exe",
+      "scope": "#/properties/tool-path",
+      "options": {
+        "toolType": "NuGet.CommandLine",
+        "required": true,
+        "placeholder": "/opt/agent/nuget.exe"
+      }
+    },
+    {
+      "type": "InputPathControl",
+      "label": "Packages",
+      "scope": "#/properties/packages",
+      "options": {
+        "onlyDirectories": false,
+        "multi": true,
+        "description": "A newline-separated list of NuGet package files (.nupkg) to push to the NuGet feed. Wildcards are supported."
+      }
+    },
+    {
+      "type": "Control",
+      "label": "API key",
+      "scope": "#/properties/api-key",
+      "options": {
+        "description": "Specify the API key to access a NuGet packages feed. For built-in TeamCity NuGet server, specify %teamcity.nuget.feed.api.key%"
+      }
+    },
+    {
+      "type": "Control",
+      "label": "Package source",
+      "scope": "#/properties/server-url",
+      "options": {
+        "description": "Specify the NuGet packages feed URL to push packages to. Leave blank to let NuGet decide what package repository to use. To use a [TeamCity NuGet feed](https://www.jetbrains.com/help/teamcity/using-teamcity-as-nuget-feed.html), specify the URL from the NuGet feed project settings page."
+      }
+    },
+    {
+      "type": "AdvancedSettingsSection",
+      "elements": [
+        {
+          "type": "Control",
+          "label": "Command line parameters",
+          "scope": "#/properties/args",
+          "options": {
+            "description": "Enter additional parameters to use when calling [nuget push](https://docs.microsoft.com/en-us/nuget/tools/cli-ref-push) command"
+          }
+        }
+      ]
+    }
+  ]
+}
