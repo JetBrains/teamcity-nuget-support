@@ -32,11 +32,25 @@ install_jdk() {
 install_jdk
 log "Using JDK at $JAVA17_HOME"
 
-# --- Mono (msbuild for nuget-extensions) ------------------------------------
-if ! command -v msbuild >/dev/null 2>&1 && ! command -v mono >/dev/null 2>&1; then
-  log "Installing mono-devel (needed to build .NET nuget-extensions)"
+# --- Mono (msbuild/xbuild for nuget-extensions) -------------------------------
+if ! command -v xbuild >/dev/null 2>&1; then
+  log "Installing mono-devel and mono-xbuild (needed to build .NET nuget-extensions)"
   sudo apt-get update -qq
-  sudo apt-get install -y -qq mono-devel || log "WARNING: mono-devel install failed; .NET extension builds will not work"
+  sudo apt-get install -y -qq mono-devel mono-xbuild \
+    || log "WARNING: mono install failed; .NET extension builds will not work"
+fi
+
+# --- JVM proxy settings -------------------------------------------------------
+# The JVM (Gradle wrapper, daemon, forked test JVMs) ignores http(s)_proxy env
+# vars, so derive JVM proxy properties from the current environment on every
+# boot (the proxy address may differ between runs).
+JAVA_PROXY_OPTS=""
+PROXY_URL="${https_proxy:-${HTTPS_PROXY:-}}"
+if [ -n "$PROXY_URL" ]; then
+  PROXY_HOST=$(echo "$PROXY_URL" | sed -E 's#^[a-zA-Z]+://##; s#/.*##; s#:[0-9]+$##')
+  PROXY_PORT=$(echo "$PROXY_URL" | sed -E 's#.*:([0-9]+)/?$#\1#')
+  JAVA_PROXY_OPTS="-Dhttp.proxyHost=$PROXY_HOST -Dhttp.proxyPort=$PROXY_PORT -Dhttps.proxyHost=$PROXY_HOST -Dhttps.proxyPort=$PROXY_PORT -Dhttp.nonProxyHosts=localhost|127.0.0.1"
+  log "Using HTTP proxy $PROXY_HOST:$PROXY_PORT for JVM processes"
 fi
 
 # --- Login-shell environment -------------------------------------------------
@@ -44,6 +58,9 @@ cat > "$ENV_FILE" <<EOF
 export JAVA_HOME="$JAVA17_HOME"
 export PATH="$JAVA17_HOME/bin:\$PATH"
 EOF
+if [ -n "$JAVA_PROXY_OPTS" ]; then
+  printf 'export JAVA_TOOL_OPTIONS="%s"\n' "$JAVA_PROXY_OPTS" >> "$ENV_FILE"
+fi
 MARKER="# air-env"
 add_source_line() {
   local f="$1"
@@ -57,16 +74,31 @@ add_source_line "$HOME/.bashrc"
 
 export JAVA_HOME="$JAVA17_HOME"
 export PATH="$JAVA17_HOME/bin:$PATH"
+if [ -n "$JAVA_PROXY_OPTS" ]; then
+  export JAVA_TOOL_OPTIONS="$JAVA_PROXY_OPTS"
+fi
 
 cd "$REPO_DIR"
 chmod +x ./gradlew
 
 # --- TeamCity distribution (non-public compile dependencies) -----------------
+# The build resolves org.jetbrains.teamcity[.internal] artifacts from a locally
+# installed TeamCity at nuget-server/teamcity/environments/<version> (see the
+# flatDir repository in build.gradle). The rodm install task downloads the wrong
+# default version (9.0), so fetch the distribution matching libs.versions.toml
+# directly.
 TC_VERSION=$(sed -n 's/^teamcity *= *"\(.*\)"/\1/p' gradle/libs.versions.toml)
-TC_LIB_DIR="nuget-server/teamcity/environments/${TC_VERSION}/webapps/ROOT/WEB-INF/lib"
+TC_HOME="nuget-server/teamcity/environments/${TC_VERSION}"
+TC_LIB_DIR="$TC_HOME/webapps/ROOT/WEB-INF/lib"
 if [ ! -d "$TC_LIB_DIR" ]; then
-  log "Downloading TeamCity ${TC_VERSION} distribution (several GB, one-time)"
-  ./gradlew --no-daemon ":nuget-server:installTeamCity${TC_VERSION}"
+  log "Downloading TeamCity ${TC_VERSION} distribution (~1.5 GB, one-time)"
+  curl -fSL --retry 3 "https://download.jetbrains.com/teamcity/TeamCity-${TC_VERSION}.tar.gz" -o /tmp/TeamCity.tar.gz
+  log "Unpacking TeamCity ${TC_VERSION}"
+  rm -rf /tmp/tc-extract "$TC_HOME"
+  mkdir -p /tmp/tc-extract "$(dirname "$TC_HOME")"
+  tar -xzf /tmp/TeamCity.tar.gz -C /tmp/tc-extract
+  mv /tmp/tc-extract/TeamCity "$TC_HOME"
+  rm -rf /tmp/TeamCity.tar.gz /tmp/tc-extract
   log "TeamCity ${TC_VERSION} installed"
 else
   log "TeamCity ${TC_VERSION} already installed"
