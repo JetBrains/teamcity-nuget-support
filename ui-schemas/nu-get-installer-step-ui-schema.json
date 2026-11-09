@@ -1,5 +1,6 @@
 {
   "title": "NuGet Installer",
+  "description": "Installs and updates missing NuGet packages",
   "type": "VerticalLayout",
   "elements": [
     {

@@ -1,5 +1,6 @@
 {
   "title": "NuGet Publish",
+  "description": "Pushes and publishes NuGet package to a given feed",
   "type": "VerticalLayout",
   "elements": [
     {

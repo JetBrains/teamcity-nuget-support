@@ -1,5 +1,6 @@
 {
   "title": "NuGet Pack",
+  "description": "Creates a NuGet package from a given spec file",
   "type": "VerticalLayout",
   "elements": [
     {
@@ -84,7 +85,10 @@
         {
           "type": "Control",
           "label": "Clean output directory",
-          "scope": "#/properties/clean-output-dir"
+          "scope": "#/properties/clean-output-dir",
+          "options": {
+            "description": ""
+          }
         },
         {
           "type": "Control",
@@ -107,12 +111,18 @@
         {
           "type": "Control",
           "label": "Create tool package",
-          "scope": "#/properties/tool-package"
+          "scope": "#/properties/tool-package",
+          "options": {
+            "description": ""
+          }
         },
         {
           "type": "Control",
           "label": "Include sources and symbols",
-          "scope": "#/properties/include-symbols"
+          "scope": "#/properties/include-symbols",
+          "options": {
+            "description": ""
+          }
         },
         {
           "type": "Control",
