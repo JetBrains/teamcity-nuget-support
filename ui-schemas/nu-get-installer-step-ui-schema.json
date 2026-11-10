@@ -61,6 +61,7 @@
           "label": "Command line parameters",
           "scope": "#/properties/args",
           "options": {
+            "resizable": true,
             "description": "Enter additional parameters to use when calling [nuget restore](https://docs.microsoft.com/en-us/nuget/tools/cli-ref-restore) command"
           }
         },
@@ -113,6 +114,7 @@
                     "label": "Command line parameters",
                     "scope": "#/properties/args",
                     "options": {
+                      "resizable": true,
                       "description": "Enter additional parameters to use when calling [nuget update](https://docs.microsoft.com/en-us/nuget/tools/cli-ref-update) command"
                     }
                   },

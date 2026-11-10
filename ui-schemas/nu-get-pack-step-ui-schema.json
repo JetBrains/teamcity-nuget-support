@@ -70,7 +70,7 @@
                 "elements": [
                   {
                     "type": "InputPathControl",
-                    "label": "Base directory path",
+                    "label": "Path",
                     "scope": "#/properties/path",
                     "options": {
                       "onlyDirectories": true,
@@ -129,6 +129,7 @@
           "label": "Command line parameters",
           "scope": "#/properties/args",
           "options": {
+            "resizable": true,
             "description": "Enter additional parameters to use when calling [nuget pack](https://docs.microsoft.com/en-us/nuget/tools/cli-ref-pack) command"
           }
         }
